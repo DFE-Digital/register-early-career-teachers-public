@@ -1,0 +1,19 @@
+---
+title: You've assigned <%= @mentor_name %> as a mentor
+header: false
+---
+
+<%= govuk_panel(title_text: "You've assigned #{@mentor_name} as a mentor") do %>
+for
+<br>
+<strong><%= @ect_name %></strong>
+<% end %>
+
+<%= @mentor_name %> is now <%= @ect_name %>'s mentor, and this completes <%= @ect_name %>'s registration as an ECT at
+your school.
+
+### What happens next
+
+They do not need to give us any more information.
+
+<%= govuk_link_to "Back to your ECTs", schools_ects_home_path %>
