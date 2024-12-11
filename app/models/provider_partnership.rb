@@ -3,6 +3,7 @@ class ProviderPartnership < ApplicationRecord
   belongs_to :academic_year, inverse_of: :provider_partnerships
   belongs_to :lead_provider, inverse_of: :provider_partnerships
   belongs_to :delivery_partner, inverse_of: :provider_partnerships
+  has_many :events
 
   # Validations
   validates :academic_year_id,

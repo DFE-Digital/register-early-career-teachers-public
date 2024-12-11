@@ -2,6 +2,8 @@ class School < ApplicationRecord
   # Associations
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
 
+  has_many :events
+
   has_many :ect_at_school_periods, inverse_of: :school
   has_many :mentor_at_school_periods, inverse_of: :school
 
