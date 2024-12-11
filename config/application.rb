@@ -20,6 +20,7 @@ module ECF2
     config.active_record.belongs_to_required_by_default = false
     config.generators.system_tests = nil
     config.action_mailer.deliver_later_queue_name = "mailers"
+    config.generators.system_tests = nil
 
     config.generators do |g|
       g.helper(false)
