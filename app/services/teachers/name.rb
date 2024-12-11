@@ -8,7 +8,7 @@ class Teachers::Name
   def full_name
     return if teacher.blank?
 
-    teacher.corrected_name || first_name_plus_last_name
+    teacher.corrected_name.presence || first_name_plus_last_name
   end
 
 private
