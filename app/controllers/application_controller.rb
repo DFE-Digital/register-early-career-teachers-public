@@ -42,6 +42,10 @@ private
     @current_user ||= session_manager.load_from_session
   end
 
+  def reload_current_user
+    @current_user = session_manager.load_from_session
+  end
+
   def login_redirect_path
     session_manager.requested_path || admin_home_path || ab_home_path || school_home_path || fail(UnredirectableError)
   end

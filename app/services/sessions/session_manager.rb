@@ -34,7 +34,7 @@ module Sessions
 
       return if expired?
 
-      current_user.record_new_activity!(session:)
+      load_user_from_session.record_new_activity!(session:)
     end
 
     def end_session!
@@ -64,7 +64,11 @@ module Sessions
     def current_user
       return if session['user_session'].blank?
 
-      @current_user ||= Sessions::SessionUser.from_session(session['user_session'])
+      @current_user ||= load_user_from_session
+    end
+
+    def load_user_from_session
+      Sessions::SessionUser.from_session(session['user_session'])
     end
 
     def current_session
