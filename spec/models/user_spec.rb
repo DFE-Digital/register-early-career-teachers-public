@@ -9,5 +9,7 @@ describe User do
 
   describe 'associations' do
     it { is_expected.to have_many(:dfe_roles) }
+    it { is_expected.to have_many(:events) }
+    it { is_expected.to have_many(:authored_events).inverse_of(:author).class_name('Event') }
   end
 end

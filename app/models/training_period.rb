@@ -6,6 +6,7 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
   belongs_to :provider_partnership
   has_many :declarations, inverse_of: :training_period
+  has_many :events
 
   # Validations
   validates :started_on,

@@ -8,6 +8,7 @@ class Teacher < ApplicationRecord
   has_many :mentor_at_school_periods, inverse_of: :teacher
   has_many :induction_extensions, inverse_of: :teacher
   has_many :induction_periods, -> { order(started_on: :asc) }
+  has_many :events
 
   # Validations
   validates :first_name,

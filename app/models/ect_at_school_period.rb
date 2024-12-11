@@ -7,8 +7,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :mentorship_periods, inverse_of: :mentee
   has_many :mentors, through: :mentorship_periods, source: :mentor
   has_many :training_periods, inverse_of: :ect_at_school_period
-
   has_many :mentor_at_school_periods, through: :teacher
+  has_many :events
 
   # Validations
   validates :started_on,
