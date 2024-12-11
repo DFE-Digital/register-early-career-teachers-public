@@ -1,5 +1,5 @@
 module AuthHelper
-  def sign_in_as(user_type, method: :persona, appropriate_body: nil, school_urn:)
+  def sign_in_as(user_type, method: :persona, appropriate_body: nil, school_urn: nil)
     Rails.logger.info("logging in as #{user_type}")
 
     case method

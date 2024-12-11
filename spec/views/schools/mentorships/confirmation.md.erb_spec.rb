@@ -1,12 +1,12 @@
 RSpec.describe "schools/mentorships/confirmation.md.erb" do
   let(:ect_name) { "Michale Dixon" }
-  let(:mentor) { double("mentor_at_school_period", full_name: 'Peter Times') }
-  let(:title) { "You've assigned #{mentor.full_name} as a mentor" }
+  let(:mentor_name) { 'Peter Times' }
+  let(:title) { "You've assigned #{mentor_name} as a mentor" }
   let(:your_ects_path) { schools_ects_home_path }
 
   before do
     assign(:ect_name, ect_name)
-    assign(:mentor, mentor)
+    assign(:mentor_name, mentor_name)
   end
 
   it "sets the page title to 'You've assigned <mentor name> as a mentor'" do
@@ -24,6 +24,6 @@ RSpec.describe "schools/mentorships/confirmation.md.erb" do
   it 'includes a button that links to the school home page' do
     render
 
-    expect(rendered).to have_link('Back to ECTs', href: your_ects_path)
+    expect(rendered).to have_link('Back to your ECTs', href: your_ects_path)
   end
 end
