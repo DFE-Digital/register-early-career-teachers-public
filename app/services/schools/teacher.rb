@@ -3,8 +3,8 @@ module Schools
     IN_PROGRESS = 'In progress'.freeze
     UNKNOWN = 'Unknown'.freeze
 
-    def initialize(school_id)
-      @school_id = school_id
+    def initialize(school_urn)
+      @school_urn = school_urn
     end
 
     def fetch_etcs_and_mentors
@@ -21,7 +21,7 @@ module Schools
 
   private
 
-    attr_reader :school_id
+    attr_reader :school_urn
 
     def ects_and_mentors
       ECTAtSchoolPeriod
@@ -35,7 +35,7 @@ module Schools
     end
 
     def school
-      @school ||= School.find_by(id: school_id) || School.first
+      @school ||= School.find_by(urn: school_urn) || School.first
     end
   end
 end
