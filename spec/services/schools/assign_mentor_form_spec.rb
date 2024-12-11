@@ -60,7 +60,7 @@ describe Schools::AssignMentorForm, type: :model do
       it 'adds a new mentorship for the ect and the mentor starting today' do
         expect(ect.current_mentor).to be_nil
 
-        subject.save
+        expect(subject.save).to be_truthy
 
         expect(ect.current_mentor).to eq(mentor)
         expect(ect.current_mentorship.started_on).to eq(Date.current)

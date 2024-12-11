@@ -51,8 +51,8 @@ RSpec.describe 'Add a mentor to an ECT' do
     expect(page.url).to end_with("/school/ects/#{@ect.id}/mentorship/new")
   end
 
-  def when_i_select_register_a_new_mentor
-    page.get_by_role(:radio, name: "Register a new mentor").check
+  def when_i_select_the_mentor
+    page.get_by_role(:radio, name: @mentor_name).check
     page.get_by_role(:button, name: 'Continue').click
   end
 
@@ -70,7 +70,6 @@ RSpec.describe 'Add a mentor to an ECT' do
   end
 
   def and_the_ect_is_shown_linked_to_the_mentor_just_registered
-    debugger
     expect(page.get_by_role(:link, name: @ect_name)).to be_visible
     expect(page.locator('dt', hasText: 'Mentor')).to be_visible
     expect(page.locator('dd', hasText: @mentor_name)).to be_visible
