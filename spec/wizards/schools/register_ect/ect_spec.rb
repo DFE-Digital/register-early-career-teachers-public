@@ -2,9 +2,10 @@ require 'rails_helper'
 
 describe Schools::RegisterECTWizard::ECT do
   let(:school) { FactoryBot.create(:school) }
+  let(:trn) { "3002586" }
   let(:store) do
     FactoryBot.build(:session_repository,
-                     trn: "3002586",
+                     trn:,
                      date_of_birth: "11-10-1945",
                      trs_first_name: "Dusty",
                      trs_last_name: "Rhodes",
@@ -125,6 +126,15 @@ describe Schools::RegisterECTWizard::ECT do
       expect(teacher.trn).to eq(ect.trn)
       expect(ect_at_school_period.school_id).to eq(school.id)
       expect(ect_at_school_period.started_on).to eq(Date.current)
+    end
+  end
+
+  describe('#ect_at_school_period_id') do
+    it 'returns the id of the ECT at school period' do
+      teacher = FactoryBot.create(:teacher, trn:)
+      ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher: teacher, school: school)
+
+      expect(ect.ect_at_school_period_id).to eq(ect_at_school_period.id)
     end
   end
 end
