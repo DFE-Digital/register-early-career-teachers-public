@@ -85,6 +85,7 @@ emma_thompson = Teacher.create!(first_name: 'Emma', last_name: 'Thompson', trn: 
 kate_winslet = Teacher.create!(first_name: 'Kate', last_name: 'Winslet', trn: '1023457')
 alan_rickman = Teacher.create!(first_name: 'Alan', last_name: 'Rickman', trn: '2084589')
 hugh_grant = Teacher.create!(first_name: 'Hugh', last_name: 'Grant', trn: '3657894')
+jamie_parsons = Teacher.create!(first_name: 'Jamie', last_name: 'Parsons', trn: '1237894')
 harriet_walter = Teacher.create!(first_name: 'Harriet', last_name: 'Walter', trn: '2017654')
 hugh_laurie = Teacher.create!(first_name: 'Hugh', last_name: 'Laurie', trn: '4786654')
 andre_roussimoff = Teacher.create!(first_name: 'André', last_name: 'Roussimoff', trn: '8886654')
@@ -353,6 +354,40 @@ InductionExtension.create!(
 
 InductionExtension.create!(
   teacher: hugh_grant,
+  number_of_terms: 1
+).tap { |ext| describe_extension(ext) }
+
+print_seed_info("Jamie Parsons (ECT)", indent: 2, colour: ECT_COLOUR)
+
+jamie_parsons_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
+  teacher: jamie_parsons,
+  school: abbey_grove_school,
+  started_on: 2.years.ago
+).tap { |sp| describe_ect_at_school_period(sp) }
+
+TrainingPeriod.create!(
+  ect_at_school_period: jamie_parsons_ect_at_abbey_grove,
+  started_on: 2.years.ago,
+  finished_on: 1.week.ago,
+  provider_partnership: grove_artisan_partnership_2021
+).tap { |tp| describe_training_period(tp) }
+
+InductionPeriod.create!(
+  teacher: jamie_parsons,
+  appropriate_body: golden_leaf_teaching_school_hub,
+  started_on: 2.years.ago + 3.days,
+  finished_on: 1.week.ago,
+  induction_programme: 'fip',
+  number_of_terms: 3
+).tap { |ip| describe_induction_period(ip) }
+
+InductionExtension.create!(
+  teacher: jamie_parsons,
+  number_of_terms: 1.5
+).tap { |ext| describe_extension(ext) }
+
+InductionExtension.create!(
+  teacher: jamie_parsons,
   number_of_terms: 1
 ).tap { |ext| describe_extension(ext) }
 
