@@ -49,7 +49,7 @@ RSpec.describe 'Registering a mentor' do
 
   def then_i_am_in_the_requirements_page
     expect(page.get_by_text("What you'll need to add a new mentor for #{@ect_name}")).to be_visible
-    expect(page.url).to end_with("/school/register-mentor/what-you-will-need?ect_id=#{Rack::Utils.escape(@ect.id)}")
+    expect(page.url).to end_with("/school/register-mentor/what-you-will-need?ect_id=#{@ect.id}")
   end
 
   def when_i_click_continue
