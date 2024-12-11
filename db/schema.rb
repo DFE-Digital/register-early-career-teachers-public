@@ -10,15 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_11_112260) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_11_115427) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
+  enable_extension "plpgsql"
   enable_extension "unaccent"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
+  create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
@@ -150,6 +151,47 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_11_112260) do
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
     t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
     t.index ["teacher_id"], name: "index_ect_at_school_periods_on_teacher_id"
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.text "heading"
+    t.text "body"
+    t.text "event_type"
+    t.datetime "happened_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.integer "teacher_id"
+    t.integer "appropriate_body_id"
+    t.integer "induction_period_id"
+    t.integer "induction_extension_id"
+    t.integer "school_id"
+    t.integer "ect_at_school_period_id"
+    t.integer "mentor_at_school_period_id"
+    t.integer "training_period_id"
+    t.integer "mentorship_period_id"
+    t.integer "provider_partnership_id"
+    t.integer "lead_provider_id"
+    t.integer "delivery_partner_id"
+    t.integer "user_id"
+    t.enum "author_type", null: false, enum_type: "event_author_types"
+    t.integer "author_id"
+    t.text "author_name"
+    t.text "author_email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
+    t.index ["author_email"], name: "index_events_on_author_email"
+    t.index ["author_id"], name: "index_events_on_author_id"
+    t.index ["delivery_partner_id"], name: "index_events_on_delivery_partner_id"
+    t.index ["ect_at_school_period_id"], name: "index_events_on_ect_at_school_period_id"
+    t.index ["induction_extension_id"], name: "index_events_on_induction_extension_id"
+    t.index ["induction_period_id"], name: "index_events_on_induction_period_id"
+    t.index ["lead_provider_id"], name: "index_events_on_lead_provider_id"
+    t.index ["mentor_at_school_period_id"], name: "index_events_on_mentor_at_school_period_id"
+    t.index ["mentorship_period_id"], name: "index_events_on_mentorship_period_id"
+    t.index ["provider_partnership_id"], name: "index_events_on_provider_partnership_id"
+    t.index ["school_id"], name: "index_events_on_school_id"
+    t.index ["teacher_id"], name: "index_events_on_teacher_id"
+    t.index ["training_period_id"], name: "index_events_on_training_period_id"
+    t.index ["user_id"], name: "index_events_on_user_id"
   end
 
   create_table "gias_school_links", force: :cascade do |t|
@@ -487,6 +529,20 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_11_112260) do
   add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"
+  add_foreign_key "events", "appropriate_bodies", on_delete: :nullify
+  add_foreign_key "events", "delivery_partners", on_delete: :nullify
+  add_foreign_key "events", "ect_at_school_periods", on_delete: :nullify
+  add_foreign_key "events", "induction_extensions", on_delete: :nullify
+  add_foreign_key "events", "induction_periods", on_delete: :nullify
+  add_foreign_key "events", "lead_providers", on_delete: :nullify
+  add_foreign_key "events", "mentor_at_school_periods", on_delete: :nullify
+  add_foreign_key "events", "mentorship_periods", on_delete: :nullify
+  add_foreign_key "events", "provider_partnerships", on_delete: :nullify
+  add_foreign_key "events", "schools", on_delete: :nullify
+  add_foreign_key "events", "teachers", on_delete: :nullify
+  add_foreign_key "events", "training_periods", on_delete: :nullify
+  add_foreign_key "events", "users", column: "author_id", on_delete: :nullify
+  add_foreign_key "events", "users", on_delete: :nullify
   add_foreign_key "gias_school_links", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "induction_extensions", "teachers"
   add_foreign_key "induction_periods", "appropriate_bodies"
