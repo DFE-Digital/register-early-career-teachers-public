@@ -6,7 +6,7 @@
 <p class="govuk-body">You can either assign a mentor now or return and do it later. You need to do this to complete
   their registration.</p>
 
-<%= govuk_button_link_to("Assign a mentor", schools_register_mentor_wizard_start_path(ect_id: @ect.ect_at_school_period_id)) %>
+<%= govuk_button_link_to("Assign a mentor", assign_or_create_mentor_path(@ect.ect_at_school_period)) %>
 
 <p class="govuk-body">
   <%= govuk_link_to "Back to your ECTs", schools_ects_home_path %>

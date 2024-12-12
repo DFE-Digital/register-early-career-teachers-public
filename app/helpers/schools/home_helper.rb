@@ -10,8 +10,7 @@ private
   end
 
   def assign_or_create_mentor_path(ect)
-    # TODO: reinstate when page is ready
-    # return new_schools_ect_mentorship_path(ect) if eligible_mentors_for_ect?(ect)
+    return new_schools_ect_mentorship_path(ect) if eligible_mentors_for_ect?(ect)
 
     schools_register_mentor_wizard_start_path(ect_id: ect.id)
   end
