@@ -1,0 +1,24 @@
+<% page_data(title: "Who will mentor #{@ect_name}?", header: false, error: @mentor_form.errors.present?) %>
+
+<%= content_for(:backlink_or_breadcrumb) { govuk_back_link(href: schools_ects_home_path) } %>
+
+<%= form_with model: @mentor_form,
+              url: schools_ect_mentorship_path(@ect),
+              method: :post do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_radio_buttons_fieldset :mentor_id,
+                                     legend: { text: "Who will mentor #{@ect_name}?",
+                                               tag: 'h1',
+                                               size: 'l' } do %>
+    <% @mentor_form.eligible_mentors.each_with_index do |mentor, i| %>
+      <%= f.govuk_radio_button :mentor_id, mentor.id,
+                               label: { text: Teachers::Name.new(mentor.teacher).full_name },
+                               link_errors: i == 0 %>
+    <% end %>
+    <%= f.govuk_radio_divider %>
+    <%= f.govuk_radio_button :mentor_id, 0, label: { text: "Register a new mentor" } %>
+  <% end %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>

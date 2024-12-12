@@ -1,4 +1,4 @@
-RSpec.describe 'Registering a mentor' do
+RSpec.describe 'Redirect to register a new mentor for an ECT' do
   include_context 'fake trs api client'
 
   let(:page) { RSpec.configuration.playwright_page }
@@ -7,9 +7,13 @@ RSpec.describe 'Registering a mentor' do
   scenario 'happy path' do
     given_there_is_a_school_in_the_service
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
+    and_there_is_a_mentor_registered_at_the_school_eligible_to_mentor_the_ect
     and_i_sign_in_as_that_school_user
     and_i_am_on_the_schools_landing_page
     when_i_click_to_assign_a_mentor_to_the_ect
+    then_i_am_in_the_who_will_mentor_page
+
+    when_i_select_register_a_new_mentor
     then_i_am_in_the_requirements_page
 
     when_i_click_continue
@@ -48,6 +52,11 @@ RSpec.describe 'Registering a mentor' do
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
+  def and_there_is_a_mentor_registered_at_the_school_eligible_to_mentor_the_ect
+    @mentor = FactoryBot.create(:mentor_at_school_period, :active, school: @school)
+    @mentor_name = Teachers::Name.new(@mentor.teacher).full_name
+  end
+
   def and_i_am_on_the_schools_landing_page
     path = '/schools/home/ects'
     page.goto path
@@ -56,6 +65,16 @@ RSpec.describe 'Registering a mentor' do
 
   def when_i_click_to_assign_a_mentor_to_the_ect
     page.get_by_role('link', name: 'assign a mentor or register a new one').click
+  end
+
+  def then_i_am_in_the_who_will_mentor_page
+    expect(page.get_by_text("Who will mentor #{@ect_name}?")).to be_visible
+    expect(page.url).to end_with("/school/ects/#{@ect.id}/mentorship/new")
+  end
+
+  def when_i_select_register_a_new_mentor
+    page.get_by_role(:radio, name: "Register a new mentor").check
+    page.get_by_role(:button, name: 'Continue').click
   end
 
   def then_i_am_in_the_requirements_page
@@ -136,7 +155,8 @@ RSpec.describe 'Registering a mentor' do
   end
 
   def and_the_ect_is_shown_linked_to_the_mentor_just_registered
-    expect(page.get_by_text("Kirk Van Houten")).to be_visible
-    expect(page.get_by_text(@ect_name)).to be_visible
+    expect(page.get_by_role(:link, name: @ect_name)).to be_visible
+    expect(page.locator('dt', hasText: 'Mentor')).to be_visible
+    expect(page.locator('dd', hasText: 'Kirk Van Houten')).to be_visible
   end
 end

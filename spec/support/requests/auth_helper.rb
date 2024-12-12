@@ -1,10 +1,10 @@
 module AuthHelper
-  def sign_in_as(user_type, method: :persona, appropriate_body: nil)
+  def sign_in_as(user_type, method: :persona, appropriate_body: nil, school_urn: nil)
     Rails.logger.info("logging in as #{user_type}")
 
     case method
     when :otp then sign_in_with_otp(user_type)
-    when :persona then sign_in_with_persona(user_type, appropriate_body:)
+    when :persona then sign_in_with_persona(user_type, appropriate_body:, school_urn:)
     end
   end
 
@@ -22,17 +22,23 @@ private
     end
   end
 
-  def sign_in_with_persona(user_type, appropriate_body:)
-    fake_name = Faker::Name.name
-    fake_email = Faker::Internet.email
-
+  def sign_in_with_persona(user_type, appropriate_body:, school_urn:)
     case user_type
     when :appropriate_body_user
-      fail(ArgumentError, "appropriate_body missing") unless appropriate_body
-
-      Rails.logger.debug("Signing in with persona as appropriate body user")
-      post("/auth/developer/callback", params: { email: fake_email, name: fake_name, appropriate_body_id: appropriate_body.id })
+      sign_in_with_appropriate_body_persona(appropriate_body:)
+    when :school_user
+      sign_in_with_school_persona(school_urn:)
     end
+  end
+
+  def sign_in_with_appropriate_body_persona(appropriate_body:, name: Faker::Name.name, email: Faker::Internet.email)
+    Rails.logger.debug("Signing in with persona as appropriate body user")
+    post("/auth/developer/callback", params: { email:, name:, appropriate_body_id: appropriate_body.id })
+  end
+
+  def sign_in_with_school_persona(school_urn:, name: Faker::Name.name, email: Faker::Internet.email)
+    Rails.logger.debug("Signing in with persona as school user")
+    post("/auth/developer/callback", params: { email:, name:, school_urn: })
   end
 end
 
