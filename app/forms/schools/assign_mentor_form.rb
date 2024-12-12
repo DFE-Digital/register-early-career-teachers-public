@@ -5,7 +5,7 @@ module Schools
     attr_accessor :ect, :mentor_id
 
     validates :ect, presence: { message: "ECT missing or not registered at this school" }
-    validates :mentor_id, presence: { message: "Radios cannot be left blank" }
+    validates :mentor_id, presence: { message: "Select a mentor from the list provided or choose to register a new mentor" }
     validate :mentor_at_school, if: :mentor_id
     validate :mentorship_authorized, if: -> { ect && mentor }
 

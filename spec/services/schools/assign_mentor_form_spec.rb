@@ -1,7 +1,7 @@
 describe Schools::AssignMentorForm, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of(:ect).with_message("ECT missing or not registered at this school") }
-    it { is_expected.to validate_presence_of(:mentor_id).with_message("Radios cannot be left blank") }
+    it { is_expected.to validate_presence_of(:mentor_id).with_message("Select a mentor from the list provided or choose to register a new mentor") }
 
     describe "mentor at school" do
       context "when the mentor is not registered at all" do
