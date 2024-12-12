@@ -120,6 +120,12 @@ Rails.application.routes.draw do
   end
 
   namespace :schools, path: :school do
+    resources :ects, only: [] do
+      resource :mentorship, only: %i[new create] do
+        get :confirmation, on: :collection
+      end
+    end
+
     namespace :register_mentor_wizard, path: "register-mentor" do
       get "what-you-will-need", as: :start, action: :start
 
