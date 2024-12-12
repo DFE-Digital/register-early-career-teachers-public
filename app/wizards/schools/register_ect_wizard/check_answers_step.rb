@@ -8,7 +8,8 @@ module Schools
     private
 
       def persist
-        ect.register!
+        ect_at_school_period_id = ect.register!.id
+        ect.update!(ect_at_school_period_id:)
       end
     end
   end

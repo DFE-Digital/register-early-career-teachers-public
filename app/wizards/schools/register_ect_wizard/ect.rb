@@ -36,11 +36,6 @@ module Schools
                                  school_urn:)
                                .register_teacher!
       end
-
-      def ect_at_school_period_id
-        Schools::Teacher.new(school_urn)
-                        .fetch_ect_at_school_period_id(trn: trn)
-      end
     end
   end
 end

@@ -19,12 +19,6 @@ module Schools
       end
     end
 
-    def fetch_ect_at_school_period_id(trn:)
-      ECTAtSchoolPeriod
-        .joins(:teacher, :school)
-        .find_by(teacher: { trn: trn }, school: { urn: school_urn }).id
-    end
-
   private
 
     attr_reader :school_urn
