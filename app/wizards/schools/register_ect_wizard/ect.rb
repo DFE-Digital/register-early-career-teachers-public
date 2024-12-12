@@ -10,6 +10,10 @@ module Schools
         trs_date_of_birth.to_date&.to_formatted_s(:govuk)
       end
 
+      def ect_at_school_period
+        @ect_at_school_period ||= ECTAtSchoolPeriod.find_by_id(ect_at_school_period_id)
+      end
+
       def in_trs?
         trs_first_name.present?
       end

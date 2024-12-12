@@ -1,5 +1,6 @@
 RSpec.describe "schools/register_ect_wizard/confirmation.html.erb" do
-  let(:ect) { double('ECT', full_name: 'John Doe', ect_at_school_period_id: 22) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, id: 1) }
+  let(:ect) { double('ECT', full_name: 'John Doe', ect_at_school_period_id: 1, ect_at_school_period:) }
   let(:title) { "You have saved #{ect.full_name}'s details" }
   let(:ects_link) { schools_ects_home_path }
   let(:assign_mentor_link) { schools_register_mentor_wizard_start_path(ect_id: ect.ect_at_school_period_id) }
