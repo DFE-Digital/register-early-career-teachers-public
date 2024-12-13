@@ -30,7 +30,7 @@ describe CorrectedNameValidator, type: :model do
       subject = test_class.new(corrected_name: "   ")
       subject.valid?
 
-      expect(subject.errors[:corrected_name]).to include("Enter the full, correct name")
+      expect(subject.errors[:corrected_name]).to include("Enter the correct full name")
     end
   end
 end
