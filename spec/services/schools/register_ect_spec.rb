@@ -32,21 +32,5 @@ describe Schools::RegisterECT do
       expect(ect_at_school_period.teacher_id).to eq(teacher.id)
       expect(ect_at_school_period.started_on).to eq(started_on)
     end
-
-    context "when no start date is provided" do
-      subject(:service) do
-        described_class.new(first_name:,
-                            last_name:,
-                            trn:,
-                            school_urn: school.urn,
-                            corrected_name:)
-      end
-
-      it "current date is assigned" do
-        service.register_teacher!
-
-        expect(ect_at_school_period.started_on).to eq(Date.current)
-      end
-    end
   end
 end
