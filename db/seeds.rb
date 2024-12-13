@@ -92,6 +92,7 @@ andre_roussimoff = Teacher.create!(first_name: 'André', last_name: 'Roussimoff'
 imogen_stubbs = Teacher.create!(first_name: 'Imogen', last_name: 'Stubbs', trn: '6352869')
 gemma_jones = Teacher.create!(first_name: 'Gemma', last_name: 'Jones', trn: '9578426')
 anthony_hopkins = Teacher.create!(first_name: 'Anthony', last_name: 'Hopkins', trn: '6228282')
+john_withers = Teacher.create!(first_name: 'John', last_name: 'Withers', corrected_name: 'Old Man Withers', trn: '8590123')
 
 print_seed_info("Adding schools")
 
@@ -496,7 +497,7 @@ TrainingPeriod.create!(
   provider_partnership: meadow_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
-print_seed_info("Anthony Hopkins (ECT)", indent: 2)
+print_seed_info("Anthony Hopkins (ECT)", indent: 2, colour: ECT_COLOUR)
 
 anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   teacher: anthony_hopkins,
@@ -509,6 +510,25 @@ TrainingPeriod.create!(
   started_on: 2.years.ago,
   provider_partnership: meadow_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
+
+print_seed_info("John Withers (mentor)", indent: 2, colour: MENTOR_COLOUR)
+
+john_withers_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
+  teacher: john_withers,
+  school: abbey_grove_school,
+  started_on: 2.years.ago
+).tap { |sp| describe_mentor_at_school_period(sp) }
+
+TrainingPeriod.create!(
+  mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
+  started_on: 2.years.ago,
+  provider_partnership: meadow_grain_partnership_2022
+).tap { |tp| describe_training_period(tp) }
+
+InductionExtension.create!(
+  teacher: john_withers,
+  number_of_terms: 2
+).tap { |ext| describe_extension(ext) }
 
 print_seed_info("Adding mentorships:")
 
