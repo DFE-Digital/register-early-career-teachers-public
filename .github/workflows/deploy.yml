@@ -22,6 +22,12 @@ permissions:
 jobs:
   brakeman:
     name: Brakeman
+  permissions:
+    actions: read
+    contents: read
+    pull-requests: write
+    security-events: write
+
     uses: ./.github/workflows/brakeman.yml
 
   lint:
