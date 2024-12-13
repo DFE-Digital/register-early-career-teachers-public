@@ -11,6 +11,7 @@ RSpec.describe "schools/register_mentor_wizard/review_mentor_details.html.erb" d
                    trs_first_name: "John",
                    trs_last_name: "Wayne",
                    trs_date_of_birth: "1950-01-01",
+                   corrected_name: nil,
                    date_of_birth:,
                    national_insurance_number:)
   end
