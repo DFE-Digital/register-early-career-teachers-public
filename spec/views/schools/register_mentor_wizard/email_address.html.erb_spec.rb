@@ -2,8 +2,8 @@ RSpec.describe "schools/register_mentor_wizard/email_address.html.erb" do
   let(:back_path) { schools_register_mentor_wizard_review_mentor_details_path }
   let(:continue_path) { schools_register_mentor_wizard_email_address_path }
   let(:mentor) { wizard.mentor }
-  let(:title) { "What is #{mentor.full_name}'s email address?" }
-  let(:store) { double(trs_first_name: "John", trs_last_name: "Waters") }
+  let(:title) { "What is Jim Waters's email address?" }
+  let(:store) { double(trs_first_name: "John", trs_last_name: "Waters", corrected_name: "Jim Waters") }
   let(:wizard) { Schools::RegisterMentorWizard::Wizard.new(current_step: :email_address, store:) }
 
   before do
@@ -11,7 +11,7 @@ RSpec.describe "schools/register_mentor_wizard/email_address.html.erb" do
     assign(:mentor, mentor)
   end
 
-  it "sets the page title to 'What is John Waters's email address'" do
+  it "sets the page title to 'What is Jim Waters's email address'" do
     render
 
     expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
