@@ -13,6 +13,10 @@ on:
         required: false
         default: "20.15.1"
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   ruby_linting:
     name: "Lint ruby"
