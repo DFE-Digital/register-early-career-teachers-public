@@ -149,7 +149,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def and_the_ect_is_shown_linked_to_the_mentor_just_registered
-    expect(page.get_by_text("Kirk Van Houten")).to be_visible
+    expect(page.get_by_text("Kirk Van Damme")).to be_visible
     expect(page.get_by_text(@ect_name)).to be_visible
   end
 end
