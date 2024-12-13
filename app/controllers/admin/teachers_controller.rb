@@ -6,8 +6,7 @@ module Admin
       @appropriate_bodies = AppropriateBody.order(:name)
       @pagy, @teachers = pagy(
         Teachers::Search.new(
-          query_string: params[:q],
-          appropriate_body_ids: params[:appropriate_body_ids]
+          query_string: params[:q]
         ).search
       )
     end

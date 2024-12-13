@@ -19,27 +19,12 @@ RSpec.describe "Admin root", type: :request do
     context "with an authenticated DfE user" do
       include_context 'fake session manager for DfE user'
 
-      it "shows the teachers index" do
+      it "shows the teachers search page" do
         get "/admin"
         expect(response.status).to eq(200)
+
         expect(response.body).to include("Early career teachers")
-      end
-
-      it "shows the search interface" do
-        get "/admin"
-        expect(response.status).to eq(200)
         expect(response.body).to include("Search by name or TRN")
-      end
-
-      it "lists appropriate bodies in the filter" do
-        ab1 = FactoryBot.create(:appropriate_body, name: "Test AB 1")
-        ab2 = FactoryBot.create(:appropriate_body, name: "Test AB 2")
-
-        get "/admin"
-
-        expect(response.status).to eq(200)
-        expect(response.body).to include(ab1.name)
-        expect(response.body).to include(ab2.name)
       end
     end
   end

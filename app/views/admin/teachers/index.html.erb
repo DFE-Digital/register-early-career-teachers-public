@@ -1,17 +1,5 @@
 <% page_data(title: "Early career teachers") %>
 
-<div class="govuk-tabs" data-module="govuk-tabs">
-  <h2 class="govuk-tabs__title">Contents</h2>
-  <ul class="govuk-tabs__list">
-    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-      <%= link_to "ECTs", admin_teachers_path, class: "govuk-tabs__tab" %>
-    </li>
-    <li class="govuk-tabs__list-item">
-      <%= link_to "Change log", "#", class: "govuk-tabs__tab" %>
-    </li>
-  </ul>
-</div>
-
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-third">
     <%= form_with method: :get, data: { turbo: false } do |f| %>
@@ -23,29 +11,8 @@
           )
       %>
 
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-            Filter by appropriate body
-          </legend>
-
-          <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
-            <% @appropriate_bodies.each do |ab| %>
-              <div class="govuk-checkboxes__item">
-                <%= check_box_tag "appropriate_body_ids[]",
-                    ab.id,
-                    params[:appropriate_body_ids]&.include?(ab.id.to_s),
-                    class: "govuk-checkboxes__input"
-                %>
-                <%= label_tag "appropriate_body_ids_#{ab.id}", ab.name, class: "govuk-label govuk-checkboxes__label" %>
-              </div>
-            <% end %>
-          </div>
-        </fieldset>
-      </div>
-
       <div class="govuk-button-group">
-        <%= f.govuk_submit "Apply filters" %>
+        <%= f.govuk_submit "Search" %>
         <button type="reset" class="govuk-button govuk-button--secondary">Reset</button>
       </div>
     <% end %>
@@ -56,7 +23,6 @@
       <% @teachers.each do |teacher| %>
         <%= govuk_summary_card(title: Teachers::Name.new(teacher).full_name) do |card|
           card.with_action { govuk_link_to("Show", admin_teacher_path(teacher)) }
-          card.with_action { govuk_link_to("Delete", "/") }
           card.with_summary_list(
             actions: false,
             rows: [
