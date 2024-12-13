@@ -12,7 +12,7 @@ module Schools
       end
 
       def next_step
-        :check_answers
+        :start_date
       end
     end
   end

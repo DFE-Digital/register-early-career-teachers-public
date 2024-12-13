@@ -112,6 +112,9 @@ Rails.application.routes.draw do
       get "email-address", action: :new
       post "email-address", action: :create
 
+      get "start-date", action: :new
+      post "start-date", action: :create
+
       get "check-answers", action: :new
       post "check-answers", action: :create
 

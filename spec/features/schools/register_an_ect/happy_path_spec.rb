@@ -23,6 +23,10 @@ RSpec.describe 'Registering an ECT' do
 
     when_i_enter_the_ect_email_address
     and_i_click_continue
+    then_i_should_be_taken_to_the_ect_start_date_page
+
+    when_i_enter_a_valid_start_date
+    and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_all_the_ect_data_on_the_page
 
@@ -103,6 +107,15 @@ RSpec.describe 'Registering an ECT' do
     page.get_by_role('button', name: "Continue").click
   end
 
+  def then_i_should_be_taken_to_the_ect_start_date_page
+    expect(page.url).to end_with('/schools/register-ect/start-date')
+  end
+
+  def when_i_enter_a_valid_start_date
+    page.get_by_label('month').fill('3')
+    page.get_by_label('year').fill(next_year)
+  end
+
   def then_i_should_be_taken_to_the_check_answers_page
     expect(page.url).to end_with('/schools/register-ect/check-answers')
   end
@@ -112,6 +125,7 @@ RSpec.describe 'Registering an ECT' do
     expect(page.get_by_text("Kirk Van Damme")).to be_visible
     expect(page.get_by_text("3 February 1977")).to be_visible
     expect(page.get_by_text('example@example.com')).to be_visible
+    expect(page.get_by_text("March #{next_year}")).to be_visible
   end
 
   def when_i_click_confirm_details
@@ -132,5 +146,10 @@ RSpec.describe 'Registering an ECT' do
 
   def then_i_should_be_taken_to_the_ects_page
     expect(page.url).to end_with('/schools/home/ects')
+  end
+
+  def next_year
+    today = Time.zone.today
+    (today.year + 1).to_s
   end
 end
