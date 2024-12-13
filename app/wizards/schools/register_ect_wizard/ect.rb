@@ -37,7 +37,8 @@ module Schools
                                  last_name: trs_last_name,
                                  corrected_name:,
                                  trn:,
-                                 school_urn:)
+                                 school_urn:,
+                                 started_on: Date.parse(start_date))
                                .register_teacher!
       end
     end
