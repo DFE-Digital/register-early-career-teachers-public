@@ -8,6 +8,11 @@ env:
 on:
   workflow_call:
 
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+
 jobs:
   brakeman-scan:
     name: Brakeman Scan
