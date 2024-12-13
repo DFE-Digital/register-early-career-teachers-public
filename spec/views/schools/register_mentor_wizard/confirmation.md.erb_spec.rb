@@ -3,7 +3,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
   let(:your_ects_path) { schools_ects_home_path }
   let(:mentor) { wizard.mentor }
   let(:title) { "You've assigned #{mentor.full_name} as a mentor" }
-  let(:store) { double(trs_first_name: "John", trs_last_name: "Wayne") }
+  let(:store) { double(trs_first_name: "John", trs_last_name: "Wayne", corrected_name: nil) }
   let(:wizard) { Schools::RegisterMentorWizard::Wizard.new(current_step: :confirmation, store:) }
 
   before do

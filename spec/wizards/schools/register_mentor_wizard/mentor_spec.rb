@@ -7,6 +7,7 @@ describe Schools::RegisterMentorWizard::Mentor do
                      trs_first_name: "Dusty",
                      trs_last_name: "Rhodes",
                      trs_date_of_birth: "1945-10-11",
+                     corrected_name: nil,
                      email: "dusty@rhodes.com",
                      school_urn: school.urn)
   end
@@ -20,8 +21,20 @@ describe Schools::RegisterMentorWizard::Mentor do
   end
 
   describe '#full_name' do
-    it 'returns the full name of the mentor' do
-      expect(mentor.full_name).to eq("Dusty Rhodes")
+    context 'when corrected_name is not set' do
+      it 'returns the full name by joining first and last names of the mentor' do
+        expect(mentor.full_name).to eq("Dusty Rhodes")
+      end
+    end
+
+    context 'when corrected_name is set' do
+      before do
+        store.corrected_name = 'Randy Marsh'
+      end
+
+      it 'returns the corrected_name as the full name' do
+        expect(mentor.full_name).to eq('Randy Marsh')
+      end
     end
   end
 
