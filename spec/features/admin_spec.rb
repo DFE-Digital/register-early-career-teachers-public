@@ -1,22 +1,20 @@
-RSpec.describe "Admin" do
+RSpec.describe "Admin root" do
   include UserHelper
-  # TODO: This test should be replaced with something meaningful.
-  # Just here to prove Playwright is working.
   scenario "visiting the admin placeholder page" do
     given_i_am_logged_in_as_an_admin
-    when_i_visit_the_admin_placeholder_page
-    then_i_should_see_the_admin_placeholder_page
+    when_i_visit_the_admin_root_page
+    then_i_should_see_the_admin_teacher_search_page
   end
 
   def given_i_am_logged_in_as_an_admin
     sign_in_as_admin
   end
 
-  def when_i_visit_the_admin_placeholder_page
+  def when_i_visit_the_admin_root_page
     page.goto(admin_path)
   end
 
-  def then_i_should_see_the_admin_placeholder_page
-    expect(page.get_by_text("Placeholder page for the admin site")).to be_visible
+  def then_i_should_see_the_admin_teacher_search_page
+    expect(page.get_by_text("Search by name or TRN")).to be_visible
   end
 end
