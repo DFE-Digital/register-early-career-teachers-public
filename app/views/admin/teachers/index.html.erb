@@ -29,7 +29,7 @@
               { key: { text: "TRN" }, value: { text: teacher.trn } },
               {
                 key: { text: "Appropriate body" },
-                value: { text: teacher.induction_periods.last.appropriate_body.name },
+                value: { text: Teachers::InductionPeriod.new(teacher).active_induction_period&.appropriate_body&.name },
               },
               {
                 key: { text: "Induction periods recorded" },
