@@ -1,48 +1,51 @@
-<% page_data(title: "Teachers") %>
+<% page_data(title: "Early career teachers") %>
 
-<%= form_with method: :get do |f| %>
-  <%=
-    f.govuk_text_field(
-      "q",
-      value: params[:q],
-      label: { text: "Search for teacher", size: "s" },
-      hint: { text: "Name or TRN" },
-    )
-  %>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <%= form_with method: :get, data: { turbo: false } do |f| %>
 
-  <%= f.govuk_submit "Search" %>
-<% end %>
+      <%= f.govuk_text_field(
+            "q",
+            value: params[:q],
+            label: { text: "Search by name or TRN", size: "s" },
+          )
+      %>
 
-<p class="govuk-body"><strong><%= @pagy.count %></strong> teachers found</p>
+      <div class="govuk-button-group">
+        <%= f.govuk_submit "Search" %>
+        <button type="reset" class="govuk-button govuk-button--secondary">Reset</button>
+      </div>
+    <% end %>
+  </div>
 
-<%=
-  govuk_table do |table|
-    table.with_head do |head|
-      head.with_row do |row|
-        row.with_cell(text: "Name")
-        row.with_cell(text: "Role")
-        row.with_cell(text: "TRN")
-        row.with_cell { govuk_visually_hidden("Has migration errors") }
-      end
-    end
+  <div class="govuk-grid-column-two-thirds">
+    <ul class="govuk-list">
+      <% @teachers.each do |teacher| %>
+        <%= govuk_summary_card(title: Teachers::Name.new(teacher).full_name) do |card|
+          card.with_action { govuk_link_to("Show", admin_teacher_path(teacher)) }
+          card.with_summary_list(
+            actions: false,
+            rows: [
+              { key: { text: "TRN" }, value: { text: teacher.trn } },
+              {
+                key: { text: "Appropriate body" },
+                value: { text: Teachers::InductionPeriod.new(teacher).active_induction_period&.appropriate_body&.name },
+              },
+              {
+                key: { text: "Induction periods recorded" },
+                value: { text: teacher.induction_periods.count },
+              },
+              {
+                key: { text: "Status" },
+                # FIXME: this is a placeholder as we cannot display a real status yet
+                value: { text: govuk_tag(text: "placeholder", colour: %w[grey green red purple orange yellow].sample) },
+              },
+            ]
+          )
+        end %>
+      <% end %>
+    </ul>
 
-    table.with_body do |body|
-      @teachers.each_with_index do |teacher, index|
-        body.with_row do |row|
-          row.with_cell do
-            govuk_link_to "#{teacher.first_name} #{teacher.last_name}", admin_teacher_path(teacher, page: @pagy.page)
-          end
-          row.with_cell(text: Teachers::Role.new(teacher:))
-          row.with_cell(text: teacher.trn)
-          if teacher.migration_failures.any?
-            row.with_cell { govuk_tag(text: "Error", colour: "red") }
-          else
-            row.with_cell(text: "")
-          end
-        end
-      end
-    end
-  end
-%>
-
-<%= govuk_pagination pagy: @pagy %>
+    <%= govuk_pagination pagy: @pagy %>
+  </div>
+</div>
