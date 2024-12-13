@@ -16,6 +16,11 @@ RSpec.configure do |config|
     end
   end
 
+  # Sign out the user after every feature spec.
+  config.after(type: :feature) do
+    config.playwright_page.goto(sign_out_path)
+  end
+
   # Close Playwright browsers
   config.after(:suite) do
     RSpecPlaywright.close_browsers
