@@ -4,7 +4,7 @@ RSpec.describe 'Visiting the service' do
 
   # FIXME: broken when running the whole suite because the session isn't cleared
   #        after each scenario
-  xcontext 'when the schools interface is disabled' do
+  context 'when the schools interface is disabled' do
     before do
       allow(Rails.application.config).to receive(:enable_schools_interface).and_return(false)
     end
@@ -17,7 +17,7 @@ RSpec.describe 'Visiting the service' do
 
   # FIXME: broken when running the whole suite because the session isn't cleared
   #        after each scenario
-  xcontext 'when the schools interface is enabled' do
+  context 'when the schools interface is enabled' do
     before do
       allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
     end
