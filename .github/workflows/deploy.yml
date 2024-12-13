@@ -53,7 +53,7 @@ jobs:
         id: build-docker-image
         with:
           docker-repository: ghcr.io/dfe-digital/ecf2
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-review:
     name: Deploy review
