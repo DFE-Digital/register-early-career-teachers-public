@@ -19,7 +19,7 @@ RSpec.describe 'Redirect to register a new mentor for an ECT' do
     when_i_click_continue
     then_i_should_be_taken_to_the_find_mentor_page
 
-    when_i_submit_the_find_mentor_form(trn:, dob_day: '1', dob_month: '12', dob_year: '2000')
+    when_i_submit_the_find_mentor_form(trn:, dob_day: '3', dob_month: '2', dob_year: '1977')
     then_i_should_be_taken_to_the_review_mentor_details_page
     and_i_should_see_the_mentor_details_in_the_review_page
 
@@ -106,7 +106,7 @@ RSpec.describe 'Redirect to register a new mentor for an ECT' do
   def and_i_should_see_the_mentor_details_in_the_review_page
     expect(page.get_by_text(trn)).to be_visible
     expect(page.get_by_text("Kirk Van Houten")).to be_visible
-    expect(page.get_by_text("1 December 2000")).to be_visible
+    expect(page.get_by_text("3 February 1977")).to be_visible
   end
 
   def when_i_click_confirm_and_continue
