@@ -1,8 +1,8 @@
-RSpec.describe 'Registering a mentor' do
+RSpec.describe 'Registering a mentor', :js do
   include_context 'fake trs api client'
 
   let(:page) { RSpec.configuration.playwright_page }
-  let(:trn) { '9876543' }
+  let(:trn) { '3002586' }
 
   scenario 'happy path' do
     given_there_is_a_school_in_the_service
@@ -15,7 +15,7 @@ RSpec.describe 'Registering a mentor' do
     when_i_click_continue
     then_i_should_be_taken_to_the_find_mentor_page
 
-    when_i_submit_the_find_mentor_form(trn:, dob_day: '1', dob_month: '12', dob_year: '2000')
+    when_i_submit_the_find_mentor_form
     then_i_should_be_taken_to_the_review_mentor_details_page
     and_i_should_see_the_mentor_details_in_the_review_page
 
@@ -72,11 +72,15 @@ RSpec.describe 'Registering a mentor' do
     expect(page.url).to end_with(path)
   end
 
-  def when_i_submit_the_find_mentor_form(trn:, dob_day:, dob_month:, dob_year:)
-    page.get_by_label('trn').fill(trn)
-    page.get_by_label('day').fill(dob_day)
-    page.get_by_label('month').fill(dob_month)
-    page.get_by_label('year').fill(dob_year)
+  def when_i_submit_the_find_mentor_form
+    if ActiveModel::Type::Boolean.new.cast(ENV.fetch('TEST_GUIDANCE', false))
+      page.get_by_role(:row, name: trn).get_by_role(:button, name: "Select").first.click
+    else
+      page.get_by_label('trn').fill(trn)
+      page.get_by_label('day').fill('3')
+      page.get_by_label('month').fill('2')
+      page.get_by_label('year').fill('1977')
+    end
     page.get_by_role('button', name: 'Continue').click
   end
 
@@ -87,7 +91,7 @@ RSpec.describe 'Registering a mentor' do
   def and_i_should_see_the_mentor_details_in_the_review_page
     expect(page.get_by_text(trn)).to be_visible
     expect(page.get_by_text("Kirk Van Houten")).to be_visible
-    expect(page.get_by_text("1 December 2000")).to be_visible
+    expect(page.get_by_text("3 February 1977")).to be_visible
   end
 
   def when_i_click_confirm_and_continue
