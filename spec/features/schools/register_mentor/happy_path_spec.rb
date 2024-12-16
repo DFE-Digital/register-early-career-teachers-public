@@ -18,7 +18,9 @@ RSpec.describe 'Registering a mentor', :js do
     then_i_should_be_taken_to_the_review_mentor_details_page
     and_i_should_see_the_mentor_details_in_the_review_page
 
-    when_i_click_confirm_and_continue
+    when_i_select_that_my_mentor_name_is_incorrect
+    and_i_enter_the_corrected_name
+    and_i_click_confirm_and_continue
     then_i_should_be_taken_to_the_email_address_page
 
     when_i_enter_the_mentor_email_address
@@ -93,7 +95,15 @@ RSpec.describe 'Registering a mentor', :js do
     expect(page.get_by_text("3 February 1977")).to be_visible
   end
 
-  def when_i_click_confirm_and_continue
+  def when_i_select_that_my_mentor_name_is_incorrect
+    page.get_by_label("No, they changed their name or it's spelt wrong").check
+  end
+
+  def and_i_enter_the_corrected_name
+    page.get_by_label('Enter the correct full name').fill('Kirk Van Damme')
+  end
+
+  def and_i_click_confirm_and_continue
     page.get_by_role('button', name: 'Confirm and continue').click
   end
 
@@ -117,7 +127,7 @@ RSpec.describe 'Registering a mentor', :js do
     expect(page.locator('dt', hasText: 'Teacher reference number (TRN)')).to be_visible
     expect(page.locator('dd', hasText: trn)).to be_visible
     expect(page.locator('dt', hasText: 'Name')).to be_visible
-    expect(page.locator('dd', hasText: 'Kirk Van Houten')).to be_visible
+    expect(page.locator('dd', hasText: 'Kirk Van Damme')).to be_visible
     expect(page.locator('dt', hasText: 'Email address')).to be_visible
     expect(page.locator('dd', hasText: 'example@example.com')).to be_visible
   end
@@ -139,7 +149,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def and_the_ect_is_shown_linked_to_the_mentor_just_registered
-    expect(page.get_by_text("Kirk Van Houten")).to be_visible
+    expect(page.get_by_text("Kirk Van Damme")).to be_visible
     expect(page.get_by_text(@ect_name)).to be_visible
   end
 end
