@@ -14,6 +14,7 @@ on:
   merge_group:
 
 permissions:
+  contents: read
   packages: write
   pull-requests: write
   security-events: write
@@ -22,6 +23,12 @@ jobs:
   brakeman:
     name: Brakeman
     uses: ./.github/workflows/brakeman.yml
+
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+      security-events: write
 
   lint:
     name: Lint
@@ -45,6 +52,8 @@ jobs:
       docker-image-tag: ${{ steps.build-docker-image.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: DFE-Digital/github-actions/build-docker-image@master
         id: build-docker-image
@@ -62,6 +71,9 @@ jobs:
       name: review
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: ./.github/actions/deploy-environment-to-aks
         id: deploy
         with:
@@ -95,6 +107,8 @@ jobs:
       environment_url: ${{ steps.deploy.outputs.environment_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: ./.github/actions/deploy-environment-to-aks
         id: deploy
@@ -114,6 +128,8 @@ jobs:
       name: production
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: ./.github/actions/deploy-environment-to-aks
         id: deploy
