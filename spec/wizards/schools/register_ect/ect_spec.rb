@@ -7,6 +7,7 @@ describe Schools::RegisterECTWizard::ECT do
                      corrected_name: nil,
                      date_of_birth: "11-10-1945",
                      email: "dusty@rhodes.com",
+                     programme_type: "pokemon_led",
                      school_urn: school.urn,
                      start_date: 'January 2025',
                      trn: "3002586",
@@ -111,6 +112,12 @@ describe Schools::RegisterECTWizard::ECT do
   describe '#trs_national_insurance_number' do
     it 'returns the national insurance number in trs' do
       expect(ect.trs_national_insurance_number).to eq("OWAD23455")
+    end
+  end
+
+  describe '#formatted_programme_type' do
+    it 'returns the formatted programme type' do
+      expect(ect.formatted_programme_type).to eq('Pokemon-led')
     end
   end
 

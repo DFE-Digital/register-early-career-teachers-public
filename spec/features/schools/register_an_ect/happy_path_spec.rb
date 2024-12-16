@@ -27,6 +27,10 @@ RSpec.describe 'Registering an ECT' do
 
     when_i_enter_a_valid_start_date
     and_i_click_continue
+    then_i_should_be_taken_to_the_programme_type_page
+
+    when_i_select_school_led
+    and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_all_the_ect_data_on_the_page
 
@@ -101,6 +105,14 @@ RSpec.describe 'Registering an ECT' do
 
   def when_i_enter_the_ect_email_address
     page.fill('#email-address-email-field', 'example@example.com')
+  end
+
+  def then_i_should_be_taken_to_the_programme_type_page
+    expect(page.url).to end_with('/schools/register-ect/programme-type')
+  end
+
+  def when_i_select_school_led
+    page.get_by_label("School-led").check
   end
 
   def and_i_click_continue
