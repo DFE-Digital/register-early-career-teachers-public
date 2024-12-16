@@ -26,6 +26,11 @@
     row.with_key(text: 'School start date')
     row.with_value(text: @ect.start_date)
   end
+
+  summary_list.with_row do |row|
+    row.with_key(text: 'Programme type')
+    row.with_value(text: @ect.formatted_programme_type)
+  end
 end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
