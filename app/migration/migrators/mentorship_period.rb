@@ -34,8 +34,9 @@ module Migrators
       induction_records.validate!
 
       mentorship_period_data = MentorshipPeriodExtractor.new(induction_records:)
-
       Builders::MentorshipPeriods.new(teacher:, mentorship_period_data:).process!
+    rescue ActiveRecord::ActiveRecordError, ::InductionRecordSanitizer::InductionRecordError => e
+      raise ChildRecordError.new(e.message, teacher)
     end
   end
 end
