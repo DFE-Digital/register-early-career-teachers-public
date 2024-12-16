@@ -4,7 +4,7 @@ RSpec.configure do |config|
   config.add_setting :playwright_browser
   config.add_setting :playwright_page
 
-  # Start/Reuse Playwright browser
+  # Start/Reuse Playwright browser on every feature spec
   config.before(type: :feature) do
     config.playwright_browser ||= RSpecPlaywright.start_browser
     config.playwright_page = config.playwright_browser
@@ -13,7 +13,12 @@ RSpec.configure do |config|
     config.playwright_page.set_default_timeout(RSpecPlaywright::DEFAULT_TIMEOUT)
   end
 
-  # Close Playwright browsers
+  # Close Playwright page after each feature spec
+  config.after(type: :feature) do
+    page.close
+  end
+
+  # Close Playwright browser after the suite's finished
   config.after(:suite) do
     RSpecPlaywright.close_browser
   end
