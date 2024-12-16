@@ -1,7 +1,6 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client'
 
-  let(:page) { RSpec.configuration.playwright_page }
   let(:trn) { '9876543' }
 
   scenario 'happy path' do
@@ -13,7 +12,7 @@ RSpec.describe 'Registering an ECT' do
     when_i_click_continue
     then_i_am_on_the_find_ect_step_page
 
-    when_i_submit_the_find_ect_form(trn:, dob_day: '1', dob_month: '12', dob_year: '2000')
+    when_i_submit_the_find_ect_form(trn:, dob_day: '3', dob_month: '2', dob_year: '1977')
     then_i_should_be_taken_to_the_review_ect_details_page
     and_i_should_see_the_ect_details_in_the_review_page
 
@@ -77,7 +76,7 @@ RSpec.describe 'Registering an ECT' do
   def and_i_should_see_the_ect_details_in_the_review_page
     expect(page.get_by_text(trn)).to be_visible
     expect(page.get_by_text("Kirk Van Houten")).to be_visible
-    expect(page.get_by_text("1 December 2000")).to be_visible
+    expect(page.get_by_text("3 February 1977")).to be_visible
   end
 
   def when_i_select_that_my_ect_name_is_incorrect
@@ -111,7 +110,7 @@ RSpec.describe 'Registering an ECT' do
   def and_i_should_see_all_the_ect_data_on_the_page
     expect(page.get_by_text(trn)).to be_visible
     expect(page.get_by_text("Kirk Van Damme")).to be_visible
-    expect(page.get_by_text("1 December 2000")).to be_visible
+    expect(page.get_by_text("3 February 1977")).to be_visible
     expect(page.get_by_text('example@example.com')).to be_visible
   end
 

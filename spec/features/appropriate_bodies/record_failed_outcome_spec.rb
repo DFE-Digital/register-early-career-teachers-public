@@ -1,6 +1,5 @@
 RSpec.describe "Recording a failed outcome for an ECT" do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:page) { RSpec.configuration.playwright_page }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:trn) { teacher.trn }
   let(:today) { Time.zone.today }
