@@ -8,6 +8,8 @@ services:
     volumes:
       - ../..:/workspaces:cached
     command: sleep infinity
+    environment:
+      ENABLE_PERSONAS: true
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
