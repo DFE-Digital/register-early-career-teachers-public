@@ -3,6 +3,7 @@ require_relative 'rspec_playwright'
 RSpec.configure do |config|
   config.add_setting :playwright_browser
   config.add_setting :playwright_page
+  config.include_context 'page', type: :feature
 
   # Start/Reuse Playwright browser on every feature spec
   config.before(type: :feature) do
