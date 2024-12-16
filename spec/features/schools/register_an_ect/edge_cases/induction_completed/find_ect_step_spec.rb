@@ -1,8 +1,6 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client that finds teacher that has passed their induction'
 
-  let(:page) { RSpec.configuration.playwright_page }
-
   scenario 'User enters date of birth (find ECT step) but teacher has completed their induction' do
     given_i_am_logged_in_as_a_school_user
     when_i_am_on_the_find_ect_step_page
@@ -26,9 +24,9 @@ RSpec.describe 'Registering an ECT' do
 
   def and_i_submit_a_date_of_birth_and_trn_of_a_teacher_that_has_completed_their_induction
     page.get_by_label('trn').fill('9876543')
-    page.get_by_label('day').fill('1')
-    page.get_by_label('month').fill('12')
-    page.get_by_label('year').fill('2000')
+    page.get_by_label('day').fill('3')
+    page.get_by_label('month').fill('2')
+    page.get_by_label('year').fill('1977')
     page.get_by_role('button', name: 'Continue').click
   end
 

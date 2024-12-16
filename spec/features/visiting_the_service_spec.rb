@@ -1,5 +1,4 @@
 RSpec.describe 'Visiting the service' do
-  let(:page) { RSpec.configuration.playwright_page }
   let(:current_path) { URI.parse(page.url).path }
 
   # FIXME: broken when running the whole suite because the session isn't cleared
