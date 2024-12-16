@@ -1,8 +1,6 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client returns 200 then 400'
 
-  let(:page) { RSpec.configuration.playwright_page }
-
   scenario 'Teacher with national insurance number is not found' do
     given_i_am_logged_in_as_a_school_user
     and_i_am_on_the_schools_landing_page

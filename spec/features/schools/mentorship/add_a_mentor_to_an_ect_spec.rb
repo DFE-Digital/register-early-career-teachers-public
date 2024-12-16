@@ -1,6 +1,4 @@
 RSpec.describe 'Add a mentor to an ECT' do
-  let(:page) { RSpec.configuration.playwright_page }
-
   scenario 'happy path' do
     given_there_is_a_school_in_the_service
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
