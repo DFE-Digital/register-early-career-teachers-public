@@ -1,6 +1,7 @@
 describe Schools::RegisterMentor do
   let(:first_name) { "Dusty" }
   let(:last_name) { "Rhodes" }
+  let(:corrected_name) { "Randy Marsh" }
   let(:trn) { "3002586" }
   let(:school) { FactoryBot.create(:school) }
   let(:started_on) { Date.yesterday }
@@ -8,6 +9,7 @@ describe Schools::RegisterMentor do
   subject(:service) do
     described_class.new(first_name:,
                         last_name:,
+                        corrected_name:,
                         trn:,
                         school_urn: school.urn,
                         started_on:)
@@ -21,6 +23,7 @@ describe Schools::RegisterMentor do
       expect { service.register! }.to change(Teacher, :count).from(0).to(1)
       expect(teacher.first_name).to eq(first_name)
       expect(teacher.last_name).to eq(last_name)
+      expect(teacher.corrected_name).to eq(corrected_name)
       expect(teacher.trn).to eq(trn)
     end
 
@@ -34,6 +37,7 @@ describe Schools::RegisterMentor do
       subject(:service) do
         described_class.new(first_name:,
                             last_name:,
+                            corrected_name:,
                             trn:,
                             school_urn: school.urn)
       end

@@ -7,6 +7,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
     double(trn: "1234567",
            trs_first_name: "John",
            trs_last_name: "Wayne",
+           corrected_name: "Jim Wayne",
            email: "john.wayne@example.com")
   end
   let(:wizard) { Schools::RegisterMentorWizard::Wizard.new(current_step: :check_answers, store:) }
@@ -36,7 +37,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
     expect(rendered).to have_element(:dt, text: "Teacher reference number (TRN)")
     expect(rendered).to have_element(:dd, text: "1234567")
     expect(rendered).to have_element(:dt, text: "Name")
-    expect(rendered).to have_element(:dd, text: "John Wayne")
+    expect(rendered).to have_element(:dd, text: "Jim Wayne")
     expect(rendered).to have_element(:dt, text: "Email address")
     expect(rendered).to have_element(:dd, text: "john.wayne@example.com")
   end
@@ -44,7 +45,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   it 'includes an inset with the names of the mentor and ECT associated' do
     render
 
-    expect(rendered).to have_selector(".govuk-inset-text", text: 'John Wayne will mentor Michael Dixon', visible: true)
+    expect(rendered).to have_selector(".govuk-inset-text", text: 'Jim Wayne will mentor Michael Dixon', visible: true)
     expect(rendered).to have_selector("form[action='#{confirm_details_path}']")
   end
 

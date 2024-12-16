@@ -29,6 +29,18 @@ end %>
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
+  <%= f.govuk_radio_buttons_fieldset :change_name, legend: { text: "Are these details correct for the mentor?" } do %>
+    <%= f.govuk_radio_button :change_name, :no, label: { text: "Yes" }, link_errors: true %>
+    <%= f.govuk_radio_button :change_name, :yes, label: { text: "No, they changed their name or it's spelt wrong" } do %>
+      <%= f.govuk_text_field :corrected_name,
+                             label: {
+                               text: "Enter the correct full name"
+                             },
+                             hint: {
+                               text: "The name you provide will be used for mentor registration. The mentor can update their name in their teacher record using the Access your teaching qualification service."                             } %>
+    <% end %>
+  <% end %>
+
   <%= f.govuk_submit "Confirm and continue" %>
 <% end %>
 

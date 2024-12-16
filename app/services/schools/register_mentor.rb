@@ -1,10 +1,11 @@
 module Schools
   class RegisterMentor
-    attr_reader :first_name, :last_name, :school_urn, :started_on, :teacher, :trn
+    attr_reader :first_name, :last_name, :corrected_name, :school_urn, :started_on, :teacher, :trn
 
-    def initialize(first_name:, last_name:, trn:, school_urn:, started_on: Date.current)
+    def initialize(first_name:, last_name:, corrected_name:, trn:, school_urn:, started_on: Date.current)
       @first_name = first_name
       @last_name = last_name
+      @corrected_name = corrected_name
       @school_urn = school_urn
       @started_on = started_on
       @trn = trn
@@ -20,7 +21,7 @@ module Schools
   private
 
     def create_teacher!
-      @teacher = ::Teacher.create!(first_name:, last_name:, trn:)
+      @teacher = ::Teacher.create!(first_name:, last_name:, corrected_name:, trn:)
     end
 
     def school
