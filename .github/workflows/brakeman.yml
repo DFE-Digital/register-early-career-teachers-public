@@ -8,6 +8,11 @@ env:
 on:
   workflow_call:
 
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+
 jobs:
   brakeman-scan:
     name: Brakeman Scan
@@ -16,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1.202.0
@@ -27,11 +34,5 @@ jobs:
           gem install brakeman --version ${{ env.BRAKEMAN_VERSION }}
 
       - name: Scan
-        continue-on-error: true
         run: |
-          brakeman -f sarif -o output.sarif.json .
-
-      - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: output.sarif.json
+          brakeman --rails8 --exit-on-warn --exit-on-error
