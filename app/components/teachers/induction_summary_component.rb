@@ -22,7 +22,7 @@ module Teachers
     end
 
     def extension_view_link
-      helpers.govuk_link_to("View", helpers.ab_teacher_extensions_path(teacher), class: 'govuk-link--no-visited-state')
+      helpers.govuk_link_to("View", helpers.ab_teacher_extensions_path(teacher), no_visited_state: true)
     end
   end
 end
