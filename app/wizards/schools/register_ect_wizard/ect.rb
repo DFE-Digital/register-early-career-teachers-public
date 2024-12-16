@@ -3,11 +3,15 @@ module Schools
     class ECT < SimpleDelegator
       # This class is a decorator for the SessionRepository
       def full_name
-        corrected_name || [trs_first_name, trs_last_name].join(" ").strip
+        corrected_name.presence || [trs_first_name, trs_last_name].join(" ").strip
       end
 
       def govuk_date_of_birth
         trs_date_of_birth.to_date&.to_formatted_s(:govuk)
+      end
+
+      def ect_at_school_period
+        @ect_at_school_period ||= ECTAtSchoolPeriod.find_by_id(ect_at_school_period_id)
       end
 
       def in_trs?
