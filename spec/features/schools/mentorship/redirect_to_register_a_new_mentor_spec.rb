@@ -1,7 +1,6 @@
 RSpec.describe 'Redirect to register a new mentor for an ECT' do
   include_context 'fake trs api client'
 
-  let(:page) { RSpec.configuration.playwright_page }
   let(:trn) { '9876543' }
 
   scenario 'happy path' do

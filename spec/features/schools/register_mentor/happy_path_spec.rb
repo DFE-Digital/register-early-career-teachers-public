@@ -1,7 +1,6 @@
 RSpec.describe 'Registering a mentor', :js do
   include_context 'fake trs api client'
 
-  let(:page) { RSpec.configuration.playwright_page }
   let(:trn) { '3002586' }
 
   scenario 'happy path' do

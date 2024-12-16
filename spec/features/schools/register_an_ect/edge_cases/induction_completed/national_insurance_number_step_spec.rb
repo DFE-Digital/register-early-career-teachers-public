@@ -1,8 +1,6 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api returns a teacher and then a teacher that has completed their induction'
 
-  let(:page) { RSpec.configuration.playwright_page }
-
   scenario 'User enters national insurance number but teacher has completed their induction' do
     given_i_am_logged_in_as_a_school_user
     when_i_am_on_the_find_ect_step_page
