@@ -26,5 +26,13 @@ describe Teachers::Name do
         expect(subject.full_name).to eql(%(#{teacher.first_name} #{teacher.last_name}))
       end
     end
+
+    context 'when the corrected_name is an empty string' do
+      let(:teacher) { FactoryBot.build(:teacher, corrected_name: "") }
+
+      it 'returns the first name followed by the last name' do
+        expect(subject.full_name).to eql(%(#{teacher.first_name} #{teacher.last_name}))
+      end
+    end
   end
 end
