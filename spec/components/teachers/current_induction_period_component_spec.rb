@@ -42,10 +42,5 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
       render_inline(component)
       expect(page).to have_link("Release", href: new_ab_teacher_release_ect_path(teacher_trn: teacher.trn))
     end
-
-    it "includes a change programme link" do
-      render_inline(component)
-      expect(page).to have_link("Change", href: "#")
-    end
   end
 end
