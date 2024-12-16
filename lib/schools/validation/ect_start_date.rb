@@ -3,10 +3,10 @@ module Schools
     class ECTStartDate
       attr_reader :format_error
 
-      # Initializer expects a Hash with the format { 1 => year, 2 => month, 3 => day }
-
-      def initialize(ect_start_date_as_hash)
+      # ect_start_date_as_hash: { 1 => year, 2 => month, 3 => day }
+      def initialize(ect_start_date_as_hash:, current_date: nil)
         @ect_start_date_as_hash = ect_start_date_as_hash
+        @current_date = current_date || Time.zone.today
         @format_error = nil
       end
 
@@ -15,12 +15,16 @@ module Schools
         format_error.nil?
       end
 
+      def formatted_start_date
+        start_date.strftime("%B %Y")
+      end
+
     private
 
-      attr_reader :ect_start_date_as_hash
+      attr_reader :ect_start_date_as_hash, :current_date
 
       def validate
-        return @format_error = "Start date cannot be blank" if date_missing?
+        return @format_error = "Enter the date the ECT started or will start teaching at your school" if date_missing?
         return @format_error = "Enter the start date using the correct format, for example 03 1998" if invalid_date?
         return @format_error = "The start date must be from within either the current academic year or one of the last 2 academic years" if start_date_out_of_range?
 
@@ -33,20 +37,12 @@ module Schools
       # - August 23 - July 24
       # - August 24 - July 25
       def start_date_out_of_range?
-        current_date = Time.zone.today
-        current_year_start = Date.new(current_date.year, 8, 1)
-        previous_years_start = [
-          current_year_start.prev_year,
-          current_year_start.prev_year(2)
-        ]
+        before_august = current_date.month < 8
+        start_of_current_academic_year = Time.zone.local(current_date.year - (before_august ? 1 : 0), 8, 1)
+        first_allowed_date = start_of_current_academic_year.prev_year(2)
+        last_allowed_date = start_of_current_academic_year.next_year(1)
 
-        valid_ranges = [
-          (previous_years_start[1]...previous_years_start[0]),
-          (previous_years_start[0]...current_year_start),
-          (current_year_start...(current_year_start + 1.year))
-        ]
-
-        valid_ranges.none? { |range| range.cover?(start_date) }
+        !(first_allowed_date...last_allowed_date).cover?(start_date)
       end
 
       def date_missing?
@@ -60,7 +56,7 @@ module Schools
       def invalid_date?
         start_date
         false
-      rescue ArgumentError
+      rescue StandardError
         true
       end
 
@@ -68,7 +64,7 @@ module Schools
         month = ect_start_date_as_hash[2].to_i
         year = ect_start_date_as_hash[1].to_i
 
-        @start_date ||= Date.new(year, month)
+        Time.zone.local(year, month)
       end
     end
   end

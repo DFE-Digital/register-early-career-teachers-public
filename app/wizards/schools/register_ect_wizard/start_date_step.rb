@@ -18,9 +18,7 @@ module Schools
       end
 
       def start_date_formatted
-        month = start_date[2].to_i
-        year = start_date[1].to_i
-        Date.new(year, month).strftime("%B %Y")
+        Schools::Validation::ECTStartDate.new(ect_start_date_as_hash: start_date).formatted_start_date
       end
     end
   end
