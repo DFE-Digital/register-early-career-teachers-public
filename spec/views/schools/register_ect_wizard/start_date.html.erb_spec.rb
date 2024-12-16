@@ -42,4 +42,13 @@ RSpec.describe "schools/register_ect_wizard/start_date.html.erb" do
 
     expect(rendered).to have_button('Continue')
   end
+
+  it 'includes a start date field hint with the current year' do
+    assign(:wizard, wizard)
+    assign(:ect, ect)
+
+    render
+
+    expect(rendered).to have_content("For example, 9 #{Date.current.year}")
+  end
 end
