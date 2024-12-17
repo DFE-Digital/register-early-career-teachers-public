@@ -1,0 +1,31 @@
+<h2 class="govuk-heading-m">Past induction periods</h2>
+
+<% past_periods.each do |period| %>
+  <%=
+    govuk_summary_list(actions: false, card: { title: period.appropriate_body.name }) do |sl|
+      sl.with_row do |row|
+        row.with_key(text: "Induction programme")
+        row.with_value(text: helpers.induction_programme_choice_name(period.induction_programme))
+      end
+
+      sl.with_row do |row|
+        row.with_key(text: "Start date")
+        row.with_value(text: period.started_on.to_fs(:govuk))
+      end
+
+      if period.finished_on.present?
+        sl.with_row do |row|
+          row.with_key(text: "End date")
+          row.with_value(text: period.finished_on.to_fs(:govuk))
+        end
+      end
+
+      if period.number_of_terms.present?
+        sl.with_row do |row|
+          row.with_key(text: "Number of terms")
+          row.with_value(text: period.number_of_terms)
+        end
+      end
+    end
+  %>
+<% end %>
