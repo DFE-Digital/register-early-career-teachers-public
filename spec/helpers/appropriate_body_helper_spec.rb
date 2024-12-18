@@ -10,7 +10,7 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
     end
 
     it "has keys for the old (pre-2025) induction choices" do
-      expect(induction_programme_choices.map(&:identifier)).to eql(%w[cip fip diy])
+      expect(induction_programme_choices.map(&:identifier)).to eql(%w[fip cip diy])
     end
   end
 
