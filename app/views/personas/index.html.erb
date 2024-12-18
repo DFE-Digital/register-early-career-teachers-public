@@ -25,7 +25,7 @@
           <%= tag.p(persona_organisation(persona)) %>
         </div>
 
-        <%= form_with url: "/auth/developer/callback" do |f| %>
+        <%= form_with url: "/auth/persona/callback" do |f| %>
           <%= hidden_field_tag "email", persona.email %>
           <%= hidden_field_tag "name", persona.name %>
           <%= hidden_field_tag "appropriate_body_id", persona.appropriate_body_id %>
