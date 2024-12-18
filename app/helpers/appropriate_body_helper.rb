@@ -7,8 +7,8 @@ module AppropriateBodyHelper
     #        should be switched with something more appropriate for external
     #        users
     [
-      InductionProgrammeChoice.new(identifier: 'cip', name: 'Core induction programme'),
       InductionProgrammeChoice.new(identifier: 'fip', name: 'Full induction programme'),
+      InductionProgrammeChoice.new(identifier: 'cip', name: 'Core induction programme'),
       InductionProgrammeChoice.new(identifier: 'diy', name: 'Do it yourself')
     ]
   end
