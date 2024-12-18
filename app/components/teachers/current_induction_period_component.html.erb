@@ -1,0 +1,15 @@
+<h2 class="govuk-heading-m">Current induction period</h2>
+
+<%=
+  govuk_summary_list(card: { title: current_period.appropriate_body.name, actions: [release_link] }) do |sl|
+    sl.with_row do |row|
+      row.with_key(text: "Induction programme")
+      row.with_value(text: helpers.induction_programme_choice_name(current_period.induction_programme))
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Start date")
+      row.with_value(text: started_on)
+    end
+  end
+%>
