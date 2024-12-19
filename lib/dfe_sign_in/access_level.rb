@@ -1,6 +1,6 @@
 module DfESignIn
   class AccessLevel
-    Role = Data.define(:id, :name, :code)
+    Role = Data.define(:id, :name, :code, :numeric_id)
 
     attr_reader :user_id, :service_id, :organisation_id, :roles
 
@@ -20,10 +20,15 @@ module DfESignIn
           Role.new(
             id: r.fetch('id'),
             name: r.fetch('name'),
-            code: r.fetch('code')
+            code: r.fetch('code'),
+            numeric_id: r.fetch('numericId')
           )
         end
       )
+    end
+
+    def has_register_ect_access_role?
+      roles.any? { |r| r.code == 'registerECTsAccess' }
     end
   end
 end
