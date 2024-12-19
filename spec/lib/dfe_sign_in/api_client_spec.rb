@@ -14,9 +14,17 @@ describe DfESignIn::APIClient do
       'DFE_SIGN_IN_API_AUDIENCE' => fake_api_audience,
       'DFE_SIGN_IN_API_SECRET' => fake_api_secret,
     })
+
+    allow(Rails.application.config).to receive(:dfe_sign_in_enabled).and_return(true)
   end
 
   describe 'initialization' do
+    it 'fails unless config setting dfe_sign_in_enabled is true' do
+      allow(Rails.application.config).to receive(:dfe_sign_in_enabled).and_return(false)
+
+      expect { DfESignIn::APIClient.new }.to raise_error(DfESignIn::APIClient::DfESignInDisabled)
+    end
+
     it 'uses the env var DFE_SIGN_IN_API_BASE_URL as the default url' do
       api_client = DfESignIn::APIClient.new
 
