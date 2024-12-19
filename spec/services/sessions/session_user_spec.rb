@@ -17,6 +17,23 @@ RSpec.describe Sessions::SessionUser do
       expect(session_user.last_active_at).to eql(last_active_at)
       expect(session_user.dfe).to be(true)
     end
+
+    context 'when appropriate_body_id is nil but dfe_sign_in_organisation_id is present' do
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id: SecureRandom.uuid) }
+      let(:appropriate_body_dfe_sign_in_organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
+
+      it 'uses the dfe_sign_in_organisation_id to find the appropriate body' do
+        session_user = Sessions::SessionUser.new(
+          provider: 'otp',
+          name: 'Robert Englund',
+          email: 'rob.e@example.com',
+          appropriate_body_id: nil,
+          dfe_sign_in_organisation_id: appropriate_body_dfe_sign_in_organisation_id
+        )
+
+        expect(session_user.appropriate_body_id).to eql(appropriate_body.id)
+      end
+    end
   end
 
   describe '.from_session' do
@@ -127,12 +144,17 @@ RSpec.describe Sessions::SessionUser do
     let(:last_active_at) { 8.minutes.ago }
 
     it 'returns all relevant attribtues in a hash' do
+      dfe_sign_in_user_id = SecureRandom.uuid
+      dfe_sign_in_organisation_id = SecureRandom.uuid
+
       session_user = Sessions::SessionUser.new(
         provider: 'otp',
         name: 'Bela Lugosi',
         email: 'bl@example.com',
         last_active_at:,
-        appropriate_body_id: 1234
+        appropriate_body_id: 1234,
+        dfe_sign_in_user_id:,
+        dfe_sign_in_organisation_id:
       )
 
       expect(session_user.to_h).to eql(
@@ -143,7 +165,9 @@ RSpec.describe Sessions::SessionUser do
           "last_active_at" => last_active_at,
           "appropriate_body_id" => 1234,
           "school_urn" => nil,
-          "dfe" => false
+          "dfe" => false,
+          "dfe_sign_in_user_id" => dfe_sign_in_user_id,
+          "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id
         }
       )
     end

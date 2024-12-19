@@ -1,17 +1,23 @@
 module AppropriateBodies
   class Search
-    def initialize(query_string)
+    def initialize(query_string = nil)
+      @scope = AppropriateBody
+
       @query_string = query_string
     end
 
     def search
       query = if @query_string.blank?
-                AppropriateBody.all
+                @scope.all
               else
-                AppropriateBody.where("name ILIKE ?", "%#{@query_string}%")
+                @scope.where("name ILIKE ?", "%#{@query_string}%")
               end
 
       query.order(name: 'asc')
+    end
+
+    def find_by_dfe_sign_in_organisation_id(dfe_sign_in_organisation_id)
+      @scope.find_by(dfe_sign_in_organisation_id:)
     end
   end
 end

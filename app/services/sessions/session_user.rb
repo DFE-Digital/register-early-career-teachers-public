@@ -1,16 +1,17 @@
 module Sessions
   class SessionUser
-    attr_reader :provider, :name, :email, :appropriate_body_id, :school_urn, :dfe
+    attr_reader :provider, :name, :email, :appropriate_body_id, :school_urn, :dfe, :dfe_sign_in_user_id, :dfe_sign_in_organisation_id
 
-    def initialize(provider:, email:, name: nil, appropriate_body_id: nil, school_urn: nil, dfe_sign_in_organisation_id: nil, dfe: false, last_active_at: Time.zone.now)
+    def initialize(provider:, email:, dfe_sign_in_user_id: nil, name: nil, appropriate_body_id: nil, school_urn: nil, dfe_sign_in_organisation_id: nil, dfe: false, last_active_at: Time.zone.now)
+      @dfe_sign_in_user_id = dfe_sign_in_user_id
+      @dfe_sign_in_organisation_id = dfe_sign_in_organisation_id
       @provider = provider
       @name = name
       @email = email
       @last_active_at = last_active_at
-      @appropriate_body_id = appropriate_body_id
+      @appropriate_body_id = appropriate_body_id || find_appropriate_body_id
       @school_urn = school_urn
       @dfe = dfe
-      @dfe_sign_in_organisation_id = dfe_sign_in_organisation_id
     end
 
     def last_active_at
@@ -54,6 +55,7 @@ module Sessions
         name: user_info.info.then { |info| "#{info.first_name} #{info.last_name}" },
         school_urn: user_info.extra.raw_info.organisation.urn,
         dfe_sign_in_organisation_id: user_info.extra.raw_info.organisation.id,
+        dfe_sign_in_user_id: user_info.uid,
         email: user_info.info.email
       )
     end
@@ -78,7 +80,17 @@ module Sessions
         "appropriate_body_id" => appropriate_body_id.presence,
         "school_urn" => school_urn.presence,
         "dfe" => dfe,
+        "dfe_sign_in_user_id" => dfe_sign_in_user_id,
+        "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id,
       }
+    end
+
+  private
+
+    def find_appropriate_body_id
+      appropriate_body = AppropriateBodies::Search.new.find_by_dfe_sign_in_organisation_id(dfe_sign_in_organisation_id)
+
+      appropriate_body&.id
     end
   end
 end
