@@ -8,6 +8,7 @@ module Migration
 
     def migrated_mentor
       return unless mentor_present?
+
       Teacher.find_by(legacy_mentor_id: induction_record.mentor_profile_id)
     end
 
