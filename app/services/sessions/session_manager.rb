@@ -1,5 +1,7 @@
 module Sessions
   class SessionManager
+    class MissingAccessLevel < StandardError; end
+
     MAX_SESSION_IDLE_TIME = 2.hours
 
     attr_reader :session
@@ -19,7 +21,12 @@ module Sessions
     end
 
     def begin_dfe_sign_in_session!(user_info)
-      session['user_session'] = SessionUser.from_dfe_sign_in(user_info).to_h
+      session_user = SessionUser.from_dfe_sign_in(user_info)
+
+      fail(MissingAccessLevel) unless dfe_sign_in_user_has_access?(user_id: session_user.dfe_sign_in_user_id,
+                                                                   organisation_id: session_user.dfe_sign_in_organisation_id)
+
+      session['user_session'] = session_user.to_h
     end
 
     def load_from_session
@@ -74,6 +81,18 @@ module Sessions
       return if current_user.blank?
 
       current_user.email
+    end
+
+    def dfe_sign_in_user_has_access?(organisation_id:, user_id:)
+      access_level = dfe_sign_in_api_client.access_levels(organisation_id:, user_id:)
+
+      Rails.logger.info(access_level)
+
+      access_level.has_register_ect_access_role?
+    end
+
+    def dfe_sign_in_api_client
+      @dfe_sign_in_api_client ||= DfESignIn::APIClient.new
     end
   end
 end
