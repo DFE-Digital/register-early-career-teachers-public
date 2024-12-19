@@ -1,0 +1,48 @@
+<% page_data(title: "Teachers") %>
+
+<%= form_with method: :get do |f| %>
+  <%=
+    f.govuk_text_field(
+      "q",
+      value: params[:q],
+      label: { text: "Search for teacher", size: "s" },
+      hint: { text: "Name or TRN" },
+    )
+  %>
+
+  <%= f.govuk_submit "Search" %>
+<% end %>
+
+<p class="govuk-body"><strong><%= @pagy.count %></strong> teachers found</p>
+
+<%=
+  govuk_table do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Name")
+        row.with_cell(text: "Role")
+        row.with_cell(text: "TRN")
+        row.with_cell { govuk_visually_hidden("Has migration errors") }
+      end
+    end
+
+    table.with_body do |body|
+      @teachers.each_with_index do |teacher, index|
+        body.with_row do |row|
+          row.with_cell do
+            govuk_link_to "#{teacher.first_name} #{teacher.last_name}", migration_teacher_path(teacher, page: @pagy.page)
+          end
+          row.with_cell(text: Teachers::Role.new(teacher:))
+          row.with_cell(text: teacher.trn)
+          if teacher.migration_failures.any?
+            row.with_cell { govuk_tag(text: "Error", colour: "red") }
+          else
+            row.with_cell(text: "")
+          end
+        end
+      end
+    end
+  end
+%>
+
+<%= govuk_pagination pagy: @pagy %>
