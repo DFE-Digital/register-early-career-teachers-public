@@ -1,6 +1,13 @@
 class Migration::TeachersController < ::AdminController
   layout "full"
 
+  def index
+    @pagy, teachers = pagy(
+      Teachers::Search.new(query_string: params[:q]).search.order(:last_name, :first_name, :id)
+    )
+    @teachers = Admin::TeacherPresenter.wrap(teachers)
+  end
+
   def show
     @page = params[:page] || 1
     fetch_teacher_data
@@ -57,6 +64,6 @@ private
   end
 
   def teacher
-    @teacher ||= Admin::TeacherPresenter.new(Teacher.find_by(trn: params[:trn]))
+    @teacher ||= Admin::TeacherPresenter.new(Teacher.find_by(trn: params[:id]))
   end
 end

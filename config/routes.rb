@@ -85,7 +85,7 @@ Rails.application.routes.draw do
         post "reset", action: :reset, as: :reset
       end
     end
-    get "teachers/:trn", to: "teachers#show", as: :teacher_details
+    resources :teachers, only: %i[index show]
   end
 
   namespace :schools do
