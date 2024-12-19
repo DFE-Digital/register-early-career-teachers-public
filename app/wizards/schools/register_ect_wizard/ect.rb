@@ -33,10 +33,7 @@ module Schools
       end
 
       def formatted_programme_type
-        programme_type.split('_')
-                      .map
-                      .with_index { |word, index| index.zero? ? word.capitalize : word }
-                      .join('-')
+        programme_type.capitalize.dasherize
       end
 
       def register!
