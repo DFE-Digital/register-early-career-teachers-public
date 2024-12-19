@@ -4,15 +4,16 @@ describe Schools::RegisterECTWizard::ECT do
   let(:school) { FactoryBot.create(:school) }
   let(:store) do
     FactoryBot.build(:session_repository,
-                     trn: "3002586",
+                     corrected_name: nil,
                      date_of_birth: "11-10-1945",
+                     email: "dusty@rhodes.com",
+                     school_urn: school.urn,
+                     start_date: 'January 2025',
+                     trn: "3002586",
                      trs_first_name: "Dusty",
                      trs_last_name: "Rhodes",
                      trs_date_of_birth: "1945-10-11",
-                     trs_national_insurance_number: "OWAD23455",
-                     email: "dusty@rhodes.com",
-                     school_urn: school.urn,
-                     corrected_name: nil)
+                     trs_national_insurance_number: "OWAD23455")
   end
 
   subject(:ect) { described_class.new(store) }
@@ -124,7 +125,7 @@ describe Schools::RegisterECTWizard::ECT do
 
       expect(teacher.trn).to eq(ect.trn)
       expect(ect_at_school_period.school_id).to eq(school.id)
-      expect(ect_at_school_period.started_on).to eq(Date.current)
+      expect(ect_at_school_period.started_on).to eq(Date.parse('January 2025'))
     end
   end
 end
