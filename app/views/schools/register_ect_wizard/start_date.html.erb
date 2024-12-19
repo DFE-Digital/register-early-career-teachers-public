@@ -1,0 +1,14 @@
+<% page_data(title: "What is the date #{@ect.full_name} started or will start teaching as an ECT at your school?", error: @wizard.current_step.errors.present?, backlink_href: schools_register_ect_wizard_email_address_path) %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_date_field :start_date,
+                         omit_day: true,
+                         width: "two-thirds",
+                         legend: { text: 'Start date', size: "m", tag: "h3", hidden: true },
+                         hint: { text: "For example, 9 #{Date.current.year}" }
+  %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>
