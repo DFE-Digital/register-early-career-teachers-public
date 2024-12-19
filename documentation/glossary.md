@@ -10,7 +10,7 @@ Delivery partners are responsible for delivering training and events for ECTs an
 
 ## Early Career Teacher Programme (ECTP)
 
-The training that Early Career Teachers (ECTs) and ECT mentors are entitled to as part of their 2-year induction. From September 2025, this training will be based on the [ITTECF](https://www.gov.uk/government/publications/initial-teacher-training-and-early-career-framework). 
+The training that Early Career Teachers (ECTs) and ECT mentors are entitled to as part of their 2-year induction. From September 2025, this training will be based on the [ITTECF](https://www.gov.uk/government/publications/initial-teacher-training-and-early-career-framework).
 
 For clarity, avoid referring to ‘induction training’ which could be misconstrued as something wider - i.e. the wider contextual training ECTs should have in schools (and any new staff to that school)
 
@@ -30,14 +30,15 @@ The training programmes for ECTs and their mentors based on the ITTECF delivered
 
 A school delivering their own ECTP for their ECTs, not accessing the funded provider-led training programme. Do not use “DIY” or “DIY programme” in user-facing contexts.
 
-## Mentoring of ECTs / ECT mentor 
+## Mentoring of ECTs / ECT mentor
 
 The regular mentoring that ECTs are entitled to, and their designated mentor. Avoid using ‘ECF mentoring’ or ECF mentor
 
-## Assessment 
+## Assessment
 
 The formal assessment of ECTs against the teachers’ standards. This determines whether they pass or fail statutory induction. It’s important to be clear that:
-* ECTs are not assessed against the ECF or ITTECF 
+
+* ECTs are not assessed against the ECF or ITTECF
 * ECF-based or ITTECF-based training for ECTs is not assessed
 * ECF-based or ITTECF-based training for ECTs is not part of an ECT’s formal assessment
 * ECTs do not have to complete their ECF-based or ITTECF-based training for ECTs to pass their induction
@@ -54,9 +55,9 @@ This project aims to replace the old Manage training service.
 
 You can read more about what schools can do in the service in our guidance: [Guidance for schools: how to manage ECF-based training](https://www.gov.uk/guidance/how-to-set-up-training-for-early-career-teachers)
 
-## DfE’s ‘Support for early career teachers’ service 
+## DfE’s ‘Support for early career teachers’ service
 
-[Support for early career teachers](https://support-for-early-career-teachers.education.gov.uk/) is the online service schools use to access the DfE-accredited training materials if they wish to deliver these themselves. 
+[Support for early career teachers](https://support-for-early-career-teachers.education.gov.uk/) is the online service schools use to access the DfE-accredited training materials if they wish to deliver these themselves.
 
 ## Replacement mentors
 
@@ -64,8 +65,8 @@ A new mentor joining the ECF mentor training programme to replace an existing me
 
 ## Replacing mentors
 
-A mentor who is already on the ECF mentor training programme who starts to support an ECT (new or existing). This mentor does not need new funding as they have already had this allocated. 
+A mentor who is already on the ECF mentor training programme who starts to support an ECT (new or existing). This mentor does not need new funding as they have already had this allocated.
 
-## Qualifying nursery provision within maintained schools 
+## Qualifying nursery provision within maintained schools
 
 Previously referred to as ‘maintained nursery schools and nursery provision within maintained schools’
