@@ -42,7 +42,15 @@
     if induction_record.ect?
       list.with_row do |row|
         row.with_key(text: "Mentor")
-        row.with_value(text: induction_record.mentor_name)
+        row.with_value do
+          if mentor_present?
+            if migrated_mentor.present?
+              govuk_link_to induction_record.mentor_name, admin_teacher_path(migrated_mentor)
+            else
+              govuk_tag(text: induction_record.mentor_name, colour: "red")
+            end
+          end
+        end
       end
     end
     list.with_row do |row|
