@@ -55,6 +55,7 @@ module Sessions
         name: user_info.info.then { |info| "#{info.first_name} #{info.last_name}" },
         school_urn: user_info.extra.raw_info.organisation.urn,
         dfe_sign_in_organisation_id: user_info.extra.raw_info.organisation.id,
+        dfe_sign_in_user_id: user_info.uid,
         email: user_info.info.email
       )
     end
