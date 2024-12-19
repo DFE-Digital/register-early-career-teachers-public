@@ -15,5 +15,5 @@
 <%= govuk_warning_text(text: "Some of this teacher's records could not be migrated") if @teacher.migration_failures.any? %>
 
 <p class="govuk-body">
-  <%= govuk_link_to "Migration detail", migration_teacher_details_path(@teacher, page: @page) %>
+  <%= govuk_link_to "Migration detail", migration_teacher_path(@teacher, page: @page) %>
 </p>
