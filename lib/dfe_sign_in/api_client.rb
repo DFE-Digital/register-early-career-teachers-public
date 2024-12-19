@@ -1,10 +1,14 @@
 module DfESignIn
   class APIClient
+    class DfESignIn::APIClient::DfESignInDisabled < StandardError; end
+
     attr_reader :connection
 
     DEFAULT_TIMEOUT = 3
 
     def initialize(url: base_url, timeout: DEFAULT_TIMEOUT)
+      fail(DfESignInDisabled) unless Rails.application.config.dfe_sign_in_enabled
+
       @connection = Faraday.new(url:, request: { timeout: }) do |faraday|
         faraday.request(:authorization, 'Bearer', jwt)
         faraday.request(:json)
