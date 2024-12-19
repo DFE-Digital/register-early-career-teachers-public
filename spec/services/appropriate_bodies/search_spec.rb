@@ -1,28 +1,43 @@
 describe AppropriateBodies::Search do
   describe 'dealing with search terms' do
+    let(:query_string) { nil }
     subject { described_class.new(query_string) }
 
-    context 'when the search string is blank' do
-      before { allow(AppropriateBody).to receive(:all).and_call_original }
+    describe "#search" do
+      context 'when the search string is blank' do
+        let(:query_string) { ' ' }
 
-      let(:query_string) { ' ' }
+        it 'applies no conditions and returns all appropriate bodies' do
+          subject.search
 
-      it 'applies no conditions and returns all appropriate bodies' do
-        subject.search
+          expect(subject.search.to_sql).to start_with(%(SELECT "appropriate_bodies".* FROM "appropriate_bodies" ORDER BY))
+        end
+      end
 
-        expect(AppropriateBody).to have_received(:all).once.with(no_args)
+      context 'when the search string contains some text' do
+        let(:query_string) { 'Captain Scrummy' }
+
+        it 'initiates a full text search with the given search string' do
+          expect(subject.search.to_sql).to include(%{WHERE (name ILIKE '%Captain Scrummy%')})
+        end
+      end
+
+      context 'ordering' do
+        before { allow(AppropriateBody).to receive(:where).and_call_original }
+
+        it 'defaults to order by name ascending' do
+          expect(subject.search.to_sql).to include(%(ORDER BY "appropriate_bodies"."name" ASC))
+        end
       end
     end
 
-    context 'when the search string contains some text' do
-      before { allow(AppropriateBody).to receive(:where).and_call_original }
+    describe "#find_by_dfe_sign_in_organisation_id" do
+      it 'uses the provided ID to find the right appropriate body' do
+        allow(AppropriateBody).to receive(:find_by).with(dfe_sign_in_organisation_id: 'abc123').and_call_original
 
-      let(:query_string) { 'Captain Scrummy' }
+        subject.find_by_dfe_sign_in_organisation_id('abc123')
 
-      it 'initiates a full text search with the given search string' do
-        subject.search
-
-        expect(AppropriateBody).to have_received(:where).once.with("name ILIKE ?", "%#{query_string}%")
+        expect(AppropriateBody).to have_received(:find_by).with(dfe_sign_in_organisation_id: 'abc123')
       end
     end
   end
