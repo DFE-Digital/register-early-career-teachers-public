@@ -2,11 +2,13 @@ RSpec.describe Sessions::SessionManager do
   let(:session) { HashWithIndifferentAccess.new }
   let(:user) { FactoryBot.create(:user, email: "eric@example.com") }
   let(:email) { user.email }
-  let(:provider) { "otp" }
+  let(:provider) { 'dfe_sign_in' }
 
   subject(:service) { Sessions::SessionManager.new(session) }
 
   describe "#begin_otp_session!" do
+    let(:provider) { "otp" }
+
     it "creates a user_session hash in the session" do
       service.begin_otp_session!(user.email)
       expect(session["user_session"]).to be_present
@@ -24,6 +26,61 @@ RSpec.describe Sessions::SessionManager do
 
     it "stores a last active timestamp in the session" do
       service.begin_otp_session!(email)
+      expect(session["user_session"]["last_active_at"]).to be_within(1.second).of(Time.zone.now)
+    end
+  end
+
+  describe "#begin_dfe_sign_in_session!" do
+    let(:provider) { 'dfe_sign_in' }
+    let(:first_name) { 'Milhouse' }
+    let(:last_name) { 'Van Houten' }
+    let(:email) { 'mvh@example.com' }
+
+    before { allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new) }
+
+    let(:user_info) do
+      OmniAuth::AuthHash.new(
+        {
+          provider:,
+          uid: email,
+          info: { first_name:, last_name:, email: },
+          extra: {
+            raw_info: {
+              organisation: {
+                id: 1234
+              }
+            }
+          }
+        }
+      )
+    end
+
+    it "creates a user_session hash in the session" do
+      service.begin_dfe_sign_in_session!(user_info)
+
+      expect(session["user_session"]).to be_present
+    end
+
+    context "when the DfE Sign-in API response doesn't have the 'registerECTsAccess' code" do
+      before { allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_code: 'somethingElse')) }
+
+      it 'raises an MissingAccessLevel error' do
+        expect { service.begin_dfe_sign_in_session!(user_info) }.to raise_error(Sessions::SessionManager::MissingAccessLevel)
+      end
+    end
+
+    it "stores the email in the session" do
+      service.begin_dfe_sign_in_session!(user_info)
+      expect(session["user_session"]["email"]).to eq email
+    end
+
+    it "stores the provider in the session" do
+      service.begin_dfe_sign_in_session!(user_info)
+      expect(session["user_session"]["provider"]).to eq provider
+    end
+
+    it "stores a last active timestamp in the session" do
+      service.begin_dfe_sign_in_session!(user_info)
       expect(session["user_session"]["last_active_at"]).to be_within(1.second).of(Time.zone.now)
     end
   end
