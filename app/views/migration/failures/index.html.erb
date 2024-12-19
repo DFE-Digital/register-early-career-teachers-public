@@ -14,7 +14,7 @@
     table.with_body do |body|
       @migration_failures.each_with_index do |failure, index|
         parent_link = govuk_link_to(Teachers::Name.new(failure.parent).full_name,
-                                    migration_teacher_details_path(failure.parent)) unless failure.parent.blank?
+                                    migration_teacher_path(failure.parent)) unless failure.parent.blank?
 
         body.with_row(html_attributes: { class: "govuk-!-font-size-16" }) do |row|
           if parent_link
