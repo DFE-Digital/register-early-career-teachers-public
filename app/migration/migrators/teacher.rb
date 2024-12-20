@@ -28,6 +28,51 @@ module Migrators
       end
     end
 
+    def safe_migrate_teacher(teacher_profile:)
+      trn = teacher_profile.trn
+      full_name = teacher_profile.user.full_name
+
+      teacher = Builders::Teacher.new(trn:, full_name:, legacy_id: teacher_profile.user_id).build
+      if teacher.nil?
+        # TODO: record migration failure
+        Rails.logger.error "Failed to create teacher for teacher_profile.id #{teacher_profile.id}"
+        return false
+      end
+
+      has_errors = false
+
+      teacher_profile
+        .participant_profiles
+        .ect_or_mentor
+        .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
+        .find_each do |participant_profile|
+          induction_records = InductionRecordSanitizer.new(participant_profile:)
+
+          if induction_records.valid?
+            sp_success = tp_success = false
+            school_periods = SchoolPeriodExtractor.new(induction_records:)
+            training_period_data = TrainingPeriodExtractor.new(induction_records:)
+
+            if participant_profile.ect?
+              teacher.update!(legacy_ect_id: participant_profile.id)
+              sp_success = Builders::ECT::SchoolPeriods.new(teacher:, school_periods:).build
+              tp_success = Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
+            else
+              teacher.update!(legacy_mentor_id: participant_profile.id)
+              sp_success = Builders::Mentor::SchoolPeriods.new(teacher:, school_periods:).build
+              tp_success = Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
+            end
+            has_errors = true unless sp_success && tp_success
+          else
+            # TODO: record teacher migration failure
+            Rails.logger.error "Induction records issues for participant_profle #{participant_profile.id}"
+            has_errors = true
+          end
+        end
+
+      has_errors
+    end
+
     def migrate_teacher!(teacher_profile:)
       trn = teacher_profile.trn
       full_name = teacher_profile.user.full_name

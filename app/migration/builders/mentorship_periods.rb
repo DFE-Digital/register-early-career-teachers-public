@@ -1,9 +1,9 @@
 module Builders
-  class MentorshipPeriods
-    attr_reader :teacher, :mentorship_period_data
+  class MentorshipPeriods < TeacherBase
+    attr_reader :mentorship_period_data
 
     def initialize(teacher:, mentorship_period_data:)
-      @teacher = teacher
+      super(teacher:)
       @mentorship_period_data = mentorship_period_data
     end
 
