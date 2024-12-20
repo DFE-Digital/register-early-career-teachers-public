@@ -3,7 +3,7 @@ module Schools
     class ProgrammeTypeStep < Step
       attr_accessor :programme_type
 
-      validates :programme_type, presence: { message: "Select either 'Provider-led' or 'School-led' training" }
+      validates :programme_type, programme_type: true
 
       def self.permitted_params
         %i[programme_type]
