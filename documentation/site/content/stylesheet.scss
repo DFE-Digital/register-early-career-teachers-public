@@ -50,9 +50,13 @@ $govuk-assets-path: "/";
 }
 
 .service-rules {
-    > p:first-of-type {
-        @include govuk-font($size: 24);
-    }
+  h2.govuk-heading-m {
+    margin-top: 2em;
+    padding-top: .5em;
+    border-top: 2px solid $govuk-border-colour;
+  }
+}
+
 .ecf1-service-rules {
   > p:first-of-type {
     @include govuk-font($size: 24);
