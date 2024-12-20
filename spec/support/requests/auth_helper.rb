@@ -33,12 +33,12 @@ private
 
   def sign_in_with_appropriate_body_persona(appropriate_body:, name: Faker::Name.name, email: Faker::Internet.email)
     Rails.logger.debug("Signing in with persona as appropriate body user")
-    post("/auth/developer/callback", params: { email:, name:, appropriate_body_id: appropriate_body.id })
+    post("/auth/persona/callback", params: { email:, name:, appropriate_body_id: appropriate_body.id })
   end
 
   def sign_in_with_school_persona(school_urn:, name: Faker::Name.name, email: Faker::Internet.email)
     Rails.logger.debug("Signing in with persona as school user")
-    post("/auth/developer/callback", params: { email:, name:, school_urn: })
+    post("/auth/persona/callback", params: { email:, name:, school_urn: })
   end
 end
 
