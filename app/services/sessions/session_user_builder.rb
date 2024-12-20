@@ -20,13 +20,9 @@ module Sessions
 
     # User info
     def organisation = (@organisation ||= payload.extra.raw_info.organisation)
-
     def provider = (@provider ||= payload.provider.to_sym)
-
     def user_info = (@user_info ||= payload.info)
-
     def persona? = provider == :persona
-
     def dfe_sign_in? = provider == :dfe_sign_in
 
     delegate :appropriate_body_id, to: :user_info
@@ -37,13 +33,9 @@ module Sessions
 
     # User?
     def appropriate_body_user? = dfe_sign_in? && organisation.urn.blank?
-
     def school_user? = dfe_sign_in? && organisation.urn.present?
-
     def appropriate_body_persona? = persona? && appropriate_body_id.present?
-
     def dfe_persona? = persona? && ActiveModel::Type::Boolean.new.cast(dfe_staff)
-
     def school_persona? = persona? && school_urn.present?
 
     # Appropriate Body users
