@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_11_115427) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_19_151842) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -491,6 +491,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_11_115427) do
     t.uuid "legacy_ect_id"
     t.uuid "legacy_mentor_id"
     t.datetime "induction_completion_submitted_to_trs_at"
+    t.date "qts_awarded_on"
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["first_name", "last_name", "corrected_name"], name: "index_teachers_on_first_name_and_last_name_and_corrected_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["search"], name: "index_teachers_on_search", using: :gin

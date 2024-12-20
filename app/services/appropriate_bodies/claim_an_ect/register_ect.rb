@@ -36,7 +36,8 @@ module AppropriateBodies
       def update_teacher_name
         teacher.assign_attributes(
           first_name: pending_induction_submission.trs_first_name,
-          last_name: pending_induction_submission.trs_last_name
+          last_name: pending_induction_submission.trs_last_name,
+          qts_awarded_on: pending_induction_submission.trs_qts_awarded
         )
 
         if teacher.changed?
