@@ -21,8 +21,9 @@ class InductionPeriod < ApplicationRecord
             inclusion: { in: %w[fip cip diy],
                          message: "Choose an induction programme" }
 
-  validate :teacher_distinct_period
-
+  validate :start_date_after_qts_date
+  validate :start_date_before_end_date, if: -> { started_on.present? && finished_on.present? }
+  validate :teacher_distinct_period, if: -> { valid_date_order? }
   validate :number_of_terms_for_ongoing_induction_period
 
   # Scopes
@@ -31,6 +32,25 @@ class InductionPeriod < ApplicationRecord
   scope :siblings_of, ->(instance) { for_teacher(instance.teacher).excluding(instance) }
 
 private
+
+  def start_date_after_qts_date
+    return if started_on.blank? || teacher.qts_awarded_on.blank?
+    return if started_on >= teacher.qts_awarded_on
+
+    errors.add(:started_on, "cannot be before QTS award date")
+  end
+
+  def start_date_before_end_date
+    return if started_on <= finished_on
+
+    errors.add(:started_on, "must be before end date")
+  end
+
+  def valid_date_order?
+    return true if started_on.blank? || finished_on.blank?
+
+    started_on <= finished_on
+  end
 
   def teacher_distinct_period
     overlapping_siblings = InductionPeriod.siblings_of(self).overlapping_with(self).exists?
@@ -41,9 +61,8 @@ private
   def number_of_terms_for_ongoing_induction_period
     return if finished_on.blank?
     return if number_of_terms.blank?
+    return if number_of_terms.zero? || number_of_terms >= 1
 
-    if number_of_terms.positive? && number_of_terms < 1
-      errors.add(:number_of_terms, "Partial terms can only be recorded after completing a full term of induction. If the early career teacher has done less than one full term of induction they cannot record partial terms and the number inputted should be 0.")
-    end
+    errors.add(:number_of_terms, "Partial terms can only be recorded after completing a full term of induction. If the early career teacher has done less than one full term of induction they cannot record partial terms and the number inputted should be 0.")
   end
 end
