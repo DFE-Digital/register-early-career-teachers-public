@@ -53,6 +53,10 @@ $govuk-assets-path: "/";
     > p:first-of-type {
         @include govuk-font($size: 24);
     }
+.ecf1-service-rules {
+  > p:first-of-type {
+    @include govuk-font($size: 24);
+  }
 }
 
 code {
