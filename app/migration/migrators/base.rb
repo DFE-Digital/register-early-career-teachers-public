@@ -88,25 +88,42 @@ module Migrators
 
   protected
 
-    def migrate(items)
-      items = items.order(:id).offset(offset).limit(limit)
+    def migrate(collection)
+      items = collection.order(:id).offset(offset).limit(limit)
 
       start_migration!(items.count)
 
       # As we're using offset/limit, we can't use find_each!
       items.each do |item|
-        yield(item)
-        DataMigration.update_counters(data_migration.id, processed_count: 1)
-      rescue ::Migrators::ChildRecordError => e
-        DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
-        failure_manager.record_child_failure(e.parent, item, e.message)
-      rescue ActiveRecord::ActiveRecordError, ::InductionRecordSanitizer::InductionRecordError => e
+        success = yield(item)
+        DataMigration.update_counters(data_migration.id, processed_count: 1, failure_count: success ? 0 : 1)
+      rescue => e
         DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
         failure_manager.record_failure(item, e.message)
       end
 
       finalise_migration!
     end
+
+    # def migrate(items)
+    #   items = items.order(:id).offset(offset).limit(limit)
+
+    #   start_migration!(items.count)
+
+    #   # As we're using offset/limit, we can't use find_each!
+    #   items.each do |item|
+    #     yield(item)
+    #     DataMigration.update_counters(data_migration.id, processed_count: 1)
+    #   rescue ::Migrators::ChildRecordError => e
+    #     DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
+    #     failure_manager.record_child_failure(e.parent, item, e.message)
+    #   rescue ActiveRecord::ActiveRecordError, ::InductionRecordSanitizer::InductionRecordError => e
+    #     DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
+    #     failure_manager.record_failure(item, e.message)
+    #   end
+
+    #   finalise_migration!
+    # end
 
     def run_once
       yield if worker.zero?
@@ -118,6 +135,15 @@ module Migrators
 
     def data_migration
       @data_migration ||= DataMigration.find_by(model: self.class.model, worker:)
+    end
+
+    def record_failure(teacher, error)
+      if teacher.present?
+        TeacherMigrationFailure.create!(teacher:, message: error.message)
+      else
+        failure_
+    rescue => e
+      Rails.logger.error(e)
     end
 
   private

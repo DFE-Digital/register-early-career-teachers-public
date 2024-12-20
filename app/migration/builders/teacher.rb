@@ -12,6 +12,13 @@ module Builders
       ::Teacher.create!(trn:, first_name: parser.first_name, last_name: parser.last_name, legacy_id:)
     end
 
+    def build
+      process!
+    rescue => e
+      Rails.logger.error e.message
+      nil
+    end
+
   private
 
     def parser

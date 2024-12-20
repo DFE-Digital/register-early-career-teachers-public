@@ -1,10 +1,10 @@
 module Builders
   module ECT
-    class TrainingPeriods
-      attr_reader :teacher, :training_period_data
+    class TrainingPeriods < Builders::TeacherBase
+      attr_reader :training_period_data
 
       def initialize(teacher:, training_period_data:)
-        @teacher = teacher
+        super(teacher:)
         @training_period_data = training_period_data
       end
 
