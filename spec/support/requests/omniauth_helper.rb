@@ -4,7 +4,7 @@ module OmniAuthHelper
     OmniAuth.config.mock_auth[:dfe_sign_in] = OmniAuth::AuthHash.new(
       provider: 'dfe_sign_in',
       callback_path: '/auth/dfe/callback',
-      uid: '1234567890',
+      uid: args[:uid],
       info: {
         email: args[:email],
         first_name: args[:first_name],

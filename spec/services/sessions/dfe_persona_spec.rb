@@ -42,13 +42,19 @@ RSpec.describe Sessions::DfEPersona do
     end
   end
 
+  describe '#dfe_sign_in_authorisable?' do
+    it 'returns false' do
+      expect(dfe_persona.dfe_sign_in_authorisable?).to be_falsey
+    end
+  end
+
   describe '#to_h' do
     it 'returns a hash including only relevant attributes' do
       expect(dfe_persona.to_h).to eql({
-        'type' => 'Sessions::DfEPersona',
-        'email' => email,
-        'last_active_at' => last_active_at
-      })
+                                        'type' => 'Sessions::DfEPersona',
+                                        'email' => email,
+                                        'last_active_at' => last_active_at
+                                      })
     end
   end
 end

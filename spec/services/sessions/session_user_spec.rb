@@ -8,6 +8,7 @@ RSpec.describe Sessions::SessionUser do
 
     context 'when user session stores an appropriate body user' do
       let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
+      let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
       let!(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
       let(:fake_user_session) do
         {
@@ -15,7 +16,8 @@ RSpec.describe Sessions::SessionUser do
           'email' => 'ab_user@example.com',
           'name' => 'Christopher Lee',
           'last_active_at' => last_active_at,
-          'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id
+          'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
+          'dfe_sign_in_user_id' => dfe_sign_in_user_id
         }
       end
 
@@ -87,6 +89,7 @@ RSpec.describe Sessions::SessionUser do
 
     context 'when user session stores a school user' do
       let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
+      let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
       let(:school_urn) { FactoryBot.create(:school).urn }
       let(:fake_user_session) do
         {
@@ -95,7 +98,8 @@ RSpec.describe Sessions::SessionUser do
           'name' => 'Christopher Lee',
           'last_active_at' => last_active_at,
           'school_urn' => school_urn,
-          'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id
+          'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
+          'dfe_sign_in_user_id' => dfe_sign_in_user_id
         }
       end
 

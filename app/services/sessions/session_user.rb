@@ -9,10 +9,19 @@ module Sessions
       session_user_class.new(**user_session.except('type').symbolize_keys)
     end
 
+    def initialize(email:, last_active_at: Time.zone.now)
+      @email = email
+      @last_active_at = last_active_at.is_a?(String) ? Time.zone.parse(last_active_at) : last_active_at
+    end
+
     # User?
     def appropriate_body_user? = false
+
     def dfe_user? = false
+
     def school_user? = false
+
+    def dfe_sign_in_authorisable? = false
 
     # Activity
     def expired?
@@ -25,13 +34,6 @@ module Sessions
 
     def record_new_activity(time)
       @last_active_at = time
-    end
-
-  private
-
-    def initialize(email:, last_active_at: Time.zone.now)
-      @email = email
-      @last_active_at = last_active_at.is_a?(String) ? Time.zone.parse(last_active_at) : last_active_at
     end
   end
 end

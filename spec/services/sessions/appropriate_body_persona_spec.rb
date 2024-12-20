@@ -48,15 +48,21 @@ RSpec.describe Sessions::AppropriateBodyPersona do
     end
   end
 
+  describe '#dfe_sign_in_authorisable?' do
+    it 'returns false' do
+      expect(appropriate_body_persona.dfe_sign_in_authorisable?).to be_falsey
+    end
+  end
+
   describe '#to_h' do
     it 'returns a hash including only relevant attributes' do
       expect(appropriate_body_persona.to_h).to eql({
-        'type' => 'Sessions::AppropriateBodyPersona',
-        'email' => email,
-        'name' => name,
-        'last_active_at' => last_active_at,
-        'appropriate_body_id' => appropriate_body_id
-      })
+                                                     'type' => 'Sessions::AppropriateBodyPersona',
+                                                     'email' => email,
+                                                     'name' => name,
+                                                     'last_active_at' => last_active_at,
+                                                     'appropriate_body_id' => appropriate_body_id
+                                                   })
     end
   end
 end
