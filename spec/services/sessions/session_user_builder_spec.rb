@@ -1,32 +1,30 @@
 RSpec.describe Sessions::SessionUserBuilder do
   describe '#session_user' do
     let(:email) { Faker::Internet.email }
-    let(:first_name) { Faker::Name.first_name }
-    let(:last_name) { Faker::Name.last_name }
-    let(:name) { [first_name, last_name].join(" ").strip }
-
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
     let(:school) { FactoryBot.create(:school) }
 
     let(:omniauth_payload) do
-      OpenStruct.new(
+      OmniAuth::AuthHash.new(
         provider:,
-        info: OpenStruct.new(
+        uid:,
+        info: {
           email:,
-          first_name:,
-          last_name:,
+          first_name: Faker::Name.first_name,
+          last_name: Faker::Name.last_name,
+          name: Faker::Name.name,
           appropriate_body_id:,
           school_urn:,
           dfe_staff:
-        ),
-        extra: OpenStruct.new(
-          raw_info: OpenStruct.new(
-            organisation: OpenStruct.new(
+        },
+        extra: {
+          raw_info: {
+            organisation: {
               id: organisation_id,
               urn: organisation_urn
-            )
-          )
-        )
+            }
+          }
+        }
       )
     end
 
@@ -34,6 +32,7 @@ RSpec.describe Sessions::SessionUserBuilder do
 
     context 'when the provider is dfe_sign_in and no organisation_urn present' do
       let(:provider) { 'dfe_sign_in' }
+      let(:uid) { Faker::Internet.uuid }
       let(:appropriate_body_id) { nil }
       let(:school_urn) { nil }
       let(:dfe_staff) { nil }
@@ -47,6 +46,7 @@ RSpec.describe Sessions::SessionUserBuilder do
 
     context 'when the provider is dfe_sign_in and the organisation_urn is present' do
       let(:provider) { 'dfe_sign_in' }
+      let(:uid) { Faker::Internet.uuid }
       let(:appropriate_body_id) { nil }
       let(:school_urn) { nil }
       let(:dfe_staff) { nil }
@@ -60,6 +60,7 @@ RSpec.describe Sessions::SessionUserBuilder do
 
     context 'when the provider is persona and the appropriate_body_id is present' do
       let(:provider) { 'persona' }
+      let(:uid) { email }
       let(:appropriate_body_id) { appropriate_body.id }
       let(:school_urn) { nil }
       let(:dfe_staff) { 'false' }
@@ -73,6 +74,7 @@ RSpec.describe Sessions::SessionUserBuilder do
 
     context 'when the provider is persona and the school_urn is present' do
       let(:provider) { 'persona' }
+      let(:uid) { email }
       let(:appropriate_body_id) { nil }
       let(:school_urn) { school.urn }
       let(:dfe_staff) { 'false' }
@@ -86,6 +88,7 @@ RSpec.describe Sessions::SessionUserBuilder do
 
     context 'when the provider is persona and the dfe_staff is truthy' do
       let(:provider) { 'persona' }
+      let(:uid) { email }
       let(:appropriate_body_id) { nil }
       let(:school_urn) { nil }
       let(:dfe_staff) { 'true' }
@@ -96,6 +99,20 @@ RSpec.describe Sessions::SessionUserBuilder do
 
       it 'returns a dfe persona' do
         expect(subject).to be_a(Sessions::DfEPersona)
+      end
+    end
+
+    context 'when the provider is unknown' do
+      let(:provider) { 'something_unexpected' }
+      let(:uid) { Faker::Internet.uuid }
+      let(:appropriate_body_id) { nil }
+      let(:school_urn) { nil }
+      let(:dfe_staff) { nil }
+      let(:organisation_id) { nil }
+      let(:organisation_urn) { nil }
+
+      it 'raises an UnknownProvider error' do
+        expect { subject }.to raise_error(described_class::UnknownProvider, provider)
       end
     end
   end

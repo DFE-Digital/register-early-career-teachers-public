@@ -5,12 +5,15 @@ RSpec.describe Sessions::SchoolUser do
   let(:name) { 'Christopher Lee' }
   let(:school_urn) { FactoryBot.create(:school).urn }
   let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
+  let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
   let(:last_active_at) { 4.minutes.ago }
 
-  subject(:school_user) { described_class.new(email:, name:, school_urn:, dfe_sign_in_organisation_id:, last_active_at:) }
+  subject(:school_user) do
+    described_class.new(email:, name:, school_urn:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, last_active_at:)
+  end
 
   it_behaves_like 'a session user' do
-    let(:user_props) { { email:, name:, school_urn:, dfe_sign_in_organisation_id: } }
+    let(:user_props) { { email:, name:, school_urn:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }
   end
 
   describe '.PROVIDER' do
@@ -32,7 +35,13 @@ RSpec.describe Sessions::SchoolUser do
   end
 
   describe '#dfe_sign_in_organisation_id' do
-    it 'returns the dfe_sign_in_organisation_id of the user' do
+    it 'returns the id of the organisation of the user in DfE SignIn' do
+      expect(school_user.dfe_sign_in_organisation_id).to eql(dfe_sign_in_organisation_id)
+    end
+  end
+
+  describe '#dfe_sign_in_user_id' do
+    it 'returns the id of the user in DfE SignIn' do
       expect(school_user.dfe_sign_in_organisation_id).to eql(dfe_sign_in_organisation_id)
     end
   end
@@ -55,16 +64,23 @@ RSpec.describe Sessions::SchoolUser do
     end
   end
 
+  describe '#dfe_sign_in_authorisable?' do
+    it 'returns true' do
+      expect(school_user.dfe_sign_in_authorisable?).to be_truthy
+    end
+  end
+
   describe '#to_h' do
     it 'returns a hash including only relevant attributes' do
       expect(school_user.to_h).to eql({
-        'type' => 'Sessions::SchoolUser',
-        'email' => email,
-        'name' => name,
-        'last_active_at' => last_active_at,
-        'school_urn' => school_urn,
-        'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id
-      })
+                                        'type' => 'Sessions::SchoolUser',
+                                        'email' => email,
+                                        'name' => name,
+                                        'last_active_at' => last_active_at,
+                                        'school_urn' => school_urn,
+                                        'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
+                                        'dfe_sign_in_user_id' => dfe_sign_in_user_id
+                                      })
     end
   end
 end

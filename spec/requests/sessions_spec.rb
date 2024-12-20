@@ -31,14 +31,17 @@ RSpec.describe 'Sessions', type: :request do
     let(:last_name) { Faker::Name.last_name }
     let(:name) { [first_name, last_name].join(" ").strip }
     let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
+    let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
     let(:school_urn) { '123456' }
 
     context 'sign in an appropriate body user' do
-      let(:params) { { email:, name:, dfe_sign_in_organisation_id: } }
+      let(:params) { { email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }
       let!(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
 
       before do
-        mock_dfe_sign_in_provider!(email:,
+        allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
+        mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
+                                   email:,
                                    first_name:,
                                    last_name:,
                                    organisation_id: dfe_sign_in_organisation_id)
@@ -59,11 +62,13 @@ RSpec.describe 'Sessions', type: :request do
     end
 
     context 'sign in a school user' do
-      let(:params) { { email:, name:, school_urn:, dfe_sign_in_organisation_id: } }
+      let(:params) { { email:, name:, school_urn:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }
       let!(:school) { FactoryBot.create(:school, urn: school_urn) }
 
       before do
-        mock_dfe_sign_in_provider!(email:,
+        allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
+        mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
+                                   email:,
                                    first_name:,
                                    last_name:,
                                    organisation_id: dfe_sign_in_organisation_id,
