@@ -58,12 +58,12 @@ RSpec.describe Sessions::AppropriateBodyUser do
   describe '#to_h' do
     it 'returns a hash including only relevant attributes' do
       expect(appropriate_body_user.to_h).to eql({
-                                                  'type' => 'Sessions::AppropriateBodyUser',
-                                                  'email' => email,
-                                                  'name' => name,
-                                                  'last_active_at' => last_active_at,
-                                                  'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id
-                                                })
+        'type' => 'Sessions::AppropriateBodyUser',
+        'email' => email,
+        'name' => name,
+        'last_active_at' => last_active_at,
+        'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id
+      })
     end
   end
 end
