@@ -57,12 +57,12 @@ RSpec.describe Sessions::Users::SchoolPersona do
   describe '#to_h' do
     it 'returns a hash including only relevant attributes' do
       expect(school_persona.to_h).to eql({
-                                           'type' => 'Sessions::Users::SchoolPersona',
-                                           'email' => email,
-                                           'name' => name,
-                                           'last_active_at' => last_active_at,
-                                           'school_urn' => school_urn
-                                         })
+        'type' => 'Sessions::Users::SchoolPersona',
+        'email' => email,
+        'name' => name,
+        'last_active_at' => last_active_at,
+        'school_urn' => school_urn
+      })
     end
   end
 end

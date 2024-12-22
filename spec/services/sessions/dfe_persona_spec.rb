@@ -51,10 +51,10 @@ RSpec.describe Sessions::Users::DfEPersona do
   describe '#to_h' do
     it 'returns a hash including only relevant attributes' do
       expect(dfe_persona.to_h).to eql({
-                                        'type' => 'Sessions::Users::DfEPersona',
-                                        'email' => email,
-                                        'last_active_at' => last_active_at
-                                      })
+        'type' => 'Sessions::Users::DfEPersona',
+        'email' => email,
+        'last_active_at' => last_active_at
+      })
     end
   end
 end
