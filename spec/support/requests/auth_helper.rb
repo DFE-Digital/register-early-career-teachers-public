@@ -25,7 +25,8 @@ private
     post(otp_sign_in_verify_path,
          params: {
            sessions_otp_sign_in_form: {
-             code: Sessions::OneTimePassword.new(user:).generate }
+             code: Sessions::OneTimePassword.new(user:).generate
+           }
          })
   end
 
