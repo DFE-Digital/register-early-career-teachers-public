@@ -32,4 +32,7 @@ module OmniAuthHelper
   end
 end
 
-RSpec.configure { |config| config.include(OmniAuthHelper, type: :request) }
+RSpec.configure do |config|
+  config.include(OmniAuthHelper, type: :request)
+  config.include(OmniAuthHelper, type: :feature)
+end

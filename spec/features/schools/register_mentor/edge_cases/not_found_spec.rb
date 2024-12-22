@@ -32,7 +32,7 @@ RSpec.describe 'Registering a mentor' do
   end
 
   def and_i_sign_in_as_that_school_user
-    @user = sign_in_as_school_user(@school.urn)
+    sign_in_as_school_user(school: @school)
   end
 
   def and_i_am_on_the_schools_landing_page

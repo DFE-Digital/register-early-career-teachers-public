@@ -5,7 +5,7 @@ RSpec.describe 'Releasing an ECT' do
   let(:today) { Time.zone.today }
   let(:number_of_completed_terms) { 4 }
 
-  before { sign_in_as_appropriate_body_user(appropriate_body) }
+  before { sign_in_as_appropriate_body_user(appropriate_body:) }
 
   let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: appropriate_body) }
 

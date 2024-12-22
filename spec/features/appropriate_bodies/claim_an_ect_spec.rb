@@ -2,7 +2,7 @@ RSpec.describe 'Claiming an ECT' do
   include_context 'fake trs api client'
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
-  before { sign_in_as_appropriate_body_user(appropriate_body) }
+  before { sign_in_as_appropriate_body_user(appropriate_body:) }
 
   scenario 'Happy path' do
     given_i_am_on_the_claim_an_ect_find_page
