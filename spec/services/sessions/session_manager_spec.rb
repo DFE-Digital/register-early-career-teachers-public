@@ -5,12 +5,12 @@ RSpec.describe Sessions::SessionManager do
   let(:school_urn) { FactoryBot.create(:school).urn }
   let(:last_active_at) { 4.minutes.ago }
   let(:user) do
-    Sessions::SchoolUser.new(email:,
-                             name:,
-                             school_urn:,
-                             dfe_sign_in_organisation_id: '1',
-                             dfe_sign_in_user_id: '1',
-                             last_active_at:)
+    Sessions::Users::SchoolUser.new(email:,
+                                    name:,
+                                    school_urn:,
+                                    dfe_sign_in_organisation_id: '1',
+                                    dfe_sign_in_user_id: '1',
+                                    last_active_at:)
   end
 
   subject(:service) { Sessions::SessionManager.new(session) }
@@ -28,7 +28,7 @@ RSpec.describe Sessions::SessionManager do
     it 'stores the user relevant attributes in the session' do
       service.begin_session!(user)
 
-      expect(session['user_session']['type']).to eql('Sessions::SchoolUser')
+      expect(session['user_session']['type']).to eql('Sessions::Users::SchoolUser')
       expect(session['user_session']['email']).to eql(email)
       expect(session['user_session']['name']).to eql(name)
       expect(session['user_session']['school_urn']).to eql(school_urn)

@@ -1,6 +1,6 @@
 require_relative 'session_user_context'
 
-RSpec.describe Sessions::DfEPersona do
+RSpec.describe Sessions::Users::DfEPersona do
   let(:email) { 'dfe_user@email.com' }
   let(:name) { 'Christopher Lee' }
   let(:last_active_at) { 4.minutes.ago }
@@ -51,10 +51,10 @@ RSpec.describe Sessions::DfEPersona do
   describe '#to_h' do
     it 'returns a hash including only relevant attributes' do
       expect(dfe_persona.to_h).to eql({
-        'type' => 'Sessions::DfEPersona',
-        'email' => email,
-        'last_active_at' => last_active_at
-      })
+                                        'type' => 'Sessions::Users::DfEPersona',
+                                        'email' => email,
+                                        'last_active_at' => last_active_at
+                                      })
     end
   end
 end

@@ -40,7 +40,7 @@ RSpec.describe Sessions::Users::Builder do
       let(:organisation_urn) { nil }
 
       it 'returns an appropriate body user' do
-        expect(subject).to be_a(Sessions::AppropriateBodyUser)
+        expect(subject).to be_a(Sessions::Users::AppropriateBodyUser)
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe Sessions::Users::Builder do
       let(:organisation_urn) { school.urn }
 
       it 'returns a school user' do
-        expect(subject).to be_a(Sessions::SchoolUser)
+        expect(subject).to be_a(Sessions::Users::SchoolUser)
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Sessions::Users::Builder do
       let(:organisation_urn) { nil }
 
       it 'returns a school user' do
-        expect(subject).to be_a(Sessions::AppropriateBodyPersona)
+        expect(subject).to be_a(Sessions::Users::AppropriateBodyPersona)
       end
     end
 
@@ -82,7 +82,7 @@ RSpec.describe Sessions::Users::Builder do
       let(:organisation_urn) { nil }
 
       it 'returns a school persona' do
-        expect(subject).to be_a(Sessions::SchoolPersona)
+        expect(subject).to be_a(Sessions::Users::SchoolPersona)
       end
     end
 
@@ -98,7 +98,7 @@ RSpec.describe Sessions::Users::Builder do
       let!(:user) { FactoryBot.create(:user, email:) }
 
       it 'returns a dfe persona' do
-        expect(subject).to be_a(Sessions::DfEPersona)
+        expect(subject).to be_a(Sessions::Users::DfEPersona)
       end
     end
 
