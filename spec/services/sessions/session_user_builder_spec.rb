@@ -1,4 +1,4 @@
-RSpec.describe Sessions::SessionUserBuilder do
+RSpec.describe Sessions::Users::Builder do
   describe '#session_user' do
     let(:email) { Faker::Internet.email }
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }

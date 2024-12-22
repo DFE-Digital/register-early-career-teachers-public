@@ -1,5 +1,5 @@
 module Sessions
-  class SessionUser
+  class User
     attr_reader :email, :last_active_at
 
     MAX_SESSION_IDLE_TIME = 2.hours

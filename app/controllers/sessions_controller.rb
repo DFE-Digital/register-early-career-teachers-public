@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
 private
 
   def session_user
-    Sessions::SessionUserBuilder.new(omniauth_payload: request.env['omniauth.auth'])
-                                .session_user
+    Sessions::Users::Builder.new(omniauth_payload: request.env['omniauth.auth'])
+                            .session_user
   end
 end
