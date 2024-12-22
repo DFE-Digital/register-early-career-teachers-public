@@ -1,12 +1,24 @@
 module Sessions
   class User
+    class UnrecognisedType < StandardError; end
+
     attr_reader :email, :last_active_at
 
     MAX_SESSION_IDLE_TIME = 2.hours
 
     def self.from_session(user_session)
-      session_user_class = user_session['type']&.constantize
-      session_user_class.new(**user_session.except('type').symbolize_keys) if session_user_class
+      return if user_session&.dig('type').blank?
+
+      user_props = user_session.except('type').symbolize_keys
+      case user_session['type']
+      when 'Sessions::Users::AppropriateBodyPersona' then Sessions::Users::AppropriateBodyPersona.new(**user_props)
+      when 'Sessions::Users::AppropriateBodyUser' then Sessions::Users::AppropriateBodyUser.new(**user_props)
+      when 'Sessions::Users::DfEPersona' then Sessions::Users::DfEPersona.new(**user_props)
+      when 'Sessions::Users::DfEUser' then Sessions::Users::DfEUser.new(**user_props)
+      when 'Sessions::Users::SchoolPersona' then Sessions::Users::SchoolPersona.new(**user_props)
+      when 'Sessions::Users::SchoolUser' then Sessions::Users::SchoolUser.new(**user_props)
+      else fail(UnrecognisedType)
+      end
     end
 
     def initialize(email:, last_active_at: Time.zone.now)
