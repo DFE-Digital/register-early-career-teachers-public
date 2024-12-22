@@ -1,199 +1,108 @@
 RSpec.describe Sessions::SessionManager do
   let(:session) { HashWithIndifferentAccess.new }
-  let(:user) { FactoryBot.create(:user, email: "eric@example.com") }
-  let(:email) { user.email }
-  let(:provider) { 'dfe_sign_in' }
+  let(:email) { 'school_persona@email.com' }
+  let(:name) { 'Christopher Lee' }
+  let(:school_urn) { FactoryBot.create(:school).urn }
+  let(:last_active_at) { 4.minutes.ago }
+  let(:user) do
+    Sessions::Users::SchoolUser.new(email:,
+                                    name:,
+                                    school_urn:,
+                                    dfe_sign_in_organisation_id: '1',
+                                    dfe_sign_in_user_id: '1',
+                                    last_active_at:)
+  end
 
   subject(:service) { Sessions::SessionManager.new(session) }
 
-  describe "#begin_otp_session!" do
-    let(:provider) { "otp" }
-
-    it "creates a user_session hash in the session" do
-      service.begin_otp_session!(user.email)
-      expect(session["user_session"]).to be_present
-    end
-
-    it "stores the email in the session" do
-      service.begin_otp_session!(email)
-      expect(session["user_session"]["email"]).to eq email
-    end
-
-    it "stores the provider in the session" do
-      service.begin_otp_session!(email)
-      expect(session["user_session"]["provider"]).to eq provider
-    end
-
-    it "stores a last active timestamp in the session" do
-      service.begin_otp_session!(email)
-      expect(session["user_session"]["last_active_at"]).to be_within(1.second).of(Time.zone.now)
-    end
+  before do
+    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_code: 'registerECTsAccess'))
   end
 
-  describe "#begin_dfe_sign_in_session!" do
-    let(:provider) { 'dfe_sign_in' }
-    let(:first_name) { 'Milhouse' }
-    let(:last_name) { 'Van Houten' }
-    let(:email) { 'mvh@example.com' }
-
-    before { allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new) }
-
-    let(:user_info) do
-      OmniAuth::AuthHash.new(
-        {
-          provider:,
-          uid: email,
-          info: { first_name:, last_name:, email: },
-          extra: {
-            raw_info: {
-              organisation: {
-                id: 1234
-              }
-            }
-          }
-        }
-      )
+  describe '#begin_session!' do
+    it 'creates a user_session hash in the session' do
+      service.begin_session!(user)
+      expect(session['user_session']).to be_present
     end
 
-    it "creates a user_session hash in the session" do
-      service.begin_dfe_sign_in_session!(user_info)
+    it 'stores the user relevant attributes in the session' do
+      service.begin_session!(user)
 
-      expect(session["user_session"]).to be_present
+      expect(session['user_session']['type']).to eql('Sessions::Users::SchoolUser')
+      expect(session['user_session']['email']).to eql(email)
+      expect(session['user_session']['name']).to eql(name)
+      expect(session['user_session']['school_urn']).to eql(school_urn)
+      expect(session['user_session']['last_active_at']).to be_within(1.second).of(last_active_at)
+      expect(session['user_session']['dfe_sign_in_organisation_id']).to eql('1')
+      expect(session['user_session']['dfe_sign_in_user_id']).to eql('1')
     end
 
-    context "when the DfE Sign-in API response doesn't have the 'registerECTsAccess' code" do
+    context "when the user signs via DfE Sign In but has no 'registerECTsAccess' permissions for their organisation" do
       before { allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_code: 'somethingElse')) }
 
       it 'raises an MissingAccessLevel error' do
-        expect { service.begin_dfe_sign_in_session!(user_info) }.to raise_error(Sessions::SessionManager::MissingAccessLevel)
+        expect { service.begin_session!(user) }.to raise_error(described_class::MissingAccessLevel)
       end
-    end
-
-    it "stores the email in the session" do
-      service.begin_dfe_sign_in_session!(user_info)
-      expect(session["user_session"]["email"]).to eq email
-    end
-
-    it "stores the provider in the session" do
-      service.begin_dfe_sign_in_session!(user_info)
-      expect(session["user_session"]["provider"]).to eq provider
-    end
-
-    it "stores a last active timestamp in the session" do
-      service.begin_dfe_sign_in_session!(user_info)
-      expect(session["user_session"]["last_active_at"]).to be_within(1.second).of(Time.zone.now)
     end
   end
 
-  describe "#load_from_session" do
-    before do
-      session["user_session"] = {
-        "email" => user.email,
-        "name" => user.name,
-        "provider" => provider,
-        "last_active_at" => 10.minutes.ago,
-      }
-    end
-
-    it "is a Sessions::SessionUser" do
-      expect(service.load_from_session).to be_a(Sessions::SessionUser)
-    end
-
-    it "returns the User associated with the session data" do
-      expect(service.load_from_session.name).to eq user.name
-    end
-
-    it "updates the last_active_at timestamp" do
-      service.load_from_session
-      expect(session['user_session']['last_active_at']).to be_within(1.second).of(Time.zone.now)
-    end
-
-    context "when the session data is stale" do
-      let(:last_active_at) { 3.hours.ago }
-
+  describe '#current_user' do
+    context 'when the session began' do
       before do
-        session["user_session"] = { "email" => email, "provider" => provider, "last_active_at" => last_active_at }
+        service.begin_session!(user)
       end
 
-      it "returns nil" do
-        expect(service.load_from_session).to be_nil
+      it 'is kind of a Sessions::User' do
+        expect(service.current_user).to be_a(Sessions::User)
       end
 
-      it "does not update the last_active_at timestamp" do
-        service.load_from_session
-        expect(session["user_session"]["last_active_at"]).to eq last_active_at
+      it 'returns the user associated with the session data' do
+        expect(service.current_user.name).to eql(user.name)
+      end
+
+      it 'updates the last_active_at timestamp in both, the user and the user session' do
+        expect(session['user_session']['last_active_at']).to be_within(1.second).of(last_active_at)
+
+        new_user = service.current_user
+
+        expect(session['user_session']['last_active_at']).to be_within(1.second).of(Time.zone.now)
+        expect(new_user.last_active_at).to be_within(1.second).of(Time.zone.now)
       end
     end
   end
 
-  describe "#end_session!" do
-    let(:session) { double("Session") }
+  describe '#end_session!' do
+    let(:session) { double('Session') }
 
-    it "calls destroy on the session object" do
+    it 'calls destroy on the session object' do
       expect(session).to receive(:destroy).once
       service.end_session!
     end
   end
 
-  describe "#requested_path=" do
-    let(:url) { "https://path.to/something/" }
+  describe '#requested_path=' do
+    let(:url) { 'https://path.to/something/' }
 
-    it "stores the requested path in the session" do
+    it 'stores the requested path in the session' do
       service.requested_path = url
-      expect(session["requested_path"]).to eq url
+      expect(session['requested_path']).to eq url
     end
   end
 
-  describe "#requested_path" do
-    let(:url) { "https://path.to/something/" }
+  describe '#requested_path' do
+    let(:url) { 'https://path.to/something/' }
 
     before do
-      session["requested_path"] = url
+      session['requested_path'] = url
     end
 
-    it "returns the requested path from the session" do
+    it 'returns the requested path from the session' do
       expect(service.requested_path).to eq url
     end
 
-    it "removes the requested path from the session" do
+    it 'removes the requested path from the session' do
       service.requested_path
-      expect(session.keys.map(&:to_s)).not_to include "requested_path"
-    end
-  end
-
-  describe "#expired?" do
-    context "when the last_active_at was less than the MAX_SESSION_IDLE_TIME ago" do
-      it "returns false" do
-        session["user_session"] = { "last_active_at" => 1.minute.ago }
-        expect(service).not_to be_expired
-      end
-    end
-
-    context "when the last_active_at was greater than the MAX_SESSION_IDLE_TIME ago" do
-      it "returns true" do
-        session["user_session"] = { "last_active_at" => (Sessions::SessionManager::MAX_SESSION_IDLE_TIME + 1.minute).ago }
-        expect(service).to be_expired
-      end
-    end
-
-    context "when no last_active_at time has been recorded" do
-      it "returns true" do
-        expect(service).to be_expired
-      end
-    end
-  end
-
-  describe "#expires_at" do
-    it "returns the time when the session would expire due to inactivity" do
-      last_active_at = 1.minute.ago
-      session["user_session"] = { "last_active_at" => last_active_at }
-      expect(service.expires_at).to eq last_active_at + Sessions::SessionManager::MAX_SESSION_IDLE_TIME
-    end
-
-    context "when no last_active_at time has been recorded" do
-      it "returns nil" do
-        expect(service.expires_at).to be_nil
-      end
+      expect(session.keys.map(&:to_s)).not_to include 'requested_path'
     end
   end
 end

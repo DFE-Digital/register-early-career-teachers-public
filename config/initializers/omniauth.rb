@@ -3,9 +3,8 @@ Rails.application.config.middleware.use(OmniAuth::Builder) do
   if Rails.application.config.enable_personas
     provider(
       :developer,
-      name: 'developer',
-      # FIXME: add appropriate_body_id and school_urn to fields
-      fields: %i[name email],
+      name: 'persona',
+      fields: %i[name email school_urn appropriate_body_id dfe_staff],
       uid_field: :email
     )
   end

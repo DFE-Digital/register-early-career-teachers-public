@@ -40,7 +40,7 @@ RSpec.describe 'Registering an ECT' do
 
   def given_i_am_logged_in_as_a_school_user
     school = FactoryBot.create(:school)
-    sign_in_as_school_user(school.urn)
+    sign_in_as_school_user(school:)
   end
 
   def and_i_am_on_the_schools_landing_page

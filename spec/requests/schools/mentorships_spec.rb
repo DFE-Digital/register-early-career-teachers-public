@@ -17,7 +17,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
 
     context 'when signed in as school user' do
       before do
-        sign_in_as(:school_user, school_urn: school.urn)
+        sign_in_as(:school_user, school:, method: :dfe_sign_in)
       end
 
       it 'instantiates a new Schools::AssignMentorForm and renders the page' do
@@ -43,7 +43,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
 
     context 'when signed in as school user' do
       before do
-        sign_in_as(:school_user, school_urn: school.urn)
+        sign_in_as(:school_user, school:)
       end
 
       context 'when the option selected by the user is to create a new mentor' do
@@ -100,7 +100,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
 
     context 'when signed in as school user' do
       before do
-        sign_in_as(:school_user, school_urn: school.urn)
+        sign_in_as(:school_user, school:)
       end
 
       it 'instantiates a new Schools::AssignMentorForm and renders the page' do

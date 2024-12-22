@@ -3,17 +3,17 @@ class PersonasController < ApplicationController
   layout 'full'
 
   def index
-    persona_data = Struct.new(:name, :email, :school, :image, :alt, :appropriate_body, :dfe_staff, :type) do
+    persona_data = Struct.new(:name, :email, :school_name, :image, :alt, :appropriate_body_name, :dfe_staff, :type) do
       def appropriate_body_id
-        (appropriate_body.present?) ? AppropriateBody.find_by!(name: appropriate_body).id : nil
+        AppropriateBody.find_by!(name: appropriate_body_name).id if appropriate_body_name.present?
       end
 
       def school_urn
-        (school.present?) ? School.joins(:gias_school).find_by!(gias_school: { name: school }).urn : nil
+        School.joins(:gias_school).find_by!(gias_school: { name: school_name }).urn if school_name.present?
       end
 
       def user_id
-        dfe_staff ? User.find_by!(name:).id : nil
+        User.find_by!(name:).id if dfe_staff
       end
     end
 

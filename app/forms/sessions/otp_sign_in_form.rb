@@ -18,7 +18,7 @@ module Sessions
     end
 
     def user
-      @user ||= User.find_by(email:)
+      @user ||= ::User.find_by(email:)
     end
 
   private

@@ -21,7 +21,7 @@ RSpec.describe 'Add a mentor to an ECT' do
   end
 
   def and_i_sign_in_as_that_school_user
-    @user = sign_in_as_school_user(@school.urn)
+    sign_in_as_school_user(school: @school)
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
