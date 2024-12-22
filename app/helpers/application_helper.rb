@@ -2,11 +2,7 @@ module ApplicationHelper
   include Pagy::Frontend
 
   def page_data(title:, header: nil, header_size: "l", error: false, backlink_href: nil, caption: nil, caption_size: 'm')
-    page_title = if error
-                   "Error: #{title}"
-                 else
-                   title
-                 end
+    page_title = title_with_error_prefix(title, error:)
 
     content_for(:page_title) { page_title }
 
