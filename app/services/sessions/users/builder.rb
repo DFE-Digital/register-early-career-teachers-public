@@ -1,5 +1,5 @@
 module Sessions
-  class Users
+  module Users
     class Builder
       class UnknownProvider < StandardError; end
 
@@ -46,32 +46,32 @@ module Sessions
 
       # Appropriate Body users
       def appropriate_body_persona
-        Sessions::AppropriateBodyPersona.new(email:, name:, appropriate_body_id:)
+        Sessions::Users::AppropriateBodyPersona.new(email:, name:, appropriate_body_id:)
       end
 
       def appropriate_body_user
-        Sessions::AppropriateBodyUser.new(email:,
-                                          name: [first_name, last_name].join(" "),
-                                          dfe_sign_in_organisation_id: organisation.id,
-                                          dfe_sign_in_user_id: uid)
+        Sessions::Users::AppropriateBodyUser.new(email:,
+                                                 name: [first_name, last_name].join(" "),
+                                                 dfe_sign_in_organisation_id: organisation.id,
+                                                 dfe_sign_in_user_id: uid)
       end
 
       # DfE users
       def dfe_persona
-        Sessions::DfEPersona.new(email:)
+        Sessions::Users::DfEPersona.new(email:)
       end
 
       # School users
       def school_persona
-        Sessions::SchoolPersona.new(email:, name:, school_urn:)
+        Sessions::Users::SchoolPersona.new(email:, name:, school_urn:)
       end
 
       def school_user
-        Sessions::SchoolUser.new(email:,
-                                 name: [user_info.first_name, user_info.last_name].join(" ").strip,
-                                 school_urn: organisation.urn,
-                                 dfe_sign_in_organisation_id: organisation.id,
-                                 dfe_sign_in_user_id: uid)
+        Sessions::Users::SchoolUser.new(email:,
+                                        name: [user_info.first_name, user_info.last_name].join(" ").strip,
+                                        school_urn: organisation.urn,
+                                        dfe_sign_in_organisation_id: organisation.id,
+                                        dfe_sign_in_user_id: uid)
       end
     end
   end

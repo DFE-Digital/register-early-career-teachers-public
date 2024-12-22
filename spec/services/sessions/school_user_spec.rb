@@ -1,6 +1,6 @@
 require_relative 'session_user_context'
 
-RSpec.describe Sessions::SchoolUser do
+RSpec.describe Sessions::Users::SchoolUser do
   let(:email) { 'school_user@email.com' }
   let(:name) { 'Christopher Lee' }
   let(:school_urn) { FactoryBot.create(:school).urn }
@@ -73,14 +73,14 @@ RSpec.describe Sessions::SchoolUser do
   describe '#to_h' do
     it 'returns a hash including only relevant attributes' do
       expect(school_user.to_h).to eql({
-        'type' => 'Sessions::SchoolUser',
-        'email' => email,
-        'name' => name,
-        'last_active_at' => last_active_at,
-        'school_urn' => school_urn,
-        'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
-        'dfe_sign_in_user_id' => dfe_sign_in_user_id
-      })
+                                        'type' => 'Sessions::Users::SchoolUser',
+                                        'email' => email,
+                                        'name' => name,
+                                        'last_active_at' => last_active_at,
+                                        'school_urn' => school_urn,
+                                        'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
+                                        'dfe_sign_in_user_id' => dfe_sign_in_user_id
+                                      })
     end
   end
 end

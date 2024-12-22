@@ -63,6 +63,6 @@ private
   end
 
   def session_user
-    Sessions::DfEUser.new(email: @otp_form.email)
+    Sessions::Users::DfEUser.new(email: @otp_form.email)
   end
 end

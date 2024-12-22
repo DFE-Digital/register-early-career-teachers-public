@@ -52,11 +52,11 @@ RSpec.describe 'Sessions', type: :request do
       end
 
       it 'signs the user and take them to their home page' do
-        allow(Sessions::AppropriateBodyUser).to receive(:new).and_call_original
+        allow(Sessions::Users::AppropriateBodyUser).to receive(:new).and_call_original
 
         post('/auth/dfe/callback')
 
-        expect(Sessions::AppropriateBodyUser).to have_received(:new).with(**params).once
+        expect(Sessions::Users::AppropriateBodyUser).to have_received(:new).with(**params).once
         expect(response).to redirect_to(ab_teachers_path)
       end
     end
@@ -80,11 +80,11 @@ RSpec.describe 'Sessions', type: :request do
       end
 
       it 'signs the user and take them to their home page' do
-        allow(Sessions::SchoolUser).to receive(:new).and_call_original
+        allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
 
         post('/auth/dfe/callback')
 
-        expect(Sessions::SchoolUser).to have_received(:new).with(**params).once
+        expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
         expect(response).to redirect_to(schools_ects_home_path)
       end
     end
@@ -94,11 +94,11 @@ RSpec.describe 'Sessions', type: :request do
       let(:params) { { email:, name:, appropriate_body_id: } }
 
       it 'signs the user and take them to their home page' do
-        allow(Sessions::AppropriateBodyPersona).to receive(:new).and_call_original
+        allow(Sessions::Users::AppropriateBodyPersona).to receive(:new).and_call_original
 
         post('/auth/persona/callback', params:)
 
-        expect(Sessions::AppropriateBodyPersona).to have_received(:new).with(**params).once
+        expect(Sessions::Users::AppropriateBodyPersona).to have_received(:new).with(**params).once
         expect(response).to redirect_to(ab_teachers_path)
       end
     end
@@ -108,11 +108,11 @@ RSpec.describe 'Sessions', type: :request do
       let(:params) { { email:, name:, school_urn: } }
 
       it 'signs the user and take them to their home page' do
-        allow(Sessions::SchoolPersona).to receive(:new).and_call_original
+        allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original
 
         post('/auth/persona/callback', params:)
 
-        expect(Sessions::SchoolPersona).to have_received(:new).with(**params).once
+        expect(Sessions::Users::SchoolPersona).to have_received(:new).with(**params).once
         expect(response).to redirect_to(schools_ects_home_path)
       end
     end
@@ -123,11 +123,11 @@ RSpec.describe 'Sessions', type: :request do
       end
 
       it 'signs the user and take them to their home page' do
-        allow(Sessions::DfEPersona).to receive(:new).and_call_original
+        allow(Sessions::Users::DfEPersona).to receive(:new).and_call_original
 
         post('/auth/persona/callback', params: { dfe_staff: true, email:, name: })
 
-        expect(Sessions::DfEPersona).to have_received(:new).with(email:).once
+        expect(Sessions::Users::DfEPersona).to have_received(:new).with(email:).once
         expect(response).to redirect_to(admin_path)
       end
     end
