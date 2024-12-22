@@ -7,7 +7,7 @@ RSpec.describe "Admin root" do
   end
 
   def given_i_am_logged_in_as_an_admin
-    sign_in_as_admin
+    sign_in_as_dfe_user(role: :finance)
   end
 
   def when_i_visit_the_admin_root_page
