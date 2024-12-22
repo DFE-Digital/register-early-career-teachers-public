@@ -27,7 +27,7 @@ class OTPSessionsController < ApplicationController
     if @otp_form.valid?(:verify)
       clean_up_session
 
-      session_manager.begin_otp_session!(@otp_form.email)
+      session_manager.begin_session!(session_user)
 
       if authenticated?
         redirect_to(login_redirect_path)
@@ -60,5 +60,9 @@ private
 
   def permitted_params
     params.require(:sessions_otp_sign_in_form).permit(:email, :code)
+  end
+
+  def session_user
+    Sessions::Users::DfEUser.new(email: @otp_form.email)
   end
 end

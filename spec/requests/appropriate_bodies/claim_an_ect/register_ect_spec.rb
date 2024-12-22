@@ -42,7 +42,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
     end
 
     context 'when signed in' do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:, method: :dfe_sign_in) }
       before { allow(AppropriateBodies::ClaimAnECT::CheckECT).to receive(:new).with(any_args).and_call_original }
       before { allow(AppropriateBodies::ClaimAnECT::RegisterECT).to receive(:new).with(any_args).and_call_original }
 

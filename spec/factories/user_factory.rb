@@ -5,10 +5,20 @@ FactoryBot.define do
 
     trait :admin do
       after(:create) do |user|
-        FactoryBot.create(:dfe_role, user:)
+        FactoryBot.create(:dfe_role, :admin, user:)
       end
     end
 
-    trait(:appropriate_body_user) {} # FIXME: remove this eventually
+    trait :super_admin do
+      after(:create) do |user|
+        FactoryBot.create(:dfe_role, :super_admin, user:)
+      end
+    end
+
+    trait :finance do
+      after(:create) do |user|
+        FactoryBot.create(:dfe_role, :finance, user:)
+      end
+    end
   end
 end

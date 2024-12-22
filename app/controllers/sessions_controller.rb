@@ -6,15 +6,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user_info = request.env['omniauth.auth']
-    provider = user_info.provider
-
-    Sessions::SessionBuilder.new(
-      provider,
-      session_manager:,
-      user_info:,
-      params:
-    ).build!
+    session_manager.begin_session!(session_user)
 
     if authenticated?
       redirect_to(login_redirect_path)
@@ -27,5 +19,12 @@ class SessionsController < ApplicationController
   def destroy
     session_manager.end_session!
     redirect_to(root_path)
+  end
+
+private
+
+  def session_user
+    Sessions::Users::Builder.new(omniauth_payload: request.env['omniauth.auth'])
+                            .session_user
   end
 end

@@ -1,175 +1,124 @@
-RSpec.describe Sessions::SessionUser do
-  describe '.initialize' do
-    let(:last_active_at) { 2.minutes.ago }
+RSpec.describe Sessions::User do
+  let(:last_active_at) { 4.minutes.ago }
 
-    it 'initializes correctly' do
-      session_user = Sessions::SessionUser.new(
-        provider: 'otp',
-        name: 'Peter Cushing',
-        email: 'pc@example.com',
-        last_active_at:,
-        dfe: true
-      )
-
-      expect(session_user.provider).to eql('otp')
-      expect(session_user.name).to eql('Peter Cushing')
-      expect(session_user.email).to eql('pc@example.com')
-      expect(session_user.last_active_at).to eql(last_active_at)
-      expect(session_user.dfe).to be(true)
-    end
-
-    context 'when appropriate_body_id is nil but dfe_sign_in_organisation_id is present' do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id: SecureRandom.uuid) }
-      let(:appropriate_body_dfe_sign_in_organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
-
-      it 'uses the dfe_sign_in_organisation_id to find the appropriate body' do
-        session_user = Sessions::SessionUser.new(
-          provider: 'otp',
-          name: 'Robert Englund',
-          email: 'rob.e@example.com',
-          appropriate_body_id: nil,
-          dfe_sign_in_organisation_id: appropriate_body_dfe_sign_in_organisation_id
-        )
-
-        expect(session_user.appropriate_body_id).to eql(appropriate_body.id)
-      end
-    end
-  end
+  subject(:session_user) { described_class.new(email: 'a@email.com', last_active_at:) }
 
   describe '.from_session' do
-    let(:last_active_at) { 4.minutes.ago }
+    subject(:session_user) { described_class.from_session(fake_user_session) }
 
-    it 'loads a new SessionUser from the provided hash (session["user_session"])' do
-      fake_user_session = {
-        'provider' => 'developer',
-        'name' => 'Christopher Lee',
-        'email' => 'cl@example.com',
-        'last_active_at' => last_active_at,
-        'appropriate_body_id' => 23
-      }
+    context 'when the user session stores no user data' do
+      let(:fake_user_session) { {} }
 
-      session_user = Sessions::SessionUser.from_session(fake_user_session)
-
-      expect(session_user.provider).to eql('developer')
-      expect(session_user.name).to eql('Christopher Lee')
-      expect(session_user.email).to eql('cl@example.com')
-      expect(session_user.last_active_at).to eql(last_active_at)
-      expect(session_user.appropriate_body_id).to be(23)
-    end
-  end
-
-  describe '.from_user_record' do
-    let(:last_active_at) { 6.minutes.ago }
-
-    it 'finds the corresponding user record with the given email and sets the SessionUser up approrpiately' do
-      user = FactoryBot.create(:user)
-
-      session_user = Sessions::SessionUser.from_user_record(email: user.email, provider: 'otp')
-
-      expect(session_user.name).to eql(user.name)
-      expect(session_user.email).to eql(user.email)
-      expect(session_user.provider).to eql('otp')
-    end
-  end
-
-  describe '#record_new_activity!' do
-    it 'updates the provided session hash with the default timestamp (now)' do
-      fake_session = { 'user_session' => { 'last_active_at' => 5.minutes.ago } }
-      session_user = Sessions::SessionUser.new(provider: 'test', email: 'Nicolas Cage')
-      session_user.record_new_activity!(session: fake_session)
-
-      expect(fake_session['user_session']['last_active_at']).to be_within(1.second).of(Time.zone.now)
-    end
-
-    context 'when a time is provided' do
-      it 'updates the provided session hash with the given timestamp' do
-        fake_session = { 'user_session' => { 'last_active_at' => 5.minutes.ago } }
-        session_user = Sessions::SessionUser.new(provider: 'test', email: 'Nicolas Cage')
-        session_user.record_new_activity!(session: fake_session, time: 2.minutes.ago)
-
-        expect(fake_session['user_session']['last_active_at']).to be_within(1.second).of(2.minutes.ago)
+      it 'do not instantiate any Sessions::User' do
+        expect(session_user).to be_nil
       end
     end
-  end
 
-  describe '#appropriate_body_user?' do
-    it 'is true with appropriate_body_id is present' do
-      session_user = Sessions::SessionUser.new(email: 'test@example.com', provider: 'otp', appropriate_body_id: 123)
-
-      expect(session_user).to be_appropriate_body_user
-    end
-
-    it 'is false with appropriate_body_id is missing' do
-      session_user = Sessions::SessionUser.new(email: 'test@example.com', provider: 'otp')
-
-      expect(session_user).not_to be_appropriate_body_user
-    end
-  end
-
-  describe '#school_user?' do
-    it 'is true with school_urn is present' do
-      session_user = Sessions::SessionUser.new(email: 'test@example.com', provider: 'otp', school_urn: 123_456)
-
-      expect(session_user).to be_school_user
-    end
-
-    it 'is false with school_urn is missing' do
-      session_user = Sessions::SessionUser.new(email: 'test@example.com', provider: 'otp')
-
-      expect(session_user).not_to be_school_user
-    end
-  end
-
-  describe '#dfe_user?' do
-    it 'is true with dfe is true' do
-      session_user = Sessions::SessionUser.new(email: 'test@example.com', provider: 'otp', dfe: true)
-
-      expect(session_user).to be_dfe_user
-    end
-
-    it 'is false with dfe is missing' do
-      session_user = Sessions::SessionUser.new(email: 'test@example.com', provider: 'otp')
-
-      expect(session_user).not_to be_dfe_user
-    end
-
-    it 'is false with dfe is false' do
-      session_user = Sessions::SessionUser.new(email: 'test@example.com', provider: 'otp', dfe: false)
-
-      expect(session_user).not_to be_dfe_user
-    end
-  end
-
-  describe '#to_h' do
-    let(:last_active_at) { 8.minutes.ago }
-
-    it 'returns all relevant attribtues in a hash' do
-      dfe_sign_in_user_id = SecureRandom.uuid
-      dfe_sign_in_organisation_id = SecureRandom.uuid
-
-      session_user = Sessions::SessionUser.new(
-        provider: 'otp',
-        name: 'Bela Lugosi',
-        email: 'bl@example.com',
-        last_active_at:,
-        appropriate_body_id: 1234,
-        dfe_sign_in_user_id:,
-        dfe_sign_in_organisation_id:
-      )
-
-      expect(session_user.to_h).to eql(
+    context 'when user session stores an appropriate body user' do
+      let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
+      let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
+      let!(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
+      let(:fake_user_session) do
         {
-          "provider" => 'otp',
-          "email" => 'bl@example.com',
-          "name" => 'Bela Lugosi',
-          "last_active_at" => last_active_at,
-          "appropriate_body_id" => 1234,
-          "school_urn" => nil,
-          "dfe" => false,
-          "dfe_sign_in_user_id" => dfe_sign_in_user_id,
-          "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id
+          'type' => 'Sessions::Users::AppropriateBodyUser',
+          'email' => 'ab_user@example.com',
+          'name' => 'Christopher Lee',
+          'last_active_at' => last_active_at,
+          'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
+          'dfe_sign_in_user_id' => dfe_sign_in_user_id
         }
-      )
+      end
+
+      it 'instantiates a Sessions::Users::AppropriateBodyUser' do
+        expect(session_user).to be_a(Sessions::Users::AppropriateBodyUser)
+        expect(session_user.name).to eql('Christopher Lee')
+        expect(session_user.email).to eql('ab_user@example.com')
+        expect(session_user.last_active_at).to eql(last_active_at)
+        expect(session_user.appropriate_body_id).to be(appropriate_body.id)
+      end
+    end
+
+    context 'when user session stores an appropriate body persona' do
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:fake_user_session) do
+        {
+          'type' => 'Sessions::Users::AppropriateBodyPersona',
+          'email' => 'ab_persona@example.com',
+          'name' => 'Christopher Lee',
+          'last_active_at' => last_active_at,
+          'appropriate_body_id' => appropriate_body.id
+        }
+      end
+
+      it 'instantiates a Sessions::Users::AppropriateBodyPersona' do
+        expect(session_user).to be_a(Sessions::Users::AppropriateBodyPersona)
+        expect(session_user.name).to eql('Christopher Lee')
+        expect(session_user.email).to eql('ab_persona@example.com')
+        expect(session_user.last_active_at).to eql(last_active_at)
+        expect(session_user.appropriate_body_id).to be(appropriate_body.id)
+      end
+    end
+
+    context 'when user session stores an existing db dfe user' do
+      let!(:dfe_user) { FactoryBot.create(:user, :admin, name: 'Christopher Lee', email: 'dfe_user@example.com') }
+      let(:fake_user_session) do
+        {
+          'type' => 'Sessions::Users::DfEUser',
+          'email' => 'dfe_user@example.com',
+          'last_active_at' => last_active_at
+        }
+      end
+
+      it 'instantiates a Sessions::Users::DfEUser' do
+        expect(session_user).to be_a(Sessions::Users::DfEUser)
+        expect(session_user.name).to eql('Christopher Lee')
+        expect(session_user.email).to eql('dfe_user@example.com')
+        expect(session_user.last_active_at).to eql(last_active_at)
+      end
+    end
+
+    context 'when user session stores a dfe persona' do
+      let!(:dfe_user) { FactoryBot.create(:user, :admin, name: 'Christopher Lee', email: 'dfe_persona@example.com') }
+      let(:fake_user_session) do
+        {
+          'type' => 'Sessions::Users::DfEPersona',
+          'email' => 'dfe_persona@example.com',
+          'last_active_at' => last_active_at
+        }
+      end
+
+      it 'instantiates a Sessions::Users::DfEPersona' do
+        expect(session_user).to be_a(Sessions::Users::DfEPersona)
+        expect(session_user.name).to eql('Christopher Lee')
+        expect(session_user.email).to eql('dfe_persona@example.com')
+        expect(session_user.last_active_at).to eql(last_active_at)
+      end
+    end
+
+    context 'when user session stores a school user' do
+      let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
+      let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
+      let(:school_urn) { FactoryBot.create(:school).urn }
+      let(:fake_user_session) do
+        {
+          'type' => 'Sessions::Users::SchoolUser',
+          'email' => 'school_user@example.com',
+          'name' => 'Christopher Lee',
+          'last_active_at' => last_active_at,
+          'school_urn' => school_urn,
+          'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
+          'dfe_sign_in_user_id' => dfe_sign_in_user_id
+        }
+      end
+
+      it 'instantiates a Sessions::Users::SchoolUser' do
+        expect(session_user).to be_a(Sessions::Users::SchoolUser)
+        expect(session_user.email).to eql('school_user@example.com')
+        expect(session_user.name).to eql('Christopher Lee')
+        expect(session_user.last_active_at).to eql(last_active_at)
+        expect(session_user.school_urn).to eql(school_urn)
+        expect(session_user.dfe_sign_in_organisation_id).to eql(dfe_sign_in_organisation_id)
+      end
     end
   end
 end

@@ -10,9 +10,11 @@ class ApplicationController < ActionController::Base
 
 private
 
+  delegate :current_user, to: :session_manager
+
   def require_admin
     # This method is used by Blazer to restrict access. See config/blazer.yml
-    redirect_to('/sign-in') unless Admin::Access.new(current_user).can_access?
+    redirect_to(sign_in_path) unless Admin::Access.new(current_user).can_access?
   end
 
   def ab_home_path
@@ -36,10 +38,6 @@ private
 
   def authenticated?
     current_user.present?
-  end
-
-  def current_user
-    @current_user ||= session_manager.load_from_session
   end
 
   def login_redirect_path
