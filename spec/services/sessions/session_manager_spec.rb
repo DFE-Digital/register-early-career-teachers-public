@@ -52,8 +52,8 @@ RSpec.describe Sessions::SessionManager do
         service.begin_session!(user)
       end
 
-      it 'is kind of a Sessions::SessionUser' do
-        expect(service.current_user).to be_a(Sessions::SessionUser)
+      it 'is kind of a Sessions::User' do
+        expect(service.current_user).to be_a(Sessions::User)
       end
 
       it 'returns the user associated with the session data' do

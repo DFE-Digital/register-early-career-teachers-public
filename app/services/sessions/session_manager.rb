@@ -44,7 +44,7 @@ module Sessions
     def load_from_session
       return if session['user_session'].blank?
 
-      Sessions::SessionUser.from_session(session['user_session']).tap do |session_user|
+      Sessions::User.from_session(session['user_session']).tap do |session_user|
         return(nil) if session_user.nil?
         return(nil) if session_user.expired?
 

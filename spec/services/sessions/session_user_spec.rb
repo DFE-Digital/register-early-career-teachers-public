@@ -1,4 +1,4 @@
-RSpec.describe Sessions::SessionUser do
+RSpec.describe Sessions::User do
   let(:last_active_at) { 4.minutes.ago }
 
   subject(:session_user) { described_class.new(email: 'a@email.com', last_active_at:) }
@@ -9,7 +9,7 @@ RSpec.describe Sessions::SessionUser do
     context 'when the user session stores no user data' do
       let(:fake_user_session) { {} }
 
-      it 'do not instantiate any SessionUser' do
+      it 'do not instantiate any Sessions::User' do
         expect(session_user).to be_nil
       end
     end
