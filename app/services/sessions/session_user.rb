@@ -5,8 +5,8 @@ module Sessions
     MAX_SESSION_IDLE_TIME = 2.hours
 
     def self.from_session(user_session)
-      session_user_class = user_session['type'].constantize
-      session_user_class.new(**user_session.except('type').symbolize_keys)
+      session_user_class = user_session['type']&.constantize
+      session_user_class.new(**user_session.except('type').symbolize_keys) if session_user_class
     end
 
     def initialize(email:, last_active_at: Time.zone.now)
@@ -16,11 +16,8 @@ module Sessions
 
     # User?
     def appropriate_body_user? = false
-
     def dfe_user? = false
-
     def school_user? = false
-
     def dfe_sign_in_authorisable? = false
 
     # Activity

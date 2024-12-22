@@ -6,6 +6,14 @@ RSpec.describe Sessions::SessionUser do
   describe '.from_session' do
     subject(:session_user) { described_class.from_session(fake_user_session) }
 
+    context 'when the user session stores no user data' do
+      let(:fake_user_session) { {} }
+
+      it 'do not instantiate any SessionUser' do
+        expect(session_user).to be_nil
+      end
+    end
+
     context 'when user session stores an appropriate body user' do
       let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
       let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
