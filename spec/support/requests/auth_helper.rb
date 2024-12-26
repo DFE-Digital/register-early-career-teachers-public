@@ -1,22 +1,32 @@
 module AuthHelper
-  def sign_in_as(user_type, method: :persona, appropriate_body: nil, school: nil, user: nil)
+  def sign_in_as(user_type,
+                 method: :persona,
+                 appropriate_body: nil,
+                 school: nil,
+                 user: nil,
+                 email: Faker::Internet.email,
+                 first_name: Faker::Name.first_name,
+                 last_name: Faker::Name.last_name,
+                 uid: Faker::Internet.uuid)
     Rails.logger.info("logging in as #{user_type}")
 
+    name = "#{first_name} #{last_name}"
+
     case method
-    when :dfe_sign_in then sign_in_with_dfe_sign_in(user_type)
+    when :dfe_sign_in then sign_in_with_dfe_sign_in(user_type, email: email, first_name: first_name, last_name: last_name, uid: uid)
     when :otp then sign_in_with_otp(user)
-    when :persona then sign_in_with_persona(user_type, appropriate_body:, school:, user:)
+    when :persona then sign_in_with_persona(user_type, appropriate_body:, school:, user:, name:, email:)
     end
   end
 
 private
 
-  def sign_in_with_dfe_sign_in(user_type)
+  def sign_in_with_dfe_sign_in(user_type, email:, first_name:, last_name:, uid:)
     case user_type
     when :appropriate_body_user
-      sign_in_with_appropriate_body_user(appropriate_body:)
+      sign_in_with_appropriate_body_user(appropriate_body:, email:, first_name:, last_name:, uid:)
     when :school_user
-      sign_in_with_school_user(school:)
+      sign_in_with_school_user(school:, email:, first_name:, last_name:, uid:)
     end
   end
 
@@ -30,22 +40,18 @@ private
          })
   end
 
-  def sign_in_with_persona(user_type, appropriate_body:, user:, school:)
+  def sign_in_with_persona(user_type, appropriate_body:, user:, school:, email:, name:)
     case user_type
     when :appropriate_body_user
-      sign_in_with_appropriate_body_persona(appropriate_body:)
+      sign_in_with_appropriate_body_persona(appropriate_body:, name:, email:)
     when :dfe_user
       sign_in_with_dfe_persona(user:)
     when :school_user
-      sign_in_with_school_persona(school:)
+      sign_in_with_school_persona(school:, name:, email:)
     end
   end
 
-  def sign_in_with_appropriate_body_user(appropriate_body:,
-                                         email: Faker::Internet.email,
-                                         first_name: Faker::Name.first_name,
-                                         last_name: Faker::Name.last_name,
-                                         uid: Faker::Internet.uuid)
+  def sign_in_with_appropriate_body_user(appropriate_body:, email:, first_name:, last_name:, uid:)
     Rails.logger.debug("Signing in with dfe sign in as appropriate body user")
     allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
     mock_dfe_sign_in_provider!(email:,
@@ -57,11 +63,7 @@ private
     stop_mocking_dfe_sign_in_provider!
   end
 
-  def sign_in_with_school_user(school:,
-                               email: Faker::Internet.email,
-                               first_name: Faker::Name.first_name,
-                               last_name: Faker::Name.last_name,
-                               uid: Faker::Internet.uuid)
+  def sign_in_with_school_user(school:, email:, first_name:, last_name:, uid:)
     Rails.logger.debug("Signing in with dfe sign in as appropriate body user")
     allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
     mock_dfe_sign_in_provider!(email:,
@@ -73,7 +75,7 @@ private
     stop_mocking_dfe_sign_in_provider!
   end
 
-  def sign_in_with_appropriate_body_persona(appropriate_body:, email: Faker::Internet.email, name: Faker::Name.name)
+  def sign_in_with_appropriate_body_persona(appropriate_body:, email:, name:)
     Rails.logger.debug("Signing in with persona as appropriate body user")
     post("/auth/persona/callback", params: { email:, name:, appropriate_body_id: appropriate_body.id })
   end
@@ -83,7 +85,7 @@ private
     post('/auth/persona/callback', params: { email: user.email, name: user.name, dfe_staff: true })
   end
 
-  def sign_in_with_school_persona(school:, name: Faker::Name.name, email: Faker::Internet.email)
+  def sign_in_with_school_persona(school:, name:, email:)
     Rails.logger.debug("Signing in with persona as school user")
     post("/auth/persona/callback", params: { email:, name:, school_urn: school.urn })
   end
