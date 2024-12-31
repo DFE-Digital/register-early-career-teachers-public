@@ -1,6 +1,7 @@
 module Sessions
   module Users
     class AppropriateBodyPersona < User
+      EVENT_AUTHOR_TYPE = :appropriate_body_user
       PROVIDER = :persona
 
       attr_reader :appropriate_body_id, :name
@@ -21,6 +22,14 @@ module Sessions
           "name" => name,
           "last_active_at" => last_active_at,
           "appropriate_body_id" => appropriate_body_id
+        }
+      end
+
+      def event_author_params
+        {
+          author_email: email,
+          author_name: name,
+          author_type: EVENT_AUTHOR_TYPE,
         }
       end
     end

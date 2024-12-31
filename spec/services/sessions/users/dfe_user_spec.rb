@@ -18,6 +18,12 @@ RSpec.describe Sessions::Users::DfEUser do
     end
   end
 
+  describe '.EVENT_AUTHOR_TYPE' do
+    it 'returns :dfe_staff_user' do
+      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:dfe_staff_user)
+    end
+  end
+
   describe '#name' do
     it 'returns the full name from the user record' do
       expect(dfe_user.name).to eql(name)
@@ -54,6 +60,17 @@ RSpec.describe Sessions::Users::DfEUser do
         'type' => 'Sessions::Users::DfEUser',
         'email' => email,
         'last_active_at' => last_active_at
+      })
+    end
+  end
+
+  describe '#event_author_params' do
+    it 'returns a hash with the attributes needed to record an event' do
+      expect(dfe_user.event_author_params).to eql({
+        author_email: dfe_user.email,
+        author_id: dfe_user.id,
+        author_name: dfe_user.name,
+        author_type: :dfe_staff_user
       })
     end
   end
