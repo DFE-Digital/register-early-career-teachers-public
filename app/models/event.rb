@@ -1,4 +1,9 @@
 class Event < ApplicationRecord
+  EVENT_TYPES = %i[
+    appropriate_body_claims_teacher
+    teacher_name_updated_by_trs
+  ].freeze
+
   belongs_to :teacher
   belongs_to :appropriate_body
   belongs_to :induction_period

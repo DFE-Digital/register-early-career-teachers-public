@@ -1,8 +1,21 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+  let(:author) do
+    Sessions::Users::AppropriateBodyUser.new(
+      name: 'A user',
+      email: 'ab_user@something.org',
+      dfe_sign_in_user_id: SecureRandom.uuid,
+      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id
+    )
+  end
 
-  subject { described_class.new(appropriate_body:, pending_induction_submission:) }
+  before do
+    allow(author).to receive(:is_a?).with(Sessions::User).and_return(true)
+    allow(author).to receive(:is_a?).with(any_args).and_call_original
+  end
+
+  subject { described_class.new(appropriate_body:, pending_induction_submission:, author:) }
 
   describe "#initialize" do
     it "assigns the provided appropriate body and pending induction submission" do

@@ -42,7 +42,10 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
     end
 
     context 'when signed in' do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:, method: :dfe_sign_in) }
+      let(:author_first_name) { 'Anette' }
+      let(:author_last_name) { 'Benning' }
+      let(:author_email) { 'ab@something.com' }
+      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:, method: :dfe_sign_in, first_name: author_first_name, last_name: author_last_name, email: author_email) }
       before { allow(AppropriateBodies::ClaimAnECT::CheckECT).to receive(:new).with(any_args).and_call_original }
       before { allow(AppropriateBodies::ClaimAnECT::RegisterECT).to receive(:new).with(any_args).and_call_original }
 
@@ -77,8 +80,14 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
 
           expect(AppropriateBodies::ClaimAnECT::RegisterECT).to have_received(:new).with(
             appropriate_body:,
-            pending_induction_submission:
-          )
+            pending_induction_submission:,
+            author: instance_of(Sessions::Users::AppropriateBodyUser)
+          ) do |arguments|
+            arguments.fetch(:author).tap do |author|
+              expect(author.name).to eql(user.name)
+              expect(author.email).to eql(user.email)
+            end
+          end
 
           expect(response).to be_redirection
           expect(response.redirect_url).to match(%r{/claim-an-ect/register-ect/\d+\z})
