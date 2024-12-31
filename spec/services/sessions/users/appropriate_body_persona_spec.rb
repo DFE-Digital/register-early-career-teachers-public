@@ -18,6 +18,12 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     end
   end
 
+  describe '.EVENT_AUTHOR_TYPE' do
+    it 'returns :appropriate_body_user' do
+      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:appropriate_body_user)
+    end
+  end
+
   describe '#name' do
     it 'returns the name of the appropriate body persona' do
       expect(appropriate_body_persona.name).to eql(name)
@@ -62,6 +68,16 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
         'name' => name,
         'last_active_at' => last_active_at,
         'appropriate_body_id' => appropriate_body_id
+      })
+    end
+  end
+
+  describe '#event_author_params' do
+    it 'returns a hash with the attributes needed to record an event' do
+      expect(appropriate_body_persona.event_author_params).to eql({
+        author_email: appropriate_body_persona.email,
+        author_name: appropriate_body_persona.name,
+        author_type: :appropriate_body_user
       })
     end
   end

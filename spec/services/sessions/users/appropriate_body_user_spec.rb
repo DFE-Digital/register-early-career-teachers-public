@@ -22,6 +22,12 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
+  describe '.EVENT_AUTHOR_TYPE' do
+    it 'returns :appropriate_body_user' do
+      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:appropriate_body_user)
+    end
+  end
+
   describe '#appropriate_body_id' do
     it 'returns the id of the appropriate body of the user' do
       expect(appropriate_body_user.appropriate_body_id).to eql(appropriate_body.id)
@@ -79,6 +85,16 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
         'last_active_at' => last_active_at,
         'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
         'dfe_sign_in_user_id' => dfe_sign_in_user_id
+      })
+    end
+  end
+
+  describe '#event_author_params' do
+    it 'returns a hash with the attributes needed to record an event' do
+      expect(appropriate_body_user.event_author_params).to eql({
+        author_email: appropriate_body_user.email,
+        author_name: appropriate_body_user.name,
+        author_type: :appropriate_body_user
       })
     end
   end
