@@ -17,11 +17,9 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       {
         induction_programme: "fip",
         started_on: Date.new(2023, 5, 2),
-        finished_on: Date.new(2024, 5, 5),
         trn: "1234567",
         trs_first_name: "John",
         trs_last_name: "Doe",
-        number_of_terms: 3,
         trs_qts_awarded:
       }
     end
@@ -52,10 +50,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         induction_period = InductionPeriod.last
         expect(induction_period.teacher).to eq(teacher)
         expect(induction_period.started_on).to eq(Date.new(2023, 5, 2))
-        expect(induction_period.finished_on).to eq(Date.new(2024, 5, 5))
         expect(induction_period.appropriate_body).to eq(appropriate_body)
         expect(induction_period.induction_programme).to eq("fip")
-        expect(induction_period.number_of_terms).to eq(3)
       end
 
       it "enqueues BeginECTInductionJob" do
@@ -100,7 +96,6 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
       expect(subject.pending_induction_submission.induction_programme).to eq("fip")
       expect(subject.pending_induction_submission.started_on).to eq(Date.new(2023, 5, 2))
-      expect(subject.pending_induction_submission.finished_on).to eq(Date.new(2024, 5, 5))
     end
   end
 end

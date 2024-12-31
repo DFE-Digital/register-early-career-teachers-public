@@ -46,10 +46,8 @@ module AppropriateBodies
         InductionPeriod.create(
           teacher:,
           started_on: pending_induction_submission.started_on,
-          finished_on: pending_induction_submission.finished_on,
           appropriate_body:,
-          induction_programme: pending_induction_submission.induction_programme,
-          number_of_terms: pending_induction_submission.number_of_terms
+          induction_programme: pending_induction_submission.induction_programme
         )
       end
 
