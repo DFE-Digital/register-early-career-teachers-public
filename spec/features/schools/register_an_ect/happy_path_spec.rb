@@ -112,8 +112,8 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def when_i_enter_a_valid_start_date
-    page.get_by_label('month').fill(last_month.to_s)
-    page.get_by_label('year').fill(current_year)
+    page.get_by_label('month').fill(one_month_ago_today.month.to_s)
+    page.get_by_label('year').fill(one_month_ago_today.year.to_s)
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
@@ -125,7 +125,7 @@ RSpec.describe 'Registering an ECT' do
     expect(page.get_by_text("Kirk Van Damme")).to be_visible
     expect(page.get_by_text("3 February 1977")).to be_visible
     expect(page.get_by_text('example@example.com')).to be_visible
-    expect(page.get_by_text("#{Date::MONTHNAMES[last_month]} #{current_year}")).to be_visible
+    expect(page.get_by_text("#{Date::MONTHNAMES[one_month_ago_today.month]} #{one_month_ago_today.year}")).to be_visible
   end
 
   def when_i_click_confirm_details
@@ -148,15 +148,7 @@ RSpec.describe 'Registering an ECT' do
     expect(page.url).to end_with('/schools/home/ects')
   end
 
-  def current_year
-    (today.year).to_s
-  end
-
-  def last_month
-    today.month - 1
-  end
-
-  def today
-    @today ||= Time.zone.today
+  def one_month_ago_today
+    @one_month_ago_today ||= Time.zone.today.prev_month
   end
 end
