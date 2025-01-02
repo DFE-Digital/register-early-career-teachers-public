@@ -12,6 +12,8 @@ class MentorshipPeriod < ApplicationRecord
              foreign_key: :mentor_at_school_period_id,
              inverse_of: :mentorship_periods
 
+  has_many :events
+
   # Validations
   validates :started_on,
             presence: true

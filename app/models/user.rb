@@ -8,6 +8,8 @@ class User < ApplicationRecord
 
   # Associations
   has_many :dfe_roles
+  has_many :events
+  has_many :authored_events, class_name: 'Event', inverse_of: :author
 
   # Instance Methods
   def dfe_user?

@@ -1,6 +1,7 @@
 describe InductionExtension do
   describe "associations" do
     it { is_expected.to belong_to(:teacher) }
+    it { is_expected.to have_many(:events) }
   end
 
   describe 'validation' do
