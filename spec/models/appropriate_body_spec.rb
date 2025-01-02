@@ -2,6 +2,7 @@ describe AppropriateBody do
   describe "associations" do
     it { is_expected.to have_many(:induction_periods) }
     it { is_expected.to have_many(:pending_induction_submissions) }
+    it { is_expected.to have_many(:events) }
   end
 
   describe "validations" do

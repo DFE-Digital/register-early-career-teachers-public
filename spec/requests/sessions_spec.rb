@@ -13,7 +13,8 @@ RSpec.describe 'Sessions', type: :request do
 
     context 'when signed in' do
       before do
-        sign_in_as(:school_user, school: double('School', urn: '123456'))
+        school = FactoryBot.create(:school, urn: '123456')
+        sign_in_as(:school_user, school:)
       end
 
       it 'renders the sign in page' do

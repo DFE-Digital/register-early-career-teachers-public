@@ -4,6 +4,7 @@ class InductionPeriod < ApplicationRecord
   # Associations
   belongs_to :appropriate_body
   belongs_to :teacher
+  has_many :events
 
   # Validations
   validates :started_on,

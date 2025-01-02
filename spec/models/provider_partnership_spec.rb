@@ -3,6 +3,7 @@ describe ProviderPartnership do
     it { is_expected.to belong_to(:academic_year).inverse_of(:provider_partnerships) }
     it { is_expected.to belong_to(:lead_provider).inverse_of(:provider_partnerships) }
     it { is_expected.to belong_to(:delivery_partner).inverse_of(:provider_partnerships) }
+    it { is_expected.to have_many(:events) }
   end
 
   describe "validations" do

@@ -7,10 +7,11 @@ module Sessions
     MAX_SESSION_IDLE_TIME = 2.hours
 
     def self.from_session(user_session)
-      return if user_session&.dig('type').blank?
+      return unless (type = user_session&.dig('type'))
 
       user_props = user_session.except('type').symbolize_keys
-      case user_session['type']
+
+      case type
       when 'Sessions::Users::AppropriateBodyPersona' then Sessions::Users::AppropriateBodyPersona.new(**user_props)
       when 'Sessions::Users::AppropriateBodyUser' then Sessions::Users::AppropriateBodyUser.new(**user_props)
       when 'Sessions::Users::DfEPersona' then Sessions::Users::DfEPersona.new(**user_props)

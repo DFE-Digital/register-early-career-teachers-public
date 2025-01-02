@@ -2,6 +2,7 @@ describe InductionPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
     it { is_expected.to belong_to(:teacher) }
+    it { is_expected.to have_many(:events) }
   end
 
   describe "validations" do

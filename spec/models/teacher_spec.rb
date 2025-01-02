@@ -4,6 +4,7 @@ describe Teacher do
     it { is_expected.to have_many(:mentor_at_school_periods) }
     it { is_expected.to have_many(:induction_periods) }
     it { is_expected.to have_many(:induction_extensions) }
+    it { is_expected.to have_many(:events) }
 
     context "when there are multiple induction records" do
       let(:teacher) { FactoryBot.create(:teacher) }

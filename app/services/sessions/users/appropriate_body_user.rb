@@ -1,6 +1,7 @@
 module Sessions
   module Users
     class AppropriateBodyUser < User
+      EVENT_AUTHOR_TYPE = :appropriate_body_user
       PROVIDER = :dfe_sign_in
 
       attr_reader :appropriate_body_id, :dfe_sign_in_organisation_id, :dfe_sign_in_user_id, :name
@@ -28,6 +29,14 @@ module Sessions
           "last_active_at" => last_active_at,
           "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id,
           "dfe_sign_in_user_id" => dfe_sign_in_user_id
+        }
+      end
+
+      def event_author_params
+        {
+          author_email: email,
+          author_name: name,
+          author_type: EVENT_AUTHOR_TYPE,
         }
       end
     end
