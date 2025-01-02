@@ -1,5 +1,5 @@
 module Events
-  class NotASessionsUser < StandardError; end
+  class AuthorNotASessionsUser < StandardError; end
 
   class Record
     attr_reader :author,
@@ -41,7 +41,7 @@ module Events
       delivery_partner: nil,
       user: nil
     )
-      fail(NotASessionsUser, author.class) unless author.is_a?(Sessions::User)
+      fail(AuthorNotASessionsUser, author.class) unless author.is_a?(Sessions::User)
 
       @author = author
       @event_type = event_type
@@ -64,13 +64,7 @@ module Events
     end
 
     def record_event!
-      # FIXME: this should probably end up in a job
-      #        we don't want to block the app from working
-      #        if some validation fails or something goes
-      #        wrong while creating the event, but we
-      #        do care enough to investigate and the problem
-      #        without losing data
-      Event.create!(**attributes)
+      RecordEventJob.perform_later(**attributes)
     end
 
   private

@@ -19,13 +19,13 @@ module AppropriateBodies
         # end
 
         ActiveRecord::Base.transaction do
-          success = [
-            update_teacher_name,
-            create_induction_period,
-            send_begin_induction_notification_to_trs,
-            record_claim_event,
-            pending_induction_submission.save(context: :register_ect)
-          ].all?
+          success = (
+            update_teacher_name &&
+            create_induction_period &&
+            send_begin_induction_notification_to_trs &&
+            pending_induction_submission.save(context: :register_ect) &&
+            record_claim_event
+          )
 
           success or raise ActiveRecord::Rollback
         end
