@@ -14,10 +14,10 @@ describe Events::Record do
     context "when the user isn't a Sessions::User" do
       let(:non_session_user) { FactoryBot.build(:user) }
 
-      it 'fails with a NotASessionsUser error with a non Sessions::User author' do
+      it 'fails with a AuthorNotASessionsUser error with a non Sessions::User author' do
         expect {
           Events::Record.new(author: non_session_user, event_type:, heading:, body:, happened_at:)
-        }.to raise_error(Events::NotASessionsUser)
+        }.to raise_error(Events::AuthorNotASessionsUser)
       end
     end
 
@@ -51,14 +51,13 @@ describe Events::Record do
         expect(event_record.send(key)).to eql(attributes.fetch(key))
       end
 
-      allow(Event).to receive(:create!).and_return(true)
+      event_attributes = { **author.event_author_params, **attributes.except(:author) }
+
+      allow(RecordEventJob).to receive(:perform_later).with(**event_attributes).and_return(true)
 
       event_record.record_event!
 
-      expect(Event).to have_received(:create!).with(
-        **author.event_author_params,
-        **attributes.except(:author)
-      )
+      expect(RecordEventJob).to have_received(:perform_later).with(**event_attributes)
     end
   end
 end
