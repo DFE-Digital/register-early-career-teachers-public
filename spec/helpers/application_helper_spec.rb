@@ -1,6 +1,8 @@
 RSpec.describe ApplicationHelper, type: :helper do
   include GovukVisuallyHiddenHelper
   include GovukLinkHelper
+  include TitleWithErrorPrefixHelper
+
   describe "#page_data" do
     it "sets the title to the provided value" do
       expect(page_data(title: "Some title").fetch(:page_title)).to eq('Some title')
