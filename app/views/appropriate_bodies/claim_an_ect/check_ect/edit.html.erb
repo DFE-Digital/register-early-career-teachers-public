@@ -1,12 +1,15 @@
 <% page_data(
   title: "Check details for #{pending_induction_submission_full_name(@pending_induction_submission)}",
-  header: "Check #{pending_induction_submission_full_name(@pending_induction_submission)}'s details",
+  caption: "TRN: #{@pending_induction_submission.trn}",
+  header: "View #{pending_induction_submission_full_name(@pending_induction_submission)}'s details",
   error: @pending_induction_submission.errors.present?,
   backlink_href: new_ab_claim_an_ect_find_path)
 %>
 
 <%= form_with(model: @pending_induction_submission, url: ab_claim_an_ect_check_path(@pending_induction_submission, method: 'patch')) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <h2 class="govuk-heading-m">Personal details</h2>
 
   <%=
     govuk_summary_list do |sl|
@@ -26,10 +29,16 @@
       end
 
       sl.with_row do |r|
-        r.with_key(text: "Email address")
-        r.with_value(text: @pending_induction_submission.trs_email_address)
-      end if @pending_induction_submission.trs_email_address.present?
+        r.with_key(text: "Has alerts")
+        r.with_value(text: @pending_induction_submission.trs_alerts.present? ? "Yes" : "No")
+      end
+    end
+  %>
 
+  <h2 class="govuk-heading-m">Initial teacher training details</h2>
+
+  <%=
+    govuk_summary_list do |sl|
       sl.with_row do |r|
         r.with_key(text: "QTS awarded")
         r.with_value(text: @pending_induction_submission.trs_qts_awarded.to_fs(:govuk))
@@ -41,16 +50,6 @@
       end if @pending_induction_submission.trs_qts_status_description.present?
 
       sl.with_row do |r|
-        r.with_key(text: "Induction start date")
-        r.with_value(text: @pending_induction_submission.trs_induction_start_date&.to_fs(:govuk))
-      end if @pending_induction_submission.trs_induction_start_date.present?
-
-      sl.with_row do |r|
-        r.with_key(text: "Induction status")
-        r.with_value(text: @pending_induction_submission.trs_induction_status)
-      end if @pending_induction_submission.trs_induction_status.present?
-
-      sl.with_row do |r|
         r.with_key(text: "Initial teacher training provider")
         r.with_value(text: @pending_induction_submission.trs_initial_teacher_training_provider_name)
       end if @pending_induction_submission.trs_initial_teacher_training_provider_name.present?
@@ -59,13 +58,30 @@
         r.with_key(text: "Initial teacher training end date")
         r.with_value(text: @pending_induction_submission.trs_initial_teacher_training_end_date&.to_fs(:govuk))
       end if @pending_induction_submission.trs_initial_teacher_training_end_date.present?
-
-      sl.with_row do |r|
-        r.with_key(text: "Has alerts")
-        r.with_value(text: @pending_induction_submission.trs_alerts.present? ? "Yes" : "No")
-      end
     end
   %>
+
+  <h2 class="govuk-heading-m">Induction details</h2>
+
+  <%=
+    govuk_summary_list do |sl|
+      sl.with_row do |r|
+        r.with_key(text: "Induction start date")
+        r.with_value(text: @pending_induction_submission.trs_induction_start_date&.to_fs(:govuk))
+      end if @pending_induction_submission.trs_induction_start_date.present?
+
+      sl.with_row do |r|
+        r.with_key(text: "Induction status")
+        r.with_value(text: @pending_induction_submission.trs_induction_status)
+      end if @pending_induction_submission.trs_induction_status.present?
+    end
+  %>
+
+  <% if @teacher.present? %>
+    <h3 class="govuk-heading-s">Induction periods</h2>
+
+    <%= render Teachers::PastInductionPeriodsComponent.new(teacher: @teacher) %>
+  <% end %>
 
   <%= f.govuk_check_boxes_fieldset(:confirmed, legend: { text: "Is the above data correct?" }) do %>
     <%=
