@@ -17,25 +17,15 @@
   <% end %>
 
   <% sl.with_row do |row| %>
-    <% if induction.has_extensions? %>
-      <% row.with_key do %>
-        <%= govuk_visually_hidden('Induction') %> Extended by
-      <% end %>
-
-      <% row.with_value do %>
-        <%= induction_extensions.formatted_number_of_terms %>
-      <% end %>
-
-      <%= row.with_action(text: "View", visually_hidden_text: "extensions", href: ab_teacher_extensions_path(teacher_trn: teacher.trn), classes: 'govuk-link--no-visited-state') %>
-    <% else %>
-      <% row.with_key do %>
-        <%= govuk_visually_hidden('Induction') %> Extended
-      <% end %>
-
-      <% row.with_value(text: "No") %>
-
-      <% row.with_action(text: "Add", visually_hidden_text: "an extension", href: new_ab_teacher_extension_path(teacher.trn)) %>
+    <% row.with_key do %>
+      <%= govuk_visually_hidden('Induction') %> Extensions
     <% end %>
+
+    <% row.with_value do %>
+      <%= induction_extensions.formatted_number_of_terms %>
+    <% end %>
+
+    <%= row.with_action(text: extensions_action_text, visually_hidden_text: "extensions", href: ab_teacher_extensions_path(teacher_trn: teacher.trn), classes: 'govuk-link--no-visited-state') %>
   <% end %>
 
   <% sl.with_row do |row| %>
