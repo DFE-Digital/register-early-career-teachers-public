@@ -1,5 +1,5 @@
 module Sessions
-  class SessionManager
+  class Manager
     class MissingAccessLevel < StandardError; end
 
     attr_reader :session
@@ -42,8 +42,6 @@ module Sessions
     end
 
     def load_from_session
-      return if session['user_session'].blank?
-
       Sessions::User.from_session(session['user_session']).tap do |session_user|
         return(nil) if session_user.nil?
         return(nil) if session_user.expired?

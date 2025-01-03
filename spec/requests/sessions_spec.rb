@@ -135,11 +135,11 @@ RSpec.describe 'Sessions', type: :request do
   end
 
   describe 'GET /sign-out' do
-    let(:session_manager) { double('Sessions::SessionManager', current_user: nil, end_session!: true) }
+    let(:session_manager) { double('Sessions::Manager', current_user: nil, end_session!: true) }
 
     context 'when not signed in' do
       it 'redirect to the sign in page' do
-        allow(Sessions::SessionManager).to receive(:new).and_return(session_manager)
+        allow(Sessions::Manager).to receive(:new).and_return(session_manager)
 
         get('/sign-out')
 
