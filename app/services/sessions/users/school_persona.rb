@@ -9,6 +9,7 @@ module Sessions
       def initialize(email:, name:, school_urn:, **)
         @name = name
         @school_urn = School.find_by!(urn: school_urn).urn
+
         super(email:, **)
       end
 
