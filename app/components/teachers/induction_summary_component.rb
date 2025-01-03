@@ -11,6 +11,10 @@ module Teachers
       induction.has_induction_periods?
     end
 
+    def extensions_action_text
+      (induction_extensions.extended?) ? 'View' : 'Add'
+    end
+
   private
 
     def induction_extensions

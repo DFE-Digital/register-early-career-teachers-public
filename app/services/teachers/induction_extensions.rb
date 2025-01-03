@@ -10,7 +10,11 @@ class Teachers::InductionExtensions
   end
 
   def formatted_number_of_terms
-    "#{number_of_terms} terms"
+    (number_of_terms.zero?) ? "None" : "#{number_of_terms} terms"
+  end
+
+  def extended?
+    number_of_terms.positive?
   end
 
 private
