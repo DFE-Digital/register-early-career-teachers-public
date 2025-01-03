@@ -2,6 +2,8 @@ require 'capybara'
 require 'playwright'
 
 module RSpecPlaywright
+  class PlaywrightMajorVersionMismatch < StandardError; end
+
   DEFAULT_TIMEOUT = 3_000
   PLAYWRIGHT_CLI_EXECUTABLE_PATH = "./node_modules/.bin/playwright".freeze
 
@@ -27,5 +29,18 @@ module RSpecPlaywright
 
       fail(ArgumentError, 'Invalid headless option')
     end
+  end
+
+  def self.check_versions!
+    ruby_playwright_version = Gem::Version
+                                .new(Playwright::VERSION)
+                                .segments
+                                .first(2)
+    javascript_playwright_version = File.read('package-lock.json')
+                                        .match(%r{"playwright":\ "\^(?<version>.*)"})[:version]
+                                        .then { |v| Gem::Version.new(v).segments }
+                                        .first(2)
+
+    fail(PlaywrightMajorVersionMismatch) unless ruby_playwright_version == javascript_playwright_version
   end
 end
