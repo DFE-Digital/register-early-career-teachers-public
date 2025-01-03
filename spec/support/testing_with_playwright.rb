@@ -5,6 +5,10 @@ RSpec.configure do |config|
   config.add_setting :playwright_page
   config.include_context 'page', type: :feature
 
+  config.before(:suite) do
+    RSpecPlaywright.check_versions!
+  end
+
   # Start/Reuse Playwright browser on every feature spec
   config.before(type: :feature) do
     config.playwright_browser ||= RSpecPlaywright.start_browser
