@@ -16,7 +16,6 @@ module Sessions
       end
 
       def dfe_sign_in_authorisable? = true
-
       def school_user? = true
 
       def to_h

@@ -18,7 +18,6 @@ module Sessions
       end
 
       def appropriate_body_user? = true
-
       def dfe_sign_in_authorisable? = true
 
       def to_h
