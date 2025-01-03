@@ -45,7 +45,7 @@ private
   end
 
   def session_manager
-    @session_manager ||= Sessions::SessionManager.new(session)
+    @session_manager ||= Sessions::Manager.new(session)
   end
 
   def set_sentry_user
