@@ -14,5 +14,5 @@
 </div>
 
 <%= render(Teachers::InductionSummaryComponent.new(teacher: @teacher)) %>
-<%= render(Teachers::CurrentInductionPeriodComponent.new(teacher: @teacher)) %>
+<%= render(Teachers::CurrentInductionPeriodComponent.new(teacher: @teacher, enable_release: true)) %>
 <%= render(Teachers::PastInductionPeriodsComponent.new(teacher: @teacher)) %>

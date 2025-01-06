@@ -9,7 +9,7 @@
 %>
 
 <%= render(Teachers::InductionSummaryComponent.new(teacher: @teacher)) %>
-<%= render(Teachers::CurrentInductionPeriodComponent.new(teacher: @teacher)) %>
+<%= render(Teachers::CurrentInductionPeriodComponent.new(teacher: @teacher, enable_edit: true)) %>
 <%= render(Teachers::PastInductionPeriodsComponent.new(teacher: @teacher)) %>
 
 <%= govuk_warning_text(text: "Some of this teacher's records could not be migrated") if @teacher.migration_failures.any? %>

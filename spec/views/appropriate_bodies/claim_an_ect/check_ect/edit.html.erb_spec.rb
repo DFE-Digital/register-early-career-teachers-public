@@ -61,6 +61,15 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
 
         expect(rendered).to have_css('.govuk-summary-card__title', text: current_induction_period.appropriate_body.name)
       end
+
+      it 'has no release link' do
+        assign(:teacher, teacher)
+        assign(:pending_induction_submission, pending_induction_submission)
+
+        render
+
+        expect(rendered).not_to have_link('Release')
+      end
     end
 
     context 'when the ECT has past induction periods' do
