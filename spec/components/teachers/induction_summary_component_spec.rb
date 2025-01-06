@@ -30,7 +30,7 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
 
       it "displays extension information" do
         render_inline(component)
-        expect(page).to have_content("Extended by")
+        expect(page).to have_content("Extensions")
         expect(page).to have_link("View", href: ab_teacher_extensions_path(teacher_trn: teacher.trn))
       end
     end
@@ -38,9 +38,9 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
     context "without extensions" do
       it "displays no extension information" do
         render_inline(component)
-        expect(page).to have_content("Extended")
-        expect(page).to have_content("No")
-        expect(page).to have_link("Add", href: new_ab_teacher_extension_path(teacher_trn: teacher.trn))
+        expect(page).to have_content("Extensions")
+        expect(page).to have_content("None")
+        expect(page).to have_link("Add", href: ab_teacher_extensions_path(teacher_trn: teacher.trn))
       end
     end
   end
