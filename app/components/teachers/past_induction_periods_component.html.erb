@@ -1,31 +1,35 @@
 <h2 class="govuk-heading-m">Past induction periods</h2>
 
-<% past_periods.each do |period| %>
-  <%=
-    govuk_summary_list(card: { title: period.appropriate_body.name, actions: can_edit?(period) ? [edit_link(period)] : [] }) do |sl|
-      sl.with_row do |row|
-        row.with_key(text: "Induction programme")
-        row.with_value(text: helpers.induction_programme_choice_name(period.induction_programme))
-      end
+<ul class="govuk-list">
+  <% past_periods.each do |period| %>
+    <li>
+      <%=
+        govuk_summary_list(card: { title: period.appropriate_body.name, actions: can_edit?(period) ? [edit_link(period)] : [] }) do |sl|
+          sl.with_row do |row|
+            row.with_key(text: "Induction programme")
+            row.with_value(text: helpers.induction_programme_choice_name(period.induction_programme))
+          end
 
-      sl.with_row do |row|
-        row.with_key(text: "Start date")
-        row.with_value(text: period.started_on.to_fs(:govuk))
-      end
+          sl.with_row do |row|
+            row.with_key(text: "Start date")
+            row.with_value(text: period.started_on.to_fs(:govuk))
+          end
 
-      if period.finished_on.present?
-        sl.with_row do |row|
-          row.with_key(text: "End date")
-          row.with_value(text: period.finished_on.to_fs(:govuk))
+          if period.finished_on.present?
+            sl.with_row do |row|
+              row.with_key(text: "End date")
+              row.with_value(text: period.finished_on.to_fs(:govuk))
+            end
+          end
+
+          if period.number_of_terms.present?
+            sl.with_row do |row|
+              row.with_key(text: "Number of terms")
+              row.with_value(text: period.number_of_terms)
+            end
+          end
         end
-      end
-
-      if period.number_of_terms.present?
-        sl.with_row do |row|
-          row.with_key(text: "Number of terms")
-          row.with_value(text: period.number_of_terms)
-        end
-      end
-    end
-  %>
-<% end %>
+      %>
+    </li>
+  <% end %>
+</ul>
