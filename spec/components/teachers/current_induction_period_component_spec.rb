@@ -5,7 +5,8 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
   include Rails.application.routes.url_helpers
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:component) { described_class.new(teacher: teacher) }
+  let(:kwargs) { { teacher: teacher } }
+  let(:component) { described_class.new(**kwargs) }
 
   context "when teacher has no current induction period" do
     it "does not render" do
@@ -38,9 +39,18 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
       expect(page).to have_content(6.months.ago.to_date.to_fs(:govuk))
     end
 
-    it "includes a release link" do
+    it "doesn't include a release link by default" do
       render_inline(component)
-      expect(page).to have_link("Release", href: new_ab_teacher_release_ect_path(teacher_trn: teacher.trn))
+      expect(page).not_to have_text "Release"
+    end
+
+    context 'when enable_release: true' do
+      let(:kwargs) { { teacher: teacher, enable_release: true } }
+
+      it 'includes a release link' do
+        render_inline(component)
+        expect(page).to have_link("Release", href: new_ab_teacher_release_ect_path(teacher_trn: teacher.trn))
+      end
     end
   end
 end
