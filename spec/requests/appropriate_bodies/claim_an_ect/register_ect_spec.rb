@@ -46,7 +46,6 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
       let(:author_last_name) { 'Benning' }
       let(:author_email) { 'ab@something.com' }
       let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:, method: :dfe_sign_in, first_name: author_first_name, last_name: author_last_name, email: author_email) }
-      before { allow(AppropriateBodies::ClaimAnECT::CheckECT).to receive(:new).with(any_args).and_call_original }
       before { allow(AppropriateBodies::ClaimAnECT::RegisterECT).to receive(:new).with(any_args).and_call_original }
 
       context 'when the submission is valid' do

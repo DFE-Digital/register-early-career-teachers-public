@@ -23,7 +23,7 @@ module AppropriateBodies
             **trs_teacher.present.except(:trs_national_insurance_number)
           )
 
-        check_if_teacher_has_active_induction_period!
+        check_if_teacher_has_active_induction_period_with_appropriate_body!
         trs_teacher.check_eligibility!
 
         pending_induction_submission.save(context: :find_ect)
@@ -39,7 +39,7 @@ module AppropriateBodies
         @api_client ||= TRS::APIClient.new
       end
 
-      def check_if_teacher_has_active_induction_period!
+      def check_if_teacher_has_active_induction_period_with_appropriate_body!
         existing_teacher = Teacher.find_by(trn: pending_induction_submission.trn)
 
         return unless existing_teacher
@@ -50,8 +50,6 @@ module AppropriateBodies
 
         if active_induction_period.appropriate_body == appropriate_body
           raise AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB, ::Teachers::Name.new(existing_teacher).full_name
-        else
-          raise AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithAnotherAB, ::Teachers::Name.new(existing_teacher).full_name
         end
       end
     end
