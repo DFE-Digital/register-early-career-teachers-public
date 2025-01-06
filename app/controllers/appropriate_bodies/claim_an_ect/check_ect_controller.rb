@@ -19,6 +19,8 @@ module AppropriateBodies
 
           render :edit
         end
+      rescue AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithAnotherAB
+        redirect_to ab_claim_an_ect_errors_another_ab_path(@pending_induction_submission)
       end
 
     private

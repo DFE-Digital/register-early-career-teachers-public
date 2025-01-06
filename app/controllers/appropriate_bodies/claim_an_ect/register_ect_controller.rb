@@ -20,8 +20,6 @@ module AppropriateBodies
 
           render(:edit)
         end
-        # rescue AppropriateBodies::Errors::TeacherAlreadyClaimedError => e
-        #   @pending_induction_submission.errors.add(:base, e.message)
       end
 
       def show
