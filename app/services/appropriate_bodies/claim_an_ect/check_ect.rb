@@ -1,19 +1,19 @@
 module AppropriateBodies
   module ClaimAnECT
     class CheckECT
-      attr_reader :appropriate_body, :pending_induction_submission, :confirmed
+      attr_reader :appropriate_body, :pending_induction_submission
 
       def initialize(appropriate_body:, pending_induction_submission:)
         @appropriate_body = appropriate_body
         @pending_induction_submission = pending_induction_submission
       end
 
-      def confirm_info_correct(confirmed)
+      def begin_claim!
         check_if_teacher_has_active_induction_period_with_another_appropriate_body!
 
         pending_induction_submission.tap do |submission|
-          submission.confirmed = confirmed
-          submission.confirmed_at = Time.zone.now if confirmed
+          submission.confirmed = true
+          submission.confirmed_at = Time.zone.now
         end
 
         pending_induction_submission.save(context: :check_ect)

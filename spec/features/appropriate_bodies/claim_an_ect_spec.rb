@@ -10,8 +10,7 @@ RSpec.describe 'Claiming an ECT' do
     and_i_submit_the_form
 
     now_i_should_be_on_the_claim_an_ect_check_page
-    when_i_confirm_the_details_are_correct
-    and_i_submit_the_form
+    when_i_begin_the_claim_process
 
     now_i_should_be_on_the_claim_an_ect_register_page
     when_i_enter_the_start_date
@@ -37,6 +36,10 @@ private
     page.get_by_label('Year').fill('2003')
   end
 
+  def when_i_begin_the_claim_process
+    page.get_by_role('button', name: "Claim induction").click
+  end
+
   def when_i_submit_the_form
     page.get_by_role('button', name: "Continue").click
   end
@@ -46,10 +49,6 @@ private
     @pending_induction_submission = PendingInductionSubmission.last
     path = "/appropriate-body/claim-an-ect/check-ect/#{@pending_induction_submission.id}/edit"
     expect(page.url).to end_with(path)
-  end
-
-  def when_i_confirm_the_details_are_correct
-    page.get_by_label('I have checked the information above and it looks accurate').check
   end
 
   def now_i_should_be_on_the_claim_an_ect_register_page
