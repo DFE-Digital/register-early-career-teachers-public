@@ -3,6 +3,7 @@ module AppropriateBodies
     class CheckECTController < AppropriateBodiesController
       def edit
         @pending_induction_submission = find_pending_induction_submission
+        @teacher = Teacher.find_by(trn: @pending_induction_submission.trn)
       end
 
       def update

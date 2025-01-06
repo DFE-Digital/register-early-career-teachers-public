@@ -11,8 +11,19 @@ module TRS
       end
     end
 
-    def find_teacher(trn:, date_of_birth: nil, national_insurance_number: nil)
-      params = { dateOfBirth: date_of_birth, nationalInsuranceNumber: national_insurance_number, include: 'Induction' }.compact
+    # available include values:
+    # * Induction
+    # * InitialTeacherTraining
+    # * NpqQualifications
+    # * MandatoryQualifications
+    # * PendingDetailChanges
+    # * HigherEducationQualifications
+    # * Sanctions
+    # * Alerts
+    # * PreviousNames
+    # * AllowIdSignInWithProhibitions
+    def find_teacher(trn:, date_of_birth: nil, national_insurance_number: nil, include: %w[Induction InitialTeacherTraining])
+      params = { dateOfBirth: date_of_birth, nationalInsuranceNumber: national_insurance_number, include: include.join(",") }.compact
       response = @connection.get(persons_path(trn), params)
 
       if response.success?
