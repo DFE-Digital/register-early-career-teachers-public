@@ -78,8 +78,7 @@
   %>
 
   <% if @teacher.present? %>
-    <h3 class="govuk-heading-s">Induction periods</h2>
-
+    <%= render Teachers::CurrentInductionPeriodComponent.new(teacher: @teacher) %>
     <%= render Teachers::PastInductionPeriodsComponent.new(teacher: @teacher) %>
   <% end %>
 
