@@ -1,4 +1,6 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
+  before { allow(Events::Record).to receive(:new).and_call_original }
+
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
   let(:author) do
@@ -73,23 +75,67 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         }.to have_enqueued_job(BeginECTInductionJob)
           .with(hash_including(trn: "1234567", start_date: "2023-05-02"))
       end
+
+      it "records an appropriate_body_claims_teacher event" do
+        subject.register(pending_induction_submission_params)
+
+        expect(Events::Record).to have_received(:new).with(
+          hash_including(
+            author: author,
+            event_type: :appropriate_body_claims_teacher,
+            appropriate_body: appropriate_body
+          )
+        )
+      end
     end
 
-    context "when registering an existing teacher without an induction period" do
-      let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567") }
+    context 'when registering an existing teacher' do
+      context "when the teacher has no induction period" do
+        let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567") }
 
-      it "updates the existing teacher and creates a new induction period" do
-        expect {
+        it "updates the existing teacher and creates a new induction period" do
+          expect {
+            subject.register(pending_induction_submission_params)
+          }.to change(Teacher, :count).by(0)
+            .and change(InductionPeriod, :count).by(1)
+
+          existing_teacher.reload
+          expect(existing_teacher.first_name).to eq("John")
+          expect(existing_teacher.last_name).to eq("Doe")
+
+          induction_period = InductionPeriod.last
+          expect(induction_period.teacher).to eq(existing_teacher)
+        end
+      end
+
+      context "when the teacher's name changes" do
+        let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567", first_name: "Jonathan", last_name: "Dole") }
+
+        before do
           subject.register(pending_induction_submission_params)
-        }.to change(Teacher, :count).by(0)
-          .and change(InductionPeriod, :count).by(1)
+          existing_teacher.reload
+        end
 
-        existing_teacher.reload
-        expect(existing_teacher.first_name).to eq("John")
-        expect(existing_teacher.last_name).to eq("Doe")
+        it 'records the name change' do
+          expect(existing_teacher.first_name).to eql(pending_induction_submission_params[:trs_first_name])
+          expect(existing_teacher.last_name).to eql(pending_induction_submission_params[:trs_last_name])
+          expect(Events::Record).to have_received(:new).with(
+            hash_including(
+              author: author,
+              event_type: :teacher_name_updated_by_trs,
+              appropriate_body: appropriate_body,
+              teacher: existing_teacher
+            )
+          )
+        end
 
-        induction_period = InductionPeriod.last
-        expect(induction_period.teacher).to eq(existing_teacher)
+        it 'saves the pending_induction_submission' do
+          induction_period = InductionPeriod.last
+          expect(induction_period.teacher).to eq(existing_teacher)
+          expect(induction_period.started_on).to eq(Date.new(2023, 5, 2))
+          expect(induction_period.appropriate_body).to eq(appropriate_body)
+          expect(induction_period.induction_programme).to eq("fip")
+        end
       end
     end
 
