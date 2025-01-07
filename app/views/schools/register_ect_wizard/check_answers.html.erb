@@ -1,4 +1,4 @@
-<% page_data(title: "Check your answers before submitting", backlink_href: schools_register_ect_wizard_start_date_path) %>
+<% page_data(title: "Check your answers before submitting", backlink_href: schools_register_ect_wizard_programme_type_path) %>
 
 <h2 class="govuk-heading-m">Teacher details</h2>
 <%= govuk_summary_list do |summary_list|
@@ -25,6 +25,11 @@
   summary_list.with_row do |row|
     row.with_key(text: 'School start date')
     row.with_value(text: @ect.start_date)
+  end
+
+  summary_list.with_row do |row|
+    row.with_key(text: 'Programme type')
+    row.with_value(text: @ect.formatted_programme_type)
   end
 end %>
 

@@ -116,6 +116,9 @@ Rails.application.routes.draw do
       get "start-date", action: :new
       post "start-date", action: :create
 
+      get "programme-type", action: :new
+      post "programme-type", action: :create
+
       get "check-answers", action: :new
       post "check-answers", action: :create
 

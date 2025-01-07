@@ -262,16 +262,6 @@ InductionPeriod.create!(
   induction_programme: 'fip'
 ).tap { |ip| describe_induction_period(ip) }
 
-InductionExtension.create!(
-  teacher: kate_winslet,
-  number_of_terms: 3
-).tap { |ext| describe_extension(ext) }
-
-InductionExtension.create!(
-  teacher: kate_winslet,
-  number_of_terms: 3
-).tap { |ext| describe_extension(ext) }
-
 print_seed_info("Hugh Laurie (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
 hugh_laurie_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
