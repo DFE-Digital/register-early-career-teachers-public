@@ -13,6 +13,7 @@ module Schools
       def next_step
         return :trn_not_found unless mentor.in_trs?
         return :national_insurance_number unless mentor.matches_trs_dob?
+        return :already_active_at_school if mentor.active_at_school?
 
         :review_mentor_details
       end
