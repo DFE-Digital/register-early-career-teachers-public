@@ -9,7 +9,7 @@ module Navigation
     end
 
     def call
-      govuk_service_navigation(service_name: "Register early career teachers") do |service_navigation|
+      govuk_service_navigation(service_name: "Register early career teachers", service_url: "/") do |service_navigation|
         navigation_items.each do |item|
           service_navigation.with_navigation_item(
             text: item[:text],
