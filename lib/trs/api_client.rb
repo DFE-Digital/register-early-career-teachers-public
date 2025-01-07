@@ -54,6 +54,7 @@ module TRS
                   'startDate' => start_date,
                   'completionDate' => completion_date }.compact.to_json
 
+      # FIXME: verify this is the right endpoint
       response = @connection.put(persons_path(trn, suffix: 'induction'), payload)
 
       Rails.logger.debug("calling TRS API: #{response}")
