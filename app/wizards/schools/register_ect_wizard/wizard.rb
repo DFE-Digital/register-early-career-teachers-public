@@ -16,6 +16,7 @@ module Schools
             induction_exempt: InductionExemptStep,
             national_insurance_number: NationalInsuranceNumberStep,
             not_found: NotFoundStep,
+            programme_type: ProgrammeTypeStep,
             review_ect_details: ReviewECTDetailsStep,
             start_date: StartDateStep,
             trn_not_found: TRNNotFoundStep,

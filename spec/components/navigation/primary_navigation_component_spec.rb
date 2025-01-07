@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
   describe "a nested navigation structure with two levels" do
+    let(:current_path) { '/' }
     let(:current_user) { FactoryBot.build(:user) }
 
     subject { described_class.new(current_path:, current_user:) }
@@ -11,6 +12,12 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
         expect(rendered_content).to have_css("a.govuk-service-navigation__link", text: option[:text])
         expect(rendered_content).to have_css("a.govuk-service-navigation__link[href='#{option[:href]}']")
       end
+    end
+
+    it 'renders a link to the homepage with the service name' do
+      render_inline(subject)
+
+      expect(rendered_content).to have_link('Register early career teachers', href: '/', class: 'govuk-service-navigation__link')
     end
 
     context "when AB path" do
