@@ -25,6 +25,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
   scope :siblings_of, ->(instance) { for_teacher(instance.teacher_id).where.not(id: instance.id) }
   scope :school_siblings_of, ->(instance) { siblings_of(instance).for_school(instance.school_id) }
+  scope :with_trn, ->(trn) { joins(:teacher).where(teachers: { trn: }) }
 
 private
 
