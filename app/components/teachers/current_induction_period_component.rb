@@ -2,6 +2,11 @@ module Teachers
   class CurrentInductionPeriodComponent < ViewComponent::Base
     attr_reader :teacher, :induction, :enable_release, :enable_edit
 
+    # FIXME: it's not entirely clear here that enable_edit is for
+    #        admin and enable_release for ABs. This could be
+    #        reworked so we pass in an array of links and render
+    #        whatever's passed in - but that does mean shifting
+    #        a bit of logic around (probably to Teachers::Induction)
     def initialize(teacher:, enable_edit: false, enable_release: false)
       @teacher = teacher
       @induction = Teachers::Induction.new(teacher)
