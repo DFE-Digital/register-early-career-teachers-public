@@ -61,7 +61,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
         it "raises an error" do
           expect { service.update_induction! }.to raise_error(
             ActiveRecord::RecordInvalid,
-            "Validation failed: Started on Started on cannot be before QTS award date (1 January 2023)"
+            "Validation failed: Started on Start date cannot be before QTS award date (1 January 2023)"
           )
         end
       end

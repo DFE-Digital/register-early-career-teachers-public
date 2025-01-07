@@ -104,7 +104,7 @@ RSpec.describe Admin::InductionPeriodsController do
               induction_period: { started_on: 2.years.ago }
             }
             expect(response).to be_unprocessable
-            expect(response.body).to include("Started on cannot be before QTS award date")
+            expect(response.body).to include("Start date cannot be before QTS award date")
           end
         end
       end

@@ -36,7 +36,7 @@ private
     return if started_on.blank? || teacher.qts_awarded_on.blank?
     return if started_on >= teacher.qts_awarded_on
 
-    errors.add(:started_on, "Started on cannot be before QTS award date (#{teacher.qts_awarded_on.to_fs(:govuk)})")
+    errors.add(:started_on, "Start date cannot be before QTS award date (#{teacher.qts_awarded_on.to_fs(:govuk)})")
   end
 
   def valid_date_order?
