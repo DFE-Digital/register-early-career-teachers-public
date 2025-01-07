@@ -14,7 +14,7 @@ module Schools
       end
 
       def next_step
-        :check_answers
+        :programme_type
       end
 
       def start_date_formatted

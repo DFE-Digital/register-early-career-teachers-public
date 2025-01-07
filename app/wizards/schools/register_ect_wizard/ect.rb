@@ -32,6 +32,10 @@ module Schools
         trs_induction_status == 'Exempt'
       end
 
+      def formatted_programme_type
+        programme_type.capitalize.dasherize
+      end
+
       def register!
         Schools::RegisterECT.new(first_name: trs_first_name,
                                  last_name: trs_last_name,

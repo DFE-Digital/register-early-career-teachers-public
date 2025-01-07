@@ -32,7 +32,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
       it "displays teacher information" do
         get admin_teacher_path(teacher)
         expect(response.body).to include(teacher.trn)
-        expect(response.body).to include(Teachers::Name.new(teacher).full_name)
+        expect(response.body).to include(CGI.escape_html(Teachers::Name.new(teacher).full_name))
       end
 
       context "when teacher has migration failures" do
