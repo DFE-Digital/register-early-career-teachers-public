@@ -9,15 +9,13 @@ module Admin
       @params = params
     end
 
-    def call
+    def update_induction!
       validate_can_update!
 
       previous_start_date = induction_period.started_on
 
       ActiveRecord::Base.transaction do
-        induction_period.update!(
-          params.slice(:started_on, :finished_on, :number_of_terms, :induction_programme)
-        )
+        induction_period.update!(params)
         notify_trs_of_start_date_change(previous_start_date)
       end
 

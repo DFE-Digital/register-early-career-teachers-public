@@ -22,7 +22,6 @@ class InductionPeriod < ApplicationRecord
                          message: "Choose an induction programme" }
 
   validate :start_date_after_qts_date
-  validate :start_date_before_end_date, if: -> { started_on.present? && finished_on.present? }
   validate :teacher_distinct_period, if: -> { valid_date_order? }
   validate :number_of_terms_for_ongoing_induction_period
 
@@ -37,13 +36,7 @@ private
     return if started_on.blank? || teacher.qts_awarded_on.blank?
     return if started_on >= teacher.qts_awarded_on
 
-    errors.add(:started_on, "cannot be before QTS award date")
-  end
-
-  def start_date_before_end_date
-    return if started_on <= finished_on
-
-    errors.add(:started_on, "must be before end date")
+    errors.add(:started_on, "Started on cannot be before QTS award date (#{teacher.qts_awarded_on.to_fs(:govuk)})")
   end
 
   def valid_date_order?
