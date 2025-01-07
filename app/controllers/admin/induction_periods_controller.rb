@@ -11,12 +11,14 @@ module Admin
         params: induction_period_params
       )
 
-      if service.call
+      if service.update_induction!
         redirect_to admin_teacher_path(@induction_period.teacher),
                     notice: "Induction period updated successfully"
       end
-    rescue UpdateInductionPeriodService::RecordedOutcomeError, ActiveRecord::RecordInvalid => e
+    rescue UpdateInductionPeriodService::RecordedOutcomeError => e
       @induction_period.errors.add(:base, e.message)
+      render :edit, status: :unprocessable_entity
+    rescue ActiveRecord::RecordInvalid
       render :edit, status: :unprocessable_entity
     end
 

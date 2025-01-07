@@ -7,7 +7,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
   let(:induction_period) { FactoryBot.create(:induction_period, teacher: teacher, started_on: "2023-06-01", finished_on: "2023-12-31") }
   let(:params) { {} }
 
-  describe "#call" do
+  describe "#update" do
     context "with valid params" do
       let(:params) do
         {
@@ -19,7 +19,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
       end
 
       it "updates the induction period" do
-        expect { service.call }.to change { induction_period.reload.started_on }.to(Date.parse("2024-01-01"))
+        expect { service.update_induction! }.to change { induction_period.reload.started_on }.to(Date.parse("2024-01-01"))
           .and change { induction_period.reload.finished_on }.to(Date.parse("2024-12-31"))
           .and change { induction_period.reload.number_of_terms }.to(3)
           .and change { induction_period.reload.induction_programme }.to("cip")
@@ -27,12 +27,10 @@ RSpec.describe Admin::UpdateInductionPeriodService do
     end
 
     context "when induction period has an outcome" do
-      before do
-        induction_period.update!(outcome: "pass")
-      end
+      let(:induction_period) { FactoryBot.create(:induction_period, teacher: teacher, started_on: "2023-06-01", finished_on: "2023-12-31", outcome: "pass") }
 
       it "raises an error" do
-        expect { service.call }.to raise_error(
+        expect { service.update_induction! }.to raise_error(
           Admin::UpdateInductionPeriodService::RecordedOutcomeError,
           "Cannot edit induction period with recorded outcome"
         )
@@ -49,9 +47,9 @@ RSpec.describe Admin::UpdateInductionPeriodService do
         end
 
         it "raises an error" do
-          expect { service.call }.to raise_error(
+          expect { service.update_induction! }.to raise_error(
             ActiveRecord::RecordInvalid,
-            "Validation failed: Finished on must be later than the start date, Started on must be before end date"
+            "Validation failed: Finished on The finish date must be later than the start date"
           )
         end
       end
@@ -61,9 +59,9 @@ RSpec.describe Admin::UpdateInductionPeriodService do
         let(:params) { { started_on: "2022-12-31" } }
 
         it "raises an error" do
-          expect { service.call }.to raise_error(
+          expect { service.update_induction! }.to raise_error(
             ActiveRecord::RecordInvalid,
-            "Validation failed: Started on cannot be before QTS award date"
+            "Validation failed: Started on Started on cannot be before QTS award date (1 January 2023)"
           )
         end
       end
@@ -81,7 +79,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
           let(:params) { { started_on: "2023-05-01" } }
 
           it "raises an error" do
-            expect { service.call }.to raise_error(
+            expect { service.update_induction! }.to raise_error(
               ActiveRecord::RecordInvalid,
               "Validation failed: Induction periods cannot overlap"
             )
@@ -100,7 +98,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
           let(:params) { { finished_on: "2023-12-01" } }
 
           it "raises an error" do
-            expect { service.call }.to raise_error(
+            expect { service.update_induction! }.to raise_error(
               ActiveRecord::RecordInvalid,
               "Validation failed: Induction periods cannot overlap"
             )
@@ -117,7 +115,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
       end
 
       it "enqueues BeginECTInductionJob" do
-        service.call
+        service.update_induction!
 
         expect(BeginECTInductionJob).to have_received(:perform_later).with(
           trn: teacher.trn,
@@ -136,7 +134,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
         end
 
         it "does not enqueue BeginECTInductionJob" do
-          service.call
+          service.update_induction!
 
           expect(BeginECTInductionJob).not_to have_received(:perform_later)
         end

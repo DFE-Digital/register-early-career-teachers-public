@@ -11,7 +11,7 @@ describe Interval do
         end
 
         it "add an error" do
-          expect(subject.errors.messages).to include(finished_on: ["must be later than the start date"])
+          expect(subject.errors.messages).to include(finished_on: ["The finish date must be later than the start date"])
         end
       end
 
@@ -23,7 +23,7 @@ describe Interval do
         end
 
         it "add an error" do
-          expect(subject.errors.messages).to include(finished_on: ["must be later than the start date"])
+          expect(subject.errors.messages).to include(finished_on: ["The finish date must be later than the start date"])
         end
       end
     end
