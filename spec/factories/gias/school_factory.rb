@@ -109,5 +109,9 @@ FactoryBot.define do
     trait(:independent_school_type) do
       type_name { GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.sample }
     end
+
+    trait(:state_school_type) do
+      type_name { GIAS::Types::STATE_SCHOOL_TYPES.sample }
+    end
   end
 end
