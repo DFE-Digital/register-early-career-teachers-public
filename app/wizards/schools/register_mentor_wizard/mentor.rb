@@ -12,7 +12,7 @@ module Schools
       end
 
       def active_record_at_school
-        @active_record_at_school ||= school.current_mentor_period(trn:)
+        @active_record_at_school ||= MentorAtSchoolPeriods::Search.new.mentor_periods(trn:, urn: school_urn).ongoing.last
       end
 
       def full_name
