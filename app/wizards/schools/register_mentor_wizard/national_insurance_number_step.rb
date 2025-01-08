@@ -13,6 +13,7 @@ module Schools
 
       def next_step
         return :not_found unless mentor.in_trs?
+        return :already_active_at_school if mentor.active_at_school?
 
         :review_mentor_details
       end

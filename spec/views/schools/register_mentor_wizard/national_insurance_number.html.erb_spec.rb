@@ -2,7 +2,7 @@ RSpec.describe "schools/register_mentor_wizard/national_insurance_number.html.er
   let(:back_path) { schools_register_mentor_wizard_find_mentor_path }
   let(:continue_path) { schools_register_mentor_wizard_national_insurance_number_path }
   let(:title) { "We cannot find the mentor's details" }
-  let(:wizard) { Schools::RegisterMentorWizard::Wizard.new(current_step: :national_insurance_number, store: {}) }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number, store: {}) }
 
   before do
     assign(:wizard, wizard)

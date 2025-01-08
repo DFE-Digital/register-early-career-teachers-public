@@ -4,7 +4,7 @@ RSpec.describe "schools/register_mentor_wizard/email_address.html.erb" do
   let(:mentor) { wizard.mentor }
   let(:title) { "What is Jim Waters's email address?" }
   let(:store) { double(trs_first_name: "John", trs_last_name: "Waters", corrected_name: "Jim Waters") }
-  let(:wizard) { Schools::RegisterMentorWizard::Wizard.new(current_step: :email_address, store:) }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :email_address, store:) }
 
   before do
     assign(:wizard, wizard)

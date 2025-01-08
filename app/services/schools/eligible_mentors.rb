@@ -5,7 +5,7 @@ module Schools
     end
 
     def for_ect(ect)
-      @school.current_mentors.excluding(ect_as_mentor_at_school(ect))
+      @school.mentor_at_school_periods.ongoing.excluding(ect_as_mentor_at_school(ect))
     end
 
   private

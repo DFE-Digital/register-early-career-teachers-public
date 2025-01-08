@@ -6,6 +6,7 @@ module Schools
       steps do
         [
           {
+            already_active_at_school: AlreadyActiveAtSchoolStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep,
             email_address: EmailAddressStep,

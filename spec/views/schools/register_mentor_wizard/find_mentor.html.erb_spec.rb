@@ -3,7 +3,7 @@ RSpec.describe "schools/register_mentor_wizard/find_mentor.html.erb" do
   let(:back_path) { schools_register_mentor_wizard_start_path(ect_id: ect.id) }
   let(:continue_path) { schools_register_mentor_wizard_find_mentor_path }
   let(:title) { "Find a mentor" }
-  let(:wizard) { Schools::RegisterMentorWizard::Wizard.new(current_step: :find_mentor, ect_id: ect.id) }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, ect_id: ect.id) }
 
   before do
     assign(:wizard, wizard)
