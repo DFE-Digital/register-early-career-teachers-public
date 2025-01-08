@@ -4,7 +4,15 @@ RSpec.describe Admin::UpdateInductionPeriodService do
   subject(:service) { described_class.new(induction_period: induction_period, params: params) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:induction_period) { FactoryBot.create(:induction_period, teacher: teacher, started_on: "2023-06-01", finished_on: "2023-12-31") }
+  let(:induction_period) do
+    FactoryBot.create(
+      :induction_period,
+      teacher:,
+      started_on: "2023-06-01",
+      finished_on: "2023-12-31",
+      number_of_terms: 2
+    )
+  end
   let(:params) { {} }
 
   describe "#update" do
