@@ -105,7 +105,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
   context '#save!' do
     context 'when the step is not valid' do
-      let(:wizard) { FactoryBot.create(:register_mentor_wizard, current_step: :find_mentor) }
+      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor) }
       subject { wizard.current_step }
 
       it 'does not update any data in the wizard mentor' do
@@ -139,10 +139,10 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       it 'updates the wizard mentor trn and TRS data' do
         expect { subject.save! }
           .to change(subject.mentor, :trn).from(nil).to('1234568')
-                                          .and change(subject.mentor, :date_of_birth).from(nil).to('3-2-1977')
-                                                                                     .and change(subject.mentor, :trs_date_of_birth).from(nil).to('1977-02-03')
-                                                                                                                                    .and change(subject.mentor, :trs_first_name).from(nil).to('Kirk')
-                                                                                                                                                                                .and change(subject.mentor, :trs_last_name).from(nil).to('Van Houten')
+          .and change(subject.mentor, :date_of_birth).from(nil).to('3-2-1977')
+          .and change(subject.mentor, :trs_date_of_birth).from(nil).to('1977-02-03')
+          .and change(subject.mentor, :trs_first_name).from(nil).to('Kirk')
+          .and change(subject.mentor, :trs_last_name).from(nil).to('Van Houten')
       end
     end
   end

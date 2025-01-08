@@ -5,7 +5,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
   let(:mentor) { wizard.mentor }
   let(:title) { "You've assigned #{mentor.full_name} as a mentor" }
   let(:store) { double(trs_first_name: "John", trs_last_name: "Wayne", corrected_name: nil, already_active_at_school:) }
-  let(:wizard) { Schools::RegisterMentorWizard::Wizard.new(current_step: :confirmation, store:) }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :confirmation, store:) }
 
   before do
     assign(:wizard, wizard)
