@@ -128,7 +128,6 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
 
       context "when the submission is valid but ECT has an active induction period with another AB" do
         let(:teacher) { FactoryBot.create(:teacher, trn:) }
-        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
@@ -139,13 +138,15 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
           )
         end
 
-        it 're-renders the find page and displays the relevant error' do
+        it 'shows the check details page' do
           post(
             '/appropriate-body/claim-an-ect/find-ect',
             params: { pending_induction_submission: search_params }
           )
 
-          expect(response.redirect_url).to match(%r{/appropriate-body/claim-an-ect/errors/induction-with-another-appropriate-body/\d+\z})
+          last_pending_induction_submission_id = PendingInductionSubmission.last.id
+
+          expect(response.redirect_url).to end_with("/appropriate-body/claim-an-ect/check-ect/#{last_pending_induction_submission_id}/edit")
         end
       end
 

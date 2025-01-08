@@ -39,12 +39,12 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
         include_context "fake trs api client"
         let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
-        it "raises TeacherHasActiveInductionPeriodWithAnotherAB" do
+        it "returns true" do
           find_ect = AppropriateBodies::ClaimAnECT::FindECT.new(
             appropriate_body: FactoryBot.create(:appropriate_body), pending_induction_submission:
           )
 
-          expect { find_ect.import_from_trs! }.to raise_error(AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithAnotherAB)
+          expect(find_ect.import_from_trs!).to be(true)
         end
       end
 
