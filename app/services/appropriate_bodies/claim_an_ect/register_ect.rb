@@ -40,30 +40,30 @@ module AppropriateBodies
           qts_awarded_on: pending_induction_submission.trs_qts_awarded
         )
 
-        if teacher.changed?
-          teacher_name = ::Teachers::Name.new(teacher).full_name
+        return true unless teacher.persisted? && teacher.changed?
 
-          # TODO: We probably want to put the logic we need here
-          #       in another class as it'll be shared by the
-          #       school side
-          #
-          #       I think we should check if it's an update or
-          #       a new record and create events accordingly:
-          #
-          #       * Jon Smith's ECT record was created
-          #       * Jonathan Smith's name was changed from Jon Smith
+        teacher_name = ::Teachers::Name.new(teacher).full_name
 
-          teacher.save
+        # TODO: We probably want to put the logic we need here
+        #       in another class as it'll be shared by the
+        #       school side
+        #
+        #       I think we should check if it's an update or
+        #       a new record and create events accordingly:
+        #
+        #       * Jon Smith's ECT record was created
+        #       * Jonathan Smith's name was changed from Jon Smith
 
-          Events::Record.new(
-            author: author,
-            event_type: :teacher_name_updated_by_trs,
-            heading: "#{teacher_name} was changed",
-            teacher:,
-            appropriate_body:,
-            happened_at: Time.zone.now
-          ).record_event!
-        end
+        teacher.save
+
+        Events::Record.new(
+          author: author,
+          event_type: :teacher_name_updated_by_trs,
+          heading: "#{teacher_name} was changed",
+          teacher:,
+          appropriate_body:,
+          happened_at: Time.zone.now
+        ).record_event!
       end
 
       def teacher

@@ -45,4 +45,44 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
 
     expect(view.content_for(:error_summary)).to have_css('.govuk-error-summary')
   end
+
+  describe 'induction periods' do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+
+    context 'when the ECT has past induction periods' do
+      let!(:current_induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
+
+      it 'shows the current induction period' do
+        assign(:teacher, teacher)
+        assign(:pending_induction_submission, pending_induction_submission)
+
+        render
+
+        expect(rendered).to have_css('.govuk-summary-card__title', text: current_induction_period.appropriate_body.name)
+      end
+
+      it 'has no release link' do
+        assign(:teacher, teacher)
+        assign(:pending_induction_submission, pending_induction_submission)
+
+        render
+
+        expect(rendered).not_to have_link('Release')
+      end
+    end
+
+    context 'when the ECT has past induction periods' do
+      let!(:past_induction_period) { FactoryBot.create(:induction_period, teacher:) }
+
+      it 'shows a list of past induction periods' do
+        assign(:teacher, teacher)
+        assign(:pending_induction_submission, pending_induction_submission)
+
+        render
+
+        expect(rendered).to have_css('ul.govuk-list > li .govuk-summary-card__title', text: past_induction_period.appropriate_body.name)
+      end
+    end
+  end
 end

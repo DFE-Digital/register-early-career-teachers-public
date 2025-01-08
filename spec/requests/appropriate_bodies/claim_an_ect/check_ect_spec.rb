@@ -90,6 +90,22 @@ RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT
           expect(response.body).to include(page_heading)
         end
       end
+
+      context "when the ECT has an ongoing induction period with another appropriate body" do
+        let!(:preexisting_teacher) { FactoryBot.create(:teacher, trn: pending_induction_submission.trn) }
+        let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher: preexisting_teacher) }
+
+        it 'redirects to the ECT already claimed by another AB early exit page' do
+          patch(
+            "/appropriate-body/claim-an-ect/check-ect/#{pending_induction_submission.id}",
+            params: { pending_induction_submission: { confirmed: '1' } }
+          )
+
+          redirect_url = "/appropriate-body/claim-an-ect/errors/induction-with-another-appropriate-body/#{pending_induction_submission.id}"
+
+          expect(response).to redirect_to(redirect_url)
+        end
+      end
     end
   end
 end
