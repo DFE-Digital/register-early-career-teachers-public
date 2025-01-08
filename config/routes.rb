@@ -119,6 +119,12 @@ Rails.application.routes.draw do
       get "start-date", action: :new
       post "start-date", action: :create
 
+      get "appropriate-body", action: :new
+      post "appropriate-body", action: :create
+
+      get "funding-ind-appropriate-body", action: :new
+      post "funding-ind-appropriate-body", action: :create
+
       get "programme-type", action: :new
       post "programme-type", action: :create
 

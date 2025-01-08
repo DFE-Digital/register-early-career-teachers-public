@@ -5,6 +5,12 @@ module Schools
         :confirmation
       end
 
+      def previous_step
+        return :funding_ind_appropriate_body if independent_school?
+
+        :appropriate_body
+      end
+
     private
 
       def persist

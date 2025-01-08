@@ -7,7 +7,7 @@ module Schools
       end
 
       def govuk_date_of_birth
-        trs_date_of_birth.to_date&.to_formatted_s(:govuk)
+        trs_date_of_birth&.to_date&.to_formatted_s(:govuk)
       end
 
       def ect_at_school_period

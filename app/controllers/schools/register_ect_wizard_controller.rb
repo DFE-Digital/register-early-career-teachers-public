@@ -29,7 +29,8 @@ module Schools
       @wizard = WIZARD_CLASS.new(
         current_step:,
         step_params: params,
-        store:
+        store:,
+        school:
       )
       @ect = @wizard.ect
     end
