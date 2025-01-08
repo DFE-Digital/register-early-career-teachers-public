@@ -94,7 +94,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def when_i_click_to_assign_the_existing_mentor_to_the_ect
-    page.get_by_role('button', name: "Assign #{@ect_name} to mentor #{@mentor_name}").click
+    page.get_by_role('button', name: "Assign #{@mentor_name} to mentor #{@ect_name}").click
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
