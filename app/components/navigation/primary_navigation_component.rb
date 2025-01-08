@@ -9,7 +9,7 @@ module Navigation
     end
 
     def call
-      govuk_service_navigation(service_name: "Register early career teachers", service_url: "/") do |service_navigation|
+      govuk_service_navigation(service_name: "Register early career teachers", service_url: service_url) do |service_navigation|
         navigation_items.each do |item|
           service_navigation.with_navigation_item(
             text: item[:text],
@@ -22,36 +22,47 @@ module Navigation
 
   private
 
-    def ab_nav_options
-      if current_path.start_with?("/appropriate-body")
-        []
-      end
-    end
-
-    def dfe_nav_options
-      if Admin::Access.new(current_user).can_access?
-        [
-          { text: "Schools", href: admin_schools_path },
-        ]
+    def service_url
+      if current_path.start_with?("/admin")
+        "/admin"
+      else
+        "/"
       end
     end
 
     def navigation_items
-      [
-        ab_nav_options,
-        dfe_nav_options,
-        school_nav_options,
-        ({ text: "Sign out", href: sign_out_path } if current_user),
-      ].flatten.compact
+      if admin_section? && admin_access?
+        admin_navigation_items
+      else
+        school_navigation_items
+      end
     end
 
-    def school_nav_options
-      if current_path.start_with?("/school")
-        [
-          { text: "Your ECTs", href: schools_ects_home_path },
-          { text: "Your mentors", href: 'FIXME' }
-        ]
-      end
+    def admin_navigation_items
+      [
+        { text: "Teachers", href: "/admin/teachers" },
+        { text: "Organisations", href: "/admin/organisations" },
+        { text: "Admin users", href: "#" },
+      ]
+    end
+
+    def school_navigation_items
+      [
+        { text: "Your ECTs", href: schools_ects_home_path },
+        { text: "Your mentors", href: "#" }
+      ]
+    end
+
+    def admin_section?
+      current_path.start_with?("/admin")
+    end
+
+    def admin_access?
+      Admin::Access.new(current_user).can_access?
+    end
+
+    def current_page?(path)
+      current_path == path
     end
   end
 end

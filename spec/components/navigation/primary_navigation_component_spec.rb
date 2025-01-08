@@ -1,117 +1,99 @@
 require "rails_helper"
 
 RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
-  describe "a nested navigation structure with two levels" do
-    let(:current_path) { '/' }
-    let(:current_user) { FactoryBot.build(:user) }
+  let(:current_path) { "/" }
+  let(:current_user) { FactoryBot.build(:user) }
 
-    subject { described_class.new(current_path:, current_user:) }
+  subject { described_class.new(current_path:, current_user:) }
 
-    def validate_navigation_options(options)
-      options.each do |option|
-        expect(rendered_content).to have_css("a.govuk-service-navigation__link", text: option[:text])
-        expect(rendered_content).to have_css("a.govuk-service-navigation__link[href='#{option[:href]}']")
-      end
+  def validate_navigation_items(expected_items)
+    expected_items.each do |item|
+      expect(rendered_content).to have_link(item[:text], href: item[:href])
     end
+  end
 
-    it 'renders a link to the homepage with the service name' do
+  describe "#call" do
+    it "renders the service name" do
       render_inline(subject)
-
-      expect(rendered_content).to have_link('Register early career teachers', href: '/', class: 'govuk-service-navigation__link')
+      expect(rendered_content).to have_link("Register early career teachers")
     end
 
-    context "when AB path" do
-      let(:current_path) { "/appropriate-body/1" }
-
-      let(:expected_school_nav_options) do
-        [{ text: "Sign out", href: "/sign-out" }]
-      end
-
-      it "renders AB path options" do
-        render_inline(subject)
-
-        validate_navigation_options(expected_school_nav_options)
-      end
-
-      context "when not authenticated" do
-        let(:current_user) { nil }
-
-        it "does not render the sign out option" do
-          render_inline(subject)
-
-          expect(rendered_content).not_to have_css("a.govuk-service-navigation__link", text: "Sign out")
-        end
-      end
-    end
-
-    context "when school path" do
-      let(:current_path) { "/schools/home/ects" }
-      let(:expected_school_nav_options) do
-        [
-          { text: "Your ECTs", href: "/schools/home/ects" },
-          { text: "Your mentors", href: 'FIXME' },
-          { text: "Sign out", href: "/sign-out" }
-        ]
-      end
-
-      it "renders school path options" do
-        render_inline(subject)
-
-        validate_navigation_options(expected_school_nav_options)
-      end
-
-      context "when not authenticated" do
-        let(:current_user) { nil }
-
-        it "does not render the sign out option" do
-          render_inline(subject)
-
-          expect(rendered_content).not_to have_css("a.govuk-service-navigation__link", text: "Sign out")
-        end
-      end
-    end
-
-    context "when a dfe user is signed in" do
-      let(:current_user) { FactoryBot.create(:user) }
+    context "when in admin section with admin access" do
       let(:current_path) { "/admin" }
-      let(:expected_dfe_nav_options) do
-        [
-          { text: "Schools", href: '/admin/schools' },
-          { text: "Sign out", href: "/sign-out" }
-        ]
-      end
+      let(:current_user) { FactoryBot.create(:user) }
 
       before do
-        current_user.dfe_roles.create!
+        allow(Admin::Access).to receive(:new).with(current_user).and_return(double(can_access?: true))
       end
 
-      it "renders dfe admin options" do
+      it "renders admin navigation items" do
         render_inline(subject)
 
-        validate_navigation_options(expected_dfe_nav_options)
+        expected_items = [
+          { text: "Teachers", href: "/admin/teachers" },
+          { text: "Organisations", href: "/admin/organisations" },
+          { text: "Admin users", href: "#" },
+        ]
+
+        validate_navigation_items(expected_items)
+      end
+
+      it "sets the correct service URL" do
+        render_inline(subject)
+        expect(rendered_content).to have_link("Register early career teachers", href: "/admin")
       end
     end
 
-    context "when any other path" do
-      let(:current_path) { "/" }
-      let(:expected_school_nav_options) do
-        [{ text: "Sign out", href: "/sign-out" }]
+    context "when in admin section without admin access" do
+      let(:current_path) { "/admin" }
+
+      before do
+        allow(Admin::Access).to receive(:new).with(current_user).and_return(double(can_access?: false))
       end
 
-      it "renders just the sign out option" do
+      it "renders school navigation items" do
         render_inline(subject)
 
-        validate_navigation_options(expected_school_nav_options)
+        expected_items = [
+          { text: "Your ECTs", href: "/schools/home/ects" },
+          { text: "Your mentors", href: "#" }
+        ]
+
+        validate_navigation_items(expected_items)
+      end
+    end
+
+    context "when in school section" do
+      let(:current_path) { "/school" }
+
+      it "renders school navigation items" do
+        render_inline(subject)
+
+        expected_items = [
+          { text: "Your ECTs", href: "/schools/home/ects" },
+          { text: "Your mentors", href: "#" }
+        ]
+
+        validate_navigation_items(expected_items)
       end
 
-      context "when not authenticated" do
-        let(:current_user) { nil }
+      it "sets the correct service URL" do
+        render_inline(subject)
+        expect(rendered_content).to have_link("Register early career teachers", href: "/")
+      end
+    end
 
-        it "does not render the sign out option" do
-          render_inline(subject)
+    context "when current page matches a navigation item" do
+      let(:current_path) { "/admin/teachers" }
+      let(:current_user) { FactoryBot.create(:user) }
 
-          expect(rendered_content).not_to have_css("a.govuk-service-navigation__link", text: "Sign out")
-        end
+      before do
+        allow(Admin::Access).to receive(:new).with(current_user).and_return(double(can_access?: true))
+      end
+
+      it "marks the current item as active" do
+        render_inline(subject)
+        expect(rendered_content).to have_css("a[aria-current='page']", text: "Teachers")
       end
     end
   end

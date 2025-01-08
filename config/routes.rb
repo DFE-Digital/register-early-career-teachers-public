@@ -40,6 +40,9 @@ Rails.application.routes.draw do
     resources :users, only: %i[index] do
     end
 
+    resources :organisations, only: %i[index] do
+    end
+
     resources :appropriate_bodies, only: %i[index], path: 'appropriate-bodies' do
     end
 
