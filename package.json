@@ -2,7 +2,7 @@
   "name": "app",
   "dependencies": {
     "accessible-autocomplete": "^3.0.1",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.24.2",
     "govuk-frontend": "5.7.1",
     "sass": "^1.82.0"
   },
