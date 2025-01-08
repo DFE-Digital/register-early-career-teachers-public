@@ -92,11 +92,5 @@ describe MentorAtSchoolPeriod do
         expect(described_class.school_siblings_of(mentor_at_school_period)).to match_array([period_2])
       end
     end
-
-    describe ".with_trn" do
-      it "returns mentor periods only for the teacher with the given trn" do
-        expect(described_class.with_trn(teacher.trn)).to match_array([period_1, period_2, period_3])
-      end
-    end
   end
 end
