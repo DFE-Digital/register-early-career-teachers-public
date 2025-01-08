@@ -2,14 +2,10 @@ class School < ApplicationRecord
   # Associations
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
 
-  has_many :events
-
   has_many :ect_at_school_periods, inverse_of: :school
-  has_many :mentor_at_school_periods, inverse_of: :school
-
-  has_many :current_mentors, -> { ongoing }, class_name: "MentorAtSchoolPeriod"
-
   has_many :ect_teachers, -> { distinct }, through: :ect_at_school_periods, source: :teacher
+  has_many :events
+  has_many :mentor_at_school_periods, inverse_of: :school
   has_many :mentor_teachers, -> { distinct }, through: :mentor_at_school_periods, source: :teacher
 
   # Validations

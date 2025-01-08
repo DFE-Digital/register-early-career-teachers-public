@@ -10,7 +10,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
            corrected_name: "Jim Wayne",
            email: "john.wayne@example.com")
   end
-  let(:wizard) { Schools::RegisterMentorWizard::Wizard.new(current_step: :check_answers, store:) }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :check_answers, store:) }
   let(:mentor) { wizard.mentor }
 
   before do

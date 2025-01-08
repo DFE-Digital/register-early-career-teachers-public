@@ -1,0 +1,14 @@
+---
+title: This mentor has already been registered
+---
+
+<%= @mentor.full_name %> has already been registered as a mentor so there's no need to do this again.
+You can still continue to assign <%= @mentor.full_name %> to mentor <%= @ect_name %>.
+
+If you meant to register and assign a different mentor to <%= @ect_name %>, you can go back to do this.
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= f.govuk_submit "Assign #{@mentor.full_name} to mentor #{@ect_name}" %>
+<% end %>
+
+[Back to ECTs](<%= schools_ects_home_path %>)

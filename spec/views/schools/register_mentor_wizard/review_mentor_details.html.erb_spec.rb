@@ -7,15 +7,16 @@ RSpec.describe "schools/register_mentor_wizard/review_mentor_details.html.erb" d
   let(:national_insurance_number) { "AD12345ED" }
   let(:title) { "Check mentor details" }
   let(:store) do
-    OpenStruct.new(trn: "1234567",
-                   trs_first_name: "John",
-                   trs_last_name: "Wayne",
-                   trs_date_of_birth: "1950-01-01",
-                   corrected_name: nil,
-                   date_of_birth:,
-                   national_insurance_number:)
+    FactoryBot.build(:session_repository,
+                     trn: "1234567",
+                     trs_first_name: "John",
+                     trs_last_name: "Wayne",
+                     trs_date_of_birth: "1950-01-01",
+                     corrected_name: nil,
+                     date_of_birth:,
+                     national_insurance_number:)
   end
-  let(:wizard) { Schools::RegisterMentorWizard::Wizard.new(current_step: :review_mentor_details, store:) }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :review_mentor_details, store:) }
   let(:mentor) { wizard.mentor }
 
   before do

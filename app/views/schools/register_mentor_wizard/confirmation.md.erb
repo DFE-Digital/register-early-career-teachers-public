@@ -11,9 +11,11 @@ for
 
 You have successfully registered <%= @ect_name %> for training.
 
+<% unless @mentor.already_active_at_school %>
 ### What happens next
 
 We'll email <%= @mentor.full_name %> to confirm you have registered them.
+<% end %>
 
 They do not need to provide us with any further details.
 

@@ -146,6 +146,9 @@ Rails.application.routes.draw do
       get "trn-not-found", action: :new
       get "not-found", action: :new
 
+      get "already-active-at-school", action: :new
+      post "already-active-at-school", action: :create
+
       get "review-mentor-details", action: :new
       post "review-mentor-details", action: :create
 
