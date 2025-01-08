@@ -480,6 +480,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_09_110019) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "teacher_migration_failures", force: :cascade do |t|
+    t.bigint "teacher_id"
+    t.string "message", null: false
+    t.uuid "migration_item_id"
+    t.string "migration_item_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["teacher_id"], name: "index_teacher_migration_failures_on_teacher_id"
+  end
+
   create_table "teachers", force: :cascade do |t|
     t.string "corrected_name"
     t.datetime "created_at", null: false
@@ -565,6 +575,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_09_110019) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "teacher_migration_failures", "teachers"
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "mentor_at_school_periods"
   add_foreign_key "training_periods", "provider_partnerships"
