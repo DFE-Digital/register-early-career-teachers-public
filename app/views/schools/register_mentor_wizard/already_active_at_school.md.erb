@@ -8,7 +8,7 @@ You can still continue to assign <%= @mentor.full_name %> to mentor <%= @ect_nam
 If you meant to register and assign a different mentor to <%= @ect_name %>, you can go back to do this.
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
-<%= f.govuk_submit "Assign #{@ect_name} to mentor #{@mentor.full_name}" %>
+  <%= f.govuk_submit "Assign #{@mentor.full_name} to mentor #{@ect_name}" %>
 <% end %>
 
 [Back to ECTs](<%= schools_ects_home_path %>)
