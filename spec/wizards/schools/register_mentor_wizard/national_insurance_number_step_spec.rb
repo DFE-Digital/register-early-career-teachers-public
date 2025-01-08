@@ -77,7 +77,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
 
   context '#save!' do
     context 'when the step is not valid' do
-      let(:wizard) { FactoryBot.create(:register_mentor_wizard, current_step: :national_insurance_number) }
+      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number) }
       subject { wizard.current_step }
 
       it 'does not update any data in the wizard mentor' do
@@ -106,8 +106,8 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
       it 'updates the wizard mentor national insurance number and TRS data' do
         expect { subject.save! }
           .to change(subject.mentor, :national_insurance_number).from(nil).to('AB123456A')
-                                                                .and change(subject.mentor, :trs_first_name).from(nil).to('Kirk')
-                                                                                                            .and change(subject.mentor, :trs_last_name).from(nil).to('Van Houten')
+          .and change(subject.mentor, :trs_first_name).from(nil).to('Kirk')
+          .and change(subject.mentor, :trs_last_name).from(nil).to('Van Houten')
       end
     end
   end
