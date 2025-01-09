@@ -10,7 +10,7 @@ module Schools
       end
 
       def next_step
-        :check_answers
+        :working_pattern
       end
     end
   end

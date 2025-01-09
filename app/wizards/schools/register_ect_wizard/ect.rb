@@ -42,7 +42,8 @@ module Schools
                                  corrected_name:,
                                  trn:,
                                  school:,
-                                 started_on: Date.parse(start_date))
+                                 started_on: Date.parse(start_date),
+                                 working_pattern:)
                                .register_teacher!
       end
     end
