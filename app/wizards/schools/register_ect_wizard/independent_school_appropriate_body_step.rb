@@ -13,11 +13,9 @@ module Schools
         :programme_type
       end
 
-      def save!
-        if valid_step?
-          name = appropriate_body_type == 'ISTIP' ? appropriate_body_type : appropriate_body_name
-          ect.update!(appropriate_body_name: name)
-        end
+      def persist
+        name = appropriate_body_type == 'ISTIP' ? appropriate_body_type : appropriate_body_name
+        ect.update!(appropriate_body_name: name)
       end
     end
   end
