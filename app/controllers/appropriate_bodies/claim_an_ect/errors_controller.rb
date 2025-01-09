@@ -15,7 +15,7 @@ module AppropriateBodies
     private
 
       def find_pending_induction_submission
-        PendingInductionSubmissions::Search.new(appropriate_body: @appropriate_body).pending_induction_submissions.find(params[:id])
+        @pending_induction_submission = PendingInductionSubmissions::Search.new(appropriate_body: @appropriate_body).pending_induction_submissions.find(params[:id])
       end
     end
   end
