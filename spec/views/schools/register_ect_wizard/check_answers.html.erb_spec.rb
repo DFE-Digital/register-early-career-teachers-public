@@ -7,7 +7,8 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
            govuk_date_of_birth: '12 January 1931',
            start_date: 'September 2022',
            formatted_programme_type: 'School-led',
-           appropriate_body_name: 'Teaching Regulation Agency')
+           appropriate_body_name: 'Teaching Regulation Agency',
+           working_pattern: 'Full time')
   end
   let(:school) { double('School', type_name: 'Other independent school', independent?: true) }
   let(:title) { "Check your answers before submitting" }

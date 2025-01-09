@@ -13,7 +13,8 @@ describe Schools::RegisterECTWizard::ECT do
                      trs_first_name: "Dusty",
                      trs_last_name: "Rhodes",
                      trs_date_of_birth: "1945-10-11",
-                     trs_national_insurance_number: "OWAD23455")
+                     trs_national_insurance_number: "OWAD23455",
+                     working_pattern: "full_time")
   end
 
   subject(:ect) { described_class.new(store) }
@@ -105,6 +106,12 @@ describe Schools::RegisterECTWizard::ECT do
   describe '#trn' do
     it 'returns the trn' do
       expect(ect.trn).to eq("3002586")
+    end
+  end
+
+  describe '#working_pattern' do
+    it 'returns the working pattern' do
+      expect(ect.working_pattern).to eq("full_time")
     end
   end
 

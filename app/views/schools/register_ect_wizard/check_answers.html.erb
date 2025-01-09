@@ -36,6 +36,11 @@
     row.with_key(text: 'Programme type')
     row.with_value(text: @ect.formatted_programme_type)
   end
+
+  summary_list.with_row do |row|
+    row.with_key(text: 'Working pattern')
+    row.with_value(text: @ect.working_pattern)
+  end
 end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
