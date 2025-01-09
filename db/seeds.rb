@@ -138,6 +138,8 @@ AppropriateBody.create!(name: 'Frame University London', local_authority_code: 8
 AppropriateBody.create!(name: 'Easelcroft Teaching School Hub', local_authority_code: 573, establishment_number: 9273, dfe_sign_in_organisation_id: SecureRandom.uuid)
 AppropriateBody.create!(name: 'Vista College', local_authority_code: 418, establishment_number: 3735, dfe_sign_in_organisation_id: SecureRandom.uuid)
 
+active_appropriate_bodies = [umber_teaching_school_hub, golden_leaf_teaching_school_hub]
+
 print_seed_info("Adding lead providers")
 
 grove_institute = LeadProvider.create!(name: 'Grove Institute').tap { |dp| describe_lead_provider(dp) }
@@ -307,12 +309,16 @@ InductionExtension.create!(
   number_of_terms: 1.5
 ).tap { |ext| describe_extension(ext) }
 
-PendingInductionSubmission.create!(
-  appropriate_body: golden_leaf_teaching_school_hub,
-  trn: alan_rickman.trn,
-  date_of_birth: Date.new(1946, 2, 21),
-  started_on: 1.month.ago
-).tap { |is| describe_pending_induction_submission(is) }
+active_appropriate_bodies.each do |appropriate_body|
+  PendingInductionSubmission.create!(
+    appropriate_body:,
+    trn: alan_rickman.trn,
+    date_of_birth: Date.new(1946, 2, 21),
+    started_on: 1.month.ago,
+    trs_first_name: alan_rickman.first_name,
+    trs_last_name: alan_rickman.last_name
+  ).tap { |is| describe_pending_induction_submission(is) }
+end
 
 print_seed_info("Hugh Grant (ECT)", indent: 2, colour: ECT_COLOUR)
 
