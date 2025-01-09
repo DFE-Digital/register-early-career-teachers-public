@@ -1,7 +1,7 @@
-RSpec.describe "schools/register_ect_wizard/funding_ind_appropriate_body.html.erb" do
+RSpec.describe "schools/register_ect_wizard/independent_school_appropriate_body.html.erb" do
   let(:back_path) { schools_register_ect_wizard_start_date_path }
   let(:continue_path) { schools_register_ect_wizard_check_answers_path }
-  let(:step) { Schools::RegisterECTWizard::FundingIndAppropriateBodyStep.new }
+  let(:step) { Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep.new }
   let(:ect) { double(full_name: 'John Smith') }
   let(:title) { "Which appropriate body will be supporting #{ect.full_name}'s induction?" }
   let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :find_ect, store: {}) }

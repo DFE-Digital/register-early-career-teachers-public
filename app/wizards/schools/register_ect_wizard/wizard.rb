@@ -8,12 +8,12 @@ module Schools
       steps do
         [
           {
-            appropriate_body: AppropriateBodyStep,
+            state_school_appropriate_body: StateSchoolAppropriateBodyStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep,
             email_address: EmailAddressStep,
             find_ect: FindECTStep,
-            funding_ind_appropriate_body: FundingIndAppropriateBodyStep,
+            independent_school_appropriate_body: IndependentSchoolAppropriateBodyStep,
             induction_completed: InductionCompletedStep,
             induction_exempt: InductionExemptStep,
             national_insurance_number: NationalInsuranceNumberStep,

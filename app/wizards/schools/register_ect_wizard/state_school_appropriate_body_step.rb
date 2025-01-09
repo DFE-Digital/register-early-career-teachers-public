@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class AppropriateBodyStep < Step
+    class StateSchoolAppropriateBodyStep < Step
       attr_accessor :appropriate_body_name
 
       validates :appropriate_body_name, presence: { message: "Enter the name of the appropriate body which will be supporting the ECT's induction" }
