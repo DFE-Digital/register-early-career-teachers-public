@@ -9,7 +9,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
            formatted_programme_type: 'School-led',
            appropriate_body_name: 'Teaching Regulation Agency')
   end
-  let(:school) { double('School', type_name: 'Other independent school') }
+  let(:school) { double('School', type_name: 'Other independent school', independent?: true) }
   let(:title) { "Check your answers before submitting" }
   let(:back_path) { schools_register_ect_wizard_independent_school_appropriate_body_path }
   let(:continue_path) { schools_register_ect_wizard_check_answers_path }
