@@ -30,7 +30,7 @@ RSpec.describe Sessions::Users::Builder do
 
     subject { described_class.new(omniauth_payload:).session_user }
 
-    context 'when the provider is dfe_sign_in and no organisation_urn present' do
+    context 'when the provider is dfe_sign_in and the organisation_id matches an appropriate body record' do
       let(:provider) { 'dfe_sign_in' }
       let(:uid) { Faker::Internet.uuid }
       let(:appropriate_body_id) { nil }

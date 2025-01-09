@@ -4,8 +4,8 @@ module Sessions
       class UnknownProvider < StandardError; end
 
       def session_user
-        return school_user if school_user?
         return appropriate_body_user if appropriate_body_user?
+        return school_user if school_user?
         return dfe_persona if dfe_persona?
         return school_persona if school_persona?
         return appropriate_body_persona if appropriate_body_persona?
@@ -38,7 +38,8 @@ module Sessions
       delegate :school_urn, to: :user_info
 
       # User?
-      def appropriate_body_user? = dfe_sign_in? && organisation.urn.blank?
+      def appropriate_body_organisation? = AppropriateBody.exists?(dfe_sign_in_organisation_id: organisation.id)
+      def appropriate_body_user? = dfe_sign_in? && appropriate_body_organisation?
       def school_user? = dfe_sign_in? && organisation.urn.present?
       def appropriate_body_persona? = persona? && appropriate_body_id.present?
       def dfe_persona? = persona? && ActiveModel::Type::Boolean.new.cast(dfe_staff)
