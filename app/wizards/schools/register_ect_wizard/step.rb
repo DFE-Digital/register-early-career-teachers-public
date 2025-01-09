@@ -6,6 +6,7 @@ module Schools
       include ActiveRecord::AttributeAssignment
 
       delegate :ect, :school, :valid_step?, to: :wizard
+      delegate :independent?, to: :school, prefix: true
 
       def next_step
       end
@@ -19,10 +20,6 @@ module Schools
       end
 
     private
-
-      def independent_school?
-        GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(school.type_name)
-      end
 
       def fetch_trs_teacher(**args)
         ::TRS::APIClient.new.find_teacher(**args)

@@ -14,7 +14,7 @@ module Schools
       end
 
       def next_step
-        return :independent_school_appropriate_body if independent_school?
+        return :independent_school_appropriate_body if school_independent?
 
         :state_school_appropriate_body
       end
