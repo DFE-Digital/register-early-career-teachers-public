@@ -1,0 +1,12 @@
+.govuk-header {
+  &__navigation-list {
+    float: right;
+  }
+
+  &__navigation-item {
+    border-color: #b1b4b6;
+    padding-left: 15px;
+    border-style: solid;
+    border-width: 0 0 0 1px;
+  }
+}
