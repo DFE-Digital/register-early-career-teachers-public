@@ -35,15 +35,17 @@
 <%= render TestGuidanceComponent.new do |component| %>
   <% component.with_trs_example_teacher_details %>
 
-  <% if PendingInductionSubmission.last.present? %>
+  <% pending_induction_submission = @appropriate_body.pending_induction_submissions.first %>
+
+  <% if pending_induction_submission.present? %>
     <h2 class="govuk-heading-m">Error preview</h2>
     <%=
       govuk_list([
-        govuk_link_to('Exempt from completing induction', ab_claim_an_ect_errors_exempt_path(PendingInductionSubmission.last), no_visited_state: true),
-        govuk_link_to('Induction already completed', ab_claim_an_ect_errors_already_complete_path(PendingInductionSubmission.last), no_visited_state: true),
-        govuk_link_to('Induction with another appropriate body', ab_claim_an_ect_errors_another_ab_path(PendingInductionSubmission.last), no_visited_state: true),
-        govuk_link_to('No QTS', ab_claim_an_ect_errors_no_qts_path(PendingInductionSubmission.last), no_visited_state: true),
-        govuk_link_to('Prohibited from teaching', ab_claim_an_ect_errors_prohibited_path(PendingInductionSubmission.last), no_visited_state: true),
+        govuk_link_to('Exempt from completing induction', ab_claim_an_ect_errors_exempt_path(pending_induction_submission), no_visited_state: true),
+        govuk_link_to('Induction already completed', ab_claim_an_ect_errors_already_complete_path(pending_induction_submission), no_visited_state: true),
+        govuk_link_to('Induction with another appropriate body', ab_claim_an_ect_errors_another_ab_path(pending_induction_submission), no_visited_state: true),
+        govuk_link_to('No QTS', ab_claim_an_ect_errors_no_qts_path(pending_induction_submission), no_visited_state: true),
+        govuk_link_to('Prohibited from teaching', ab_claim_an_ect_errors_prohibited_path(pending_induction_submission), no_visited_state: true),
       ])
     %>
   <% end %>
