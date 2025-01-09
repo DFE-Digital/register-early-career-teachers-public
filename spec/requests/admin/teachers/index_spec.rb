@@ -8,7 +8,9 @@ RSpec.describe "Admin teachers index", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'fake session manager for non-DfE user'
+      before do
+        sign_in_as(:appropriate_body_user, appropriate_body: FactoryBot.create(:appropriate_body))
+      end
 
       it "requires authorisation" do
         get "/admin/teachers"
@@ -17,7 +19,9 @@ RSpec.describe "Admin teachers index", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'fake session manager for DfE user'
+      before do
+        sign_in_as(:dfe_user, user: FactoryBot.create(:user, :admin))
+      end
 
       context "with search query" do
         it "filters teachers by name" do
