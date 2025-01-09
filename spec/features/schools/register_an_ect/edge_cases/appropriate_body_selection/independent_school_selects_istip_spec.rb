@@ -47,7 +47,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_independent_schools_appropriate_bodies_page
-    expect(page.url).to end_with('/schools/register-ect/funding-ind-appropriate-body')
+    expect(page.url).to end_with('/schools/register-ect/independent-school-appropriate-body')
   end
 
   def when_i_select_istip_as_the_appropriate_body

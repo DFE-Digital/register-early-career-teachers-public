@@ -137,11 +137,11 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_appropriate_bodies_page
-    expect(page.url).to end_with('/schools/register-ect/appropriate-body')
+    expect(page.url).to end_with('/schools/register-ect/state-school-appropriate-body')
   end
 
   def when_i_select_an_appropriate_body
-    page.select_option('select#appropriate-body-appropriate-body-name-field', value: 'Golden Leaf Teaching Hub')
+    page.select_option('select#state-school-appropriate-body-appropriate-body-name-field', value: 'Golden Leaf Teaching Hub')
   end
 
   def then_i_should_be_taken_to_the_check_answers_page

@@ -14,9 +14,9 @@ module Schools
       end
 
       def next_step
-        return :funding_ind_appropriate_body if independent_school?
+        return :independent_school_appropriate_body if independent_school?
 
-        :appropriate_body
+        :state_school_appropriate_body
       end
 
       def start_date_formatted

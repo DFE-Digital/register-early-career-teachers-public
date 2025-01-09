@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class FundingIndAppropriateBodyStep < Step
+    class IndependentSchoolAppropriateBodyStep < Step
       attr_accessor :appropriate_body_name, :appropriate_body_type
 
       validates_with AppropriateBodyValidator
