@@ -141,7 +141,8 @@ module Migrators
       if teacher.present?
         TeacherMigrationFailure.create!(teacher:, message: error.message)
       else
-        failure_
+        failure_manager.record_failure({}, error.message)
+      end
     rescue => e
       Rails.logger.error(e)
     end

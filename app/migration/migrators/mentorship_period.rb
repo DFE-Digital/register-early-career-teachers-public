@@ -24,8 +24,31 @@ module Migrators
 
     def migrate!
       migrate(self.class.ects) do |participant_profile|
-        migrate_mentorships!(participant_profile:)
+        safe_migrate_mentorships(participant_profile:)
       end
+    end
+
+    def safe_migrate_mentorships(participant_profile:)
+      teacher = ::Teacher.find_by(legacy_ect_id: participant_profile.id)
+
+      if teacher.nil?
+        failure_manager.record_failure(participant_profile, "Cannot find Teacher for ParticipantProfile::ECT with id #{participant_profile.id}")
+        return false
+      end
+
+      success = true
+      induction_records = InductionRecordSanitizer.new(participant_profile:)
+
+      if induction_records.valid?
+        mentorship_period_data = MentorshipPeriodExtractor.new(induction_records:)
+        success = Builders::MentorshipPeriods.new(teacher:, mentorship_period_data:).build
+      else
+        ::TeacherMigrationError.create!(teacher:, message: induction_records.error, migration_item_id: participant_profile.id,
+                                        migration_item_type: participant_profile.class.name)
+        success = false
+      end
+
+      success
     end
 
     def migrate_mentorships!(participant_profile:)
