@@ -24,7 +24,7 @@ module Migrators
 
     def migrate!
       migrate(self.class.teachers.eager_load(:user)) do |teacher_profile|
-        migrate_teacher!(teacher_profile:)
+        safe_migrate_teacher(teacher_profile:)
       end
     end
 
@@ -32,14 +32,14 @@ module Migrators
       trn = teacher_profile.trn
       full_name = teacher_profile.user.full_name
 
-      teacher = Builders::Teacher.new(trn:, full_name:, legacy_id: teacher_profile.user_id).build
+      builder = Builders::Teacher.new(trn:, full_name:, legacy_id: teacher_profile.user_id)
+      teacher = builder.build
       if teacher.nil?
-        # TODO: record migration failure
-        Rails.logger.error "Failed to create teacher for teacher_profile.id #{teacher_profile.id}"
+        failure_manager.record_failure(teacher_profile, builder.error)
         return false
       end
 
-      has_errors = false
+      success = true
 
       teacher_profile
         .participant_profiles
@@ -62,15 +62,17 @@ module Migrators
               sp_success = Builders::Mentor::SchoolPeriods.new(teacher:, school_periods:).build
               tp_success = Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
             end
-            has_errors = true unless sp_success && tp_success
+            success = false unless sp_success && tp_success
           else
-            # TODO: record teacher migration failure
-            Rails.logger.error "Induction records issues for participant_profle #{participant_profile.id}"
-            has_errors = true
+            ::TeacherMigrationFailure.create!(teacher:,
+                                              message: induction_records.error,
+                                              migration_item_id: participant_profile.id,
+                                              migration_item_type: participant_profile.class.name)
+            success = false
           end
         end
 
-      has_errors
+      success
     end
 
     def migrate_teacher!(teacher_profile:)

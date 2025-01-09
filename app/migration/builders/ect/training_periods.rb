@@ -1,14 +1,15 @@
 module Builders
   module ECT
-    class TrainingPeriods < Builders::TeacherBase
-      attr_reader :training_period_data
+    class TrainingPeriods
+      attr_reader :teacher, :training_period_data
 
       def initialize(teacher:, training_period_data:)
-        super(teacher:)
+        @teacher = teacher
         @training_period_data = training_period_data
       end
 
-      def process!
+      def build
+        success = true
         period_date = Data.define(:started_on, :finished_on)
 
         training_period_data.each do |period|
@@ -27,7 +28,11 @@ module Builders
                                    finished_on: period.end_date,
                                    legacy_start_id: period.start_source_id,
                                    legacy_end_id: period.end_source_id)
+        rescue ActiveRecord::ActiveRecordError => e
+          ::TeacherMigrationError.create!(teacher:, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
+          success = false
         end
+        success
       end
     end
   end
