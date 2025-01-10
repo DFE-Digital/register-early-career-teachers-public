@@ -8,11 +8,20 @@ describe AppropriateBodies::ReleaseECT do
       trn: induction_period.teacher.trn
     )
   end
+  let(:author) do
+    Sessions::Users::AppropriateBodyUser.new(
+      name: 'A user',
+      email: 'ab_user@something.org',
+      dfe_sign_in_user_id: SecureRandom.uuid,
+      dfe_sign_in_organisation_id: induction_period.appropriate_body.dfe_sign_in_organisation_id
+    )
+  end
 
   subject do
     AppropriateBodies::ReleaseECT.new(
       appropriate_body: induction_period.appropriate_body,
-      pending_induction_submission:
+      pending_induction_submission:,
+      author:
     )
   end
 
