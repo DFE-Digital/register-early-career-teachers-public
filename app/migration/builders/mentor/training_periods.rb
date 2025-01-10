@@ -29,7 +29,7 @@ module Builders
                                    legacy_start_id: period.start_source_id,
                                    legacy_end_id: period.end_source_id)
         rescue ActiveRecord::ActiveRecordError => e
-          ::TeacherMigrationError.create!(teacher:, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
+          ::TeacherMigrationFailure.create!(teacher:, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
           success = false
         end
 

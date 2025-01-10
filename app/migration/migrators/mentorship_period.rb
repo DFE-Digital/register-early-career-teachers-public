@@ -43,8 +43,8 @@ module Migrators
         mentorship_period_data = MentorshipPeriodExtractor.new(induction_records:)
         success = Builders::MentorshipPeriods.new(teacher:, mentorship_period_data:).build
       else
-        ::TeacherMigrationError.create!(teacher:, message: induction_records.error, migration_item_id: participant_profile.id,
-                                        migration_item_type: participant_profile.class.name)
+        ::TeacherMigrationFailure.create!(teacher:, message: induction_records.error, migration_item_id: participant_profile.id,
+                                          migration_item_type: participant_profile.class.name)
         success = false
       end
 
