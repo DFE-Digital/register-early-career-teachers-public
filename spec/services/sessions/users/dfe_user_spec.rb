@@ -18,9 +18,9 @@ RSpec.describe Sessions::Users::DfEUser do
     end
   end
 
-  describe '.EVENT_AUTHOR_TYPE' do
+  describe '.USER_TYPE' do
     it 'returns :dfe_staff_user' do
-      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:dfe_staff_user)
+      expect(described_class::USER_TYPE).to eql(:dfe_staff_user)
     end
   end
 

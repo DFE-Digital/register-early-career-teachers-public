@@ -1,7 +1,7 @@
 module Sessions
   module Users
     class DfEPersona < User
-      EVENT_AUTHOR_TYPE = :dfe_staff_user
+      USER_TYPE = :dfe_staff_user
       PROVIDER = :persona
 
       attr_reader :id, :name
@@ -31,7 +31,7 @@ module Sessions
           author_email: email,
           author_id: id,
           author_name: name,
-          author_type: EVENT_AUTHOR_TYPE,
+          author_type: USER_TYPE,
         }
       end
     end
