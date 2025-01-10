@@ -8,15 +8,12 @@ module Sessions
 
       def initialize(email:, **)
         ::User.find_by!(email:).then do |user|
-          @dfe_user = user.dfe_user?
           @id = user.id
           @name = user.name
         end
 
         super(email:, **)
       end
-
-      def dfe_user? = @dfe_user
 
       def to_h
         {

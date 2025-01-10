@@ -13,8 +13,6 @@ module Sessions
         super(email:, **)
       end
 
-      def school_user? = true
-
       def to_h
         {
           "type" => self.class.name,
