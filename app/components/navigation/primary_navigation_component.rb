@@ -28,6 +28,8 @@ module Navigation
     end
 
     def navigation_items
+      return [] unless current_user_type
+
       {
         appropriate_body_user: [],
         dfe_staff_user: [
@@ -39,7 +41,7 @@ module Navigation
           { text: "Your ECTs", href: schools_ects_home_path },
           { text: "Your mentors", href: "#" }
         ]
-      }.fetch(current_user_type, [])
+      }.fetch(current_user_type)
     end
   end
 end
