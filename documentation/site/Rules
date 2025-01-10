@@ -24,6 +24,12 @@ end
 
 compile '/service-rules/ecf1/*.md' do
   filter(:govuk_markdown)
+  layout('/ecf1-service-rules.*')
+  write(item.identifier.without_ext + '/index.html')
+end
+
+compile '/service-rules/*.md' do
+  filter(:govuk_markdown)
   layout('/service-rules.*')
   write(item.identifier.without_ext + '/index.html')
 end
