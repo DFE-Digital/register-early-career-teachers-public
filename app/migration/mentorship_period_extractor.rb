@@ -25,6 +25,7 @@ private
       mentor_id = induction_record.mentor_profile_id
 
       next if current_mentor.nil? && mentor_id.nil?
+      next if current_mentor.present? && mentor_id.nil?
 
       if current_mentor != mentor_id
         current_mentor = mentor_id

@@ -16,6 +16,10 @@ module Migrators
       %i[provider_partnership]
     end
 
+    def self.records_per_worker
+      1_000
+    end
+
     def self.reset!
       if Rails.application.config.enable_migration_testing
         ::Teacher.connection.execute("TRUNCATE #{::Teacher.table_name} RESTART IDENTITY CASCADE")
