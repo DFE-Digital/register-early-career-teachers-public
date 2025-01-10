@@ -22,9 +22,9 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
-  describe '.EVENT_AUTHOR_TYPE' do
+  describe '.USER_TYPE' do
     it 'returns :appropriate_body_user' do
-      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:appropriate_body_user)
+      expect(described_class::USER_TYPE).to eql(:appropriate_body_user)
     end
   end
 
@@ -38,6 +38,10 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     it 'returns the full name of the appropriate body user' do
       expect(appropriate_body_user.name).to eql(name)
     end
+  end
+
+  describe '#user_type' do
+    it('is :appropriate_body_user') { expect(appropriate_body_user.user_type).to be(:appropriate_body_user) }
   end
 
   describe '#dfe_sign_in_organisation_id' do
