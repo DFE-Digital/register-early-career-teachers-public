@@ -18,9 +18,9 @@ RSpec.describe Sessions::Users::SchoolPersona do
     end
   end
 
-  describe '.EVENT_AUTHOR_TYPE' do
+  describe '.USER_TYPE' do
     it 'returns :school_user' do
-      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:school_user)
+      expect(described_class::USER_TYPE).to eql(:school_user)
     end
   end
 
@@ -28,6 +28,10 @@ RSpec.describe Sessions::Users::SchoolPersona do
     it 'returns the full name of the user' do
       expect(school_persona.name).to eql(name)
     end
+  end
+
+  describe '#user_type' do
+    it('is :school_user') { expect(school_persona.user_type).to be(:school_user) }
   end
 
   describe '#school_urn' do

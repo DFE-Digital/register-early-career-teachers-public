@@ -18,9 +18,9 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
-  describe '.EVENT_AUTHOR_TYPE' do
+  describe '.USER_TYPE' do
     it 'returns :dfe_staff_user' do
-      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:dfe_staff_user)
+      expect(described_class::USER_TYPE).to eql(:dfe_staff_user)
     end
   end
 
@@ -28,6 +28,10 @@ RSpec.describe Sessions::Users::DfEPersona do
     it 'returns the full name from the user record' do
       expect(dfe_persona.name).to eql(name)
     end
+  end
+
+  describe '#user_type' do
+    it('is :dfe_staff_user') { expect(dfe_persona.user_type).to be(:dfe_staff_user) }
   end
 
   describe '#appropriate_body_user?' do

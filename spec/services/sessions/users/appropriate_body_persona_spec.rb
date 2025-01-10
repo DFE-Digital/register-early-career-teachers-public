@@ -18,9 +18,9 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     end
   end
 
-  describe '.EVENT_AUTHOR_TYPE' do
+  describe '.USER_TYPE' do
     it 'returns :appropriate_body_user' do
-      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:appropriate_body_user)
+      expect(described_class::USER_TYPE).to eql(:appropriate_body_user)
     end
   end
 
@@ -28,6 +28,10 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     it 'returns the name of the appropriate body persona' do
       expect(appropriate_body_persona.name).to eql(name)
     end
+  end
+
+  describe '#user_type' do
+    it('is :appropriate_body_user') { expect(appropriate_body_persona.user_type).to be(:appropriate_body_user) }
   end
 
   describe '#appropriate_body_id' do
