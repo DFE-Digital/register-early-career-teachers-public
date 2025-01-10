@@ -8,3 +8,8 @@ ENABLE_SCHOOLS_INTERFACE: true
 TEST_GUIDANCE: true
 ENABLE_SENTRY: true
 ENABLE_BLAZER: true
+DFE_SIGN_IN_API_AUDIENCE: signin.education.gov.uk
+DFE_SIGN_IN_API_BASE_URL: 'https://dev-api.signin.education.gov.uk'
+DFE_SIGN_IN_CLIENT_ID: RegisterECTs
+DFE_SIGN_IN_ISSUER: 'https://dev-oidc.signin.education.gov.uk'
+DFE_SIGN_IN_REDIRECT_URI: 'https://staging.register-early-career-teachers.education.gov.uk/auth/dfe/callback'
