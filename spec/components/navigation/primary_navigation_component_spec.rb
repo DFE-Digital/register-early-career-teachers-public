@@ -2,9 +2,10 @@ require "rails_helper"
 
 RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
   let(:current_path) { "/" }
+  let(:current_user_type) { nil }
   let(:nav_selector) { 'nav.govuk-service-navigation__wrapper' }
 
-  subject { described_class.new(current_path:) }
+  subject { described_class.new(current_path:, current_user_type:) }
 
   def validate_navigation_items(expected_items)
     expect(rendered_content).to have_css(nav_selector)
@@ -15,6 +16,11 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
   end
 
   describe "#call" do
+    it "sets service URL to the root path" do
+      render_inline(subject)
+      expect(rendered_content).to have_link("Register early career teachers", href: "/")
+    end
+
     it "renders the service name" do
       render_inline(subject)
       expect(rendered_content).to have_link("Register early career teachers")
@@ -22,6 +28,7 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
     context "when in admin section" do
       let(:current_path) { "/admin" }
+      let(:current_user_type) { :dfe_staff_user }
 
       it "renders admin navigation items" do
         render_inline(subject)
@@ -34,15 +41,11 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
         validate_navigation_items(expected_items)
       end
-
-      it "sets the correct service URL" do
-        render_inline(subject)
-        expect(rendered_content).to have_link("Register early career teachers", href: "/admin")
-      end
     end
 
     context "when in school section" do
       let(:current_path) { "/schools" }
+      let(:current_user_type) { :school_user }
 
       it "renders school navigation items" do
         render_inline(subject)
@@ -54,11 +57,6 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
         validate_navigation_items(expected_items)
       end
-
-      it "sets the correct service URL" do
-        render_inline(subject)
-        expect(rendered_content).to have_link("Register early career teachers", href: "/schools/home/ects")
-      end
     end
 
     context "when in the appropriate body section" do
@@ -69,30 +67,22 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
         expect(rendered_content).not_to have_css(nav_selector)
       end
-
-      it "sets the correct service URL" do
-        render_inline(subject)
-        expect(rendered_content).to have_link("Register early career teachers", href: "/appropriate-body")
-      end
     end
 
-    context "when in the no section" do
+    context "when in no section" do
       let(:current_path) { "/" }
+      let(:current_user_type) { nil }
 
       it "has no navigation items" do
         render_inline(subject)
 
         expect(rendered_content).not_to have_css(nav_selector)
       end
-
-      it "sets the correct service URL" do
-        render_inline(subject)
-        expect(rendered_content).to have_link("Register early career teachers", href: "/")
-      end
     end
 
     context "when current page matches a navigation item" do
       let(:current_path) { "/admin/teachers" }
+      let(:current_user_type) { :dfe_staff_user }
 
       it "marks the current item as active" do
         render_inline(subject)

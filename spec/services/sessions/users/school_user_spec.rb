@@ -34,6 +34,10 @@ RSpec.describe Sessions::Users::SchoolUser do
     end
   end
 
+  describe '#user_type' do
+    it('is :school_user') { expect(school_user.user_type).to be(:school_user) }
+  end
+
   describe '#school_urn' do
     it 'returns the urn of the school of the user' do
       expect(school_user.school_urn).to eql(school_urn)

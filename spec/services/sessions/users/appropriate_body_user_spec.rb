@@ -40,6 +40,10 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
+  describe '#user_type' do
+    it('is :appropriate_body_user') { expect(appropriate_body_user.user_type).to be(:appropriate_body_user) }
+  end
+
   describe '#dfe_sign_in_organisation_id' do
     it 'returns the id of the organisation of the user in DfE SignIn' do
       expect(appropriate_body_user.dfe_sign_in_organisation_id).to eql(dfe_sign_in_organisation_id)

@@ -30,6 +30,10 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     end
   end
 
+  describe '#user_type' do
+    it('is :appropriate_body_user') { expect(appropriate_body_persona.user_type).to be(:appropriate_body_user) }
+  end
+
   describe '#appropriate_body_id' do
     it 'returns the appropriate_body_id of the persona' do
       expect(appropriate_body_persona.appropriate_body_id).to eql(appropriate_body_id)

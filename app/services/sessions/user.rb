@@ -28,10 +28,11 @@ module Sessions
     end
 
     # User?
-    def appropriate_body_user? = false
-    def dfe_user? = false
-    def school_user? = false
     def dfe_sign_in_authorisable? = false
+    def appropriate_body_user? = user_type == :appropriate_body_user
+    def dfe_user? = user_type == :dfe_staff_user
+    def school_user? = user_type == :school_user
+    def user_type = self.class::USER_TYPE
 
     # Activity
     def expired?

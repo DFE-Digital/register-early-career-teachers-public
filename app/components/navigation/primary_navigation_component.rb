@@ -1,17 +1,12 @@
 module Navigation
   class PrimaryNavigationComponent < ViewComponent::Base
-    attr_accessor :current_path, :area
+    attr_accessor :current_path, :current_user_type
 
-    def initialize(current_path:)
+    def initialize(current_path:, current_user_type:)
       super
 
       @current_path = current_path
-      @area = case current_path
-              when %r{\A/admin}            then :admin
-              when %r{\A/appropriate-body} then :appropriate_body
-              when %r{\A/schools}          then :school
-              else :none
-              end
+      @current_user_type = current_user_type
     end
 
     def call
@@ -25,28 +20,24 @@ module Navigation
     end
 
     def service_url
-      {
-        admin: '/admin',
-        appropriate_body: '/appropriate-body',
-        school: '/schools/home/ects',
-        none: '/'
-      }.fetch(area)
+      '/'
     end
 
     def navigation_items
+      return [] if current_user_type.nil?
+
       {
-        admin: [
+        dfe_staff_user: [
           { text: "Teachers", href: admin_teachers_path },
           { text: "Organisations", href: admin_organisations_path },
           { text: "Admin users", href: "#" },
         ],
-        school: [
+        school_user: [
           { text: "Your ECTs", href: schools_ects_home_path },
           { text: "Your mentors", href: "#" }
         ],
-        appropriate_body: [],
-        none: []
-      }.fetch(area)
+        appropriate_body_user: [],
+      }.fetch(current_user_type)
     end
   end
 end

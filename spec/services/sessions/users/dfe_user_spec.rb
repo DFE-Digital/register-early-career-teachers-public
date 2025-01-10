@@ -30,6 +30,10 @@ RSpec.describe Sessions::Users::DfEUser do
     end
   end
 
+  describe '#user_type' do
+    it('is :dfe_staff_user') { expect(dfe_user.user_type).to be(:dfe_staff_user) }
+  end
+
   describe '#appropriate_body_user?' do
     it 'returns false' do
       expect(dfe_user).not_to be_appropriate_body_user
