@@ -6,9 +6,7 @@ RSpec.describe "Admin", type: :request do
     end
 
     context "with an authenticated user" do
-      before do
-        sign_in_as(:appropriate_body_user, appropriate_body: FactoryBot.create(:appropriate_body))
-      end
+      include_context 'sign in as non-DfE user'
 
       context "when the user isn't a DfE user" do
         it "requires authorisation" do
@@ -19,9 +17,7 @@ RSpec.describe "Admin", type: :request do
       end
 
       context 'when the user is a DfE user' do
-        before do
-          sign_in_as(:dfe_user, user: FactoryBot.create(:user, :admin))
-        end
+        include_context 'sign in as DfE user'
 
         it "allows access to DfE users" do
           get "/admin"

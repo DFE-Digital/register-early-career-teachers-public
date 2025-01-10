@@ -13,9 +13,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      before do
-        sign_in_as(:appropriate_body_user, appropriate_body: FactoryBot.create(:appropriate_body))
-      end
+      include_context 'sign in as non-DfE user'
 
       it "requires authorisation" do
         get admin_teacher_path(teacher)
@@ -24,9 +22,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      before do
-        sign_in_as(:dfe_user, user: FactoryBot.create(:user, :admin))
-      end
+      include_context 'sign in as DfE user'
 
       it "returns http success" do
         get admin_teacher_path(teacher)
