@@ -1,7 +1,7 @@
 module Sessions
   module Users
     class SchoolUser < User
-      EVENT_AUTHOR_TYPE = :school_user
+      USER_TYPE = :school_user
       PROVIDER = :dfe_sign_in
 
       attr_reader :name, :school_urn, :dfe_sign_in_organisation_id, :dfe_sign_in_user_id
@@ -34,7 +34,7 @@ module Sessions
         {
           author_email: email,
           author_name: name,
-          author_type: EVENT_AUTHOR_TYPE,
+          author_type: USER_TYPE,
         }
       end
     end
