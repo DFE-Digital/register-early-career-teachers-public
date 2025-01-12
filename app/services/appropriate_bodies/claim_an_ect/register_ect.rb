@@ -80,17 +80,12 @@ module AppropriateBodies
       end
 
       def record_claim_event
-        teacher_name = ::Teachers::Name.new(teacher).full_name
-
-        Events::Record.new(
+        Events::Record.record_appropriate_body_claims_teacher_event!(
           author: author,
-          event_type: :appropriate_body_claims_teacher,
-          heading: "#{teacher_name} was claimed by #{appropriate_body.name}",
           teacher:,
           appropriate_body:,
-          induction_period:,
-          happened_at: Time.zone.now
-        ).record_event!
+          induction_period:
+        )
       end
 
       def send_begin_induction_notification_to_trs
