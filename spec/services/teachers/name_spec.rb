@@ -11,7 +11,7 @@ describe Teachers::Name do
     end
 
     context 'when a corrected_name is set' do
-      let(:teacher) { FactoryBot.build(:teacher) }
+      let(:teacher) { FactoryBot.build(:teacher, :with_corrected_name) }
 
       it 'returns the corrected name' do
         expect(teacher.corrected_name).to be_present
