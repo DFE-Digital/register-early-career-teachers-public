@@ -83,7 +83,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           hash_including(
             author: author,
             event_type: :appropriate_body_claims_teacher,
-            appropriate_body: appropriate_body
+            appropriate_body: appropriate_body,
+            heading: "John Doe was claimed by #{appropriate_body.name}"
           )
         )
       end
