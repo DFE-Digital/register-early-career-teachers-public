@@ -89,7 +89,7 @@ module Events
         lead_provider:,
         delivery_partner:,
         user:
-      }
+      }.compact
     end
   end
 end
