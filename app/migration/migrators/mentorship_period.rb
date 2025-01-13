@@ -50,21 +50,5 @@ module Migrators
 
       success
     end
-
-    def migrate_mentorships!(participant_profile:)
-      teacher = ::Teacher.find_by!(legacy_ect_id: participant_profile.id)
-
-      induction_records = InductionRecordSanitizer.new(participant_profile:)
-      induction_records.validate!
-
-      mentorship_period_data = MentorshipPeriodExtractor.new(induction_records:)
-      Builders::MentorshipPeriods.new(teacher:, mentorship_period_data:).process!
-    rescue ActiveRecord::ActiveRecordError, ::InductionRecordSanitizer::InductionRecordError => e
-      if teacher.present?
-        raise ChildRecordError.new(e.message, teacher)
-      else
-        raise
-      end
-    end
   end
 end

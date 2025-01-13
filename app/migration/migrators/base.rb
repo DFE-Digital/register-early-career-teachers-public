@@ -105,26 +105,6 @@ module Migrators
       finalise_migration!
     end
 
-    # def migrate(items)
-    #   items = items.order(:id).offset(offset).limit(limit)
-
-    #   start_migration!(items.count)
-
-    #   # As we're using offset/limit, we can't use find_each!
-    #   items.each do |item|
-    #     yield(item)
-    #     DataMigration.update_counters(data_migration.id, processed_count: 1)
-    #   rescue ::Migrators::ChildRecordError => e
-    #     DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
-    #     failure_manager.record_child_failure(e.parent, item, e.message)
-    #   rescue ActiveRecord::ActiveRecordError, ::InductionRecordSanitizer::InductionRecordError => e
-    #     DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
-    #     failure_manager.record_failure(item, e.message)
-    #   end
-
-    #   finalise_migration!
-    # end
-
     def run_once
       yield if worker.zero?
     end
@@ -176,7 +156,7 @@ module Migrators
         "processed_count",
         "total_count"
       ).symbolize_keys
-      # Rails.logger.info(message, migration_details)
+
       Rails.logger.info("#{message}: [#{migration_details}]")
     end
 
@@ -188,7 +168,7 @@ module Migrators
 
       # Queue a follow up migration to migrate any
       # dependent models.
-      MigrationJob.perform_later
+      MigrationJob.set(wait: 10.seconds).perform_later
     end
   end
 end
