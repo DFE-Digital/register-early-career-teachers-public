@@ -55,8 +55,9 @@ describe AppropriateBodies::ReleaseECT do
       expect(Events::Record).to have_received(:new).with(
         hash_including(
           author:,
-          event_type: :ect_released,
+          event_type: :appropriate_body_releases_teacher,
           appropriate_body:,
+          induction_period:,
           teacher: induction_period.teacher,
           heading: "#{Teachers::Name.new(induction_period.teacher).full_name} was released by #{appropriate_body.name}"
         )
