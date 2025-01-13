@@ -44,4 +44,8 @@ class School < ApplicationRecord
   def to_param
     urn
   end
+
+  def independent?
+    GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(type_name)
+  end
 end

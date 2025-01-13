@@ -113,7 +113,7 @@ schools = school_data.map do |school_args|
                                          induction_eligibility: :eligible,
                                          local_authority_code: rand(20),
                                          establishment_number: school_args[:urn],
-                                         type_name: GIAS::Types::ALL_TYPES.sample,
+                                         type_name: school_args[:name] == 'Brookfield School' ? GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.sample : GIAS::Types::STATE_SCHOOL_TYPES.sample,
                                          in_england: true,
                                          section_41_approved: false))
 

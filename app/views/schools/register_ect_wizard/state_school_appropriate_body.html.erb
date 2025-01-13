@@ -1,0 +1,26 @@
+<% page_data(
+     title: "Which appropriate body will be supporting #{@ect.full_name}'s induction?",
+     error: @wizard.current_step.errors.present?,
+     backlink_href: schools_register_ect_wizard_start_date_path) %>
+
+<p class="govuk-body">The appropriate body is a teaching school hub that helps assess whether the ECT has met the
+  teaching standards' at the end of induction.</p>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_collection_select(:appropriate_body_name,
+                                @wizard.appropriate_bodies,
+                                :name,
+                                :name,
+                                label: { text: "Which appropriate body will be supporting #{@ect.full_name}'s induction?", size: 's', hidden: true },
+                                options: { include_blank: true },
+                                class: "autocomplete"
+      ) %>
+
+  <%= render Teachers::AppropriateBodiesDetails.new %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>
+
+

@@ -40,6 +40,7 @@
   appropriate_body_name: Null
   dfe_staff: No
   school_name: Abbey Grove School
+  school_type: State-funded
   image: personas/bob.png
   alt: Bob from Bob's Burgers, holding a hamburger.
   type: School user
@@ -49,6 +50,7 @@
   appropriate_body_name: Null
   dfe_staff: No
   school_name: Brookfield School
+  school_type: Independent
   image: personas/serena.png
   alt: Serena from Sailor Moon leaping in the air.
   type: School user
