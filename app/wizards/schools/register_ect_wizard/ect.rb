@@ -54,6 +54,10 @@ module Schools
                                  working_pattern:)
                                .register_teacher!
       end
+
+      def active_at_school?(school:)
+        ECTAtSchoolPeriods::Search.new.exists?(school_id: school.id, trn: trn)
+      end
     end
   end
 end
