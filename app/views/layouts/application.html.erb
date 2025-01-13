@@ -6,11 +6,14 @@
     <%= render partial: "layouts/shared/js_enabled" %>
 
     <%= govuk_skip_link %>
-    <%= govuk_header(full_width_border: true, html_attributes: { class: [environment_specific_header_colour_class] }) %>
+    <%= govuk_header(full_width_border: true, html_attributes: { class: [environment_specific_header_colour_class] }) do |header| %>
+      <%= header.with_navigation_item(text: current_user.organisation_name) if current_user %>
+      <%= header.with_navigation_item(text: "Sign out", href: sign_out_path) if current_user %>
+    <% end %>
 
     <%= render Navigation::PrimaryNavigationComponent.new(
       current_path: request.fullpath,
-      current_user:
+      current_user_type: current_user&.user_type
     ) %>
 
     <div class="govuk-width-container">

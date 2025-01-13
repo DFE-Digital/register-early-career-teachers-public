@@ -10,9 +10,9 @@ describe Schools::RegisterECT do
     described_class.new(first_name:,
                         last_name:,
                         trn:,
-                        school_urn: school.urn,
                         started_on:,
-                        corrected_name:)
+                        corrected_name:,
+                        school:)
   end
 
   describe '#register_teacher!' do

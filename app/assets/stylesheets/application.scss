@@ -7,9 +7,11 @@ $govuk-assets-path: "/";
 
 // app styles
 @import "header/colour-overrides";
+@import "header/navigation";
 
 // library styles
 @import "accessible-autocomplete/src/autocomplete";
+@import "autocomplete";
 
 // X-Govuk Prototype
 @import "admin";

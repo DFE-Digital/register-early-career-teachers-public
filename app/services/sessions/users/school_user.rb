@@ -1,14 +1,14 @@
 module Sessions
   module Users
     class SchoolUser < User
-      EVENT_AUTHOR_TYPE = :school_user
+      USER_TYPE = :school_user
       PROVIDER = :dfe_sign_in
 
-      attr_reader :name, :school_urn, :dfe_sign_in_organisation_id, :dfe_sign_in_user_id
+      attr_reader :name, :school, :dfe_sign_in_organisation_id, :dfe_sign_in_user_id
 
       def initialize(email:, name:, school_urn:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, **)
         @name = name
-        @school_urn = School.find_by!(urn: school_urn).urn
+        @school = School.find_by!(urn: school_urn)
         @dfe_sign_in_organisation_id = dfe_sign_in_organisation_id
         @dfe_sign_in_user_id = dfe_sign_in_user_id
 
@@ -16,7 +16,17 @@ module Sessions
       end
 
       def dfe_sign_in_authorisable? = true
-      def school_user? = true
+
+      def event_author_params
+        {
+          author_email: email,
+          author_name: name,
+          author_type: USER_TYPE,
+        }
+      end
+
+      def organisation_name = school.name
+      delegate :urn, to: :school, prefix: true, allow_nil: true
 
       def to_h
         {
@@ -27,14 +37,6 @@ module Sessions
           "school_urn" => school_urn,
           "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id,
           "dfe_sign_in_user_id" => dfe_sign_in_user_id
-        }
-      end
-
-      def event_author_params
-        {
-          author_email: email,
-          author_name: name,
-          author_type: EVENT_AUTHOR_TYPE,
         }
       end
     end

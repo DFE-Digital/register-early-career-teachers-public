@@ -8,7 +8,7 @@ RSpec.describe "Admin root", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'fake session manager for non-DfE user'
+      include_context 'sign in as non-DfE user'
 
       it "requires authorisation" do
         get "/admin"
@@ -17,7 +17,7 @@ RSpec.describe "Admin root", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'fake session manager for DfE user'
+      include_context 'sign in as DfE user'
 
       it "shows the teachers search page" do
         get "/admin"

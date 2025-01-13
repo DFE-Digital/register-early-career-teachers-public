@@ -1,19 +1,28 @@
 module Sessions
   module Users
     class SchoolPersona < User
-      EVENT_AUTHOR_TYPE = :school_user
+      USER_TYPE = :school_user
       PROVIDER = :persona
 
-      attr_reader :name, :school_urn
+      attr_reader :name, :school
 
       def initialize(email:, name:, school_urn:, **)
         @name = name
-        @school_urn = School.find_by!(urn: school_urn).urn
+        @school = School.find_by!(urn: school_urn)
 
         super(email:, **)
       end
 
-      def school_user? = true
+      def event_author_params
+        {
+          author_email: email,
+          author_name: name,
+          author_type: USER_TYPE,
+        }
+      end
+
+      def organisation_name = school.name
+      delegate :urn, to: :school, prefix: true, allow_nil: true
 
       def to_h
         {
@@ -22,14 +31,6 @@ module Sessions
           "name" => name,
           "last_active_at" => last_active_at,
           "school_urn" => school_urn.presence,
-        }
-      end
-
-      def event_author_params
-        {
-          author_email: email,
-          author_name: name,
-          author_type: EVENT_AUTHOR_TYPE,
         }
       end
     end

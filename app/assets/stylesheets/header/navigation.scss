@@ -1,0 +1,17 @@
+.govuk-header {
+  &__navigation {
+    display: flex;
+
+    @include govuk-media-query($from: tablet) {
+      justify-content: flex-end;
+    }
+  }
+
+  &__navigation-item {
+    @include govuk-media-query($from: tablet) {
+      margin: 0;
+      padding-inline: 15px;
+      border-left: 1px solid $govuk-border-colour
+    }
+  }
+}

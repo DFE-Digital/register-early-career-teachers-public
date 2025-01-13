@@ -5,10 +5,16 @@ module Schools
         :confirmation
       end
 
+      def previous_step
+        return :independent_school_appropriate_body if school_independent?
+
+        :state_school_appropriate_body
+      end
+
     private
 
       def persist
-        ect_at_school_period_id = ect.register!.id
+        ect_at_school_period_id = ect.register!(school).id
         ect.update!(ect_at_school_period_id:)
       end
     end

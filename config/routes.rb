@@ -119,6 +119,12 @@ Rails.application.routes.draw do
       get "start-date", action: :new
       post "start-date", action: :create
 
+      get "state-school-appropriate-body", action: :new
+      post "state-school-appropriate-body", action: :create
+
+      get "independent-school-appropriate-body", action: :new
+      post "independent-school-appropriate-body", action: :create
+
       get "programme-type", action: :new
       post "programme-type", action: :create
 

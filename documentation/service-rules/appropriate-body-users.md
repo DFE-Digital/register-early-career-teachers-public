@@ -35,7 +35,7 @@ The users, accounts, credentials and links to organisations are managed by DfE S
 
 Example user info returned by DfE Sign-in:
 
-```json
+```
 {
   "sub": "aaaaaaaa-aaaa-aaaa-1111-111111111111",
   "organisation": {
@@ -54,9 +54,35 @@ Example user info returned by DfE Sign-in:
 
 ## Viewing early career teachers
 
-## Claiming a new early career teacher
+### The current ECT list
 
-When an appropriate body takes over the care of a early career teacher <mark>(how does this happen, who chooses who?)</mark> they inform us by registering them.
+When an appropriate body user logs in they'll see a list of their current ECTs.
+
+They can search the list by name and TRN. When 7 digit numbers are detected in the search string they will take precedance over any text.
+
+They can also [find and claim](#claiming-a-new-early-career-teacher) new ECTs by clicking the 'Find and claim an ECT' button.
+
+Clicking on 'Show' in an ECT's summary card will take users to the [the view page for that ECT](#the-current-ect-view).
+
+### The current ECT view
+
+The view page shows details about the selected ECT, including their:
+
+* TRN
+* name
+* extensions
+* initial teacher training record summary
+* a list of their induction periods
+
+From this page the user can:
+
+* [pass their induction](#passing-an-early-career-teacher-39-s-induction)
+* [fail their induction](#failing-an-early-career-teacher-39-s-induction)
+* [release the ECT](#releasing-an-early-career-teacher)
+
+## Finding and claiming new early career teachers
+
+When an appropriate body takes over the care of a early career teacher they inform us by registering them.
 
 The registration process takes place with the following steps:
 
@@ -118,47 +144,70 @@ Teachers who have been prohibited from teaching aren't permitted to receive rece
 
 ## Releasing an early career teacher
 
-When an ECT finishes an induction at an appropriate body before they have fully completed their induction, the appropriate body inform us by releasing them.
+When an ECT finishes an induction at an appropriate body before they have fully completed their induction, the appropriate body informs DfE by releasing them.
 
 The release process takes place with the following steps:
 
-1. Locate the ECT's record from the 'view list of ECT records' page using the following information:
-    * TRN
-    * Date of Birth
-2. Confirming the details returned by the TRS API belong to the person we expect, this page shows the teacher's:
-    * name
-    * date of birth
-    * email address
-    * [QTS](https://www.gov.uk/guidance/qualified-teacher-status-qts) award date
-    * QTS status
-    * induction start date
-    * induction status
-    * [initial teacher training](https://www.gov.uk/government/collections/initial-teacher-training) provider
-    * initial teacher training end date
-    * [alerts](https://www.gov.uk/government/collections/teacher-misconduct)
-3. Release the ECT by entering the following information:
+1. From the view ECT screen click 'Release'
+2. Release the ECT by entering the following information:
     * The end date of the induction period
     * The number of terms carried out during the induction period
+3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period and leaves the ECT free to be claimed by another appropriate body.
 
 ### Validation
 
-* **TRN**
-  - must be present
-  - must be 7 numeric digits
-* **Date of birth**
-  - must be present
-  - the teacher must be between 18 and 100 years old
-* **Induction start date**
-  - must be present
-  - must be after the QTS award date
 * **Induction period end date**
   - must be present
   - must be later than the induction start date
   - must not overlap with another induction period
-  - must not be more than x length in the future
- * **Number of terms**
+* **Number of terms**
   - must be present
   - partial terms must be entered as decimals
   - value must be between 0 and 16 weeks
-    
-## Recording an early career teacher's induction outcome
+
+## Passing an early career teacher's induction
+
+Most inductions end successfully. When the induction is complete the appropriate body informs DfE by recording a pass.
+
+The pass process takes place with the following steps:
+
+1. From the view ECT screen click 'Pass induction'
+2. Pass the ECT by entering the following information:
+    * The end date of the induction period
+    * The number of terms carried out during the induction period
+3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period. The 'Pass' state and induction completion date are written to the teacher's record via the TRS API.
+
+### Validation
+
+* **Induction period end date**
+  - must be present
+  - must be later than the induction start date
+  - must not overlap with another induction period
+* **Number of terms**
+  - must be present
+  - partial terms must be entered as decimals
+  - value must be between 0 and 16 weeks
+
+## Failing an early career teacher's induction
+
+Some inductions end unsuccessfully. When the induction is complete the appropriate body informs DfE by recording a fail.
+
+The fail process takes place with the following steps:
+
+1. From the view ECT screen click 'Fail induction'
+2. Fail the ECT by entering the following information:
+    * The end date of the induction period
+    * The number of terms carried out during the induction period
+3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period. The 'Pass' state and induction completion date are written to the teacher's record via the TRS API.
+
+### Validation
+
+* **Induction period end date**
+  - must be present
+  - must be later than the induction start date
+  - must not overlap with another induction period
+* **Number of terms**
+  - must be present
+  - partial terms must be entered as decimals
+  - value must be between 0 and 16 weeks
+

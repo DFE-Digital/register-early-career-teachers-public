@@ -85,7 +85,7 @@ module AppropriateBodies
         Events::Record.new(
           author: author,
           event_type: :appropriate_body_claims_teacher,
-          heading: "#{teacher_name} claimed by #{appropriate_body.name}",
+          heading: "#{teacher_name} was claimed by #{appropriate_body.name}",
           teacher:,
           appropriate_body:,
           induction_period:,

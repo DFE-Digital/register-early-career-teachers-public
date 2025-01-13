@@ -18,15 +18,9 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
-  describe '.EVENT_AUTHOR_TYPE' do
+  describe '.USER_TYPE' do
     it 'returns :dfe_staff_user' do
-      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:dfe_staff_user)
-    end
-  end
-
-  describe '#name' do
-    it 'returns the full name from the user record' do
-      expect(dfe_persona.name).to eql(name)
+      expect(described_class::USER_TYPE).to eql(:dfe_staff_user)
     end
   end
 
@@ -42,15 +36,38 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
-  describe '#school_user?' do
-    it 'returns false' do
-      expect(dfe_persona).not_to be_school_user
+  describe '#event_author_params' do
+    it 'returns a hash with the attributes needed to record an event' do
+      expect(dfe_persona.event_author_params).to eql({
+        author_email: user.email,
+        author_id: user.id,
+        author_name: user.name,
+        author_type: :dfe_staff_user
+      })
+    end
+  end
+
+  describe '#name' do
+    it 'returns the full name from the user record' do
+      expect(dfe_persona.name).to eql(name)
     end
   end
 
   describe '#dfe_sign_in_authorisable?' do
     it 'returns false' do
       expect(dfe_persona.dfe_sign_in_authorisable?).to be_falsey
+    end
+  end
+
+  describe '#organisation_name' do
+    it 'returns Department for Education' do
+      expect(dfe_persona.organisation_name).to eq('Department for Education')
+    end
+  end
+
+  describe '#school_user?' do
+    it 'returns false' do
+      expect(dfe_persona).not_to be_school_user
     end
   end
 
@@ -64,14 +81,7 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
-  describe '#event_author_params' do
-    it 'returns a hash with the attributes needed to record an event' do
-      expect(dfe_persona.event_author_params).to eql({
-        author_email: user.email,
-        author_id: user.id,
-        author_name: user.name,
-        author_type: :dfe_staff_user
-      })
-    end
+  describe '#user_type' do
+    it('is :dfe_staff_user') { expect(dfe_persona.user_type).to be(:dfe_staff_user) }
   end
 end

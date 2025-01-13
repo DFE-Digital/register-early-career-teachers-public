@@ -76,6 +76,8 @@ module GIAS
       "Other independent school"
     ].freeze
 
+    STATE_SCHOOL_TYPES = ALL_TYPES - INDEPENDENT_SCHOOLS_TYPES
+
     NOT_IN_ENGLAND_TYPES = [
       "British schools overseas",
       "Offshore schools",

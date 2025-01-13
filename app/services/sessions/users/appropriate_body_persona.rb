@@ -1,19 +1,29 @@
 module Sessions
   module Users
     class AppropriateBodyPersona < User
-      EVENT_AUTHOR_TYPE = :appropriate_body_user
+      USER_TYPE = :appropriate_body_user
       PROVIDER = :persona
 
-      attr_reader :appropriate_body_id, :name
+      attr_reader :appropriate_body, :name
 
       def initialize(email:, name:, appropriate_body_id:, **)
-        @appropriate_body_id = AppropriateBody.find(appropriate_body_id).id
+        @appropriate_body = AppropriateBody.find(appropriate_body_id)
         @name = name
 
         super(email:, **)
       end
 
-      def appropriate_body_user? = true
+      delegate :id, to: :appropriate_body, prefix: true, allow_nil: true
+
+      def event_author_params
+        {
+          author_email: email,
+          author_name: name,
+          author_type: USER_TYPE,
+        }
+      end
+
+      def organisation_name = appropriate_body.name
 
       def to_h
         {
@@ -22,14 +32,6 @@ module Sessions
           "name" => name,
           "last_active_at" => last_active_at,
           "appropriate_body_id" => appropriate_body_id
-        }
-      end
-
-      def event_author_params
-        {
-          author_email: email,
-          author_name: name,
-          author_type: EVENT_AUTHOR_TYPE,
         }
       end
     end

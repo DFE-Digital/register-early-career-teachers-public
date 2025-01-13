@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Admin::InductionPeriodsController do
   include ActionView::Helpers::SanitizeHelper
 
-  include_context 'fake session manager for DfE user'
+  include_context 'sign in as DfE user'
 
   describe "GET /admin/induction_periods/:id/edit" do
     let(:induction_period) { FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 6.months.ago) }
