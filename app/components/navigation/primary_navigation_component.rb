@@ -10,7 +10,7 @@ module Navigation
     end
 
     def call
-      govuk_service_navigation(service_name:, service_url:, current_path:, navigation_items:)
+      govuk_service_navigation(service_name:, service_url:, current_path:, navigation_id:, navigation_items:)
     end
 
   private
@@ -23,10 +23,15 @@ module Navigation
       '/'
     end
 
+    def navigation_id
+      'register-early-career-teachers-service-navigation-list'
+    end
+
     def navigation_items
-      return [] if current_user_type.nil?
+      return [] unless current_user_type
 
       {
+        appropriate_body_user: [],
         dfe_staff_user: [
           { text: "Teachers", href: admin_teachers_path },
           { text: "Organisations", href: admin_organisations_path },
@@ -35,8 +40,7 @@ module Navigation
         school_user: [
           { text: "Your ECTs", href: schools_ects_home_path },
           { text: "Your mentors", href: "#" }
-        ],
-        appropriate_body_user: [],
+        ]
       }.fetch(current_user_type)
     end
   end
