@@ -40,6 +40,10 @@ module Schools
         working_pattern.humanize
       end
 
+      def formatted_appropriate_body_name
+        appropriate_body_name == 'ISTIP' ? 'Independent Schools Teacher Induction Panel (ISTIP)' : appropriate_body_name
+      end
+
       def register!(school)
         Schools::RegisterECT.new(first_name: trs_first_name,
                                  last_name: trs_last_name,
