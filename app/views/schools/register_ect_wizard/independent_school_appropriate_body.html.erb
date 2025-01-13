@@ -21,11 +21,11 @@
                                     :name,
                                     :name,
                                     label: { text: "Which appropriate body will be supporting #{@ect.full_name}'s induction?", size: 's', hidden: true },
+                                    hint: { text: "Enter appropriate body name" },
                                     options: { include_blank: true },
                                     class: "autocomplete"
           ) %>
     <% end %>
-
     <%= render Teachers::AppropriateBodiesDetails.new %>
   <% end %>
 
