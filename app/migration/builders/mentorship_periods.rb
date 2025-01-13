@@ -43,7 +43,6 @@ module Builders
                                    finished_on: period.end_date,
                                    legacy_start_id: period.start_source_id,
                                    legacy_end_id: period.end_source_id)
-
       rescue ActiveRecord::ActiveRecordError => e
         log_period_error(period:, message: e.message)
         success = false

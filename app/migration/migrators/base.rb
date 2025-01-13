@@ -97,7 +97,7 @@ module Migrators
       items.each do |item|
         success = yield(item)
         DataMigration.update_counters(data_migration.id, processed_count: 1, failure_count: success ? 0 : 1)
-      rescue => e
+      rescue StandardError => e
         DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
         failure_manager.record_failure(item, e.message)
       end
@@ -143,7 +143,7 @@ module Migrators
       else
         failure_manager.record_failure({}, error.message)
       end
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error(e)
     end
 
