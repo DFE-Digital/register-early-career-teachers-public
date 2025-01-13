@@ -1,12 +1,13 @@
 module AppropriateBodies
   class ReleaseECT
-    attr_reader :teacher, :pending_induction_submission, :author, :appropriate_body
+    attr_reader :teacher, :pending_induction_submission, :author, :appropriate_body, :induction_period
 
     def initialize(appropriate_body:, pending_induction_submission:, author:)
       @appropriate_body = appropriate_body
       @pending_induction_submission = pending_induction_submission
       @teacher = Teacher.find_by!(trn: pending_induction_submission.trn)
       @author = author
+      @induction_period = ongoing_induction_period
     end
 
     def release!
@@ -25,14 +26,12 @@ module AppropriateBodies
   private
 
     def record_event!
-      Events::Record.new(
+      Events::Record.record_appropriate_body_releases_teacher_event!(
         author: author,
-        event_type: :ect_released,
-        heading: "#{teacher_name} was released by #{appropriate_body.name}",
         teacher:,
         appropriate_body:,
-        happened_at: Time.zone.now
-      ).record_event!
+        induction_period: induction_period
+      )
     end
 
     def teacher_name

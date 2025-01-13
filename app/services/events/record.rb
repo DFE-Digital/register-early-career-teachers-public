@@ -76,6 +76,13 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
+    def self.record_appropriate_body_releases_teacher_event!(author:, appropriate_body:, induction_period:, teacher:, happened_at: Time.zone.now)
+      event_type = :appropriate_body_releases_teacher
+      heading = "#{Teachers::Name.new(teacher).full_name} was released by #{appropriate_body.name}"
+
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+    end
+
     # Teacher events
 
   private
