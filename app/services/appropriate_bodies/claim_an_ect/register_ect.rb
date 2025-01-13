@@ -20,7 +20,7 @@ module AppropriateBodies
 
         ActiveRecord::Base.transaction do
           success = (
-            update_teacher_name &&
+            update_teacher &&
             create_induction_period &&
             send_begin_induction_notification_to_trs &&
             pending_induction_submission.save(context: :register_ect) &&
@@ -33,37 +33,24 @@ module AppropriateBodies
 
     private
 
-      def update_teacher_name
+      def update_teacher
+        old_name = ::Teachers::Name.new(teacher).full_name_in_trs
+
         teacher.assign_attributes(
           first_name: pending_induction_submission.trs_first_name,
           last_name: pending_induction_submission.trs_last_name,
           qts_awarded_on: pending_induction_submission.trs_qts_awarded
         )
 
-        return true unless teacher.persisted? && teacher.changed?
+        new_name = ::Teachers::Name.new(teacher).full_name_in_trs
 
-        teacher_name = ::Teachers::Name.new(teacher).full_name
+        teacher.save!
 
-        # TODO: We probably want to put the logic we need here
-        #       in another class as it'll be shared by the
-        #       school side
-        #
-        #       I think we should check if it's an update or
-        #       a new record and create events accordingly:
-        #
-        #       * Jon Smith's ECT record was created
-        #       * Jonathan Smith's name was changed from Jon Smith
+        if new_name != old_name
+          Events::Record.teacher_name_changed_in_trs!(author:, old_name:, new_name:, teacher:, appropriate_body:)
+        end
 
-        teacher.save
-
-        Events::Record.new(
-          author: author,
-          event_type: :teacher_name_updated_by_trs,
-          heading: "#{teacher_name} was changed",
-          teacher:,
-          appropriate_body:,
-          happened_at: Time.zone.now
-        ).record_event!
+        true
       end
 
       def teacher
@@ -80,17 +67,12 @@ module AppropriateBodies
       end
 
       def record_claim_event
-        teacher_name = ::Teachers::Name.new(teacher).full_name
-
-        Events::Record.new(
+        Events::Record.record_appropriate_body_claims_teacher_event!(
           author: author,
-          event_type: :appropriate_body_claims_teacher,
-          heading: "#{teacher_name} was claimed by #{appropriate_body.name}",
           teacher:,
           appropriate_body:,
-          induction_period:,
-          happened_at: Time.zone.now
-        ).record_event!
+          induction_period:
+        )
       end
 
       def send_begin_induction_notification_to_trs
