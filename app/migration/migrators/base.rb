@@ -117,16 +117,6 @@ module Migrators
       @data_migration ||= DataMigration.find_by(model: self.class.model, worker:)
     end
 
-    def record_failure(teacher, error)
-      if teacher.present?
-        TeacherMigrationFailure.create!(teacher:, message: error.message)
-      else
-        failure_manager.record_failure({}, error.message)
-      end
-    rescue StandardError => e
-      Rails.logger.error(e)
-    end
-
   private
 
     def offset
