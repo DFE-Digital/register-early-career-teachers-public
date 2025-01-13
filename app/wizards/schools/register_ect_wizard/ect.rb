@@ -7,7 +7,7 @@ module Schools
       end
 
       def govuk_date_of_birth
-        trs_date_of_birth.to_date&.to_formatted_s(:govuk)
+        trs_date_of_birth&.to_date&.to_formatted_s(:govuk)
       end
 
       def ect_at_school_period
@@ -36,12 +36,12 @@ module Schools
         programme_type.capitalize.dasherize
       end
 
-      def register!
+      def register!(school)
         Schools::RegisterECT.new(first_name: trs_first_name,
                                  last_name: trs_last_name,
                                  corrected_name:,
                                  trn:,
-                                 school_urn:,
+                                 school:,
                                  started_on: Date.parse(start_date))
                                .register_teacher!
       end

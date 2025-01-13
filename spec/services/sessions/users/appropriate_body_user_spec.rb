@@ -22,9 +22,15 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
-  describe '.EVENT_AUTHOR_TYPE' do
+  describe '.USER_TYPE' do
     it 'returns :appropriate_body_user' do
-      expect(described_class::EVENT_AUTHOR_TYPE).to eql(:appropriate_body_user)
+      expect(described_class::USER_TYPE).to eql(:appropriate_body_user)
+    end
+  end
+
+  describe '#appropriate_body' do
+    it 'returns the appropriate_body associated to the persona' do
+      expect(appropriate_body_user.appropriate_body).to eql(appropriate_body)
     end
   end
 
@@ -34,9 +40,9 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
-  describe '#name' do
-    it 'returns the full name of the appropriate body user' do
-      expect(appropriate_body_user.name).to eql(name)
+  describe '#appropriate_body_user?' do
+    it 'returns true' do
+      expect(appropriate_body_user).to be_appropriate_body_user
     end
   end
 
@@ -52,27 +58,43 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
-  describe '#appropriate_body_user?' do
-    it 'returns true' do
-      expect(appropriate_body_user).to be_appropriate_body_user
-    end
-  end
-
   describe '#dfe_user?' do
     it 'returns false' do
       expect(appropriate_body_user).not_to be_dfe_user
     end
   end
 
-  describe '#school_user?' do
-    it 'returns false' do
-      expect(appropriate_body_user).not_to be_school_user
-    end
-  end
-
   describe '#dfe_sign_in_authorisable?' do
     it 'returns true' do
       expect(appropriate_body_user.dfe_sign_in_authorisable?).to be_truthy
+    end
+  end
+
+  describe '#event_author_params' do
+    it 'returns a hash with the attributes needed to record an event' do
+      expect(appropriate_body_user.event_author_params).to eql({
+        author_email: appropriate_body_user.email,
+        author_name: appropriate_body_user.name,
+        author_type: :appropriate_body_user
+      })
+    end
+  end
+
+  describe '#name' do
+    it 'returns the full name of the appropriate body user' do
+      expect(appropriate_body_user.name).to eql(name)
+    end
+  end
+
+  describe '#organisation_name' do
+    it 'returns the name of the appropriate body associated to the user' do
+      expect(appropriate_body_user.organisation_name).to eq(appropriate_body.name)
+    end
+  end
+
+  describe '#school_user?' do
+    it 'returns false' do
+      expect(appropriate_body_user).not_to be_school_user
     end
   end
 
@@ -89,13 +111,7 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
-  describe '#event_author_params' do
-    it 'returns a hash with the attributes needed to record an event' do
-      expect(appropriate_body_user.event_author_params).to eql({
-        author_email: appropriate_body_user.email,
-        author_name: appropriate_body_user.name,
-        author_type: :appropriate_body_user
-      })
-    end
+  describe '#user_type' do
+    it('is :appropriate_body_user') { expect(appropriate_body_user.user_type).to be(:appropriate_body_user) }
   end
 end
