@@ -6,6 +6,7 @@ FactoryBot.define do
     sequence(:author_email) { |n| "user#{n}@something.org" }
     sequence(:author_name) { |n| "User #{n}" }
     author_type { :appropriate_body_user }
+    event_type { Event::EVENT_TYPES.sample }
 
     trait(:dfe_staff_user) do
       association :user
