@@ -32,15 +32,15 @@ describe Builders::MentorshipPeriods do
 
   subject(:service) { described_class.new(teacher:, mentorship_period_data:) }
 
-  describe "#process!" do
+  describe "#build" do
     it "creates MentorshipPeriod records for the mentorship periods" do
       expect {
-        service.process!
+        service.build
       }.to change { MentorshipPeriod.count }.by(2)
     end
 
     it "populates the MentorshipPeriod records with the correct information" do
-      service.process!
+      service.build
       periods = ect_period.mentorship_periods.order(:started_on)
 
       expect(periods.first.mentor).to eq mentor_period_1
@@ -58,28 +58,46 @@ describe Builders::MentorshipPeriods do
 
     context "when there is no ECTAtSchoolPeriod that contains the training dates" do
       let!(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: started_on + 1.month, finished_on:) }
-      it "raises an error" do
+
+      it "creates a TeacherMigrationFailure record" do
         expect {
-          service.process!
-        }.to(raise_error { ActiveRecord::RecordNotFound }.with_message("No ECTAtSchoolPeriod found for mentorship dates"))
+          service.build
+        }.to change { TeacherMigrationFailure.count }.by(1)
+      end
+
+      it "stores an error message in the failure record" do
+        service.build
+        expect(teacher.teacher_migration_failures.first.message).to eq "No ECTAtSchoolPeriod found for mentorship dates"
       end
     end
 
     context "when there is no MentorAtSchoolPeriod that contains the training dates" do
       let(:mentor_period_2) { FactoryBot.create(:mentor_at_school_period, school: ect_period.school, started_on: 1.month.ago) }
-      it "raises an error" do
+
+      it "creates a TeacherMigrationFailure record" do
         expect {
-          service.process!
-        }.to(raise_error { ActiveRecord::RecordNotFound }.with_message("No MentorAtSchoolPeriod found for mentorship dates"))
+          service.build
+        }.to change { TeacherMigrationFailure.count }.by(1)
+      end
+
+      it "stores an error message in the failure record" do
+        service.build
+        expect(teacher.teacher_migration_failures.first.message).to eq "No MentorAtSchoolPeriod found for mentorship dates"
       end
     end
 
     context "when the mentor does not have a MentorAtSchoolPeriod at the same school" do
       let(:mentor_period_1) { FactoryBot.create(:mentor_at_school_period, :active, started_on: started_on + 1.day) }
-      it "raises an error" do
+
+      it "creates a TeacherMigrationFailure record" do
         expect {
-          service.process!
-        }.to(raise_error { ActiveRecord::RecordNotFound }.with_message("No MentorAtSchoolPeriod found for mentorship dates"))
+          service.build
+        }.to change { TeacherMigrationFailure.count }.by(1)
+      end
+
+      it "stores an error message in the failure record" do
+        service.build
+        expect(teacher.teacher_migration_failures.first.message).to eq "No MentorAtSchoolPeriod found for mentorship dates"
       end
     end
   end
