@@ -164,10 +164,10 @@ describe Schools::RegisterECTWizard::ECT do
     end
   end
 
-  describe '#registered?' do
+  describe '#active_at_school?' do
     it 'returns true if the ECT is registered at the given school' do
       teacher = FactoryBot.create(:teacher, trn: ect.trn)
-      FactoryBot.create(:ect_at_school_period, teacher: teacher, school: school)
+      FactoryBot.create(:ect_at_school_period, :active, teacher: teacher, school: school)
 
       expect(ect.active_at_school?(school: school)).to be_truthy
     end
