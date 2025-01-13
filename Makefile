@@ -3,7 +3,7 @@ RG_TAGS={"Product" : "Early Careers Framework"}
 REGION=UK South
 SERVICE_NAME=cpd-ec2
 SERVICE_SHORT=cpdec2
-DOCKER_REPOSITORY=ghcr.io/dfe-digital/ecf2
+DOCKER_REPOSITORY=ghcr.io/dfe-digital/register-early-career-teachers-public
 
 serve-documentation-site:
 	cd documentation/site && bundle exec nanoc live --handler webrick --port 8000
