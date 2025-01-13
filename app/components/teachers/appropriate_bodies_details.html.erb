@@ -1,0 +1,8 @@
+<%= govuk_details(summary_text: 'Find out more about appropriate bodies') do %>
+  <p class="govuk-body">They are teaching school hubs that:</p>
+  <%= govuk_list [
+                   "ensure schools follow correct procedures for ECTs, including providing an ECF-based induction",
+                   "make sure ECTs receive their statutory entitlements (time off timetable and mentoring)",
+                   "monitor ECT progress during induction and advise schools on how to support improvement"
+                 ], type: :bullet %>
+<% end %>

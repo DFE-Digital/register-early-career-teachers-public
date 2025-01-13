@@ -29,7 +29,8 @@ module Schools
       @wizard = WIZARD_CLASS.new(
         current_step:,
         step_params: params,
-        store:
+        store:,
+        school:
       )
       @ect = @wizard.ect
     end
@@ -45,9 +46,7 @@ module Schools
     end
 
     def store
-      @store ||= SessionRepository.new(session:, form_key: FORM_KEY).tap do |store|
-        store.update(school_urn: @school.urn)
-      end
+      @store ||= SessionRepository.new(session:, form_key: FORM_KEY)
     end
   end
 end

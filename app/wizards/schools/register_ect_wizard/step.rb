@@ -5,7 +5,8 @@ module Schools
     class Step < DfE::Wizard::Step
       include ActiveRecord::AttributeAssignment
 
-      delegate :ect, :valid_step?, to: :wizard
+      delegate :ect, :school, :valid_step?, to: :wizard
+      delegate :independent?, to: :school, prefix: true
 
       def next_step
       end
