@@ -16,7 +16,8 @@ module AppropriateBodies
         record_outcome = AppropriateBodies::RecordOutcome.new(
           appropriate_body: @appropriate_body,
           pending_induction_submission: @pending_induction_submission,
-          teacher: @teacher
+          teacher: @teacher,
+          author: current_user
         )
 
         PendingInductionSubmission.transaction do

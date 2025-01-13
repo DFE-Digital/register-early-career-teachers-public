@@ -92,6 +92,13 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
+    def self.teacher_passed_induction!(author:, appropriate_body:, induction_period:, teacher:, happened_at: Time.zone.now)
+      event_type = :teacher_passed_induction
+      heading = "#{Teachers::Name.new(teacher).full_name} passed induction"
+
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+    end
+
   private
 
     def attributes
