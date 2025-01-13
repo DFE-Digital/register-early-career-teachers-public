@@ -28,7 +28,7 @@ module AppropriateBodies
       Events::Record.new(
         author: author,
         event_type: :ect_released,
-        heading: "#{teacher_name} was released",
+        heading: "#{teacher_name} was released by #{appropriate_body.name}",
         teacher:,
         appropriate_body:,
         happened_at: Time.zone.now
