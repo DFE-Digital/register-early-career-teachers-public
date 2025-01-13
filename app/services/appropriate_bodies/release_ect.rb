@@ -18,7 +18,6 @@ module AppropriateBodies
         )
 
         pending_induction_submission.destroy!
-
         record_event!
       end
     end
