@@ -1,7 +1,7 @@
 describe Teachers::Name do
-  describe '#full_name' do
-    subject { Teachers::Name.new(teacher) }
+  subject { Teachers::Name.new(teacher) }
 
+  describe '#full_name' do
     context 'when teacher is missing' do
       let(:teacher) { nil }
 
@@ -32,6 +32,22 @@ describe Teachers::Name do
 
       it 'returns the first name followed by the last name' do
         expect(subject.full_name).to eql(%(#{teacher.first_name} #{teacher.last_name}))
+      end
+    end
+  end
+
+  describe '#full_name_in_trs' do
+    let(:teacher) { FactoryBot.build(:teacher, first_name: 'Diana', last_name: 'Rigg') }
+
+    it 'returns the first name followed by the last name' do
+      expect(subject.full_name_in_trs).to eql(%(#{teacher.first_name} #{teacher.last_name}))
+    end
+
+    context 'when the corrected_name is present' do
+      let(:teacher) { FactoryBot.build(:teacher, first_name: 'Diana', last_name: 'Rigg', corrected_name: 'Diana Elizabeth Rigg') }
+
+      it 'is ignored' do
+        expect(subject.full_name_in_trs).to eql(%(#{teacher.first_name} #{teacher.last_name}))
       end
     end
   end
