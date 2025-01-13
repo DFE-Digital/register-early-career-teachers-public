@@ -147,4 +147,20 @@ describe Schools::RegisterECTWizard::ECT do
       expect(ect_at_school_period.started_on).to eq(Date.parse('January 2025'))
     end
   end
+
+  describe '#formatted_appropriate_body_name' do
+    context "when appropriate_body_name is 'ISTIP'" do
+      it "returns 'Independent Schools Teacher Induction Panel (ISTIP)'" do
+        store.appropriate_body_name = 'ISTIP'
+        expect(ect.formatted_appropriate_body_name).to eq('Independent Schools Teacher Induction Panel (ISTIP)')
+      end
+    end
+
+    context "when appropriate_body_name is not 'ISTIP'" do
+      it 'returns the appropriate_body_name' do
+        store.appropriate_body_name = 'Another body'
+        expect(ect.formatted_appropriate_body_name).to eq('Another body')
+      end
+    end
+  end
 end
