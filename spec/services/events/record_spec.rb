@@ -1,15 +1,18 @@
 describe Events::Record do
-  describe '#initialize' do
-    let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
-    let!(:session_user) do
-      Sessions::Users::DfEPersona.new(email: user.email)
-    end
+  let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
+  let(:teacher) { FactoryBot.build(:teacher, first_name: 'Rhys', last_name: 'Ifans') }
+  let(:induction_period) { FactoryBot.build(:induction_period) }
+  let(:appropriate_body) { FactoryBot.build(:appropriate_body, name: "Burns Slant Drilling Co.") }
+  let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
+  let(:author_params) { { author_id: author.id, author_name: author.name, author_email: author.email, author_type: :dfe_staff_user } }
 
+  before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+
+  describe '#initialize' do
     let(:heading) { 'Something happened' }
     let(:event_type) { :appropriate_body_claims_teacher }
     let(:body) { 'A very important event' }
     let(:happened_at) { 2.minutes.ago }
-    let(:author) { session_user }
 
     context "when the user isn't a Sessions::User" do
       let(:non_session_user) { FactoryBot.build(:user) }
@@ -28,9 +31,9 @@ describe Events::Record do
         heading:,
         body:,
         happened_at:,
+        induction_period:,
+        teacher:,
         school: FactoryBot.build(:school),
-        induction_period: FactoryBot.build(:induction_period),
-        teacher: FactoryBot.build(:teacher),
         appropriate_body: FactoryBot.build(:appropriate_body),
         induction_extension: FactoryBot.build(:induction_extension),
         ect_at_school_period: FactoryBot.build(:ect_at_school_period),
@@ -58,6 +61,42 @@ describe Events::Record do
       event_record.record_event!
 
       expect(RecordEventJob).to have_received(:perform_later).with(**event_attributes)
+    end
+  end
+
+  describe '.record_appropriate_body_claims_teacher_event!' do
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_appropriate_body_claims_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          induction_period:,
+          teacher:,
+          appropriate_body:,
+          heading: 'Rhys Ifans was claimed by Burns Slant Drilling Co.',
+          event_type: :appropriate_body_claims_teacher,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_appropriate_body_claims_teacher_event!' do
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_appropriate_body_releases_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          induction_period:,
+          teacher:,
+          appropriate_body:,
+          heading: 'Rhys Ifans was released by Burns Slant Drilling Co.',
+          event_type: :appropriate_body_releases_teacher,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
     end
   end
 end
