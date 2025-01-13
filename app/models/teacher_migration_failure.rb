@@ -7,7 +7,7 @@ class TeacherMigrationFailure < ApplicationRecord
     if migration_item_id.present?
       begin
         migration_item_type.constantize.find_by(id: migration_item_id)
-      rescue => e
+      rescue StandardError
         Rails.logger.error("Error instantiating migration item for id #{migration_item_id}")
       end
     end

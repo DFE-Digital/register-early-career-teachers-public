@@ -39,7 +39,7 @@ module Admin
     end
 
     def has_migration_failures?
-      MigrationFailure.where(parent_id: teacher.id, parent_type: "Teacher").any? ||  
+      MigrationFailure.where(parent_id: teacher.id, parent_type: "Teacher").any? ||
         teacher.teacher_migration_failures.any?
     end
 
