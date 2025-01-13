@@ -35,7 +35,7 @@
 <%= render TestGuidanceComponent.new do |component| %>
   <% component.with_trs_example_teacher_details %>
 
-  <% pending_induction_submission = @appropriate_body.pending_induction_submissions.first %>
+  <% pending_induction_submission = PendingInductionSubmissions::Search.new(appropriate_body: @appropriate_body).pending_induction_submissions.first %>
 
   <% if pending_induction_submission.present? %>
     <h2 class="govuk-heading-m">Error preview</h2>

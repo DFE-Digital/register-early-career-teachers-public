@@ -8,15 +8,12 @@ class Teachers::Name
   def full_name
     return if teacher.blank?
 
-    teacher.corrected_name.presence || first_name_plus_last_name
+    teacher.corrected_name.presence || full_name_in_trs
   end
 
-private
+  def full_name_in_trs
+    return if teacher.blank?
 
-  # this isn't really the _right_ thing to do but given
-  # we only receive separate first and last names from TRS
-  # we're left with little option
-  def first_name_plus_last_name
     %(#{teacher.first_name} #{teacher.last_name})
   end
 end
