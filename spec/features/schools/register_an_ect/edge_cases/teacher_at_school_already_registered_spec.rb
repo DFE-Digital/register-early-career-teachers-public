@@ -1,7 +1,7 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client'
 
-  scenario 'Teacher with trn has already regostered as an ECT at a school' do
+  scenario 'Teacher with trn has already registered as an ECT at a school' do
     given_i_am_logged_in_as_a_school_user
     and_an_ect_has_already_registered_at_my_school
     and_i_am_on_the_find_ect_step_page
@@ -23,7 +23,7 @@ RSpec.describe 'Registering an ECT' do
 
   def and_an_ect_has_already_registered_at_my_school
     teacher = FactoryBot.create(:teacher, trn: '9876543')
-    FactoryBot.create(:ect_at_school_period, teacher: teacher, school:)
+    FactoryBot.create(:ect_at_school_period, :active, teacher: teacher, school:)
   end
 
   def when_i_click_continue
@@ -38,9 +38,9 @@ RSpec.describe 'Registering an ECT' do
 
   def when_i_submit_the_details_of_the_ect_already_registered
     page.get_by_label('trn').fill('9876543')
-    page.get_by_label('day').fill('1')
+    page.get_by_label('day').fill('3')
     page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1980')
+    page.get_by_label('year').fill('1977')
     page.get_by_role('button', name: 'Continue').click
   end
 
