@@ -1,5 +1,5 @@
 class Event < ApplicationRecord
-  EVENT_TYPES = %i[
+  EVENT_TYPES = %w[
     appropriate_body_claims_teacher
     appropriate_body_releases_teacher
 
@@ -25,6 +25,7 @@ class Event < ApplicationRecord
 
   validates :heading, presence: true
   validates :happened_at, presence: true
+  validates :event_type, presence: true, inclusion: { in: EVENT_TYPES }
 
   validate :check_author_present
   validate :event_happened_in_the_past
