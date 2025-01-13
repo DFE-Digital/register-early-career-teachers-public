@@ -8,15 +8,15 @@ describe Builders::Mentor::SchoolPeriods do
 
   subject(:service) { described_class.new(teacher:, school_periods:) }
 
-  describe "#process!" do
+  describe "#build" do
     it "creates MentorAtSchoolPeriod records for the school periods" do
       expect {
-        service.process!
+        service.build
       }.to change { teacher.mentor_at_school_periods.count }.by(2)
     end
 
     it "populates the MentorAtSchoolPeriod records with the correct information" do
-      service.process!
+      service.build
       periods = teacher.mentor_at_school_periods.order(:started_on)
 
       expect(periods.first.school).to eq school_1
@@ -35,21 +35,20 @@ describe Builders::Mentor::SchoolPeriods do
     context "when the school does not exist" do
       let(:period_1) { FactoryBot.build(:school_period, urn: "12121", start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
 
-      it "raises an error" do
+      it "creates a TeacherMigrationFailure record" do
         expect {
-          service.process!
-        }.to(raise_error { ActiveRecord::RecordNotFound })
+          service.build
+        }.to change { TeacherMigrationFailure.count }.by(1)
       end
     end
 
     context "when the school period dates overlap" do
       let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 2.months.ago.to_date, end_date: nil) }
 
-      # FIXME: this raises currently but I think that we need to be able to have overlapping MentorAtSchoolPeriod records
-      xit "does not raise an error" do
+      it "does not create a TeacherMigrationFailure record" do
         expect {
-          service.process!
-        }.not_to raise_error
+          service.build
+        }.not_to(change { TeacherMigrationFailure.count })
       end
     end
   end
