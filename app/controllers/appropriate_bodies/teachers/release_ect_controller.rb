@@ -16,7 +16,8 @@ module AppropriateBodies
 
         release_ect = AppropriateBodies::ReleaseECT.new(
           appropriate_body: @appropriate_body,
-          pending_induction_submission: @pending_induction_submission
+          pending_induction_submission: @pending_induction_submission,
+          author: current_user
         )
 
         PendingInductionSubmission.transaction do
