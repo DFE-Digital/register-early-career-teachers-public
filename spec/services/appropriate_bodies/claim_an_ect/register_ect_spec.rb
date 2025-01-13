@@ -125,7 +125,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
               author: author,
               event_type: :teacher_name_updated_by_trs,
               appropriate_body: appropriate_body,
-              teacher: existing_teacher
+              teacher: existing_teacher,
+              heading: "Name changed from Jonathan Dole to John Doe"
             )
           )
         end
