@@ -26,15 +26,11 @@ module AppropriateBodies
 
     def record_event!
       Events::Record.record_appropriate_body_releases_teacher_event!(
-        author: author,
+        author:,
         teacher:,
         appropriate_body:,
-        induction_period: induction_period
+        induction_period:
       )
-    end
-
-    def teacher_name
-      ::Teachers::Name.new(teacher).full_name
     end
 
     def ongoing_induction_period
