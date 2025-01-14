@@ -17,7 +17,7 @@ module TRS
       @induction_start_date = data.dig('induction', 'startDate')
       @induction_status = data.dig('induction', 'status')
 
-      @qts_awarded = data.dig('qts', 'awarded')
+      @qts_awarded_on = data.dig('qts', 'awarded')
       @qts_status_description = data.dig('qts', 'statusDescription')
 
       @induction_status_description = data.dig('induction', 'statusDescription')
@@ -40,7 +40,7 @@ module TRS
         trs_induction_status_description: @induction_status_description,
         trs_initial_teacher_training_provider_name: @initial_teacher_training_provider_name,
         trs_initial_teacher_training_end_date: @initial_teacher_training_end_date,
-        trs_qts_awarded: @qts_awarded,
+        trs_qts_awarded_on: @qts_awarded_on,
         trs_qts_status_description: @qts_status_description,
       }
     end
@@ -79,7 +79,7 @@ module TRS
     end
 
     def qts_awarded?
-      @qts_awarded.present?
+      @qts_awarded_on.present?
     end
 
     def prohibited_from_teaching?

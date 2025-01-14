@@ -27,7 +27,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   end
 
   describe "#register" do
-    let(:trs_qts_awarded) { Date.new(2023, 5, 2) }
+    let(:trs_qts_awarded_on) { Date.new(2023, 5, 2) }
     let(:pending_induction_submission_params) do
       {
         induction_programme: "fip",
@@ -35,12 +35,12 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         trn: "1234567",
         trs_first_name: "John",
         trs_last_name: "Doe",
-        trs_qts_awarded:
+        trs_qts_awarded_on:
       }
     end
 
     context "with started_on before trs_qts_awarded" do
-      let(:trs_qts_awarded) { Date.new(2023, 5, 3) }
+      let(:trs_qts_awarded_on) { Date.new(2023, 5, 3) }
 
       it "fails because invalid" do
         expect(subject.register(pending_induction_submission_params)).to be_falsey
