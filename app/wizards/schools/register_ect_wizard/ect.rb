@@ -36,6 +36,10 @@ module Schools
         programme_type.capitalize.dasherize
       end
 
+      def formatted_working_pattern
+        working_pattern.humanize
+      end
+
       def register!(school)
         Schools::RegisterECT.new(first_name: trs_first_name,
                                  last_name: trs_last_name,

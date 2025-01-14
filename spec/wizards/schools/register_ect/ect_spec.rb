@@ -127,6 +127,12 @@ describe Schools::RegisterECTWizard::ECT do
     end
   end
 
+  describe '#formatted_working_pattern' do
+    it 'returns the formatted working pattern' do
+      expect(ect.formatted_working_pattern).to eq('Full time')
+    end
+  end
+
   describe '#register!' do
     let(:teacher) { Teacher.first }
     let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
