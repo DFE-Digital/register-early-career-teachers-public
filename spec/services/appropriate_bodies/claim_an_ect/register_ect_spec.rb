@@ -81,9 +81,9 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
         expect(Events::Record).to have_received(:new).with(
           hash_including(
-            author: author,
+            author:,
             event_type: :appropriate_body_claims_teacher,
-            appropriate_body: appropriate_body,
+            appropriate_body:,
             heading: "John Doe was claimed by #{appropriate_body.name}"
           )
         )
@@ -122,9 +122,9 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           expect(existing_teacher.last_name).to eql(pending_induction_submission_params[:trs_last_name])
           expect(Events::Record).to have_received(:new).with(
             hash_including(
-              author: author,
+              author:,
               event_type: :teacher_name_updated_by_trs,
-              appropriate_body: appropriate_body,
+              appropriate_body:,
               teacher: existing_teacher,
               heading: "Name changed from Jonathan Dole to John Doe"
             )

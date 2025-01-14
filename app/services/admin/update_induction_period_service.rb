@@ -43,7 +43,7 @@ module Admin
     end
 
     def earliest_period?
-      !InductionPeriod.where(teacher: teacher)
+      !InductionPeriod.where(teacher:)
         .where("started_on < ?", induction_period.started_on)
         .exists?
     end

@@ -10,7 +10,7 @@ RSpec.describe AppropriateBodyValidator do
     end
   end
 
-  subject { test_class.new(appropriate_body_type: appropriate_body_type, appropriate_body_name: appropriate_body_name) }
+  subject { test_class.new(appropriate_body_type:, appropriate_body_name:) }
 
   context 'when the appropriate_body_type is blank' do
     let(:appropriate_body_type) { '' }

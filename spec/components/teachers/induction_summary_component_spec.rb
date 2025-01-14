@@ -5,7 +5,7 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
   include Rails.application.routes.url_helpers
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:component) { described_class.new(teacher: teacher) }
+  let(:component) { described_class.new(teacher:) }
 
   context "when teacher has no induction periods" do
     it "does not render" do
@@ -14,7 +14,7 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
   end
 
   context "when teacher has induction periods" do
-    let!(:induction_period) { FactoryBot.create(:induction_period, teacher: teacher, started_on: 1.year.ago) }
+    let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: 1.year.ago) }
 
     it "renders" do
       expect(component.render?).to be true
@@ -26,7 +26,7 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
     end
 
     context "with extensions" do
-      let!(:extension) { FactoryBot.create(:induction_extension, teacher: teacher) }
+      let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
 
       it "displays extension information" do
         render_inline(component)

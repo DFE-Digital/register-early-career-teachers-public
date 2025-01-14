@@ -77,7 +77,7 @@ describe Admin::CurrentTeachers do
       # First period: 3 months ago to 2 months ago
       FactoryBot.create(
         :induction_period,
-        teacher: teacher,
+        teacher:,
         appropriate_body: ab,
         started_on: 3.months.ago.to_date,
         finished_on: 2.months.ago.to_date,
@@ -87,7 +87,7 @@ describe Admin::CurrentTeachers do
       # Second period: ongoing from 1 month ago
       FactoryBot.create(
         :induction_period,
-        teacher: teacher,
+        teacher:,
         appropriate_body: ab,
         started_on: 1.month.ago.to_date,
         finished_on: nil,

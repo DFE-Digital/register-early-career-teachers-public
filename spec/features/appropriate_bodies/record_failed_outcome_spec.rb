@@ -7,7 +7,7 @@ RSpec.describe "Recording a failed outcome for an ECT" do
 
   before { sign_in_as_appropriate_body_user(appropriate_body:) }
 
-  let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: appropriate_body) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
 
   scenario 'Happy path' do
     given_i_am_on_the_ect_page(trn)
@@ -63,7 +63,7 @@ private
   end
 
   def and_the_pending_induction_submission_record_should_have_the_right_data_in_it
-    pending_induction_submission = PendingInductionSubmission.find_by(trn:, appropriate_body: appropriate_body)
+    pending_induction_submission = PendingInductionSubmission.find_by(trn:, appropriate_body:)
 
     expect(pending_induction_submission.number_of_terms).to eql(number_of_completed_terms)
     expect(pending_induction_submission.finished_on).to eql(today)

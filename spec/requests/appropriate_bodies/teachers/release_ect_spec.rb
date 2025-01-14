@@ -17,8 +17,8 @@ RSpec.describe 'Appropriate body releasing an ECT' do
 
       before do
         InductionPeriod.create!(
-          appropriate_body: appropriate_body,
-          teacher: teacher,
+          appropriate_body:,
+          teacher:,
           started_on: Date.parse("2022-09-01"),
           induction_programme: :fip
         )

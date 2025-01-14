@@ -4,7 +4,7 @@ RSpec.describe Teachers::PastInductionPeriodsComponent, type: :component do
   include AppropriateBodyHelper
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:component) { described_class.new(teacher: teacher) }
+  let(:component) { described_class.new(teacher:) }
 
   context "when teacher has no past induction periods" do
     it "does not render" do
@@ -16,8 +16,8 @@ RSpec.describe Teachers::PastInductionPeriodsComponent, type: :component do
     let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Past AB") }
     let!(:past_period) do
       FactoryBot.create(:induction_period,
-                        teacher: teacher,
-                        appropriate_body: appropriate_body,
+                        teacher:,
+                        appropriate_body:,
                         started_on: 2.years.ago,
                         finished_on: 1.year.ago,
                         induction_programme: "cip",
@@ -51,7 +51,7 @@ RSpec.describe Teachers::PastInductionPeriodsComponent, type: :component do
     context "with multiple past periods" do
       let!(:older_period) do
         FactoryBot.create(:induction_period,
-                          teacher: teacher,
+                          teacher:,
                           started_on: 4.years.ago,
                           finished_on: 3.years.ago)
       end
