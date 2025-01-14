@@ -3,7 +3,7 @@ FactoryBot.define do
     skip_create
     initialize_with { new(current_step:, step_params:, store:, school:) }
 
-    current_step { :find_mentor }
+    current_step { :find_ect }
     step_params { {} }
     store { FactoryBot.create(:session_repository) }
     school { FactoryBot.create(:school, gias_school: FactoryBot.create(:gias_school, :state_school_type)) }
