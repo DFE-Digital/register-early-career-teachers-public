@@ -10,11 +10,10 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
            appropriate_body_name: 'Teaching Regulation Agency',
            working_pattern: 'Full time')
   end
-  let(:school) { double('School', type_name: 'Other independent school', independent?: true) }
   let(:title) { "Check your answers before submitting" }
-  let(:back_path) { schools_register_ect_wizard_independent_school_appropriate_body_path }
+  let(:back_path) { schools_register_ect_wizard_working_pattern_path }
   let(:continue_path) { schools_register_ect_wizard_check_answers_path }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :check_answers, school:, store: {}) }
+  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :check_answers, store: {}) }
 
   before do
     assign(:ect, ect)
