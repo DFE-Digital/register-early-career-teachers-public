@@ -5,12 +5,6 @@ module Schools
         :confirmation
       end
 
-      def previous_step
-        return :independent_school_appropriate_body if school_independent?
-
-        :state_school_appropriate_body
-      end
-
     private
 
       def persist

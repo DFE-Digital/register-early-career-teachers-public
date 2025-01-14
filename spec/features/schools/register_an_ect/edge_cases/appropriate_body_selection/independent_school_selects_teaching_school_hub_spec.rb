@@ -19,6 +19,9 @@ RSpec.describe 'Registering an ECT' do
     when_i_select_school_led
     and_i_click_continue
 
+    then_i_should_be_taken_to_the_working_pattern_page
+    when_i_select_full_time
+    and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_the_correct_appropriate_body_on_the_page
   end
@@ -71,6 +74,14 @@ RSpec.describe 'Registering an ECT' do
 
   def when_i_select_school_led
     page.get_by_label("School-led").check
+  end
+
+  def then_i_should_be_taken_to_the_working_pattern_page
+    expect(page.url).to end_with('/schools/register-ect/working-pattern')
+  end
+
+  def when_i_select_full_time
+    page.get_by_label("Full time").check
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
