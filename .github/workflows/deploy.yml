@@ -58,7 +58,7 @@ jobs:
       - uses: DFE-Digital/github-actions/build-docker-image@master
         id: build-docker-image
         with:
-          docker-repository: ghcr.io/dfe-digital/ecf2
+          docker-repository: ghcr.io/dfe-digital/register-early-career-teachers-public
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-review:
