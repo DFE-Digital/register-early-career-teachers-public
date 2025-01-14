@@ -8,7 +8,8 @@ module Builders
         @training_period_data = training_period_data
       end
 
-      def process!
+      def build
+        success = true
         period_date = Data.define(:started_on, :finished_on)
 
         training_period_data.each do |period|
@@ -27,7 +28,12 @@ module Builders
                                    finished_on: period.end_date,
                                    legacy_start_id: period.start_source_id,
                                    legacy_end_id: period.end_source_id)
+        rescue ActiveRecord::ActiveRecordError => e
+          ::TeacherMigrationFailure.create!(teacher:, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
+          success = false
         end
+
+        success
       end
     end
   end

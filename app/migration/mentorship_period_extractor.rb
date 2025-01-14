@@ -19,15 +19,17 @@ private
 
   def build_mentorship_periods
     current_period = nil
-    current_mentor = nil
+    current_mentor_id = nil
 
     @induction_records.each_with_object([]) do |induction_record, periods|
       mentor_id = induction_record.mentor_profile_id
 
-      next if current_mentor.nil? && mentor_id.nil?
+      next if current_mentor_id.nil? && mentor_id.nil?
 
-      if current_mentor != mentor_id
-        current_mentor = mentor_id
+      if current_mentor_id.present? && mentor_id.nil?
+        current_mentor_id = nil
+      elsif current_mentor_id != mentor_id
+        current_mentor_id = mentor_id
 
         mentor_teacher = ::Teacher.find_by(legacy_mentor_id: mentor_id)
 

@@ -13,15 +13,15 @@ describe Builders::ECT::TrainingPeriods do
 
   subject(:service) { described_class.new(teacher:, training_period_data:) }
 
-  describe "#process!" do
+  describe "#build" do
     it "creates TrainingPeriod records for the school periods" do
       expect {
-        service.process!
+        service.build
       }.to change { TrainingPeriod.count }.by(2)
     end
 
     it "populates the TrainingPeriod records with the correct information" do
-      service.process!
+      service.build
       periods = TrainingPeriod.where(ect_at_school_period_id: teacher.ect_at_school_periods.select(:id)).order(:started_on)
 
       expect(periods.first.provider_partnership).to eq partnership_1
@@ -39,10 +39,11 @@ describe Builders::ECT::TrainingPeriods do
 
     context "when there is no ECTAtSchoolPeriod that contains the training dates" do
       let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: academic_year.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 14.months.ago.to_date, end_date: 1.month.ago.to_date) }
-      it "raises an error" do
+
+      it "creates a TeacherMigrationFailure record" do
         expect {
-          service.process!
-        }.to(raise_error { ActiveRecord::RecordInvalid })
+          service.build
+        }.to change { TeacherMigrationFailure.count }.by(1)
       end
     end
   end

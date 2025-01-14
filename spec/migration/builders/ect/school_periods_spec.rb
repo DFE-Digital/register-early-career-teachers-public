@@ -8,15 +8,15 @@ describe Builders::ECT::SchoolPeriods do
 
   subject(:service) { described_class.new(teacher:, school_periods:) }
 
-  describe "#process!" do
+  describe "#build" do
     it "creates ECTAtSchoolPeriod records for the school periods" do
       expect {
-        service.process!
+        service.build
       }.to change { teacher.ect_at_school_periods.count }.by(2)
     end
 
     it "populates the ECTAtSchoolPeriod records with the correct information" do
-      service.process!
+      service.build
       periods = teacher.ect_at_school_periods.order(:started_on)
 
       expect(periods.first.school).to eq school_1
@@ -35,20 +35,20 @@ describe Builders::ECT::SchoolPeriods do
     context "when the school does not exist" do
       let(:period_1) { FactoryBot.build(:school_period, urn: "12121", start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
 
-      it "raises an error" do
+      it "creates a TeacherMigrationFailure record" do
         expect {
-          service.process!
-        }.to(raise_error { ActiveRecord::RecordNotFound })
+          service.build
+        }.to change { TeacherMigrationFailure.count }.by(1)
       end
     end
 
     context "when the school period dates cause a validation error " do
       let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 2.months.ago.to_date, end_date: nil) }
 
-      it "raises an error" do
+      it "creates a TeacherMigrationFailure record" do
         expect {
-          service.process!
-        }.to(raise_error { ActiveRecord::RecordInvalid })
+          service.build
+        }.to change { TeacherMigrationFailure.count }.by(1)
       end
     end
   end

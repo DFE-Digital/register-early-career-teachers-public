@@ -26,9 +26,7 @@ private
   end
 
   def failures
-    @failures = Migration::MigrationFailurePresenter.wrap(
-      MigrationFailure.where(parent_type: "Teacher", parent_id: @teacher.id)
-    )
+    @failures = @teacher.teacher_migration_failures
   end
 
   def ect_school_periods

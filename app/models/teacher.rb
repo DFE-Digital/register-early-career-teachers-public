@@ -10,6 +10,9 @@ class Teacher < ApplicationRecord
   has_many :induction_periods, -> { order(started_on: :asc) }
   has_many :events
 
+  # TODO: remove after migration complete
+  has_many :teacher_migration_failures
+
   # Validations
   validates :first_name,
             presence: true
