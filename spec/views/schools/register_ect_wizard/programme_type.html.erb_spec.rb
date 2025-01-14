@@ -1,10 +1,11 @@
 RSpec.describe "schools/register_ect_wizard/programme_type.html.erb" do
-  let(:back_path) { schools_register_ect_wizard_email_address_path }
+  let(:back_path) { schools_register_ect_wizard_independent_school_appropriate_body_path }
+  let(:school) { double('School', type_name: 'Other independent school', independent?: true) }
   let(:continue_path) { schools_register_ect_wizard_check_answers_path }
   let(:step) { Schools::RegisterECTWizard::FindECTStep.new }
   let(:ect) { double(full_name: 'John Smith') }
   let(:title) { "What training programme will #{ect.full_name} follow?" }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :programme_type, store: {}) }
+  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :programme_type, store: {}, school:) }
 
   before do
     assign(:wizard, wizard)

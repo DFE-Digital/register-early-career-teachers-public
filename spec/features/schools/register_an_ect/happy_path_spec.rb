@@ -39,6 +39,10 @@ RSpec.describe 'Registering an ECT' do
 
     when_i_select_school_led
     and_i_click_continue
+    then_i_should_i_should_be_taken_to_the_working_pattern_page
+
+    when_i_select_full_time
+    and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_all_the_ect_data_on_the_page
 
@@ -123,6 +127,10 @@ RSpec.describe 'Registering an ECT' do
     page.get_by_label("School-led").check
   end
 
+  def when_i_select_full_time
+    page.get_by_label("Full time").check
+  end
+
   def and_i_click_continue
     page.get_by_role('button', name: "Continue").click
   end
@@ -144,6 +152,10 @@ RSpec.describe 'Registering an ECT' do
     page.get_by_role('combobox', name: "Which appropriate body will be")
         .first
         .select_option(value: "Golden Leaf Teaching Hub")
+  end
+
+  def then_i_should_i_should_be_taken_to_the_working_pattern_page
+    expect(page.url).to end_with('/schools/register-ect/working-pattern')
   end
 
   def then_i_should_be_taken_to_the_check_answers_page

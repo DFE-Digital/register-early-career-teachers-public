@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_19_151842) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_09_110019) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
-  enable_extension "plpgsql"
   enable_extension "unaccent"
 
   # Custom types defined in this database.
@@ -24,6 +24,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_19_151842) do
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
   create_enum "induction_programme", ["cip", "fip", "diy"]
+  create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "academic_years", primary_key: "year", id: :serial, force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -146,6 +147,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_19_151842) do
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.uuid "legacy_start_id"
     t.uuid "legacy_end_id"
+    t.enum "working_pattern", enum_type: "working_pattern"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"

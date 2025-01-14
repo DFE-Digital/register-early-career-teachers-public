@@ -22,6 +22,7 @@ module Schools
             review_ect_details: ReviewECTDetailsStep,
             start_date: StartDateStep,
             trn_not_found: TRNNotFoundStep,
+            working_pattern: WorkingPatternStep
           }
         ]
       end
