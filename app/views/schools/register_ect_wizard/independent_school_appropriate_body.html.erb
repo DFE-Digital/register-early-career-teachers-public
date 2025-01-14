@@ -26,7 +26,8 @@
                                     class: "autocomplete"
           ) %>
     <% end %>
-    <%= render Teachers::AppropriateBodiesDetails.new %>
+
+    <%= render 'schools/register_ect_wizard/appropriate_body_details' %>
   <% end %>
 
   <%= f.govuk_submit "Continue" %>
