@@ -59,11 +59,11 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def when_i_select_a_teaching_school_hub_as_the_appropriate_body_type
-    page.get_by_label('Teaching school hub').check
+    page.get_by_label('A different appropriate body').check
   end
 
   def and_i_select_an_appropriate_body
-    page.get_by_role('combobox', name: "Which appropriate body will be")
+    page.get_by_role('combobox', name: "")
         .first
         .select_option(value: "Golden Leaf Teaching Hub")
   end
