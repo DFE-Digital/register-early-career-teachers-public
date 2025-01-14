@@ -4,8 +4,8 @@ RSpec.describe 'Appropriate body recording a passed outcome for a teacher' do
   let!(:induction_period) do
     FactoryBot.create(
       :induction_period,
-      teacher: teacher,
-      appropriate_body: appropriate_body,
+      teacher:,
+      appropriate_body:,
       started_on: 1.month.ago,
       finished_on: nil,
       induction_programme: 'fip'

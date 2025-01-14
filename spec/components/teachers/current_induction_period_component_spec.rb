@@ -5,7 +5,7 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
   include Rails.application.routes.url_helpers
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:kwargs) { { teacher: teacher } }
+  let(:kwargs) { { teacher: } }
   let(:component) { described_class.new(**kwargs) }
 
   context "when teacher has no current induction period" do
@@ -18,8 +18,8 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
     let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Test AB") }
     let!(:current_period) do
       FactoryBot.create(:induction_period,
-                        teacher: teacher,
-                        appropriate_body: appropriate_body,
+                        teacher:,
+                        appropriate_body:,
                         started_on: 6.months.ago,
                         finished_on: nil,
                         induction_programme: "cip")
@@ -45,7 +45,7 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
     end
 
     context 'when enable_release: true' do
-      let(:kwargs) { { teacher: teacher, enable_release: true } }
+      let(:kwargs) { { teacher:, enable_release: true } }
 
       it 'includes a release link' do
         render_inline(component)

@@ -13,7 +13,7 @@ module AuthHelper
     name = "#{first_name} #{last_name}"
 
     case method
-    when :dfe_sign_in then sign_in_with_dfe_sign_in(user_type, email: email, first_name: first_name, last_name: last_name, uid: uid)
+    when :dfe_sign_in then sign_in_with_dfe_sign_in(user_type, email:, first_name:, last_name:, uid:)
     when :otp then sign_in_with_otp(user)
     when :persona then sign_in_with_persona(user_type, appropriate_body:, school:, user:, name:, email:)
     end

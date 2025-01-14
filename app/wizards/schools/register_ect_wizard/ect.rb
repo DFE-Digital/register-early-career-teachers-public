@@ -56,7 +56,7 @@ module Schools
       end
 
       def active_at_school?(school:)
-        ECTAtSchoolPeriods::Search.new.exists?(school_id: school.id, trn: trn)
+        ECTAtSchoolPeriods::Search.new.exists?(school_id: school.id, trn:)
       end
     end
   end

@@ -26,7 +26,7 @@ RSpec.describe "Admin teachers index", type: :request do
 
           FactoryBot.create(
             :induction_period,
-            teacher: teacher,
+            teacher:,
             started_on: 1.month.ago.to_date,
             finished_on: nil,
             induction_programme: 'fip'
@@ -52,7 +52,7 @@ RSpec.describe "Admin teachers index", type: :request do
 
           FactoryBot.create(
             :induction_period,
-            teacher: teacher,
+            teacher:,
             started_on: 1.month.ago.to_date,
             finished_on: nil,
             induction_programme: 'fip'

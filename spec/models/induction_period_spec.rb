@@ -57,8 +57,8 @@ describe InductionPeriod do
 
       subject do
         FactoryBot.build(:induction_period,
-                         appropriate_body: appropriate_body,
-                         teacher: teacher,
+                         appropriate_body:,
+                         teacher:,
                          finished_on: Date.current)
       end
 
