@@ -132,7 +132,7 @@ describe Teachers::Search do
 
       context 'when the search string contains some text' do
         it 'initiates a full text search with the given search string' do
-          teacher = FactoryBot.create(:teacher, first_name: 'Captain', last_name: 'Scrummy')
+          teacher = FactoryBot.create(:teacher, trs_first_name: 'Captain', trs_last_name: 'Scrummy')
           FactoryBot.create(
             :induction_period,
             teacher:,
@@ -166,9 +166,9 @@ describe Teachers::Search do
     end
 
     it 'orders results by last name, first name, and id' do
-      teacher1 = FactoryBot.create(:teacher, first_name: 'Alan', last_name: 'Smith')
-      teacher2 = FactoryBot.create(:teacher, first_name: 'Bob', last_name: 'Smith')
-      teacher3 = FactoryBot.create(:teacher, first_name: 'Alan', last_name: 'Jones')
+      teacher1 = FactoryBot.create(:teacher, trs_first_name: 'Alan', trs_last_name: 'Smith')
+      teacher2 = FactoryBot.create(:teacher, trs_first_name: 'Bob', trs_last_name: 'Smith')
+      teacher3 = FactoryBot.create(:teacher, trs_first_name: 'Alan', trs_last_name: 'Jones')
 
       FactoryBot.create(
         :induction_period,

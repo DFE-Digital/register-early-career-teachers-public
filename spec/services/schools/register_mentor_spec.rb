@@ -1,14 +1,14 @@
 describe Schools::RegisterMentor do
-  let(:first_name) { "Dusty" }
-  let(:last_name) { "Rhodes" }
+  let(:trs_first_name) { "Dusty" }
+  let(:trs_last_name) { "Rhodes" }
   let(:corrected_name) { "Randy Marsh" }
   let(:trn) { "3002586" }
   let(:school) { FactoryBot.create(:school) }
   let(:started_on) { Date.yesterday }
 
   subject(:service) do
-    described_class.new(first_name:,
-                        last_name:,
+    described_class.new(trs_first_name:,
+                        trs_last_name:,
                         corrected_name:,
                         trn:,
                         school_urn: school.urn,
@@ -21,8 +21,8 @@ describe Schools::RegisterMentor do
 
     it 'creates a new Teacher record' do
       expect { service.register! }.to change(Teacher, :count).from(0).to(1)
-      expect(teacher.first_name).to eq(first_name)
-      expect(teacher.last_name).to eq(last_name)
+      expect(teacher.trs_first_name).to eq(trs_first_name)
+      expect(teacher.trs_last_name).to eq(trs_last_name)
       expect(teacher.corrected_name).to eq(corrected_name)
       expect(teacher.trn).to eq(trn)
     end
@@ -35,8 +35,8 @@ describe Schools::RegisterMentor do
 
     context "when no start date is provided" do
       subject(:service) do
-        described_class.new(first_name:,
-                            last_name:,
+        described_class.new(trs_first_name:,
+                            trs_last_name:,
                             corrected_name:,
                             trn:,
                             school_urn: school.urn)

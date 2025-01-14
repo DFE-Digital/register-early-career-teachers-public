@@ -37,9 +37,9 @@ module AppropriateBodies
         old_name = ::Teachers::Name.new(teacher).full_name_in_trs
 
         teacher.assign_attributes(
-          first_name: pending_induction_submission.trs_first_name,
-          last_name: pending_induction_submission.trs_last_name,
-          qts_awarded_on: pending_induction_submission.trs_qts_awarded
+          trs_first_name: pending_induction_submission.trs_first_name,
+          trs_last_name: pending_induction_submission.trs_last_name,
+          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded # FIXME: rename to trs_qts_awarded_on
         )
 
         new_name = ::Teachers::Name.new(teacher).full_name_in_trs

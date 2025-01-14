@@ -14,6 +14,6 @@ class Teachers::Name
   def full_name_in_trs
     return if teacher.blank?
 
-    %(#{teacher.first_name} #{teacher.last_name})
+    %(#{teacher.trs_first_name} #{teacher.trs_last_name})
   end
 end

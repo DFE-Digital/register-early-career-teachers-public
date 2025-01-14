@@ -96,7 +96,7 @@ RSpec.describe Admin::InductionPeriodsController do
         end
 
         context "when start date is before QTS date" do
-          let(:teacher) { FactoryBot.create(:teacher, qts_awarded_on: 1.year.ago) }
+          let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
           let(:induction_period) { FactoryBot.create(:induction_period, started_on: 6.months.ago, finished_on: 1.month.ago, teacher:) }
 
           it "returns error" do

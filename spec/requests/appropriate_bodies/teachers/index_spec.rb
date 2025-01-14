@@ -16,8 +16,8 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
 
     context 'when signed in as an appropriate body user' do
       let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
-      let!(:emma) { FactoryBot.create(:teacher, first_name: 'Emma') }
-      let!(:john) { FactoryBot.create(:teacher, first_name: 'John') }
+      let!(:emma) { FactoryBot.create(:teacher, trs_first_name: 'Emma') }
+      let!(:john) { FactoryBot.create(:teacher, trs_first_name: 'John') }
 
       before do
         [emma, john].each do |teacher|
@@ -29,7 +29,7 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
         get("/appropriate-body/teachers")
 
         expect(response).to be_successful
-        expect(response.body).to include(emma.first_name, john.first_name)
+        expect(response.body).to include(emma.trs_first_name, john.trs_first_name)
       end
 
       context "with a query parameter" do
@@ -37,8 +37,8 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
           get("/appropriate-body/teachers?q=emma")
           expect(response).to be_successful
 
-          expect(response.body).to include(emma.first_name)
-          expect(response.body).not_to include(john.first_name)
+          expect(response.body).to include(emma.trs_first_name)
+          expect(response.body).not_to include(john.trs_first_name)
         end
       end
     end

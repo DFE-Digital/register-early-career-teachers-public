@@ -33,10 +33,10 @@ class InductionPeriod < ApplicationRecord
 private
 
   def start_date_after_qts_date
-    return if started_on.blank? || teacher.qts_awarded_on.blank?
-    return if started_on >= teacher.qts_awarded_on
+    return if started_on.blank? || teacher.trs_qts_awarded_on.blank?
+    return if started_on >= teacher.trs_qts_awarded_on
 
-    errors.add(:started_on, "Start date cannot be before QTS award date (#{teacher.qts_awarded_on.to_fs(:govuk)})")
+    errors.add(:started_on, "Start date cannot be before QTS award date (#{teacher.trs_qts_awarded_on.to_fs(:govuk)})")
   end
 
   def valid_date_order?
