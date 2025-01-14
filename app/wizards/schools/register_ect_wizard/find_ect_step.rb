@@ -15,6 +15,7 @@ module Schools
       def next_step
         return :trn_not_found unless ect.in_trs?
         return :national_insurance_number unless ect.matches_trs_dob?
+        return :already_active_at_school if ect.active_at_school?(school:)
         return :induction_completed if ect.induction_completed?
         return :induction_exempt if ect.induction_exempt?
 

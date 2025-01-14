@@ -8,6 +8,7 @@ module Schools
       steps do
         [
           {
+            already_active_at_school: AlreadyActiveAtSchoolStep,
             state_school_appropriate_body: StateSchoolAppropriateBodyStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep,
