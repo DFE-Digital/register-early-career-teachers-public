@@ -4,8 +4,8 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
   let!(:induction_period) do
     FactoryBot.create(
       :induction_period,
-      teacher: teacher,
-      appropriate_body: appropriate_body,
+      teacher:,
+      appropriate_body:,
       started_on: 1.month.ago,
       finished_on: nil,
       induction_programme: 'fip'
@@ -85,9 +85,9 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
           )
 
           expect(AppropriateBodies::RecordOutcome).to have_received(:new).with(
-            appropriate_body: appropriate_body,
+            appropriate_body:,
             pending_induction_submission: an_instance_of(PendingInductionSubmission),
-            teacher: teacher,
+            teacher:,
             author: an_instance_of(Sessions::Users::AppropriateBodyPersona)
           )
 

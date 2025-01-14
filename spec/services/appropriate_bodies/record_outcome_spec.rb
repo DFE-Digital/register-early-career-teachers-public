@@ -21,7 +21,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:induction_period) { FactoryBot.create(:induction_period, teacher: teacher) }
+  let(:induction_period) { FactoryBot.create(:induction_period, teacher:) }
   let(:pending_induction_submission) do
     FactoryBot.create(:pending_induction_submission,
                       trn: teacher.trn,

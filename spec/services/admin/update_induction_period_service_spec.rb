@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Admin::UpdateInductionPeriodService do
-  subject(:service) { described_class.new(induction_period: induction_period, params: params) }
+  subject(:service) { described_class.new(induction_period:, params:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:induction_period) do
@@ -35,7 +35,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
     end
 
     context "when induction period has an outcome" do
-      let(:induction_period) { FactoryBot.create(:induction_period, teacher: teacher, started_on: "2023-06-01", finished_on: "2023-12-31", outcome: "pass") }
+      let(:induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: "2023-06-01", finished_on: "2023-12-31", outcome: "pass") }
 
       it "raises an error" do
         expect { service.update_induction! }.to raise_error(
@@ -78,7 +78,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
         context "when overlapping with previous period" do
           let!(:previous_period) do
             FactoryBot.create(:induction_period,
-                              teacher: teacher,
+                              teacher:,
                               started_on: "2023-01-01",
                               finished_on: "2023-07-01",
                               induction_programme: "cip")
@@ -97,7 +97,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
         context "when overlapping with next period" do
           let!(:next_period) do
             FactoryBot.create(:induction_period,
-                              teacher: teacher,
+                              teacher:,
                               started_on: "2023-11-01",
                               finished_on: "2024-05-01",
                               induction_programme: "cip")
@@ -135,7 +135,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
       context "when not the earliest period" do
         before do
           FactoryBot.create(:induction_period,
-                            teacher: teacher,
+                            teacher:,
                             started_on: "2022-01-01",
                             finished_on: "2022-12-31",
                             induction_programme: "cip")

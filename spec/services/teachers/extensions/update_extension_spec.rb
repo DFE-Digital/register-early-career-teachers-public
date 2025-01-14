@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Teachers::Extensions::UpdateExtension do
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:extension) { FactoryBot.create(:induction_extension, teacher: teacher, number_of_terms: 1) }
+  let(:extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 1) }
   let(:service) { described_class.new(extension, valid_params) }
 
   describe "#update_extension" do

@@ -45,8 +45,8 @@ RSpec.describe Admin::InductionPeriodsController do
 
         context "when updating earliest period start date" do
           let!(:teacher) { FactoryBot.create(:teacher) }
-          let!(:earliest_period) { FactoryBot.create(:induction_period, teacher: teacher, started_on: 2.years.ago, finished_on: 18.months.ago) }
-          let!(:later_period) { FactoryBot.create(:induction_period, teacher: teacher, started_on: 1.year.ago, finished_on: 6.months.ago) }
+          let!(:earliest_period) { FactoryBot.create(:induction_period, teacher:, started_on: 2.years.ago, finished_on: 18.months.ago) }
+          let!(:later_period) { FactoryBot.create(:induction_period, teacher:, started_on: 1.year.ago, finished_on: 6.months.ago) }
 
           it "enqueues BeginECTInductionJob" do
             expect {
@@ -83,8 +83,8 @@ RSpec.describe Admin::InductionPeriodsController do
 
         context "when dates would cause overlap" do
           let!(:teacher) { FactoryBot.create(:teacher) }
-          let!(:first_period) { FactoryBot.create(:induction_period, teacher: teacher, started_on: 1.year.ago, finished_on: 6.months.ago) }
-          let!(:second_period) { FactoryBot.create(:induction_period, teacher: teacher, started_on: 5.months.ago, finished_on: 1.month.ago) }
+          let!(:first_period) { FactoryBot.create(:induction_period, teacher:, started_on: 1.year.ago, finished_on: 6.months.ago) }
+          let!(:second_period) { FactoryBot.create(:induction_period, teacher:, started_on: 5.months.ago, finished_on: 1.month.ago) }
 
           it "returns error" do
             patch admin_teacher_induction_period_path(second_period.teacher, second_period), params: {
@@ -97,7 +97,7 @@ RSpec.describe Admin::InductionPeriodsController do
 
         context "when start date is before QTS date" do
           let(:teacher) { FactoryBot.create(:teacher, qts_awarded_on: 1.year.ago) }
-          let(:induction_period) { FactoryBot.create(:induction_period, started_on: 6.months.ago, finished_on: 1.month.ago, teacher: teacher) }
+          let(:induction_period) { FactoryBot.create(:induction_period, started_on: 6.months.ago, finished_on: 1.month.ago, teacher:) }
 
           it "returns error" do
             patch admin_teacher_induction_period_path(induction_period.teacher, induction_period), params: {

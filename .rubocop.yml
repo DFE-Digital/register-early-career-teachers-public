@@ -58,3 +58,6 @@ Naming/MethodParameterName:
 
 Lint/MissingSuper:
   Enabled: false
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always

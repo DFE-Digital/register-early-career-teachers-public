@@ -68,7 +68,7 @@ module AppropriateBodies
 
       def record_claim_event
         Events::Record.record_appropriate_body_claims_teacher_event!(
-          author: author,
+          author:,
           teacher:,
           appropriate_body:,
           induction_period:
