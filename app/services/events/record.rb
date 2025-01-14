@@ -83,6 +83,13 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
+    def self.record_appropriate_body_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:, happened_at: Time.zone.now)
+      event_type = :appropriate_body_passes_teacher
+      heading = "#{Teachers::Name.new(teacher).full_name} passed induction"
+
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+    end
+
     # Teacher events
 
     def self.teacher_name_changed_in_trs!(old_name:, new_name:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
@@ -90,13 +97,6 @@ module Events
       heading = "Name changed from #{old_name} to #{new_name}"
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
-    end
-
-    def self.teacher_passed_induction!(author:, appropriate_body:, induction_period:, teacher:, happened_at: Time.zone.now)
-      event_type = :teacher_passed_induction
-      heading = "#{Teachers::Name.new(teacher).full_name} passed induction"
-
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
   private
