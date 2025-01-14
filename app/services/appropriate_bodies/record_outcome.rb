@@ -39,7 +39,7 @@ module AppropriateBodies
     end
 
     def record_pass_induction_event!
-      Events::Record.teacher_passed_induction!(
+      Events::Record.record_appropriate_body_passes_teacher_event(
         author:,
         teacher:,
         appropriate_body:,
