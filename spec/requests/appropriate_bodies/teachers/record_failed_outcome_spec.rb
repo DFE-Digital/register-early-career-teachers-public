@@ -87,7 +87,8 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
           expect(AppropriateBodies::RecordOutcome).to have_received(:new).with(
             appropriate_body: appropriate_body,
             pending_induction_submission: an_instance_of(PendingInductionSubmission),
-            teacher: teacher
+            teacher: teacher,
+            author: an_instance_of(Sessions::Users::AppropriateBodyPersona)
           )
 
           expect(response).to be_redirection

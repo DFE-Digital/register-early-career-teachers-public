@@ -3,9 +3,19 @@ require "rails_helper"
 RSpec.describe AppropriateBodies::RecordOutcome do
   subject(:service) do
     described_class.new(
-      appropriate_body: appropriate_body,
-      pending_induction_submission: pending_induction_submission,
-      teacher: teacher
+      appropriate_body:,
+      pending_induction_submission:,
+      teacher:,
+      author:
+    )
+  end
+
+  let(:author) do
+    Sessions::Users::AppropriateBodyUser.new(
+      name: 'A user',
+      email: 'ab_user@something.org',
+      dfe_sign_in_user_id: SecureRandom.uuid,
+      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id
     )
   end
 

@@ -82,17 +82,17 @@ describe Events::Record do
     end
   end
 
-  describe '.record_appropriate_body_claims_teacher_event!' do
+  describe '.record_appropriate_body_passes_teacher_event' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_appropriate_body_releases_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
+        Events::Record.record_appropriate_body_passes_teacher_event(author:, teacher:, appropriate_body:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
-          heading: 'Rhys Ifans was released by Burns Slant Drilling Co.',
-          event_type: :appropriate_body_releases_teacher,
+          heading: 'Rhys Ifans passed induction',
+          event_type: :appropriate_body_passes_teacher,
           happened_at: Time.zone.now,
           **author_params
         )
