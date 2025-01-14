@@ -128,6 +128,9 @@ Rails.application.routes.draw do
       get "programme-type", action: :new
       post "programme-type", action: :create
 
+      get "working-pattern", action: :new
+      post "working-pattern", action: :create
+
       get "check-answers", action: :new
       post "check-answers", action: :create
 

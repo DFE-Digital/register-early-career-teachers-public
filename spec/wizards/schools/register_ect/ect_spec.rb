@@ -13,7 +13,8 @@ describe Schools::RegisterECTWizard::ECT do
                      trs_first_name: "Dusty",
                      trs_last_name: "Rhodes",
                      trs_date_of_birth: "1945-10-11",
-                     trs_national_insurance_number: "OWAD23455")
+                     trs_national_insurance_number: "OWAD23455",
+                     working_pattern: "full_time")
   end
 
   subject(:ect) { described_class.new(store) }
@@ -108,6 +109,12 @@ describe Schools::RegisterECTWizard::ECT do
     end
   end
 
+  describe '#working_pattern' do
+    it 'returns the working pattern' do
+      expect(ect.working_pattern).to eq("full_time")
+    end
+  end
+
   describe '#trs_national_insurance_number' do
     it 'returns the national insurance number in trs' do
       expect(ect.trs_national_insurance_number).to eq("OWAD23455")
@@ -117,6 +124,12 @@ describe Schools::RegisterECTWizard::ECT do
   describe '#formatted_programme_type' do
     it 'returns the formatted programme type' do
       expect(ect.formatted_programme_type).to eq('Pokemon-led')
+    end
+  end
+
+  describe '#formatted_working_pattern' do
+    it 'returns the formatted working pattern' do
+      expect(ect.formatted_working_pattern).to eq('Full time')
     end
   end
 

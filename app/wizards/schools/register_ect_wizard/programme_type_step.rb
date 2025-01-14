@@ -10,7 +10,13 @@ module Schools
       end
 
       def next_step
-        :check_answers
+        :working_pattern
+      end
+
+      def previous_step
+        return :independent_school_appropriate_body if school_independent?
+
+        :state_school_appropriate_body
       end
     end
   end
