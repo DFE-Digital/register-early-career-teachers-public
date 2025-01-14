@@ -1,0 +1,5 @@
+<% page_data(title: "#{@ect.full_name} is already registered at your school", error: false) %>
+
+<p class="govuk-body">Our records show this ECT is already registered for training at your school.</p>
+
+<p class="govuk-body"><%= govuk_link_to("Register another ECT", schools_register_ect_wizard_find_ect_path) %></p>
