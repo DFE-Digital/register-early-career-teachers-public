@@ -1,18 +1,20 @@
 module AppropriateBodies
   class RecordOutcome
-    attr_reader :teacher, :pending_induction_submission, :appropriate_body
+    attr_reader :teacher, :pending_induction_submission, :appropriate_body, :author
 
-    def initialize(appropriate_body:, pending_induction_submission:, teacher:)
+    def initialize(appropriate_body:, pending_induction_submission:, teacher:, author:)
       @appropriate_body = appropriate_body
       @pending_induction_submission = pending_induction_submission
       @teacher = teacher
+      @author = author
     end
 
     def pass!
       ActiveRecord::Base.transaction do
         success = [
           close_induction_period(:pass),
-          send_pass_induction_notification_to_trs
+          send_pass_induction_notification_to_trs,
+          record_pass_induction_event!
         ].all?
 
         success or raise ActiveRecord::Rollback
@@ -34,6 +36,15 @@ module AppropriateBodies
 
     def active_induction_period
       @active_induction_period ||= ::Teachers::InductionPeriod.new(teacher).active_induction_period
+    end
+
+    def record_pass_induction_event!
+      Events::Record.record_appropriate_body_passes_teacher_event(
+        author:,
+        teacher:,
+        appropriate_body:,
+        induction_period: active_induction_period
+      )
     end
 
     def close_induction_period(outcome)
