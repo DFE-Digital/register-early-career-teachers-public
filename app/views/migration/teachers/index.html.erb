@@ -34,7 +34,7 @@
           end
           row.with_cell(text: Teachers::Role.new(teacher:))
           row.with_cell(text: teacher.trn)
-          if teacher.migration_failures.any?
+          if teacher.has_migration_failures?
             row.with_cell { govuk_tag(text: "Error", colour: "red") }
           else
             row.with_cell(text: "")

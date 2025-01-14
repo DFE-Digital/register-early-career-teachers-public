@@ -8,7 +8,8 @@ module Builders
         @school_periods = school_periods
       end
 
-      def process!
+      def build
+        success = true
         school_periods.each do |period|
           school = School.find_by!(urn: period.urn)
           ::ECTAtSchoolPeriod.create!(teacher:,
@@ -17,7 +18,12 @@ module Builders
                                       finished_on: period.end_date,
                                       legacy_start_id: period.start_source_id,
                                       legacy_end_id: period.end_source_id)
+        rescue ActiveRecord::ActiveRecordError => e
+          ::TeacherMigrationFailure.create!(teacher:, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
+          success = false
         end
+
+        success
       end
     end
   end

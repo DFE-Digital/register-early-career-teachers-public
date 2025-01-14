@@ -38,8 +38,9 @@ module Admin
       teacher.mentor_at_school_periods.order(started_on: :desc)
     end
 
-    def migration_failures
-      MigrationFailure.where(parent_id: teacher.id, parent_type: "Teacher").order(:id)
+    def has_migration_failures?
+      MigrationFailure.where(parent_id: teacher.id, parent_type: "Teacher").any? ||
+        teacher.teacher_migration_failures.any?
     end
 
   private
