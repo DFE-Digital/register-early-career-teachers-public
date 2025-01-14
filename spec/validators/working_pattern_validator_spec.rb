@@ -10,7 +10,7 @@ RSpec.describe WorkingPatternValidator do
     end
   end
 
-  subject { test_class.new(working_pattern: working_pattern) }
+  subject { test_class.new(working_pattern:) }
 
   context 'when working_pattern is valid' do
     %w[part_time full_time].each do |valid_value|

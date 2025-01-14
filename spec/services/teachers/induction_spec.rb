@@ -6,11 +6,11 @@ RSpec.describe Teachers::Induction do
 
   describe "#current_induction_period" do
     before do
-      FactoryBot.create(:induction_period, teacher: teacher, started_on: 2.years.ago, finished_on: 1.year.ago)
+      FactoryBot.create(:induction_period, teacher:, started_on: 2.years.ago, finished_on: 1.year.ago)
     end
 
     it "returns the induction period without a finished_on date" do
-      current_period = FactoryBot.create(:induction_period, teacher: teacher, started_on: 6.months.ago, finished_on: nil)
+      current_period = FactoryBot.create(:induction_period, teacher:, started_on: 6.months.ago, finished_on: nil)
 
       expect(service.current_induction_period).to eq(current_period)
     end
@@ -23,19 +23,19 @@ RSpec.describe Teachers::Induction do
   describe "#past_induction_periods" do
     let(:older_finish) do
       FactoryBot.create(:induction_period,
-                        teacher: teacher,
+                        teacher:,
                         started_on: 3.years.ago,
                         finished_on: 2.years.ago)
     end
     let(:recent_finish) do
       FactoryBot.create(:induction_period,
-                        teacher: teacher,
+                        teacher:,
                         started_on: 2.years.ago,
                         finished_on: 1.year.ago)
     end
     let(:current) do
       FactoryBot.create(:induction_period,
-                        teacher: teacher,
+                        teacher:,
                         started_on: 6.months.ago,
                         finished_on: nil)
     end
@@ -49,11 +49,11 @@ RSpec.describe Teachers::Induction do
   describe "#induction_start_date" do
     it "returns the start date of the first induction period" do
       FactoryBot.create(:induction_period,
-                        teacher: teacher,
+                        teacher:,
                         started_on: 2.years.ago,
                         finished_on: 1.year.ago)
       FactoryBot.create(:induction_period,
-                        teacher: teacher,
+                        teacher:,
                         started_on: 3.years.ago,
                         finished_on: 2.years.ago)
       expect(service.induction_start_date).to eq(3.years.ago.to_date)
@@ -67,7 +67,7 @@ RSpec.describe Teachers::Induction do
   describe "#has_induction_periods?" do
     it "returns true when teacher has induction periods" do
       FactoryBot.create(:induction_period,
-                        teacher: teacher,
+                        teacher:,
                         started_on: 1.year.ago,
                         finished_on: 6.months.ago)
       expect(service.has_induction_periods?).to be true
@@ -80,7 +80,7 @@ RSpec.describe Teachers::Induction do
 
   describe "#has_extensions?" do
     it "returns true when teacher has induction extensions" do
-      FactoryBot.create(:induction_extension, teacher: teacher)
+      FactoryBot.create(:induction_extension, teacher:)
 
       expect(service.has_extensions?).to be true
     end

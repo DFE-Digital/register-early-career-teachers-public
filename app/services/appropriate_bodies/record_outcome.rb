@@ -50,7 +50,7 @@ module AppropriateBodies
     def close_induction_period(outcome)
       active_induction_period.update(
         finished_on: pending_induction_submission.finished_on,
-        outcome: outcome,
+        outcome:,
         number_of_terms: pending_induction_submission.number_of_terms
       )
     end

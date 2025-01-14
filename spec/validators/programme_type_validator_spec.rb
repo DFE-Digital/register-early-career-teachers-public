@@ -10,7 +10,7 @@ RSpec.describe ProgrammeTypeValidator do
     end
   end
 
-  subject { test_class.new(programme_type: programme_type) }
+  subject { test_class.new(programme_type:) }
 
   context 'when programme_type is valid' do
     %w[provider_led school_led].each do |valid_value|
