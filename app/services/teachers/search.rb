@@ -12,7 +12,7 @@ module Teachers
     end
 
     def search
-      scope.order(:last_name, :first_name, :id)
+      scope.order(:trs_last_name, :trs_first_name, :id)
     end
 
   private

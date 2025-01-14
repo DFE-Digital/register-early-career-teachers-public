@@ -171,7 +171,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
 
           expect(response).to be_redirection
           expect(response.redirect_url).to match(%r{/teachers/\d+\z})
-          expect(flash[:notice]).to eq("Teacher #{teacher.first_name} #{teacher.last_name} already has an active induction period with this appropriate body")
+          expect(flash[:notice]).to eq("Teacher #{teacher.trs_first_name} #{teacher.trs_last_name} already has an active induction period with this appropriate body")
         end
       end
 

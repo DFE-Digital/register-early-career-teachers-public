@@ -19,8 +19,8 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
 
     it "builds a summary card for a teacher" do
       expect(summary_card_for_teacher(teacher)).to include(
-        CGI.escapeHTML(teacher.first_name),
-        CGI.escapeHTML(teacher.last_name)
+        CGI.escapeHTML(teacher.trs_first_name),
+        CGI.escapeHTML(teacher.trs_last_name)
       )
     end
 

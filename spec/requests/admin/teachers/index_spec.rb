@@ -21,8 +21,8 @@ RSpec.describe "Admin teachers index", type: :request do
 
       context "with search query" do
         it "filters teachers by name" do
-          teacher = FactoryBot.create(:teacher, first_name: "John", last_name: "Smith")
-          other_teacher = FactoryBot.create(:teacher, first_name: "Jane", last_name: "Doe")
+          teacher = FactoryBot.create(:teacher, trs_first_name: "John", trs_last_name: "Smith")
+          other_teacher = FactoryBot.create(:teacher, trs_first_name: "Jane", trs_last_name: "Doe")
 
           FactoryBot.create(
             :induction_period,

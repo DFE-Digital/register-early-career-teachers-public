@@ -1,6 +1,6 @@
 describe Events::Record do
   let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
-  let(:teacher) { FactoryBot.build(:teacher, first_name: 'Rhys', last_name: 'Ifans') }
+  let(:teacher) { FactoryBot.build(:teacher, trs_first_name: 'Rhys', trs_last_name: 'Ifans') }
   let(:induction_period) { FactoryBot.build(:induction_period) }
   let(:appropriate_body) { FactoryBot.build(:appropriate_body, name: "Burns Slant Drilling Co.") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }

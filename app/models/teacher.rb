@@ -14,10 +14,10 @@ class Teacher < ApplicationRecord
   has_many :teacher_migration_failures
 
   # Validations
-  validates :first_name,
+  validates :trs_first_name,
             presence: true
 
-  validates :last_name,
+  validates :trs_last_name,
             presence: true
 
   validates :trn,

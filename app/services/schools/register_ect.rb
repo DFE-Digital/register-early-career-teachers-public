@@ -1,10 +1,10 @@
 module Schools
   class RegisterECT
-    attr_reader :corrected_name, :first_name, :last_name, :started_on, :school, :teacher, :trn, :working_pattern
+    attr_reader :corrected_name, :trs_first_name, :trs_last_name, :started_on, :school, :teacher, :trn, :working_pattern
 
-    def initialize(first_name:, last_name:, trn:, school:, corrected_name:, started_on:, working_pattern:)
-      @first_name = first_name
-      @last_name = last_name
+    def initialize(trs_first_name:, trs_last_name:, trn:, school:, corrected_name:, started_on:, working_pattern:)
+      @trs_first_name = trs_first_name
+      @trs_last_name = trs_last_name
       @started_on = started_on
       @corrected_name = corrected_name
       @trn = trn
@@ -22,7 +22,7 @@ module Schools
   private
 
     def create_teacher!
-      @teacher = ::Teacher.create!(first_name:, last_name:, trn:, corrected_name:)
+      @teacher = ::Teacher.create!(trs_first_name:, trs_last_name:, trn:, corrected_name:)
     end
 
     def start_at_school!

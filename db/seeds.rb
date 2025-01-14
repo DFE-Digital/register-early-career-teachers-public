@@ -16,8 +16,8 @@ def describe_period_duration(period)
 end
 
 def describe_mentorship_period(mp)
-  mentor_name = Colourize.text("#{mp.mentor.teacher.first_name} #{mp.mentor.teacher.last_name}", MENTOR_COLOUR)
-  ect_name = Colourize.text("#{mp.mentee.teacher.first_name} #{mp.mentee.teacher.last_name}", ECT_COLOUR)
+  mentor_name = Colourize.text("#{mp.mentor.teacher.trs_first_name} #{mp.mentor.teacher.trs_last_name}", MENTOR_COLOUR)
+  ect_name = Colourize.text("#{mp.mentee.teacher.trs_first_name} #{mp.mentee.teacher.trs_last_name}", ECT_COLOUR)
 
   print_seed_info("#{mentor_name} mentoring #{ect_name} at #{mp.mentor.school.gias_school.name} #{describe_period_duration(mp)}", indent: 2)
 end
@@ -81,18 +81,18 @@ end
 
 print_seed_info("Adding teachers")
 
-emma_thompson = Teacher.create!(first_name: 'Emma', last_name: 'Thompson', trn: '1023456')
-kate_winslet = Teacher.create!(first_name: 'Kate', last_name: 'Winslet', trn: '1023457')
-alan_rickman = Teacher.create!(first_name: 'Alan', last_name: 'Rickman', trn: '2084589')
-hugh_grant = Teacher.create!(first_name: 'Hugh', last_name: 'Grant', trn: '3657894')
-jamie_parsons = Teacher.create!(first_name: 'Jamie', last_name: 'Parsons', trn: '1237894')
-harriet_walter = Teacher.create!(first_name: 'Harriet', last_name: 'Walter', trn: '2017654')
-hugh_laurie = Teacher.create!(first_name: 'Hugh', last_name: 'Laurie', trn: '4786654')
-andre_roussimoff = Teacher.create!(first_name: 'André', last_name: 'Roussimoff', trn: '8886654')
-imogen_stubbs = Teacher.create!(first_name: 'Imogen', last_name: 'Stubbs', trn: '6352869')
-gemma_jones = Teacher.create!(first_name: 'Gemma', last_name: 'Jones', trn: '9578426')
-anthony_hopkins = Teacher.create!(first_name: 'Anthony', last_name: 'Hopkins', trn: '6228282')
-john_withers = Teacher.create!(first_name: 'John', last_name: 'Withers', corrected_name: 'Old Man Withers', trn: '8590123')
+emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456')
+kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457')
+alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589')
+hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894')
+jamie_parsons = Teacher.create!(trs_first_name: 'Jamie', trs_last_name: 'Parsons', trn: '1237894')
+harriet_walter = Teacher.create!(trs_first_name: 'Harriet', trs_last_name: 'Walter', trn: '2017654')
+hugh_laurie = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Laurie', trn: '4786654')
+andre_roussimoff = Teacher.create!(trs_first_name: 'André', trs_last_name: 'Roussimoff', trn: '8886654')
+imogen_stubbs = Teacher.create!(trs_first_name: 'Imogen', trs_last_name: 'Stubbs', trn: '6352869')
+gemma_jones = Teacher.create!(trs_first_name: 'Gemma', trs_last_name: 'Jones', trn: '9578426')
+anthony_hopkins = Teacher.create!(trs_first_name: 'Anthony', trs_last_name: 'Hopkins', trn: '6228282')
+john_withers = Teacher.create!(trs_first_name: 'John', trs_last_name: 'Withers', corrected_name: 'Old Man Withers', trn: '8590123')
 
 print_seed_info("Adding schools")
 
@@ -315,8 +315,8 @@ active_appropriate_bodies.each do |appropriate_body|
     trn: alan_rickman.trn,
     date_of_birth: Date.new(1946, 2, 21),
     started_on: 1.month.ago,
-    trs_first_name: alan_rickman.first_name,
-    trs_last_name: alan_rickman.last_name
+    trs_first_name: alan_rickman.trs_first_name,
+    trs_last_name: alan_rickman.trs_last_name
   ).tap { |is| describe_pending_induction_submission(is) }
 end
 
