@@ -63,7 +63,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
       end
 
       context "when start date is before QTS award date" do
-        let(:teacher) { FactoryBot.create(:teacher, qts_awarded_on: Date.parse("2023-01-01")) }
+        let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: Date.parse("2023-01-01")) }
         let(:params) { { started_on: "2022-12-31" } }
 
         it "raises an error" do

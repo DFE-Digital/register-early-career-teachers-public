@@ -3,7 +3,16 @@ module TRS
     PROHIBITED_FROM_TEACHING_CATEGORY_ID = 'b2b19019-b165-47a3-8745-3297ff152581'.freeze
     INVALID_INDUCTION_STATUSES = %w[Exempt Pass Fail PassedinWales FailedinWales].freeze
 
-    attr_reader :trn, :first_name, :last_name, :date_of_birth, :induction_status, :national_insurance_number
+    attr_reader :trn,
+                :first_name,
+                :last_name,
+                :date_of_birth,
+                :induction_status,
+                :national_insurance_number,
+                :qts_awarded_on,
+                :qts_status_description,
+                :initial_teacher_training_provider_name,
+                :initial_teacher_training_end_date
 
     def initialize(data)
       @trn = data['trn']
@@ -17,7 +26,7 @@ module TRS
       @induction_start_date = data.dig('induction', 'startDate')
       @induction_status = data.dig('induction', 'status')
 
-      @qts_awarded = data.dig('qts', 'awarded')
+      @qts_awarded_on = data.dig('qts', 'awarded')
       @qts_status_description = data.dig('qts', 'statusDescription')
 
       @induction_status_description = data.dig('induction', 'statusDescription')
@@ -40,7 +49,7 @@ module TRS
         trs_induction_status_description: @induction_status_description,
         trs_initial_teacher_training_provider_name: @initial_teacher_training_provider_name,
         trs_initial_teacher_training_end_date: @initial_teacher_training_end_date,
-        trs_qts_awarded: @qts_awarded,
+        trs_qts_awarded_on: @qts_awarded_on,
         trs_qts_status_description: @qts_status_description,
       }
     end
@@ -79,7 +88,7 @@ module TRS
     end
 
     def qts_awarded?
-      @qts_awarded.present?
+      @qts_awarded_on.present?
     end
 
     def prohibited_from_teaching?

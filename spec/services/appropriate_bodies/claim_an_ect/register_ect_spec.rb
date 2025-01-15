@@ -27,7 +27,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   end
 
   describe "#register" do
-    let(:trs_qts_awarded) { Date.new(2023, 5, 2) }
+    let(:trs_qts_awarded_on) { Date.new(2023, 5, 2) }
     let(:pending_induction_submission_params) do
       {
         induction_programme: "fip",
@@ -35,12 +35,12 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         trn: "1234567",
         trs_first_name: "John",
         trs_last_name: "Doe",
-        trs_qts_awarded:
+        trs_qts_awarded_on:
       }
     end
 
     context "with started_on before trs_qts_awarded" do
-      let(:trs_qts_awarded) { Date.new(2023, 5, 3) }
+      let(:trs_qts_awarded_on) { Date.new(2023, 5, 3) }
 
       it "fails because invalid" do
         expect(subject.register(pending_induction_submission_params)).to be_falsey
@@ -58,8 +58,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           .and change(InductionPeriod, :count).by(1)
 
         teacher = Teacher.last
-        expect(teacher.first_name).to eq("John")
-        expect(teacher.last_name).to eq("Doe")
+        expect(teacher.trs_first_name).to eq("John")
+        expect(teacher.trs_last_name).to eq("Doe")
         expect(teacher.trn).to eq("1234567")
 
         induction_period = InductionPeriod.last
@@ -101,8 +101,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
             .and change(InductionPeriod, :count).by(1)
 
           existing_teacher.reload
-          expect(existing_teacher.first_name).to eq("John")
-          expect(existing_teacher.last_name).to eq("Doe")
+          expect(existing_teacher.trs_first_name).to eq("John")
+          expect(existing_teacher.trs_last_name).to eq("Doe")
 
           induction_period = InductionPeriod.last
           expect(induction_period.teacher).to eq(existing_teacher)
@@ -110,7 +110,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       end
 
       context "when the teacher's name changes" do
-        let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567", first_name: "Jonathan", last_name: "Dole") }
+        let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567", trs_first_name: "Jonathan", trs_last_name: "Dole") }
 
         before do
           subject.register(pending_induction_submission_params)
@@ -118,8 +118,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         end
 
         it 'records the name change' do
-          expect(existing_teacher.first_name).to eql(pending_induction_submission_params[:trs_first_name])
-          expect(existing_teacher.last_name).to eql(pending_induction_submission_params[:trs_last_name])
+          expect(existing_teacher.trs_first_name).to eql(pending_induction_submission_params[:trs_first_name])
+          expect(existing_teacher.trs_last_name).to eql(pending_induction_submission_params[:trs_last_name])
           expect(Events::Record).to have_received(:new).with(
             hash_including(
               author:,

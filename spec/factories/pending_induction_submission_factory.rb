@@ -6,7 +6,7 @@ FactoryBot.define do
     trs_first_name { Faker::Name.first_name }
     trs_last_name { Faker::Name.last_name }
     started_on { 1.year.ago }
-    trs_qts_awarded { 2.years.ago }
+    trs_qts_awarded_on { 2.years.ago }
 
     trait :finishing do
       finished_on { 1.week.ago }

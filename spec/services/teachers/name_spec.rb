@@ -23,7 +23,7 @@ describe Teachers::Name do
       let(:teacher) { FactoryBot.build(:teacher, corrected_name: nil) }
 
       it 'returns the first name followed by the last name' do
-        expect(subject.full_name).to eql(%(#{teacher.first_name} #{teacher.last_name}))
+        expect(subject.full_name).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
       end
     end
 
@@ -31,23 +31,23 @@ describe Teachers::Name do
       let(:teacher) { FactoryBot.build(:teacher, corrected_name: "") }
 
       it 'returns the first name followed by the last name' do
-        expect(subject.full_name).to eql(%(#{teacher.first_name} #{teacher.last_name}))
+        expect(subject.full_name).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
       end
     end
   end
 
   describe '#full_name_in_trs' do
-    let(:teacher) { FactoryBot.build(:teacher, first_name: 'Diana', last_name: 'Rigg') }
+    let(:teacher) { FactoryBot.build(:teacher, trs_first_name: 'Diana', trs_last_name: 'Rigg') }
 
     it 'returns the first name followed by the last name' do
-      expect(subject.full_name_in_trs).to eql(%(#{teacher.first_name} #{teacher.last_name}))
+      expect(subject.full_name_in_trs).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
     end
 
     context 'when the corrected_name is present' do
-      let(:teacher) { FactoryBot.build(:teacher, first_name: 'Diana', last_name: 'Rigg', corrected_name: 'Diana Elizabeth Rigg') }
+      let(:teacher) { FactoryBot.build(:teacher, trs_first_name: 'Diana', trs_last_name: 'Rigg', corrected_name: 'Diana Elizabeth Rigg') }
 
       it 'is ignored' do
-        expect(subject.full_name_in_trs).to eql(%(#{teacher.first_name} #{teacher.last_name}))
+        expect(subject.full_name_in_trs).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
       end
     end
   end

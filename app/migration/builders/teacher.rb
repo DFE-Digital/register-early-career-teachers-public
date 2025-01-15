@@ -10,7 +10,7 @@ module Builders
     end
 
     def build
-      ::Teacher.create!(trn:, first_name: parser.first_name, last_name: parser.last_name, legacy_id:)
+      ::Teacher.create!(trn:, trs_first_name: parser.first_name, trs_last_name: parser.last_name, legacy_id:)
     rescue ActiveRecord::ActiveRecordError => e
       @error = e.message
       nil

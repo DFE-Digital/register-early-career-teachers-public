@@ -34,8 +34,8 @@ module Schools
       end
 
       def register!
-        Schools::RegisterMentor.new(first_name: trs_first_name,
-                                    last_name: trs_last_name,
+        Schools::RegisterMentor.new(trs_first_name:,
+                                    trs_last_name:,
                                     corrected_name:,
                                     trn:,
                                     school_urn:)

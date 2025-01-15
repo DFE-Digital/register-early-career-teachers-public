@@ -18,8 +18,8 @@ describe Teacher do
   describe "validations" do
     subject { FactoryBot.build(:teacher) }
 
-    it { is_expected.to validate_presence_of(:first_name) }
-    it { is_expected.to validate_presence_of(:last_name) }
+    it { is_expected.to validate_presence_of(:trs_first_name) }
+    it { is_expected.to validate_presence_of(:trs_last_name) }
     it { is_expected.to validate_uniqueness_of(:trn).with_message('TRN already exists').case_insensitive }
 
     describe "trn" do
@@ -44,8 +44,8 @@ describe Teacher do
       end
 
       describe 'basic matching' do
-        let!(:target) { FactoryBot.create(:teacher, first_name: "Malcolm", last_name: "Wilkerson", corrected_name: nil) }
-        let!(:other) { FactoryBot.create(:teacher, first_name: "Reese", last_name: "Wilkerson", corrected_name: nil) }
+        let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Malcolm", trs_last_name: "Wilkerson", corrected_name: nil) }
+        let!(:other) { FactoryBot.create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
 
         it "returns only the expected result" do
           results = Teacher.search('Malcolm')
@@ -63,7 +63,7 @@ describe Teacher do
       end
 
       describe 'matching with accents' do
-        let!(:target) { FactoryBot.create(:teacher, first_name: "Stëvìê", last_name: "Kènårbän", corrected_name: nil) }
+        let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Stëvìê", trs_last_name: "Kènårbän", corrected_name: nil) }
 
         it 'matches when names have accents but search terms do not' do
           results = Teacher.search('Stevie Kenarban')

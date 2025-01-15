@@ -1,8 +1,9 @@
 module TRS
   class FakeAPIClient
-    def initialize(raise_not_found: false, include_qts: true, prohibited_from_teaching: false, induction_status: nil)
+    def initialize(raise_not_found: false, include_qts: true, include_itt: true, prohibited_from_teaching: false, induction_status: nil)
       @raise_not_found = raise_not_found
       @include_qts = include_qts
+      @include_itt = include_itt
       @prohibited_from_teaching = prohibited_from_teaching
       @induction_status = induction_status
     end
@@ -15,6 +16,7 @@ module TRS
       TRS::Teacher.new(
         teacher_params(trn:, date_of_birth:, national_insurance_number:)
           .merge(qts)
+          .merge(itt)
           .merge(prohibited_from_teaching)
           .merge(induction_status)
       )
@@ -38,8 +40,8 @@ module TRS
       {
         'qts' => {
           'awarded' => Time.zone.today - 3.years,
-          'certificateUrl' => 'string',
-          'statusDescription' => 'string'
+          'certificateUrl' => 'https://fancy-certificates.example.com/1234',
+          'statusDescription' => 'Passed'
         }
       }
     end
@@ -57,6 +59,26 @@ module TRS
 
       {
         'induction' => { 'status' => @induction_status },
+      }
+    end
+
+    def itt
+      return {} unless @include_itt
+
+      {
+        "initialTeacherTraining" => [
+          {
+            "qualification" => { "name" => "Postgraduate Certificate in Education" },
+            "startDate" => "2020-12-31",
+            "result" => "Pass",
+            "subjects" => [],
+            "endDate" => "2021-04-05",
+            "programmeType" => nil,
+            "programmeTypeDescription" => nil,
+            "ageRange" => nil,
+            "provider" => { "name" => "Example Provider Ltd." },
+          }
+        ]
       }
     end
   end

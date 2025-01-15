@@ -20,14 +20,14 @@ describe Builders::Teacher do
       expect(teacher.trn).to eq trn
     end
 
-    it "sets the first name" do
+    it "sets the TRS first name" do
       teacher = subject.build
-      expect(teacher.first_name).to eq "Chester"
+      expect(teacher.trs_first_name).to eq "Chester"
     end
 
-    it "sets the last name" do
+    it "sets the TRS last name" do
       teacher = subject.build
-      expect(teacher.last_name).to eq "Thompson"
+      expect(teacher.trs_last_name).to eq "Thompson"
     end
 
     context "when a legacy_id is supplied" do

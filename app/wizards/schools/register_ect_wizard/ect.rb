@@ -45,8 +45,8 @@ module Schools
       end
 
       def register!(school)
-        Schools::RegisterECT.new(first_name: trs_first_name,
-                                 last_name: trs_last_name,
+        Schools::RegisterECT.new(trs_first_name:,
+                                 trs_last_name:,
                                  corrected_name:,
                                  trn:,
                                  school:,
