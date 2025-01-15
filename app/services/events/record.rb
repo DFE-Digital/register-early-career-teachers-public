@@ -1,5 +1,5 @@
 module Events
-  class AuthorNotASessionsUser < StandardError; end
+  class InvalidAuthor < StandardError; end
 
   class Record
     attr_reader :author,
@@ -41,8 +41,6 @@ module Events
       delivery_partner: nil,
       user: nil
     )
-      fail(AuthorNotASessionsUser, author.class) unless author.is_a?(Sessions::User)
-
       @author = author
       @event_type = event_type
       @heading = heading
@@ -103,7 +101,7 @@ module Events
 
     def attributes
       {
-        **author.event_author_params,
+        **author_event_params,
         event_type:,
         heading:,
         body:,
@@ -122,6 +120,17 @@ module Events
         delivery_partner:,
         user:
       }.compact
+    end
+
+    def author_event_params
+      case author
+      when Sessions::User
+        author.event_author_params
+      when Events::SystemAuthor
+        author.system_author_params
+      else
+        fail(InvalidAuthor, author.class)
+      end
     end
   end
 end

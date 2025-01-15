@@ -64,10 +64,10 @@ describe PendingInductionSubmission do
       it { is_expected.to validate_acceptance_of(:confirmed).on(:check_ect).with_message("Confirm if these details are correct or try your search again") }
     end
 
-    describe "trs_qts_awarded_before_started_on" do
-      let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, started_on:, trs_qts_awarded: Date.new(2023, 5, 1)) }
+    describe "trs_qts_awarded_on_before_started_on" do
+      let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, started_on:, trs_qts_awarded_on: Date.new(2023, 5, 1)) }
 
-      context "when trs_qts_awarded is before started_on" do
+      context "when trs_qts_awarded_on is before started_on" do
         let(:started_on) { Date.new(2023, 5, 2) }
 
         it "is valid" do
@@ -76,7 +76,8 @@ describe PendingInductionSubmission do
           expect(pending_induction_submission.errors[:started_on]).to be_empty
         end
       end
-      context "when trs_qts_awarded is after started_on" do
+
+      context "when trs_qts_awarded_on is after started_on" do
         let(:started_on) { Date.new(2023, 4, 1) }
 
         it "is invalid" do

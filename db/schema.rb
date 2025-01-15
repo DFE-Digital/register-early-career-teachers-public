@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_09_110019) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_15_105233) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -19,7 +19,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_09_110019) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
-  create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user"]
+  create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
@@ -336,7 +336,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_09_110019) do
     t.date "trs_initial_teacher_training_end_date"
     t.string "trs_initial_teacher_training_provider_name"
     t.enum "outcome", enum_type: "induction_outcomes"
-    t.date "trs_qts_awarded"
+    t.date "trs_qts_awarded_on"
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
   end
 
@@ -496,18 +496,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_09_110019) do
     t.datetime "updated_at", null: false
     t.string "trn", null: false
     t.datetime "induction_start_date_submitted_to_trs_at"
-    t.string "first_name", null: false
-    t.string "last_name", null: false
-    t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(first_name, ''::character varying))::text || ' '::text) || (COALESCE(last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
+    t.string "trs_first_name", null: false
+    t.string "trs_last_name", null: false
+    t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
     t.uuid "legacy_id"
     t.uuid "legacy_ect_id"
     t.uuid "legacy_mentor_id"
     t.datetime "induction_completion_submitted_to_trs_at"
-    t.date "qts_awarded_on"
+    t.date "trs_qts_awarded_on"
+    t.string "trs_qts_status_description"
+    t.string "trs_induction_status", limit: 16
+    t.string "trs_initial_teacher_training_provider_name"
+    t.date "trs_initial_teacher_training_end_date"
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
-    t.index ["first_name", "last_name", "corrected_name"], name: "index_teachers_on_first_name_and_last_name_and_corrected_name", opclass: :gin_trgm_ops, using: :gin
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
+    t.index ["trs_first_name", "trs_last_name", "corrected_name"], name: "idx_on_trs_first_name_trs_last_name_corrected_name_6d0edad502", opclass: :gin_trgm_ops, using: :gin
   end
 
   create_table "training_periods", force: :cascade do |t|

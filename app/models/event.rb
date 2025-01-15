@@ -33,6 +33,7 @@ class Event < ApplicationRecord
 private
 
   def check_author_present
+    return if author_type == 'system'
     return if author_id.present? || author_email.present?
 
     errors.add(:base, 'Author is missing')

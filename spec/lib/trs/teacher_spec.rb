@@ -94,7 +94,7 @@ RSpec.describe TRS::Teacher do
         trs_induction_status_description: 'Induction Status Description',
         trs_initial_teacher_training_end_date: "2024-09-18",
         trs_initial_teacher_training_provider_name: "Provider Name",
-        trs_qts_awarded: '2024-09-18',
+        trs_qts_awarded_on: '2024-09-18',
         trs_qts_status_description: 'qts_status',
         trs_national_insurance_number: "AB123456C",
       }
