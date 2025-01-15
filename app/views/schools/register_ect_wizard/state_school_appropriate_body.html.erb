@@ -3,8 +3,9 @@
      error: @wizard.current_step.errors.present?,
      backlink_href: schools_register_ect_wizard_start_date_path) %>
 
-<p class="govuk-body">The appropriate body is a teaching school hub that helps assess whether the ECT has met the
-  teaching standards' at the end of induction.</p>
+<p class="govuk-body">Appropriate bodies are responsible for assuring the quality of the statutory induction of ECTs.</p>
+
+<p class="govuk-body">We share the ECT's details with the appropriate body to check the ECT has been registered correctly.</p>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
