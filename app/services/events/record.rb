@@ -90,6 +90,13 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
+    def self.record_appropriate_body_fails_teacher_event(author:, appropriate_body:, induction_period:, teacher:, happened_at: Time.zone.now)
+      event_type = :appropriate_body_fails_teacher
+      heading = "#{Teachers::Name.new(teacher).full_name} failed induction"
+
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+    end
+
     # Teacher events
 
     def self.teacher_name_changed_in_trs!(old_name:, new_name:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
