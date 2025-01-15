@@ -25,8 +25,7 @@ module Teachers
         new_name = Teachers::Name.new(teacher).full_name
 
         if old_name != new_name
-          # TODO: make Events::Record accept a 'system' author for scheduled jobs etc.
-          # Events::Record.teacher_name_changed_in_trs!(old_name:, new_name:, author:, teacher:)
+          Events::Record.teacher_name_changed_in_trs!(old_name:, new_name:, teacher:, author: Events::SystemAuthor.new)
         end
 
         teacher.save
