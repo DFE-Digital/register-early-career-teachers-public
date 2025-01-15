@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_15_105233) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_15_130749) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -508,6 +508,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_105233) do
     t.string "trs_induction_status", limit: 16
     t.string "trs_initial_teacher_training_provider_name"
     t.date "trs_initial_teacher_training_end_date"
+    t.datetime "trs_data_last_refreshed_at", precision: nil
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
