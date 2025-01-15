@@ -1,4 +1,7 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
+  include ActiveJob::TestHelper
+  include_context 'fake trs api client'
+
   before { allow(Events::Record).to receive(:new).and_call_original }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -87,6 +90,9 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
             heading: "John Doe was claimed by #{appropriate_body.name}"
           )
         )
+        perform_enqueued_jobs
+
+        expect(Event.last.event_type).to eq("appropriate_body_claims_teacher")
       end
     end
 
@@ -129,6 +135,10 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
               heading: "Name changed from Jonathan Dole to John Doe"
             )
           )
+
+          perform_enqueued_jobs
+
+          expect(Event.all.map(&:event_type)).to match_array(%w[teacher_name_updated_by_trs appropriate_body_claims_teacher])
         end
 
         it 'saves the pending_induction_submission' do
