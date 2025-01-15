@@ -19,8 +19,8 @@ describe Events::Record do
 
       it 'fails with a AuthorNotASessionsUser error with a non Sessions::User author' do
         expect {
-          Events::Record.new(author: non_session_user, event_type:, heading:, body:, happened_at:)
-        }.to raise_error(Events::AuthorNotASessionsUser)
+          Events::Record.new(author: non_session_user, event_type:, heading:, body:, happened_at:).record_event!
+        }.to raise_error(Events::InvalidAuthor)
       end
     end
 

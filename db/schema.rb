@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_14_202440) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_15_105233) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -19,7 +19,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_14_202440) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
-  create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user"]
+  create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
