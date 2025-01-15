@@ -11,7 +11,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
            formatted_working_pattern: 'Full time')
   end
   let(:title) { "Check your answers before submitting" }
-  let(:back_path) { schools_register_ect_wizard_working_pattern_path }
+  let(:back_path) { schools_register_ect_wizard_programme_type_path }
   let(:continue_path) { schools_register_ect_wizard_check_answers_path }
   let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :check_answers, store: {}) }
 
