@@ -22,7 +22,8 @@ module Schools
   private
 
     def create_teacher!
-      @teacher = ::Teacher.create!(trs_first_name:, trs_last_name:, trn:, corrected_name:)
+      @teacher = ::Teacher.where(trn:)
+                          .first_or_create!(trs_first_name:, trs_last_name:, trn:, corrected_name:)
     end
 
     def start_at_school!

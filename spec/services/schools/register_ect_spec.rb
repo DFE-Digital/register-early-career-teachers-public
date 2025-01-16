@@ -21,7 +21,13 @@ describe Schools::RegisterECT do
     let(:teacher) { Teacher.first }
     let(:ect_at_school_period) { ECTAtSchoolPeriod.first }
 
-    it 'creates a new Teacher record' do
+    it 'does not create a new Teacher record if a Teacher with the same TRN already exists' do
+      FactoryBot.create(:teacher, trn:, trs_first_name: 'Bob', trs_last_name: 'Smith', corrected_name: 'Bob Smithy-Smith')
+
+      expect { service.register_teacher! }.not_to change(Teacher, :count)
+    end
+
+    it 'creates a new Teacher record if it does not exist' do
       expect { service.register_teacher! }.to change(Teacher, :count).from(0).to(1)
       expect(teacher.trs_first_name).to eq(trs_first_name)
       expect(teacher.trs_last_name).to eq(trs_last_name)
