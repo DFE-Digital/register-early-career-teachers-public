@@ -25,7 +25,8 @@ module AppropriateBodies
       ActiveRecord::Base.transaction do
         success = [
           close_induction_period(:fail),
-          send_fail_induction_notification_to_trs
+          send_fail_induction_notification_to_trs,
+          record_fail_induction_event!
         ].all?
 
         success or raise ActiveRecord::Rollback
@@ -40,6 +41,15 @@ module AppropriateBodies
 
     def record_pass_induction_event!
       Events::Record.record_appropriate_body_passes_teacher_event(
+        author:,
+        teacher:,
+        appropriate_body:,
+        induction_period: active_induction_period
+      )
+    end
+
+    def record_fail_induction_event!
+      Events::Record.record_appropriate_body_fails_teacher_event(
         author:,
         teacher:,
         appropriate_body:,

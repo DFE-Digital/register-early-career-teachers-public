@@ -22,6 +22,15 @@ module TRS
       )
     end
 
+    def pass_induction!(...)
+    end
+
+    def fail_induction!(...)
+    end
+
+    def begin_induction!(...)
+    end
+
   private
 
     def teacher_params(trn:, date_of_birth:, national_insurance_number:)
