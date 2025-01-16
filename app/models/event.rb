@@ -2,7 +2,8 @@ class Event < ApplicationRecord
   EVENT_TYPES = %w[
     appropriate_body_claims_teacher
     appropriate_body_releases_teacher
-
+    appropriate_body_fails_teacher
+    appropriate_body_passes_teacher
     teacher_name_updated_by_trs
   ].freeze
 
