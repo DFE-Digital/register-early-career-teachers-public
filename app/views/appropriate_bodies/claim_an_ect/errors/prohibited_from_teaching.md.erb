@@ -1,5 +1,7 @@
 ---
-title: <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> is prohibited from teaching
+title: You cannot register <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %>
 ---
 
-Our records show <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> is prohibited from teaching.
+Our records show that <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> cannot be claimed as an ECT.
+
+[Find and claim another ECT](<%= new_ab_claim_an_ect_find_path %>)
