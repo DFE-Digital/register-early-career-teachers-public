@@ -33,8 +33,8 @@ module Navigation
       {
         appropriate_body_user: [],
         dfe_staff_user: [
-          { text: "Teachers", href: admin_teachers_path },
-          { text: "Organisations", href: admin_organisations_path },
+          { text: "Teachers", href: admin_teachers_path, active_when: '/admin/teachers' },
+          { text: "Organisations", href: admin_organisations_path, active_when: '/admin/organisations' },
           { text: "Admin users", href: "#" },
         ],
         school_user: [
