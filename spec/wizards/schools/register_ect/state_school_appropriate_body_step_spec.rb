@@ -1,21 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep, type: :model do
+RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type: :model do
   describe 'validations' do
-    subject { described_class.new(appropriate_body_name:, appropriate_body_type:) }
+    subject { described_class.new(appropriate_body_name:) }
 
-    context 'when the appropriate_body_type is not present' do
-      let(:appropriate_body_type) { nil }
-      let(:appropriate_body_name) { nil }
-
-      it 'is not valid' do
-        expect(subject).not_to be_valid
-        expect(subject.errors[:appropriate_body_type]).to include("Select the appropriate body which will be supporting the ECT's induction")
-      end
-    end
-
-    context 'when the appropriate_body_type is present but the appropriate_body_name is not' do
-      let(:appropriate_body_type) { 'teaching_school_hub' }
+    context 'when the appropriate_body_name is not present' do
       let(:appropriate_body_name) { nil }
 
       it 'is not valid' do
@@ -24,8 +13,7 @@ RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep,
       end
     end
 
-    context 'when the appropriate_body_type is present and the appropriate_body_name is also present' do
-      let(:appropriate_body_type) { 'teacher_school_hub' }
+    context 'when the appropriate_body_name is present' do
       let(:appropriate_body_name) { 'Some Teaching School Hub' }
 
       it 'is valid' do
@@ -35,7 +23,7 @@ RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep,
   end
 
   describe '#next_step' do
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :independent_school_appropriate_body) }
+    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body) }
 
     subject { wizard.current_step }
 
@@ -45,7 +33,7 @@ RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep,
   end
 
   describe '#previous_step' do
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :independent_school_appropriate_body) }
+    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body) }
 
     subject { wizard.current_step }
 
@@ -57,13 +45,12 @@ RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep,
   context '#save!' do
     let(:step_params) do
       ActionController::Parameters.new(
-        "independent_school_appropriate_body" => {
-          "appropriate_body_type" => 'teaching_school_hub',
+        "state_school_appropriate_body" => {
           "appropriate_body_name" => 'Some Appropriate Body',
         }
       )
     end
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :independent_school_appropriate_body, step_params:) }
+    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body, step_params:) }
 
     subject { wizard.current_step }
 
