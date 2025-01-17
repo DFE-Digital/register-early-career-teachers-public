@@ -53,6 +53,10 @@ RSpec.describe 'Appropriate body releasing an ECT' do
       end
 
       context "when the teacher has one ongoing induction period" do
+        before do
+          allow(PendingInductionSubmissions::Build).to receive(:closing_induction_period).and_call_original
+        end
+
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
@@ -74,6 +78,15 @@ RSpec.describe 'Appropriate body releasing an ECT' do
           }
         end
 
+        it 'uses PendingInductionSubmissions::Build to instantiate the PendingInductionSubmission' do
+          post(
+            "/appropriate-body/teachers/#{teacher.trn}/release",
+            params: release_params
+          )
+
+          expect(PendingInductionSubmissions::Build).to have_received(:closing_induction_period).once
+        end
+
         it 'updates the induction period and redirects to show page' do
           post(
             "/appropriate-body/teachers/#{teacher.trn}/release",
@@ -86,6 +99,46 @@ RSpec.describe 'Appropriate body releasing an ECT' do
 
           expect(response).to be_redirection
           expect(response.redirect_url).to match(%r{/appropriate-body/teachers/#{teacher.trn}/release\z})
+        end
+
+        context 'with missing params' do
+          let(:invalid_params) do
+            {
+              pending_induction_submission: {
+                finished_on: nil,
+                number_of_terms: nil
+              }
+            }
+          end
+
+          it 'renders the new form with errors' do
+            post(
+              "/appropriate-body/teachers/#{teacher.trn}/release",
+              params: invalid_params
+            )
+
+            expect(response.body).to include('There is a problem')
+          end
+        end
+
+        context 'when finished_on is before started_on' do
+          let(:invalid_params) do
+            {
+              pending_induction_submission: {
+                finished_on: induction_period.started_on - 1.month,
+                number_of_terms: 5
+              }
+            }
+          end
+
+          it 'includes finish date must be later than start date' do
+            post(
+              "/appropriate-body/teachers/#{teacher.trn}/release",
+              params: invalid_params
+            )
+
+            expect(response.body).to include('The finish date must be later than the start date')
+          end
         end
       end
     end
