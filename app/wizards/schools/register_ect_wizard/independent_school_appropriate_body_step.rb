@@ -13,6 +13,10 @@ module Schools
         :programme_type
       end
 
+      def previous_step
+        :start_date
+      end
+
       def persist
         name = appropriate_body_type == 'ISTIP' ? appropriate_body_type : appropriate_body_name
         ect.update!(appropriate_body_name: name)
