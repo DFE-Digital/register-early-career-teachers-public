@@ -67,6 +67,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
 
         before do
           allow(AppropriateBodies::RecordOutcome).to receive(:new).and_return(fake_record_outcome)
+          allow(PendingInductionSubmissions::Build).to receive(:closing_induction_period).and_call_original
         end
 
         it 'creates a new pending induction submission' do
@@ -76,6 +77,15 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
               params: valid_params
             )
           }.to change(PendingInductionSubmission, :count).by(1)
+        end
+
+        it 'uses PendingInductionSubmissions::Build to instantiate the PendingInductionSubmission' do
+          post(
+            "/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome",
+            params: valid_params
+          )
+
+          expect(PendingInductionSubmissions::Build).to have_received(:closing_induction_period).once
         end
 
         it 'calls the record outcome service and redirects' do
@@ -96,7 +106,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
         end
       end
 
-      context 'with invalid params' do
+      context 'with missing params' do
         let(:invalid_params) do
           {
             pending_induction_submission: {
@@ -113,8 +123,28 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
             params: invalid_params
           )
 
-          expect(response).to be_successful
-          expect(response.body).to include('Record failed outcome')
+          expect(response.body).to include('There is a problem')
+        end
+      end
+
+      context 'when finished_on is before started_on' do
+        let(:invalid_params) do
+          {
+            pending_induction_submission: {
+              finished_on: induction_period.started_on - 1.month,
+              number_of_terms: 5,
+              outcome: 'fail'
+            }
+          }
+        end
+
+        it 'includes finish date must be later than start date' do
+          post(
+            "/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome",
+            params: invalid_params
+          )
+
+          expect(response.body).to include('The finish date must be later than the start date')
         end
       end
     end
