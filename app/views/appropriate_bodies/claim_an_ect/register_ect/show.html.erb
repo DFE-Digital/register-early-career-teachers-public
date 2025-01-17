@@ -4,13 +4,13 @@
 %>
 
 
-<%= govuk_panel(title_text: "You’ve successfully claimed #{PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name}'s induction") %>
+<%= govuk_panel(title_text: "You’ve successfully claimed #{PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name}’s induction") %>
 
 <p>
   You’ve successfully claimed <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> with <%= @appropriate_body.name %>. This means that they cannot be claimed by another appropriate body.
 </p>
 
-<h2 class="govuk-heading-m">What happens next</h2> 
+<h2 class="govuk-heading-m">What happens next</h2>
 
 <p>
   Use this service to report of any changes in John Smith's induction. For example, if:
