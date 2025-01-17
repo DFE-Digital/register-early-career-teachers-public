@@ -11,15 +11,16 @@ module TRS
       end
     end
 
-    # available include values:
+    # Included items:
     # * Induction
+    # * Alerts
     # * InitialTeacherTraining
+    # Other available items:
     # * NpqQualifications
     # * MandatoryQualifications
     # * PendingDetailChanges
     # * HigherEducationQualifications
     # * Sanctions
-    # * Alerts
     # * PreviousNames
     # * AllowIdSignInWithProhibitions
     def find_teacher(trn:, date_of_birth: nil, national_insurance_number: nil, include: %w[Induction InitialTeacherTraining Alerts])
