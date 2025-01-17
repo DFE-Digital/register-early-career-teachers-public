@@ -14,9 +14,11 @@ module Schools
       end
 
       def next_step
-        return :independent_school_appropriate_body if school_independent?
+        :working_pattern
+      end
 
-        :state_school_appropriate_body
+      def previous_step
+        :email_address
       end
 
       def start_date_formatted
