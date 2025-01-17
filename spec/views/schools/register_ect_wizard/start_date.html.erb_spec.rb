@@ -4,7 +4,7 @@ RSpec.describe "schools/register_ect_wizard/start_date.html.erb" do
   let(:step) { Schools::RegisterECTWizard::StartDateStep.new }
   let(:ect) { double(full_name: 'John Smith') }
   let(:title) { "What is the date #{ect.full_name} started or will start teaching as an ECT at your school?" }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :find_ect, store: {}) }
+  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :start_date, store: {}) }
 
   it "sets the page title to 'What is the date John Smith started or will start teaching as an ECT at your school?'" do
     assign(:wizard, wizard)
