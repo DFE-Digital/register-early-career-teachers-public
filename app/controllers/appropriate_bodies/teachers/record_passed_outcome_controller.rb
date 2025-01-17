@@ -9,10 +9,12 @@ module AppropriateBodies
 
       def create
         @teacher = find_teacher
-        @pending_induction_submission = PendingInductionSubmission.new(
+        @pending_induction_submission = PendingInductionSubmissions::Build.closing_induction_period(
+          ::Teachers::InductionPeriod.new(@teacher).active_induction_period,
           **pending_induction_submission_params,
           **pending_induction_submission_attributes
-        )
+        ).pending_induction_submission
+
         record_outcome = AppropriateBodies::RecordOutcome.new(
           appropriate_body: @appropriate_body,
           pending_induction_submission: @pending_induction_submission,
