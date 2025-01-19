@@ -52,15 +52,15 @@ RSpec.describe Teachers::PastInductionPeriodsComponent, type: :component do
       let!(:older_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          started_on: 4.years.ago,
-                          finished_on: 3.years.ago)
+                          started_on: 3.years.ago,
+                          finished_on: 2.years.ago)
       end
 
       it "displays all past periods in chronological order" do
         render_inline(component)
         dates = page.all(".govuk-summary-list__value").map(&:text)
-        expect(dates).to include(4.years.ago.to_date.to_fs(:govuk))
         expect(dates).to include(3.years.ago.to_date.to_fs(:govuk))
+        expect(dates).to include(2.years.ago.to_date.to_fs(:govuk))
       end
     end
   end
