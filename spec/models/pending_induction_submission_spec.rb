@@ -57,6 +57,7 @@ describe PendingInductionSubmission do
     end
 
     describe "number_of_terms" do
+      it { is_expected.to validate_presence_of(:number_of_terms).with_message('Enter a number of terms').on(%i[release_ect record_outcome]) }
       it { is_expected.to validate_inclusion_of(:number_of_terms).in_range(0..16).with_message("Terms must be between 0 and 16").on(%i[release_ect record_outcome]) }
     end
 
