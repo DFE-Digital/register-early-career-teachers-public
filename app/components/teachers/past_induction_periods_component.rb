@@ -1,10 +1,11 @@
 module Teachers
   class PastInductionPeriodsComponent < ViewComponent::Base
-    attr_reader :teacher, :induction
+    attr_reader :teacher, :induction, :enable_edit
 
-    def initialize(teacher:)
+    def initialize(teacher:, enable_edit: false)
       @teacher = teacher
       @induction = Teachers::Induction.new(teacher)
+      @enable_edit = enable_edit
     end
 
     def render?
@@ -18,7 +19,7 @@ module Teachers
     end
 
     def can_edit?(period)
-      period.outcome.blank?
+      enable_edit && period.outcome.blank?
     end
 
     def edit_link(period)
