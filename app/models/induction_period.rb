@@ -21,6 +21,7 @@ class InductionPeriod < ApplicationRecord
             inclusion: { in: %w[fip cip diy],
                          message: "Choose an induction programme" }
 
+  validate :started_on_from_september_2021_onwards, if: -> { started_on.present? }
   validate :started_on_not_in_future, if: -> { started_on.present? }
   validate :finished_on_not_in_future, if: -> { finished_on.present? }
   validate :start_date_after_qts_date
@@ -32,6 +33,12 @@ class InductionPeriod < ApplicationRecord
   scope :siblings_of, ->(instance) { for_teacher(instance.teacher).excluding(instance) }
 
 private
+
+  def started_on_from_september_2021_onwards
+    return if started_on >= Date.new(2021, 9, 1)
+
+    errors.add(:started_on, "Enter a start date after 1 September 2021")
+  end
 
   def started_on_not_in_future
     return if started_on <= Date.current

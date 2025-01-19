@@ -39,6 +39,21 @@ describe InductionPeriod do
 
     it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy]).with_message("Choose an induction programme") }
 
+    describe '#started_on_from_september_2021_onwards' do
+      context 'when started_on before September 2021' do
+        subject { FactoryBot.build(:induction_period, started_on:) }
+        let(:started_on) { Date.new(2021, 8, 31) }
+        before { subject.valid? }
+
+        it 'has a suitable error message' do
+          expect(subject.errors.messages[:started_on]).to include("Enter a start date after 1 September 2021")
+        end
+      end
+
+      it { is_expected.not_to allow_values(Date.new(2021, 8, 31)).for(:started_on) }
+      it { is_expected.to allow_values(Date.new(2021, 9, 1), Date.new(2021, 9, 2)).for(:started_on) }
+    end
+
     describe "started_on_not_in_future" do
       let(:induction_period) { FactoryBot.create(:induction_period, finished_on: nil) }
 
