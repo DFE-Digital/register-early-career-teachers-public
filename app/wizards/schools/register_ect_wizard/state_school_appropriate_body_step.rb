@@ -12,6 +12,10 @@ module Schools
       def next_step
         :programme_type
       end
+
+      def previous_step
+        :start_date
+      end
     end
   end
 end
