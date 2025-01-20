@@ -17,7 +17,7 @@ module Schools
       attr_reader :name
 
       def parse_name
-        parsed_name = name.strip.presence
+        parsed_name = name&.strip.presence
         return [nil, "Enter the correct full name"] unless parsed_name
         return [nil, "Corrected name must be 70 characters or less"] if parsed_name.size > 70
 
