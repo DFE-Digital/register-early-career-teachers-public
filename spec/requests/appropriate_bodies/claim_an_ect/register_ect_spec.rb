@@ -144,7 +144,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
       it 'finds the right PendingInductionSubmission record and renders the page' do
         get("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}/")
 
-        expected_content = "#{pending_induction_submission.trs_first_name} #{pending_induction_submission.trs_last_name} has been registered with #{appropriate_body.name}"
+        expected_content = "You’ve successfully claimed #{pending_induction_submission.trs_first_name} #{pending_induction_submission.trs_last_name}’s induction"
 
         expect(response.body).to include(expected_content)
         expect(response).to be_successful
