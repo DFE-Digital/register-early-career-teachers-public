@@ -18,4 +18,28 @@ RSpec.describe "Pages", type: :request do
       end
     end
   end
+
+  describe 'GET /accessibility' do
+    it 'shows the accessibilty statement' do
+      get '/accessibility'
+      expect(response).to be_successful
+      expect(response.body).to include('Accessibility statement')
+    end
+  end
+
+  describe 'GET /privacy' do
+    it 'shows the privacy policy' do
+      get '/privacy'
+      expect(response).to be_successful
+      expect(response.body).to include('Privacy policy')
+    end
+  end
+
+  describe 'GET /privacy' do
+    it 'shows the cookies page' do
+      get '/cookies'
+      expect(response).to be_successful
+      expect(response.body).to include('Cookies')
+    end
+  end
 end

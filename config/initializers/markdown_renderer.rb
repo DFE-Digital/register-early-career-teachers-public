@@ -24,7 +24,7 @@ module MarkdownRenderer
   end
 
   def self.render(markdown)
-    GovukMarkdown.render(markdown.to_str, { strip_front_matter: true }).html_safe
+    GovukMarkdown.render(markdown.to_str, { strip_front_matter: true, headings_start_with: 'l' }).html_safe
   end
 end
 

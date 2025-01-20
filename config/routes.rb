@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   root to: 'pages#home'
   get '/support', to: 'pages#support'
+  get '/cookies', to: 'pages#cookies'
+  get '/accessibility', to: 'pages#accessibility'
+  get '/privacy', to: 'pages#privacy'
 
   get "healthcheck" => "rails/health#show", as: :rails_health_check
 
