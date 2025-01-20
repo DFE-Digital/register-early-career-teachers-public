@@ -32,7 +32,7 @@ module Migrators
       teacher = ::Teacher.find_by(legacy_ect_id: participant_profile.id)
 
       if teacher.nil?
-        failure_manager.record_failure(participant_profile, "Cannot find Teacher for ParticipantProfile::ECT with id #{participant_profile.id}")
+        failure_manager.record_failure(participant_profile, "Cannot find Teacher for ECT in mentorship period")
         return false
       end
 
