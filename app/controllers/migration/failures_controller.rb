@@ -2,8 +2,29 @@ class Migration::FailuresController < ::AdminController
   layout "full"
 
   def index
-    @pagy, failures = pagy(MigrationFailure.where(data_migration_id: DataMigration.where(model: params[:model]).select(:id)).order(:parent_id, :created_at))
-    @migration_failures = Migration::MigrationFailurePresenter.wrap(failures)
-    @model = params[:model]
+    @failures = grouped_failures
+  end
+
+private
+
+  def grouped_failures
+    migrator_models.map do |model|
+      {
+        model:,
+        failures: MigrationFailure.joins(:data_migration).where(data_migration: { model: }).group(:failure_message).count
+      }
+    end
+  end
+
+  def migrator_names
+    @migrator_names ||= migrator_models.map(&:humanize)
+  end
+
+  def migrator_models
+    @migrator_models ||= migrators.map { |m| m.model }.sort
+  end
+
+  def migrators
+    Migrators::Base.migrators
   end
 end
