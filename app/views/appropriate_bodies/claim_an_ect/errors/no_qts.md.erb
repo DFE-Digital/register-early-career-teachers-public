@@ -1,5 +1,7 @@
 ---
-title: <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %>'s QTS has not been awarded
+title: You cannot register  <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %>
 ---
 
-<%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %>'s QTS has not been awarded.
+Our records show that <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> does not have their qualified teacher status (QTS).
+
+[Find and claim another ECT](<%= new_ab_claim_an_ect_find_path %>)
