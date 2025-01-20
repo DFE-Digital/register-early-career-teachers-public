@@ -127,8 +127,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
 
         expect(BeginECTInductionJob).to have_received(:perform_later).with(
           trn: teacher.trn,
-          start_date: Date.parse("2023-01-01"),
-          teacher_id: teacher.id
+          start_date: Date.parse("2023-01-01")
         )
       end
 

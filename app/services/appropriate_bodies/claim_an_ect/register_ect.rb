@@ -79,7 +79,6 @@ module AppropriateBodies
         BeginECTInductionJob.perform_later(
           trn: pending_induction_submission.trn,
           start_date: pending_induction_submission.started_on.to_s,
-          teacher_id: teacher.id,
           pending_induction_submission_id: pending_induction_submission.id
         )
       end
