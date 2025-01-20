@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  skip_before_action :authenticate
+
   def home
     redirect_to(login_redirect_path) and return if authenticated?
 
@@ -6,5 +8,14 @@ class PagesController < ApplicationController
   end
 
   def support
+  end
+
+  def cookies
+  end
+
+  def accessibility
+  end
+
+  def privacy
   end
 end
