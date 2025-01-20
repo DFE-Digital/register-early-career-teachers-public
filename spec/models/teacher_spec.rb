@@ -40,7 +40,7 @@ describe Teacher do
   describe 'scopes' do
     describe '#search' do
       it "searches the 'search' column using a tsquery" do
-        expect(Teacher.search('Joey').to_sql).to end_with(%{WHERE (teachers.search @@ websearch_to_tsquery('unaccented', 'Joey'))})
+        expect(Teacher.search('Joey').to_sql).to end_with(%{WHERE (teachers.search @@ to_tsquery('unaccented', 'Joey:*'))})
       end
 
       describe 'basic matching' do
@@ -49,13 +49,6 @@ describe Teacher do
 
         it "returns only the expected result" do
           results = Teacher.search('Malcolm')
-
-          expect(results).to include(target)
-          expect(results).not_to include(other)
-        end
-
-        it "supports web search syntax" do
-          results = Teacher.search('Wilkerson -Reese')
 
           expect(results).to include(target)
           expect(results).not_to include(other)
@@ -75,6 +68,29 @@ describe Teacher do
           results = Teacher.search('Stëvìê Kènårbän')
 
           expect(results).to include(target)
+        end
+      end
+
+      describe 'matching a prefix' do
+        let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Dewey", trs_last_name: "Wilkerson", corrected_name: nil) }
+        let!(:other) { FactoryBot.create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
+
+        it 'matches on the start of a word' do
+          results = Teacher.search('Dew')
+
+          expect(results).to include(target)
+        end
+
+        it 'matches on multiple starts of words' do
+          results = Teacher.search('Dew Wil')
+
+          expect(results).to include(target)
+        end
+
+        it 'only on multiple starts when all match part of the name' do
+          results = Teacher.search('Dew Wil')
+
+          expect(results).not_to include(other)
         end
       end
     end
