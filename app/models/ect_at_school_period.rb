@@ -15,6 +15,10 @@ class ECTAtSchoolPeriod < ApplicationRecord
             notify_email: true,
             allow_nil: true
 
+  validates :email,
+            email_uniqueness: true,
+            allow_nil: true
+
   validates :started_on,
             presence: true
 
