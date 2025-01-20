@@ -219,6 +219,7 @@ print_seed_info("Emma Thompson (mentor)", indent: 2, colour: MENTOR_COLOUR)
 emma_thompson_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
   teacher: emma_thompson,
   school: abbey_grove_school,
+  email: 'emma.thompson@matilda.com',
   started_on: 3.years.ago
 ).tap { |sp| describe_mentor_at_school_period(sp) }
 
@@ -248,6 +249,7 @@ print_seed_info("Kate Winslet (ECT)", indent: 2, colour: ECT_COLOUR)
 kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   teacher: kate_winslet,
   school: ackley_bridge,
+  email: 'kate.winslet@titanic.com',
   started_on: 1.year.ago
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -269,6 +271,7 @@ print_seed_info("Hugh Laurie (mentor)", indent: 2, colour: MENTOR_COLOUR)
 hugh_laurie_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
   teacher: hugh_laurie,
   school: abbey_grove_school,
+  email: 'hugh.laurie@house.com',
   started_on: 2.years.ago
 ).tap { |sp| describe_mentor_at_school_period(sp) }
 
@@ -288,6 +291,7 @@ print_seed_info("Alan Rickman (ECT)", indent: 2, colour: ECT_COLOUR)
 alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   teacher: alan_rickman,
   school: ackley_bridge,
+  email: 'alan.rickman@diehard.com',
   started_on: 2.years.ago
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -325,6 +329,7 @@ print_seed_info("Hugh Grant (ECT)", indent: 2, colour: ECT_COLOUR)
 hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   teacher: hugh_grant,
   school: abbey_grove_school,
+  email: 'hugh.grant@wonka.com',
   started_on: 2.years.ago
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -359,6 +364,7 @@ print_seed_info("Jamie Parsons (ECT)", indent: 2, colour: ECT_COLOUR)
 jamie_parsons_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   teacher: jamie_parsons,
   school: abbey_grove_school,
+  email: 'jamie.parsons@aol.com',
   started_on: 2.years.ago
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -438,6 +444,7 @@ InductionPeriod.create!(
 imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
   teacher: imogen_stubbs,
   school: mallory_towers,
+  email: 'imogen.stubbs@eriktheviking.com',
   started_on: 2.years.ago
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -465,6 +472,7 @@ InductionPeriod.create!(
 gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   teacher: gemma_jones,
   school: mallory_towers,
+  email: 'gemma.jones@rocketman.com',
   started_on: 21.months.ago
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -484,6 +492,7 @@ print_seed_info("André Roussimoff (ECT)", indent: 2, colour: ECT_COLOUR)
 andre_roussimoff_mentoring_at_ackley_bridge = MentorAtSchoolPeriod.create!(
   teacher: andre_roussimoff,
   school: ackley_bridge,
+  email: 'andre.giant@wwf.com',
   started_on: 1.year.ago
 ).tap { |sp| describe_mentor_at_school_period(sp) }
 
@@ -498,6 +507,7 @@ print_seed_info("Anthony Hopkins (ECT)", indent: 2, colour: ECT_COLOUR)
 anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   teacher: anthony_hopkins,
   school: brookfield_school,
+  email: 'anthony.hopkins@favabeans.com',
   started_on: 2.years.ago
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -512,6 +522,7 @@ print_seed_info("John Withers (mentor)", indent: 2, colour: MENTOR_COLOUR)
 john_withers_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
   teacher: john_withers,
   school: abbey_grove_school,
+  email: 'john.withers@amusementpark.com',
   started_on: 2.years.ago
 ).tap { |sp| describe_mentor_at_school_period(sp) }
 
