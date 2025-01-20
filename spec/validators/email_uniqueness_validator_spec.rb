@@ -33,4 +33,12 @@ RSpec.describe EmailUniquenessValidator do
       expect(subject).to be_valid
     end
   end
+
+  context 'when an email is blank' do
+    let(:email) { '' }
+
+    it 'is valid' do
+      expect(subject).to be_valid
+    end
+  end
 end
