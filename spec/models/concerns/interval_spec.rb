@@ -91,6 +91,20 @@ describe Interval do
       end
     end
   end
+
+  describe '#ongoing?' do
+    context 'when finished_on is nil' do
+      subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: nil) }
+
+      it { is_expected.to be_ongoing }
+    end
+
+    context 'when finished_on is present' do
+      subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.ago) }
+
+      it { is_expected.not_to be_ongoing }
+    end
+  end
 end
 
 class DummyMentor < ApplicationRecord
