@@ -1,9 +1,7 @@
 class Teachers::InductionStatus
-  class MissingTeacherAndTRSInductionStatus < StandardError; end
-
   attr_reader :teacher, :induction_periods, :trs_induction_status
 
-  def initialize(teacher: nil, induction_periods: [], trs_induction_status: nil)
+  def initialize(teacher:, induction_periods:, trs_induction_status:)
     @teacher = teacher
     @induction_periods = induction_periods
     @trs_induction_status = trs_induction_status || teacher&.trs_induction_status
@@ -54,15 +52,15 @@ private
   end
 
   def has_any_open_induction_periods?
-    induction_periods.any?(&:ongoing?)
+    induction_periods&.any?(&:ongoing?)
   end
 
   def has_an_induction_outcome?
-    induction_periods.any? { |ip| ip.outcome.present? }
+    induction_periods&.any? { |ip| ip.outcome.present? }
   end
 
   def induction_outcome
-    return unless (period_with_outcome = induction_periods.find { |ip| ip.outcome.present? })
+    return unless (period_with_outcome = induction_periods&.find { |ip| ip.outcome.present? })
 
     period_with_outcome.outcome
   end

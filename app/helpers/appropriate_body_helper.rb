@@ -40,7 +40,15 @@ module AppropriateBodyHelper
           },
           {
             key: { text: "Status" },
-            value: { text: govuk_tag(**Teachers::InductionStatus.new(teacher:).status_tag_kwargs) },
+            value: {
+              text: govuk_tag(
+                **Teachers::InductionStatus.new(
+                  teacher:,
+                  induction_periods: teacher.induction_periods,
+                  trs_induction_status: teacher.trs_induction_status
+                ).status_tag_kwargs
+              ),
+            },
           },
         ]
       )
