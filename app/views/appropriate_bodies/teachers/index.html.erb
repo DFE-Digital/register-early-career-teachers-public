@@ -20,7 +20,7 @@
 
       <div class="govuk-button-group">
         <%= f.govuk_submit("Search") %>
-        <button type="reset" class="govuk-button govuk-button--secondary">Reset</button>
+        <%= govuk_link_to("Reset", ab_teachers_path, secondary: true) %>
       </div>
     <% end %>
   </div>
