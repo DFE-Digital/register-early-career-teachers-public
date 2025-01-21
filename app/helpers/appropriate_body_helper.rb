@@ -25,7 +25,7 @@ module AppropriateBodyHelper
     ]
   end
 
-  def summary_card_for_teacher(teacher)
+  def summary_card_for_teacher(teacher:)
     induction_start_date = Teachers::InductionPeriod.new(teacher).induction_start_date&.to_fs(:govuk)
 
     govuk_summary_card(title: Teachers::Name.new(teacher).full_name) do |card|
@@ -40,13 +40,14 @@ module AppropriateBodyHelper
           },
           {
             key: { text: "Status" },
-            # FIXME: this is a placeholder as we cannot display a real status yet
-            value: { text: govuk_tag(text: "placeholder", colour: %w[grey green red purple orange yellow].sample) },
+            value: { text: govuk_tag(**Teachers::InductionStatus.new(teacher:).status_tag_kwargs) },
           },
         ]
       )
     end
   end
+
+private
 
   def pending_induction_submission_full_name(pending_induction_submission)
     PendingInductionSubmissions::Name.new(pending_induction_submission).full_name

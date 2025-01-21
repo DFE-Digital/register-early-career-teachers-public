@@ -27,7 +27,7 @@
 
   <div class="govuk-grid-column-two-thirds">
     <% @teachers.all.each do |teacher| %>
-      <%= summary_card_for_teacher(teacher) %>
+      <%= summary_card_for_teacher(teacher:) %>
     <% end %>
   </div>
 </div>
