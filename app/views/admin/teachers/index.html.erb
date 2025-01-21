@@ -37,8 +37,15 @@
               },
               {
                 key: { text: "Status" },
-                # FIXME: this is a placeholder as we cannot display a real status yet
-                value: { text: govuk_tag(text: "placeholder", colour: %w[grey green red purple orange yellow].sample) },
+                value: {
+                  text: govuk_tag(
+                    **Teachers::InductionStatus.new(
+                      teacher:,
+                      induction_periods: teacher.induction_periods,
+                      trs_induction_status: teacher.trs_induction_status
+                    ).status_tag_kwargs
+                  )
+                },
               },
             ]
           )
