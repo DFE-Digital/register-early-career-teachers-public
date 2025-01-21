@@ -72,7 +72,13 @@
 
     sl.with_row do |r|
       r.with_key(text: "Induction status")
-      r.with_value(text: govuk_tag(**Teachers::InductionStatus.new(trs_induction_status: @pending_induction_submission.trs_induction_status).status_tag_kwargs))
+      r.with_value(text: govuk_tag(
+        **Teachers::InductionStatus.new(
+          teacher: @teacher,
+          induction_periods: @teacher&.induction_periods,
+          trs_induction_status: @pending_induction_submission.trs_induction_status
+        ).status_tag_kwargs
+      ))
     end if @pending_induction_submission.trs_induction_status.present?
   end
 %>
