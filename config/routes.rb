@@ -90,6 +90,7 @@ Rails.application.routes.draw do
       end
     end
     resources :failures, only: %i[index]
+    resources :teacher_failures, path: "teacher-failures", only: %i[index]
     resources :teachers, only: %i[index show]
   end
 
