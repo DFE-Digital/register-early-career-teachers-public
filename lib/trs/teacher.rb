@@ -72,6 +72,10 @@ module TRS
       true
     end
 
+    def prohibited_from_teaching?
+      @alerts&.any? { |alert| alert.dig('alertType', 'alertCategory', 'alertCategoryId') == PROHIBITED_FROM_TEACHING_CATEGORY_ID }
+    end
+
   private
 
     def induction_status_completed?
@@ -89,10 +93,6 @@ module TRS
 
     def qts_awarded?
       @qts_awarded_on.present?
-    end
-
-    def prohibited_from_teaching?
-      @alerts&.any? { |alert| alert.dig('alertType', 'alertCategory', 'alertCategoryId') == PROHIBITED_FROM_TEACHING_CATEGORY_ID }
     end
   end
 end

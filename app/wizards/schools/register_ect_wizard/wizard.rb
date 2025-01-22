@@ -10,6 +10,7 @@ module Schools
           {
             already_active_at_school: AlreadyActiveAtSchoolStep,
             state_school_appropriate_body: StateSchoolAppropriateBodyStep,
+            cannot_register_ect: CannotRegisterECTStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep,
             email_address: EmailAddressStep,
