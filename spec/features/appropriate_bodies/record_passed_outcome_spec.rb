@@ -54,7 +54,7 @@ private
 
   def and_i_click_submit
     teacher_name = Teachers::Name.new(teacher).full_name
-    page.get_by_role('button', name: "Record passing outcome for #{teacher_name}").click
+    page.get_by_role('button', name: "Record pass outcome for #{teacher_name}").click
   end
 
   def then_i_should_be_on_the_success_page
