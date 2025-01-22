@@ -156,21 +156,6 @@ describe InductionPeriod do
           expect(subject).to be_valid
         end
       end
-
-      context "when number_of_terms is between 0 and 1" do
-        before { subject.number_of_terms = 0.5 }
-
-        it "is invalid" do
-          expect(subject).not_to be_valid
-        end
-
-        it "adds the correct error message" do
-          subject.valid?
-          expect(subject.errors[:number_of_terms]).to include(
-            "Partial terms can only be recorded after completing a full term of induction. If the early career teacher has done less than one full term of induction they cannot record partial terms and the number inputted should be 0."
-          )
-        end
-      end
     end
   end
 

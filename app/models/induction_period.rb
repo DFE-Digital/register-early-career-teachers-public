@@ -25,7 +25,6 @@ class InductionPeriod < ApplicationRecord
   validate :finished_on_not_in_future, if: -> { finished_on.present? }
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
-  validate :number_of_terms_for_ongoing_induction_period
 
   # Scopes
   scope :for_teacher, ->(teacher) { where(teacher:) }
@@ -63,13 +62,5 @@ private
     overlapping_siblings = InductionPeriod.siblings_of(self).overlapping_with(self).exists?
 
     errors.add(:base, "Induction periods cannot overlap") if overlapping_siblings
-  end
-
-  def number_of_terms_for_ongoing_induction_period
-    return if finished_on.blank?
-    return if number_of_terms.blank?
-    return if number_of_terms.zero? || number_of_terms >= 1
-
-    errors.add(:number_of_terms, "Partial terms can only be recorded after completing a full term of induction. If the early career teacher has done less than one full term of induction they cannot record partial terms and the number inputted should be 0.")
   end
 end
