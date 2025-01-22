@@ -29,6 +29,8 @@ class Teachers::InductionStatus
       passed
     in { teacher_present: false, trs_induction_status: 'FailedInWales' }
       failed_in_wales
+    in { teacher_present: false, trs_induction_status: 'PassedInWales' }
+      passed_in_wales
     in { teacher_present: false, trs_induction_status: 'None' }
       none
     else
@@ -38,6 +40,16 @@ class Teachers::InductionStatus
 
   def induction_status = status_tag_kwargs.fetch(:text)
   def induction_status_colour = status_tag_kwargs.fetch(:colour)
+
+  def completed?
+    %w[
+      Exempt
+      Passed
+      Failed
+      PassedInWales
+      FailedInWales
+    ].include?(trs_induction_status)
+  end
 
 private
 
@@ -71,6 +83,7 @@ private
   def in_progress = { text: 'In progress', colour: 'blue' }
   def none = { text: 'None', colour: 'grey' }
   def passed = { text: 'Passed', colour: 'green' }
+  def passed_in_wales = { text: 'Passed in Wales', colour: 'green' }
   def paused = { text: 'Induction paused', colour: 'pink' }
   def required_to_complete = { text: 'Required to complete', colour: 'yellow' }
   def unknown = { text: 'Unknown', colour: 'grey' }

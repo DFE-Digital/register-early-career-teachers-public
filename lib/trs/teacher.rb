@@ -1,7 +1,7 @@
 module TRS
   class Teacher
     PROHIBITED_FROM_TEACHING_CATEGORY_ID = 'b2b19019-b165-47a3-8745-3297ff152581'.freeze
-    INVALID_INDUCTION_STATUSES = %w[Exempt Pass Fail PassedinWales FailedinWales].freeze
+    INVALID_INDUCTION_STATUSES = %w[Exempt Passed Failed PassedInWales FailedInWales].freeze
 
     attr_reader :trn,
                 :first_name,
@@ -79,11 +79,12 @@ module TRS
   private
 
     def induction_status_completed?
+      # binding.debugger
       %w[
-        Pass
-        Fail
-        PassedinWales
-        FailedinWales
+        Passed
+        Failed
+        PassedInWales
+        FailedInWales
       ].include?(induction_status)
     end
 

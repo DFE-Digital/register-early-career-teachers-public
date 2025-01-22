@@ -31,7 +31,7 @@ shared_context 'fake trs api client that finds teacher prohibited from teaching'
   end
 end
 
-shared_context 'fake trs api client that finds teacher with invalid induction status' do |status|
+shared_context 'fake trs api client that finds teacher with specific induction status' do |status|
   before do
     allow(TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(induction_status: status))
   end

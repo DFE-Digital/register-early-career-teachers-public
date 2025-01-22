@@ -141,7 +141,7 @@ RSpec.describe TRS::Teacher do
       end
     end
 
-    %w[Pass Fail PassedinWales FailedinWales].each do |status|
+    %w[Passed Failed PassedInWales FailedInWales].each do |status|
       context "when the teacher has an induction status of #{status}" do
         let(:data) do
           {
