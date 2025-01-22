@@ -25,6 +25,8 @@ class TestGuidanceComponent < ViewComponent::Base
         ["3002578", "10/09/1977", "CB196295D", ""],
         ["3002577", "02/12/2000", "BT524135A", ""],
         ["3002576", "04/03/1999", "GE377928A", ""],
+        ["2632412", "16/02/1984", "", "Prohibited from teaching"],
+        ["2908239", "12/08/1978", "", "Prohibited from teaching"],
       ]
     end
 
