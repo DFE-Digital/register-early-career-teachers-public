@@ -99,7 +99,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
       end
 
       context "when the submission is valid but ECT is exempt" do
-        include_context 'fake trs api client that finds teacher with invalid induction status', 'Exempt'
+        include_context 'fake trs api client that finds teacher with specific induction status', 'Exempt'
 
         it 'redirects to exempt error page' do
           post(
@@ -111,9 +111,9 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
         end
       end
 
-      %w[Pass Fail PassedinWales FailedinWales].each do |status|
+      %w[Passed Failed PassedInWales FailedInWales].each do |status|
         context "when the submission is valid but ECT is #{status}" do
-          include_context 'fake trs api client that finds teacher with invalid induction status', status
+          include_context 'fake trs api client that finds teacher with specific induction status', status
 
           it 'redirects to completed error page' do
             post(

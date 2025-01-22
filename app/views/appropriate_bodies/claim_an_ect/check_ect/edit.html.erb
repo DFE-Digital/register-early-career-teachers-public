@@ -5,8 +5,10 @@
   backlink_href: new_ab_claim_an_ect_find_path)
 %>
 
-<%= form_with(model: @pending_induction_submission, url: ab_claim_an_ect_check_path(@pending_induction_submission, method: 'patch')) do |f| %>
-  <%= f.govuk_submit("Claim induction") %>
+<% unless induction_status_from(teacher: @teacher, pending_induction_submission: @pending_induction_submission).completed? %>
+  <%= form_with(model: @pending_induction_submission, url: ab_claim_an_ect_check_path(@pending_induction_submission, method: 'patch')) do |f| %>
+    <%= f.govuk_submit("Claim induction") %>
+  <% end %>
 <% end %>
 
 <h2 class="govuk-heading-m">Personal details</h2>
@@ -72,13 +74,14 @@
 
     sl.with_row do |r|
       r.with_key(text: "Induction status")
-      r.with_value(text: govuk_tag(
-        **Teachers::InductionStatus.new(
-          teacher: @teacher,
-          induction_periods: @teacher&.induction_periods,
-          trs_induction_status: @pending_induction_submission.trs_induction_status
-        ).status_tag_kwargs
-      ))
+      r.with_value(
+        text: govuk_tag(
+          **induction_status_from(
+            teacher: @teacher,
+            pending_induction_submission: @pending_induction_submission
+          ).status_tag_kwargs
+        )
+      )
     end if @pending_induction_submission.trs_induction_status.present?
   end
 %>
