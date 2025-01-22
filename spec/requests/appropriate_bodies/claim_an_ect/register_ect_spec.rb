@@ -119,6 +119,28 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
           expect(response.body).to include(page_heading)
         end
       end
+
+      # TODO: ensure it doesn't raise when the induction period's not valid
+      context "when the pending induction period is invalid" do
+        let(:registration_params) do
+          {
+            induction_programme: 'fip',
+            'started_on(3)' => '4',
+            'started_on(2)' => '6',
+            'started_on(1)' => Time.zone.today.year.next.to_s,
+          }
+        end
+
+        it 'passes the parameters to the AppropriateBodies::ClaimAnECT::RegisterECT but does not redirect and rerenders the form' do
+          patch(
+            "/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}",
+            params: { pending_induction_submission: registration_params }
+          )
+
+          expect(response).to be_ok
+          expect(response.body).to include(page_heading)
+        end
+      end
     end
   end
 

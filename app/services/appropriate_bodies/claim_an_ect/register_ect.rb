@@ -19,15 +19,14 @@ module AppropriateBodies
         # end
 
         ActiveRecord::Base.transaction do
-          success = (
-            update_teacher &&
-            create_induction_period &&
-            send_begin_induction_notification_to_trs &&
-            pending_induction_submission.save(context: :register_ect) &&
-            record_claim_event
-          )
+          steps = [
+            update_teacher,
+            send_begin_induction_notification_to_trs,
+            pending_induction_submission.save(context: :register_ect),
+            create_induction_period && record_induction_period_event
+          ]
 
-          success or raise ActiveRecord::Rollback
+          steps.all? or raise ActiveRecord::Rollback
         end
       end
 
@@ -64,9 +63,11 @@ module AppropriateBodies
           appropriate_body:,
           induction_programme: pending_induction_submission.induction_programme
         )
+
+        @induction_period.persisted?
       end
 
-      def record_claim_event
+      def record_induction_period_event
         Events::Record.record_appropriate_body_claims_teacher_event!(
           author:,
           teacher:,
