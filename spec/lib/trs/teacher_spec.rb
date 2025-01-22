@@ -156,4 +156,46 @@ RSpec.describe TRS::Teacher do
       end
     end
   end
+
+  describe '#prohibited_from_teaching?' do
+    context 'when teacher has a prohibition alert' do
+      let(:data) do
+        {
+          'alerts' => [
+            {
+              'alertType' => { 'alertCategory' => { 'alertCategoryId' => 'b2b19019-b165-47a3-8745-3297ff152581' } },
+            }
+          ]
+        }
+      end
+
+      it 'returns true' do
+        expect(subject.prohibited_from_teaching?).to be true
+      end
+    end
+
+    context 'when teacher has no alerts' do
+      let(:data) { { 'alerts' => [] } }
+
+      it 'returns false' do
+        expect(subject.prohibited_from_teaching?).to be false
+      end
+    end
+
+    context "when teacher has different type of alert" do
+      let(:data) do
+        {
+          'alerts' => [
+            {
+              'alertType' => { 'alertCategory' => { 'alertCategoryId' => 'different_category' } },
+            }
+          ]
+        }
+      end
+
+      it "returns false" do
+        expect(subject.prohibited_from_teaching?).to be false
+      end
+    end
+  end
 end
