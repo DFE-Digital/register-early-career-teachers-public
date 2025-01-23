@@ -2,40 +2,59 @@ require 'csv'
 
 module AppropriateBodies::Importers
   class TeacherImporter
-    def initialize(filename = Rails.root.join('db/samples/appropriate-body-portal/teachers.csv'))
+    IMPORT_ERROR_LOG = 'tmp/teacher_import.log'.freeze
+
+    Row = Struct.new(:trn, :trs_first_name, :trs_last_name)
+
+    def initialize(filename)
       @csv = CSV.read(filename, headers: true)
+
+      File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
+      @import_error_log = Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
-    def import
-      count = 0
-
-      Teacher.transaction do
-        @csv.each do |row|
-          Rails.logger.debug("attempting to import row: #{row.to_h}")
-
-          next if row.values_at('trn', 'first_name', 'last_name').any?(&:blank?)
-
-          Teacher.create!(**(build(row))).tap do |teacher|
-            if (induction_extension_terms = convert_extension(row)) && induction_extension_terms.positive?
-              Rails.logger.warn("Importing extension: #{induction_extension_terms}")
-              teacher.induction_extensions.create!(number_of_terms: induction_extension_terms)
-            end
-          end
-
-          count += 1
-        end
-      end
-
-      [count, @csv.count]
+    def rows
+      @csv.first(5000).map { |row| Row.new(**build(row)) }
     end
+
+    # def import
+    #   count = 0
+    #
+    #   Teacher.transaction do
+    #     @csv.each.with_index(1) do |row, i|
+    #       Rails.logger.debug("attempting to import row: #{row.to_h}")
+    #
+    #       next if row.values_at('trn', 'first_name', 'last_name').any?(&:blank?)
+    #
+    #       begin
+    #         Teacher.create!(**(build(row))).tap do |teacher|
+    #           if (induction_extension_terms = convert_extension(row)) && induction_extension_terms.positive?
+    #             Rails.logger.warn("Importing extension: #{induction_extension_terms}")
+    #             teacher.induction_extensions.create!(number_of_terms: induction_extension_terms)
+    #           end
+    #         end
+    #       rescue ActiveRecord::RecordInvalid => e
+    #         @import_error_log.error "#########################"
+    #         @import_error_log.error "Failed to import Teacher"
+    #         @import_error_log.error "Row number: #{i}"
+    #         @import_error_log.error "Message: #{e.message}"
+    #         @import_error_log.error "Row data: #{row}"
+    #       end
+    #
+    #       count += 1
+    #     end
+    #   end
+    #
+    #   [count, @csv.count]
+    # end
 
   private
 
     def build(row)
       {
         trn: row['trn'],
-        first_name: row['first_name'].strip,
-        last_name: row['last_name'].strip,
+        trs_first_name: row['first_name'].strip,
+        trs_last_name: row['last_name']&.strip,
       }
     end
 

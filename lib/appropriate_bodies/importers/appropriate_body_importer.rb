@@ -2,21 +2,40 @@ require 'csv'
 
 module AppropriateBodies::Importers
   class AppropriateBodyImporter
-    def initialize(filename = Rails.root.join('db/samples/appropriate-body-portal/appropriate-body.csv'))
+    IMPORT_ERROR_LOG = 'tmp/appropriate_body_import.log'.freeze
+
+    Row = Struct.new(:legacy_id, :name, :dfe_sign_in_organisation_id, :local_authority_code, :establishment_number)
+
+    def initialize(filename)
       @csv = CSV.read(filename, headers: true)
+
+      File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
+      @import_error_log = Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
-    def import
-      AppropriateBody.transaction do
-        @csv.each do |row|
-          Rails.logger.debug("attempting to import row: #{row.to_h}")
-
-          AppropriateBody.create!(**build(row))
-        end
-      end
-
-      @csv.count
+    def rows
+      @csv.map { |row| Row.new(**build(row)) }
     end
+
+    # def import
+    #   AppropriateBody.transaction do
+    #     @csv.each.with_index(1) do |row, i|
+    #       Rails.logger.debug("attempting to import row: #{row.to_h}")
+    #
+    #       begin
+    #         AppropriateBody.create!(**build(row))
+    #       rescue ActiveRecord::RecordInvalid => e
+    #         @import_error_log.error "#########################"
+    #         @import_error_log.error "Failed to import Appropriate Body"
+    #         @import_error_log.error "Row number: #{i}"
+    #         @import_error_log.error "Message: #{e.message}"
+    #         @import_error_log.error "Row data: #{row}"
+    #       end
+    #     end
+    #   end
+    #
+    #   @csv.count
+    # end
 
   private
 
@@ -67,8 +86,15 @@ module AppropriateBodies::Importers
                    local_authority_code: local_authority_code[0..2],
                    establishment_number: local_authority_code[4..8]
                  }
+               when %r{\A\d{7}\z}
+                 {
+                   local_authority_code: local_authority_code[0..2],
+                   establishment_number: local_authority_code[3..7]
+                 }
                else
-                 Rails.logger.debug("Can't import #{local_authority_code} from #{row}")
+                 @import_error_log.error "#########################"
+                 @import_error_log.error "Invalid local authority code"
+                 @import_error_log.error "Value: #{local_authority_code}"
 
                  {}
                end
