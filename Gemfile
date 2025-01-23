@@ -49,6 +49,7 @@ group :test do
   gem "rspec"
   gem "rspec-rails"
   gem "shoulda-matchers"
+  gem "super_diff"
 end
 
 group :development, :test do
