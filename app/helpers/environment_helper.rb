@@ -7,7 +7,7 @@ module EnvironmentHelper
 
   def environment_specific_phase_banner
     tag_text = ENVIRONMENT_PHASE_BANNER_TAG || "Beta"
-    banner_text = ENVIRONMENT_PHASE_BANNER_CONTENT || govuk_link_to("Give feedback about this service", "#")
+    banner_text = ENVIRONMENT_PHASE_BANNER_CONTENT
 
     govuk_phase_banner(text: banner_text, tag: { text: tag_text, colour: ENVIRONMENT_COLOUR }.compact)
   end
