@@ -11,6 +11,10 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :events
 
   # Validations
+  validates :email,
+            notify_email: true,
+            allow_nil: true
+
   validates :started_on,
             presence: true
 
