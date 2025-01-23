@@ -1,6 +1,6 @@
 module API
   module V3
-    class StatementsController < BaseController
+    class TransfersController < BaseController
       def index = head(:method_not_allowed)
       def show = head(:method_not_allowed)
     end

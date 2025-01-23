@@ -1,4 +1,4 @@
-module Api
+module API
   module V3
     class PartnershipsController < BaseController
       def create = head(:method_not_allowed)
