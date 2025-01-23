@@ -39,6 +39,15 @@ class Teachers::InductionStatus
   def induction_status = status_tag_kwargs.fetch(:text)
   def induction_status_colour = status_tag_kwargs.fetch(:colour)
 
+  def completed?
+    %w[
+      Exempt
+      Passed
+      Failed
+      FailedInWales
+    ].include?(trs_induction_status)
+  end
+
 private
 
   def induction_info

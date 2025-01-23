@@ -1,27 +1,47 @@
 RSpec.describe 'Claiming an ECT' do
-  include_context 'fake trs api client'
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   before { sign_in_as_appropriate_body_user(appropriate_body:) }
 
-  scenario 'Happy path' do
-    given_i_am_on_the_claim_an_ect_find_page
-    when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
-    and_i_submit_the_form
+  describe "when the ECT has not passed the induction" do
+    include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
-    now_i_should_be_on_the_claim_an_ect_check_page
-    when_i_begin_the_claim_process
+    scenario 'Happy path when induction is not completed' do
+      given_i_am_on_the_claim_an_ect_find_page
+      when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
+      and_i_submit_the_form
 
-    now_i_should_be_on_the_claim_an_ect_register_page
-    when_i_enter_the_start_date
-    and_choose_an_induction_programme
-    and_i_submit_the_form
+      now_i_should_be_on_the_claim_an_ect_check_page
+      when_i_begin_the_claim_process
 
-    now_i_should_be_on_the_confirmation_page
-    and_the_data_i_submitted_should_be_saved_on_the_pending_record
+      now_i_should_be_on_the_claim_an_ect_register_page
+      when_i_enter_the_start_date
+      and_choose_an_induction_programme
+      and_i_submit_the_form
+
+      now_i_should_be_on_the_confirmation_page
+      and_the_data_i_submitted_should_be_saved_on_the_pending_record
+    end
+  end
+
+  describe "when the ECT has passed the induction" do
+    include_context 'fake trs api client that finds teacher with specific induction status', 'Passed'
+
+    scenario 'Button is hidden when induction is completed' do
+      given_i_am_on_the_claim_an_ect_find_page
+      when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
+      and_i_submit_the_form
+
+      now_i_should_be_on_the_claim_an_ect_check_page
+      then_i_should_not_see_the_claim_button
+    end
   end
 
 private
+
+  def then_i_should_not_see_the_claim_button
+    expect(page.get_by_role('button', name: "Claim induction")).not_to be_visible
+  end
 
   def given_i_am_on_the_claim_an_ect_find_page
     path = '/appropriate-body/claim-an-ect/find-ect/new'

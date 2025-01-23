@@ -1,7 +1,6 @@
 module TRS
   class Teacher
     PROHIBITED_FROM_TEACHING_CATEGORY_ID = 'b2b19019-b165-47a3-8745-3297ff152581'.freeze
-    INVALID_INDUCTION_STATUSES = %w[Exempt Pass Fail PassedinWales FailedinWales].freeze
 
     attr_reader :trn,
                 :first_name,
@@ -66,9 +65,6 @@ module TRS
       raise TRS::Errors::QTSNotAwarded unless qts_awarded?
       raise TRS::Errors::ProhibitedFromTeaching if prohibited_from_teaching?
 
-      raise TRS::Errors::Exempt if induction_status == 'Exempt'
-      raise TRS::Errors::Completed if induction_status_completed?
-
       true
     end
 
@@ -77,15 +73,6 @@ module TRS
     end
 
   private
-
-    def induction_status_completed?
-      %w[
-        Pass
-        Fail
-        PassedinWales
-        FailedinWales
-      ].include?(induction_status)
-    end
 
     def api_client
       @api_client ||= TRS::APIClient.new
