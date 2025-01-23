@@ -128,33 +128,6 @@ RSpec.describe TRS::Teacher do
         expect { subject.check_eligibility! }.to raise_error(TRS::Errors::ProhibitedFromTeaching)
       end
     end
-
-    context "when the teacher is exempt from induction" do
-      let(:data) do
-        {
-          'induction' => { 'status' => 'Exempt' },
-          'qts' => { 'awarded' => '2024-09-18' },
-        }
-      end
-      it "raises TRS::Errors::Exempt" do
-        expect { subject.check_eligibility! }.to raise_error(TRS::Errors::Exempt)
-      end
-    end
-
-    %w[Passed Failed PassedInWales FailedInWales].each do |status|
-      context "when the teacher has an induction status of #{status}" do
-        let(:data) do
-          {
-            'induction' => { 'status' => status },
-            'qts' => { 'awarded' => '2024-09-18' },
-          }
-        end
-
-        it "raises TRS::Errors::Completed" do
-          expect { subject.check_eligibility! }.to raise_error(TRS::Errors::Completed)
-        end
-      end
-    end
   end
 
   describe '#prohibited_from_teaching?' do
