@@ -56,8 +56,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
         }.to have_enqueued_job(PassECTInductionJob).with(
           trn: pending_induction_submission.trn,
           completion_date: pending_induction_submission.finished_on.to_s,
-          pending_induction_submission_id: pending_induction_submission.id,
-          teacher_id: teacher.id
+          pending_induction_submission_id: pending_induction_submission.id
         )
       end
 
@@ -109,8 +108,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
         }.to have_enqueued_job(FailECTInductionJob).with(
           trn: pending_induction_submission.trn,
           completion_date: pending_induction_submission.finished_on.to_s,
-          pending_induction_submission_id: pending_induction_submission.id,
-          teacher_id: teacher.id
+          pending_induction_submission_id: pending_induction_submission.id
         )
       end
 
