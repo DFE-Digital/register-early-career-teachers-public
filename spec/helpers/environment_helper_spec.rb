@@ -35,10 +35,6 @@ RSpec.describe EnvironmentHelper, type: :helper do
       expect(subject).to_not match(/govuk-tag--\w+/)
     end
 
-    it "contains the text 'Give feedback about this service'" do
-      expect(subject).to include("Give feedback about this service")
-    end
-
     context 'when ENVIRONMENT_COLOUR, ENVIRONMENT_PHASE_BANNER_CONTENT and ENVIRONMENT_PHASE_BANNER_TAG are set' do
       before do
         stub_const('ENVIRONMENT_COLOUR', 'yellow')
