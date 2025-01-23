@@ -175,4 +175,30 @@ Rails.application.routes.draw do
       get "confirmation", action: :new
     end
   end
+
+  namespace :api do
+    namespace :v3 do
+      resources :participants, only: %i[index show] do
+        put :change_schedule, path: "change-schedule"
+        put :defer
+        put :resume
+        put :withdraw
+
+        collection do
+          resources :transfers, only: %i[index]
+          get ":participant_id/transfers", to: "transfers#show"
+        end
+      end
+
+      resources :declarations, only: %i[create show index] do
+        put :void, path: "void"
+      end
+
+      resources :statements, only: %i[index show]
+      resources :delivery_partners, only: %i[index show], path: "delivery-partners"
+      resources :partnerships, only: %i[show index create update]
+      resources :schools, only: %i[index show]
+      resources :unfunded_mentors, only: %i[index show]
+    end
+  end
 end
