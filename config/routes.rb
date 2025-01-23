@@ -84,7 +84,6 @@ Rails.application.routes.draw do
   namespace :migration do
     resources :migrations, only: %i[index create], path: "/" do
       collection do
-        # get ":model/failures", to: "failures#index", as: :failures
         get "download_report/:model", action: :download_report, as: :download_report
         post "reset", action: :reset, as: :reset
       end
