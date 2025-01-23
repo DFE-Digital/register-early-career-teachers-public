@@ -3,7 +3,7 @@ class Migration::TeachersController < ::AdminController
 
   def index
     @pagy, teachers = pagy(
-      Teachers::Search.new(query_string: params[:q]).search.order(:last_name, :first_name, :id)
+      Teachers::Search.new(query_string: params[:q]).search.order(:trs_last_name, :trs_first_name, :id)
     )
     @teachers = Admin::TeacherPresenter.wrap(teachers)
   end
