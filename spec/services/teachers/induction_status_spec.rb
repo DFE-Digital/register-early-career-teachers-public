@@ -90,8 +90,43 @@ RSpec.describe Teachers::InductionStatus do
     let(:induction_periods) { [] }
     let(:trs_induction_status) { 'SomethingEntirelyDifferent' }
 
-    it "has a status of 'Unknown'" do
+    it "has a status of 'Unknown'" do
       expect(subject.induction_status).to eql('Unknown')
+    end
+  end
+
+  describe "#completed?" do
+    let(:teacher) { nil }
+    let(:induction_periods) { [] }
+
+    %w[
+      Exempt
+      Passed
+      Failed
+      FailedInWales
+    ].each do |status|
+      context "with complete TRS status (#{status})" do
+        let(:trs_induction_status) { status }
+
+        it "returns true" do
+          expect(subject).to be_completed
+        end
+      end
+    end
+
+    %w[
+      InProgress
+      RequiredToComplete
+      None
+      Paused
+    ].each do |status|
+      context "with incomplete TRS status (#{status})" do
+        let(:trs_induction_status) { status }
+
+        it "returns false" do
+          expect(subject).not_to be_completed
+        end
+      end
     end
   end
 end
