@@ -40,6 +40,7 @@ class PendingInductionSubmission < ApplicationRecord
             on: %i[release_ect record_outcome]
 
   validates :number_of_terms,
+            presence: { message: "Enter a number of terms" },
             inclusion: { in: 0..16,
                          message: "Terms must be between 0 and 16" },
             on: %i[release_ect record_outcome]
