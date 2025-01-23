@@ -183,10 +183,10 @@ Rails.application.routes.draw do
         put :defer
         put :resume
         put :withdraw
+        get :transfers, to: "transfers#show"
 
         collection do
           resources :transfers, only: %i[index]
-          get ":participant_id/transfers", to: "transfers#show"
         end
       end
 
@@ -198,7 +198,7 @@ Rails.application.routes.draw do
       resources :delivery_partners, only: %i[index show], path: "delivery-partners"
       resources :partnerships, only: %i[show index create update]
       resources :schools, only: %i[index show]
-      resources :unfunded_mentors, only: %i[index show]
+      resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors"
     end
   end
 end
