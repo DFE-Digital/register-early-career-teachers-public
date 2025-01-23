@@ -2,21 +2,28 @@ require 'csv'
 
 module AppropriateBodies::Importers
   class InductionPeriodImporter
+    IMPORT_ERROR_LOG = 'tmp/induction_period_import.log'.freeze
     LOGFILE = Rails.root.join("log/induction_period_import.log").freeze
 
     attr_accessor :csv, :data
 
-    Row = Struct.new(:appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, keyword_init: true) do
+    Row = Struct.new(:appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, :notes, keyword_init: true) do
       def range
         started_on...finished_on
       end
 
-      def to_hash
-        { appropriate_body_id:, started_on:, finished_on:, number_of_terms:, induction_programme: convert_induction_programme }
-      end
-
       def length
         (finished_on || Time.zone.today) - started_on
+      end
+
+      # used in notes
+      def to_h
+        { appropriate_body_id:, started_on:, finished_on:, induction_programme:, number_of_terms: }
+      end
+
+      # used for comparisons in tests
+      def to_hash
+        { appropriate_body_id:, started_on:, finished_on:, number_of_terms:, induction_programme: convert_induction_programme }
       end
 
     private
@@ -30,67 +37,51 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename: Rails.root.join('db/samples/appropriate-body-portal/induction-periods.csv'), csv: nil)
-      File.delete(LOGFILE) if File.exist?(LOGFILE)
-
+    def initialize(filename, csv: nil)
       @csv = csv || CSV.read(filename, headers: true)
 
-      data = @csv.map do |row|
-        logger.debug("attempting to import row: #{row.to_hash}")
-
-        unless (appropriate_body_id = appropriate_bodies[row['appropriate_body_id']])
-          logger.warn("No AB found for ID #{row['appropriate_body_id']}")
-
-          next
-        end
-
-        Row.new(
-          appropriate_body_id:,
-          started_on: extract_date(row['started_on']),
-          finished_on: extract_date(row['finished_on']),
-          induction_programme: row['induction_programme_choice'],
-          number_of_terms: row['number_of_terms'].to_i,
-          trn: row['trn']
-        )
-      end
-
-      @data = data.compact
+      File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
+      @import_error_log = Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
-    def import
-      count = 0
+    def rows
+      @rows ||= @csv.map { |row| Row.new(**build(row)) }
+    end
 
-      periods_by_trn.each do |trn, rows|
-        logger.debug("adding rows for #{trn}")
-        teacher_id = teachers[trn]
-
-        InductionPeriod.transaction do
-          rows.map do |row|
-            InductionPeriod.create!(**row, teacher_id:)
-            count += 1
-          end
-        end
-      end
-
-      [count, @csv.count]
+    def build(row)
+      {
+        appropriate_body_id: row['appropriate_body_id'],
+        started_on: extract_date(row['started_on']),
+        finished_on: extract_date(row['finished_on']),
+        induction_programme: row['induction_programme_choice'],
+        number_of_terms: row['number_of_terms'].to_i,
+        trn: row['trn'],
+        notes: []
+      }
     end
 
     def periods_by_trn
-      @data
-        .reject { |ip| ip.finished_on && ip.started_on >= ip.finished_on } # FIXME: log these
+      rows
+        .reject { |ip| ip.started_on.nil? }
+        .reject { |ip| ip.started_on == Date.new(1, 1, 1) }
+        .reject { |ip| ip.finished_on && ip.started_on >= ip.finished_on }
         .group_by(&:trn)
+        .select { |_trn, periods| periods.any? { |p| p.finished_on.nil? } }
         .transform_values { |periods| periods.sort_by { |p| [p.started_on, p.length, p.appropriate_body_id] } }
         .each_with_object({}) do |(trn, rows), h|
           keep = []
 
           rows.each do |current|
             keep << current and next if keep.empty?
-            keep << current and next if keep.none? { |sibling| current.range.overlap?(sibling.range) }
+            keep << current and next if keep.none? { |already_recorded| current.range.overlap?(already_recorded.range) }
 
             keep
               .select { |sibling| sibling.range.overlap?(current.range) }
               .each do |sibling|
-                if sibling.appropriate_body_id == current.appropriate_body_id
+                original_sibling = sibling.to_h
+                original_current = current.to_h
+
+                if sibling.appropriate_body_id == current.appropriate_body_id && sibling.induction_programme == current.induction_programme
                   case
                   when sibling.range.cover?(current.range)
                     #                  ┌─────────────────────────────┐
@@ -99,6 +90,12 @@ module AppropriateBodies::Importers
                     #               ┌──────────────────────────────────────┐
                     #   Sibling     │                KEEP                  │
                     #               └──────────────────────────────────────┘
+                    sibling.number_of_terms = [sibling.number_of_terms, current.number_of_terms].max
+                    sibling.notes << {
+                      heading: "Imported from DQT",
+                      body: "DQT held 2 overlapping induction periods for this teacher/appropriate body combination. 1 was discarded",
+                      data: { originals: [original_sibling, original_current], combined: sibling.to_h }
+                    }
                     next
                   when current.range.cover?(sibling.range)
                     #               ┌──────────────────────────────────────┐
@@ -107,6 +104,12 @@ module AppropriateBodies::Importers
                     #                  ┌─────────────────────────────┐
                     #   Sibling        │           DISCARD           │
                     #                  └─────────────────────────────┘
+                    current.number_of_terms = [sibling.number_of_terms, current.number_of_terms].max
+                    current.notes << {
+                      heading: "Imported from DQT",
+                      body: "DQT held 2 overlapping induction periods for this teacher/appropriate body combination. 1 was discarded",
+                      data: { originals: [original_sibling, original_current], combined: current.to_h }
+                    }
                     keep.delete(sibling)
                     keep << current
                   when sibling.range.cover?(current.started_on) && !sibling.range.cover?(current.finished_on)
@@ -117,7 +120,13 @@ module AppropriateBodies::Importers
                     #               ┌─────────────────────────────────────────┬───┐
                     #   Sibling     │                EXTEND                   │╳╳╳│
                     #               └─────────────────────────────────────────┴───┘
+                    current.number_of_terms = [sibling.number_of_terms, current.number_of_terms].max
                     sibling.finished_on = current.finished_on
+                    sibling.notes << {
+                      heading: "Imported from DQT",
+                      body: "DQT held 2 overlapping induction periods for this teacher/appropriate body combination. 1 was extended to cover the full duration.",
+                      data: { originals: [original_sibling, original_current], combined: sibling.to_h }
+                    }
                   when !sibling.range.cover?(current.started_on) && sibling.range.cover(current.finished_on)
                     #               ┌──────────────────────────────────────┐
                     #   Current     │              DISCARD                 │
@@ -126,9 +135,33 @@ module AppropriateBodies::Importers
                     #               ┌─────┬──────────────────────────────────────┐
                     #   Sibling     │╳╳╳╳╳│             EXTEND                   │
                     #               └─────┴──────────────────────────────────────┘
+                    sibling.number_of_terms = [sibling.number_of_terms, current.number_of_terms].max
                     sibling.started_on = current.started_on
+                    sibling.notes << {
+                      heading: "Imported from DQT",
+                      body: "DQT held 2 overlapping induction periods for this teacher/appropriate body combination. 1 was extended to cover the full duration.",
+                      data: { originals: [original_sibling, original_current], combined: sibling.to_h }
+                    }
                   else
                     fail
+                  end
+                elsif sibling.appropriate_body_id == current.appropriate_body_id && sibling.induction_programme != current.induction_programme
+                  case
+                  when sibling.range.cover?(current.started_on) && !sibling.range.cover?(current.finished_on)
+                    #                         ┌─────────────────────────────────┐
+                    #   Current               │          KEEP                   │
+                    #                         └─────────────────────────────────┘
+                    #
+                    #               ┌─────────┬┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┐
+                    #   Sibling     │ SHRINK  │                    ┊
+                    #               └─────────┴┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┘
+                    sibling.finished_on = current.started_on
+                    sibling.notes << {
+                      heading: "Imported from DQT",
+                      body: "DQT held 2 overlapping induction periods for this teacher/appropriate body combination with different induction programmes. This record was cut off when the later one started to prevent overlaps.",
+                      data: { originals: [original_sibling, original_current] }
+                    }
+                    keep << current
                   end
                 else
                   case
@@ -148,6 +181,11 @@ module AppropriateBodies::Importers
                     #   Sibling     │ SHRINK  │                    ┊
                     #               └─────────┴┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┘
                     sibling.finished_on = current.started_on
+                    sibling.notes << {
+                      heading: "Imported from DQT",
+                      body: "DQT held 2 overlapping induction periods for this teacher with different appropriate bodies. This record was cut off when the later one started to prevent overlaps.",
+                      data: { originals: [original_sibling, original_current] }
+                    }
                     keep << current
                   end
                 end
@@ -168,18 +206,6 @@ module AppropriateBodies::Importers
       @logger ||= Logger.new(LOGFILE).tap do |l|
         l.level = Logger::Severity::DEBUG
       end
-    end
-
-    def appropriate_bodies
-      @appropriate_bodies ||= AppropriateBody
-        .select(:id, :legacy_id)
-        .each_with_object({}) { |t, h| h[t.legacy_id] = t.id }
-    end
-
-    def teachers
-      @teachers ||= Teacher
-        .select(:id, :trn)
-        .each_with_object({}) { |t, h| h[t.trn] = t.id }
     end
 
     def extract_date(datetime)
