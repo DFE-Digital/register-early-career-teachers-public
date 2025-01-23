@@ -71,7 +71,6 @@ RSpec.describe Teachers::InductionStatus do
         "Failed" => "Failed",
         "Passed" => "Passed",
         "FailedInWales" => "Failed in Wales",
-        "PassedInWales" => "Passed in Wales",
         "None" => "None",
       }.each do |trs_induction_status, our_description|
         context "when the trs_induction_status is #{trs_induction_status}" do
@@ -104,7 +103,6 @@ RSpec.describe Teachers::InductionStatus do
       Exempt
       Passed
       Failed
-      PassedInWales
       FailedInWales
     ].each do |status|
       context "with complete TRS status (#{status})" do
