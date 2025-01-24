@@ -19,7 +19,8 @@ module Teachers
           trs_induction_status: trs_teacher.induction_status,
           trs_qts_status_description: trs_teacher.qts_status_description,
           trs_initial_teacher_training_provider_name: trs_teacher.initial_teacher_training_provider_name,
-          trs_initial_teacher_training_end_date: trs_teacher.initial_teacher_training_end_date
+          trs_initial_teacher_training_end_date: trs_teacher.initial_teacher_training_end_date,
+          trs_data_last_refreshed_at: Time.zone.now
         )
 
         new_name = Teachers::Name.new(teacher).full_name
