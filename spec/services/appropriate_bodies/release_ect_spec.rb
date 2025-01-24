@@ -1,4 +1,6 @@
 describe AppropriateBodies::ReleaseECT do
+  include ActiveJob::TestHelper
+
   let(:induction_period) { FactoryBot.create(:induction_period, :active) }
   let(:appropriate_body) { induction_period.appropriate_body }
   let(:pending_induction_submission) do
@@ -51,6 +53,10 @@ describe AppropriateBodies::ReleaseECT do
 
       expect(induction_period.number_of_terms).to eql(pending_induction_submission.number_of_terms)
       expect(induction_period.finished_on).to eql(pending_induction_submission.finished_on)
+    end
+
+    it "records the event" do
+      subject.release!
 
       expect(Events::Record).to have_received(:new).with(
         hash_including(
@@ -62,6 +68,10 @@ describe AppropriateBodies::ReleaseECT do
           heading: "#{Teachers::Name.new(induction_period.teacher).full_name} was released by #{appropriate_body.name}"
         )
       )
+
+      perform_enqueued_jobs
+
+      expect(Event.last.event_type).to eq("appropriate_body_releases_teacher")
     end
 
     it 'destroys the pending_induction_submission' do

@@ -37,8 +37,7 @@ module Admin
 
       BeginECTInductionJob.perform_later(
         trn: teacher.trn,
-        start_date: induction_period.started_on,
-        teacher_id: teacher.id
+        start_date: induction_period.started_on
       )
     end
 

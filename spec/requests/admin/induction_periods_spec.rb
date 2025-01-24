@@ -56,8 +56,7 @@ RSpec.describe Admin::InductionPeriodsController do
             }.to have_enqueued_job(BeginECTInductionJob)
               .with(
                 trn: teacher.trn,
-                start_date: 20.months.ago.to_date,
-                teacher_id: teacher.id
+                start_date: 20.months.ago.to_date
               )
           end
         end

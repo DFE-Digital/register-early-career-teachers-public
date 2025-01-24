@@ -57,11 +57,78 @@ describe PendingInductionSubmission do
     end
 
     describe "number_of_terms" do
+      it { is_expected.to validate_presence_of(:number_of_terms).with_message('Enter a number of terms').on(%i[release_ect record_outcome]) }
       it { is_expected.to validate_inclusion_of(:number_of_terms).in_range(0..16).with_message("Terms must be between 0 and 16").on(%i[release_ect record_outcome]) }
     end
 
     describe "confirmed" do
       it { is_expected.to validate_acceptance_of(:confirmed).on(:check_ect).with_message("Confirm if these details are correct or try your search again") }
+    end
+
+    describe "started_on_not_in_future" do
+      let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+
+      context "when started_on is today" do
+        before { pending_induction_submission.started_on = Date.current }
+
+        it "is valid" do
+          expect(pending_induction_submission).to be_valid
+        end
+      end
+
+      context "when started_on is in the past" do
+        before { pending_induction_submission.started_on = Date.current - 1.day }
+
+        it "is valid" do
+          expect(pending_induction_submission).to be_valid
+        end
+      end
+
+      context "when started_on is in the future" do
+        before { pending_induction_submission.started_on = Date.current + 1.day }
+
+        it "is invalid" do
+          expect(pending_induction_submission).not_to be_valid
+        end
+
+        it "adds the correct error message" do
+          pending_induction_submission.valid?
+          expect(pending_induction_submission.errors[:started_on]).to include("Start date cannot be in the future")
+        end
+      end
+    end
+
+    describe "finished_on_not_in_future" do
+      let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+
+      context "when finished_on is today" do
+        before { pending_induction_submission.finished_on = Date.current }
+
+        it "is valid" do
+          expect(pending_induction_submission).to be_valid
+        end
+      end
+
+      context "when finished_on is in the past" do
+        before { pending_induction_submission.finished_on = Date.current - 1.day }
+
+        it "is valid" do
+          expect(pending_induction_submission).to be_valid
+        end
+      end
+
+      context "when finished_on is in the future" do
+        before { pending_induction_submission.finished_on = Date.current + 1.day }
+
+        it "is invalid" do
+          expect(pending_induction_submission).not_to be_valid
+        end
+
+        it "adds the correct error message" do
+          pending_induction_submission.valid?
+          expect(pending_induction_submission.errors[:finished_on]).to include("End date cannot be in the future")
+        end
+      end
     end
 
     describe "trs_qts_awarded_on_before_started_on" do

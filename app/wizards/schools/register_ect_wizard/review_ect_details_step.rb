@@ -15,6 +15,10 @@ module Schools
       def next_step
         :email_address
       end
+
+      def previous_step
+        :find_ect
+      end
     end
   end
 end

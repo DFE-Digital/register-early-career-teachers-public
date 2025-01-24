@@ -1,4 +1,4 @@
-<% page_data(title: "Check your answers before submitting", backlink_href: schools_register_ect_wizard_working_pattern_path ) %>
+<% page_data(title: "Check your answers before submitting", backlink_href: @wizard.previous_step_path) %>
 
 <h2 class="govuk-heading-m">Teacher details</h2>
 <%= govuk_summary_list do |summary_list|
@@ -28,6 +28,11 @@
   end
 
   summary_list.with_row do |row|
+    row.with_key(text: 'Working pattern')
+    row.with_value(text: @ect.formatted_working_pattern)
+  end
+
+  summary_list.with_row do |row|
     row.with_key(text: 'Appropriate body')
     row.with_value(text: @ect.formatted_appropriate_body_name)
   end
@@ -35,11 +40,6 @@
   summary_list.with_row do |row|
     row.with_key(text: 'Programme type')
     row.with_value(text: @ect.formatted_programme_type)
-  end
-
-  summary_list.with_row do |row|
-    row.with_key(text: 'Working pattern')
-    row.with_value(text: @ect.formatted_working_pattern)
   end
 end %>
 

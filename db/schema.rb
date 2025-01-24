@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_15_130749) do
-  # These are extensions that must be enabled in order to support this database
+ActiveRecord::Schema[8.0].define(version: 2025_01_20_140655) do
+# These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
   enable_extension "unaccent"
@@ -495,14 +495,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_130749) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "trn", null: false
-    t.datetime "induction_start_date_submitted_to_trs_at"
     t.string "trs_first_name", null: false
     t.string "trs_last_name", null: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
     t.uuid "legacy_id"
     t.uuid "legacy_ect_id"
     t.uuid "legacy_mentor_id"
-    t.datetime "induction_completion_submitted_to_trs_at"
     t.date "trs_qts_awarded_on"
     t.string "trs_qts_status_description"
     t.string "trs_induction_status", limit: 16

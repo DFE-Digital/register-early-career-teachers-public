@@ -13,6 +13,14 @@ FactoryBot.define do
       number_of_terms { nil }
     end
 
+    trait :pass do
+      outcome { :pass }
+    end
+
+    trait :fail do
+      outcome { :fail }
+    end
+
     trait(:cip) { induction_programme { "cip" } }
     trait(:diy) { induction_programme { "diy" } }
   end

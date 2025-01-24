@@ -14,6 +14,10 @@ module Schools
       def next_step
         :start_date
       end
+
+      def previous_step
+        :review_ect_details
+      end
     end
   end
 end

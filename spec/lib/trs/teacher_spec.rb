@@ -128,31 +128,46 @@ RSpec.describe TRS::Teacher do
         expect { subject.check_eligibility! }.to raise_error(TRS::Errors::ProhibitedFromTeaching)
       end
     end
+  end
 
-    context "when the teacher is exempt from induction" do
+  describe '#prohibited_from_teaching?' do
+    context 'when teacher has a prohibition alert' do
       let(:data) do
         {
-          'induction' => { 'status' => 'Exempt' },
-          'qts' => { 'awarded' => '2024-09-18' },
+          'alerts' => [
+            {
+              'alertType' => { 'alertCategory' => { 'alertCategoryId' => 'b2b19019-b165-47a3-8745-3297ff152581' } },
+            }
+          ]
         }
       end
-      it "raises TRS::Errors::Exempt" do
-        expect { subject.check_eligibility! }.to raise_error(TRS::Errors::Exempt)
+
+      it 'returns true' do
+        expect(subject.prohibited_from_teaching?).to be true
       end
     end
 
-    %w[Pass Fail PassedinWales FailedinWales].each do |status|
-      context "when the teacher has an induction status of #{status}" do
-        let(:data) do
-          {
-            'induction' => { 'status' => status },
-            'qts' => { 'awarded' => '2024-09-18' },
-          }
-        end
+    context 'when teacher has no alerts' do
+      let(:data) { { 'alerts' => [] } }
 
-        it "raises TRS::Errors::Completed" do
-          expect { subject.check_eligibility! }.to raise_error(TRS::Errors::Completed)
-        end
+      it 'returns false' do
+        expect(subject.prohibited_from_teaching?).to be false
+      end
+    end
+
+    context "when teacher has different type of alert" do
+      let(:data) do
+        {
+          'alerts' => [
+            {
+              'alertType' => { 'alertCategory' => { 'alertCategoryId' => 'different_category' } },
+            }
+          ]
+        }
+      end
+
+      it "returns false" do
+        expect(subject.prohibited_from_teaching?).to be false
       end
     end
   end

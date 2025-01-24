@@ -40,6 +40,7 @@ class PendingInductionSubmission < ApplicationRecord
             on: %i[release_ect record_outcome]
 
   validates :number_of_terms,
+            presence: { message: "Enter a number of terms" },
             inclusion: { in: 0..16,
                          message: "Terms must be between 0 and 16" },
             on: %i[release_ect record_outcome]
@@ -67,6 +68,8 @@ class PendingInductionSubmission < ApplicationRecord
             presence: { message: "QTS has not been awarded" },
             on: :register_ect
 
+  validate :started_on_not_in_future, if: -> { started_on.present? }
+  validate :finished_on_not_in_future, if: -> { finished_on.present? }
   validate :trs_qts_awarded_on_before_started_on, on: :register_ect
 
 private
@@ -80,5 +83,17 @@ private
         "Induction start date cannot be earlier than QTS award date (#{trs_qts_awarded_on.to_fs(:govuk)})"
       )
     end
+  end
+
+  def started_on_not_in_future
+    return if started_on <= Date.current
+
+    errors.add(:started_on, "Start date cannot be in the future")
+  end
+
+  def finished_on_not_in_future
+    return if finished_on <= Date.current
+
+    errors.add(:finished_on, "End date cannot be in the future")
   end
 end

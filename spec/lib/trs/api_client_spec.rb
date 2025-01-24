@@ -11,7 +11,7 @@ RSpec.describe TRS::APIClient do
 
     context 'finding a teacher by TRN and date of birth' do
       let(:response_body) { { 'firstName' => 'John', 'trn' => trn }.to_json }
-      let(:expected_payload) { { dateOfBirth: "1990-01-01", include: "Induction,InitialTeacherTraining" } }
+      let(:expected_payload) { { dateOfBirth: "1990-01-01", include: "Induction,InitialTeacherTraining,Alerts" } }
 
       before do
         allow(connection).to receive(:get).with(expected_path, expected_payload).and_return(response)
@@ -33,7 +33,7 @@ RSpec.describe TRS::APIClient do
 
     context 'finding a teacher by TRN and national insurance number' do
       let(:response_body) { { 'firstName' => 'John', 'trn' => trn }.to_json }
-      let(:expected_payload) { { nationalInsuranceNumber: "QQ123456A", include: "Induction,InitialTeacherTraining" } }
+      let(:expected_payload) { { nationalInsuranceNumber: "QQ123456A", include: "Induction,InitialTeacherTraining,Alerts" } }
 
       before do
         allow(connection).to receive(:get).with(expected_path, expected_payload).and_return(response)
@@ -82,14 +82,23 @@ RSpec.describe TRS::APIClient do
     let(:response) { instance_double(Faraday::Response, success?: true) }
     let(:trn) { '0000123' }
     let(:start_date) { '2024-01-01' }
-    let(:expected_payload) { { 'inductionStatus' => 'InProgress', 'startDate' => start_date }.to_json }
+    let(:modified_at) { "2022-05-03T03:00:00.000Z" }
+    let(:expected_payload) do
+      {
+        'inductionStatus' => 'InProgress',
+        'startDate' => start_date,
+        'modifiedOn' => modified_at
+      }.to_json
+    end
 
     before do
       allow(connection).to receive(:put).with("v3/persons/#{trn}/induction", expected_payload).and_return(response)
     end
 
     it "puts to the induction endpoint with the 'begin' parameters" do
-      client.begin_induction!(trn:, start_date:)
+      travel_to(modified_at) do
+        client.begin_induction!(trn:, start_date:)
+      end
 
       expect(connection).to have_received(:put).with("v3/persons/#{trn}/induction", expected_payload).once
     end
@@ -99,14 +108,23 @@ RSpec.describe TRS::APIClient do
     let(:response) { instance_double(Faraday::Response, success?: true) }
     let(:trn) { '0000234' }
     let(:completion_date) { '2024-02-02' }
-    let(:expected_payload) { { 'inductionStatus' => 'Pass', 'completionDate' => completion_date }.to_json }
+    let(:modified_at) { "2022-05-03T03:00:00.000Z" }
+    let(:expected_payload) do
+      {
+        'inductionStatus' => 'Pass',
+        'completionDate' => completion_date,
+        'modifiedOn' => modified_at
+      }.to_json
+    end
 
     before do
       allow(connection).to receive(:put).with("v3/persons/#{trn}/induction", expected_payload).and_return(response)
     end
 
     it "puts to the induction endpoint with the 'pass' parameters" do
-      client.pass_induction!(trn:, completion_date:)
+      travel_to(modified_at) do
+        client.pass_induction!(trn:, completion_date:)
+      end
 
       expect(connection).to have_received(:put).with("v3/persons/#{trn}/induction", expected_payload).once
     end
@@ -116,15 +134,23 @@ RSpec.describe TRS::APIClient do
     let(:response) { instance_double(Faraday::Response, success?: true) }
     let(:trn) { '0000345' }
     let(:completion_date) { '2024-03-03' }
-    let(:expected_payload) { { 'inductionStatus' => 'Fail', 'completionDate' => completion_date }.to_json }
+    let(:modified_at) { "2022-05-03T03:00:00.000Z" }
+    let(:expected_payload) do
+      {
+        'inductionStatus' => 'Fail',
+        'completionDate' => completion_date,
+        'modifiedOn' => modified_at
+      }.to_json
+    end
 
     before do
       allow(connection).to receive(:put).with("v3/persons/#{trn}/induction", expected_payload).and_return(response)
     end
 
     it "puts to the induction endpoint with the 'fail' parameters" do
-      client.fail_induction!(trn:, completion_date:)
-
+      travel_to(modified_at) do
+        client.fail_induction!(trn:, completion_date:)
+      end
       expect(connection).to have_received(:put).with("v3/persons/#{trn}/induction", expected_payload).once
     end
   end

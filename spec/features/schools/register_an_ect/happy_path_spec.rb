@@ -31,6 +31,10 @@ RSpec.describe 'Registering an ECT' do
 
     when_i_enter_a_valid_start_date
     and_i_click_continue
+    then_i_should_i_should_be_taken_to_the_working_pattern_page
+
+    when_i_select_full_time
+    and_i_click_continue
     then_i_should_be_taken_to_the_appropriate_bodies_page
 
     when_i_select_an_appropriate_body
@@ -39,10 +43,7 @@ RSpec.describe 'Registering an ECT' do
 
     when_i_select_school_led
     and_i_click_continue
-    then_i_should_i_should_be_taken_to_the_working_pattern_page
 
-    when_i_select_full_time
-    and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_all_the_ect_data_on_the_page
 
