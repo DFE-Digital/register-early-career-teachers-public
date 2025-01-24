@@ -2,7 +2,7 @@ module Admin
   class UpdateInductionPeriodService
     class RecordedOutcomeError < StandardError; end
 
-    attr_reader :induction_period, :params
+    attr_reader :induction_period
 
     def initialize(induction_period:, params:)
       @induction_period = induction_period
@@ -45,6 +45,15 @@ module Admin
       !InductionPeriod.where(teacher:)
         .where("started_on < ?", induction_period.started_on)
         .exists?
+    end
+
+    def params
+      # Nullify number_of_terms when removing finished_on
+      if @params.key?(:finished_on) && @params[:finished_on].blank? && induction_period.finished_on.present?
+        @params[:number_of_terms] = nil
+      end
+
+      @params
     end
   end
 end
