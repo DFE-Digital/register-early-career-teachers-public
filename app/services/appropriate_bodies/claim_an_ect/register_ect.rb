@@ -17,7 +17,6 @@ module AppropriateBodies
         # if teacher.persisted? && teacher.induction_periods.present?
         #   raise AppropriateBodies::Errors::TeacherAlreadyClaimedError, "Teacher already claimed"
         # end
-
         ActiveRecord::Base.transaction do
           steps = [
             update_teacher,

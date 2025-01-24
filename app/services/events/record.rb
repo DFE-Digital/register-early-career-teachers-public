@@ -62,7 +62,9 @@ module Events
     end
 
     def record_event!
-      RecordEventJob.perform_later(**attributes)
+      # FIXME: This job is causing serialization errors when launched within a failing transaction block.
+      # We have not yet identified the root cause of this issue therefore we're going to run the job inline for now.
+      RecordEventJob.perform_now(**attributes)
     end
 
     # Appropriate body events
