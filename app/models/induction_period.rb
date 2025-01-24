@@ -12,8 +12,10 @@ class InductionPeriod < ApplicationRecord
             presence: true
 
   validates :number_of_terms,
-            presence: { message: "Enter a number of terms",
-                        if: -> { finished_on.present? } }
+            inclusion: { in: 0..16,
+                         message: "Terms must be between 0 and 16" },
+            presence: { message: "Enter a number of terms" },
+            if: -> { finished_on.present? }
 
   validates :induction_programme,
             inclusion: { in: %w[fip cip diy],
