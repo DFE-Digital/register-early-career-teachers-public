@@ -5,6 +5,7 @@
 # eventually write to the actual database before deleting the record here.
 class PendingInductionSubmission < ApplicationRecord
   include Interval
+  include CommonInductionPeriodValidation
 
   attribute :confirmed
 
