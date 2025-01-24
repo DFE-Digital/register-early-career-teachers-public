@@ -35,11 +35,9 @@ module Navigation
         dfe_staff_user: [
           { text: "Teachers", href: admin_teachers_path },
           { text: "Organisations", href: admin_organisations_path },
-          { text: "Admin users", href: "#" },
         ],
         school_user: [
           { text: "Your ECTs", href: schools_ects_home_path },
-          { text: "Your mentors", href: "#" }
         ]
       }.fetch(current_user_type)
     end

@@ -39,6 +39,72 @@ describe InductionPeriod do
 
     it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy]).with_message("Choose an induction programme") }
 
+    describe "started_on_not_in_future" do
+      let(:induction_period) { FactoryBot.create(:induction_period, finished_on: nil) }
+
+      context "when started_on is today" do
+        before { induction_period.started_on = Date.current }
+
+        it "is valid" do
+          expect(induction_period).to be_valid
+        end
+      end
+
+      context "when started_on is in the past" do
+        before { induction_period.started_on = Date.current - 1.day }
+
+        it "is valid" do
+          expect(induction_period).to be_valid
+        end
+      end
+
+      context "when started_on is in the future" do
+        before { induction_period.started_on = Date.current + 1.day }
+
+        it "is invalid" do
+          expect(induction_period).not_to be_valid
+        end
+
+        it "adds the correct error message" do
+          induction_period.valid?
+          expect(induction_period.errors[:started_on]).to include("Start date cannot be in the future")
+        end
+      end
+    end
+
+    describe "finished_on_not_in_future" do
+      let(:induction_period) { FactoryBot.create(:induction_period) }
+
+      context "when finished_on is today" do
+        before { induction_period.finished_on = Date.current }
+
+        it "is valid" do
+          expect(induction_period).to be_valid
+        end
+      end
+
+      context "when finished_on is in the past" do
+        before { induction_period.finished_on = Date.current - 1.day }
+
+        it "is valid" do
+          expect(induction_period).to be_valid
+        end
+      end
+
+      context "when finished_on is in the future" do
+        before { induction_period.finished_on = Date.current + 1.day }
+
+        it "is invalid" do
+          expect(induction_period).not_to be_valid
+        end
+
+        it "adds the correct error message" do
+          induction_period.valid?
+          expect(induction_period.errors[:finished_on]).to include("End date cannot be in the future")
+        end
+      end
+    end
+
     describe "number_of_terms" do
       context "when finished_on is empty" do
         subject { FactoryBot.build(:induction_period, :active) }
@@ -88,21 +154,6 @@ describe InductionPeriod do
         before { subject.number_of_terms = 1 }
         it "is valid" do
           expect(subject).to be_valid
-        end
-      end
-
-      context "when number_of_terms is between 0 and 1" do
-        before { subject.number_of_terms = 0.5 }
-
-        it "is invalid" do
-          expect(subject).not_to be_valid
-        end
-
-        it "adds the correct error message" do
-          subject.valid?
-          expect(subject.errors[:number_of_terms]).to include(
-            "Partial terms can only be recorded after completing a full term of induction. If the early career teacher has done less than one full term of induction they cannot record partial terms and the number inputted should be 0."
-          )
         end
       end
     end

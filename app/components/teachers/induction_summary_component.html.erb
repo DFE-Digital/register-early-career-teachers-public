@@ -24,8 +24,6 @@
     <% row.with_value do %>
       <%= induction_extensions.formatted_number_of_terms %>
     <% end %>
-
-    <%= row.with_action(text: extensions_action_text, visually_hidden_text: "extensions", href: ab_teacher_extensions_path(teacher_trn: teacher.trn), classes: 'govuk-link--no-visited-state') %>
   <% end %>
 
   <% sl.with_row do |row| %>
@@ -35,7 +33,5 @@
       Future Teaching Scholars,<br/>
       Maths and English, ages 5-11<br/>
     <% end %>
-
-    <% row.with_action(text: "View", visually_hidden_text: "ITT records", href: ab_teacher_initial_teacher_training_records_path(teacher), classes: 'govuk-link--no-visited-state') %>
   <% end %>
 <% end %>

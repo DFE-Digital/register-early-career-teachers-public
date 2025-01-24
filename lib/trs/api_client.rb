@@ -11,18 +11,19 @@ module TRS
       end
     end
 
-    # available include values:
+    # Included items:
     # * Induction
+    # * Alerts
     # * InitialTeacherTraining
+    # Other available items:
     # * NpqQualifications
     # * MandatoryQualifications
     # * PendingDetailChanges
     # * HigherEducationQualifications
     # * Sanctions
-    # * Alerts
     # * PreviousNames
     # * AllowIdSignInWithProhibitions
-    def find_teacher(trn:, date_of_birth: nil, national_insurance_number: nil, include: %w[Induction InitialTeacherTraining])
+    def find_teacher(trn:, date_of_birth: nil, national_insurance_number: nil, include: %w[Induction InitialTeacherTraining Alerts])
       params = { dateOfBirth: date_of_birth, nationalInsuranceNumber: national_insurance_number, include: include.join(",") }.compact
       response = @connection.get(persons_path(trn), params)
 
@@ -35,24 +36,25 @@ module TRS
       end
     end
 
-    def begin_induction!(trn:, start_date:)
-      update_induction_status(trn:, status: 'InProgress', start_date:)
+    def begin_induction!(trn:, start_date:, modified_at: Time.zone.now)
+      update_induction_status(trn:, status: 'InProgress', start_date:, modified_at:)
     end
 
-    def pass_induction!(trn:, completion_date:)
-      update_induction_status(trn:, status: 'Pass', completion_date:)
+    def pass_induction!(trn:, completion_date:, modified_at: Time.zone.now)
+      update_induction_status(trn:, status: 'Pass', completion_date:, modified_at:)
     end
 
-    def fail_induction!(trn:, completion_date:)
-      update_induction_status(trn:, status: 'Fail', completion_date:)
+    def fail_induction!(trn:, completion_date:, modified_at: Time.zone.now)
+      update_induction_status(trn:, status: 'Fail', completion_date:, modified_at:)
     end
 
   private
 
-    def update_induction_status(trn:, status:, start_date: nil, completion_date: nil)
+    def update_induction_status(trn:, status:, modified_at:, start_date: nil, completion_date: nil)
       payload = { 'inductionStatus' => status,
                   'startDate' => start_date,
-                  'completionDate' => completion_date }.compact.to_json
+                  'completionDate' => completion_date,
+                  'modifiedOn' => modified_at }.compact.to_json
 
       # FIXME: verify this is the right endpoint
       response = @connection.put(persons_path(trn, suffix: 'induction'), payload)

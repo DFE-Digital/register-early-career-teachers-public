@@ -4,7 +4,7 @@ RSpec.describe "schools/register_ect_wizard/independent_school_appropriate_body.
   let(:step) { Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep.new }
   let(:ect) { double(full_name: 'John Smith') }
   let(:title) { "Which appropriate body will be supporting #{ect.full_name}'s induction?" }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :find_ect, store: {}) }
+  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :independent_school_appropriate_body, store: {}) }
 
   it "sets the page title to 'Which appropriate body will be supporting John Smith's induction?'" do
     assign(:wizard, wizard)

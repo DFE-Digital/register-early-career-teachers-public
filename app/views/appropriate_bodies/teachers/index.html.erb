@@ -20,16 +20,14 @@
 
       <div class="govuk-button-group">
         <%= f.govuk_submit("Search") %>
-        <button type="reset" class="govuk-button govuk-button--secondary">Reset</button>
+        <%= govuk_link_to("Reset", ab_teachers_path, secondary: true) %>
       </div>
     <% end %>
   </div>
 
   <div class="govuk-grid-column-two-thirds">
-    <ul class="govuk-list">
-      <% @teachers.all.each do |teacher| %>
-        <%= summary_card_for_teacher(teacher) %>
-      <% end %>
-    </ul>
+    <% @teachers.all.each do |teacher| %>
+      <%= summary_card_for_teacher(teacher:) %>
+    <% end %>
   </div>
 </div>
