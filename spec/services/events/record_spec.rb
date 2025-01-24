@@ -6,7 +6,7 @@ describe Events::Record do
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:author_params) { { author_id: author.id, author_name: author.name, author_email: author.email, author_type: :dfe_staff_user } }
 
-  before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+  before { allow(RecordEventJob).to receive(:perform_now).and_return(true) }
 
   describe '#initialize' do
     let(:heading) { 'Something happened' }
@@ -56,11 +56,11 @@ describe Events::Record do
 
       event_attributes = { **author.event_author_params, **attributes.except(:author) }
 
-      allow(RecordEventJob).to receive(:perform_later).with(**event_attributes).and_return(true)
+      allow(RecordEventJob).to receive(:perform_now).with(**event_attributes).and_return(true)
 
       event_record.record_event!
 
-      expect(RecordEventJob).to have_received(:perform_later).with(**event_attributes)
+      expect(RecordEventJob).to have_received(:perform_now).with(**event_attributes)
     end
   end
 
@@ -69,7 +69,7 @@ describe Events::Record do
       freeze_time do
         Events::Record.record_appropriate_body_claims_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
+        expect(RecordEventJob).to have_received(:perform_now).with(
           induction_period:,
           teacher:,
           appropriate_body:,
@@ -87,7 +87,7 @@ describe Events::Record do
       freeze_time do
         Events::Record.record_appropriate_body_passes_teacher_event(author:, teacher:, appropriate_body:, induction_period:)
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
+        expect(RecordEventJob).to have_received(:perform_now).with(
           induction_period:,
           teacher:,
           appropriate_body:,
@@ -105,7 +105,7 @@ describe Events::Record do
       freeze_time do
         Events::Record.record_appropriate_body_fails_teacher_event(author:, teacher:, appropriate_body:, induction_period:)
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
+        expect(RecordEventJob).to have_received(:perform_now).with(
           induction_period:,
           teacher:,
           appropriate_body:,
