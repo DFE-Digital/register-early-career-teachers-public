@@ -29,13 +29,6 @@ class InductionPeriod < ApplicationRecord
 
 private
 
-  def start_date_after_qts_date
-    return if started_on.blank? || teacher.trs_qts_awarded_on.blank?
-    return if started_on >= teacher.trs_qts_awarded_on
-
-    errors.add(:started_on, "Start date cannot be before QTS award date (#{teacher.trs_qts_awarded_on.to_fs(:govuk)})")
-  end
-
   def valid_date_order?
     return true if started_on.blank? || finished_on.blank?
 
@@ -46,5 +39,11 @@ private
     overlapping_siblings = InductionPeriod.siblings_of(self).overlapping_with(self).exists?
 
     errors.add(:base, "Induction periods cannot overlap") if overlapping_siblings
+  end
+
+  def start_date_after_qts_date
+    return if teacher.blank?
+
+    ensure_start_date_after_qts_date(teacher.trs_qts_awarded_on)
   end
 end
