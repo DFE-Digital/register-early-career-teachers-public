@@ -4,7 +4,7 @@ class BeginECTInductionJob < ApplicationJob
       api_client.begin_induction!(trn:, start_date:)
 
       if pending_induction_submission_id.present?
-        PendingInductionSubmission.find(pending_induction_submission_id).destroy!
+        PendingInductionSubmission.find_by(id: pending_induction_submission_id)&.destroy!
       end
     end
   end

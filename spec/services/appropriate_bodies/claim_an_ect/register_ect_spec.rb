@@ -2,7 +2,10 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   include ActiveJob::TestHelper
   include_context 'fake trs api client'
 
-  before { allow(Events::Record).to receive(:new).and_call_original }
+  before do
+    clear_enqueued_jobs
+    allow(Events::Record).to receive(:new).and_call_original
+  end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
