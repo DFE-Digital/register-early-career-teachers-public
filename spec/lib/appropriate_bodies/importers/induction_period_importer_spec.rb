@@ -32,10 +32,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
   describe 'mapping induction programmes' do
     it 'converts names to codes properly' do
       mappings = {
-        subject.rows.find { |r| r.appropriate_body_id == ab_1.legacy_id } => 'cip',
-        subject.rows.find { |r| r.appropriate_body_id == ab_2.legacy_id } => 'diy',
-        subject.rows.find { |r| r.appropriate_body_id == ab_3.legacy_id } => 'fip',
-        subject.rows.find { |r| r.appropriate_body_id == ab_4.legacy_id } => 'fip' # defaults when missing
+        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_1.legacy_id } => 'cip',
+        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_2.legacy_id } => 'diy',
+        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_3.legacy_id } => 'fip',
+        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_4.legacy_id } => 'fip' # defaults when missing
       }
       mappings.each do |row, expected_induction_programme|
         expect(row.to_hash.fetch(:induction_programme)).to eql(expected_induction_programme)
@@ -75,7 +75,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                 started_on: Date.new(2012, 1, 1),
                 finished_on: nil,
                 induction_programme: nil,
-                appropriate_body_id: ab_1.legacy_id,
+                legacy_appropriate_body_id: ab_1.legacy_id,
                 trn: '2600071',
                 number_of_terms: 3,
                 notes: []
@@ -107,7 +107,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 3,
                   notes: []
@@ -117,7 +117,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2021, 2, 2),
                   finished_on: nil,
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 0,
                   notes: []
@@ -147,7 +147,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 3, 3),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 3,
                   notes: []
@@ -177,7 +177,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 3, 3),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 3,
                   notes: []
@@ -208,7 +208,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 4
                 ).to_hash,
@@ -217,7 +217,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2021, 1, 1),
                   finished_on: nil,
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 0
                 ).to_hash
@@ -253,7 +253,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 3,
                   notes: []
@@ -263,7 +263,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2021, 2, 2),
                   finished_on: nil,
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 3,
                   notes: []
@@ -294,7 +294,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 4,
                   notes: []
@@ -304,7 +304,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2021, 1, 1),
                   finished_on: nil,
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 0,
                   notes: []
@@ -337,7 +337,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 3, 3),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_2.legacy_id,
+                  legacy_appropriate_body_id: ab_2.legacy_id,
                   trn: '2600071',
                   number_of_terms: 4,
                   notes: []
@@ -346,7 +346,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 3, 3),
                   finished_on: Date.new(2012, 5, 5),
                   induction_programme: 'Core Induction Programme',
-                  appropriate_body_id: ab_2.legacy_id,
+                  legacy_appropriate_body_id: ab_2.legacy_id,
                   trn: '2600071',
                   number_of_terms: 2,
                   notes: []
@@ -356,7 +356,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2021, 3, 3),
                   finished_on: nil,
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_2.legacy_id,
+                  legacy_appropriate_body_id: ab_2.legacy_id,
                   trn: '2600071',
                   number_of_terms: 2,
                   notes: []
@@ -385,7 +385,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_2.legacy_id,
+                  legacy_appropriate_body_id: ab_2.legacy_id,
                   trn: '2600071',
                   number_of_terms: 4,
                   notes: []
@@ -394,7 +394,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 4, 4),
                   finished_on: Date.new(2012, 6, 6),
                   induction_programme: 'Core Induction Programme',
-                  appropriate_body_id: ab_2.legacy_id,
+                  legacy_appropriate_body_id: ab_2.legacy_id,
                   trn: '2600071',
                   number_of_terms: 2,
                   notes: []
@@ -404,7 +404,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2021, 3, 3),
                   finished_on: nil,
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_2.legacy_id,
+                  legacy_appropriate_body_id: ab_2.legacy_id,
                   trn: '2600071',
                   number_of_terms: 2,
                   notes: []
@@ -437,7 +437,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 3, 3),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_2.legacy_id,
+                  legacy_appropriate_body_id: ab_2.legacy_id,
                   trn: '2600071',
                   number_of_terms: 4,
                   notes: []
@@ -446,7 +446,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 3, 3),
                   finished_on: Date.new(2012, 5, 5),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 2,
                   notes: []
@@ -456,7 +456,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2021, 3, 3),
                   finished_on: nil,
                   induction_programme: 'Full Induction Prorgramme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 2,
                   notes: []
@@ -485,7 +485,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 2, 2),
                   induction_programme: 'Full Induction Progamme',
-                  appropriate_body_id: ab_2.legacy_id,
+                  legacy_appropriate_body_id: ab_2.legacy_id,
                   trn: '2600071',
                   number_of_terms: 1
                 ).to_hash,
@@ -493,7 +493,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2012, 2, 2),
                   finished_on: Date.new(2012, 5, 5),
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 4
                 ).to_hash,
@@ -502,7 +502,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   started_on: Date.new(2021, 2, 2),
                   finished_on: nil,
                   induction_programme: 'Full Induction Programme',
-                  appropriate_body_id: ab_1.legacy_id,
+                  legacy_appropriate_body_id: ab_1.legacy_id,
                   trn: '2600071',
                   number_of_terms: 4
                 ).to_hash
