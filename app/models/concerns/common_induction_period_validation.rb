@@ -2,6 +2,9 @@ module CommonInductionPeriodValidation
   extend ActiveSupport::Concern
 
   included do
+    validates :appropriate_body_id,
+              presence: { message: "Select an appropriate body" }
+
     validate :started_on_from_september_2021_onwards, if: -> { started_on.present? }
   end
 

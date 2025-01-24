@@ -15,9 +15,6 @@ class PendingInductionSubmission < ApplicationRecord
   belongs_to :appropriate_body
 
   # Validations
-  validates :appropriate_body_id,
-            presence: { message: "Select an appropriate body" }
-
   validates :trn,
             presence: { message: "Enter a TRN" },
             format: { with: Teacher::TRN_FORMAT, message: "TRN must be 7 numeric digits" },

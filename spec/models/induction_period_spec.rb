@@ -11,7 +11,7 @@ describe InductionPeriod do
   describe "validations" do
     subject { FactoryBot.build(:induction_period) }
 
-    it { is_expected.to validate_presence_of(:appropriate_body_id) }
+    it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
 
     describe 'overlapping periods' do
       let(:teacher) { FactoryBot.create(:teacher) }
