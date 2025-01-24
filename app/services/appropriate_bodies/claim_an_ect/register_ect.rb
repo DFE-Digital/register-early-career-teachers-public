@@ -17,13 +17,13 @@ module AppropriateBodies
         # if teacher.persisted? && teacher.induction_periods.present?
         #   raise AppropriateBodies::Errors::TeacherAlreadyClaimedError, "Teacher already claimed"
         # end
-
         ActiveRecord::Base.transaction do
           steps = [
             update_teacher,
+            create_induction_period,
             send_begin_induction_notification_to_trs,
             pending_induction_submission.save(context: :register_ect),
-            create_induction_period && record_induction_period_event
+            record_induction_period_event
           ]
 
           steps.all? or raise ActiveRecord::Rollback
