@@ -27,7 +27,6 @@ RSpec.describe Teachers::Extensions::UpdateExtension do
       let(:service) { described_class.new(extension, invalid_params) }
 
       it "does not update the extension" do
-        # expect { service.update_extension }.to(not_change { extension.reload.attributes })
         expect { service.update_extension }.not_to(change { extension.reload.attributes })
       end
 
