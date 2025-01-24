@@ -11,9 +11,6 @@ class InductionPeriod < ApplicationRecord
   validates :started_on,
             presence: true
 
-  validates :appropriate_body_id,
-            presence: true
-
   validates :number_of_terms,
             presence: { message: "Enter a number of terms",
                         if: -> { finished_on.present? } }

@@ -7,6 +7,8 @@ describe PendingInductionSubmission do
   end
 
   describe "validation" do
+    it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
+
     describe "trn" do
       it { is_expected.to validate_presence_of(:trn).on(:find_ect).with_message("Enter a TRN") }
 
