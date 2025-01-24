@@ -7,7 +7,7 @@ module AppropriateBodies::Importers
 
     attr_accessor :csv, :data
 
-    Row = Struct.new(:appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, :notes, keyword_init: true) do
+    Row = Struct.new(:legacy_appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, :notes, :teacher_id, :appropriate_body_id, keyword_init: true) do
       def range
         started_on...finished_on
       end
@@ -26,12 +26,16 @@ module AppropriateBodies::Importers
 
       # used in notes
       def to_h
-        { appropriate_body_id:, started_on:, finished_on:, induction_programme:, number_of_terms: }
+        { appropriate_body_id: legacy_appropriate_body_id, started_on:, finished_on:, induction_programme:, number_of_terms: }
       end
 
       # used for comparisons in tests
       def to_hash
-        { appropriate_body_id:, started_on:, finished_on:, number_of_terms:, induction_programme: convert_induction_programme }
+        { appropriate_body_id:, started_on:, finished_on:, induction_programme: convert_induction_programme, number_of_terms: }
+      end
+
+      def to_record
+        { appropriate_body_id:, started_on:, finished_on:, induction_programme: convert_induction_programme, number_of_terms:, teacher_id: }
       end
 
     private
@@ -58,13 +62,15 @@ module AppropriateBodies::Importers
 
     def build(row)
       {
-        appropriate_body_id: row['appropriate_body_id'],
+        legacy_appropriate_body_id: row['appropriate_body_id'],
         started_on: extract_date(row['started_on']),
         finished_on: extract_date(row['finished_on']),
         induction_programme: row['induction_programme_choice'],
         number_of_terms: row['number_of_terms'].to_i,
         trn: row['trn'],
-        notes: []
+        notes: [],
+        appropriate_body_id: nil,
+        teacher_id: nil
       }
     end
 
@@ -89,7 +95,7 @@ module AppropriateBodies::Importers
                 original_sibling = sibling.to_h
                 original_current = current.to_h
 
-                if sibling.appropriate_body_id == current.appropriate_body_id && sibling.induction_programme == current.induction_programme
+                if sibling.legacy_appropriate_body_id == current.legacy_appropriate_body_id && sibling.induction_programme == current.induction_programme
                   case
                   when current.started_on == sibling.started_on && current.finished? && sibling.ongoing?
                     #               ┌─────────────────────────────────────────┐
@@ -181,7 +187,7 @@ module AppropriateBodies::Importers
                   else
                     fail
                   end
-                elsif sibling.appropriate_body_id == current.appropriate_body_id && sibling.induction_programme != current.induction_programme
+                elsif sibling.legacy_appropriate_body_id == current.legacy_appropriate_body_id && sibling.induction_programme != current.induction_programme
                   case
                   when sibling.range.cover?(current.started_on) && !sibling.range.cover?(current.finished_on)
                     #                         ┌─────────────────────────────────┐
@@ -199,10 +205,12 @@ module AppropriateBodies::Importers
                     }
                     keep << current
                   end
-                else
+                else # different appropriate bodies
                   case
+                  when sibling.started_on == current.started_on
+                    # TODO: work out what to do here
                   when sibling.range.cover?(current.range) || current.range.cover?(sibling.range)
-                    # an indunction period from one AB entirely contains one from another,
+                    # an induction period from one AB entirely contains one from another,
                     # which do we keep?
                     #
                     # This might never happen in prod so let's ignore it for now

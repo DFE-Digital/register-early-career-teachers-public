@@ -4,38 +4,27 @@ module AppropriateBodies::Importers
   class AppropriateBodyImporter
     IMPORT_ERROR_LOG = 'tmp/appropriate_body_import.log'.freeze
 
-    Row = Struct.new(:legacy_id, :name, :dfe_sign_in_organisation_id, :local_authority_code, :establishment_number)
+    Row = Struct.new(:legacy_id, :name, :dfe_sign_in_organisation_id, :local_authority_code, :establishment_number) do
+      def to_h
+        { name:, legacy_id:, establishment_number:, local_authority_code:, dfe_sign_in_organisation_id: SecureRandom.uuid } # FIXME: fix dfe_sign_in_organisation_id
+      end
+    end
 
-    def initialize(filename)
+    def initialize(filename, wanted_legacy_ids)
       @csv = CSV.read(filename, headers: true)
+      @wanted_legacy_ids = wanted_legacy_ids
 
       File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
       @import_error_log = Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
     def rows
-      @csv.map { |row| Row.new(**build(row)) }
-    end
+      @csv.map { |row|
+        next unless row['id'].in?(@wanted_legacy_ids)
 
-    # def import
-    #   AppropriateBody.transaction do
-    #     @csv.each.with_index(1) do |row, i|
-    #       Rails.logger.debug("attempting to import row: #{row.to_h}")
-    #
-    #       begin
-    #         AppropriateBody.create!(**build(row))
-    #       rescue ActiveRecord::RecordInvalid => e
-    #         @import_error_log.error "#########################"
-    #         @import_error_log.error "Failed to import Appropriate Body"
-    #         @import_error_log.error "Row number: #{i}"
-    #         @import_error_log.error "Message: #{e.message}"
-    #         @import_error_log.error "Row data: #{row}"
-    #       end
-    #     end
-    #   end
-    #
-    #   @csv.count
-    # end
+        Row.new(**build(row))
+      }.compact
+    end
 
   private
 

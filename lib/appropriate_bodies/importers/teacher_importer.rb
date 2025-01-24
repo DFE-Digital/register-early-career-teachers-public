@@ -4,57 +4,61 @@ module AppropriateBodies::Importers
   class TeacherImporter
     IMPORT_ERROR_LOG = 'tmp/teacher_import.log'.freeze
 
-    Row = Struct.new(:trn, :trs_first_name, :trs_last_name)
+    Row = Struct.new(:trn, :first_name, :last_name, :induction_status) do
+      def to_h
+        {
+          trn:,
+          trs_first_name: first_name_with_fallback,
+          trs_last_name: last_name_with_fallback,
+        }
+      end
 
-    def initialize(filename)
-      @csv = CSV.read(filename, headers: true)
+      def first_name_with_fallback
+        first_name || 'Unknown'
+      end
 
-      File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
-      @import_error_log = Logger.new(IMPORT_ERROR_LOG, File::CREAT)
+      def last_name_with_fallback
+        last_name || 'Unknown'
+      end
+    end
+
+    def initialize(filename, wanted_trns)
+      sorted_wanted_trns = wanted_trns.sort
+
+      file = File.readlines(filename)
+      file.delete_at(0)
+      sorted_lines = file.sort
+
+      wanted_lines = []
+
+      seek = sorted_wanted_trns.shift
+
+      sorted_lines.each do |line|
+        next unless line.start_with?(seek)
+
+        wanted_lines << line
+
+        break if sorted_wanted_trns.empty?
+
+        seek = sorted_wanted_trns.shift
+      end
+
+      @csv = CSV.parse(wanted_lines.join, headers: %w[trn first_name last_name induction_status])
     end
 
     def rows
-      @csv.first(5000).map { |row| Row.new(**build(row)) }
+      @rows ||= @csv.map { |row| Row.new(**build(row)) }
     end
-
-    # def import
-    #   count = 0
-    #
-    #   Teacher.transaction do
-    #     @csv.each.with_index(1) do |row, i|
-    #       Rails.logger.debug("attempting to import row: #{row.to_h}")
-    #
-    #       next if row.values_at('trn', 'first_name', 'last_name').any?(&:blank?)
-    #
-    #       begin
-    #         Teacher.create!(**(build(row))).tap do |teacher|
-    #           if (induction_extension_terms = convert_extension(row)) && induction_extension_terms.positive?
-    #             Rails.logger.warn("Importing extension: #{induction_extension_terms}")
-    #             teacher.induction_extensions.create!(number_of_terms: induction_extension_terms)
-    #           end
-    #         end
-    #       rescue ActiveRecord::RecordInvalid => e
-    #         @import_error_log.error "#########################"
-    #         @import_error_log.error "Failed to import Teacher"
-    #         @import_error_log.error "Row number: #{i}"
-    #         @import_error_log.error "Message: #{e.message}"
-    #         @import_error_log.error "Row data: #{row}"
-    #       end
-    #
-    #       count += 1
-    #     end
-    #   end
-    #
-    #   [count, @csv.count]
-    # end
 
   private
 
     def build(row)
       {
         trn: row['trn'],
-        trs_first_name: row['first_name'].strip,
-        trs_last_name: row['last_name']&.strip,
+        first_name: row['first_name']&.strip,
+        last_name: row['last_name']&.strip,
+        induction_status: row['induction_status']
+        # FIXME: extensions
       }
     end
 
