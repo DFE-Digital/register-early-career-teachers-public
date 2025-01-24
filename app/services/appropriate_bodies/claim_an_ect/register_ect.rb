@@ -45,7 +45,7 @@ module AppropriateBodies
 
         teacher.save!
 
-        if new_name != old_name
+        if old_name && new_name != old_name
           Events::Record.teacher_name_changed_in_trs!(author:, old_name:, new_name:, teacher:, appropriate_body:)
         end
 

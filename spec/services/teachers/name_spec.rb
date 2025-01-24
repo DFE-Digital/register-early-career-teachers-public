@@ -34,6 +34,14 @@ describe Teachers::Name do
         expect(subject.full_name).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
       end
     end
+
+    context 'when the trs first and last name are nil' do
+      let(:teacher) { FactoryBot.build(:teacher, trs_first_name: nil, trs_last_name: nil) }
+
+      it 'returns the first name followed by the last name' do
+        expect(subject.full_name).to be_nil
+      end
+    end
   end
 
   describe '#full_name_in_trs' do
