@@ -149,7 +149,7 @@ describe PendingInductionSubmission do
       end
     end
 
-    describe "trs_qts_awarded_on_before_started_on" do
+    describe "start_date_after_qts_date" do
       let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, started_on:, trs_qts_awarded_on: Date.new(2023, 5, 1)) }
 
       context "when trs_qts_awarded_on is before started_on" do
@@ -168,7 +168,7 @@ describe PendingInductionSubmission do
         it "is invalid" do
           pending_induction_submission.valid?(:register_ect)
 
-          expect(pending_induction_submission.errors[:started_on]).to include("Induction start date cannot be earlier than QTS award date (1 May 2023)")
+          expect(pending_induction_submission.errors[:started_on]).to include("Start date cannot be before QTS award date (1 May 2023)")
         end
       end
     end

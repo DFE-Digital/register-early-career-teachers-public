@@ -48,7 +48,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       it "fails because invalid" do
         expect(subject.register(pending_induction_submission_params)).to be_falsey
         expect(subject.pending_induction_submission.errors[:started_on]).to include(
-          "Induction start date cannot be earlier than QTS award date (3 May 2023)"
+          "Start date cannot be before QTS award date (3 May 2023)"
         )
       end
     end

@@ -28,4 +28,11 @@ module CommonInductionPeriodValidation
 
     errors.add(:finished_on, "End date cannot be in the future")
   end
+
+  def ensure_start_date_after_qts_date(qts_award_date)
+    return if started_on.blank? || qts_award_date.blank?
+    return if started_on >= qts_award_date
+
+    errors.add(:started_on, "Start date cannot be before QTS award date (#{qts_award_date.to_fs(:govuk)})")
+  end
 end
