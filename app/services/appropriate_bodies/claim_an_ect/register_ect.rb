@@ -19,11 +19,10 @@ module AppropriateBodies
         # end
         ActiveRecord::Base.transaction do
           steps = [
-            update_teacher,
-            create_induction_period,
+            create_or_update_teacher,
             send_begin_induction_notification_to_trs,
             pending_induction_submission.save(context: :register_ect),
-            record_induction_period_event
+            create_induction_period
           ]
 
           steps.all? or raise ActiveRecord::Rollback
@@ -32,7 +31,8 @@ module AppropriateBodies
 
     private
 
-      def update_teacher
+      # FIXME: move this to its own service class
+      def create_or_update_teacher
         old_name = ::Teachers::Name.new(teacher).full_name_in_trs
 
         teacher.assign_attributes(
@@ -57,23 +57,14 @@ module AppropriateBodies
       end
 
       def create_induction_period
-        @induction_period = InductionPeriod.create(
-          teacher:,
-          started_on: pending_induction_submission.started_on,
-          appropriate_body:,
-          induction_programme: pending_induction_submission.induction_programme
-        )
+        started_on = pending_induction_submission.started_on
+        induction_programme = pending_induction_submission.induction_programme
+
+        @induction_period = InductionPeriods::CreateInductionPeriod
+          .new(teacher:, started_on:, induction_programme:, appropriate_body:)
+          .create_induction_period(author:)
 
         @induction_period.persisted?
-      end
-
-      def record_induction_period_event
-        Events::Record.record_appropriate_body_claims_teacher_event!(
-          author:,
-          teacher:,
-          appropriate_body:,
-          induction_period:
-        )
       end
 
       def send_begin_induction_notification_to_trs
