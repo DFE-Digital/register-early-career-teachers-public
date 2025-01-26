@@ -1,5 +1,6 @@
 module Events
   class InvalidAuthor < StandardError; end
+  class NotPersistedRecord < StandardError; end
 
   class Record
     attr_reader :author,
@@ -62,6 +63,7 @@ module Events
     end
 
     def record_event!
+      check_relationship_attributes_are_persisted
       # FIXME: This job is causing serialization errors when launched within a failing transaction block.
       # We have not yet identified the root cause of this issue therefore we're going to run the job inline for now.
       RecordEventJob.perform_later(**attributes)
@@ -109,12 +111,31 @@ module Events
   private
 
     def attributes
+      { **event_attributes, **author_attributes, **relationship_attributes }
+    end
+
+    def event_attributes
       {
-        **author_event_params,
         event_type:,
         heading:,
         body:,
         happened_at:,
+      }.compact
+    end
+
+    def author_attributes
+      case author
+      when Sessions::User
+        author.event_author_params
+      when Events::SystemAuthor
+        author.system_author_params
+      else
+        fail(InvalidAuthor, author.class)
+      end
+    end
+
+    def relationship_attributes
+      {
         school:,
         induction_period:,
         teacher:,
@@ -131,15 +152,8 @@ module Events
       }.compact
     end
 
-    def author_event_params
-      case author
-      when Sessions::User
-        author.event_author_params
-      when Events::SystemAuthor
-        author.system_author_params
-      else
-        fail(InvalidAuthor, author.class)
-      end
+    def check_relationship_attributes_are_persisted
+      relationship_attributes.each { |name, object| fail(NotPersistedRecord, name) unless object.persisted? }
     end
   end
 end

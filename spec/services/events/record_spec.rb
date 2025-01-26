@@ -1,19 +1,19 @@
 describe Events::Record do
   let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
-  let(:teacher) { FactoryBot.build(:teacher, trs_first_name: 'Rhys', trs_last_name: 'Ifans') }
-  let(:induction_period) { FactoryBot.build(:induction_period) }
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body, name: "Burns Slant Drilling Co.") }
+  let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Rhys', trs_last_name: 'Ifans') }
+  let(:induction_period) { FactoryBot.create(:induction_period) }
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Burns Slant Drilling Co.") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:author_params) { { author_id: author.id, author_name: author.name, author_email: author.email, author_type: :dfe_staff_user } }
+
+  let(:heading) { 'Something happened' }
+  let(:event_type) { :appropriate_body_claims_teacher }
+  let(:body) { 'A very important event' }
+  let(:happened_at) { 2.minutes.ago }
 
   before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
 
   describe '#initialize' do
-    let(:heading) { 'Something happened' }
-    let(:event_type) { :appropriate_body_claims_teacher }
-    let(:body) { 'A very important event' }
-    let(:happened_at) { 2.minutes.ago }
-
     context "when the user isn't a Sessions::User" do
       let(:non_session_user) { FactoryBot.build(:user) }
 
@@ -25,6 +25,9 @@ describe Events::Record do
     end
 
     it 'assigns and saves attributes correctly' do
+      ect_at_school_period = FactoryBot.create(:ect_at_school_period, :active, started_on: 3.weeks.ago)
+      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.weeks.ago)
+
       attributes = {
         author:,
         event_type:,
@@ -33,17 +36,23 @@ describe Events::Record do
         happened_at:,
         induction_period:,
         teacher:,
-        school: FactoryBot.build(:school),
-        appropriate_body: FactoryBot.build(:appropriate_body),
-        induction_extension: FactoryBot.build(:induction_extension),
-        ect_at_school_period: FactoryBot.build(:ect_at_school_period),
-        mentor_at_school_period: FactoryBot.build(:mentor_at_school_period),
-        training_period: FactoryBot.build(:training_period),
-        mentorship_period: FactoryBot.build(:mentorship_period),
-        provider_partnership: FactoryBot.build(:provider_partnership),
-        lead_provider: FactoryBot.build(:lead_provider),
-        delivery_partner: FactoryBot.build(:delivery_partner),
-        user: FactoryBot.build(:user),
+        school: FactoryBot.create(:school),
+        appropriate_body: FactoryBot.create(:appropriate_body),
+        induction_extension: FactoryBot.create(:induction_extension),
+        ect_at_school_period:,
+        mentor_at_school_period:,
+        provider_partnership: FactoryBot.create(:provider_partnership),
+        lead_provider: FactoryBot.create(:lead_provider),
+        delivery_partner: FactoryBot.create(:delivery_partner),
+        user: FactoryBot.create(:user),
+        training_period: FactoryBot.create(:training_period, :active, ect_at_school_period:, started_on: 1.week.ago),
+        mentorship_period: FactoryBot.create(
+          :mentorship_period,
+          mentor: mentor_at_school_period,
+          mentee: ect_at_school_period,
+          started_on: 1.week.ago,
+          finished_on: nil
+        ),
       }
 
       event_record = Events::Record.new(author:, **attributes)
@@ -61,6 +70,33 @@ describe Events::Record do
       event_record.record_event!
 
       expect(RecordEventJob).to have_received(:perform_later).with(**event_attributes)
+    end
+  end
+
+  describe '#record_event!' do
+    {
+      induction_period: FactoryBot.build(:induction_period),
+      teacher: FactoryBot.build(:teacher),
+      school: FactoryBot.build(:school),
+      appropriate_body: FactoryBot.build(:appropriate_body),
+      induction_extension: FactoryBot.build(:induction_extension),
+      ect_at_school_period: FactoryBot.build(:ect_at_school_period),
+      mentor_at_school_period: FactoryBot.build(:mentor_at_school_period),
+      provider_partnership: FactoryBot.build(:provider_partnership),
+      lead_provider: FactoryBot.build(:lead_provider),
+      delivery_partner: FactoryBot.build(:delivery_partner),
+      user: FactoryBot.build(:user),
+      training_period: FactoryBot.build(:training_period),
+      mentorship_period: FactoryBot.build(:mentorship_period),
+    }.each do |attribute, object|
+      describe "when #{attribute} is missing" do
+        let(:attributes_with_unsaved_school) { { attribute => object } }
+        subject { Events::Record.new(author:, event_type:, heading:, happened_at:, **attributes_with_unsaved_school) }
+
+        it 'fails with a NotPersistedRecordError' do
+          expect { subject.record_event! }.to raise_error(Events::NotPersistedRecord, attribute.to_s)
+        end
+      end
     end
   end
 
