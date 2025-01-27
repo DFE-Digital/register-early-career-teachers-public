@@ -128,6 +128,66 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
       end
 
+      context 'and the first period has an end date and terms but the second does not' do
+        let(:sample_csv_data) do
+          <<~CSV
+            appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+            025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,03/03/2012 00:00:00,Full Induction Programme,3,2600071
+            025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,,Full Induction Programme,,2600071
+          CSV
+        end
+
+        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+
+        it 'it keeps the finished (first) period' do
+          expect(subject.periods_as_hashes_by_trn).to eql(
+            {
+              '2600071' => [
+                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                  started_on: Date.new(2012, 1, 1),
+                  finished_on: Date.new(2012, 3, 3),
+                  induction_programme: 'Full Induction Programme',
+                  appropriate_body_id: ab_1.legacy_id,
+                  trn: '2600071',
+                  number_of_terms: 3,
+                  notes: []
+                ).to_hash,
+              ]
+            }
+          )
+        end
+      end
+
+      context 'and the second period has an end date and terms but the first does not' do
+        let(:sample_csv_data) do
+          <<~CSV
+            appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+            025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,,Full Induction Programme,,2600071
+            025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,03/03/2012 00:00:00,Full Induction Programme,3,2600071
+          CSV
+        end
+
+        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+
+        it 'it keeps the finished (second) period' do
+          expect(subject.periods_as_hashes_by_trn).to eql(
+            {
+              '2600071' => [
+                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                  started_on: Date.new(2012, 1, 1),
+                  finished_on: Date.new(2012, 3, 3),
+                  induction_programme: 'Full Induction Programme',
+                  appropriate_body_id: ab_1.legacy_id,
+                  trn: '2600071',
+                  number_of_terms: 3,
+                  notes: []
+                ).to_hash,
+              ]
+            }
+          )
+        end
+      end
+
       context 'and the second period ends after the first period has started' do
         let(:sample_csv_data) do
           <<~CSV
