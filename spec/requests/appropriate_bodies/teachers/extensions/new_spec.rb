@@ -12,7 +12,7 @@ RSpec.describe "Appropriate Body teacher extensions new", type: :request do
       get("/appropriate-body/teachers/#{teacher.trn}/extensions/new")
 
       expect(response).to be_successful
-      expect(response.body).to include('Add an Extension to an ECT&#39;s induction')
+      expect(response.body).to include('Enter number of terms')
     end
   end
 
