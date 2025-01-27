@@ -1,0 +1,11 @@
+name: Nightly backup production database and upload it to Azure Storage
+
+on:
+  schedule:
+    - cron: "15 0 * * *" # 00:15 UTC
+
+jobs:
+  backup-and-store:
+    uses: ./.github/workflows/backup-db.yml
+    with:
+      environment: production
