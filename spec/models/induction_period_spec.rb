@@ -1,6 +1,6 @@
 describe InductionPeriod do
   it { is_expected.to be_a_kind_of(Interval) }
-  it { is_expected.to be_a_kind_of(CommonInductionPeriodValidation) }
+  it { is_expected.to be_a_kind_of(SharedInductionPeriodValidation) }
 
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }

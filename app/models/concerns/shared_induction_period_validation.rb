@@ -1,4 +1,4 @@
-module CommonInductionPeriodValidation
+module SharedInductionPeriodValidation
   extend ActiveSupport::Concern
 
   included do
