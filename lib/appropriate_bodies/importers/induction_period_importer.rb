@@ -16,6 +16,14 @@ module AppropriateBodies::Importers
         (finished_on || Time.zone.today) - started_on
       end
 
+      def finished?
+        finished_on.present? && number_of_terms.present?
+      end
+
+      def ongoing?
+        !finished?
+      end
+
       # used in notes
       def to_h
         { appropriate_body_id:, started_on:, finished_on:, induction_programme:, number_of_terms: }
@@ -83,6 +91,33 @@ module AppropriateBodies::Importers
 
                 if sibling.appropriate_body_id == current.appropriate_body_id && sibling.induction_programme == current.induction_programme
                   case
+                  when current.started_on == sibling.started_on && current.finished? && sibling.ongoing?
+                    #               ┌─────────────────────────────────────────┐
+                    #   Current     │                  KEEP                   │
+                    #               └─────────────────────────────────────────┘
+                    #               ┌──────────────────────────────────────────────────────────>
+                    #   Sibling     │              DISCARD
+                    #               └──────────────────────────────────────────────────────────>
+                    current.notes << {
+                      heading: "Imported from DQT",
+                      body: "DQT held 2 induction periods for this teacher/appropriate body combination with the same start date. The ongoing one was discarded.",
+                      data: { originals: [original_sibling, original_current], combined: current.to_h }
+                    }
+                    keep.delete(sibling)
+                    keep << current
+                  when current.started_on == sibling.started_on && sibling.finished? && current.ongoing?
+                    #               ┌──────────────────────────────────────────────────────────>
+                    #   Current     │                  DISCARD
+                    #               └──────────────────────────────────────────────────────────>
+                    #               ┌─────────────────────────────────────────┐
+                    #   Sibling     │              KEEP                       │
+                    #               └─────────────────────────────────────────┘
+                    sibling.notes << {
+                      heading: "Imported from DQT",
+                      body: "DQT held 2 induction periods for this teacher/appropriate body combination with the same start date. The ongoing one was discarded.",
+                      data: { originals: [original_sibling, original_current], combined: sibling.to_h }
+                    }
+                    next
                   when sibling.range.cover?(current.range)
                     #                  ┌─────────────────────────────┐
                     #   Current        │           DISCARD           │
@@ -120,6 +155,7 @@ module AppropriateBodies::Importers
                     #               ┌─────────────────────────────────────────┬───┐
                     #   Sibling     │                EXTEND                   │╳╳╳│
                     #               └─────────────────────────────────────────┴───┘
+
                     current.number_of_terms = [sibling.number_of_terms, current.number_of_terms].max
                     sibling.finished_on = current.finished_on
                     sibling.notes << {
