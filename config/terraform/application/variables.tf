@@ -94,7 +94,7 @@ variable "postgres_flexible_server_sku" {
 }
 
 variable "postgres_snapshot_flexible_server_sku" {
-  default = "GP_Standard_D2ds_v4"
+  default = "B_Standard_B1ms"
 }
 
 variable "postgres_enable_high_availability" {
