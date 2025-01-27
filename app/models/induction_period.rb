@@ -12,10 +12,15 @@ class InductionPeriod < ApplicationRecord
             presence: true
 
   validates :number_of_terms,
-            inclusion: { in: 0..16,
-                         message: "Terms must be between 0 and 16" },
-            presence: { message: "Enter a number of terms" },
-            if: -> { finished_on.present? }
+            inclusion: {
+              in: 0..16, message: "Terms must be between 0 and 16", if: -> { finished_on.present? }
+            },
+            presence: {
+              message: "Enter a number of terms", if: -> { finished_on.present? }
+            },
+            absence: {
+              message: "Delete the number of terms if the induction has no end date", if: -> { finished_on.blank? }
+            }
 
   validates :induction_programme,
             inclusion: { in: %w[fip cip diy],
@@ -24,7 +29,6 @@ class InductionPeriod < ApplicationRecord
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
 
-  # Scopes
   scope :for_teacher, ->(teacher) { where(teacher:) }
   scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
   scope :siblings_of, ->(instance) { for_teacher(instance.teacher).excluding(instance) }

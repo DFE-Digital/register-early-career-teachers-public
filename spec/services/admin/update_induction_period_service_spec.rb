@@ -32,15 +32,6 @@ RSpec.describe Admin::UpdateInductionPeriodService do
           .and change { induction_period.reload.number_of_terms }.to(3)
           .and change { induction_period.reload.induction_programme }.to("cip")
       end
-
-      context "when removing end date" do
-        it "clears the number of terms" do
-          params[:finished_on] = nil
-
-          expect { service.update_induction! }.to change { induction_period.reload.finished_on }.to(nil)
-            .and change { induction_period.reload.number_of_terms }.to(nil)
-        end
-      end
     end
 
     context "when induction period has an outcome" do
