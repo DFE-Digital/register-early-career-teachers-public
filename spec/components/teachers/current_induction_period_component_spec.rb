@@ -18,10 +18,10 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
     let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Test AB") }
     let!(:current_period) do
       FactoryBot.create(:induction_period,
+                        :active,
                         teacher:,
                         appropriate_body:,
                         started_on: 6.months.ago,
-                        finished_on: nil,
                         induction_programme: "cip")
     end
 
