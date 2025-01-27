@@ -8,7 +8,7 @@
   )
 %>
 
-<%= render(Teachers::InductionSummaryComponent.new(teacher: @teacher)) %>
+<%= render(Teachers::InductionSummaryComponent.new(teacher: @teacher, is_admin: true)) %>
 <%= render(Teachers::CurrentInductionPeriodComponent.new(teacher: @teacher, enable_edit: true)) %>
 <%= render(Teachers::PastInductionPeriodsComponent.new(teacher: @teacher, enable_edit: true)) %>
 

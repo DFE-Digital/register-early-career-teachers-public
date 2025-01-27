@@ -13,6 +13,22 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
     end
   end
 
+  context "#render_extension_links?" do
+    context "when the user is an admin" do
+      let(:component) { described_class.new(teacher:, is_admin: true) }
+
+      it "returns false" do
+        expect(component.render_extension_links?).to be false
+      end
+    end
+
+    context "when the user is not an admin" do
+      it "returns true" do
+        expect(component.render_extension_links?).to be true
+      end
+    end
+  end
+
   context "when teacher has induction periods" do
     let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: 1.year.ago) }
 
