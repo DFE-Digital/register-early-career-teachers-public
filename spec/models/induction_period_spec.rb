@@ -40,7 +40,7 @@ describe InductionPeriod do
     it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy]).with_message("Choose an induction programme") }
 
     describe "started_on_not_in_future" do
-      let(:induction_period) { FactoryBot.create(:induction_period, finished_on: nil) }
+      let(:induction_period) { FactoryBot.create(:induction_period, :active) }
 
       context "when started_on is today" do
         before { induction_period.started_on = Date.current }
@@ -115,46 +115,11 @@ describe InductionPeriod do
         subject { FactoryBot.build(:induction_period) }
         it { is_expected.to validate_presence_of(:number_of_terms).with_message("Enter a number of terms") }
       end
-    end
 
-    describe "number_of_terms_for_ongoing_induction_period" do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-      let(:teacher) { FactoryBot.create(:teacher) }
+      context "when finished on is empty and number of terms is present" do
+        subject { FactoryBot.build(:induction_period, number_of_terms: 3, finished_on: nil) }
 
-      subject do
-        FactoryBot.build(:induction_period,
-                         appropriate_body:,
-                         teacher:,
-                         finished_on: Date.current)
-      end
-
-      context "when finished_on is blank" do
-        before { subject.finished_on = nil }
-        it "is valid" do
-          expect(subject).to be_valid
-        end
-      end
-
-      context "when number_of_terms is blank" do
-        before { subject.number_of_terms = nil }
-        it "is valid" do
-          subject.finished_on = nil
-          expect(subject).to be_valid
-        end
-      end
-
-      context "when number_of_terms is 0" do
-        before { subject.number_of_terms = 0 }
-        it "is valid" do
-          expect(subject).to be_valid
-        end
-      end
-
-      context "when number_of_terms is 1 or greater" do
-        before { subject.number_of_terms = 1 }
-        it "is valid" do
-          expect(subject).to be_valid
-        end
+        it { is_expected.to validate_absence_of(:number_of_terms).with_message("Delete the number of terms if the induction has no end date") }
       end
     end
   end

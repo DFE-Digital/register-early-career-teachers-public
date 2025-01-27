@@ -10,18 +10,18 @@ describe Teachers::Search do
 
           FactoryBot.create(
             :induction_period,
+            :active,
             teacher: teacher1,
             appropriate_body: ab1,
             started_on: 1.month.ago.to_date,
-            finished_on: nil,
             induction_programme: 'fip'
           )
           FactoryBot.create(
             :induction_period,
+            :active,
             teacher: teacher2,
             appropriate_body: ab2,
             started_on: 1.month.ago.to_date,
-            finished_on: nil,
             induction_programme: 'fip'
           )
 
@@ -42,9 +42,9 @@ describe Teachers::Search do
 
           FactoryBot.create(
             :induction_period,
+            :active,
             teacher: teacher1,
             started_on: 1.month.ago.to_date,
-            finished_on: nil,
             induction_programme: 'fip'
           )
           FactoryBot.create(
@@ -75,17 +75,17 @@ describe Teachers::Search do
 
           FactoryBot.create(
             :induction_period,
+            :active,
             teacher: teacher1,
             appropriate_body: ab,
             started_on: 1.month.ago.to_date,
-            finished_on: nil,
             induction_programme: 'fip'
           )
           FactoryBot.create(
             :induction_period,
+            :active,
             teacher: teacher2,
             started_on: 1.month.ago.to_date,
-            finished_on: nil,
             induction_programme: 'fip'
           )
 
@@ -116,9 +116,9 @@ describe Teachers::Search do
           teacher = FactoryBot.create(:teacher, trn: '1234567')
           FactoryBot.create(
             :induction_period,
+            :active,
             teacher:,
             started_on: 1.month.ago.to_date,
-            finished_on: nil,
             induction_programme: 'fip'
           )
 
@@ -135,9 +135,9 @@ describe Teachers::Search do
           teacher = FactoryBot.create(:teacher, trs_first_name: 'Captain', trs_last_name: 'Scrummy')
           FactoryBot.create(
             :induction_period,
+            :active,
             teacher:,
             started_on: 1.month.ago.to_date,
-            finished_on: nil,
             induction_programme: 'fip'
           )
 
@@ -153,9 +153,9 @@ describe Teachers::Search do
         teacher = FactoryBot.create(:teacher)
         FactoryBot.create(
           :induction_period,
+          :active,
           teacher:,
           started_on: 1.month.ago.to_date,
-          finished_on: nil,
           induction_programme: 'fip'
         )
 
@@ -172,23 +172,23 @@ describe Teachers::Search do
 
       FactoryBot.create(
         :induction_period,
+        :active,
         teacher: teacher1,
         started_on: 1.month.ago.to_date,
-        finished_on: nil,
         induction_programme: 'fip'
       )
       FactoryBot.create(
         :induction_period,
+        :active,
         teacher: teacher2,
         started_on: 1.month.ago.to_date,
-        finished_on: nil,
         induction_programme: 'fip'
       )
       FactoryBot.create(
         :induction_period,
+        :active,
         teacher: teacher3,
         started_on: 1.month.ago.to_date,
-        finished_on: nil,
         induction_programme: 'fip'
       )
 
