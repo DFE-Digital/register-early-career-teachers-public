@@ -1,7 +1,10 @@
 <% page_data(
   title: "Edit induction period",
-  error: @induction_period.errors.present?
+  error: @induction_period.errors.present?,
+  backlink_href: admin_teacher_path(@induction_period.teacher)
 ) %>
+
+<%= content_for(:backlink_or_breadcrumb) { govuk_back_link(href: admin_teacher_path(@induction_period.teacher)) } %>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
