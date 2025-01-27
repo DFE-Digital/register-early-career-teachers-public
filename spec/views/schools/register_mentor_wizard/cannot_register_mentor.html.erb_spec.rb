@@ -18,4 +18,4 @@ RSpec.describe "schools/register_mentor_wizard/cannot_register_mentor" do
   it "includes a link back to ECTs" do
     expect(rendered).to have_link("Back to ECTs", href: schools_ects_home_path)
   end
-end 
+end
