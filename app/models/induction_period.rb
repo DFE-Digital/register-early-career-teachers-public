@@ -1,6 +1,6 @@
 class InductionPeriod < ApplicationRecord
   include Interval
-  include CommonInductionPeriodValidation
+  include SharedInductionPeriodValidation
 
   # Associations
   belongs_to :appropriate_body
