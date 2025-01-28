@@ -1,11 +1,14 @@
 describe PendingInductionSubmission do
   it { is_expected.to be_a_kind_of(Interval) }
+  it { is_expected.to be_a_kind_of(SharedInductionPeriodValidation) }
 
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
   end
 
   describe "validation" do
+    it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
+
     describe "trn" do
       it { is_expected.to validate_presence_of(:trn).on(:find_ect).with_message("Enter a TRN") }
 
@@ -41,6 +44,21 @@ describe PendingInductionSubmission do
         ["111/1111", "AAAA/BBB", "1234/12345"].each do |id|
           it { is_expected.not_to allow_value(id).for(:establishment_id).on(:find_ect).with_message("Enter an establishment ID in the format 1234/567") }
         end
+      end
+
+      describe '#started_on_from_september_2021_onwards' do
+        context 'when started_on before September 2021' do
+          subject { FactoryBot.build(:pending_induction_submission, started_on:) }
+          let(:started_on) { Date.new(2021, 8, 31) }
+          before { subject.valid? }
+
+          it 'has a suitable error message' do
+            expect(subject.errors.messages[:started_on]).to include("Enter a start date after 1 September 2021")
+          end
+        end
+
+        it { is_expected.not_to allow_values(Date.new(2021, 8, 31)).for(:started_on) }
+        it { is_expected.to allow_values(Date.new(2021, 9, 1), Date.new(2021, 9, 2)).for(:started_on) }
       end
     end
 
@@ -131,7 +149,7 @@ describe PendingInductionSubmission do
       end
     end
 
-    describe "trs_qts_awarded_on_before_started_on" do
+    describe "start_date_after_qts_date" do
       let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, started_on:, trs_qts_awarded_on: Date.new(2023, 5, 1)) }
 
       context "when trs_qts_awarded_on is before started_on" do
@@ -150,7 +168,7 @@ describe PendingInductionSubmission do
         it "is invalid" do
           pending_induction_submission.valid?(:register_ect)
 
-          expect(pending_induction_submission.errors[:started_on]).to include("Induction start date cannot be earlier than QTS award date (1 May 2023)")
+          expect(pending_induction_submission.errors[:started_on]).to include("Start date cannot be before QTS award date (1 May 2023)")
         end
       end
     end
