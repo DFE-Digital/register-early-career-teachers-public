@@ -14,6 +14,12 @@ describe MentorAtSchoolPeriod do
     it { is_expected.to validate_presence_of(:school_id) }
     it { is_expected.to validate_presence_of(:teacher_id) }
 
+    context "email" do
+      it { is_expected.to allow_value(nil).for(:email) }
+      it { is_expected.to allow_value("test@example.com").for(:email) }
+      it { is_expected.not_to allow_value("invalid_email").for(:email) }
+    end
+
     context "teacher school distinct period" do
       context "when the period has not finished yet" do
         context "when the teacher has a school sibling mentor_at_school_period starting later" do
