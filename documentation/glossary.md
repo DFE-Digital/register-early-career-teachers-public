@@ -70,3 +70,7 @@ A mentor who is already on the ECF mentor training programme who starts to suppo
 ## Qualifying nursery provision within maintained schools
 
 Previously referred to as ‘maintained nursery schools and nursery provision within maintained schools’
+
+## Teacher Regulation Service (TRS)
+
+Source of truth for teacher data and current statuses.
