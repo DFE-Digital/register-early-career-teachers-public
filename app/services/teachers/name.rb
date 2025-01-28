@@ -13,6 +13,7 @@ class Teachers::Name
 
   def full_name_in_trs
     return if teacher.blank?
+    return if teacher.trs_first_name.blank? && teacher.trs_last_name.blank?
 
     %(#{teacher.trs_first_name} #{teacher.trs_last_name})
   end

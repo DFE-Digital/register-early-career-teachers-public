@@ -63,6 +63,8 @@ module AppropriateBodies
         outcome:,
         number_of_terms: pending_induction_submission.number_of_terms
       )
+
+      active_induction_period.valid?
     end
 
     def send_fail_induction_notification_to_trs
