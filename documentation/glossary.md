@@ -73,4 +73,4 @@ Previously referred to as ‘maintained nursery schools and nursery provision wi
 
 ## Teacher Regulation Service (TRS)
 
-Source of truth for teacher data and current statuses.
+Source of truth for teacher data and current statuses replacing NQP.
