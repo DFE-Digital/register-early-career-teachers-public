@@ -3,17 +3,23 @@
 <%=
   f.govuk_date_field :finished_on,
     legend: {
-      text: "Enter the date #{Teachers::Name.new(@teacher).full_name} moved from #{@appropriate_body.name}"
+      text: "When did they move from #{@appropriate_body.name}?"
     }
 %>
 
 <%=
-  f.govuk_number_field :number_of_terms,
+  f.govuk_number_field(:number_of_terms,
     width: 4,
     label: {
       size: 'm',
-      text: "How many terms of induction did #{Teachers::Name.new(@teacher).full_name} spend with you?",
+      text: "How many terms of induction did they spend with you?"
     },
-    hint: { text: "Enter partial terms of induction as a decimal number. For example, one term and a half should be given as 1.5 terms." }
+    hint: { text: "You can use up to one decimal place if the induction term is not a whole number. For example, for 2 and a half terms enter 2.5" }) do
 %>
-
+  <p class="govuk-body">You’ll need to consider:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>the amount of induction time they’ve completed so far</li>
+    <li>their full-time equivalent (FTE) working patterns and any long periods of absence</li>
+    <li>if they have sufficient time in their current post which can count towards their induction</li>
+  </ul>
+<% end %>

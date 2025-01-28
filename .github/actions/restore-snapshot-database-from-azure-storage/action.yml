@@ -1,0 +1,140 @@
+name: Restore snapshot database from Azure storage
+description: Restore an Azure postgres snapshot database from a daily backup saved in Azure Storage
+inputs:
+  storage-account:
+    description: Name of the Azure storage account that contains the backup
+    required: true
+  app-name:
+    description: Name of the app deployment
+    required: true
+  namespace:
+    description: Namespace where the app is deployed. Required when role is not cluster admin.
+    required: false
+  resource-group:
+    description: Name of the Azure resource group
+    required: true
+  cluster:
+    description: Cluster being used. Test or Production.
+    required: true
+  azure-credentials:
+    description: 'A JSON string containing service principal credentials e.g. {"client_id": "x", "client_secret": "x", "subscription_id": "x", "tenant_id": "x"}'
+    required: false
+    default: ''
+  azure-client-id:
+    description: Azure service principal or managed identity client ID when using OIDC
+    required: false
+    default: ''
+  azure-subscription-id:
+    description: Azure service principal or managed identity subscription ID when using OIDC
+    required: false
+    default: ''
+  azure-tenant-id:
+    description: Azure service principal or managed identity tenant ID when using OIDC
+    required: false
+    default: ''
+  backup-file:
+    description: Name of the backup file to restore. Must include the .gz extension if the remote file has it.
+    required: true
+  slack-webhook:
+    description: Name of the slack webhook
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: azure/login@v2
+      with:
+        creds: ${{ inputs.azure-credentials }}
+        client-id: ${{ inputs.azure-client-id }}
+        tenant-id: ${{ inputs.azure-tenant-id }}
+        subscription-id: ${{ inputs.azure-subscription-id }}
+
+    - name: Setup postgres client
+      uses: DFE-Digital/github-actions/install-postgres-client@master
+      with:
+        version: 16
+
+    - name: Install kubectl
+      uses: DFE-Digital/github-actions/set-kubectl@master
+
+    - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
+      with:
+        azure-credentials: ${{ inputs.azure-credentials }}
+        azure-client-id: ${{ inputs.azure-client-id }}
+        azure-tenant-id: ${{ inputs.azure-tenant-id }}
+        azure-subscription-id: ${{ inputs.azure-subscription-id }}
+
+    - name: Set up cluster environment variables
+      shell: bash
+      run: |
+        case ${{ inputs.cluster }} in
+          test)
+            echo "cluster_rg=s189t01-tsc-ts-rg" >> $GITHUB_ENV
+            echo "cluster_name=s189t01-tsc-test-aks" >> $GITHUB_ENV
+            ;;
+          production)
+            echo "cluster_rg=s189p01-tsc-pd-rg" >> $GITHUB_ENV
+            echo "cluster_name=s189p01-tsc-production-aks" >> $GITHUB_ENV
+            ;;
+          *)
+            echo "unknown cluster"
+            ;;
+        esac
+
+    - name: K8 setup
+      shell: bash
+      run: |
+        az aks get-credentials --overwrite-existing -g ${{ env.cluster_rg }} -n ${{ env.cluster_name }}
+        kubelogin convert-kubeconfig -l spn
+        # install konduit
+        curl -s https://raw.githubusercontent.com/DFE-Digital/teacher-services-cloud/master/scripts/konduit.sh -o ./konduit.sh
+        chmod +x ./konduit.sh
+
+    - name: Set Connection String
+      shell: bash
+      run: |
+        STORAGE_CONN_STR=$(az storage account show-connection-string -g ${{ inputs.resource-group }} -n ${{ inputs.storage-account }} --query 'connectionString')
+        echo "::add-mask::$STORAGE_CONN_STR"
+        echo "AZURE_STORAGE_CONNECTION_STRING=$STORAGE_CONN_STR" >> $GITHUB_ENV
+
+    - name: Download Backup from Azure Storage
+      shell: bash
+      run: |
+        az config set extension.use_dynamic_install=yes_without_prompt
+        az config set core.only_show_errors=true
+        az storage azcopy blob download --container database-backup \
+        --source ${{ inputs.backup-file }} --destination ${{ inputs.backup-file }}
+
+    - name: Restore backup to aks env database
+      shell: bash
+      run: |
+        if [[ -n "${{ inputs.namespace }}" ]]; then
+          NAMESPACE_ARG="-n ${{ inputs.namespace }}"
+        fi
+        COMPRESS=$( file --brief ${{ inputs.backup-file }} | grep -ic compressed || true )
+        if [[ $COMPRESS -gt 0 ]]; then
+          COMPRESS_ARG=-c
+        fi
+
+        ./konduit.sh ${NAMESPACE_ARG} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-app-kv -i ${{ inputs.backup-file }} ${COMPRESS_ARG} -t 7200 -x ${{ inputs.app-name }} -- psql
+
+    - name: Restore Summary
+      if: success()
+      shell: bash
+      run: |
+        NOW=$(TZ=Europe/London date +"%F %R")
+        echo 'SNAPSHOT DB RESTORE SUCCESSFUL!' >> $GITHUB_STEP_SUMMARY
+        echo '  APP: ${{ inputs.app-name }}' >> $GITHUB_STEP_SUMMARY
+        echo '  BACKUP FILE RESTORED: ${{ inputs.storage-account }} / database-backup / ${{ inputs.backup-file }}' >> $GITHUB_STEP_SUMMARY
+        echo "  AT : ${NOW}" >> $GITHUB_STEP_SUMMARY
+
+    - name: Notify Slack channel on job failure
+      if: failure()
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_USERNAME: CI Deployment
+        SLACK_TITLE: Snapshot Database restore failure
+        SLACK_MESSAGE: ${{ inputs.app-name }} snapshop restore job failed
+        SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
+        SLACK_COLOR: failure
+        SLACK_FOOTER: Sent from restore-snapshot-database-from-azure-storage action

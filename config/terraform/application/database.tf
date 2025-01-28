@@ -18,6 +18,27 @@ module "postgres" {
   azure_maintenance_window       = var.azure_maintenance_window
 }
 
+module "postgres-snapshot" {
+  source = "./vendor/modules/aks//aks/postgres"
+
+  name                           = "snapshot"
+  count                          = var.deploy_snapshot_database ? 1 : 0
+  namespace                      = var.namespace
+  environment                    = var.environment
+  azure_resource_prefix          = var.azure_resource_prefix
+  service_name                   = var.service_name
+  service_short                  = var.service_short
+  config_short                   = var.config_short
+  cluster_configuration_map      = module.cluster_data.configuration_map
+  use_azure                      = var.deploy_azure_backing_services
+  azure_enable_monitoring        = false
+  azure_enable_backup_storage    = false
+  server_version                 = "16"
+  azure_extensions               = ["btree_gin", "citext", "plpgsql", "pg_trgm", "unaccent"]
+  azure_enable_high_availability = false
+  azure_sku_name                 = var.postgres_snapshot_flexible_server_sku
+}
+
 module "redis-cache" {
   source = "./vendor/modules/aks//aks/redis"
 
