@@ -4,7 +4,7 @@ class Teachers::InductionStatus
   def initialize(teacher:, induction_periods:, trs_induction_status:)
     @teacher = teacher
     @induction_periods = induction_periods
-    @trs_induction_status = trs_induction_status || teacher&.trs_induction_status
+    @trs_induction_status = trs_induction_status
   end
 
   def status_tag_kwargs
