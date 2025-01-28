@@ -1,4 +1,5 @@
-name: Restore Snapshot DB from production DB
+name: Nightly copy production main db into snapshot db keeping no backup in Azure Storage
+
 on:
   workflow_dispatch:
     inputs:
