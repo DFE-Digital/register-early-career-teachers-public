@@ -1,4 +1,4 @@
-name: Restore Snapshot database from Azure storage
+name: Restore snapshot db from Azure storage
 
 on:
   workflow_dispatch:
@@ -19,7 +19,6 @@ on:
         default: default
 
   workflow_call:
-    secrets: inherit
     inputs:
       environment:
         description: Environment to backup
@@ -70,7 +69,11 @@ jobs:
 
       - name: Generate the backup file name
         run: |
+          # Load environment-specific configuration
+          source config/global_config/${DEPLOY_ENV}.sh
           TODAY=$(date +"%F")
+
+          # Set BACKUP_FILE variable
           if [ "${BACKUP_FILE}" == "schedule" ]; then
             BACKUP_FILE=${SERVICE_SHORT}_${CONFIG_SHORT}_${TODAY}
           elif [ "${BACKUP_FILE}" == "default" ]; then
