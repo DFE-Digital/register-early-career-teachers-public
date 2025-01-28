@@ -100,5 +100,5 @@ jobs:
           resource-group: ${{ env.RESOURCE_GROUP_NAME }}
           cluster: ${{ env.CLUSTER }}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
-          backup-file: ${{ env.BACKUP_FILE }}.sql
+          backup-file: ${{ env.BACKUP_FILE }}.sql.gz
           slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
