@@ -18,6 +18,18 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: '/appropriate-body/claim-an-ect/find-ect/new')
   end
 
+  describe 'induction status' do
+    let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trs_induction_status: 'FailedInWales') }
+
+    it 'displays the status tag that corresponds to the TRS induction status on the pending induction submission' do
+      assign(:pending_induction_submission, pending_induction_submission)
+
+      render
+
+      expect(rendered).to have_css('strong.govuk-tag', text: 'Failed in Wales')
+    end
+  end
+
   describe 'induction periods' do
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
