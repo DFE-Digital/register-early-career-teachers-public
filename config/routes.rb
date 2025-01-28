@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   root to: 'pages#home'
   get '/support', to: 'pages#support'
+  get '/cookies', to: 'pages#cookies'
+  get '/accessibility', to: 'pages#accessibility'
+  get '/privacy', to: 'pages#privacy'
 
   get "healthcheck" => "rails/health#show", as: :rails_health_check
 
@@ -158,6 +161,7 @@ Rails.application.routes.draw do
       get "no-trn", action: :new
       get "trn-not-found", action: :new
       get "not-found", action: :new
+      get "cannot-register-mentor", action: :new
 
       get "already-active-at-school", action: :new
       post "already-active-at-school", action: :create
