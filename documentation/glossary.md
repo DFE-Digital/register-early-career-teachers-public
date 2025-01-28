@@ -71,6 +71,6 @@ A mentor who is already on the ECF mentor training programme who starts to suppo
 
 Previously referred to as ‘maintained nursery schools and nursery provision within maintained schools’
 
-## Teacher Regulation Service (TRS)
+## Teaching Record System (TRS)
 
-Source of truth for teacher data and current statuses replacing NQP.
+Source of truth for teacher data and current statuses, replacing Database of Qualified Teachers (DQT).
