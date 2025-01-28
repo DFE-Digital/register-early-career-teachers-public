@@ -40,6 +40,37 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
     subject { wizard.current_step }
 
+    context 'when the mentor is prohibited from teaching' do
+      let(:teacher) { create(:teacher, trn: '1234568') }
+      before do
+        fake_client = TRS::FakeAPIClient.new
+
+        allow(fake_client).to receive(:find_teacher).and_return(
+          TRS::Teacher.new(
+            'trn' => '1234568',
+            'firstName' => 'Jane',
+            'lastName' => 'Smith',
+            'dateOfBirth' => '1977-02-03',
+            'alerts' => [
+              {
+                'alertType' => {
+                  'alertCategory' => {
+                    'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
+                  }
+                }
+              }
+            ]
+          )
+        )
+        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
+        subject.save!
+      end
+
+      it 'returns :cannot_register_mentor' do
+        expect(subject.next_step).to eq(:cannot_register_mentor)
+      end
+    end
+
     context 'when the mentor is not found in TRS' do
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(raise_not_found: true))

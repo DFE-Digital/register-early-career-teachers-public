@@ -14,6 +14,7 @@ module Schools
         return :trn_not_found unless mentor.in_trs?
         return :national_insurance_number unless mentor.matches_trs_dob?
         return :already_active_at_school if mentor.active_at_school?
+        return :cannot_register_mentor if trs_teacher.prohibited_from_teaching?
 
         :review_mentor_details
       end

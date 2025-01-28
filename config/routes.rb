@@ -161,6 +161,7 @@ Rails.application.routes.draw do
       get "no-trn", action: :new
       get "trn-not-found", action: :new
       get "not-found", action: :new
+      get "cannot-register-mentor", action: :new
 
       get "already-active-at-school", action: :new
       post "already-active-at-school", action: :create
