@@ -1,0 +1,19 @@
+name: Nightly backup production database, upload it to Azure Storage and restore the snapshot database from it
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 4 * * *" # 04:15 UTC
+
+jobs:
+  backup-and-store:
+    uses: ./.github/workflows/backup-db.yml
+    with:
+      environment: production
+      backup-file: backup-production.sql
+
+  restore-from-storage:
+    uses: ./.github/workflows/restore-snapshot-db-from-azure-storage.yml
+    with:
+      environment: production
+      backup-file: backup-production.sql

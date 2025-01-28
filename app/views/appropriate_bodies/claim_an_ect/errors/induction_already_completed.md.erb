@@ -1,5 +1,7 @@
 ---
-title: <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> has already completed their induction
+title: You cannot register <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %>
 ---
 
-Our records show <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> has already completed their induction.
+Our records show that <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> has already completed their induction.
+
+[Find and claim another ECT](<%= new_ab_claim_an_ect_find_path %>)

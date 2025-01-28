@@ -9,4 +9,13 @@ class PagesController < ApplicationController
 
   def support
   end
+
+  def cookies
+  end
+
+  def accessibility
+  end
+
+  def privacy
+  end
 end
