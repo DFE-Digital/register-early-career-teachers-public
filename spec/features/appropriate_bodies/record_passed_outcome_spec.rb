@@ -46,8 +46,7 @@ private
   end
 
   def and_i_enter_a_terms_value_of(number)
-    teacher_name = Teachers::Name.new(teacher).full_name
-    label = "How many terms of induction did #{teacher_name} spend with you?"
+    label = "How many terms of induction did they spend with you?"
 
     page.get_by_label(label).fill(number.to_s)
   end

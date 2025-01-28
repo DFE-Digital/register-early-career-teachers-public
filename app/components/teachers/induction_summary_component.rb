@@ -1,11 +1,12 @@
 module Teachers
   class InductionSummaryComponent < ViewComponent::Base
-    attr_reader :teacher, :induction, :induction_periods
+    attr_reader :teacher, :induction, :induction_periods, :is_admin
 
-    def initialize(teacher:)
+    def initialize(teacher:, is_admin: false)
       @teacher = teacher
       @induction = Teachers::Induction.new(teacher)
       @induction_periods = teacher.induction_periods
+      @is_admin = is_admin
     end
 
     def render?
@@ -14,6 +15,10 @@ module Teachers
 
     def extensions_action_text
       (induction_extensions.extended?) ? 'View' : 'Add'
+    end
+
+    def render_extension_links?
+      is_admin == false
     end
 
   private

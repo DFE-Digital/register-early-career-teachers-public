@@ -41,7 +41,6 @@
     <h2 class="govuk-heading-m">Error preview</h2>
     <%=
       govuk_list([
-        govuk_link_to('Exempt from completing induction', ab_claim_an_ect_errors_exempt_path(pending_induction_submission), no_visited_state: true),
         govuk_link_to('Induction already completed', ab_claim_an_ect_errors_already_complete_path(pending_induction_submission), no_visited_state: true),
         govuk_link_to('Induction with another appropriate body', ab_claim_an_ect_errors_another_ab_path(pending_induction_submission), no_visited_state: true),
         govuk_link_to('No QTS', ab_claim_an_ect_errors_no_qts_path(pending_induction_submission), no_visited_state: true),
