@@ -17,23 +17,22 @@ module AppropriateBodies
         # if teacher.persisted? && teacher.induction_periods.present?
         #   raise AppropriateBodies::Errors::TeacherAlreadyClaimedError, "Teacher already claimed"
         # end
-
         ActiveRecord::Base.transaction do
-          success = (
-            update_teacher &&
-            create_induction_period &&
-            send_begin_induction_notification_to_trs &&
-            pending_induction_submission.save(context: :register_ect) &&
-            record_claim_event
-          )
+          steps = [
+            create_or_update_teacher,
+            send_begin_induction_notification_to_trs,
+            pending_induction_submission.save(context: :register_ect),
+            create_induction_period
+          ]
 
-          success or raise ActiveRecord::Rollback
+          steps.all? or raise ActiveRecord::Rollback
         end
       end
 
     private
 
-      def update_teacher
+      # FIXME: move this to its own service class
+      def create_or_update_teacher
         old_name = ::Teachers::Name.new(teacher).full_name_in_trs
 
         teacher.assign_attributes(
@@ -46,7 +45,7 @@ module AppropriateBodies
 
         teacher.save!
 
-        if new_name != old_name
+        if old_name && new_name != old_name
           Events::Record.teacher_name_changed_in_trs!(author:, old_name:, new_name:, teacher:, appropriate_body:)
         end
 
@@ -58,21 +57,14 @@ module AppropriateBodies
       end
 
       def create_induction_period
-        @induction_period = InductionPeriod.create(
-          teacher:,
-          started_on: pending_induction_submission.started_on,
-          appropriate_body:,
-          induction_programme: pending_induction_submission.induction_programme
-        )
-      end
+        started_on = pending_induction_submission.started_on
+        induction_programme = pending_induction_submission.induction_programme
 
-      def record_claim_event
-        Events::Record.record_appropriate_body_claims_teacher_event!(
-          author:,
-          teacher:,
-          appropriate_body:,
-          induction_period:
-        )
+        @induction_period = InductionPeriods::CreateInductionPeriod
+          .new(teacher:, started_on:, induction_programme:, appropriate_body:)
+          .create_induction_period(author:)
+
+        @induction_period.persisted?
       end
 
       def send_begin_induction_notification_to_trs
