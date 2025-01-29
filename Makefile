@@ -5,6 +5,9 @@ SERVICE_NAME=cpd-ec2
 SERVICE_SHORT=cpdec2
 DOCKER_REPOSITORY=ghcr.io/dfe-digital/register-early-career-teachers-public
 
+# Handle BSD and GNU sed differences
+SED_INPLACE ?= $(shell if sed --version >/dev/null 2>&1; then echo "-i"; else echo "-i ''"; fi)
+
 serve-documentation-site:
 	cd documentation/site && bundle exec nanoc live --handler webrick --port 8000
 
@@ -121,6 +124,40 @@ production-cluster:
 get-cluster-credentials: set-azure-account
 	az aks get-credentials --overwrite-existing -g ${CLUSTER_RESOURCE_GROUP_NAME} -n ${CLUSTER_NAME}
 	kubelogin convert-kubeconfig -l $(if ${GITHUB_ACTIONS},spn,azurecli)
+
+.PHONY: install-konduit
+install-konduit: ## Install the konduit script, for accessing backend services
+	[ ! -f bin/konduit.sh ] \
+		&& curl -s https://raw.githubusercontent.com/DFE-Digital/teacher-services-cloud/master/scripts/konduit.sh -o bin/konduit.sh \
+		&& chmod +x bin/konduit.sh \
+		|| true
+
+konduit-cleanup:
+	sed $(SED_INPLACE) -e '/url\: "postgres/d' config/database.yml; \
+	exit 0
+
+define KONDUIT_CONNECT
+	trap 'make konduit-cleanup' INT; \
+	tmp_file=$$(mktemp); \
+	$(MAKE) konduit-cleanup; \
+	{ \
+		(tail -f -n0 "$$tmp_file" & ) | grep -q "postgres://"; \
+		postgres_url=$$(grep -o 'postgres://[^ ]*' "$$tmp_file"); \
+		echo "$$postgres_url"; \
+		sed $(SED_INPLACE) -e "s|npq_registration_development|&\\n    url: \"$$postgres_url\"|g" config/database.yml; \
+	} & \
+	bin/konduit.sh -d
+endef
+
+# Creates a konduit to the DB and points development to it. The konduit URL is removed when the konduit is closed.
+konduit: get-cluster-credentials
+	$(KONDUIT_CONNECT) ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg -n ${NAMESPACE} -k ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-app-kv npq-registration-${CONFIG_LONG}-web -- psql > "$$tmp_file"
+	exit 0
+
+# Creates a konduit to the snapshot DB and points development to it. The konduit URL is removed when the konduit is closed.
+konduit-snapshot: get-cluster-credentials
+	$(KONDUIT_CONNECT) ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg-snapshot -n ${NAMESPACE} -k ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-app-kv npq-registration-${CONFIG_LONG}-web -- psql > "$$tmp_file"
+	exit 0
 
 set-namespace:
 	$(eval NAMESPACE=$(shell jq -r '.namespace' "config/terraform/application/config/${CONFIG}.tfvars.json"))

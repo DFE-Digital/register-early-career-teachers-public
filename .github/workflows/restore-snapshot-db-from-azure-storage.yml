@@ -1,4 +1,4 @@
-name: Restore Snapshot database from Azure storage
+name: Restore snapshot db from Azure storage
 
 on:
   workflow_dispatch:
@@ -19,7 +19,6 @@ on:
         default: default
 
   workflow_call:
-    secrets: inherit
     inputs:
       environment:
         description: Environment to backup
@@ -70,7 +69,11 @@ jobs:
 
       - name: Generate the backup file name
         run: |
+          # Load environment-specific configuration
+          source config/global_config/${DEPLOY_ENV}.sh
           TODAY=$(date +"%F")
+
+          # Set BACKUP_FILE variable
           if [ "${BACKUP_FILE}" == "schedule" ]; then
             BACKUP_FILE=${SERVICE_SHORT}_${CONFIG_SHORT}_${TODAY}
           elif [ "${BACKUP_FILE}" == "default" ]; then
@@ -90,12 +93,12 @@ jobs:
             echo "SLACK_WEBHOOK=$SLACK_WEBHOOK" >> $GITHUB_OUTPUT
 
       - name: Backup ${{ env.DEPLOY_ENV }} postgres
-        uses: .github/actions/restore-snapshot-database-from-azure-storage
+        uses: ./.github/actions/restore-snapshot-database-from-azure-storage
         with:
           storage-account: ${{ env.STORAGE_ACCOUNT_NAME }}
           app-name: ${{ env.SERVICE_NAME }}-${{ env.DEPLOY_ENV }}-web
           resource-group: ${{ env.RESOURCE_GROUP_NAME }}
           cluster: ${{ env.CLUSTER }}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
-          backup-file: ${{ env.BACKUP_FILE }}.sql
+          backup-file: ${{ env.BACKUP_FILE }}.sql.gz
           slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}

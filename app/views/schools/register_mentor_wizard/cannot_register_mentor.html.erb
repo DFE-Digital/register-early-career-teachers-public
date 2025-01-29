@@ -1,0 +1,5 @@
+<% page_data(title: "You cannot register #{@mentor.full_name}", error: false) %>
+
+<p class="govuk-body">Our records show that <%= @mentor.full_name %> cannot be registered as a mentor.</p>
+
+<p class="govuk-body"><%= govuk_link_to("Back to ECTs", schools_ects_home_path) %></p>

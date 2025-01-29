@@ -5,6 +5,7 @@
 # eventually write to the actual database before deleting the record here.
 class PendingInductionSubmission < ApplicationRecord
   include Interval
+  include SharedInductionPeriodValidation
 
   attribute :confirmed
 
@@ -14,9 +15,6 @@ class PendingInductionSubmission < ApplicationRecord
   belongs_to :appropriate_body
 
   # Validations
-  validates :appropriate_body_id,
-            presence: { message: "Select an appropriate body" }
-
   validates :trn,
             presence: { message: "Enter a TRN" },
             format: { with: Teacher::TRN_FORMAT, message: "TRN must be 7 numeric digits" },
@@ -68,32 +66,13 @@ class PendingInductionSubmission < ApplicationRecord
             presence: { message: "QTS has not been awarded" },
             on: :register_ect
 
-  validate :started_on_not_in_future, if: -> { started_on.present? }
-  validate :finished_on_not_in_future, if: -> { finished_on.present? }
-  validate :trs_qts_awarded_on_before_started_on, on: :register_ect
+  validate :start_date_after_qts_date, on: :register_ect
 
 private
 
-  def trs_qts_awarded_on_before_started_on
-    return unless started_on && trs_qts_awarded_on
+  def start_date_after_qts_date
+    return if trs_qts_awarded_on.blank?
 
-    if trs_qts_awarded_on > started_on
-      errors.add(
-        :started_on,
-        "Induction start date cannot be earlier than QTS award date (#{trs_qts_awarded_on.to_fs(:govuk)})"
-      )
-    end
-  end
-
-  def started_on_not_in_future
-    return if started_on <= Date.current
-
-    errors.add(:started_on, "Start date cannot be in the future")
-  end
-
-  def finished_on_not_in_future
-    return if finished_on <= Date.current
-
-    errors.add(:finished_on, "End date cannot be in the future")
+    ensure_start_date_after_qts_date(trs_qts_awarded_on)
   end
 end

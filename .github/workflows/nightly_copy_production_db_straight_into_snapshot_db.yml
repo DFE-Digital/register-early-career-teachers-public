@@ -1,4 +1,5 @@
-name: Restore Snapshot DB from production DB
+name: Nightly copy production main db into snapshot db keeping no backup in Azure Storage
+
 on:
   workflow_dispatch:
     inputs:
@@ -21,7 +22,7 @@ jobs:
       name: ${{ inputs.environment || 'production' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Backup and restore snapshot
         uses: ./.github/actions/backup-and-restore-snapshot-database

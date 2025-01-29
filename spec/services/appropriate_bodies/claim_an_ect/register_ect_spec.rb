@@ -48,7 +48,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       it "fails because invalid" do
         expect(subject.register(pending_induction_submission_params)).to be_falsey
         expect(subject.pending_induction_submission.errors[:started_on]).to include(
-          "Induction start date cannot be earlier than QTS award date (3 May 2023)"
+          "Start date cannot be before QTS award date (3 May 2023)"
         )
       end
     end
@@ -93,6 +93,24 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         perform_enqueued_jobs
 
         expect(Event.last.event_type).to eq("appropriate_body_claims_teacher")
+      end
+    end
+
+    context "when pending_induction_submission isn't valid" do
+      let(:pending_induction_submission_params) do
+        {
+          induction_programme: "fip",
+          started_on: Date.new(2000, 5, 2),
+          trn: "1234567",
+          trs_first_name: "John",
+          trs_last_name: "Doe",
+          trs_qts_awarded_on:
+        }
+      end
+
+      it "can perform jobs without erroring" do
+        subject.register(pending_induction_submission_params)
+        perform_enqueued_jobs
       end
     end
 
