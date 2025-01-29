@@ -5,6 +5,9 @@ SERVICE_NAME=cpd-ec2
 SERVICE_SHORT=cpdec2
 DOCKER_REPOSITORY=ghcr.io/dfe-digital/register-early-career-teachers-public
 
+# Handle BSD and GNU sed differences
+SED_INPLACE ?= $(shell if sed --version >/dev/null 2>&1; then echo "-i"; else echo "-i ''"; fi)
+
 serve-documentation-site:
 	cd documentation/site && bundle exec nanoc live --handler webrick --port 8000
 
