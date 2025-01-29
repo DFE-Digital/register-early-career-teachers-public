@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_20_140655) do
-# These are extensions that must be enabled in order to support this database
+ActiveRecord::Schema[8.0].define(version: 2025_01_23_161652) do
+  # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
   enable_extension "unaccent"
@@ -148,6 +148,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_20_140655) do
     t.uuid "legacy_start_id"
     t.uuid "legacy_end_id"
     t.enum "working_pattern", enum_type: "working_pattern"
+    t.string "email"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
@@ -277,6 +278,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_20_140655) do
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.uuid "legacy_start_id"
     t.uuid "legacy_end_id"
+    t.string "email"
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
