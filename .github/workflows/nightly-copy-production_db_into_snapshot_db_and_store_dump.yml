@@ -6,13 +6,13 @@ on:
     - cron: "15 4 * * *" # 04:15 UTC
 
 jobs:
-  backup-and-store:
+  backup-production-and-store-in-azure-storage:
     uses: ./.github/workflows/backup-db.yml
     with:
       environment: production
       backup-file: backup-production.sql
 
-  restore-from-storage:
+  restore-from-azure-storage:
     uses: ./.github/workflows/restore-snapshot-db-from-azure-storage.yml
     with:
       environment: production

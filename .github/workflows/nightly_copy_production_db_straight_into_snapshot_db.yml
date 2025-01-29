@@ -16,8 +16,8 @@ on:
     - cron: "15 4 * * *" # 04:15 UTC
 
 jobs:
-  backup-and-restore-production:
-    runs-on: ubuntu-20.04
+  backup-production-and-restore-snapshot:
+    runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment || 'production' }}
     steps:
