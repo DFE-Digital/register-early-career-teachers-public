@@ -90,6 +90,9 @@ runs:
         curl -s https://raw.githubusercontent.com/DFE-Digital/teacher-services-cloud/master/scripts/konduit.sh -o ./konduit.sh
         chmod +x ./konduit.sh
 
+    - name: install-postgres-client
+      uses: DFE-Digital/github-actions/install-postgres-client@master
+
     - name: Set Connection String
       shell: bash
       run: |
