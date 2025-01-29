@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   root to: 'pages#home'
   get '/support', to: 'pages#support'
+  get '/cookies', to: 'pages#cookies'
+  get '/accessibility', to: 'pages#accessibility'
+  get '/privacy', to: 'pages#privacy'
 
   get "healthcheck" => "rails/health#show", as: :rails_health_check
 
@@ -30,23 +33,20 @@ Rails.application.routes.draw do
 
   post 'auth/:provider/callback', to: 'sessions#create'
 
-  get '/admin', to: 'admin/teachers#index'
+  get '/admin', to: redirect('admin/teachers')
 
   namespace :admin do
     constraints -> { Rails.application.config.enable_blazer } do
       mount Blazer::Engine, at: "blazer"
     end
 
-    resources :users, only: %i[index] do
-    end
+    resources :users, only: %i[index]
 
     resources :organisations, only: %i[index] do
-    end
-
-    resources :appropriate_bodies, only: %i[index], path: 'appropriate-bodies' do
-    end
-
-    resources :schools, only: %i[index show], param: :urn do
+      collection do
+        resources :appropriate_bodies, only: %i[index], path: 'appropriate-bodies'
+        resources :schools, only: %i[index show], param: :urn
+      end
     end
 
     resources :teachers, only: %i[index show] do
@@ -158,6 +158,7 @@ Rails.application.routes.draw do
       get "no-trn", action: :new
       get "trn-not-found", action: :new
       get "not-found", action: :new
+      get "cannot-register-mentor", action: :new
 
       get "already-active-at-school", action: :new
       post "already-active-at-school", action: :create
