@@ -10,7 +10,7 @@ RSpec.describe Teachers::Induction do
     end
 
     it "returns the induction period without a finished_on date" do
-      current_period = FactoryBot.create(:induction_period, teacher:, started_on: 6.months.ago, finished_on: nil)
+      current_period = FactoryBot.create(:induction_period, :active, teacher:, started_on: 6.months.ago)
 
       expect(service.current_induction_period).to eq(current_period)
     end
