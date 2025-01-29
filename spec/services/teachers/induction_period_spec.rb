@@ -51,10 +51,10 @@ describe Teachers::InductionPeriod do
       let!(:active_induction_period) do
         FactoryBot.create(
           :induction_period,
+          :active,
           appropriate_body: FactoryBot.create(:appropriate_body),
           teacher:,
-          started_on: Date.new(2024, 10, 3),
-          finished_on: nil
+          started_on: Date.new(2024, 10, 3)
         )
       end
 

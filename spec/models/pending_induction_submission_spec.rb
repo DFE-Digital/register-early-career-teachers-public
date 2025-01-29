@@ -75,8 +75,20 @@ describe PendingInductionSubmission do
     end
 
     describe "number_of_terms" do
+      subject { FactoryBot.build(:pending_induction_submission, finished_on: Date.current) }
+
       it { is_expected.to validate_presence_of(:number_of_terms).with_message('Enter a number of terms').on(%i[release_ect record_outcome]) }
       it { is_expected.to validate_inclusion_of(:number_of_terms).in_range(0..16).with_message("Terms must be between 0 and 16").on(%i[release_ect record_outcome]) }
+
+      context "when finished_on is blank" do
+        subject { FactoryBot.build(:pending_induction_submission, finished_on: nil) }
+
+        it "validates absence of number_of_terms" do
+          subject.number_of_terms = 5
+          subject.valid?(:release_ect)
+          expect(subject.errors[:number_of_terms]).to include("Delete the number of terms if the induction has no end date")
+        end
+      end
     end
 
     describe "confirmed" do
