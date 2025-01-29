@@ -21,10 +21,10 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
     }
   end
 
-  describe 'GET /appropriate-body/teachers/:teacher_trn/record-failed-outcome/new' do
+  describe 'GET /appropriate-body/teachers/:id/record-failed-outcome/new' do
     context 'when not signed in' do
       it 'redirects to the signin page' do
-        get("/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome/new")
+        get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
 
         expect(response).to be_redirection
         expect(response.redirect_url).to end_with('/sign-in')
@@ -35,7 +35,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
       before { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
       it 'renders the new form for a valid teacher' do
-        get("/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome/new")
+        get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
 
         expect(response).to be_successful
         expect(response.body).to include('Record failed outcome')
@@ -49,10 +49,10 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
     end
   end
 
-  describe 'POST /appropriate-body/teachers/:teacher_trn/record-failed-outcome' do
+  describe 'POST /appropriate-body/teachers/:id/record-failed-outcome' do
     context 'when not signed in' do
       it 'redirects to the signin page' do
-        post("/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome")
+        post("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
 
         expect(response).to be_redirection
         expect(response.redirect_url).to end_with('/sign-in')
@@ -73,7 +73,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
         it 'creates a new pending induction submission' do
           expect {
             post(
-              "/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome",
+              "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
               params: valid_params
             )
           }.to change(PendingInductionSubmission, :count).by(1)
@@ -81,7 +81,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
 
         it 'uses PendingInductionSubmissions::Build to instantiate the PendingInductionSubmission' do
           post(
-            "/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome",
+            "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
             params: valid_params
           )
 
@@ -90,7 +90,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
 
         it 'calls the record outcome service and redirects' do
           post(
-            "/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome",
+            "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
             params: valid_params
           )
 
@@ -102,7 +102,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
           )
 
           expect(response).to be_redirection
-          expect(response.redirect_url).to end_with("/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome")
+          expect(response.redirect_url).to end_with("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
         end
       end
 
@@ -119,7 +119,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
 
         it 'renders the new form with errors' do
           post(
-            "/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome",
+            "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
             params: invalid_params
           )
 
@@ -140,7 +140,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
 
         it 'includes finish date must be later than start date' do
           post(
-            "/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome",
+            "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
             params: invalid_params
           )
 
@@ -150,10 +150,10 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
     end
   end
 
-  describe 'GET /appropriate-body/teachers/:teacher_trn/record-failed-outcome' do
+  describe 'GET /appropriate-body/teachers/:id/record-failed-outcome' do
     context 'when not signed in' do
       it 'redirects to the signin page' do
-        get("/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome")
+        get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
 
         expect(response).to be_redirection
         expect(response.redirect_url).to end_with('/sign-in')
@@ -164,7 +164,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
       before { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
       it 'renders the show page for a valid teacher' do
-        get("/appropriate-body/teachers/#{teacher.trn}/record-failed-outcome")
+        get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
 
         expect(response).to be_successful
       end

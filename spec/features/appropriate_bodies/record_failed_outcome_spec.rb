@@ -1,7 +1,6 @@
 RSpec.describe "Recording a failed outcome for an ECT" do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:trn) { teacher.trn }
   let(:today) { Time.zone.today }
   let(:number_of_completed_terms) { 4 }
 
@@ -10,9 +9,9 @@ RSpec.describe "Recording a failed outcome for an ECT" do
   let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
 
   scenario 'Happy path' do
-    given_i_am_on_the_ect_page(trn)
+    given_i_am_on_the_ect_page(teacher)
     when_i_click_link('Fail induction')
-    then_i_should_be_on_the_record_outcome_page(trn)
+    then_i_should_be_on_the_record_outcome_page(teacher)
 
     when_i_enter_the_finish_date
     and_i_enter_a_terms_value_of(number_of_completed_terms)
@@ -25,9 +24,10 @@ RSpec.describe "Recording a failed outcome for an ECT" do
 
 private
 
-  def given_i_am_on_the_ect_page(trn)
-    path = "/appropriate-body/teachers/#{trn}"
+  def given_i_am_on_the_ect_page(teacher)
+    path = "/appropriate-body/teachers/#{teacher.id}"
     page.goto(path)
+    # binding.debugger
     expect(page.url).to end_with(path)
   end
 
@@ -35,8 +35,8 @@ private
     page.get_by_role('link', name: text).click
   end
 
-  def then_i_should_be_on_the_record_outcome_page(trn)
-    expect(page.url).to end_with("/appropriate-body/teachers/#{trn}/record-failed-outcome/new")
+  def then_i_should_be_on_the_record_outcome_page(teacher)
+    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
   end
 
   def when_i_enter_the_finish_date
@@ -57,12 +57,12 @@ private
   end
 
   def then_i_should_be_on_the_success_page
-    expect(page.url).to end_with("/appropriate-body/teachers/#{trn}/record-failed-outcome")
+    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
     expect(page.locator('.govuk-panel')).to be_visible
   end
 
   def and_the_pending_induction_submission_record_should_have_the_right_data_in_it
-    pending_induction_submission = PendingInductionSubmission.find_by(trn:, appropriate_body:)
+    pending_induction_submission = PendingInductionSubmission.find_by(trn: teacher.trn, appropriate_body:)
 
     expect(pending_induction_submission.number_of_terms).to eql(number_of_completed_terms)
     expect(pending_induction_submission.finished_on).to eql(today)

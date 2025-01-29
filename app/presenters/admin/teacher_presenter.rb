@@ -20,6 +20,10 @@ module Admin
       teacher.mentor_at_school_periods.any?
     end
 
+    # def trn
+    #   teacher.trn
+    # end
+
     def latest_school_period_as_an_ect
       latest = school_periods_as_an_ect.first
       SchoolPeriodPresenter.new(latest) if latest.present?

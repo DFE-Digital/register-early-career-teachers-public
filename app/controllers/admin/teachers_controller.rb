@@ -13,7 +13,7 @@ module Admin
 
     def show
       @page = params[:page] || 1
-      @teacher = TeacherPresenter.new(Teacher.find_by(trn: params[:id]))
+      @teacher = TeacherPresenter.new(Teacher.find_by(id: params[:id]))
     end
   end
 end

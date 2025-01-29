@@ -31,7 +31,7 @@ module Teachers
     def release_link
       return unless enable_release
 
-      helpers.govuk_link_to('Release', helpers.new_ab_teacher_release_ect_path(teacher_trn: teacher.trn), no_visited_state: true)
+      helpers.govuk_link_to('Release', helpers.new_ab_teacher_release_ect_path(teacher), no_visited_state: true)
     end
 
     def edit_link

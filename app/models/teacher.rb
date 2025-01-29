@@ -31,8 +31,4 @@ class Teacher < ApplicationRecord
       FullTextSearch::Query.new(query_string).search_by_all_prefixes
     )
   }
-
-  def to_param
-    trn
-  end
 end
