@@ -2,31 +2,52 @@ require 'csv'
 
 module AppropriateBodies::Importers
   class TeacherImporter
-    def initialize(filename = Rails.root.join('db/samples/appropriate-body-portal/teachers.csv'))
-      @csv = CSV.read(filename, headers: true)
-    end
+    IMPORT_ERROR_LOG = 'tmp/teacher_import.log'.freeze
 
-    def import
-      count = 0
-
-      Teacher.transaction do
-        @csv.each do |row|
-          Rails.logger.debug("attempting to import row: #{row.to_h}")
-
-          next if row.values_at('trn', 'first_name', 'last_name').any?(&:blank?)
-
-          Teacher.create!(**(build(row))).tap do |teacher|
-            if (induction_extension_terms = convert_extension(row)) && induction_extension_terms.positive?
-              Rails.logger.warn("Importing extension: #{induction_extension_terms}")
-              teacher.induction_extensions.create!(number_of_terms: induction_extension_terms)
-            end
-          end
-
-          count += 1
-        end
+    Row = Struct.new(:trn, :first_name, :last_name, :induction_status) do
+      def to_h
+        {
+          trn:,
+          trs_first_name: first_name_with_fallback,
+          trs_last_name: last_name_with_fallback,
+        }
       end
 
-      [count, @csv.count]
+      def first_name_with_fallback
+        first_name || 'Unknown'
+      end
+
+      def last_name_with_fallback
+        last_name || 'Unknown'
+      end
+    end
+
+    def initialize(filename, wanted_trns)
+      sorted_wanted_trns = wanted_trns.sort
+
+      file = File.readlines(filename)
+      file.delete_at(0)
+      sorted_lines = file.sort
+
+      wanted_lines = []
+
+      seek = sorted_wanted_trns.shift
+
+      sorted_lines.each do |line|
+        next unless line.start_with?(seek)
+
+        wanted_lines << line
+
+        break if sorted_wanted_trns.empty?
+
+        seek = sorted_wanted_trns.shift
+      end
+
+      @csv = CSV.parse(wanted_lines.join, headers: %w[trn first_name last_name induction_status])
+    end
+
+    def rows
+      @rows ||= @csv.map { |row| Row.new(**build(row)) }
     end
 
   private
@@ -34,8 +55,10 @@ module AppropriateBodies::Importers
     def build(row)
       {
         trn: row['trn'],
-        first_name: row['first_name'].strip,
-        last_name: row['last_name'].strip,
+        first_name: row['first_name']&.strip,
+        last_name: row['last_name']&.strip,
+        induction_status: row['induction_status']
+        # FIXME: extensions
       }
     end
 
