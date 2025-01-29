@@ -5,7 +5,8 @@ on:
     - cron: "15 0 * * *" # 00:15 UTC
 
 jobs:
-  backup-and-store:
+  backup-production-and-store-in-azure-storage:
+    runs-on: ubuntu-latest
     uses: ./.github/workflows/backup-db.yml
     with:
       environment: production
