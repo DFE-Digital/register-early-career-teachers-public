@@ -7,22 +7,22 @@ RSpec.describe "Appropriate Body teacher extensions new", type: :request do
   let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
   let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
-  describe 'GET /appropriate-body/teachers/:trn/extensions/new' do
+  describe 'GET /appropriate-body/teachers/:id/extensions/new' do
     it 'displays the new extension form' do
-      get("/appropriate-body/teachers/#{teacher.trn}/extensions/new")
+      get("/appropriate-body/teachers/#{teacher.id}/extensions/new")
 
       expect(response).to be_successful
       expect(response.body).to include('Enter number of terms')
     end
   end
 
-  describe 'POST /appropriate-body/teachers/:trn/extensions' do
+  describe 'POST /appropriate-body/teachers/:id/extensions' do
     context 'with valid parameters' do
       let(:valid_params) { { induction_extension: { number_of_terms: 1.5 } } }
 
       it 'creates a new extension' do
         expect {
-          post("/appropriate-body/teachers/#{teacher.trn}/extensions", params: valid_params)
+          post("/appropriate-body/teachers/#{teacher.id}/extensions", params: valid_params)
         }.to change(InductionExtension, :count).by(1)
 
         expect(response).to redirect_to(ab_teacher_path(teacher))
@@ -36,7 +36,7 @@ RSpec.describe "Appropriate Body teacher extensions new", type: :request do
 
       it 'does not create an extension' do
         expect {
-          post("/appropriate-body/teachers/#{teacher.trn}/extensions", params: invalid_params)
+          post("/appropriate-body/teachers/#{teacher.id}/extensions", params: invalid_params)
         }.not_to change(InductionExtension, :count)
 
         expect(response).to be_unprocessable

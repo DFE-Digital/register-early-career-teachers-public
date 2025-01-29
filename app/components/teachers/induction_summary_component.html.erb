@@ -26,7 +26,7 @@
     <% end %>
 
     <% if render_extension_links? %>
-      <%= row.with_action(text: extensions_action_text, visually_hidden_text: "extensions", href: ab_teacher_extensions_path(teacher_trn: teacher.trn), classes: 'govuk-link--no-visited-state') %>
+      <%= row.with_action(text: extensions_action_text, visually_hidden_text: "extensions", href: ab_teacher_extensions_path(teacher), classes: 'govuk-link--no-visited-state') %>
     <% end %>
   <% end %>
 

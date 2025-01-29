@@ -2,10 +2,10 @@ RSpec.describe 'Appropriate body releasing an ECT' do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
-  describe 'GET /appropriate-body/teachers/:trn/release/new' do
+  describe 'GET /appropriate-body/teachers/:id/release/new' do
     context 'when not signed in' do
       it 'redirects to the signin page' do
-        get("/appropriate-body/teachers/#{teacher.trn}/release/new")
+        get("/appropriate-body/teachers/#{teacher.id}/release/new")
 
         expect(response).to be_redirection
         expect(response.redirect_url).to end_with('/sign-in')
@@ -27,7 +27,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
       it 'instantiates a new PendingInductionSubmission and renders the page' do
         allow(PendingInductionSubmission).to receive(:new).and_call_original
 
-        get("/appropriate-body/teachers/#{teacher.trn}/release/new")
+        get("/appropriate-body/teachers/#{teacher.id}/release/new")
 
         expect(response).to be_successful
         expect(PendingInductionSubmission).to have_received(:new).once
@@ -35,10 +35,10 @@ RSpec.describe 'Appropriate body releasing an ECT' do
     end
   end
 
-  describe 'POST /appropriate-body/teachers/:trn/release' do
+  describe 'POST /appropriate-body/teachers/:id/release' do
     context 'when not signed in' do
       it 'redirects to the signin page' do
-        post("/appropriate-body/teachers/#{teacher.trn}/release")
+        post("/appropriate-body/teachers/#{teacher.id}/release")
 
         expect(response).to be_redirection
         expect(response.redirect_url).to end_with('/sign-in')
@@ -80,7 +80,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
 
         it 'uses PendingInductionSubmissions::Build to instantiate the PendingInductionSubmission' do
           post(
-            "/appropriate-body/teachers/#{teacher.trn}/release",
+            "/appropriate-body/teachers/#{teacher.id}/release",
             params: release_params
           )
 
@@ -89,7 +89,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
 
         it 'updates the induction period and redirects to show page' do
           post(
-            "/appropriate-body/teachers/#{teacher.trn}/release",
+            "/appropriate-body/teachers/#{teacher.id}/release",
             params: release_params
           )
 
@@ -98,7 +98,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
           expect(induction_period.number_of_terms).to eq(6)
 
           expect(response).to be_redirection
-          expect(response.redirect_url).to match(%r{/appropriate-body/teachers/#{teacher.trn}/release\z})
+          expect(response.redirect_url).to match(%r{/appropriate-body/teachers/#{teacher.id}/release\z})
         end
 
         context 'with missing params' do
@@ -113,7 +113,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
 
           it 'renders the new form with errors' do
             post(
-              "/appropriate-body/teachers/#{teacher.trn}/release",
+              "/appropriate-body/teachers/#{teacher.id}/release",
               params: invalid_params
             )
 
@@ -133,7 +133,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
 
           it 'includes finish date must be later than start date' do
             post(
-              "/appropriate-body/teachers/#{teacher.trn}/release",
+              "/appropriate-body/teachers/#{teacher.id}/release",
               params: invalid_params
             )
 

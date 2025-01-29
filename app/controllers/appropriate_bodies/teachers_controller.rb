@@ -10,7 +10,7 @@ module AppropriateBodies
     end
 
     def show
-      @teacher = AppropriateBodies::CurrentTeachers.new(@appropriate_body).current.find_by!(trn: params[:trn])
+      @teacher = AppropriateBodies::CurrentTeachers.new(@appropriate_body).current.find_by!(id: params[:id])
     end
   end
 end
