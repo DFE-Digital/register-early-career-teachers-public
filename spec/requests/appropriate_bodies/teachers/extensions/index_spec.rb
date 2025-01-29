@@ -8,7 +8,7 @@ RSpec.describe "Appropriate Body teacher extensions index", type: :request do
 
   describe 'when not signed in' do
     it 'redirects to the signin page' do
-      get("/appropriate-body/teachers/#{teacher.trn}/extensions")
+      get("/appropriate-body/teachers/#{teacher.id}/extensions")
 
       expect(response).to be_redirection
       expect(response.redirect_url).to end_with('/sign-in')
@@ -18,11 +18,11 @@ RSpec.describe "Appropriate Body teacher extensions index", type: :request do
   describe 'when signed in as an appropriate body user' do
     let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
-    describe 'GET /appropriate-body/teachers/:trn/extensions' do
+    describe 'GET /appropriate-body/teachers/:id/extensions' do
       it 'displays the extensions list' do
         FactoryBot.create(:induction_extension, teacher:, number_of_terms: 2)
 
-        get("/appropriate-body/teachers/#{teacher.trn}/extensions")
+        get("/appropriate-body/teachers/#{teacher.id}/extensions")
 
         expect(response).to be_successful
         expect(response.body).to include('2.0 terms')
