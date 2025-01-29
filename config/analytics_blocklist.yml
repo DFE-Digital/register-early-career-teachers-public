@@ -1,0 +1,505 @@
+---
+:shared:
+  :blazer_queries:
+  - id
+  - creator_id
+  - name
+  - description
+  - statement
+  - data_source
+  - status
+  - created_at
+  - updated_at
+  :blazer_dashboard_queries:
+  - id
+  - dashboard_id
+  - query_id
+  - position
+  - created_at
+  - updated_at
+  :blazer_dashboards:
+  - id
+  - creator_id
+  - name
+  - created_at
+  - updated_at
+  :blazer_checks:
+  - id
+  - creator_id
+  - query_id
+  - state
+  - schedule
+  - emails
+  - slack_channels
+  - check_type
+  - message
+  - last_run_at
+  - created_at
+  - updated_at
+  :blazer_audits:
+  - id
+  - user_id
+  - query_id
+  - statement
+  - data_source
+  - created_at
+  :solid_queue_semaphores:
+  - id
+  - key
+  - value
+  - expires_at
+  - created_at
+  - updated_at
+  :solid_queue_recurring_tasks:
+  - id
+  - key
+  - schedule
+  - command
+  - class_name
+  - arguments
+  - queue_name
+  - priority
+  - static
+  - description
+  - created_at
+  - updated_at
+  :solid_queue_processes:
+  - id
+  - kind
+  - last_heartbeat_at
+  - supervisor_id
+  - pid
+  - hostname
+  - metadata
+  - created_at
+  - name
+  :solid_queue_pauses:
+  - id
+  - queue_name
+  - created_at
+  :solid_queue_jobs:
+  - id
+  - queue_name
+  - class_name
+  - arguments
+  - priority
+  - active_job_id
+  - scheduled_at
+  - finished_at
+  - concurrency_key
+  - created_at
+  - updated_at
+  :solid_queue_scheduled_executions:
+  - id
+  - job_id
+  - queue_name
+  - priority
+  - scheduled_at
+  - created_at
+  :solid_queue_recurring_executions:
+  - id
+  - job_id
+  - task_key
+  - run_at
+  - created_at
+  :solid_queue_ready_executions:
+  - id
+  - job_id
+  - queue_name
+  - priority
+  - created_at
+  :solid_queue_failed_executions:
+  - id
+  - job_id
+  - error
+  - created_at
+  :solid_queue_claimed_executions:
+  - id
+  - job_id
+  - process_id
+  - created_at
+  :solid_queue_blocked_executions:
+  - id
+  - job_id
+  - queue_name
+  - priority
+  - concurrency_key
+  - expires_at
+  - created_at
+  :gias_school_links:
+  - id
+  - urn
+  - link_urn
+  - link_type
+  - link_date
+  - created_at
+  - updated_at
+  :gias_schools:
+  - urn
+  - name
+  - status
+  - funding_eligibility
+  - address_line1
+  - address_line2
+  - address_line3
+  - postcode
+  - primary_contact_email
+  - secondary_contact_email
+  - opened_on
+  - closed_on
+  - created_at
+  - updated_at
+  - administrative_district_name
+  - local_authority_code
+  - local_authority_name
+  - establishment_number
+  - phase_name
+  - section_41_approved
+  - type_name
+  - ukprn
+  - website
+  - induction_eligibility
+  - in_england
+  :users:
+  - id
+  - name
+  - email
+  - otp_secret
+  - otp_verified_at
+  - created_at
+  - updated_at
+  - full_name
+  - login_token
+  - login_token_valid_until
+  - remember_created_at
+  - last_sign_in_at
+  - current_sign_in_at
+  - current_sign_in_ip
+  - last_sign_in_ip
+  - sign_in_count
+  - discarded_at
+  - get_an_identity_id
+  - archived_email
+  - archived_at
+  :training_periods:
+  - id
+  - provider_partnership_id
+  - started_on
+  - finished_on
+  - created_at
+  - updated_at
+  - ect_at_school_period_id
+  - mentor_at_school_period_id
+  - range
+  - legacy_start_id
+  - legacy_end_id
+  :teacher_migration_failures:
+  - id
+  - teacher_id
+  - message
+  - migration_item_id
+  - migration_item_type
+  - created_at
+  - updated_at
+  :provider_partnerships:
+  - id
+  - academic_year_id
+  - lead_provider_id
+  - delivery_partner_id
+  - created_at
+  - updated_at
+  :pending_induction_submissions:
+  - id
+  - appropriate_body_id
+  - establishment_id
+  - trn
+  - trs_first_name
+  - trs_last_name
+  - date_of_birth
+  - trs_induction_status
+  - induction_programme
+  - started_on
+  - finished_on
+  - number_of_terms
+  - created_at
+  - updated_at
+  - confirmed_at
+  - trs_email_address
+  - trs_alerts
+  - trs_induction_start_date
+  - trs_induction_status_description
+  - trs_qts_status_description
+  - trs_initial_teacher_training_end_date
+  - trs_initial_teacher_training_provider_name
+  - outcome
+  - trs_qts_awarded_on
+  - confirmed
+  :migration_failures:
+  - id
+  - data_migration_id
+  - item
+  - failure_message
+  - created_at
+  - updated_at
+  - parent_id
+  - parent_type
+  :mentorship_periods:
+  - id
+  - ect_at_school_period_id
+  - mentor_at_school_period_id
+  - started_on
+  - finished_on
+  - created_at
+  - updated_at
+  - range
+  - legacy_start_id
+  - legacy_end_id
+  :mentor_at_school_periods:
+  - id
+  - school_id
+  - teacher_id
+  - started_on
+  - finished_on
+  - created_at
+  - updated_at
+  - range
+  - legacy_start_id
+  - legacy_end_id
+  - email
+  :lead_providers:
+  - id
+  - name
+  - created_at
+  - updated_at
+  - cpd_lead_provider_id
+  - vat_chargeable
+  :events:
+  - id
+  - heading
+  - body
+  - event_type
+  - happened_at
+  - teacher_id
+  - appropriate_body_id
+  - induction_period_id
+  - induction_extension_id
+  - school_id
+  - ect_at_school_period_id
+  - mentor_at_school_period_id
+  - training_period_id
+  - mentorship_period_id
+  - provider_partnership_id
+  - lead_provider_id
+  - delivery_partner_id
+  - user_id
+  - author_type
+  - author_id
+  - author_name
+  - author_email
+  - created_at
+  - updated_at
+  :ect_at_school_periods:
+  - id
+  - school_id
+  - teacher_id
+  - started_on
+  - finished_on
+  - created_at
+  - updated_at
+  - range
+  - legacy_start_id
+  - legacy_end_id
+  - working_pattern
+  - email
+  :dfe_roles:
+  - id
+  - role_type
+  - user_id
+  - created_at
+  - updated_at
+  :delivery_partners:
+  - id
+  - name
+  - created_at
+  - updated_at
+  - discarded_at
+  :declarations:
+  - id
+  - training_period_id
+  - declaration_type
+  - created_at
+  - updated_at
+  :data_migrations:
+  - id
+  - model
+  - processed_count
+  - failure_count
+  - started_at
+  - completed_at
+  - total_count
+  - queued_at
+  - worker
+  - created_at
+  - updated_at
+  :appropriate_bodies:
+  - body_type
+  - disable_from_year
+  - listed
+  - listed_for_school_type_codes
+  - selectable_by_schools
+  :academic_years:
+  - year
+  - created_at
+  - updated_at
+  :schools:
+  - id
+  - urn
+  - created_at
+  - updated_at
+  - name
+  - school_type_code
+  - address_line1
+  - address_line2
+  - address_line3
+  - postcode
+  - network_id
+  - domains
+  - school_type_name
+  - ukprn
+  - school_phase_type
+  - school_phase_name
+  - school_website
+  - school_status_code
+  - school_status_name
+  - secondary_contact_email
+  - primary_contact_email
+  - administrative_district_code
+  - administrative_district_name
+  - slug
+  - section_41_approved
+  :teacher_profiles:
+  - id
+  - trn
+  - school_id
+  - user_id
+  - created_at
+  - updated_at
+  :school_mentors:
+  - id
+  - participant_profile_id
+  - school_id
+  - preferred_identity_id
+  - created_at
+  - updated_at
+  - remove_from_school_on
+  :school_cohorts:
+  - id
+  - induction_programme_choice
+  - school_id
+  - cohort_id
+  - created_at
+  - updated_at
+  - estimated_teacher_count
+  - estimated_mentor_count
+  - core_induction_programme_id
+  - opt_out_of_updates
+  - default_induction_programme_id
+  - appropriate_body_id
+  :schedules:
+  - id
+  - name
+  - created_at
+  - updated_at
+  - schedule_identifier
+  - type
+  - cohort_id
+  - identifier_alias
+  :provider_relationships:
+  - id
+  - lead_provider_id
+  - delivery_partner_id
+  - cohort_id
+  - created_at
+  - updated_at
+  - discarded_at
+  :partnerships:
+  - id
+  - created_at
+  - updated_at
+  - school_id
+  - lead_provider_id
+  - cohort_id
+  - delivery_partner_id
+  - challenged_at
+  - challenge_reason
+  - challenge_deadline
+  - pending
+  - report_id
+  - relationship
+  :participant_profiles:
+  - id
+  - type
+  - school_id
+  - core_induction_programme_id
+  - cohort_id
+  - mentor_profile_id
+  - sparsity_uplift
+  - pupil_premium_uplift
+  - created_at
+  - updated_at
+  - status
+  - school_cohort_id
+  - teacher_profile_id
+  - schedule_id
+  - npq_course_id
+  - school_urn
+  - school_ukprn
+  - request_for_details_sent_at
+  - training_status
+  - profile_duplicity
+  - participant_identity_id
+  - notes
+  - induction_start_date
+  - induction_completion_date
+  - mentor_completion_date
+  - mentor_completion_reason
+  - cohort_changed_after_payments_frozen
+  :induction_records:
+  - id
+  - induction_programme_id
+  - participant_profile_id
+  - schedule_id
+  - start_date
+  - end_date
+  - created_at
+  - updated_at
+  - training_status
+  - preferred_identity_id
+  - induction_status
+  - mentor_profile_id
+  - school_transfer
+  - appropriate_body_id
+  :induction_programmes:
+  - id
+  - school_cohort_id
+  - partnership_id
+  - core_induction_programme_id
+  - training_programme
+  - created_at
+  - updated_at
+  - delivery_partner_to_be_confirmed
+  :core_induction_programmes:
+  - id
+  - name
+  - created_at
+  - updated_at
+  :cohorts:
+  - id
+  - created_at
+  - updated_at
+  - start_year
+  - registration_start_date
+  - academic_year_start_date
+  - automatic_assignment_period_end_date
+  - payments_frozen_at
+  - mentor_funding

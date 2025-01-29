@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include DfE::Analytics::Requests
+
   class UnredirectableError < StandardError; end
 
   before_action :authenticate
