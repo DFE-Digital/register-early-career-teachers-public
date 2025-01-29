@@ -1,5 +1,5 @@
-name: Backup DB
-description: Backup production DB and restore to snapshot DB
+name: Backup production and restore snapshot DB
+description: Dump production DB and straight restore to snapshot DB keeping no copy in Azure Storage
 
 inputs:
   environment:
