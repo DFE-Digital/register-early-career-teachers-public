@@ -1,7 +1,6 @@
 RSpec.describe 'Releasing an ECT' do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:trn) { teacher.trn }
   let(:today) { Time.zone.today }
   let(:number_of_completed_terms) { 4 }
 
@@ -10,9 +9,9 @@ RSpec.describe 'Releasing an ECT' do
   let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
 
   scenario 'Happy path' do
-    given_i_am_on_the_ect_page(trn)
+    given_i_am_on_the_ect_page(teacher)
     when_i_click_link('Release')
-    then_i_should_be_on_the_release_ect_page(trn)
+    then_i_should_be_on_the_release_ect_page(teacher)
 
     when_i_submit_the_form_without_filling_anything_in
     then_i_should_see_an_error_summary
@@ -29,8 +28,8 @@ RSpec.describe 'Releasing an ECT' do
 
 private
 
-  def given_i_am_on_the_ect_page(trn)
-    path = "/appropriate-body/teachers/#{trn}"
+  def given_i_am_on_the_ect_page(teacher)
+    path = "/appropriate-body/teachers/#{teacher.id}"
     page.goto(path)
     expect(page.url).to end_with(path)
   end
@@ -39,8 +38,8 @@ private
     page.get_by_role('link', name: text).click
   end
 
-  def then_i_should_be_on_the_release_ect_page(trn)
-    expect(page.url).to end_with("/appropriate-body/teachers/#{trn}/release/new")
+  def then_i_should_be_on_the_release_ect_page(teacher)
+    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/release/new")
   end
 
   def when_i_submit_the_form_without_filling_anything_in
@@ -72,7 +71,7 @@ private
   end
 
   def then_i_should_be_on_the_success_page
-    expect(page.url).to end_with("/appropriate-body/teachers/#{trn}/release")
+    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/release")
     expect(page.locator('.govuk-panel')).to be_visible
 
     teacher_name = ::Teachers::Name.new(teacher).full_name
@@ -81,7 +80,7 @@ private
   end
 
   def and_the_pending_induction_submission_should_have_been_deleted
-    expect(PendingInductionSubmission.find_by(trn:, appropriate_body:)).to be_nil
+    expect(PendingInductionSubmission.find_by(trn: teacher.trn, appropriate_body:)).to be_nil
   end
 
   def and_the_release_ect_service_should_have_been_called

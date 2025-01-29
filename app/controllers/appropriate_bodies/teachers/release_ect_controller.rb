@@ -51,7 +51,7 @@ module AppropriateBodies
       end
 
       def find_teacher
-        AppropriateBodies::CurrentTeachers.new(@appropriate_body).current.find_by!(trn: params[:teacher_trn])
+        AppropriateBodies::CurrentTeachers.new(@appropriate_body).current.find_by!(id: params[:teacher_id])
       end
     end
   end
