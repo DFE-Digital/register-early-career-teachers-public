@@ -1,0 +1,58 @@
+name: "Manual deploy image"
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deployment environment
+        required: true
+        default: migration
+        type: environment
+        options:
+          - migration
+          - production
+          - sandbox
+          - staging
+
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+  security-events: write
+
+jobs:
+  docker:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    outputs:
+      docker-image-tag: ${{ steps.build-docker-image.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: DFE-Digital/github-actions/build-docker-image@master
+        id: build-docker-image
+        with:
+          docker-repository: ghcr.io/dfe-digital/register-early-career-teachers-public
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+
+  deploy:
+    name: Deploy to environment
+    needs: [docker]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./.github/actions/deploy-environment-to-aks
+        id: deploy
+        with:
+          environment: ${{ inputs.environment }}
+          docker-image-tag: ${{ needs.docker.outputs.docker-image-tag }}
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
+          commit-sha: ${{ github.sha }}
