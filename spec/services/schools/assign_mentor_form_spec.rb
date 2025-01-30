@@ -33,7 +33,7 @@ describe Schools::AssignMentorForm, type: :model do
     end
 
     describe "mentorship authorised" do
-      context "when the school has no eligible mentors for the ect" do
+      context "when the mentor is not eligible for the ect" do
         let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
         let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, school: ect.school, teacher: ect.teacher) }
 
@@ -44,7 +44,7 @@ describe Schools::AssignMentorForm, type: :model do
         end
 
         it "adds a base error" do
-          expect(subject.errors.messages[:mentor_id]).to include("This teacher cannot be mentoring this ECT")
+          expect(subject.errors.messages[:mentor_id]).to include("It needs to be a different mentor for this ECT")
         end
       end
     end
