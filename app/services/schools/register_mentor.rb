@@ -20,8 +20,15 @@ module Schools
 
   private
 
+    def already_registered_as_a_mentor?
+      ::Teacher.find_by_trn(trn)&.mentor_at_school_periods&.exists?
+    end
+
     def create_teacher!
-      @teacher = ::Teacher.create!(trs_first_name:, trs_last_name:, corrected_name:, trn:)
+      raise ActiveRecord::RecordInvalid if already_registered_as_a_mentor?
+
+      @teacher = ::Teacher.create_with(trs_first_name:, trs_last_name:, corrected_name:)
+                          .find_or_create_by!(trn:)
     end
 
     def school
