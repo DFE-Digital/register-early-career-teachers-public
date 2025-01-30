@@ -52,7 +52,7 @@ module Schools
                                  school:,
                                  started_on: Date.parse(start_date),
                                  working_pattern:)
-                               .register_teacher!
+                            .register!
       end
 
       def active_at_school?(school:)
