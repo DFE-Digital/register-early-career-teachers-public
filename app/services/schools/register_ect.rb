@@ -12,7 +12,7 @@ module Schools
       @working_pattern = working_pattern
     end
 
-    def register_teacher!
+    def register!
       ActiveRecord::Base.transaction do
         create_teacher!
         start_at_school!
