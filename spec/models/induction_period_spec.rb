@@ -40,7 +40,7 @@ describe InductionPeriod do
       end
     end
 
-    it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy]).with_message("Choose an induction programme") }
+    it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy unknown pre_september_2021]).with_message("Choose an induction programme") }
 
     describe '#started_on_from_september_2021_onwards' do
       context 'when started_on before September 2021' do
