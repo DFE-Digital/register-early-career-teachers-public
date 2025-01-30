@@ -119,7 +119,7 @@ runs:
           COMPRESS_ARG=-c
         fi
 
-        ./konduit.sh ${NAMESPACE_ARG} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-app-kv -i ${{ inputs.backup-file }} ${COMPRESS_ARG} -t 7200 -x ${{ inputs.app-name }} -- psql
+        ./konduit.sh ${NAMESPACE_ARG} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -i ${{ inputs.backup-file }} ${COMPRESS_ARG} -t 7200 -x ${{ inputs.app-name }} -- psql
 
     - name: Restore Summary
       if: success()
