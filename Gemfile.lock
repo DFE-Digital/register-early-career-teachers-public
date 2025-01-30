@@ -401,6 +401,8 @@ GEM
     raabro (1.4.0)
     racc (1.8.1)
     rack (3.1.8)
+    rack-attack (6.7.0)
+      rack (>= 1.0, < 4)
     rack-oauth2 (2.2.1)
       activesupport
       attr_required
@@ -456,6 +458,10 @@ GEM
     rdoc (6.11.0)
       psych (>= 4.0.0)
     redcarpet (3.6.0)
+    redis (5.3.0)
+      redis-client (>= 0.22.0)
+    redis-client (0.23.2)
+      connection_pool
     regexp_parser (2.10.0)
     reline (0.6.0)
       io-console (~> 0.5)
@@ -640,7 +646,9 @@ DEPENDENCIES
   playwright-ruby-client
   propshaft
   puma (>= 5.0)
+  rack-attack
   rails (~> 8.0.1)
+  redis
   rotp
   rspec
   rspec-rails
