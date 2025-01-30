@@ -23,7 +23,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_135949) do
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
-  create_enum "induction_programme", ["cip", "fip", "diy"]
+  create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "academic_years", primary_key: "year", id: :serial, force: :cascade do |t|
