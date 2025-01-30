@@ -10,10 +10,13 @@ jobs:
     uses: ./.github/workflows/backup-db.yml
     with:
       environment: production
-      backup-file: backup-production.sql
+    secrets:
+      azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
-  restore-from-azure-storage:
+  restore-snapshot-from-azure-storage:
+    needs: backup-production-and-store-in-azure-storage
     uses: ./.github/workflows/restore-snapshot-db-from-azure-storage.yml
     with:
       environment: production
-      backup-file: backup-production.sql
+    secrets:
+      azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
