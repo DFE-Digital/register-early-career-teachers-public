@@ -13,6 +13,8 @@ gem "jsbundling-rails"
 gem "pg", "~> 1.5"
 gem "propshaft"
 gem "puma", ">= 5.0"
+gem "rack-attack"
+gem "redis"
 gem "tzinfo-data", platforms: %i[windows jruby]
 
 gem "govuk-components"
