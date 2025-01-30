@@ -44,6 +44,7 @@ COPY . .
 # Precompile assets
 RUN RAILS_ENV=production SECRET_KEY_BASE=required-to-run-but-not-used \
     GOVUK_NOTIFY_API_KEY=TestKey \
+    REDIS_CACHE_URL=redis://127.0.0.1:6379 \
     bundle exec rails assets:precompile
 
 # Cleanup to save space in the production image
