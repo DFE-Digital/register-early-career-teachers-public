@@ -17,8 +17,7 @@ describe Schools::RegisterECT do
                         working_pattern:)
   end
 
-  describe '#register_teacher!' do
-    let(:teacher) { Teacher.first }
+  describe '#register!' do
     let(:ect_at_school_period) { ECTAtSchoolPeriod.first }
 
     it 'creates a new Teacher record' do
@@ -30,8 +29,8 @@ describe Schools::RegisterECT do
     end
 
     it 'creates an associated ECTATSchoolPeriod record' do
-      expect { service.register_teacher! }.to change(ECTAtSchoolPeriod, :count).from(0).to(1)
-      expect(ect_at_school_period.teacher_id).to eq(teacher.id)
+      expect { service.register! }.to change(ECTAtSchoolPeriod, :count).from(0).to(1)
+      expect(ect_at_school_period.teacher_id).to eq(Teacher.first.id)
       expect(ect_at_school_period.started_on).to eq(started_on)
       expect(ect_at_school_period.working_pattern).to eq(working_pattern)
     end
