@@ -1,4 +1,4 @@
-name: "Manually deploy imn environment"
+name: "Manually deploy an environment"
 
 on:
   workflow_dispatch:
