@@ -39,6 +39,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
     current_mentorship&.mentor
   end
 
+  delegate :trn, to: :teacher
+
 private
 
   def teacher_distinct_period

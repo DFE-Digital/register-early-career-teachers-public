@@ -26,7 +26,8 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
   end
 
   describe '#next_step' do
-    let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, step_params:) }
+    let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
+    let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, step_params:, ect_id: ect.id) }
     let(:step_params) do
       ActionController::Parameters.new(
         "find_mentor" => {
@@ -40,37 +41,6 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
     subject { wizard.current_step }
 
-    context 'when the mentor is prohibited from teaching' do
-      let(:teacher) { create(:teacher, trn: '1234568') }
-      before do
-        fake_client = TRS::FakeAPIClient.new
-
-        allow(fake_client).to receive(:find_teacher).and_return(
-          TRS::Teacher.new(
-            'trn' => '1234568',
-            'firstName' => 'Jane',
-            'lastName' => 'Smith',
-            'dateOfBirth' => '1977-02-03',
-            'alerts' => [
-              {
-                'alertType' => {
-                  'alertCategory' => {
-                    'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
-                  }
-                }
-              }
-            ]
-          )
-        )
-        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
-        subject.save!
-      end
-
-      it 'returns :cannot_register_mentor' do
-        expect(subject.next_step).to eq(:cannot_register_mentor)
-      end
-    end
-
     context 'when the mentor is not found in TRS' do
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(raise_not_found: true))
@@ -79,6 +49,20 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
       it 'returns :trn_not_found' do
         expect(subject.next_step).to eq(:trn_not_found)
+      end
+    end
+
+    context 'when the mentor trn matches that of the ECT' do
+      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+      let(:ect) { FactoryBot.create(:ect_at_school_period, :active, teacher:) }
+
+      before do
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        subject.save!
+      end
+
+      it 'returns :cannot_mentor_themself' do
+        expect(subject.next_step).to eq(:cannot_mentor_themself)
       end
     end
 
@@ -116,6 +100,37 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
       it 'returns :already_active_at_school' do
         expect(subject.next_step).to eq(:already_active_at_school)
+      end
+    end
+
+    context 'when the mentor is prohibited from teaching' do
+      let(:teacher) { create(:teacher, trn: '1234568') }
+      before do
+        fake_client = TRS::FakeAPIClient.new
+
+        allow(fake_client).to receive(:find_teacher).and_return(
+          TRS::Teacher.new(
+            'trn' => '1234568',
+            'firstName' => 'Jane',
+            'lastName' => 'Smith',
+            'dateOfBirth' => '1977-02-03',
+            'alerts' => [
+              {
+                'alertType' => {
+                  'alertCategory' => {
+                    'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
+                  }
+                }
+              }
+            ]
+          )
+        )
+        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
+        subject.save!
+      end
+
+      it 'returns :cannot_register_mentor' do
+        expect(subject.next_step).to eq(:cannot_register_mentor)
       end
     end
 

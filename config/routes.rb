@@ -152,6 +152,9 @@ Rails.application.routes.draw do
       get "find-mentor", action: :new
       post "find-mentor", action: :create
 
+      get "cannot-mentor-themself", action: :new
+      post "cannot-mentor-themself", action: :create
+
       get "national-insurance-number", action: :new
       post "national-insurance-number", action: :create
 
