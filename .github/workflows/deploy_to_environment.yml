@@ -1,8 +1,13 @@
-name: "Manual deploy image"
+name: "Manually deploy imn environment"
 
 on:
   workflow_dispatch:
     inputs:
+      branch-name:
+        description: Branch to deploy
+        required: true
+        default: main
+        type: string
       environment:
         description: Deployment environment
         required: true
@@ -15,7 +20,7 @@ on:
           - staging
 
 permissions:
-  contents: read
+  id-token: write
   packages: write
   pull-requests: write
   security-events: write
@@ -29,6 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.branch-name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: DFE-Digital/github-actions/build-docker-image@master
@@ -46,6 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.branch-name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: ./.github/actions/deploy-environment-to-aks
