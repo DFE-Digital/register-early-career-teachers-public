@@ -191,5 +191,34 @@ describe PendingInductionSubmission do
         end
       end
     end
+
+    describe "#no_future_induction_periods" do
+      context "with induction period started and ended after submission started_on" do
+        it "is invalid" do
+          teacher = FactoryBot.create(:teacher)
+
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.current - 1.day, finished_on: Date.current)
+
+          pending_induction_submission = FactoryBot.build(:pending_induction_submission, trn: teacher.trn, started_on: Date.current - 3.days)
+
+          pending_induction_submission.valid?(:register_ect)
+
+          expect(pending_induction_submission.errors[:started_on]).to include("Enter a start date after the last induction period finished (#{Date.current.to_fs(:govuk)})")
+        end
+      end
+
+      context "with started_on overlapping with existing induction period" do
+        it "is invalid" do
+          teacher = FactoryBot.create(:teacher)
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.current - 3.days, finished_on: Date.current)
+
+          pending_induction_submission = FactoryBot.build(:pending_induction_submission, trn: teacher.trn, started_on: Date.current - 2.days)
+
+          pending_induction_submission.valid?(:register_ect)
+
+          expect(pending_induction_submission.errors[:started_on]).to include("Enter a start date after the last induction period finished (#{Date.current.to_fs(:govuk)})")
+        end
+      end
+    end
   end
 end
