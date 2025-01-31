@@ -5,11 +5,18 @@
   backlink_href: new_ab_claim_an_ect_find_path)
 %>
 
-<% unless induction_status_from(teacher: @teacher, pending_induction_submission: @pending_induction_submission).completed? %>
-  <%= form_with(model: @pending_induction_submission, url: ab_claim_an_ect_check_path(@pending_induction_submission, method: 'patch')) do |f| %>
-    <%= f.govuk_submit("Claim induction") %>
+<% unless claiming_body?(@teacher, @current_appropriate_body) %>
+  <div class="govuk-inset-text">
+    You cannot register <%= pending_induction_submission_full_name(@pending_induction_submission) %>. 
+    Our records show that <%= pending_induction_submission_full_name(@pending_induction_submission) %> is completing their induction with another appropriate body.
+  </div>
+<% else %> 
+  <% unless induction_status_from(teacher: @teacher, pending_induction_submission: @pending_induction_submission).completed? %>
+    <%= form_with(model: @pending_induction_submission, url: ab_claim_an_ect_check_path(@pending_induction_submission, method: 'patch')) do |f| %>
+      <%= f.govuk_submit("Claim induction") %>
+    <% end %>
   <% end %>
-<% end %>
+<% end %> 
 
 <h2 class="govuk-heading-m">Personal details</h2>
 
