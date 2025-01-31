@@ -169,14 +169,24 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       end
     end
 
-    xcontext "when the teacher already has an induction period" do
+    context "when trying to register a teacher with a start_date before future IPs" do
       let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567") }
-      let!(:existing_induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher) }
+      let(:started_on) { 2.days.ago }
+      let!(:existing_induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher, started_on:, finished_on: 1.day.ago) }
 
-      it "raises TeacherAlreadyClaimedError" do
-        expect {
-          subject.register(pending_induction_submission_params)
-        }.to raise_error(AppropriateBodies::Errors::TeacherAlreadyClaimedError, "Teacher already claimed")
+      let(:pending_induction_submission_params) do
+        {
+          induction_programme: "fip",
+          started_on: 3.days.ago.to_date,
+          trn: "1234567",
+          trs_first_name: "John",
+          trs_last_name: "Doe",
+          trs_qts_awarded_on:
+        }
+      end
+      it "fails because invalid" do
+        expect(subject.register(pending_induction_submission_params)).to be_falsey
+        expect(subject.pending_induction_submission.errors.key?(:started_on)).to be true
       end
     end
 

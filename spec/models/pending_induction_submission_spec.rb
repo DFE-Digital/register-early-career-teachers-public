@@ -184,5 +184,19 @@ describe PendingInductionSubmission do
         end
       end
     end
+
+    describe "#no_future_induction_periods" do
+      it "validates that there are no future induction periods" do
+        teacher = FactoryBot.create(:teacher)
+        started_on = Date.current - 1.day
+        FactoryBot.create(:induction_period, teacher:, started_on:, finished_on: Date.current)
+
+        pending_induction_submission = FactoryBot.build(:pending_induction_submission, trn: teacher.trn, started_on: Date.current - 3.days, finished_on: Date.current - 1.day)
+
+        pending_induction_submission.valid?(:register_ect)
+
+        expect(pending_induction_submission.errors[:started_on]).to include("Enter a start date after the last induction period finished (#{started_on.to_fs(:govuk)})")
+      end
+    end
   end
 end
