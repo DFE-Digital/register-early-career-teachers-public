@@ -90,6 +90,48 @@ describe MentorshipPeriod do
         end
       end
     end
+
+    context '#not_self_mentoring' do
+      context 'when mentor and mentee are the same teacher' do
+        let!(:teacher) { ect_at_school_period.teacher }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active) }
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:) }
+
+        subject { FactoryBot.build(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
+
+        it 'add a base error' do
+          subject.valid?
+
+          expect(subject.errors.messages[:base]).to include('A mentee cannot mentor themself')
+        end
+      end
+
+      context 'when mentor and mentee are different teachers' do
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active) }
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active) }
+
+        subject { FactoryBot.build(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
+
+        it 'do not add an error' do
+          subject.valid?
+
+          expect(subject.errors.messages[:base]).not_to include('A mentee cannot mentor themself')
+        end
+      end
+
+      context 'when mentor or mentee are not set yet' do
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active) }
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active) }
+
+        subject { FactoryBot.build(:mentorship_period, mentor: mentor_at_school_period) }
+
+        it 'do not add an error' do
+          subject.valid?
+
+          expect(subject.errors.messages[:base]).not_to include('A mentee cannot mentor themself')
+        end
+      end
+    end
   end
 
   describe "scopes" do
