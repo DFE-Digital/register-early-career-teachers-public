@@ -102,8 +102,14 @@ GEM
     base32 (0.3.4)
     base64 (0.2.0)
     benchmark (0.4.0)
+    better_errors (2.10.1)
+      erubi (>= 1.0.0)
+      rack (>= 0.9.0)
+      rouge (>= 1.0.0)
     bigdecimal (3.1.9)
     bindata (2.5.0)
+    binding_of_caller (1.0.1)
+      debug_inspector (>= 1.2.0)
     blazer (3.1.0)
       activerecord (>= 6.1)
       chartkick (>= 5)
@@ -140,6 +146,7 @@ GEM
     debug (1.10.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    debug_inspector (1.2.0)
     diff-lcs (1.5.1)
     drb (2.2.1)
     em-websocket (0.5.3)
@@ -454,6 +461,7 @@ GEM
       io-console (~> 0.5)
     rexml (3.3.9)
     rotp (6.3.0)
+    rouge (4.5.1)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -605,6 +613,8 @@ PLATFORMS
 DEPENDENCIES
   asciidoctor
   base32
+  better_errors
+  binding_of_caller
   blazer
   bootsnap
   brakeman
