@@ -1,4 +1,4 @@
-name: Directly copy an env main db into to the snapshot db, bypassing Azure Storage
+name: Directly copy an env main db into the snapshot db, bypassing Azure Storage
 
 on:
   workflow_dispatch:
