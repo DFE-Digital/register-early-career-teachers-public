@@ -11,6 +11,9 @@ on:
         options:
           - staging
           - production
+      azure-credentials:
+        description: Azure credentials
+        required: false
       backup-file:
         description: |
           Backup file name (without extension). Default is cpdec2_[env]_adhoc_YYYY-MM-DD. Set it explicitly when backing up a point-in-time (PTR) server. (Optional)
@@ -22,12 +25,20 @@ on:
           Name of the database server. Default is the live server. When backing up a point-in-time (PTR) server, use the full name of the PTR server. (Optional)
 
   workflow_call:
+    secrets:
+      azure-credentials:
+        description: Azure credentials
+        required: false
     inputs:
       environment:
         description: Environment to backup
         required: true
         default: staging
         type: string
+      azure-credentials:
+        description: Azure Credentials
+        type: string
+        required: false
       backup-file:
         description: |
           Backup file name (without extension). Default is cpdec2_[env]_adhoc_YYYY-MM-DD. Set it explicitly when backing up a point-in-time (PTR) server. (Optional)
@@ -56,11 +67,12 @@ jobs:
       BACKUP_FILE: ${{ inputs.backup-file || 'schedule'  }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.azure-credentials || secrets.AZURE_CREDENTIALS }}
 
       - name: Set Azure environment variables
         run: |
@@ -74,6 +86,7 @@ jobs:
           echo "STORAGE_ACCOUNT_NAME=${AZURE_RESOURCE_PREFIX}${SERVICE_SHORT}dbbkp${CONFIG_SHORT}sa" >> $GITHUB_ENV
           echo "DB_SERVER=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg" >> $GITHUB_ENV
           echo "KEYVAULT_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-inf-kv" >> $GITHUB_ENV
+          echo "APP_NAME=${SERVICE_NAME}-${DEPLOY_ENV}-web" >> $GITHUB_ENV
 
       - name: Generate the backup file name
         run: |
@@ -105,9 +118,20 @@ jobs:
         with:
           storage-account: ${{ env.STORAGE_ACCOUNT_NAME }}
           resource-group: ${{ env.RESOURCE_GROUP_NAME }}
-          app-name: ${{ env.SERVICE_NAME }}-${{ env.DEPLOY_ENV }}-web
+          app-name: ${{ env.APP_NAME }}
           cluster: ${{ env.CLUSTER }}
-          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          azure-credentials: ${{ secrets.azure-credentials || secrets.AZURE_CREDENTIALS }}
           backup-file: ${{ env.BACKUP_FILE }}.sql
           db-server-name: ${{ inputs.db-server }}
           slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+
+      - name: Notify Slack channel on job success
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_USERNAME: CI Deployment
+          SLACK_TITLE: ${{ env.DEPLOY_ENV }} database dump stored in Azure Storage (${{ env.STORAGE_ACCOUNT_NAME }}) - Success
+          SLACK_MESSAGE: ${{ env.APP_NAME }} - ${{ env.DEPLOY_ENV }} database backup job succeeded
+          SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+          SLACK_COLOR: success
+          SLACK_FOOTER: Sent from backup-db workflow
