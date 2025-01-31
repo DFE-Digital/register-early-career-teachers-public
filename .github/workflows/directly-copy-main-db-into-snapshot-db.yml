@@ -1,10 +1,10 @@
-name: Nightly copy production main db into snapshot db keeping no backup in Azure Storage
+name: Directly copy an env main db into to the snapshot db, bypassing Azure Storage
 
 on:
   workflow_dispatch:
     inputs:
       environment:
-        description: GitHub environment to backup and restore
+        description: GitHub environment to backup
         type: choice
         default: production
         options:
@@ -12,16 +12,13 @@ on:
           - production
         required: true
 
-  schedule:
-    - cron: "45 3 * * *" # 03:45 UTC
-
 env:
   SERVICE_NAME: cpd-ec2
   SERVICE_SHORT: cpdec2
   TF_VARS_PATH: config/terraform/application/config
 
 jobs:
-  backup-production-and-restore-snapshot:
+  backup-main-db-and-restore-snapshot:
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment || 'production' }}
@@ -55,7 +52,7 @@ jobs:
             echo "SLACK_WEBHOOK=$SLACK_WEBHOOK" >> $GITHUB_OUTPUT
 
       - name: Backup and restore snapshot
-        uses: ./.github/actions/backup-and-restore-snapshot-database
+        uses: ./.github/actions/directly-backup-and-restore-snapshot-database
         with:
           environment: ${{ inputs.environment || 'production' }}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}

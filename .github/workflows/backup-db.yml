@@ -86,6 +86,7 @@ jobs:
           echo "STORAGE_ACCOUNT_NAME=${AZURE_RESOURCE_PREFIX}${SERVICE_SHORT}dbbkp${CONFIG_SHORT}sa" >> $GITHUB_ENV
           echo "DB_SERVER=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg" >> $GITHUB_ENV
           echo "KEYVAULT_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-inf-kv" >> $GITHUB_ENV
+          echo "APP_NAME=${SERVICE_NAME}-${DEPLOY_ENV}-web" >> $GITHUB_ENV
 
       - name: Generate the backup file name
         run: |
@@ -117,9 +118,20 @@ jobs:
         with:
           storage-account: ${{ env.STORAGE_ACCOUNT_NAME }}
           resource-group: ${{ env.RESOURCE_GROUP_NAME }}
-          app-name: ${{ env.SERVICE_NAME }}-${{ env.DEPLOY_ENV }}-web
+          app-name: ${{ env.APP_NAME }}
           cluster: ${{ env.CLUSTER }}
           azure-credentials: ${{ secrets.azure-credentials || secrets.AZURE_CREDENTIALS }}
           backup-file: ${{ env.BACKUP_FILE }}.sql
           db-server-name: ${{ inputs.db-server }}
           slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+
+      - name: Notify Slack channel on job success
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_USERNAME: CI Deployment
+          SLACK_TITLE: ${{ env.DEPLOY_ENV }} database dump stored in Azure Storage (${{ env.STORAGE_ACCOUNT_NAME }}) - Success
+          SLACK_MESSAGE: ${{ env.APP_NAME }} - ${{ env.DEPLOY_ENV }} database backup job succeeded
+          SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+          SLACK_COLOR: success
+          SLACK_FOOTER: Sent from backup-db workflow
