@@ -1,3 +1,8 @@
 ---
 ENABLE_SENTRY: true
 ENABLE_PERSONAS: false
+DFE_SIGN_IN_API_AUDIENCE: signin.education.gov.uk
+DFE_SIGN_IN_API_BASE_URL: 'https://api.signin.education.gov.uk'
+DFE_SIGN_IN_CLIENT_ID: RegisterECTs
+DFE_SIGN_IN_ISSUER: 'https://oidc.signin.education.gov.uk'
+DFE_SIGN_IN_REDIRECT_URI: 'https://www.register-early-career-teachers.education.gov.uk/auth/dfe/callback'
