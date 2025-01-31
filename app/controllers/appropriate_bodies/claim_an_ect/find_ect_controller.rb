@@ -38,7 +38,9 @@ module AppropriateBodies
 
         render(:new)
       rescue AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB => e
-        redirect_to(ab_teacher_path(find_ect.pending_induction_submission.trn), notice: e.message)
+        teacher_id = Teacher.find_by!(trn: find_ect.pending_induction_submission.trn).id
+
+        redirect_to(ab_teacher_path(teacher_id), notice: e.message)
       end
 
     private
