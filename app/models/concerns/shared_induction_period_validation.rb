@@ -35,4 +35,13 @@ module SharedInductionPeriodValidation
 
     errors.add(:started_on, "Start date cannot be before QTS award date (#{qts_award_date.to_fs(:govuk)})")
   end
+
+  def ensure_no_future_induction_periods(teacher)
+    teacher.induction_periods.order(:started_on).each do |period|
+      if started_on < period.started_on
+        errors.add(:started_on, "Enter a start date after the last induction period finished (#{period.started_on.to_fs(:govuk)})")
+        break
+      end
+    end
+  end
 end
