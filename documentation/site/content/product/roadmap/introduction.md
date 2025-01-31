@@ -21,7 +21,7 @@ So far, we have:
 * built a way for schools to register ECTs and mentors to save school's time and improve data accuracy
 * set up DfE Sign in for appropriate bodies, so we can improve how all users access the service
 * improved how mentors are assigned to ECTs, so we can reduce having to chase schools to tell us mentor information
-* built a service for appropriate bodies to pass or fail inductions individually, so we can start to consolidate services and reduce workload for all users
+* built a service for appropriate bodies to record data about inductions individually, so we can start to consolidate services and reduce workload for all users
 * set up how we want to migrate data from ECF1 to the new Register early career teachers service
 * designed how ECTs and mentors are registered when they are moving schools
 													
