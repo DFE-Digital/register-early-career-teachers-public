@@ -14,7 +14,7 @@ All of these items of work are related [to our objectives as a team.](/product/o
 Our objectives are centered around how we can make it easier for schools, lead providers and appropriate bodies to support or train ECTs and mentors.
 
 
-## What we've already done
+## What we've done
 
 So far, we have:
 
