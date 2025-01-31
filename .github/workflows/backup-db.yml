@@ -11,9 +11,6 @@ on:
         options:
           - staging
           - production
-      azure-credentials:
-        description: Azure credentials
-        required: false
       backup-file:
         description: |
           Backup file name (without extension). Default is cpdec2_[env]_adhoc_YYYY-MM-DD. Set it explicitly when backing up a point-in-time (PTR) server. (Optional)
@@ -35,10 +32,6 @@ on:
         required: true
         default: staging
         type: string
-      azure-credentials:
-        description: Azure Credentials
-        type: string
-        required: false
       backup-file:
         description: |
           Backup file name (without extension). Default is cpdec2_[env]_adhoc_YYYY-MM-DD. Set it explicitly when backing up a point-in-time (PTR) server. (Optional)
