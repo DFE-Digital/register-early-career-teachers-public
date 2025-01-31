@@ -42,15 +42,32 @@ jobs:
     - uses: actions/checkout@v4
       name: Checkout
 
+    - uses: azure/login@v2
+      with:
+        creds: ${{ secrets.azure-credentials || secrets.AZURE_CREDENTIALS }}
+
     - name: Set environment variables
       run: |
-        source global_config/${{ inputs.environment }}.sh
+        # Load environment-specific configuration
+        source config/global_config/${{ inputs.environment }}.sh
         tf_vars_file=${{ env.TF_VARS_PATH }}/${{ inputs.environment }}.tfvars.json
+
+        # Set Azure environment variables
         echo "CLUSTER=$(jq -r '.cluster' ${tf_vars_file})" >> $GITHUB_ENV
+        echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
         echo "RESOURCE_GROUP_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-rg" >> $GITHUB_ENV
         echo "STORAGE_ACCOUNT_NAME=${AZURE_RESOURCE_PREFIX}${SERVICE_SHORT}dbbkp${CONFIG_SHORT}sa" >> $GITHUB_ENV
+        echo "APP_NAME=${SERVICE_NAME}-${{ inputs.environment }}-web" >> $GITHUB_ENV
         echo "DB_SERVER=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg" >> $GITHUB_ENV
+        echo "KEYVAULT_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-inf-kv" >> $GITHUB_ENV
+
+    - name: Generate the backup file name
+      run: |
+        # Load environment-specific configuration
+        source config/global_config/${{ inputs.environment }}.sh
         TODAY=$(date +"%F")
+
+        # Set BACKUP_FILE variables
         echo "BACKUP_FILE=${SERVICE_SHORT}_${CONFIG_SHORT}_${TODAY}.sql" >> $GITHUB_ENV
         if [ "${{ inputs.backup-file }}" != "" ]; then
           BACKUP_FILE=${{ inputs.backup-file }}
@@ -58,15 +75,49 @@ jobs:
           BACKUP_FILE=${SERVICE_SHORT}_${CONFIG_SHORT}_${TODAY}.sql.gz
         fi
         echo "BACKUP_FILE=$BACKUP_FILE" >> $GITHUB_ENV
+        echo "BACKUP_FILE_IN_STORAGE=${STORAGE_ACCOUNT_NAME} / database-backup / ${BACKUP_FILE}" >> $GITHUB_ENV
+
+    - name: Fetch secrets from key vault
+      uses: azure/CLI@v2
+      id: key-vault-secrets
+      with:
+        inlineScript: |
+          SLACK_WEBHOOK=$(az keyvault secret show --name "SLACK-WEBHOOK" --vault-name ${KEYVAULT_NAME} --query "value" -o tsv)
+          echo "::add-mask::$SLACK_WEBHOOK"
+          echo "SLACK_WEBHOOK=$SLACK_WEBHOOK" >> $GITHUB_OUTPUT
 
     - name: Restore ${{ inputs.environment }} postgres
       uses: DFE-Digital/github-actions/restore-postgres-backup@master
       with:
         storage-account: ${{ env.STORAGE_ACCOUNT_NAME }}
         resource-group: ${{ env.RESOURCE_GROUP_NAME }}
-        app-name: ${{ env.SERVICE_NAME }}-${{ inputs.environment }}
+        app-name: ${{ env.APP_NAME }}
+        namespace: ${{ env.NAMESPACE }}
         cluster: ${{ env.CLUSTER }}
+        azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
         azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
         azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         backup-file: ${{ env.BACKUP_FILE }}
+
+    - name: Notify Slack channel on job success
+      if: success()
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_USERNAME: CI Deployment
+        SLACK_TITLE: ${{ inputs.environment }} database restore succeeded
+        SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.BACKUP_FILE_IN_STORAGE }} succeeded!
+        SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+        SLACK_COLOR: success
+        SLACK_FOOTER: Sent from restore-app-main workflow
+
+    - name: Notify Slack channel on job failure
+      if: failure()
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_USERNAME: CI Deployment
+        SLACK_TITLE: ${{ inputs.environment }} database restore failure
+        SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.BACKUP_FILE_IN_STORAGE }} failed!
+        SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+        SLACK_COLOR: failure
+        SLACK_FOOTER: Sent from restore-app-main workflow
