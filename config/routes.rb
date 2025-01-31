@@ -17,7 +17,8 @@ Rails.application.routes.draw do
   resources :cities, only: %i[index create show]
 
   # omniauth sign-in
-  get 'auth/:provider/callback', to: 'sessions#create'
+  get '/auth/:provider/callback', to: 'sessions#create'
+  post '/auth/:provider/callback', to: 'sessions#create'
   get '/sign-in', to: 'sessions#new'
   get '/sign-out', to: 'sessions#destroy'
 
@@ -30,8 +31,6 @@ Rails.application.routes.draw do
   constraints -> { Rails.application.config.enable_personas } do
     resources 'personas', only: %i[index]
   end
-
-  post 'auth/:provider/callback', to: 'sessions#create'
 
   get '/admin', to: redirect('admin/teachers')
 
