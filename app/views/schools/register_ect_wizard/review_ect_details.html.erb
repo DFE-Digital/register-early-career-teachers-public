@@ -43,7 +43,7 @@ end %>
   <%= f.govuk_submit "Confirm and continue" %>
 <% end %>
 
-<div class="govuk-inset-text">
+<%= govuk_inset_text do %>
   If this is not the person you intended to register as an ECT, go back
   and <%= govuk_link_to("check details", schools_register_ect_wizard_find_ect_path) %>.
-</div>
+<% end %>
