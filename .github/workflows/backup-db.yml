@@ -123,7 +123,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_USERNAME: CI Deployment
-          SLACK_TITLE: ${{ env.DEPLOY_ENV }} database dump stored in Azure Storage (${{ env.STORAGE_ACCOUNT_NAME }}) - Success
+          SLACK_TITLE: ${{ env.DEPLOY_ENV }} database dump stored in Azure Storage (${{ env.STORAGE_ACCOUNT_NAME }} / database-backup / ${{ env.BACKUP_FILE }}.sql) - Success
           SLACK_MESSAGE: ${{ env.APP_NAME }} - ${{ env.DEPLOY_ENV }} database backup job succeeded
           SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
           SLACK_COLOR: success
