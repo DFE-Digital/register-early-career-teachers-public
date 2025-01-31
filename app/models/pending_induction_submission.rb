@@ -74,11 +74,26 @@ class PendingInductionSubmission < ApplicationRecord
 
   validate :start_date_after_qts_date, on: :register_ect
 
+  validate :no_future_induction_periods, if: -> { started_on.present? }, on: :register_ect
+
 private
 
   def start_date_after_qts_date
     return if trs_qts_awarded_on.blank?
 
     ensure_start_date_after_qts_date(trs_qts_awarded_on)
+  end
+
+  def no_future_induction_periods
+    teacher = Teacher.find_by(trn:)
+
+    return if teacher.blank?
+
+    teacher.induction_periods.where.not(finished_on: nil).find_each do |period|
+      if started_on < period.finished_on
+        errors.add(:started_on, "Enter a start date after the last induction period finished (#{period.finished_on.to_fs(:govuk)})")
+        break
+      end
+    end
   end
 end
