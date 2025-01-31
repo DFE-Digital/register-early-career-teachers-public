@@ -1,4 +1,4 @@
-name: Restore default app database from Azure storage
+name: Restore app main database from Azure storage
 
 on:
   workflow_dispatch:

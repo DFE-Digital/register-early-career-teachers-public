@@ -1,4 +1,4 @@
-name: Nightly copy production main db into snapshot db keeping backup in Azure Storage
+name: Nightly copy production main db into the snapshot db keeping backup in Azure Storage
 
 on:
   workflow_dispatch:

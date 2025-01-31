@@ -1,5 +1,5 @@
-name: Backup production and restore snapshot DB
-description: Dump production DB and straight restore to snapshot DB keeping no copy in Azure Storage
+name: Directly backup main db of an environment and restore snapshot db
+description: Dump main db of an environment and directly restore to snapshot db bypassing Azure Storage
 
 inputs:
   environment:
@@ -33,7 +33,7 @@ runs:
 
     - name: Set AKS credentials
       shell: bash
-      run: make ci production get-cluster-credentials
+      run: make ci ${{ inputs.environment }} get-cluster-credentials
 
     - name: Install kubectl
       uses: DFE-Digital/github-actions/set-kubectl@master
@@ -56,7 +56,7 @@ runs:
       shell: bash
       run: |
         NOW=$(TZ=Europe/London date +"%F %R")
-        echo 'STRAIGHT COPY OF PRODUCTION-SNAPSHOT DB SUCCESSFUL!' >> $GITHUB_STEP_SUMMARY
+        echo 'DIRECT COPY OF ${{ inputs.environment }}->SNAPSHOT DB SUCCESSFUL!' >> $GITHUB_STEP_SUMMARY
         echo '  APP: ${{ inputs.app-name }}' >> $GITHUB_STEP_SUMMARY
         echo "  AT : ${NOW}" >> $GITHUB_STEP_SUMMARY
 
@@ -65,19 +65,19 @@ runs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_USERNAME: CI Deployment
-        SLACK_TITLE: Nightly copy production-snapshot database succeeded
-        SLACK_MESSAGE: ${{ inputs.app-name }} - the straight copy of production-snapshot db succeeded
+        SLACK_TITLE: Direct copy ${{ inputs.environment }}->snapshot database succeeded
+        SLACK_MESSAGE: ${{ inputs.app-name }} - the direct copy of ${{ inputs.environment }}->snapshot db succeeded
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
         SLACK_COLOR: success
-        SLACK_FOOTER: Sent from backup-and-restore-snapshot-database action
+        SLACK_FOOTER: Sent from directly-backup-and-restore-snapshot-database action
 
     - name: Notify Slack channel on job failure
       if: failure()
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_USERNAME: CI Deployment
-        SLACK_TITLE: Nightly backup production and straight restore of Snapshot database failed
-        SLACK_MESSAGE: ${{ inputs.app-name }} - the straight copy of production-snapshot db failed
+        SLACK_TITLE: Direct copy ${{ inputs.environment }}->snapshot database failed
+        SLACK_MESSAGE: ${{ inputs.app-name }} - the direct copy of ${{ inputs.environment }}->snapshot db failed
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
-        SLACK_COLOR: failure
-        SLACK_FOOTER: Sent from backup-and-restore-snapshot-database action
+        SLACK_COLOR: failures
+        SLACK_FOOTER: Sent from directly-backup-and-restore-snapshot-database action
