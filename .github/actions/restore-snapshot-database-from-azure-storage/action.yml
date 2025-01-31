@@ -119,7 +119,7 @@ runs:
           COMPRESS_ARG=-c
         fi
 
-        ./konduit.sh ${NAMESPACE_ARG} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-app-kv -i ${{ inputs.backup-file }} ${COMPRESS_ARG} -t 7200 -x ${{ inputs.app-name }} -- psql
+        ./konduit.sh ${NAMESPACE_ARG} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -i ${{ inputs.backup-file }} ${COMPRESS_ARG} -t 7200 -x ${{ inputs.app-name }} -- psql
 
     - name: Restore Summary
       if: success()
@@ -131,13 +131,24 @@ runs:
         echo '  BACKUP FILE RESTORED: ${{ inputs.storage-account }} / database-backup / ${{ inputs.backup-file }}' >> $GITHUB_STEP_SUMMARY
         echo "  AT : ${NOW}" >> $GITHUB_STEP_SUMMARY
 
+    - name: Notify Slack channel on job success
+      if: success()
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_USERNAME: CI Deployment
+        SLACK_TITLE: Snapshot Database restore succeeded
+        SLACK_MESSAGE: ${{ inputs.app-name }} - snapshot restore job succeeded
+        SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
+        SLACK_COLOR: success
+        SLACK_FOOTER: Sent from restore-snapshot-database-from-azure-storage action
+
     - name: Notify Slack channel on job failure
       if: failure()
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_USERNAME: CI Deployment
         SLACK_TITLE: Snapshot Database restore failure
-        SLACK_MESSAGE: ${{ inputs.app-name }} snapshop restore job failed
+        SLACK_MESSAGE: ${{ inputs.app-name }} snapshot restore job failed
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
         SLACK_COLOR: failure
         SLACK_FOOTER: Sent from restore-snapshot-database-from-azure-storage action
