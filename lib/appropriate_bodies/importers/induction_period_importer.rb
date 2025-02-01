@@ -32,14 +32,18 @@ module AppropriateBodies::Importers
 
       # used for comparisons in tests
       def to_hash
-        { appropriate_body_id:, started_on:, finished_on:, induction_programme: convert_induction_programme, number_of_terms: }
+        { appropriate_body_id:, started_on:, finished_on:, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
       end
 
       def to_record
-        { appropriate_body_id:, started_on:, finished_on:, induction_programme: convert_induction_programme, number_of_terms:, teacher_id: }
+        { **to_hash, teacher_id: }
       end
 
     private
+
+      def fixed_number_of_terms
+        (finished_on.present?) ? number_of_terms : nil
+      end
 
       def convert_induction_programme
         return "pre_september_2021" if started_on < ECF_CUTOFF
