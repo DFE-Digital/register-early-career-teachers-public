@@ -32,7 +32,7 @@ module AppropriateBodies::Importers
 
       # used for comparisons in tests
       def to_hash
-        { appropriate_body_id:, started_on:, finished_on:, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
+        { appropriate_body_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
       end
 
       def to_record
@@ -43,6 +43,10 @@ module AppropriateBodies::Importers
 
       def fixed_number_of_terms
         (finished_on.present?) ? number_of_terms : nil
+      end
+
+      def fixed_finished_on
+        finished_on == started_on ? finished_on + 1 : finished_on
       end
 
       def convert_induction_programme
@@ -85,7 +89,7 @@ module AppropriateBodies::Importers
       rows
         .reject { |ip| ip.started_on.nil? }
         .reject { |ip| ip.started_on == Date.new(1, 1, 1) }
-        .reject { |ip| ip.finished_on && ip.started_on >= ip.finished_on }
+        .reject { |ip| ip.finished_on && ip.started_on > ip.finished_on }
         .group_by(&:trn)
         .select { |_trn, periods| periods.any? { |p| p.finished_on.nil? } }
         .transform_values { |periods| periods.sort_by { |p| [p.started_on, p.length, p.appropriate_body_id] } }
