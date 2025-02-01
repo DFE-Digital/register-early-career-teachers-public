@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_23_161652) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_30_172854) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -23,7 +23,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_161652) do
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
-  create_enum "induction_programme", ["cip", "fip", "diy"]
+  create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "academic_years", primary_key: "year", id: :serial, force: :cascade do |t|
