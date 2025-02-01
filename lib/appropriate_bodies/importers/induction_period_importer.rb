@@ -47,7 +47,7 @@ module AppropriateBodies::Importers
         {
           "Full Induction Programme" => "fip",
           "Core Induction Programme" => "cip",
-          "School-based Induction Programme" => "diy" # FIXME: check this! - perhaps school-funded fip?
+          "School-based Induction Programme" => "diy"
         }.fetch(induction_programme, "unknown")
       end
     end
