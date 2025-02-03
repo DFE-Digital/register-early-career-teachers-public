@@ -38,6 +38,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         trn: "1234567",
         trs_first_name: "John",
         trs_last_name: "Doe",
+        trs_induction_status: "None",
         trs_qts_awarded_on:
       }
     end

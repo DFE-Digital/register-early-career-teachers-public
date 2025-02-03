@@ -51,6 +51,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
       context 'when the submission is valid' do
         let(:registration_params) do
           {
+            trs_induction_status: 'None',
             induction_programme: 'fip',
             'started_on(3)' => '4',
             'started_on(2)' => '6',
