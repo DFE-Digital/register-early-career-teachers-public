@@ -7,3 +7,5 @@ We will:
 * improve how the API works, so lead providers can submit the data they need and have it validated correctly, saving them time and improving our data quality
 * build a check using this API to make sure the migrated data is correct
 * build a way for appropriate bodies to efficiently record inductions in bulk to reduce their workload
+* work out how we might integrate with the third party services which appropriate bodies use to manage inductions, so we can make it easier to record inductions
+* improve the record inductions service with appropriate bodies to better meet their needs in peak periods
