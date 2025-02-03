@@ -5,26 +5,26 @@ It sets out what we're working on now, what will come next, and what we might pu
 
 By sending this out publicly, we hope to:
 
-* give direction and vision to our team
+* give direction to our team
 * be transparent about what we're working on and why
-* prioritise what we need to work on and when
 * gather more feedback about the work we're aiming to do
 
-## Our objectives
-All of these items of work are related to our objectives as a team. Our objectives are structured to enable us to meet the Teaching CPD vision of services serving their core purposes and being flexible enough to adapt to future change and opportunities.
+All of these items of work are related [to our objectives as a team.](/product/objectives) 
 
-1. Reduce workload for schools when registering early career teachers and their mentors for training 🏫
-2. Improve data quality and the flexibility of the services by changing the data model and migrating data cleanly to Register early career teachers 👾
-3. Better meet lead provider needs by showing the right data over the Lead provider API, improving documentation and updating validation rules ☁️
-4. Improve understanding of financial information internally and make sure payments are calculated correctly 💰
-5. Ensure the successful development of the Register early career teacher services by planning for dependencies, risks and communications 🗒️
-6. Minimise time and money spent on support tasks by creating improved joint support and finance tooling 🦸
-7. Improve how data on ECF is reported and create performance metrics for the new Register early career teachers services 📊
-8. Reduce confusion for users by helping them understand how the Register early career teacher services are structured, the service's purposes and their own responsibilities ✏️
-9. Build services that are safe, protect privacy and are tested and documented well 🔨
-10. Save time for appropriate bodies to submit induction data for early career teachers and check relevant training information in 1 place ⏲️
-															
+Our objectives are centered around how we can make it easier for schools, lead providers and appropriate bodies to support or train ECTs and mentors.
 
+
+## What we've done
+
+So far, we have:
+
+* built a way for schools to register ECTs and mentors to save school's time and improve data accuracy
+* set up DfE Sign in for appropriate bodies, so we can improve how all users access the service
+* improved how mentors are assigned to ECTs, so we can reduce having to chase schools to tell us mentor information
+* built a service for appropriate bodies to record data about inductions individually, so we can start to consolidate services and reduce workload for all users
+* set up how we want to migrate data from ECF1 to the new Register early career teachers service
+* designed how ECTs and mentors are registered when they are moving schools
+													
 # The roadmap
 
 
