@@ -136,8 +136,8 @@ runs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_USERNAME: CI Deployment
-        SLACK_TITLE: Snapshot Database restore succeeded
-        SLACK_MESSAGE: ${{ inputs.app-name }} - snapshot restore job succeeded
+        SLACK_TITLE: Snapshot database restore succeeded
+        SLACK_MESSAGE: ${{ inputs.app-name }} - snapshot restore job from ${{ inputs.storage-account }} / database-backup / ${{ inputs.backup-file }} succeeded!
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
         SLACK_COLOR: success
         SLACK_FOOTER: Sent from restore-snapshot-database-from-azure-storage action
@@ -147,8 +147,8 @@ runs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_USERNAME: CI Deployment
-        SLACK_TITLE: Snapshot Database restore failure
-        SLACK_MESSAGE: ${{ inputs.app-name }} snapshot restore job failed
+        SLACK_TITLE: Snapshot database restore failed
+        SLACK_MESSAGE: ${{ inputs.app-name }} snapshot restore job from ${{ inputs.storage-account }} / database-backup / ${{ inputs.backup-file }} failed!
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
         SLACK_COLOR: failure
         SLACK_FOOTER: Sent from restore-snapshot-database-from-azure-storage action
