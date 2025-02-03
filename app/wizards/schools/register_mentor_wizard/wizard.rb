@@ -7,6 +7,7 @@ module Schools
         [
           {
             already_active_at_school: AlreadyActiveAtSchoolStep,
+            cannot_mentor_themself: CannotMentorThemselfStep,
             cannot_register_mentor: CannotRegisterMentorStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep,
