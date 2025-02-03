@@ -30,7 +30,7 @@ module Schools
     end
 
     def mentorship_authorized
-      errors.add(:mentor_id, "This teacher cannot be mentoring this ECT") if eligible_mentors.exclude?(mentor)
+      errors.add(:mentor_id, "It needs to be a different mentor for this ECT") if eligible_mentors.exclude?(mentor)
     end
 
     def persisted?
