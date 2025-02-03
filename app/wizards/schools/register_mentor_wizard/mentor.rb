@@ -38,7 +38,8 @@ module Schools
                                     trs_last_name:,
                                     corrected_name:,
                                     trn:,
-                                    school_urn:)
+                                    school_urn:,
+                                    email:)
                                .register!
       end
 
