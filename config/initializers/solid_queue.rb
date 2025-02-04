@@ -1,14 +1,15 @@
 if Rails.env.production?
+  module SupervisorSafety
+    def supervisees
+      return [] if supervisor.nil?
+      super
+    end
+  end
+
   module SolidQueue
     class Process
       class << self
-        alias_method :original_supervisees, :supervisees
-
-        def supervisees
-          return [] unless supervisor
-
-          original_supervisees
-        end
+        prepend SupervisorSafety
       end
     end
   end
