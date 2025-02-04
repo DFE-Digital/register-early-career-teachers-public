@@ -2,6 +2,7 @@ module AppropriateBodies
   module ClaimAnECT
     class CheckECTController < AppropriateBodiesController
       def edit
+        @current_appropriate_body = current_user.appropriate_body
         @pending_induction_submission = find_pending_induction_submission
         @teacher = Teacher.find_by(trn: @pending_induction_submission.trn)
       end
