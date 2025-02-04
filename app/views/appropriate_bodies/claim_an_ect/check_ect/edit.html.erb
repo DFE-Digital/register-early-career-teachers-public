@@ -12,6 +12,11 @@
     <% Teacher.find_by(trn: @pending_induction_submission.trn).induction_periods.each do |ip| %>
       <%= ip.inspect %>
     <% end %>
+    ##########
+
+    Current induction period: <%= Teachers::Induction.new(teacher).current_induction_period%>
+
+    ##########
   <% end %>
 <% else %>
   <% unless induction_status_from(teacher: @teacher, pending_induction_submission: @pending_induction_submission).completed? %>
