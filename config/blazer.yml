@@ -19,7 +19,7 @@ data_sources:
 # wrap queries in a transaction for safety
 # not necessary if you use a read-only user
 # true by default
-# use_transaction: false
+use_transaction: true
 
 smart_variables:
 # zone_id: "SELECT id, name FROM zones ORDER BY name ASC"
@@ -37,15 +37,16 @@ smart_columns:
 
 # change the time zone
 # time_zone: "Pacific Time (US & Canada)"
+time_zone: <%= Rails.application.config.time_zone %>
 
 # class name of the user model
-user_class: Sessions::Users::DfEUser
+user_class: User
 
 # method name for the current user
-user_method: current_user
+user_method: user
 
 # method name for the display name
-# user_name: name
+user_name: name
 
 # custom before_action to use for auth
 before_action_method: require_admin

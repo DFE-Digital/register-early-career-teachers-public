@@ -114,4 +114,10 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
   describe '#user_type' do
     it('is :appropriate_body_user') { expect(appropriate_body_user.user_type).to be(:appropriate_body_user) }
   end
+
+  describe '#user' do
+    it 'returns nil' do
+      expect(appropriate_body_user.user).to be_nil
+    end
+  end
 end
