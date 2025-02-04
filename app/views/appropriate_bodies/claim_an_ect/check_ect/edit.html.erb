@@ -7,16 +7,19 @@
 
 <% unless claiming_body?(@teacher, @current_appropriate_body) %>
   <%= govuk_inset_text do %>
-    You cannot register <%= pending_induction_submission_full_name(@pending_induction_submission) %>. 
+    You cannot register <%= pending_induction_submission_full_name(@pending_induction_submission) %>.
     Our records show that <%= pending_induction_submission_full_name(@pending_induction_submission) %> is completing their induction with another appropriate body.
+    <% Teacher.find_by(trn: @pending_induction_submission.trn).induction_periods.each do |ip| %>
+      <%= ip.inspect %>
+    <% end %>
   <% end %>
-<% else %> 
+<% else %>
   <% unless induction_status_from(teacher: @teacher, pending_induction_submission: @pending_induction_submission).completed? %>
     <%= form_with(model: @pending_induction_submission, url: ab_claim_an_ect_check_path(@pending_induction_submission, method: 'patch')) do |f| %>
       <%= f.govuk_submit("Claim induction") %>
     <% end %>
   <% end %>
-<% end %> 
+<% end %>
 
 <h2 class="govuk-heading-m">Personal details</h2>
 
