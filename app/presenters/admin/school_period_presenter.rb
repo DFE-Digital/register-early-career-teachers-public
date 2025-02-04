@@ -23,7 +23,7 @@ module Admin
     end
 
     def mentees
-      school_period.mentorship_periods.ongoing.map { |mp| mp.mentee.teacher }.sort(&:last_name)
+      school_period.mentorship_periods.ongoing.map { |mp| mp.mentee.teacher }.sort(&:trs_last_name)
     end
 
     def mentorship_periods
