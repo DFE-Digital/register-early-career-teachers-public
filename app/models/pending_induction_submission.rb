@@ -89,11 +89,12 @@ private
 
     return if teacher.blank?
 
-    teacher.induction_periods.where.not(finished_on: nil).find_each do |period|
-      if started_on < period.finished_on
-        errors.add(:started_on, "Enter a start date after the last induction period finished (#{period.finished_on.to_fs(:govuk)})")
-        break
-      end
+    latest_date_of_induction = teacher.induction_periods.maximum(:finished_on)
+
+    return unless latest_date_of_induction
+
+    if started_on < latest_date_of_induction
+      errors.add(:started_on, "Enter a start date after the last induction period finished (#{latest_date_of_induction.to_fs(:govuk)})")
     end
   end
 end
