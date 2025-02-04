@@ -3,8 +3,17 @@ RSpec.describe "schools/register_mentor_wizard/email_address.html.erb" do
   let(:continue_path) { schools_register_mentor_wizard_email_address_path }
   let(:mentor) { wizard.mentor }
   let(:title) { "What is Jim Waters's email address?" }
-  let(:store) { double(trs_first_name: "John", trs_last_name: "Waters", corrected_name: "Jim Waters") }
+  let(:email) { nil }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :email_address, store:) }
+  let(:store) do
+    FactoryBot.build(:session_repository,
+                     trn: "1234567",
+                     trs_first_name: "John",
+                     trs_last_name: "Waters",
+                     trs_date_of_birth: "1950-01-01",
+                     corrected_name: "Jim Waters",
+                     email:)
+  end
 
   before do
     assign(:wizard, wizard)
@@ -22,6 +31,7 @@ RSpec.describe "schools/register_mentor_wizard/email_address.html.erb" do
       wizard.valid_step?
       render
     end
+
     it "prefixes the page with 'Error:' when the email is invalid" do
       expect(view.content_for(:page_title)).to start_with('Error:')
     end
@@ -31,10 +41,23 @@ RSpec.describe "schools/register_mentor_wizard/email_address.html.erb" do
     end
   end
 
-  it 'includes a back button that links to check mentor details of the journey' do
-    render
+  describe "back link" do
+    before { render }
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+    context "when not checking answers" do
+      it 'targets review mentor details page' do
+        expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+      end
+    end
+
+    context "when checking answers" do
+      let(:email) { 'foo@example.com' }
+      let(:back_path) { schools_register_mentor_wizard_check_answers_path }
+
+      it 'targets check your answers page' do
+        expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+      end
+    end
   end
 
   it 'includes a continue button that posts to the email address page' do

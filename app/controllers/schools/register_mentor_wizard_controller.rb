@@ -18,7 +18,7 @@ module Schools
 
     def create
       if @wizard.save!
-        redirect_to @wizard.next_step_path
+        redirect_to cya? ? schools_register_mentor_wizard_check_answers_path : @wizard.next_step_path
       else
         render current_step
       end
@@ -51,6 +51,10 @@ module Schools
       @store ||= SessionRepository.new(session:, form_key: FORM_KEY).tap do |store|
         store.update(school_urn: @school.urn)
       end
+    end
+
+    def cya?
+      %i[review_mentor_details email_address].include?(current_step) && @mentor.email.present?
     end
   end
 end
