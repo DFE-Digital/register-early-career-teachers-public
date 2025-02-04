@@ -93,7 +93,7 @@ private
 
     return unless latest_date_of_induction
 
-    if started_on < latest_date_of_induction
+    if started_on <= latest_date_of_induction
       errors.add(:started_on, "Enter a start date after the last induction period finished (#{latest_date_of_induction.to_fs(:govuk)})")
     end
   end
