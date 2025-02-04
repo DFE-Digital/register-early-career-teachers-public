@@ -10,13 +10,13 @@ module AppropriateBodies
 
       def create
         find_ect = AppropriateBodies::ClaimAnECT::FindECT
-          .new(
-            appropriate_body: @appropriate_body,
-            pending_induction_submission: PendingInductionSubmission.new(
-              **pending_induction_submission_params,
-              **pending_induction_submission_attributes
-            )
+        .new(
+          appropriate_body: @appropriate_body,
+          pending_induction_submission: PendingInductionSubmission.new(
+            **pending_induction_submission_params,
+            **pending_induction_submission_attributes
           )
+        )
         @pending_induction_submission = find_ect.pending_induction_submission
 
         if find_ect.import_from_trs!
