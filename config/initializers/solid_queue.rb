@@ -2,6 +2,7 @@ if Rails.env.production?
   module SupervisorSafety
     def supervisees
       return [] if supervisor.nil?
+
       super
     end
   end
