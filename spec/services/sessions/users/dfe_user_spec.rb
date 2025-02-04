@@ -84,4 +84,10 @@ RSpec.describe Sessions::Users::DfEUser do
   describe '#user_type' do
     it('is :dfe_staff_user') { expect(dfe_user.user_type).to be(:dfe_staff_user) }
   end
+
+  describe '#user' do
+    it 'returns the User instance associated to this session user' do
+      expect(dfe_user.user).to eq(user)
+    end
+  end
 end

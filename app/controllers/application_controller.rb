@@ -10,10 +10,15 @@ class ApplicationController < ActionController::Base
 
 private
 
+  # A type of Sessions::User
   delegate :current_user, to: :session_manager
 
+  # The User model instance associated to the current session user (Sessions::User)
+  # Used by Blazer. See config/blazer.yml
+  delegate :user, to: :current_user, allow_nil: true
+
+  # This method is used by Blazer to restrict access. See config/blazer.yml
   def require_admin
-    # This method is used by Blazer to restrict access. See config/blazer.yml
     redirect_to(sign_in_path) unless Admin::Access.new(current_user).can_access?
   end
 
