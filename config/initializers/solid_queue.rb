@@ -6,6 +6,7 @@ if Rails.env.production?
 
         def supervisees
           return [] unless supervisor
+
           original_supervisees
         end
       end
