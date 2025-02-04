@@ -1,4 +1,4 @@
-# Early Career Framework Version 2
+# Early Career Framework Version 2 (Kas test)
 
 ECF is a framework of standards to help early career teachers succeed at the start of their careers.
 
