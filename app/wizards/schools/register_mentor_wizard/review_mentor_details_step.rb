@@ -17,7 +17,13 @@ module Schools
     private
 
       def persist
-        mentor.update(corrected_name: Schools::Validation::CorrectedName.new(corrected_name).formatted_name)
+        mentor.update(corrected_name: formatted_name)
+      end
+
+      def formatted_name
+        return nil if change_name == "no"
+
+        Schools::Validation::CorrectedName.new(corrected_name).formatted_name
       end
     end
   end

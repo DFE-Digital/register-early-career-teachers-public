@@ -6,6 +6,7 @@ RSpec.describe "schools/register_mentor_wizard/review_mentor_details.html.erb" d
   let(:confirm_and_continue_path) { schools_register_mentor_wizard_review_mentor_details_path }
   let(:national_insurance_number) { "AD12345ED" }
   let(:title) { "Check mentor details" }
+  let(:email) { nil }
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: "1234567",
@@ -14,7 +15,8 @@ RSpec.describe "schools/register_mentor_wizard/review_mentor_details.html.erb" d
                      trs_date_of_birth: "1950-01-01",
                      corrected_name: nil,
                      date_of_birth:,
-                     national_insurance_number:)
+                     national_insurance_number:,
+                     email:)
   end
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :review_mentor_details, store:) }
   let(:mentor) { wizard.mentor }
@@ -30,10 +32,23 @@ RSpec.describe "schools/register_mentor_wizard/review_mentor_details.html.erb" d
     expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
   end
 
-  it 'includes a back button that links to trn and dob page of the journey' do
-    render
+  describe "back link" do
+    before { render }
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+    context "when not checking answers" do
+      it 'targets find mentor page' do
+        expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+      end
+    end
+
+    context "when checking answers" do
+      let(:email) { 'foo@example.com' }
+      let(:back_path) { schools_register_mentor_wizard_check_answers_path }
+
+      it 'targets check your answers page' do
+        expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+      end
+    end
   end
 
   it 'displays Name and TRN' do

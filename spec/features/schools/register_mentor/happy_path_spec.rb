@@ -36,6 +36,42 @@ RSpec.describe 'Registering a mentor', :js do
     and_the_ect_is_shown_linked_to_the_mentor_just_registered
   end
 
+  scenario 'check your answers' do
+    given_there_is_a_school_in_the_service
+    and_there_is_an_ect_with_no_mentor_registered_at_the_school
+    and_i_sign_in_as_that_school_user
+    and_i_am_on_the_schools_landing_page
+    when_i_click_to_assign_a_mentor_to_the_ect
+    then_i_am_in_the_requirements_page
+
+    when_i_click_continue
+    then_i_should_be_taken_to_the_find_mentor_page
+
+    when_i_submit_the_find_mentor_form
+    then_i_should_be_taken_to_the_review_mentor_details_page
+    and_i_should_see_the_mentor_details_in_the_review_page
+
+    when_i_select_that_my_mentor_name_is_incorrect
+    and_i_enter_the_corrected_name
+    and_i_click_confirm_and_continue
+    then_i_should_be_taken_to_the_email_address_page
+
+    when_i_enter_the_mentor_email_address
+    and_i_click_continue
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_should_see_all_the_mentor_data_on_the_page
+
+    page.get_by_role('link', name: 'Change').first.click
+    then_i_should_be_taken_to_the_review_mentor_details_page
+    and_i_click_confirm_and_continue
+    then_i_should_be_taken_to_the_check_answers_page
+
+    page.get_by_role('link', name: 'Change').last.click
+    then_i_should_be_taken_to_the_email_address_page
+    and_i_click_continue
+    then_i_should_be_taken_to_the_check_answers_page
+  end
+
   def given_there_is_a_school_in_the_service
     @school = FactoryBot.create(:school, urn: "1234567")
   end
