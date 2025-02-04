@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   get '/accessibility', to: 'pages#accessibility'
   get '/privacy', to: 'pages#privacy'
 
-  get "healthcheck" => "rails/health#show", as: :rails_health_check
+  get "healthcheck" => "health_check#show", as: :rails_health_check
 
   scope via: :all do
     get '/404', to: 'errors#not_found'
