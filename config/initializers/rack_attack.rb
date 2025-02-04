@@ -5,6 +5,7 @@ class Rack::Attack
     /otp-sign-in/verify
     /sign-in
     /auth
+    /healthcheck
   ].freeze
 
   def self.protected_path?(request)
