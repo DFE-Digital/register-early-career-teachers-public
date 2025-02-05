@@ -74,9 +74,12 @@ describe AppropriateBodies::ReleaseECT do
       expect(Event.last.event_type).to eq("appropriate_body_releases_teacher")
     end
 
-    it 'destroys the pending_induction_submission' do
-      subject.release!
-      expect(PendingInductionSubmission.where(id: pending_induction_submission.id)).to be_empty
+    it 'sets the pending_induction_submission delete_at timestamp to 24h in the future' do
+      freeze_time do
+        subject.release!
+        pending_induction_submission.reload
+        expect(pending_induction_submission.delete_at).to eql(24.hours.from_now)
+      end
     end
 
     context "when an ECT has no ongoing induction periods" do
