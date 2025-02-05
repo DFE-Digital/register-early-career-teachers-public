@@ -25,6 +25,13 @@ describe PendingInductionSubmission do
       end
     end
 
+    describe "trs_induction_status" do
+      let(:statuses) { %w[None RequiredToComplete Exempt InProgress Passed Failed FailedInWales] }
+
+      it { is_expected.to validate_presence_of(:trs_induction_status).on(:register_ect).with_message("TRS Induction Status is not known") }
+      it { is_expected.to allow_values(*statuses).for(:trs_induction_status) }
+    end
+
     describe "date_of_birth" do
       it { is_expected.to validate_presence_of(:date_of_birth).with_message("Enter a date of birth").on(:find_ect) }
 
