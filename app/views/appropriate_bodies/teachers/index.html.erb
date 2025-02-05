@@ -29,5 +29,7 @@
     <% @teachers.all.each do |teacher| %>
       <%= summary_card_for_teacher(teacher:) %>
     <% end %>
+
+    <%= govuk_pagination pagy: @pagy %>
   </div>
 </div>
