@@ -122,7 +122,7 @@ jobs:
 
   deploy-production:
     name: Deploy production
-    needs: [deploy-nonprod]
+    needs: [docker, deploy-nonprod]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment:
