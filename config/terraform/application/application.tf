@@ -1,3 +1,7 @@
+locals {
+  snapshot_db_kv_secret_name = "${var.azure_resource_prefix}-${var.service_short}-${var.config_short}-pg-snapshot-database-url"
+}
+
 module "application_configuration" {
   source = "./vendor/modules/aks//aks/application_configuration"
 
@@ -18,7 +22,8 @@ module "application_configuration" {
     }
   )
   secret_variables = {
-    DATABASE_URL = module.postgres.url
+    DATABASE_URL        = module.postgres.url
+    BLAZER_DATABASE_URL = var.environment == "production" ? module.infrastructure_secrets.map[local.snapshot_db_kv_secret_name] : module.postgres.url
   }
 }
 
