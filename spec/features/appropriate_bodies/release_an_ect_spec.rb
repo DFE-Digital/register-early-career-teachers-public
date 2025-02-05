@@ -23,7 +23,7 @@ RSpec.describe 'Releasing an ECT' do
 
     then_i_should_be_on_the_success_page
     and_the_release_ect_service_should_have_been_called
-    and_the_pending_induction_submission_should_have_been_deleted
+    and_the_pending_induction_submission_delete_at_timestamp_is_set
   end
 
 private
@@ -79,8 +79,8 @@ private
     expect(page.locator('.govuk-panel')).to have_text(/#{teacher_name} has been released/)
   end
 
-  def and_the_pending_induction_submission_should_have_been_deleted
-    expect(PendingInductionSubmission.find_by(trn: teacher.trn, appropriate_body:)).to be_nil
+  def and_the_pending_induction_submission_delete_at_timestamp_is_set
+    expect(PendingInductionSubmission.find_by(trn: teacher.trn, appropriate_body:).delete_at).to be_within(1.second).of(24.hours.from_now)
   end
 
   def and_the_release_ect_service_should_have_been_called
