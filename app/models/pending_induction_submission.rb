@@ -74,6 +74,13 @@ class PendingInductionSubmission < ApplicationRecord
 
   validate :start_date_after_qts_date, on: :register_ect
 
+  validates :trs_induction_status,
+            inclusion: {
+              in: %w[None RequiredToComplete Exempt InProgress Passed Failed FailedInWales],
+              message: "TRS Induction Status is not known",
+            },
+            on: :register_ect
+
 private
 
   def start_date_after_qts_date

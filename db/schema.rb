@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_23_161652) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_31_171406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -322,7 +322,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_161652) do
     t.string "trs_first_name", limit: 80
     t.string "trs_last_name", limit: 80
     t.date "date_of_birth"
-    t.string "trs_induction_status", limit: 16
+    t.string "trs_induction_status"
     t.enum "induction_programme", enum_type: "induction_programme"
     t.date "started_on"
     t.date "finished_on"

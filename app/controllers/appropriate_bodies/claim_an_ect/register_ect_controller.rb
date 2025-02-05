@@ -29,7 +29,7 @@ module AppropriateBodies
     private
 
       def update_params
-        params.require(:pending_induction_submission).permit(:started_on, :induction_programme)
+        params.require(:pending_induction_submission).permit(:started_on, :induction_programme, :trs_induction_status)
       end
 
       def find_pending_induction_submission
