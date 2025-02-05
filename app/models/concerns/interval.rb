@@ -24,6 +24,6 @@ module Interval
   def period_dates_validation
     return if [started_on, finished_on].any?(&:blank?)
 
-    errors.add(:finished_on, "The finish date must be later than the start date") if finished_on <= started_on
+    errors.add(:finished_on, "The finish date must be later than the start date (#{started_on.to_fs(:govuk)})") if finished_on <= started_on
   end
 end
