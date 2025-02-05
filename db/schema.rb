@@ -322,7 +322,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_31_171406) do
     t.string "trs_first_name", limit: 80
     t.string "trs_last_name", limit: 80
     t.date "date_of_birth"
-    t.string "trs_induction_status", limit: 18
+    t.string "trs_induction_status"
     t.enum "induction_programme", enum_type: "induction_programme"
     t.date "started_on"
     t.date "finished_on"
