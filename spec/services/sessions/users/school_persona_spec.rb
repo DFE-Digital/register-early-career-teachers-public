@@ -97,4 +97,10 @@ RSpec.describe Sessions::Users::SchoolPersona do
   describe '#user_type' do
     it('is :school_user') { expect(school_persona.user_type).to be(:school_user) }
   end
+
+  describe '#user' do
+    it 'returns nil' do
+      expect(school_persona.user).to be_nil
+    end
+  end
 end

@@ -33,6 +33,7 @@ module Sessions
     def dfe_user? = user_type == :dfe_staff_user
     def school_user? = user_type == :school_user
     def user_type = self.class::USER_TYPE
+    def user = nil
 
     # Activity
     def expired?

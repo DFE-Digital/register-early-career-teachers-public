@@ -4,13 +4,12 @@ module Sessions
       USER_TYPE = :dfe_staff_user
       PROVIDER = :otp
 
-      attr_reader :id, :name
+      attr_reader :id, :name, :user
 
       def initialize(email:, **)
-        ::User.find_by!(email:).then do |user|
-          @id = user.id
-          @name = user.name
-        end
+        @user = ::User.find_by!(email:)
+        @id = user.id
+        @name = user.name
 
         super(email:, **)
       end
