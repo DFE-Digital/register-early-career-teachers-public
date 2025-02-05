@@ -17,7 +17,7 @@ module AppropriateBodies
           number_of_terms: pending_induction_submission.number_of_terms
         )
 
-        pending_induction_submission.destroy!
+        pending_induction_submission.update(delete_at: 24.hours.from_now)
         record_event!
       end
     end

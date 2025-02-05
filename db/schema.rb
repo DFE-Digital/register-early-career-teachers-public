@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_31_171406) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_05_135949) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -339,6 +339,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_31_171406) do
     t.string "trs_initial_teacher_training_provider_name"
     t.enum "outcome", enum_type: "induction_outcomes"
     t.date "trs_qts_awarded_on"
+    t.datetime "delete_at", precision: nil
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
   end
 
