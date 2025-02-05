@@ -2,7 +2,9 @@ require "rails_helper"
 require "dfe/analytics/rspec/matchers"
 
 RSpec.describe "DfE Analytics", type: :request do
-  before { ENV["DFE_ANALYTICS_ENABLED"] = env_var_value }
+  before do
+    stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => env_var_value)
+  end
 
   context "when disabled" do
     before { FactoryBot.create(:teacher) }
