@@ -1,7 +1,5 @@
 # Early Career Framework Version 2
 
-ECF is a framework of standards to help early career teachers succeed at the start of their careers.
-
 ## Workflows
 
 [![App deployment](https://github.com/DFE-Digital/register-early-career-teachers-public/actions/workflows/deploy.yml/badge.svg)](https://github.com/DFE-Digital/register-early-career-teachers/actions/workflows/deploy.yml)
@@ -9,14 +7,14 @@ ECF is a framework of standards to help early career teachers succeed at the sta
 
 ## Documentation
 
-* [ECF service manual](https://ecf-service-manual.education.gov.uk/)
-* [Design history](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/)
-* [Glossary](./documentation/glossary.md)
+- [ECF service manual](https://ecf-service-manual.education.gov.uk/)
+- [Design history](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/)
+- [Glossary](./documentation/glossary.md)
 
 ### Technical stuff
 
-* [Data schema](https://github.com/DFE-Digital/register-early-career-teachers/wiki/Data-schema)
-* [Setup guide](./documentation/setup.md)
+- [Data schema](https://github.com/DFE-Digital/register-early-career-teachers/wiki/Data-schema)
+- [Setup guide](./documentation/setup.md)
 
 ## Repository setup
 
