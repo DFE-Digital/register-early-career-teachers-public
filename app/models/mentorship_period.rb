@@ -24,6 +24,7 @@ class MentorshipPeriod < ApplicationRecord
   validates :mentor_at_school_period_id,
             presence: true
 
+  validate :not_self_mentoring
   validate :mentee_distinct_period
   validate :enveloped_by_ect_at_school_period, if: -> { mentee.present? && started_on.present? }
   validate :enveloped_by_mentor_at_school_period, if: -> { mentor.present? && started_on.present? }
@@ -35,12 +36,6 @@ class MentorshipPeriod < ApplicationRecord
 
 private
 
-  def mentee_distinct_period
-    return unless MentorshipPeriod.mentee_siblings_of(self).overlapping_with(self).exists?
-
-    errors.add(:base, "Mentee periods cannot overlap")
-  end
-
   def enveloped_by_ect_at_school_period
     return if (mentee.started_on..mentee.finished_on).cover?(started_on..finished_on)
 
@@ -51,5 +46,18 @@ private
     return if (mentor.started_on..mentor.finished_on).cover?(started_on..finished_on)
 
     errors.add(:base, "Date range is not contained by the mentor at school period")
+  end
+
+  def mentee_distinct_period
+    return unless MentorshipPeriod.mentee_siblings_of(self).overlapping_with(self).exists?
+
+    errors.add(:base, "Mentee periods cannot overlap")
+  end
+
+  def not_self_mentoring
+    return unless [mentor&.teacher_id, mentee&.teacher_id].all?
+    return if mentor.teacher_id != mentee.teacher_id
+
+    errors.add(:base, "A mentee cannot mentor themself")
   end
 end

@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   get '/accessibility', to: 'pages#accessibility'
   get '/privacy', to: 'pages#privacy'
 
-  get "healthcheck" => "rails/health#show", as: :rails_health_check
+  get "healthcheck" => "health_check#show", as: :rails_health_check
 
   scope via: :all do
     get '/404', to: 'errors#not_found'
@@ -151,6 +151,9 @@ Rails.application.routes.draw do
 
       get "find-mentor", action: :new
       post "find-mentor", action: :create
+
+      get "cannot-mentor-themself", action: :new
+      post "cannot-mentor-themself", action: :create
 
       get "national-insurance-number", action: :new
       post "national-insurance-number", action: :create

@@ -89,4 +89,17 @@ RSpec.describe Teachers::Induction do
       expect(service.has_extensions?).to be false
     end
   end
+
+  describe "#with_appropriate_body?" do
+    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
+
+    it "returns true when the current induction is with the body" do
+      expect(service.with_appropriate_body?(induction_period.appropriate_body)).to be true
+    end
+
+    it "returns false when the current induction is with another body" do
+      expect(service.with_appropriate_body?(other_appropriate_body)).to be false
+    end
+  end
 end
