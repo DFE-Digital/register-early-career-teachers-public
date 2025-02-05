@@ -140,6 +140,14 @@ describe InductionPeriod do
         it { is_expected.to validate_absence_of(:number_of_terms).with_message("Delete the number of terms if the induction has no end date") }
       end
     end
+
+    describe "started_on_different_from_finished_on" do
+      it "is not valid if the start date is the same as the end date" do
+        induction_period = FactoryBot.build(:induction_period, started_on: Date.current, finished_on: Date.current)
+        induction_period.valid?
+        expect(induction_period.errors[:finished_on]).to include("End date must be different from start date")
+      end
+    end
   end
 
   describe "scopes" do

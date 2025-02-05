@@ -28,6 +28,7 @@ class InductionPeriod < ApplicationRecord
 
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
+  validate :started_on_different_from_finished_on, -> { started_on.present? && finished_on.present? }
 
   scope :for_teacher, ->(teacher) { where(teacher:) }
   scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
@@ -51,5 +52,11 @@ private
     return if teacher.blank?
 
     ensure_start_date_after_qts_date(teacher.trs_qts_awarded_on)
+  end
+
+  def started_on_different_from_finished_on
+    return if started_on != finished_on
+
+    errors.add(:finished_on, "End date must be different from start date")
   end
 end
