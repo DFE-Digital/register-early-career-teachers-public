@@ -2,7 +2,8 @@ RSpec.describe PassECTInductionJob, type: :job do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:trn) { teacher.trn }
   let(:completion_date) { "2024-01-13" }
-  let!(:pending_induction_submission_id) { FactoryBot.create(:pending_induction_submission).id }
+  let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+  let!(:pending_induction_submission_id) { pending_induction_submission.id }
   let(:api_client) { instance_double(TRS::APIClient) }
 
   before do
@@ -27,10 +28,18 @@ RSpec.describe PassECTInductionJob, type: :job do
         )
       end
 
-      it "destroys the pending induction submission" do
-        expect {
-          described_class.perform_now(trn:, completion_date:, pending_induction_submission_id:)
-        }.to change { PendingInductionSubmission.count }.by(-1)
+      it "it sets the delete_at timestamp to 24 hours in the future" do
+        freeze_time do
+          described_class.perform_now(
+            trn:,
+            completion_date:,
+            pending_induction_submission_id:
+          )
+
+          pending_induction_submission.reload
+
+          expect(pending_induction_submission.delete_at).to eql(24.hours.from_now)
+        end
       end
     end
   end
