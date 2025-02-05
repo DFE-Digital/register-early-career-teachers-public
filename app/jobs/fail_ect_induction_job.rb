@@ -3,7 +3,7 @@ class FailECTInductionJob < ApplicationJob
     ActiveRecord::Base.transaction do
       api_client.fail_induction!(trn:, completion_date:)
 
-      PendingInductionSubmission.find(pending_induction_submission_id).destroy!
+      PendingInductionSubmission.find(pending_induction_submission_id).update!(delete_at: 24.hours.from_now)
     end
   end
 
