@@ -41,7 +41,7 @@ This assumes your username is `joey`. You can check yours by running `whoami`
 
    Then, running `psql` should connect and give us a prompt like this:
 
-   ```
+   ```sh
    $ psql
 
    psql (16.3)
@@ -59,7 +59,7 @@ Once you have Ruby and NodeJS installed we're ready to install the application's
 
 We can do this in one step with `bin/setup`:
 
-```bash
+```sh
 $ bin/setup
 
 # == Installing dependencies ==
@@ -80,7 +80,7 @@ $ bin/setup
 
 Or you can do each step manually with:
 
-```bash
+```sh
 $ bundle install
 $ npm install
 $ bundle exec rails db:setup
@@ -90,10 +90,47 @@ $ bundle exec rails db:setup
 
 Once all the dependencies are installed we can run the application.
 
-```
+```sh
 $ bin/dev
 ```
 
 Navigate to [https://localhost:3000](https://localhost:3000) in your browser and if you can see a website, everything's working! 🥳
 
 Go and put the kettle on.
+
+### Working with deployments
+
+**Prerequisite tools**
+
+1. [azure-cli](https://learn.microsoft.com/en-gb/cli/azure/install-azure-cli)
+2. [kubelogin](https://azure.github.io/kubelogin/install.html)
+3. [kubectl](https://kubernetes.io/docs/tasks/tools/)
+4. [konduit](https://github.com/DFE-Digital/teacher-services-cloud)
+
+```sh
+# Install kubelogin - needs to be compatible and match the version azure-cli
+$ az aks install-cli
+# Install konduit
+$ make install-konduit
+```
+
+**Example**
+
+Bootstrap access using Makefile:
+
+```sh
+# Configure tools
+$ make staging set-azure-account
+$ make staging vendor-modules
+$ make staging terraform-init
+```
+
+Activate Microsoft Entra Privileged Identity Management and ask for approval in `#cpd-dev` 
+
+```sh
+# staging environment rails console:
+$ make staging set-namespace aks-console
+
+# Or review app shell
+$ PULL_REQUEST_NUMBER=117 make review set-namespace aks-ssh
+```
