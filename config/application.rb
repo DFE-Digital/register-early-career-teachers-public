@@ -20,6 +20,7 @@ module RegisterEarlyCareerTeachers
     config.active_record.belongs_to_required_by_default = false
     config.generators.system_tests = nil
     config.action_mailer.deliver_later_queue_name = "mailers"
+    config.action_mailer.preview_paths << Rails.root.join('spec/mailers/previews')
     config.generators.system_tests = nil
 
     config.generators do |g|
