@@ -46,6 +46,41 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
     end
   end
 
+  describe 'number of terms' do
+    context 'when number_of_terms is present and finished_on is blank' do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,,,3,2600071
+        CSV
+      end
+
+      it 'sets the number_of_terms to nil' do
+        row_data = subject.periods_as_hashes_by_trn['2600071'].first
+        expect(row_data.fetch(:started_on)).to eql(Date.new(2012, 1, 1))
+        expect(row_data.fetch(:number_of_terms)).to be_nil
+      end
+    end
+  end
+
+  describe 'finished_on' do
+    context 'when started_on and finished_on are the same day' do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,01/01/2012 00:00:00,,3,2600071
+          025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2021 00:00:00,,,3,2600071
+        CSV
+      end
+
+      it 'bumps the finish date by one day' do
+        row_data = subject.periods_as_hashes_by_trn['2600071'].first
+        expect(row_data.fetch(:started_on)).to eql(Date.new(2012, 1, 1))
+        expect(row_data.fetch(:finished_on)).to eql(Date.new(2012, 1, 2))
+      end
+    end
+  end
+
   describe 'rebuilding periods' do
     context 'when an ECT has no open induction periods' do
       let(:sample_csv_data) do
