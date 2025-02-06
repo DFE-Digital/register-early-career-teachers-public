@@ -64,8 +64,6 @@ module AppropriateBodies::Importers
       puts "Induction extensions inserted: #{InductionExtension.count}"
 
       # TODO: insert events
-
-      binding.debugger
     end
     # rubocop:enable Rails/Output
   end
