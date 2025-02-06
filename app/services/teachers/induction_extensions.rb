@@ -10,7 +10,9 @@ class Teachers::InductionExtensions
   end
 
   def formatted_number_of_terms
-    (number_of_terms.zero?) ? "None" : "#{number_of_terms} terms"
+    return "None" if number_of_terms.zero?
+
+    [number_of_terms, "term".pluralize(number_of_terms.round)].join(" ")
   end
 
   def extended?
