@@ -1,31 +1,43 @@
 describe Teachers::InductionExtensions do
+  let(:teacher) { FactoryBot.create(:teacher) }
+
   describe '#yes_or_no' do
-    subject { described_class.new(teacher).yes_or_no }
-    let(:teacher) { FactoryBot.create(:teacher) }
+    subject(:yes_or_no) { described_class.new(teacher).yes_or_no }
 
     context 'without extensions' do
-      it 'returns no' do
-        expect(subject).to eq("No")
-      end
+      it { expect(yes_or_no).to eq("No") }
     end
 
     context 'with extensions' do
       let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
 
-      it 'returns yes' do
-        expect(subject).to eq("Yes")
-      end
+      it { expect(yes_or_no).to eq("Yes") }
     end
   end
 
   describe "#formatted_number_of_terms" do
-    let(:total) { 5.1 }
-    let(:teacher) { FactoryBot.create(:teacher) }
+    subject(:formatted_number_of_terms) { described_class.new(teacher).formatted_number_of_terms }
 
-    it "returns the number of terms followed by the " do
+    before do
       allow(teacher.induction_extensions).to receive(:sum).and_return(total)
+    end
 
-      expect(Teachers::InductionExtensions.new(teacher).formatted_number_of_terms).to eql("#{total} terms")
+    context "when gt 1" do
+      let(:total) { 5.1 }
+
+      it { expect(formatted_number_of_terms).to eql("#{total} terms") }
+    end
+
+    context "when lt 1" do
+      let(:total) { 0.777777 }
+
+      it { expect(formatted_number_of_terms).to eql("#{total} term") }
+    end
+
+    context "when eq 1" do
+      let(:total) { 1.0 }
+
+      it { expect(formatted_number_of_terms).to eql("#{total} term") }
     end
   end
 end
