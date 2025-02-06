@@ -4,6 +4,6 @@ class OTPMailer < ApplicationMailer
     @recipient_name = params.fetch(:recipient_name)
     @code = params.fetch(:code)
 
-    view_mail(NOTIFY_TEMPLATE_ID, to:, subject: "Sign in to ECF2 with this one time password")
+    view_mail(NOTIFY_TEMPLATE_ID, to:, subject: "Sign in to Register ECTs with this one time password")
   end
 end
