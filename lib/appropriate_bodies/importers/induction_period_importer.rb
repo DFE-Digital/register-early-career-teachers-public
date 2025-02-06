@@ -4,6 +4,7 @@ module AppropriateBodies::Importers
   class InductionPeriodImporter
     IMPORT_ERROR_LOG = 'tmp/induction_period_import.log'.freeze
     LOGFILE = Rails.root.join("log/induction_period_import.log").freeze
+    ECF_CUTOFF = Date.new(2021, 9, 1).freeze
 
     attr_accessor :csv, :data
 
@@ -41,11 +42,13 @@ module AppropriateBodies::Importers
     private
 
       def convert_induction_programme
+        return "pre_september_2021" if started_on < ECF_CUTOFF
+
         {
           "Full Induction Programme" => "fip",
           "Core Induction Programme" => "cip",
-          "School-based Induction Programme" => "diy" # FIXME: check this! - perhaps school-funded fip?
-        }.fetch(induction_programme, "fip")
+          "School-based Induction Programme" => "diy"
+        }.fetch(induction_programme, "unknown")
       end
     end
 
