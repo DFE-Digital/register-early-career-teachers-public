@@ -7,7 +7,7 @@ RSpec.describe OTPMailer, type: :mailer do
     let(:mail) { OTPMailer.with(recipient_email:, recipient_name:, code:).otp_code_email }
 
     it "renders the headers" do
-      expect(mail.subject).to eq("Sign-in to ECF2 with this one time password")
+      expect(mail.subject).to eq("Sign in to Register ECTs with this one time password")
       expect(mail.to).to eq([recipient_email])
     end
 
