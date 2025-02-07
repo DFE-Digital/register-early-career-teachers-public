@@ -47,6 +47,7 @@ Rails.application.configure do
   else
     Logger.new($stdout).warn("GOVUK_NOTIFY_API_KEY is not set")
   end
+  config.action_mailer.default_url_options = { host: "localhost", port: '3000' }
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
