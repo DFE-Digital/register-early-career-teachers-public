@@ -1,0 +1,5 @@
+production:
+  send_entity_table_checks_to_bigquery:
+    class: DfE::Analytics::EntityTableCheckJob
+    queue: dfe_analytics
+    schedule: Every day at 00:30
