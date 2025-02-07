@@ -36,14 +36,14 @@ module AppropriateBodies::Importers
           begin
             ip.teacher_id = teacher_trn_to_id.fetch(trn)
           rescue KeyError
-            puts "No teacher found with trn: #{trn}"
+            Rails.logger.error("No teacher found with trn: #{trn}")
             next
           end
 
           begin
             ip.appropriate_body_id = ab_legacy_id_to_id.fetch(ip.legacy_appropriate_body_id)
           rescue KeyError
-            puts "No appropriate body found with legacy_id: #{ip.legacy_appropriate_body_id}"
+            Rails.logger.error("No appropriate body found with legacy_id: #{ip.legacy_appropriate_body_id}")
             next
           end
 

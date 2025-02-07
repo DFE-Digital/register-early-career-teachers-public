@@ -220,13 +220,14 @@ module AppropriateBodies::Importers
                   case
                   when sibling.started_on == current.started_on
                     # TODO: work out what to do here
+                    logger.error("siblings with different appropriate bodies that start on the same day found; current: #{current}, sibling: #{sibling}")
                   when sibling.range.cover?(current.range) || current.range.cover?(sibling.range)
                     # an induction period from one AB entirely contains one from another,
                     # which do we keep?
                     #
                     # This might never happen in prod so let's ignore it for now
                     # FIXME: log these
-                    logger.error("periods contained by other period detected")
+                    logger.error("periods contained by other period detected; current: #{current}, sibling: #{sibling}")
                   when sibling.range.cover?(current.started_on) && !sibling.range.cover?(current.finished_on)
                     #                         ┌─────────────────────────────────┐
                     #   Current               │          KEEP                   │
