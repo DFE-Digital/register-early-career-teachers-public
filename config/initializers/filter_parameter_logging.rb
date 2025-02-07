@@ -6,11 +6,22 @@
 Rails.application.config.filter_parameters += %i[
   _key
   certificate
+  commit
   crypt
+  email
+  email_address
+  first_name
+  last_name
+  name
   otp
   passw
+  q
   salt
   secret
   ssn
   token
+  trn
+  trs_email_address
+  trs_first_name
+  trs_last_name
 ]
