@@ -7,3 +7,4 @@ DFE_SIGN_IN_API_BASE_URL: 'https://api.signin.education.gov.uk'
 DFE_SIGN_IN_CLIENT_ID: RegisterECTs
 DFE_SIGN_IN_ISSUER: 'https://oidc.signin.education.gov.uk'
 DFE_SIGN_IN_REDIRECT_URI: 'https://www.register-early-career-teachers.education.gov.uk/auth/dfe/callback'
+SERVICE_URL: 'https://www.register-early-career-teachers.education.gov.uk'
