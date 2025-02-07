@@ -72,6 +72,12 @@ Rails.application.configure do
     api_key: ENV.fetch("GOVUK_NOTIFY_API_KEY"),
   }
 
+  # For review apps extract everything but the last segment.
+  #   Ex: "cpd-ec2-review-154-web-9cc9fdbbf-gkd22" => cpd-ec2-review-154-web.test.teacherservices.cloud
+  #
+  # For the rest of environments get the value from ENV['SERVICE_URL']
+  config.action_mailer.default_url_options = { host: ENV['SERVICE_URL'] || ENV['HOSTNAME']&.split(/-(web|worker)/)&.first&.concat('-web.test.teacherservices.cloud') }
+
   config.action_mailer.perform_caching = false
 
   # Ignore bad email addresses and do not raise email delivery errors.
