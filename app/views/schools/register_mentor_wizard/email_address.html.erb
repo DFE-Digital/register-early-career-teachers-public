@@ -1,23 +1,2 @@
-<% 
-  page_data(
-    title: "What is #{@mentor.full_name}'s email address?", 
-    error: @wizard.current_step.errors.present?, 
-    # 1.
-    # backlink_href: @mentor.email.present? ? schools_register_mentor_wizard_check_answers_path : schools_register_mentor_wizard_review_mentor_details_path
-    # 2.
-    # backlink_href: @wizard.cya?(:email_address) ? schools_register_mentor_wizard_check_answers_path : schools_register_mentor_wizard_review_mentor_details_path
-    # 3.
-    backlink_href: @wizard.back_link_path(:email_address)
-  ) 
-%>
-
-<p class="govuk-body">We need an email so we can ask for their consent to share their details if needed for
-  training.</p>
-
-<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
-  <%= content_for(:error_summary) { f.govuk_error_summary } %>
-
-  <%= f.govuk_email_field(:email, value: @mentor.email, label: { text: "Email address", hidden: true, class: 'govuk-!-margin-bottom-4' }) %>
-
-  <%= f.govuk_submit "Continue" %>
-<% end %>
+<%= render 'email_address',
+           backlink_href: schools_register_mentor_wizard_review_mentor_details_path %>

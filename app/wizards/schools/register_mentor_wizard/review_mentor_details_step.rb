@@ -3,7 +3,10 @@ module Schools
     class ReviewMentorDetailsStep < Step
       attr_accessor :change_name, :corrected_name
 
-      validates :change_name, presence: { message: "Select 'Yes' or 'No' to confirm whether the details are correct" }
+      validates :change_name,
+                inclusion: { in: %w[yes no],
+                             message: "Select 'Yes' or 'No' to confirm whether the details are correct" }
+
       validates :corrected_name, corrected_name: true, if: -> { change_name == "yes" }
 
       def self.permitted_params

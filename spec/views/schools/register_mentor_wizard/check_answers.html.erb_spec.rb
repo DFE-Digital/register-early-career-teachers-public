@@ -61,7 +61,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   it "has change links" do
     render
 
-    expect(rendered).to have_link("Change", href: schools_register_mentor_wizard_review_mentor_details_path)
-    expect(rendered).to have_link("Change", href: schools_register_mentor_wizard_email_address_path)
+    expect(rendered).to have_link("Change", href: schools_register_mentor_wizard_change_mentor_details_path)
+    expect(rendered).to have_link("Change", href: schools_register_mentor_wizard_change_email_address_path)
   end
 end

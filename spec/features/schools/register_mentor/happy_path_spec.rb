@@ -62,12 +62,12 @@ RSpec.describe 'Registering a mentor', :js do
     and_i_should_see_all_the_mentor_data_on_the_page
 
     when_i_try_to_change_the_name
-    then_i_should_be_taken_to_the_review_mentor_details_page
+    then_i_should_be_taken_to_the_change_mentor_details_page
     and_i_click_confirm_and_continue
     then_i_should_be_taken_to_the_check_answers_page
 
     when_i_try_to_change_the_email
-    then_i_should_be_taken_to_the_email_address_page
+    then_i_should_be_taken_to_the_change_email_address_page
     and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
   end
@@ -159,8 +159,16 @@ RSpec.describe 'Registering a mentor', :js do
     page.get_by_role('link', name: 'Change').first.click
   end
 
+  def then_i_should_be_taken_to_the_change_mentor_details_page
+    expect(page.url).to end_with('/school/register-mentor/change-mentor-details')
+  end
+
   def when_i_try_to_change_the_email
     page.get_by_role('link', name: 'Change').last.click
+  end
+
+  def then_i_should_be_taken_to_the_change_email_address_page
+    expect(page.url).to end_with('/school/register-mentor/change-email-address')
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
