@@ -1,6 +1,7 @@
 ## Now 🏃
 
 We are:
+
 * improving how early career teachers are transferred between different schools, so that all users have the information they need and can make changes easily
 * setting up how records for early career teachers and mentors are viewed, so school users can understand what's happening and make changes when needed
 * cleaning up the data we've set up processes to migrate, starting with induction records
