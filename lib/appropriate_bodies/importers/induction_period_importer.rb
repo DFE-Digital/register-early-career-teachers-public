@@ -172,7 +172,6 @@ module AppropriateBodies::Importers
                     #               ┌─────────────────────────────────────────┬───┐
                     #   Sibling     │                EXTEND                   │╳╳╳│
                     #               └─────────────────────────────────────────┴───┘
-
                     current.number_of_terms = [sibling.number_of_terms, current.number_of_terms].max
                     sibling.finished_on = current.finished_on
                     sibling.notes << {
