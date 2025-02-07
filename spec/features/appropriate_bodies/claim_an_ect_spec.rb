@@ -12,7 +12,7 @@ RSpec.describe 'Claiming an ECT' do
       FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_body)
     end
 
-    scenario 'Button is hidden when induction is active' do
+    scenario 'Button is hidden when induction is ongoing' do
       given_i_am_on_the_claim_an_ect_find_page
       when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
       and_i_submit_the_form
