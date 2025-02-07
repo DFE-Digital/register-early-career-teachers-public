@@ -174,6 +174,12 @@ Rails.application.routes.draw do
       get "check-answers", action: :new
       post "check-answers", action: :create
 
+      get "change-mentor-details", action: :new
+      post "change-mentor-details", action: :create
+
+      get "change-email-address", action: :new
+      post "change-email-address", action: :create
+
       get "confirmation", action: :new
     end
   end
