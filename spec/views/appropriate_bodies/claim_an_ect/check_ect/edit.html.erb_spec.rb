@@ -37,7 +37,7 @@ RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
     end
 
     context 'when the ECT has an ongoing induction period with another appropriate body' do
-      let(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
+      let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
 
       before { assign(:current_appropriate_body, appropriate_body) }
 

@@ -12,7 +12,7 @@ class Teachers::InductionPeriod
   def active_induction_period
     # FIXME: this works if finished_on cannot be set to a future date
     # If that becomes possible, this query will need to be updated
-    teacher.induction_periods.find_by(finished_on: nil)
+    teacher.induction_periods.ongoing.first
   end
 
 private
