@@ -11,12 +11,12 @@ module AppropriateBodies::Importers
       ab_importer_rows = AppropriateBodyImporter.new(appropriate_body_csv, active_abs).rows
 
       puts "Active appropriate bodies: #{active_abs.count}"
-      # FIXME: use insert_all! here
+
       AppropriateBody.insert_all(ab_importer_rows.select { |r| r.legacy_id.in?(active_abs) }.map(&:to_h))
       puts "Appropriate bodies inserted: #{AppropriateBody.count}"
 
       puts "Active Teachers: #{teacher_importer_rows.count}"
-      # FIXME: use insert_all! here
+
       Teacher.insert_all(teacher_importer_rows.map(&:to_h))
       puts "Teachers inserted: #{Teacher.count}"
 
@@ -51,13 +51,19 @@ module AppropriateBodies::Importers
         end
       end
 
-      # FIXME: use insert_all! here
       InductionPeriod.insert_all(induction_period_rows.map(&:to_record))
 
-      # TODO: insert extensions
-      # TODO: insert events
+      induction_extensions = teacher_importer_rows.select { |tir| tir.extension_terms.present? }.map do |row|
+        {
+          teacher_id: teacher_trn_to_id.fetch(row.trn),
+          number_of_terms: row.extension_terms
+        }
+      end
 
-      binding.debugger
+      InductionExtension.insert_all(induction_extensions)
+      puts "Induction extensions inserted: #{InductionExtension.count}"
+
+      # TODO: insert events
     end
     # rubocop:enable Rails/Output
   end

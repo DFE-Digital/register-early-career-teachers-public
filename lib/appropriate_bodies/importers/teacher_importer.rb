@@ -4,13 +4,17 @@ module AppropriateBodies::Importers
   class TeacherImporter
     IMPORT_ERROR_LOG = 'tmp/teacher_import.log'.freeze
 
-    Row = Struct.new(:trn, :first_name, :last_name, :induction_status) do
+    Row = Struct.new(:trn, :first_name, :last_name, :induction_status, :extension_terms, keyword_init: true) do
       def to_h
         {
           trn:,
           trs_first_name: first_name_with_fallback,
           trs_last_name: last_name_with_fallback,
         }
+      end
+
+      def extension_h
+        { trn:, extension_terms: }
       end
 
       def first_name_with_fallback
@@ -43,7 +47,7 @@ module AppropriateBodies::Importers
         seek = sorted_wanted_trns.shift
       end
 
-      @csv = CSV.parse(wanted_lines.join, headers: %w[trn first_name last_name induction_status])
+      @csv = CSV.parse(wanted_lines.join, headers: %w[trn first_name last_name extension_length extension_length_unit induction_status])
     end
 
     def rows
@@ -57,8 +61,8 @@ module AppropriateBodies::Importers
         trn: row['trn'],
         first_name: row['first_name']&.strip,
         last_name: row['last_name']&.strip,
-        induction_status: row['induction_status']
-        # FIXME: extensions
+        induction_status: row['induction_status'],
+        extension_terms: convert_extension(row)
       }
     end
 

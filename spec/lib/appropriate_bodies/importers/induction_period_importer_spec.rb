@@ -3,6 +3,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
   let!(:ab_2) { FactoryBot.create(:appropriate_body, legacy_id: '1ddf3e82-c1ae-e311-b8ed-005056822391') }
   let!(:ab_3) { FactoryBot.create(:appropriate_body, legacy_id: 'ef1c5e56-a8e6-41e2-a47d-c75a098cd61f') }
   let!(:ab_4) { FactoryBot.create(:appropriate_body, legacy_id: '67fc4692-2b90-4a80-8131-795eb93bc496') }
+  let!(:ab_5) { FactoryBot.create(:appropriate_body, legacy_id: 'f4837bce-28ae-46d0-aae7-d49f1d8f62e3') }
 
   let!(:ect_1) { FactoryBot.create(:teacher, trn: '2600071') }
   let!(:ect_2) { FactoryBot.create(:teacher, trn: '1666461') }
@@ -12,9 +13,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
     <<~CSV
       appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
       #{ab_1.legacy_id},01/01/2012 00:00:00,10/31/2012 00:00:00,Core Induction Programme,3,2600071
-      #{ab_2.legacy_id},09/02/2019 00:00:00,11/13/2020 00:00:00,School-based Induction Programme,3,1666461
-      #{ab_3.legacy_id},02/01/2012 00:00:00,10/31/2012 00:00:00,Full Induction Programme,3,2600049
-      #{ab_4.legacy_id},02/01/2012 00:00:00,10/31/2012 00:00:00,,3,2600049
+      #{ab_2.legacy_id},12/12/2021 00:00:00,10/31/2022 00:00:00,Core Induction Programme,3,2600071
+      #{ab_3.legacy_id},09/02/2022 00:00:00,11/13/2023 00:00:00,School-based Induction Programme,3,1666461
+      #{ab_4.legacy_id},02/01/2023 00:00:00,10/31/2014 00:00:00,Full Induction Programme,3,2600049
+      #{ab_5.legacy_id},02/01/2024 00:00:00,10/31/2015 00:00:00,,3,2600049
     CSV
   end
 
@@ -26,19 +28,55 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
   end
 
   it 'converts all rows' do
-    expect(subject.rows.size).to eql(4)
+    expect(subject.rows.size).to eql(5)
   end
 
   describe 'mapping induction programmes' do
     it 'converts names to codes properly' do
       mappings = {
-        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_1.legacy_id } => 'cip',
-        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_2.legacy_id } => 'diy',
-        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_3.legacy_id } => 'fip',
-        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_4.legacy_id } => 'fip' # defaults when missing
+        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_1.legacy_id } => 'pre_september_2021',
+        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_2.legacy_id } => 'cip',
+        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_3.legacy_id } => 'diy',
+        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_4.legacy_id } => 'fip',
+        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_5.legacy_id } => 'unknown'
       }
       mappings.each do |row, expected_induction_programme|
         expect(row.to_hash.fetch(:induction_programme)).to eql(expected_induction_programme)
+      end
+    end
+  end
+
+  describe 'number of terms' do
+    context 'when number_of_terms is present and finished_on is blank' do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,,,3,2600071
+        CSV
+      end
+
+      it 'sets the number_of_terms to nil' do
+        row_data = subject.periods_as_hashes_by_trn['2600071'].first
+        expect(row_data.fetch(:started_on)).to eql(Date.new(2012, 1, 1))
+        expect(row_data.fetch(:number_of_terms)).to be_nil
+      end
+    end
+  end
+
+  describe 'finished_on' do
+    context 'when started_on and finished_on are the same day' do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,01/01/2012 00:00:00,,3,2600071
+          025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2021 00:00:00,,,3,2600071
+        CSV
+      end
+
+      it 'bumps the finish date by one day' do
+        row_data = subject.periods_as_hashes_by_trn['2600071'].first
+        expect(row_data.fetch(:started_on)).to eql(Date.new(2012, 1, 1))
+        expect(row_data.fetch(:finished_on)).to eql(Date.new(2012, 1, 2))
       end
     end
   end

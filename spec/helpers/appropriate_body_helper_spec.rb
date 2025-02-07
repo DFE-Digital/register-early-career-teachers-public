@@ -12,6 +12,14 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
     it "has keys for the old (pre-2025) induction choices" do
       expect(induction_programme_choices.map(&:identifier)).to eql(%w[fip cip diy])
     end
+
+    it "has names for the old (pre-2025) induction choices" do
+      expect(induction_programme_choices.map(&:name)).to eql([
+        'Full induction programme',
+        'Core induction programme',
+        'School-based induction programme'
+      ])
+    end
   end
 
   describe "#summary_card_for_teacher" do
