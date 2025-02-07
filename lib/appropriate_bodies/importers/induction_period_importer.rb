@@ -4,6 +4,7 @@ module AppropriateBodies::Importers
   class InductionPeriodImporter
     IMPORT_ERROR_LOG = 'tmp/induction_period_import.log'.freeze
     LOGFILE = Rails.root.join("log/induction_period_import.log").freeze
+    ECF_CUTOFF = Date.new(2021, 9, 1).freeze
 
     attr_accessor :csv, :data
 
@@ -31,21 +32,31 @@ module AppropriateBodies::Importers
 
       # used for comparisons in tests
       def to_hash
-        { appropriate_body_id:, started_on:, finished_on:, induction_programme: convert_induction_programme, number_of_terms: }
+        { appropriate_body_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
       end
 
       def to_record
-        { appropriate_body_id:, started_on:, finished_on:, induction_programme: convert_induction_programme, number_of_terms:, teacher_id: }
+        { **to_hash, teacher_id: }
       end
 
     private
 
+      def fixed_number_of_terms
+        (finished_on.present?) ? number_of_terms : nil
+      end
+
+      def fixed_finished_on
+        finished_on == started_on ? finished_on + 1 : finished_on
+      end
+
       def convert_induction_programme
+        return "pre_september_2021" if started_on < ECF_CUTOFF
+
         {
           "Full Induction Programme" => "fip",
           "Core Induction Programme" => "cip",
-          "School-based Induction Programme" => "diy" # FIXME: check this! - perhaps school-funded fip?
-        }.fetch(induction_programme, "fip")
+          "School-based Induction Programme" => "diy"
+        }.fetch(induction_programme, "unknown")
       end
     end
 
@@ -78,7 +89,7 @@ module AppropriateBodies::Importers
       rows
         .reject { |ip| ip.started_on.nil? }
         .reject { |ip| ip.started_on == Date.new(1, 1, 1) }
-        .reject { |ip| ip.finished_on && ip.started_on >= ip.finished_on }
+        .reject { |ip| ip.finished_on && ip.started_on > ip.finished_on }
         .group_by(&:trn)
         .select { |_trn, periods| periods.any? { |p| p.finished_on.nil? } }
         .transform_values { |periods| periods.sort_by { |p| [p.started_on, p.length, p.appropriate_body_id] } }

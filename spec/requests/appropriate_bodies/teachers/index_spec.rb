@@ -25,6 +25,18 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
         end
       end
 
+      context "when there are more than 10 claimed ECTs" do
+        it 'displays pagination' do
+          FactoryBot.create_list(:teacher, 11, trs_first_name: "John", trs_last_name: "Smith").each do |teacher|
+            FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
+          end
+
+          get("/appropriate-body/teachers")
+
+          expect(response.body).to include('govuk-pagination')
+        end
+      end
+
       it 'finds the right PendingInductionSubmission record and renders the page' do
         get("/appropriate-body/teachers")
 

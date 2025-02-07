@@ -23,7 +23,7 @@ class InductionPeriod < ApplicationRecord
             }
 
   validates :induction_programme,
-            inclusion: { in: %w[fip cip diy],
+            inclusion: { in: %w[fip cip diy unknown pre_september_2021],
                          message: "Choose an induction programme" }
 
   validate :start_date_after_qts_date
