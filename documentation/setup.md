@@ -132,5 +132,8 @@ Activate Microsoft Entra Privileged Identity Management and ask for approval in 
 $ make staging set-namespace aks-console
 
 # Or review app shell
-$ PULL_REQUEST_NUMBER=117 make review set-namespace aks-ssh
+$ PULL_REQUEST_NUMBER=123 make review set-namespace aks-ssh
+
+# Teardown review app
+$ PULL_REQUEST_NUMBER=123 make ci review terraform-destroy
 ```
