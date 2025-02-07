@@ -18,7 +18,12 @@ module Schools
 
     def create
       if @wizard.save!
-        redirect_to cya? ? schools_register_mentor_wizard_check_answers_path : @wizard.next_step_path
+        # 1.
+        # redirect_to cya? ? schools_register_mentor_wizard_check_answers_path : @wizard.next_step_path
+        # 2.
+        # redirect_to @wizard.cya?(current_step) ? schools_register_mentor_wizard_check_answers_path : @wizard.next_step_path
+        # 3.
+        redirect_to @wizard.next_step_path(current_step)
       else
         render current_step
       end

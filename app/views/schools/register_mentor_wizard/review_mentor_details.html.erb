@@ -1,7 +1,12 @@
 <% 
   page_data(
     title: "Check mentor details", 
-    backlink_href: @mentor.email.present? ? schools_register_mentor_wizard_check_answers_path : schools_register_mentor_wizard_find_mentor_path
+    # 1.
+    # backlink_href: @mentor.email.present? ? schools_register_mentor_wizard_check_answers_path : schools_register_mentor_wizard_find_mentor_path
+    # 2.
+    # backlink_href: @wizard.cya?(:review_mentor_details) ? schools_register_mentor_wizard_check_answers_path : schools_register_mentor_wizard_find_mentor_path
+    # 3.
+    backlink_href: @wizard.back_link_path(:review_mentor_details)
   ) 
 %>
 

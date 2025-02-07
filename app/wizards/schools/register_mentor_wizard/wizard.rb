@@ -3,6 +3,8 @@ module Schools
     class Wizard < DfE::Wizard::Base
       attr_accessor :store, :ect_id
 
+      include Rails.application.routes.url_helpers
+
       steps do
         [
           {
@@ -35,6 +37,32 @@ module Schools
 
       def mentor
         @mentor ||= Mentor.new(store)
+      end
+
+      # 3.
+      def next_step_path(current_step)
+        return schools_register_mentor_wizard_check_answers_path if cya?(current_step)
+
+        super()
+      end
+
+      def back_link_path(current_step)
+        return schools_register_mentor_wizard_check_answers_path if cya?(current_step)
+          
+        case current_step
+        when :review_mentor_details then schools_register_mentor_wizard_find_mentor_path
+        when :email_address then schools_register_mentor_wizard_review_mentor_details_path
+        end
+      end
+
+      # private
+
+      # 2 & 3.
+      def cya?(current_step)
+        %i[
+          review_mentor_details
+          email_address
+        ].include?(current_step) && mentor.email.present?
       end
     end
   end
