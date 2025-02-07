@@ -39,6 +39,11 @@ runs:
       with:
         azure-credentials: ${{ inputs.azure-credentials }}
 
+    - uses: google-github-actions/auth@v2
+      with:
+        project_id: ecf-bq
+        workload_identity_provider: projects/808138694727/locations/global/workloadIdentityPools/register-early-career-teachers-p/providers/register-early-career-teachers-p
+
     - name: Apply Terraform
       id: apply-terraform
       shell: bash
