@@ -15,6 +15,8 @@ module AppropriateBodies::Importers
       import_teacher_rows
       import_induction_periods_rows
       import_induction_extensions
+
+      update_event_titles
     end
 
   private
@@ -33,13 +35,13 @@ module AppropriateBodies::Importers
 
     def import_ab_rows
       Rails.logger.info("Active appropriate bodies: #{@active_abs.count}")
-      AppropriateBody.insert_all(@ab_importer_rows.select { |r| r.legacy_id.in?(@active_abs) }.map(&:to_h))
+      AppropriateBody.insert_all!(@ab_importer_rows.select { |r| r.legacy_id.in?(@active_abs) }.map(&:to_h))
       Rails.logger.info("Appropriate bodies inserted: #{AppropriateBody.count}")
     end
 
     def import_teacher_rows
       Rails.logger.info("Active Teachers: #{@teacher_importer_rows.count}")
-      Teacher.insert_all(@teacher_importer_rows.map(&:to_h))
+      Teacher.insert_all!(@teacher_importer_rows.map(&:to_h))
       Rails.logger.info("Teachers inserted: #{Teacher.count}")
     end
 
@@ -66,7 +68,16 @@ module AppropriateBodies::Importers
         end
       end
 
-      InductionPeriod.insert_all(induction_period_rows.map(&:to_record))
+      induction_period_ids = InductionPeriod.insert_all!(induction_period_rows.map(&:to_record), returning: [:id])
+      Rails.logger.info("Induction periods inserted: #{InductionPeriod.count}")
+
+      # FIXME: how do we set titles?
+      #        can do it by executing a single line of SQL after insert
+      induction_period_rows.each_with_index { |row, i| row.id = induction_period_ids[i]['id'] }
+
+      events = induction_period_rows.flat_map(&:events).flatten
+
+      Event.insert_all(events)
     end
 
     def import_induction_extensions
@@ -77,8 +88,28 @@ module AppropriateBodies::Importers
         }
       end
 
-      InductionExtension.insert_all(induction_extensions)
+      InductionExtension.insert_all!(induction_extensions)
       Rails.logger.info("Induction extensions inserted: #{InductionExtension.count}")
+    end
+
+    def update_event_titles
+      statements = [<<~CLAIM, <<~RELEASE]
+        update events e
+        set heading = t.trs_first_name || ' ' || t.trs_last_name || ' was claimed by ' || ab.name
+        from teachers t, appropriate_bodies ab
+        where e.event_type = 'appropriate_body_claims_teacher'
+        and e.teacher_id = t.id
+        and e.appropriate_body_id = ab.id;
+      CLAIM
+        update events e
+        set heading = t.trs_first_name || ' ' || t.trs_last_name || ' was released by ' || ab.name
+        from teachers t, appropriate_bodies ab
+        where e.event_type = 'appropriate_body_releases_teacher'
+        and e.teacher_id = t.id
+        and e.appropriate_body_id = ab.id;
+      RELEASE
+
+      ActiveRecord::Base.connection.execute(statements.join(';'))
     end
   end
 end
