@@ -11,22 +11,39 @@ module AppropriateBodies::Importers
     end
 
     def import!
+      import_ab_rows
+      import_teacher_rows
+      import_induction_periods_rows
+      import_induction_extensions
+    end
+
+  private
+
+    def teacher_trn_to_id
+      @teacher_trn_to_id ||= Teacher.all.select(:id, :trn).each_with_object({}) do |t, h|
+        h[t[:trn]] = t[:id]
+      end
+    end
+
+    def ab_legacy_id_to_id
+      @ab_legacy_id_to_id ||= AppropriateBody.all.select(:id, :legacy_id).each_with_object({}) do |ab, h|
+        h[ab[:legacy_id]] = ab[:id]
+      end
+    end
+
+    def import_ab_rows
       Rails.logger.info("Active appropriate bodies: #{@active_abs.count}")
       AppropriateBody.insert_all(@ab_importer_rows.select { |r| r.legacy_id.in?(@active_abs) }.map(&:to_h))
       Rails.logger.info("Appropriate bodies inserted: #{AppropriateBody.count}")
+    end
 
+    def import_teacher_rows
       Rails.logger.info("Active Teachers: #{@teacher_importer_rows.count}")
       Teacher.insert_all(@teacher_importer_rows.map(&:to_h))
       Rails.logger.info("Teachers inserted: #{Teacher.count}")
+    end
 
-      teacher_trn_to_id = Teacher.all.select(:id, :trn).each_with_object({}) do |t, h|
-        h[t[:trn]] = t[:id]
-      end
-
-      ab_legacy_id_to_id = AppropriateBody.all.select(:id, :legacy_id).each_with_object({}) do |ab, h|
-        h[ab[:legacy_id]] = ab[:id]
-      end
-
+    def import_induction_periods_rows
       induction_period_rows = []
 
       @induction_periods_grouped_by_trn.each do |trn, induction_periods|
@@ -50,7 +67,9 @@ module AppropriateBodies::Importers
       end
 
       InductionPeriod.insert_all(induction_period_rows.map(&:to_record))
+    end
 
+    def import_induction_extensions
       induction_extensions = @teacher_importer_rows.select { |tir| tir.extension_terms.present? }.map do |row|
         {
           teacher_id: teacher_trn_to_id.fetch(row.trn),
@@ -60,8 +79,6 @@ module AppropriateBodies::Importers
 
       InductionExtension.insert_all(induction_extensions)
       Rails.logger.info("Induction extensions inserted: #{InductionExtension.count}")
-
-      # TODO: insert events
     end
   end
 end
