@@ -11,7 +11,7 @@ module Teachers
     end
 
     def past_induction_periods
-      @past_induction_periods ||= teacher.induction_periods.where.not(finished_on: nil).order(finished_on: :asc)
+      @past_induction_periods ||= teacher.induction_periods.where.not(finished_on: nil).order(finished_on: :desc)
     end
 
     def induction_start_date

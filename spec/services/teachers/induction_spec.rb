@@ -21,28 +21,30 @@ RSpec.describe Teachers::Induction do
   end
 
   describe "#past_induction_periods" do
-    let(:older_finish) do
+    let!(:older_finish) do
       FactoryBot.create(:induction_period,
                         teacher:,
                         started_on: 3.years.ago,
                         finished_on: 2.years.ago)
     end
-    let(:recent_finish) do
+    let!(:recent_finish) do
       FactoryBot.create(:induction_period,
                         teacher:,
                         started_on: 2.years.ago,
                         finished_on: 1.year.ago)
     end
-    let(:current) do
+    let!(:current) do
       FactoryBot.create(:induction_period,
+                        :active,
                         teacher:,
                         started_on: 6.months.ago,
                         finished_on: nil)
     end
-    it "returns completed induction periods ordered by finish date ascending (oldest completed first)" do
+
+    it "returns completed induction periods ordered by finish date descending (most recent completed first)" do
       past_periods = service.past_induction_periods
 
-      expect(past_periods).to eq([older_finish, recent_finish])
+      expect(past_periods).to eq([recent_finish, older_finish])
     end
   end
 
