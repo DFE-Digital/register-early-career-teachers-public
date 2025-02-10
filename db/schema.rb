@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_05_135949) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_08_225854) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -41,7 +41,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_135949) do
     t.uuid "dfe_sign_in_organisation_id", null: false
     t.uuid "legacy_id"
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_bodies_on_dfe_sign_in_organisation_id", unique: true
-    t.index ["local_authority_code", "establishment_number"], name: "idx_on_local_authority_code_establishment_number_039c79cd09", unique: true
     t.index ["name"], name: "index_appropriate_bodies_on_name", unique: true
   end
 
@@ -180,6 +179,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_135949) do
     t.text "author_email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "metadata"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"

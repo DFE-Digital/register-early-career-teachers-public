@@ -5,6 +5,7 @@ class Event < ApplicationRecord
     appropriate_body_fails_teacher
     appropriate_body_passes_teacher
     teacher_name_updated_by_trs
+    import_from_dqt
   ].freeze
 
   belongs_to :teacher

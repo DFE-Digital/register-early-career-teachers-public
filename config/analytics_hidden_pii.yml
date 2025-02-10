@@ -10,3 +10,4 @@ shared:
   - body
   - author_name
   - author_email
+  - metadata
