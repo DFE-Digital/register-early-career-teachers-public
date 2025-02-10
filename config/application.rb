@@ -51,6 +51,8 @@ module RegisterEarlyCareerTeachers
                                   config.dfe_sign_in_redirect_uri,
                                   config.dfe_sign_in_issuer].all?
 
+    config.support_email_address = 'teacher.induction@education.gov.uk'
+
     config.after_initialize do
       ActionView::Base.default_form_builder = GOVUKDesignSystemFormBuilder::FormBuilder
     end
