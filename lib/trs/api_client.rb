@@ -1,10 +1,10 @@
 module TRS
   class APIClient
     def initialize
-      @connection = Faraday.new(url: ENV['TRS_BASE_URL']) do |faraday|
-        faraday.headers['Authorization'] = "Bearer #{ENV['TRS_API_KEY']}"
+      @connection = Faraday.new(url: Rails.application.config.trs_api_base_url) do |faraday|
+        faraday.headers['Authorization'] = "Bearer #{Rails.application.config.trs_api_key}"
         faraday.headers['Accept'] = 'application/json'
-        faraday.headers['X-Api-Version'] = 'Next'
+        faraday.headers['X-Api-Version'] = Rails.application.config.trs_api_version
         faraday.headers['Content-Type'] = 'application/json'
         faraday.adapter Faraday.default_adapter
         faraday.response :logger if Rails.env.development?
