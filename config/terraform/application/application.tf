@@ -17,14 +17,19 @@ module "application_configuration" {
 
   config_variables = merge(local.environment_variables,
     {
-      ENVIRONMENT_NAME = var.environment
-      PGSSLMODE        = local.postgres_ssl_mode
+      ENVIRONMENT_NAME               = var.environment
+      PGSSLMODE                      = local.postgres_ssl_mode
+      BIGQUERY_PROJECT_ID            = module.dfe_analytics.bigquery_project_id
+      BIGQUERY_TABLE_NAME            = module.dfe_analytics.bigquery_table_name
+      BIGQUERY_DFE_ANALYTICS_DATASET = module.dfe_analytics.bigquery_dataset
+
     }
   )
   secret_variables = {
-    DATABASE_URL        = module.postgres.url
-    BLAZER_DATABASE_URL = var.environment == "production" ? module.infrastructure_secrets.map[local.snapshot_db_kv_secret_name] : module.postgres.url
-    REDIS_CACHE_URL     = module.redis-cache.url
+    DATABASE_URL             = module.postgres.url
+    BLAZER_DATABASE_URL      = var.environment == "production" ? module.infrastructure_secrets.map[local.snapshot_db_kv_secret_name] : module.postgres.url
+    REDIS_CACHE_URL          = module.redis-cache.url
+    GOOGLE_CLOUD_CREDENTIALS = module.dfe_analytics.google_cloud_credentials
   }
 }
 
@@ -74,5 +79,6 @@ module "worker_application" {
   replicas   = var.worker_replicas
   max_memory = var.worker_memory_max
 
-  enable_logit = var.enable_logit
+  enable_logit   = var.enable_logit
+  enable_gcp_wif = true
 }

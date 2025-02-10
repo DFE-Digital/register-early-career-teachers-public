@@ -7,6 +7,10 @@ on:
     types:
     - closed
 
+permissions:
+  id-token: write
+  pull-requests: write
+
 jobs:
   delete-review-app:
     name: Delete Review App ${{ github.event.pull_request.number }}
@@ -28,6 +32,11 @@ jobs:
     - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
       with:
         azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - uses: google-github-actions/auth@v2
+      with:
+        project_id: ecf-bq
+        workload_identity_provider: projects/808138694727/locations/global/workloadIdentityPools/register-early-career-teachers-p/providers/register-early-career-teachers-p
 
     - name: Terraform Destroy
       run: |
