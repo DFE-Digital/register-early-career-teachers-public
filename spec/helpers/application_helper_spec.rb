@@ -74,8 +74,8 @@ RSpec.describe ApplicationHelper, type: :helper do
   describe '#support_mailto_link' do
     it 'returns a govuk styled link to the CPD support email address' do
       expect(support_mailto_link).to have_css(
-        %(a[href='mailto:continuing-professional-development@digital.education.gov.uk'][class='govuk-link']),
-        text: 'continuing-professional-development@digital.education.gov.uk'
+        %(a[href='mailto:teacher.induction@education.gov.uk'][class='govuk-link']),
+        text: 'teacher.induction@education.gov.uk'
       )
     end
   end
