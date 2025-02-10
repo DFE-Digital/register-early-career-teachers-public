@@ -62,6 +62,6 @@ private
   end
 
   def teacher
-    @teacher ||= Admin::TeacherPresenter.new(Teacher.find_by(trn: params[:id]))
+    @teacher ||= Admin::TeacherPresenter.new(Teacher.find(params[:id]))
   end
 end
