@@ -1,3 +1,5 @@
+# https://github.com.mcas.ms/DFE-Digital/register-ects-project-board/issues/1039
+
 module AppropriateBodies
   module ClaimAnECT
     class RegisterECT
@@ -19,7 +21,11 @@ module AppropriateBodies
         # end
         ActiveRecord::Base.transaction do
           steps = [
-            create_or_update_teacher,
+            # create_or_update_teacher,
+            manage_teacher.create_or_update!,
+            record_name_change_event,
+            # record_award_change_event,
+
             send_begin_induction_notification_to_trs,
             pending_induction_submission.save(context: :register_ect),
             create_induction_period
@@ -31,29 +37,36 @@ module AppropriateBodies
 
     private
 
-      # FIXME: move this to its own service class
-      def create_or_update_teacher
-        old_name = ::Teachers::Name.new(teacher).full_name_in_trs
+      def record_name_change_event
+        return true unless manage_teacher.name_changed?
 
-        teacher.assign_attributes(
-          trs_first_name: pending_induction_submission.trs_first_name,
-          trs_last_name: pending_induction_submission.trs_last_name,
-          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on
-        )
+        Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, **manage_teacher.changed_names)
+      end
 
-        new_name = ::Teachers::Name.new(teacher).full_name_in_trs
+      def record_award_change_event
+        true unless manage_teacher.qts_awarded_on_changed?
 
-        teacher.save!
+        # Events::Record.qts_awarded_on_changed_in_trs!(author:, teacher:, appropriate_body:, **manage_teacher.changed_qts_awarded_on)
+      end
 
-        if old_name && new_name != old_name
-          Events::Record.teacher_name_changed_in_trs!(author:, old_name:, new_name:, teacher:, appropriate_body:)
-        end
+      # def create_or_update_teacher
+      #   # separate methods
+      #   # manage
+      #   #   .set_trs_name(pending_induction_submission.trs_first_name, pending_induction_submission.trs_last_name)
+      #   #   .set_trs_qts_awarded_on(pending_induction_submission.trs_qts_awarded_on)
 
-        true
+      #   # combined method
+      #   manage.create_or_update
+      #   record_name_change_event
+      #   true
+      # end
+
+      def manage_teacher
+        @manage_teacher ||= ::Teachers::Manage.new(pending_induction_submission)
       end
 
       def teacher
-        @teacher ||= Teacher.find_or_initialize_by(trn: pending_induction_submission.trn)
+        manage_teacher.teacher
       end
 
       def create_induction_period
