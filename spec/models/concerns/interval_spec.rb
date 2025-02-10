@@ -60,6 +60,13 @@ describe Interval do
       end
     end
 
+    describe '.finished' do
+      it 'returns records where the finished_on date is null' do
+        expect(DummyMentor.finished.to_sql).to end_with(%("finished_on" IS NOT NULL))
+      end
+    end
+
+
     describe ".containing_period" do
       it "returns periods that completely contain the specified period" do
         expect(DummyMentor.containing_period(FakePeriod.new('2023-8-1', '2023-9-1'))).to match_array([period_2])
@@ -72,6 +79,24 @@ describe Interval do
 
       it "does not return periods that do not completely contain the specified date range" do
         expect(DummyMentor.containing_period(FakePeriod.new('2021-09-01', '2023-12-31'))).to be_empty
+      end
+    end
+
+    describe '.earliest_first' do
+      it 'orders by the started_on date ascending' do
+        expect(DummyMentor.earliest_first.to_sql).to include(%(ORDER BY "mentor_at_school_periods"."started_on" ASC))
+      end
+    end
+
+    describe '.latest_first' do
+      it 'orders by the started_on date descending' do
+        expect(DummyMentor.latest_first.to_sql).to include(%(ORDER BY "mentor_at_school_periods"."started_on" DESC))
+      end
+    end
+
+    describe '.latest_first' do
+      it 'orders by the started_on date descending' do
+        expect(DummyMentor.latest_first.to_sql).to include(%(ORDER BY "mentor_at_school_periods"."started_on" DESC))
       end
     end
   end
