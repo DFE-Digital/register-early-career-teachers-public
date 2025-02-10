@@ -145,6 +145,7 @@ describe Schools::RegisterECTWizard::ECT do
       expect(teacher.trn).to eq(ect.trn)
       expect(ect_at_school_period.school_id).to eq(school.id)
       expect(ect_at_school_period.started_on).to eq(Date.parse('January 2025'))
+      expect(ect_at_school_period.email).to eq('dusty@rhodes.com')
     end
   end
 
