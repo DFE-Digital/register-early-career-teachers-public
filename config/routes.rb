@@ -139,7 +139,7 @@ Rails.application.routes.draw do
   end
 
   namespace :schools, path: :school do
-    resources :ects, only: [] do
+    resources :ects, only: %i[show] do
       resource :mentorship, only: %i[new create] do
         get :confirmation, on: :collection
       end
