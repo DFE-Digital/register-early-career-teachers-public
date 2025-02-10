@@ -51,7 +51,8 @@ module Schools
                                  trn:,
                                  school:,
                                  started_on: Date.parse(start_date),
-                                 working_pattern:)
+                                 working_pattern:,
+                                 email:)
                             .register!
       end
 

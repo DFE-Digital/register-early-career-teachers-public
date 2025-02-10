@@ -1,5 +1,3 @@
-require 'ostruct'
-
 RSpec.describe "schools/register_mentor_wizard/review_mentor_details.html.erb" do
   let(:back_path) { schools_register_mentor_wizard_find_mentor_path }
   let(:date_of_birth) { "1950/1/1" }
