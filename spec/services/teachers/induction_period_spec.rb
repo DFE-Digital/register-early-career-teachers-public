@@ -1,13 +1,10 @@
 describe Teachers::InductionPeriod do
+  subject(:service) { described_class.new(teacher) }
+  let(:teacher) { FactoryBot.create(:teacher) }
+
   context '#induction_start_date' do
-    subject { described_class.new(teacher).induction_start_date }
-
-    let(:teacher) { FactoryBot.create(:teacher) }
-
     context 'when teacher does not have induction periods' do
-      it 'returns nil' do
-        expect(subject).to be_nil
-      end
+      it { expect(service.induction_start_date).to be_nil }
     end
 
     context "when the teacher has induction periods" do
@@ -22,16 +19,12 @@ describe Teachers::InductionPeriod do
       end
 
       it 'returns the start date of the first induction period' do
-        expect(subject).to eq(expected_date)
+        expect(service.induction_start_date).to eq(expected_date)
       end
     end
   end
 
   context '#active_induction_period' do
-    subject { described_class.new(teacher).active_induction_period }
-
-    let(:teacher) { FactoryBot.create(:teacher) }
-
     before do
       InductionPeriod.new(
         appropriate_body: FactoryBot.create(:appropriate_body),
@@ -42,9 +35,7 @@ describe Teachers::InductionPeriod do
     end
 
     context 'when teacher does not have an active induction period' do
-      it 'returns nil' do
-        expect(subject).to be_nil
-      end
+      it { expect(service.active_induction_period).to be_nil }
     end
 
     context "when the teacher has an active induction period" do
@@ -59,7 +50,7 @@ describe Teachers::InductionPeriod do
       end
 
       it 'returns the active induction period for the teacher' do
-        expect(subject).to eq(active_induction_period)
+        expect(service.active_induction_period).to eq(active_induction_period)
       end
     end
   end
