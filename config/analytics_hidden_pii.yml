@@ -1,0 +1,12 @@
+---
+shared:
+  :teachers:
+  - corrected_name
+  - trn
+  - trs_first_name
+  - trs_last_name
+  :events:
+  - heading
+  - body
+  - author_name
+  - author_email

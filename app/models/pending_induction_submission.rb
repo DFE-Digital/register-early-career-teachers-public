@@ -80,6 +80,7 @@ class PendingInductionSubmission < ApplicationRecord
               message: "TRS Induction Status is not known",
             },
             on: :register_ect
+  validate :no_future_induction_periods, if: -> { started_on.present? }, on: :register_ect
 
 private
 
@@ -87,5 +88,19 @@ private
     return if trs_qts_awarded_on.blank?
 
     ensure_start_date_after_qts_date(trs_qts_awarded_on)
+  end
+
+  def no_future_induction_periods
+    teacher = Teacher.find_by(trn:)
+
+    return if teacher.blank?
+
+    latest_date_of_induction = teacher.induction_periods.maximum(:finished_on)
+
+    return unless latest_date_of_induction
+
+    if started_on <= latest_date_of_induction
+      errors.add(:started_on, "Enter a start date after the last induction period finished (#{latest_date_of_induction.to_fs(:govuk)})")
+    end
   end
 end
