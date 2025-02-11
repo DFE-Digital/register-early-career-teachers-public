@@ -14,8 +14,6 @@ Rails.application.routes.draw do
     get '/500', to: 'errors#internal_server_error'
   end
 
-  resources :cities, only: %i[index create show]
-
   # omniauth sign-in
   get '/auth/:provider/callback', to: 'sessions#create'
   post '/auth/:provider/callback', to: 'sessions#create'
