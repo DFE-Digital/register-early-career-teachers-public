@@ -2,6 +2,8 @@
 
 module Schools
   class RegisterECTWizardController < SchoolsController
+    include StoreDataPreload
+
     before_action :initialize_wizard, only: %i[new create]
     before_action :reset_wizard, only: :new
 
@@ -33,6 +35,10 @@ module Schools
         school:
       )
       @ect = @wizard.ect
+
+      preload_params_from_store(@wizard, @ect)
+
+      return @ect
     end
 
     def current_step

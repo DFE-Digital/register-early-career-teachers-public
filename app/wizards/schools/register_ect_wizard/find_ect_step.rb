@@ -23,6 +23,16 @@ module Schools
         :review_ect_details
       end
 
+      def date_of_birth=(value)
+        if value.is_a?(String)
+          # Convert dates read from the store
+          @date_of_birth = string_to_date_hash(value)
+        elsif value.is_a?(Hash)
+          # Assign directly if it's a hash
+          @date_of_birth = value
+        end
+      end
+
     private
 
       def persist
@@ -42,6 +52,14 @@ module Schools
 
       def formatted_trn
         @formatted_trn ||= Validation::TeacherReferenceNumber.new(trn).formatted_trn
+      end
+
+      def string_to_date_hash(date_string)
+        # Parse the string to extract the month and year
+        date = Date.parse(date_string)
+
+        # Return the hash in the desired format
+        { 3 => date.day, 2 => date.month, 1 => date.year }
       end
     end
   end

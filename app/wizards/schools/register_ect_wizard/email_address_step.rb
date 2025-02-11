@@ -7,6 +7,18 @@ module Schools
 
       validates :email, presence: { message: "Enter the email address" }, notify_email: true
 
+      # def initialize(*args)
+      #   # attributes_with_defaults = { name: "Default Name", age: 18 }.merge(attributes)
+
+      #   super(*args) # Call the parent class's initialize
+
+      #   self.class.permitted_params.each do |param|
+      #     if respond_to?(param) && @wizard.ect.public_send(:email).present?
+      #       public_send("#{param}=", @wizard.ect.public_send(param))
+      #     end
+      #   end
+      # end
+
       def self.permitted_params
         %i[email]
       end
