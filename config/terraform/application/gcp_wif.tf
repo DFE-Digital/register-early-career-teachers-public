@@ -10,5 +10,5 @@ module "dfe_analytics" {
   namespace             = var.namespace
   service_short         = var.service_short
   environment           = var.environment
-  gcp_dataset           = "ecf_events_${var.config}"
+  gcp_dataset           = "ecf2_events_${var.config}"
 }
