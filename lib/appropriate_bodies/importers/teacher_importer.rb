@@ -93,6 +93,7 @@ module AppropriateBodies::Importers
                           value / 65.0
                         end
 
+      # FIXME: don't bother recording anything that rounds to 0
       converted_value.round
     end
   end

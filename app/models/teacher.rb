@@ -7,7 +7,7 @@ class Teacher < ApplicationRecord
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
   has_many :induction_extensions, inverse_of: :teacher
-  has_many :induction_periods, -> { order(started_on: :asc) }
+  has_many :induction_periods
   has_many :events
 
   # TODO: remove after migration complete
