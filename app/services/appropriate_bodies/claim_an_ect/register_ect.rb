@@ -21,11 +21,7 @@ module AppropriateBodies
         # end
         ActiveRecord::Base.transaction do
           steps = [
-            # create_or_update_teacher,
-            manage_teacher.create_or_update!,
-            record_name_change_event,
-            # record_award_change_event,
-
+            create_or_update_teacher!,
             send_begin_induction_notification_to_trs,
             pending_induction_submission.save(context: :register_ect),
             create_induction_period
@@ -37,36 +33,24 @@ module AppropriateBodies
 
     private
 
-      def record_name_change_event
-        return true unless manage_teacher.name_changed?
+      def create_or_update_teacher!
+        manage_teacher ||= ::Teachers::Manage.new(author, teacher)
+ 
+        # manage_teacher
+        #   .set_trs_name(pending_induction_submission.trs_first_name, pending_induction_submission.trs_last_name)
+        #   .set_trs_qts_awarded_on(pending_induction_submission.trs_qts_awarded_on)
 
-        Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, **manage_teacher.changed_names)
-      end
+        manage_teacher.update!(
+          trs_first_name: pending_induction_submission.trs_first_name, 
+          trs_last_name: pending_induction_submission.trs_last_name,
+          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on,
+        )
 
-      def record_award_change_event
-        true unless manage_teacher.qts_awarded_on_changed?
-
-        # Events::Record.qts_awarded_on_changed_in_trs!(author:, teacher:, appropriate_body:, **manage_teacher.changed_qts_awarded_on)
-      end
-
-      # def create_or_update_teacher
-      #   # separate methods
-      #   # manage
-      #   #   .set_trs_name(pending_induction_submission.trs_first_name, pending_induction_submission.trs_last_name)
-      #   #   .set_trs_qts_awarded_on(pending_induction_submission.trs_qts_awarded_on)
-
-      #   # combined method
-      #   manage.create_or_update
-      #   record_name_change_event
-      #   true
-      # end
-
-      def manage_teacher
-        @manage_teacher ||= ::Teachers::Manage.new(pending_induction_submission)
+        true
       end
 
       def teacher
-        manage_teacher.teacher
+        @teacher ||= Teacher.find_or_initialize_by(trn: pending_induction_submission.trn)
       end
 
       def create_induction_period

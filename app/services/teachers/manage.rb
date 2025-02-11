@@ -1,27 +1,25 @@
-# Perform teacher record edits, track state changes and deltas
+# Perform teacher record edits on behalf of author and track change events
+# 
 # 1. first and last name changes
 # 2. award date changes
 #
 class Teachers::Manage
-  attr_reader :pending_induction_submission, :teacher, :old_name, :new_name
+  attr_reader :author, :teacher, :teacher, :old_name, :new_name
 
-  # def initialize(teacher)
-  #   @teacher = teacher
-  # end
-
-  def initialize(pending_induction_submission)
-    @pending_induction_submission = pending_induction_submission
-    @teacher ||= Teacher.find_or_initialize_by(trn: pending_induction_submission.trn)
+  def initialize(author, teacher)
+    @author = author
+    @teacher = teacher
   end
 
-  # combined method ------------------------------------------------------------
-
-  def create_or_update!
+  def update!(params)
     @old_name = full_name
     # @old_award_date = teacher.trs_qts_awarded_on
-    teacher.assign_attributes(teacher_params)
+    teacher.assign_attributes(params)
     @new_name = full_name
+    record_name_change_event
+
     # @new_award_date = teacher.trs_qts_awarded_on
+    # record_award_change_event
     teacher.save!
   end
 
@@ -43,6 +41,8 @@ class Teachers::Manage
 
   # other methods -----------------------------------------------------------
 
+private
+
   def name_changed?
     return false if old_name.nil?
 
@@ -63,15 +63,25 @@ class Teachers::Manage
   #   { old_award_date:, new_award_date: }
   # end
 
-private
+  def record_name_change_event
+    return true unless name_changed?
 
-  def teacher_params
-    pending_induction_submission.attributes.symbolize_keys.slice(*editable_teacher_params)
+    Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_names)
   end
 
-  def editable_teacher_params
-    %i[trs_first_name trs_last_name trs_qts_awarded_on]
+  def record_award_change_event
+    true unless qts_awarded_on_changed?
+
+    # Events::Record.qts_awarded_on_changed_in_trs!(author:, teacher:, appropriate_body:, **manage_teacher.changed_qts_awarded_on)
   end
+
+  # def teacher_params
+  #   pending_induction_submission.attributes.symbolize_keys.slice(*editable_teacher_params)
+  # end
+
+  # def editable_teacher_params
+  #   %i[trs_first_name trs_last_name trs_qts_awarded_on]
+  # end
 
   def full_name
     ::Teachers::Name.new(teacher).full_name_in_trs
