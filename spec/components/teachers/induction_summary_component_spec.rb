@@ -41,7 +41,26 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
       expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
     end
 
-    context "with Initial Teacher Training" do
+    context "QTS awarded" do
+      context "when the teacher has a QTS award date" do
+        let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+
+        it "renders QTS awarded" do
+          render_inline(component)
+          expect(page).to have_content("QTS awarded")
+          expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
+        end
+      end
+
+      context "when the teacher does not have a QTS award date" do
+        it "does not render QTS awarded on" do
+          render_inline(component)
+          expect(page).not_to have_content("QTS awarded")
+        end
+      end
+    end
+
+    context "Initial Teacher Training" do
       context "when teacher has ITT provider name" do
         let(:teacher) { FactoryBot.create(:teacher, trs_initial_teacher_training_provider_name: "Test University") }
 

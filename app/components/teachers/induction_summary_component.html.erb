@@ -30,6 +30,16 @@
     <% end %>
   <% end %>
 
+  <% if teacher.trs_qts_awarded_on.present? %>
+    <% sl.with_row do |row| %>
+      <% row.with_key(text: "QTS awarded") %>
+
+      <% row.with_value do %>
+        <%= teacher.trs_qts_awarded_on.to_fs(:govuk) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
   <% if teacher.trs_initial_teacher_training_provider_name %>
     <% sl.with_row do |row| %>
       <% row.with_key(text: "Initial teacher training records") %>
