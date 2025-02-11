@@ -85,7 +85,7 @@ RSpec.describe TRS::APIClient do
     let(:modified_at) { "2022-05-03T03:00:00.000Z" }
     let(:expected_payload) do
       {
-        'inductionStatus' => 'InProgress',
+        'status' => 'InProgress',
         'startDate' => start_date,
         'modifiedOn' => modified_at
       }.to_json
@@ -111,7 +111,7 @@ RSpec.describe TRS::APIClient do
     let(:modified_at) { "2022-05-03T03:00:00.000Z" }
     let(:expected_payload) do
       {
-        'inductionStatus' => 'Pass',
+        'status' => 'Pass',
         'completedDate' => completed_date,
         'modifiedOn' => modified_at
       }.to_json
@@ -137,7 +137,7 @@ RSpec.describe TRS::APIClient do
     let(:modified_at) { "2022-05-03T03:00:00.000Z" }
     let(:expected_payload) do
       {
-        'inductionStatus' => 'Fail',
+        'status' => 'Fail',
         'completedDate' => completed_date,
         'modifiedOn' => modified_at
       }.to_json

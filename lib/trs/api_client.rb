@@ -51,7 +51,7 @@ module TRS
   private
 
     def update_induction_status(trn:, status:, modified_at:, start_date: nil, completed_date: nil)
-      payload = { 'inductionStatus' => status,
+      payload = { 'status' => status,
                   'startDate' => start_date,
                   'completedDate' => completed_date,
                   'modifiedOn' => modified_at }.compact.to_json
