@@ -107,12 +107,12 @@ RSpec.describe TRS::APIClient do
   describe '#pass_induction!' do
     let(:response) { instance_double(Faraday::Response, success?: true) }
     let(:trn) { '0000234' }
-    let(:completion_date) { '2024-02-02' }
+    let(:completed_date) { '2024-02-02' }
     let(:modified_at) { "2022-05-03T03:00:00.000Z" }
     let(:expected_payload) do
       {
         'inductionStatus' => 'Pass',
-        'completionDate' => completion_date,
+        'completedDate' => completed_date,
         'modifiedOn' => modified_at
       }.to_json
     end
@@ -123,7 +123,7 @@ RSpec.describe TRS::APIClient do
 
     it "puts to the induction endpoint with the 'pass' parameters" do
       travel_to(modified_at) do
-        client.pass_induction!(trn:, completion_date:)
+        client.pass_induction!(trn:, completed_date:)
       end
 
       expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
@@ -133,12 +133,12 @@ RSpec.describe TRS::APIClient do
   describe '#fail_induction!' do
     let(:response) { instance_double(Faraday::Response, success?: true) }
     let(:trn) { '0000345' }
-    let(:completion_date) { '2024-03-03' }
+    let(:completed_date) { '2024-03-03' }
     let(:modified_at) { "2022-05-03T03:00:00.000Z" }
     let(:expected_payload) do
       {
         'inductionStatus' => 'Fail',
-        'completionDate' => completion_date,
+        'completedDate' => completed_date,
         'modifiedOn' => modified_at
       }.to_json
     end
@@ -149,7 +149,7 @@ RSpec.describe TRS::APIClient do
 
     it "puts to the induction endpoint with the 'fail' parameters" do
       travel_to(modified_at) do
-        client.fail_induction!(trn:, completion_date:)
+        client.fail_induction!(trn:, completed_date:)
       end
       expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
     end

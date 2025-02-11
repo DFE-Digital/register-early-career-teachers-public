@@ -40,23 +40,22 @@ module TRS
       update_induction_status(trn:, status: 'InProgress', start_date:, modified_at:)
     end
 
-    def pass_induction!(trn:, completion_date:, modified_at: Time.zone.now)
-      update_induction_status(trn:, status: 'Pass', completion_date:, modified_at:)
+    def pass_induction!(trn:, completed_date:, modified_at: Time.zone.now)
+      update_induction_status(trn:, status: 'Pass', completed_date:, modified_at:)
     end
 
-    def fail_induction!(trn:, completion_date:, modified_at: Time.zone.now)
-      update_induction_status(trn:, status: 'Fail', completion_date:, modified_at:)
+    def fail_induction!(trn:, completed_date:, modified_at: Time.zone.now)
+      update_induction_status(trn:, status: 'Fail', completed_date:, modified_at:)
     end
 
   private
 
-    def update_induction_status(trn:, status:, modified_at:, start_date: nil, completion_date: nil)
+    def update_induction_status(trn:, status:, modified_at:, start_date: nil, completed_date: nil)
       payload = { 'inductionStatus' => status,
                   'startDate' => start_date,
-                  'completionDate' => completion_date,
+                  'completedDate' => completed_date,
                   'modifiedOn' => modified_at }.compact.to_json
 
-      # FIXME: verify this is the right endpoint
       response = @connection.put(persons_path(trn, suffix: 'cpd-induction'), payload)
 
       Rails.logger.debug("calling TRS API: #{response}")
