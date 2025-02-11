@@ -92,7 +92,7 @@ RSpec.describe TRS::APIClient do
     end
 
     before do
-      allow(connection).to receive(:put).with("v3/persons/#{trn}/induction", expected_payload).and_return(response)
+      allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
     end
 
     it "puts to the induction endpoint with the 'begin' parameters" do
@@ -100,7 +100,7 @@ RSpec.describe TRS::APIClient do
         client.begin_induction!(trn:, start_date:)
       end
 
-      expect(connection).to have_received(:put).with("v3/persons/#{trn}/induction", expected_payload).once
+      expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
     end
   end
 
@@ -118,7 +118,7 @@ RSpec.describe TRS::APIClient do
     end
 
     before do
-      allow(connection).to receive(:put).with("v3/persons/#{trn}/induction", expected_payload).and_return(response)
+      allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
     end
 
     it "puts to the induction endpoint with the 'pass' parameters" do
@@ -126,7 +126,7 @@ RSpec.describe TRS::APIClient do
         client.pass_induction!(trn:, completion_date:)
       end
 
-      expect(connection).to have_received(:put).with("v3/persons/#{trn}/induction", expected_payload).once
+      expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
     end
   end
 
@@ -144,14 +144,14 @@ RSpec.describe TRS::APIClient do
     end
 
     before do
-      allow(connection).to receive(:put).with("v3/persons/#{trn}/induction", expected_payload).and_return(response)
+      allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
     end
 
     it "puts to the induction endpoint with the 'fail' parameters" do
       travel_to(modified_at) do
         client.fail_induction!(trn:, completion_date:)
       end
-      expect(connection).to have_received(:put).with("v3/persons/#{trn}/induction", expected_payload).once
+      expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
     end
   end
 end
