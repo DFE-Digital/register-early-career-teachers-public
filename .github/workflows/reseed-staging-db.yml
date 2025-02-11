@@ -1,0 +1,26 @@
+name: "Manually deploy an environment"
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  packages: write
+  pull-requests: write
+  security-events: write
+
+jobs:
+  reseed:
+    name: Reseed the database
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./.github/actions/reseed-db
+        id: reseed
+        with:
+          environment: staging
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
