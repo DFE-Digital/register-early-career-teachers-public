@@ -27,7 +27,7 @@ private
   def given_i_am_on_the_ect_page(teacher)
     path = "/appropriate-body/teachers/#{teacher.id}"
     page.goto(path)
-    # binding.debugger
+
     expect(page.url).to end_with(path)
   end
 
