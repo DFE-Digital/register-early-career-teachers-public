@@ -9,6 +9,9 @@ module Interval
     scope :overlapping_with, ->(period) { where("range && daterange(?, ?)", period.started_on, period.finished_on) }
 
     scope :ongoing, -> { where(finished_on: nil) }
+    scope :finished, -> { where.not(finished_on: nil) }
+    scope :earliest_first, -> { order(started_on: 'asc') }
+    scope :latest_first, -> { order(started_on: 'desc') }
 
     scope :containing_period, ->(period) { where("range @> daterange(?, ?)", period.started_on, period.finished_on) }
   end

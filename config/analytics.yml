@@ -69,3 +69,4 @@ shared:
   - author_email
   - created_at
   - updated_at
+  - metadata

@@ -4,6 +4,7 @@ describe Schools::RegisterECT do
   let(:corrected_name) { "Randy Marsh" }
   let(:trn) { "3002586" }
   let(:school) { FactoryBot.create(:school) }
+  let(:email) { "randy@tegridyfarms.com" }
   let(:started_on) { Date.yesterday }
   let(:working_pattern) { "full_time" }
 
@@ -14,7 +15,8 @@ describe Schools::RegisterECT do
                         started_on:,
                         corrected_name:,
                         school:,
-                        working_pattern:)
+                        working_pattern:,
+                        email:)
   end
 
   describe '#register!' do
@@ -54,6 +56,7 @@ describe Schools::RegisterECT do
       expect(ect_at_school_period.teacher_id).to eq(Teacher.first.id)
       expect(ect_at_school_period.started_on).to eq(started_on)
       expect(ect_at_school_period.working_pattern).to eq(working_pattern)
+      expect(ect_at_school_period.email).to eq(email)
     end
   end
 end
