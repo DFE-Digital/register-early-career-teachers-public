@@ -5,14 +5,6 @@ describe Teacher do
     it { is_expected.to have_many(:induction_periods) }
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
-
-    context "when there are multiple induction records" do
-      let(:teacher) { FactoryBot.create(:teacher) }
-
-      it 'orders them by started_on, earliest first' do
-        expect(teacher.induction_periods.to_sql).to include(%(ORDER BY "induction_periods"."started_on" ASC))
-      end
-    end
   end
 
   describe "validations" do

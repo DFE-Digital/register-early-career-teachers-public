@@ -1,21 +1,22 @@
 module Teachers
   class Induction
-    attr_reader :teacher
+    attr_reader :teacher, :induction_periods
 
     def initialize(teacher)
       @teacher = teacher
+      @induction_periods = teacher.induction_periods
     end
 
     def current_induction_period
-      @current_induction_period ||= teacher.induction_periods.ongoing.first
+      @current_induction_period ||= induction_periods.ongoing.first
     end
 
     def past_induction_periods
-      @past_induction_periods ||= teacher.induction_periods.where.not(finished_on: nil).order(finished_on: :asc)
+      @past_induction_periods ||= induction_periods.finished.latest_first
     end
 
     def induction_start_date
-      @induction_start_date ||= teacher.induction_periods.order(:started_on).first&.started_on
+      @induction_start_date ||= first_induction_period&.started_on
     end
 
     def has_induction_periods?
@@ -28,6 +29,12 @@ module Teachers
 
     def with_appropriate_body?(appropriate_body)
       current_induction_period&.appropriate_body == appropriate_body
+    end
+
+  private
+
+    def first_induction_period
+      induction_periods.earliest_first.first
     end
   end
 end
