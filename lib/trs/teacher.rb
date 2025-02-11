@@ -53,14 +53,6 @@ module TRS
       }
     end
 
-    def begin_induction!(start_date)
-      api_client.begin_induction!(trn:, start_date:)
-    end
-
-    def complete_induction!(completion_date:, status:)
-      api_client.complete_induction!(trn:, completion_date:, status:)
-    end
-
     def check_eligibility!
       raise TRS::Errors::QTSNotAwarded unless qts_awarded?
       raise TRS::Errors::ProhibitedFromTeaching if prohibited_from_teaching?
