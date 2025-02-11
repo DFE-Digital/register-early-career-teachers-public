@@ -67,8 +67,8 @@ module TRS
         #        we want to keep hold of?
         true
       else
-        Rails.logger.warn("Error: #{response.status}")
-        Rails.logger.warn("Response: #{response.body}")
+        Rails.logger.error("Error: #{response.status}")
+        Rails.logger.error("Response: #{response.body}")
 
         false
       end
