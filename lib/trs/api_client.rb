@@ -57,7 +57,7 @@ module TRS
                   'modifiedOn' => modified_at }.compact.to_json
 
       # FIXME: verify this is the right endpoint
-      response = @connection.put(persons_path(trn, suffix: 'induction'), payload)
+      response = @connection.put(persons_path(trn, suffix: 'cpd-induction'), payload)
 
       Rails.logger.debug("calling TRS API: #{response}")
 
