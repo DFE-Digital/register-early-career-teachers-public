@@ -41,6 +41,29 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
       expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
     end
 
+    context "with Initial Teacher Training" do
+      context "when teacher has ITT provider name" do
+        let(:teacher) { FactoryBot.create(:teacher, trs_initial_teacher_training_provider_name: "Test University") }
+
+        it "renders ITT section with provider name" do
+          render_inline(component)
+          expect(page).to have_content("Initial teacher training records")
+          expect(page).to have_content("Test University")
+          expect(page).to have_link("View", href: ab_teacher_initial_teacher_training_records_path(teacher))
+        end
+      end
+
+      context "when teacher has no ITT provider name" do
+        let(:teacher) { FactoryBot.create(:teacher, trs_initial_teacher_training_provider_name: nil) }
+
+        it "does not render ITT section" do
+          render_inline(component)
+
+          expect(page).not_to have_content("Initial teacher training records")
+        end
+      end
+    end
+
     context "with extensions" do
       let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
 

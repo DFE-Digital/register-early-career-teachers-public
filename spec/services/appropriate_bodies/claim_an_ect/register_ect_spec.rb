@@ -39,7 +39,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         trs_first_name: "John",
         trs_last_name: "Doe",
         trs_induction_status: "None",
-        trs_qts_awarded_on:
+        trs_qts_awarded_on:,
+        trs_initial_teacher_training_provider_name: "ITT"
       }
     end
 
@@ -65,6 +66,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         expect(teacher.trs_first_name).to eq("John")
         expect(teacher.trs_last_name).to eq("Doe")
         expect(teacher.trn).to eq("1234567")
+        expect(teacher.trs_initial_teacher_training_provider_name).to eq("ITT")
 
         induction_period = InductionPeriod.last
         expect(induction_period.teacher).to eq(teacher)
