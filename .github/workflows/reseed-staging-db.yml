@@ -1,26 +1,24 @@
-name: "Manually deploy an environment"
+name: Reseed the staging database
 
 on:
   workflow_dispatch:
 
-permissions:
-  id-token: write
-  packages: write
-  pull-requests: write
-  security-events: write
-
 jobs:
-  reseed:
-    name: Reseed the database
+  reseed-staging:
+    name: Reseed the staging database
     runs-on: ubuntu-latest
     environment: staging
     steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+     - name: Checkout
+       uses: actions/checkout@v4
+       with:
+         token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: ./.github/actions/reseed-db
-        id: reseed
-        with:
-          environment: staging
-          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
+      with:
+        azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Reseed Staging
+      run: |
+        make ci development get-cluster-credentials
+        kubectl exec -n cpd-development deployment/cpd-ec2-staging-web -- /bin/sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 /usr/local/bin/bundle exec rails db:seed:replant" 
