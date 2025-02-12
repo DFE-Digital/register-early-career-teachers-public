@@ -89,7 +89,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
           it "raises an error" do
             expect { service.update_induction! }.to raise_error(
               ActiveRecord::RecordInvalid,
-              "Validation failed: Induction periods cannot overlap"
+              "Validation failed: Started on Start date cannot overlap another induction period"
             )
           end
         end
@@ -108,7 +108,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
           it "raises an error" do
             expect { service.update_induction! }.to raise_error(
               ActiveRecord::RecordInvalid,
-              "Validation failed: Induction periods cannot overlap"
+              "Validation failed: Finished on End date cannot overlap another induction period"
             )
           end
         end
