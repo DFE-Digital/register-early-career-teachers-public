@@ -4,7 +4,15 @@
 %>
 
 <%=
-  govuk_panel(title_text: "Success", text: "#{@teacher_name} has been released")
+  govuk_panel(title_text: "You've successfully released #{@teacher_name}")
 %>
 
-<%= govuk_button_link_to("Return to the homepage", ab_teachers_path, secondary: true) %>
+<h2 class="govuk-heading-m">What happens next</h2>
+
+<p>
+  Another appropriate body can now claim #{@teacher_name}'s induction.
+</p>
+
+<p class="govuk-body">
+<%= govuk_link_to("Back to homepage", ab_teachers_path, no_visited_state: true) %>
+</p>
