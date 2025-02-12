@@ -85,7 +85,7 @@ private
 
   def and_the_release_ect_service_should_have_been_called
     induction_period.reload
-    expect(induction_period.number_of_terms).to eql(number_of_completed_terms)
+    expect(induction_period.number_of_terms).to eq(number_of_completed_terms)
     expect(induction_period.finished_on).to eql(today)
   end
 end

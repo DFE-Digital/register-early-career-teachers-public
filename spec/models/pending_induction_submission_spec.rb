@@ -85,7 +85,7 @@ describe PendingInductionSubmission do
       subject { FactoryBot.build(:pending_induction_submission, finished_on: Date.current) }
 
       it { is_expected.to validate_presence_of(:number_of_terms).with_message('Enter a number of terms').on(%i[release_ect record_outcome]) }
-      it { is_expected.to validate_inclusion_of(:number_of_terms).in_range(0..16).with_message("Terms must be between 0 and 16").on(%i[release_ect record_outcome]) }
+      it { is_expected.to validate_inclusion_of(:number_of_terms).in_range(0..16).with_message("Number of terms must be between 0 and 16").on(%i[release_ect record_outcome]) }
 
       context "when finished_on is blank" do
         subject { FactoryBot.build(:pending_induction_submission, finished_on: nil) }
@@ -94,6 +94,49 @@ describe PendingInductionSubmission do
           subject.number_of_terms = 5
           subject.valid?(:release_ect)
           expect(subject.errors[:number_of_terms]).to include("Delete the number of terms if the induction has no end date")
+        end
+      end
+
+      context "when number_of_terms has more than 1 decimal place" do
+        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        subject { FactoryBot.build(:pending_induction_submission, appropriate_body:, number_of_terms: 3.45, finished_on: Date.current) }
+
+        it "is invalid on release_ect" do
+          expect(subject.valid?(:release_ect)).to be false
+          expect(subject.errors[:number_of_terms]).to include("Terms can only have up to 1 decimal place")
+        end
+
+        it "is invalid on record_outcome" do
+          expect(subject.valid?(:record_outcome)).to be false
+          expect(subject.errors[:number_of_terms]).to include("Terms can only have up to 1 decimal place")
+        end
+      end
+
+      context "when number_of_terms has 1 decimal place" do
+        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        subject { FactoryBot.build(:pending_induction_submission, appropriate_body:, number_of_terms: 3.5, finished_on: Date.current) }
+
+        it "is valid on release_ect" do
+          expect(subject.valid?(:release_ect)).to be true
+        end
+
+        it "is valid on record_outcome" do
+          subject.outcome = "pass"
+          expect(subject.valid?(:record_outcome)).to be true
+        end
+      end
+
+      context "when number_of_terms is an integer" do
+        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        subject { FactoryBot.build(:pending_induction_submission, appropriate_body:, number_of_terms: 3, finished_on: Date.current) }
+
+        it "is valid on release_ect" do
+          expect(subject.valid?(:release_ect)).to be true
+        end
+
+        it "is valid on record_outcome" do
+          subject.outcome = "pass"
+          expect(subject.valid?(:record_outcome)).to be true
         end
       end
     end
@@ -139,7 +182,10 @@ describe PendingInductionSubmission do
       let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
 
       context "when finished_on is today" do
-        before { pending_induction_submission.finished_on = Date.current }
+        before do
+          pending_induction_submission.finished_on = Date.current
+          pending_induction_submission.number_of_terms = 1
+        end
 
         it "is valid" do
           expect(pending_induction_submission).to be_valid
@@ -147,7 +193,10 @@ describe PendingInductionSubmission do
       end
 
       context "when finished_on is in the past" do
-        before { pending_induction_submission.finished_on = Date.current - 1.day }
+        before do
+          pending_induction_submission.finished_on = Date.current - 1.day
+          pending_induction_submission.number_of_terms = 1
+        end
 
         it "is valid" do
           expect(pending_induction_submission).to be_valid

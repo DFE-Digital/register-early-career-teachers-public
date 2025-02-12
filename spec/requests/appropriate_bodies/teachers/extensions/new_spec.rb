@@ -32,7 +32,7 @@ RSpec.describe "Appropriate Body teacher extensions new", type: :request do
     end
 
     context 'with invalid parameters' do
-      let(:invalid_params) { { induction_extension: { number_of_terms: 15 } } }
+      let(:invalid_params) { { induction_extension: { number_of_terms: 17 } } }
 
       it 'does not create an extension' do
         expect {
@@ -40,7 +40,7 @@ RSpec.describe "Appropriate Body teacher extensions new", type: :request do
         }.not_to change(InductionExtension, :count)
 
         expect(response).to be_unprocessable
-        expect(response.body).to include('Number of terms must between 0.1 and 12.0')
+        expect(response.body).to include('Number of terms must be between 0.1 and 16')
       end
     end
   end
