@@ -9,6 +9,8 @@ module Schools
             already_active_at_school: AlreadyActiveAtSchoolStep,
             cannot_mentor_themself: CannotMentorThemselfStep,
             cannot_register_mentor: CannotRegisterMentorStep,
+            change_email_address: ChangeEmailAddressStep,
+            change_mentor_details: ChangeMentorDetailsStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep,
             email_address: EmailAddressStep,
