@@ -1,5 +1,6 @@
 RSpec.shared_examples "a review mentor details step" do |current_step:, next_step:|
-  subject { described_class.new }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:) }
+  subject { described_class.new(wizard:) }
 
   describe 'validations' do
     it do

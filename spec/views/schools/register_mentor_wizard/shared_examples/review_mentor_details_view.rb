@@ -37,7 +37,9 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
   end
 
   it "prefixes the page with 'Error:' when any step data is invalid" do
+    store.corrected_name = 'a' * 100
     wizard.valid_step?
+
     render
 
     expect(view.content_for(:page_title)).to start_with('Error:')
