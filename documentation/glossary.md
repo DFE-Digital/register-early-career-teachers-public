@@ -61,7 +61,7 @@ You can read more about what schools can do in the service in our guidance: [Gui
 
 ## Replacement mentors
 
-A new mentor joining the ECF mentor training programme to replace an existing mentor. Currently, we know a mentor is a replacement mentor is a lead provider submits over the API they are on a replacement mentor schedule. This mentor needs new funding allocated to them for their training. But they do not count towards a lead provider's contract performance metrics for training. Only the first mentor for the early career teacher is counted.
+A mentor that is new to provider-led training joining ECF mentor training to replace an existing mentor. Currently, we know a mentor is a replacement mentor is a lead provider submits over the API they are on a replacement mentor schedule. This mentor needs new funding allocated to them for their training. But they do not count towards a lead provider's contract performance metrics for training. Only the first mentor for the early career teacher is counted.
 
 ## Replacing mentors
 
