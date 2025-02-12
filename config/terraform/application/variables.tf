@@ -104,6 +104,11 @@ variable "postgres_enable_high_availability" {
 
 variable "enable_logit" { default = false }
 
+variable "gcp_table_deletion_protection" {
+  type    = bool
+  default = null
+}
+
 locals {
   postgres_ssl_mode = var.enable_postgres_ssl ? "require" : "disable"
 

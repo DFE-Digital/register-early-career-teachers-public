@@ -14,4 +14,6 @@ module "dfe_analytics" {
   gcp_key               = "ecf-key"
   gcp_taxonomy_id       = 6302091323314055162
   gcp_policy_tag_id     = 301313311867345339
+
+  gcp_table_deletion_protection = var.gcp_table_deletion_protection
 }
