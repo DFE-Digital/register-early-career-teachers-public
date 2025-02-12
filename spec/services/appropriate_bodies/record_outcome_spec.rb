@@ -60,8 +60,8 @@ RSpec.describe AppropriateBodies::RecordOutcome do
           service.pass!
         }.to have_enqueued_job(PassECTInductionJob).with(
           trn: pending_induction_submission.trn,
-          start_date: induction_start_date.to_s,
-          completed_date: pending_induction_submission.finished_on.to_s,
+          start_date: induction_start_date,
+          completed_date: pending_induction_submission.finished_on,
           pending_induction_submission_id: pending_induction_submission.id
         )
       end
@@ -118,8 +118,8 @@ RSpec.describe AppropriateBodies::RecordOutcome do
           service.fail!
         }.to have_enqueued_job(FailECTInductionJob).with(
           trn: pending_induction_submission.trn,
-          start_date: induction_start_date.to_s,
-          completed_date: pending_induction_submission.finished_on.to_s,
+          start_date: induction_start_date,
+          completed_date: pending_induction_submission.finished_on,
           pending_induction_submission_id: pending_induction_submission.id
         )
       end

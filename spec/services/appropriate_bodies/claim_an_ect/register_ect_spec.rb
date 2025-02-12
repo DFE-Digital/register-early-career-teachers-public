@@ -77,7 +77,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         expect {
           subject.register(pending_induction_submission_params)
         }.to have_enqueued_job(BeginECTInductionJob)
-          .with(hash_including(trn: "1234567", start_date: "2023-05-02"))
+          .with(hash_including(trn: "1234567", start_date: Date.new(2023, 5, 2)))
       end
 
       it "records an appropriate_body_claims_teacher event" do
