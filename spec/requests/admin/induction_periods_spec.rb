@@ -90,7 +90,7 @@ RSpec.describe Admin::InductionPeriodsController do
               induction_period: { started_on: 7.months.ago }
             }
             expect(response).to be_unprocessable
-            expect(sanitize(response.body)).to include("Induction periods cannot overlap")
+            expect(sanitize(response.body)).to include("Start date cannot overlap another induction period")
           end
         end
 
