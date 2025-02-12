@@ -3,8 +3,16 @@ module Schools
     layout "full"
 
     def index
-      teacher_service = Schools::Teacher.new(school.urn)
-      @relationships = teacher_service.fetch_etcs_and_mentors
+      @ects = ects_and_mentors
+    end
+
+  private
+
+    def ects_and_mentors
+      ECTAtSchoolPeriod
+        .where(school:)
+        .eager_load(:teacher, :school, mentors: :teacher)
+        .merge(MentorshipPeriod.ongoing)
     end
   end
 end
