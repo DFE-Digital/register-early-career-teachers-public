@@ -4,12 +4,14 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   let(:ect_name) { "Michael Dixon" }
   let(:title) { "Check your answers and confirm mentor details" }
   let(:store) do
-    double(trn: "1234567",
-           trs_first_name: "John",
-           trs_last_name: "Wayne",
-           corrected_name: "Jim Wayne",
-           email: "john.wayne@example.com")
+    FactoryBot.build(:session_repository,
+                     trn: "1234567",
+                     trs_first_name: "John",
+                     trs_last_name: "Wayne",
+                     corrected_name: "Jim Wayne",
+                     email: "john.wayne@example.com")
   end
+
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :check_answers, store:) }
   let(:mentor) { wizard.mentor }
 
@@ -54,5 +56,12 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     expect(rendered).to have_button('Confirm details')
     expect(rendered).to have_selector("form[action='#{confirm_details_path}']")
+  end
+
+  it "has change links" do
+    render
+
+    expect(rendered).to have_link("Change", href: schools_register_mentor_wizard_change_mentor_details_path)
+    expect(rendered).to have_link("Change", href: schools_register_mentor_wizard_change_email_address_path)
   end
 end

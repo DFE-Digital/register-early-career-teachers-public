@@ -38,7 +38,7 @@ module Schools
     end
 
     def current_step
-      request.path.split("/").last.underscore.to_sym.tap do |step_from_path|
+      @current_step ||= request.path.split("/").last.underscore.to_sym.tap do |step_from_path|
         return :not_found unless WIZARD_CLASS.step?(step_from_path)
       end
     end

@@ -16,7 +16,11 @@ module Schools
       end
 
       def full_name
-        @full_name ||= (corrected_name || [trs_first_name, trs_last_name].join(" ")).strip
+        @full_name ||= (corrected_name || trs_full_name).strip
+      end
+
+      def trs_full_name
+        @trs_full_name ||= [trs_first_name, trs_last_name].join(" ")
       end
 
       def govuk_date_of_birth
@@ -25,6 +29,10 @@ module Schools
 
       def in_trs?
         trs_first_name.present?
+      end
+
+      def corrected_name?
+        corrected_name.present?
       end
 
       def matches_trs_dob?
@@ -38,7 +46,8 @@ module Schools
                                     trs_last_name:,
                                     corrected_name:,
                                     trn:,
-                                    school_urn:)
+                                    school_urn:,
+                                    email:)
                                .register!
       end
 

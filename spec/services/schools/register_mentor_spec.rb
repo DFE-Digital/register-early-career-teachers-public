@@ -4,6 +4,7 @@ describe Schools::RegisterMentor do
   let(:corrected_name) { "Randy Marsh" }
   let(:trn) { "3002586" }
   let(:school) { FactoryBot.create(:school) }
+  let(:email) { "randy@tegridyfarms.com" }
   let(:started_on) { Date.yesterday }
 
   subject(:service) do
@@ -12,6 +13,7 @@ describe Schools::RegisterMentor do
                         corrected_name:,
                         trn:,
                         school_urn: school.urn,
+                        email:,
                         started_on:)
   end
 
@@ -51,6 +53,7 @@ describe Schools::RegisterMentor do
       expect { service.register! }.to change(MentorAtSchoolPeriod, :count).from(0).to(1)
       expect(mentor_at_school_period.teacher_id).to eq(Teacher.first.id)
       expect(mentor_at_school_period.started_on).to eq(started_on)
+      expect(mentor_at_school_period.email).to eq(email)
     end
 
     context "when no start date is provided" do
@@ -59,7 +62,8 @@ describe Schools::RegisterMentor do
                             trs_last_name:,
                             corrected_name:,
                             trn:,
-                            school_urn: school.urn)
+                            school_urn: school.urn,
+                            email:)
       end
 
       it "current date is assigned" do
