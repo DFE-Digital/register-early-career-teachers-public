@@ -7,15 +7,15 @@ permissions:
   id-token: write
 
 jobs:
-  reseed-staging:
+  reseed-staging-db:
     name: Reseed the staging database
     runs-on: ubuntu-latest
     environment: staging
     steps:
-     - name: Checkout
-       uses: actions/checkout@v4
-       with:
-         token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
       with:
