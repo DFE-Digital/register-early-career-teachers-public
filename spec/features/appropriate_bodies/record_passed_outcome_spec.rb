@@ -63,7 +63,7 @@ private
   def and_the_pending_induction_submission_record_should_have_the_right_data_in_it
     pending_induction_submission = PendingInductionSubmission.find_by(trn: teacher.trn, appropriate_body:)
 
-    expect(pending_induction_submission.number_of_terms).to eql(number_of_completed_terms)
+    expect(pending_induction_submission.number_of_terms).to eq(number_of_completed_terms)
     expect(pending_induction_submission.finished_on).to eql(today)
     expect(pending_induction_submission.outcome).to eql('pass')
   end
@@ -72,7 +72,7 @@ private
     induction_period.reload
 
     expect(induction_period.outcome).to eql('pass')
-    expect(induction_period.number_of_terms).to eql(number_of_completed_terms)
+    expect(induction_period.number_of_terms).to eq(number_of_completed_terms)
     expect(induction_period.finished_on).to eql(today)
   end
 end
