@@ -1,5 +1,6 @@
 describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
-  subject { described_class.new }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor) }
+  subject { described_class.new(wizard:) }
 
   describe 'validations' do
     ['12345', 'RP99/12345', 'RP / 1234567', '  R P 99 / 1234', 'ZZ-123445 '].each do |trn|

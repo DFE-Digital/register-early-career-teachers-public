@@ -1,12 +1,11 @@
 module Schools
   module Validation
     class DateOfBirth
-      attr_reader :format_error
+      attr_reader :date_of_birth_as_hash, :format_error
 
-      # Initializer expects a Hash with the format { 1 => year, 2 => month, 3 => day }
-
-      def initialize(date_of_birth_as_hash)
-        @date_of_birth_as_hash = date_of_birth_as_hash
+      # Expects value with the format { 1 => year, 2 => month, 3 => day } or a date string or a Date instance
+      def initialize(value)
+        @date_of_birth_as_hash = value.is_a?(Hash) ? value : convert_to_hash(value&.to_date)
         @format_error = nil
       end
 
@@ -17,7 +16,9 @@ module Schools
 
     private
 
-      attr_reader :date_of_birth_as_hash
+      def convert_to_hash(date)
+        { 3 => date.day, 2 => date.month, 1 => date.year } if date
+      end
 
       def validate
         return @format_error = "Enter a date of birth" if date_missing?

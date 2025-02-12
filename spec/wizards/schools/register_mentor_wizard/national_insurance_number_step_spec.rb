@@ -1,5 +1,6 @@
 describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :model do
-  subject { described_class.new }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number) }
+  subject { described_class.new(wizard:) }
 
   describe 'validations' do
     ['Ab123456A',
