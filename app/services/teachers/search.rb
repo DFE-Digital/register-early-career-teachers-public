@@ -28,7 +28,7 @@ module Teachers
       @scope = if appropriate_body.nil?
                  Teacher.none
                else
-                 AppropriateBodies::CurrentTeachers.new(appropriate_body).current
+                 AppropriateBodies::ECTs.new(appropriate_body).current
                end
     end
 
