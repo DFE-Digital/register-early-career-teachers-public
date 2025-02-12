@@ -3,6 +3,9 @@ name: Reseed the staging database
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+
 jobs:
   reseed-staging:
     name: Reseed the staging database
