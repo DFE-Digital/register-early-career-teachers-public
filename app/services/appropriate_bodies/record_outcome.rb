@@ -70,6 +70,7 @@ module AppropriateBodies
     def send_fail_induction_notification_to_trs
       FailECTInductionJob.perform_later(
         trn: pending_induction_submission.trn,
+        start_date: induction_start_date,
         completed_date: pending_induction_submission.finished_on.to_s,
         pending_induction_submission_id: pending_induction_submission.id
       )
@@ -78,9 +79,14 @@ module AppropriateBodies
     def send_pass_induction_notification_to_trs
       PassECTInductionJob.perform_later(
         trn: pending_induction_submission.trn,
+        start_date: induction_start_date,
         completed_date: pending_induction_submission.finished_on.to_s,
         pending_induction_submission_id: pending_induction_submission.id
       )
+    end
+
+    def induction_start_date
+      ::Teachers::Induction.new(teacher).induction_start_date.to_s
     end
   end
 end
