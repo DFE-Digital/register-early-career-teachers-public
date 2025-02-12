@@ -1,18 +1,18 @@
 <% page_data(
-  title: "#{@teacher_name} has been released",
+  title: "#{Teachers::Name.new(@teacher).full_name} has been released",
   header: false)
 %>
 
 <%=
-  govuk_panel(title_text: "You've successfully released #{@teacher_name}")
+  govuk_panel(title_text: "You've successfully released #{Teachers::Name.new(@teacher).full_name}")
 %>
 
 <h2 class="govuk-heading-m">What happens next</h2>
 
 <p>
-  Another appropriate body can now claim #{@teacher_name}'s induction.
+  Another appropriate body can now claim <%= Teachers::Name.new(@teacher).full_name %>'s induction.
 </p>
 
 <p class="govuk-body">
-<%= govuk_link_to("Back to homepage", ab_teachers_path, no_visited_state: true) %>
+  <%= govuk_link_to("Back to homepage", ab_teachers_path, no_visited_state: true) %>
 </p>
