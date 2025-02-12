@@ -1,5 +1,5 @@
 module AppropriateBodies
-  class CurrentTeachers
+  class ECTs
     attr_reader :appropriate_body
 
     def initialize(appropriate_body)
