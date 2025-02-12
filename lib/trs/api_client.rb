@@ -41,11 +41,11 @@ module TRS
     end
 
     def pass_induction!(trn:, completed_date:, modified_at: Time.zone.now)
-      update_induction_status(trn:, status: 'Pass', completed_date:, modified_at:)
+      update_induction_status(trn:, status: 'Passed', completed_date:, modified_at:)
     end
 
     def fail_induction!(trn:, completed_date:, modified_at: Time.zone.now)
-      update_induction_status(trn:, status: 'Fail', completed_date:, modified_at:)
+      update_induction_status(trn:, status: 'Failed', completed_date:, modified_at:)
     end
 
   private

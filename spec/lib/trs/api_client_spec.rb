@@ -111,7 +111,7 @@ RSpec.describe TRS::APIClient do
     let(:modified_at) { "2022-05-03T03:00:00.000Z" }
     let(:expected_payload) do
       {
-        'status' => 'Pass',
+        'status' => 'Passed',
         'completedDate' => completed_date,
         'modifiedOn' => modified_at
       }.to_json
@@ -137,7 +137,7 @@ RSpec.describe TRS::APIClient do
     let(:modified_at) { "2022-05-03T03:00:00.000Z" }
     let(:expected_payload) do
       {
-        'status' => 'Fail',
+        'status' => 'Failed',
         'completedDate' => completed_date,
         'modifiedOn' => modified_at
       }.to_json
