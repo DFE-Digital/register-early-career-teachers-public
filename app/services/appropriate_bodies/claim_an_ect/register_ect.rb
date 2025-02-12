@@ -1,5 +1,3 @@
-# https://github.com.mcas.ms/DFE-Digital/register-ects-project-board/issues/1039
-
 module AppropriateBodies
   module ClaimAnECT
     class RegisterECT
@@ -21,7 +19,8 @@ module AppropriateBodies
         # end
         ActiveRecord::Base.transaction do
           steps = [
-            create_or_update_teacher!,
+            update_name,
+            update_award,
             send_begin_induction_notification_to_trs,
             pending_induction_submission.save(context: :register_ect),
             create_induction_period
@@ -33,20 +32,19 @@ module AppropriateBodies
 
     private
 
-      def create_or_update_teacher!
-        manage_teacher ||= ::Teachers::Manage.new(author, teacher)
- 
-        # manage_teacher
-        #   .set_trs_name(pending_induction_submission.trs_first_name, pending_induction_submission.trs_last_name)
-        #   .set_trs_qts_awarded_on(pending_induction_submission.trs_qts_awarded_on)
-
-        manage_teacher.update!(
-          trs_first_name: pending_induction_submission.trs_first_name, 
-          trs_last_name: pending_induction_submission.trs_last_name,
-          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on,
+      def update_name
+        manage_teacher.update_name!(
+          trs_first_name: pending_induction_submission.trs_first_name,
+          trs_last_name: pending_induction_submission.trs_last_name
         )
+      end
 
-        true
+      def update_award
+        manage_teacher.update_qts_awarded_on!(trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on)
+      end
+
+      def manage_teacher
+        @manage_teacher ||= ::Teachers::Manage.new(author:, teacher:, appropriate_body:)
       end
 
       def teacher

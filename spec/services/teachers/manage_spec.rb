@@ -1,39 +1,30 @@
-RSpec.describe Teachers::Manage do
-  subject(:service) { described_class.new(pending_induction_submission) }
+RSpec.describe Teachers::Manage, '#update!' do
+  subject(:service) { described_class.new(author:, teacher:, appropriate_body:) }
+
+  let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
+  let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Barry", trs_last_name: "Allen") }
-  let(:pending_induction_submission) do
-    FactoryBot.create(:pending_induction_submission,
-                      trn: teacher.trn,
-                      trs_first_name: "John",
-                      trs_last_name: "Doe")
-  end
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
-  xdescribe '#create_or_update!' do
-  end
+  describe 'events' do
+    before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
 
-  xdescribe '#set_trs_name' do
-  end
+    it 'records a name change event' do
+      freeze_time do
+        service.update_name!(trs_first_name: "John", trs_last_name: "Doe")
 
-  xdescribe '#set_trs_qts_awarded_on' do
-  end
-
-  describe 'changes' do
-    before { service.create_or_update! }
-
-    # describe '#qts_awarded_on_changed?' do
-    #   it { expect(service).to be_qts_awarded_on_changed }
-    # end
-
-    # describe '#changed_qts_awarded_on' do
-    #   it { expect(service.changed_qts_awarded_on).to eq({ old_award_date: "", new_award_date: "" }) }
-    # end
-
-    describe '#name_changed?' do
-      it { expect(service).to be_name_changed }
-    end
-
-    describe '#changed_names' do
-      it { expect(service.changed_names).to eq({ old_name: "Barry Allen", new_name: "John Doe" }) }
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          appropriate_body:,
+          author_email: 'christopher.biggins@education.gov.uk',
+          author_id: author.id,
+          author_name: 'Christopher Biggins',
+          author_type: :dfe_staff_user,
+          event_type: :teacher_name_updated_by_trs,
+          happened_at: Time.zone.now,
+          heading: 'Name changed from Barry Allen to John Doe',
+          teacher:
+        )
+      end
     end
   end
 end
