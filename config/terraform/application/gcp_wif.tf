@@ -8,7 +8,10 @@ module "dfe_analytics" {
   azure_resource_prefix = var.azure_resource_prefix
   cluster               = var.cluster
   namespace             = var.namespace
-  service_short         = var.service_short
+  service_short         = "ecf2"
   environment           = var.environment
-  gcp_dataset           = "ecf2_events_${var.config}"
+  gcp_keyring           = "ecf-key-ring"
+  gcp_key               = "ecf-key"
+  gcp_taxonomy_id       = 6302091323314055162
+  gcp_policy_tag_id     = 301313311867345339
 }
