@@ -70,7 +70,7 @@ module AppropriateBodies
       def send_begin_induction_notification_to_trs
         BeginECTInductionJob.perform_later(
           trn: pending_induction_submission.trn,
-          start_date: pending_induction_submission.started_on.to_s,
+          start_date: pending_induction_submission.started_on,
           pending_induction_submission_id: pending_induction_submission.id
         )
       end

@@ -71,7 +71,7 @@ module AppropriateBodies
       FailECTInductionJob.perform_later(
         trn: pending_induction_submission.trn,
         start_date: induction_start_date,
-        completed_date: pending_induction_submission.finished_on.to_s,
+        completed_date: pending_induction_submission.finished_on,
         pending_induction_submission_id: pending_induction_submission.id
       )
     end
@@ -80,13 +80,13 @@ module AppropriateBodies
       PassECTInductionJob.perform_later(
         trn: pending_induction_submission.trn,
         start_date: induction_start_date,
-        completed_date: pending_induction_submission.finished_on.to_s,
+        completed_date: pending_induction_submission.finished_on,
         pending_induction_submission_id: pending_induction_submission.id
       )
     end
 
     def induction_start_date
-      ::Teachers::Induction.new(teacher).induction_start_date.to_s
+      ::Teachers::Induction.new(teacher).induction_start_date
     end
   end
 end
