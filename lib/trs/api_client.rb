@@ -40,17 +40,17 @@ module TRS
       update_induction_status(trn:, status: 'InProgress', start_date:, modified_at:)
     end
 
-    def pass_induction!(trn:, completed_date:, modified_at: Time.zone.now)
-      update_induction_status(trn:, status: 'Passed', completed_date:, modified_at:)
+    def pass_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
+      update_induction_status(trn:, status: 'Passed', start_date:, completed_date:, modified_at:)
     end
 
-    def fail_induction!(trn:, completed_date:, modified_at: Time.zone.now)
-      update_induction_status(trn:, status: 'Failed', completed_date:, modified_at:)
+    def fail_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
+      update_induction_status(trn:, status: 'Failed', start_date:, completed_date:, modified_at:)
     end
 
   private
 
-    def update_induction_status(trn:, status:, modified_at:, start_date: nil, completed_date: nil)
+    def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
       payload = { 'status' => status,
                   'startDate' => start_date,
                   'completedDate' => completed_date,
