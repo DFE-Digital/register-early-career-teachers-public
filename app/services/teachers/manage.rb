@@ -1,48 +1,53 @@
-# Perform teacher record edits on behalf of author and track change events
-# 
+# Perform teacher record edits on behalf of an author in a chainable manner and track change events
+#
 # 1. first and last name changes
-# 2. award date changes
+# 2. award date changes (wip)
+# 3. jack's PR (wip)
 #
 class Teachers::Manage
-  attr_reader :author, :teacher, :teacher, :old_name, :new_name
+  attr_reader :author, :teacher, :appropriate_body
 
-  def initialize(author, teacher)
+  def initialize(author:, teacher:, appropriate_body:)
     @author = author
     @teacher = teacher
+    @appropriate_body = appropriate_body
   end
 
-  def update!(params)
+  def update_name!(trs_first_name:, trs_last_name:)
     @old_name = full_name
-    # @old_award_date = teacher.trs_qts_awarded_on
-    teacher.assign_attributes(params)
+    teacher.assign_attributes(trs_first_name:, trs_last_name:)
     @new_name = full_name
     record_name_change_event
-
-    # @new_award_date = teacher.trs_qts_awarded_on
-    # record_award_change_event
     teacher.save!
+    self
   end
 
-  # separate methods -----------------------------------------------------------
+  def update_qts_awarded_on!(trs_qts_awarded_on:)
+    @old_award_date = teacher.trs_qts_awarded_on
+    teacher.assign_attributes(trs_qts_awarded_on:)
+    @new_award_date = teacher.trs_qts_awarded_on
+    record_award_change_event
+    teacher.save!
+    self
+  end
 
-  # def set_trs_name(trs_first_name, trs_last_name)
-  #   @old_name = full_name
-  #   teacher.assign_attributes(trs_first_name:, trs_last_name:)
-  #   @new_name = full_name
+  # def update_foo!(foo:)
+  #   @foo_before = teacher.foo
+  #   teacher.assign_attributes(foo:)
+  #   @foo_after = teacher.foo
   #   teacher.save!
   #   self
   # end
-
-  # def set_trs_qts_awarded_on(trs_qts_awarded_on)
-  #   teacher.assign_attributes(trs_qts_awarded_on:)
-  #   teacher.save!
-  #   self
-  # end
-
-  # other methods -----------------------------------------------------------
 
 private
 
+  attr_reader :new_name, :old_name, :new_award_date, :old_award_date
+
+  def full_name
+    ::Teachers::Name.new(teacher).full_name_in_trs
+  end
+
+  # State ----------------------------------------------------------------------
   def name_changed?
     return false if old_name.nil?
 
@@ -52,38 +57,30 @@ private
   def qts_awarded_on_changed?
     return false if teacher.trs_qts_awarded_on.nil?
 
-    @new_award_date != @old_award_date
+    new_award_date != old_award_date
   end
 
+  # Deltas ---------------------------------------------------------------------
   def changed_names
     { old_name:, new_name: }
   end
 
-  # def changed_qts_awarded_on
-  #   { old_award_date:, new_award_date: }
-  # end
+  def changed_qts_awarded_on
+    { old_award_date:, new_award_date: }
+  end
 
+  # Events ---------------------------------------------------------------------
   def record_name_change_event
     return true unless name_changed?
 
     Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_names)
   end
 
+  # TODO: implement tracking award changes
   def record_award_change_event
-    true unless qts_awarded_on_changed?
+    return true unless qts_awarded_on_changed?
 
+    :no_op
     # Events::Record.qts_awarded_on_changed_in_trs!(author:, teacher:, appropriate_body:, **manage_teacher.changed_qts_awarded_on)
-  end
-
-  # def teacher_params
-  #   pending_induction_submission.attributes.symbolize_keys.slice(*editable_teacher_params)
-  # end
-
-  # def editable_teacher_params
-  #   %i[trs_first_name trs_last_name trs_qts_awarded_on]
-  # end
-
-  def full_name
-    ::Teachers::Name.new(teacher).full_name_in_trs
   end
 end
