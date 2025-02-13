@@ -10,9 +10,11 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename, wanted_legacy_ids)
-      @csv = CSV.read(filename, headers: true)
+    def initialize(filename, wanted_legacy_ids, dfe_sign_in_mapping_filename, csv: nil, dfe_sign_in_mapping_csv: nil)
+      @csv = csv || CSV.read(filename, headers: true)
       @wanted_legacy_ids = wanted_legacy_ids
+
+      @mapping_csv = dfe_sign_in_mapping_csv || CSV.read(dfe_sign_in_mapping_filename, headers: true)
 
       File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
       @import_error_log = Logger.new(IMPORT_ERROR_LOG, File::CREAT)
@@ -34,7 +36,7 @@ module AppropriateBodies::Importers
       # 69748633-ed32-eb11-a813-000d3a228dfc, ETS Test Organisation, 1234                       ,                     ,
 
       {
-        name: row['name'].strip,
+        name: select_name(row).strip,
 
         # FIXME: we'll probably have to supply these ourselves
         #        and they're not in the sample data, so just
@@ -44,6 +46,22 @@ module AppropriateBodies::Importers
 
         **extract_local_authority_code_and_establishment_number(row)
       }
+    end
+
+    def select_name(row)
+      if mappings_by_legacy_id.key?(row['id'])
+        mappings_by_legacy_id[row['id']].fetch('appropriate_body_name')
+      else
+        row['name']
+      end
+    end
+
+    def mappings_by_legacy_id
+      @mappings_by_legacy_id ||= @mapping_csv.map(&:to_h).index_by { |r| r['dqt_id'] }
+    end
+
+    def mappings_by_ab_name
+      @mappings_by_ab_name ||= @mapping_csv.map(&:to_h).index_by { |r| r['appropriate_body_name'] }
     end
 
     def extract_local_authority_code_and_establishment_number(row)
