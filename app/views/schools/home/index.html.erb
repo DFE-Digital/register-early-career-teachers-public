@@ -1,27 +1,28 @@
 <% page_data(title: "Early career teachers (ECT)", error: false, caption: @school.name, caption_size: 'l') %>
 
 <%= govuk_button_link_to("Add an ECT", schools_register_ect_wizard_start_path) %>
-<hr class="govuk-section-break--m"/>
+
+<hr class="govuk-section-break--m" />
+
 <div class="govuk-grid-row">
 
   <div class="govuk-grid-column-one-third">
     <h2 class="govuk-heading-m">Search by name</h2>
   </div>
 
-  <div class="govuk-grid-column-two-thirds">
+  <div class='govuk-grid-column-two-thirds'>
     <% @relationships.map do |relationship| %>
-      <%= govuk_summary_card(title: link_to_ect(relationship[:ect_name])) do |card|
-        card.with_summary_list(
-          rows: [
-            { key: { text: "Status" },
-              value: { text: in_progress_status },
-            },
-            { key: { text: "Mentor" },
-              value: { text: relationship[:mentor_name] || link_to_assign_mentor(relationship[:ect]) },
-            },
-          ],
-          classes: ["govuk-summary-list--no-border", "govuk-!-margin-bottom-0"])
-      end %>
+      <%= 
+        govuk_summary_card(title: link_to_ect(relationship[:ect])) do |card|
+          card.with_summary_list(
+            classes: %w[govuk-summary-list--no-border govuk-!-margin-bottom-0],
+            rows: [
+              { key: { text: 'Status' }, value: { text: ect_status(relationship[:ect]) } },
+              { key: { text: 'Mentor' }, value: { text: ect_mentor_details(relationship[:ect]) } },
+            ]
+          )
+        end 
+      %>
     <% end %>
   </div>
 </div>
