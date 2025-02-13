@@ -25,6 +25,8 @@ module Sessions
 
       def organisation_name = "Department for Education"
 
+      def sign_out_path = '/sign-out'
+
       def to_h
         {
           "type" => self.class.name,
