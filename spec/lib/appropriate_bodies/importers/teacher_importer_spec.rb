@@ -5,6 +5,7 @@ describe AppropriateBodies::Importers::TeacherImporter do
       1234567,Faye,Tozer,,,RequiredToComplete
       2345678,Lisa,Scott-Lee,,,InProgress
       3456789,Lee,Latchford-Evans,,,InProgress
+      4567890,Ian,Watkins,,,Exempt
     CSV
   end
 
@@ -12,12 +13,16 @@ describe AppropriateBodies::Importers::TeacherImporter do
 
   subject { AppropriateBodies::Importers::TeacherImporter.new(nil, wanted_trns, csv: sample_data.lines) }
 
-  it 'converts the wanted rows into AppropriateBodies::Importers::TeacherImporter::Row objects' do
+  it 'includes rows that have a wanted TRN' do
     expect(subject.rows.map(&:trn)).to include(*wanted_trns)
   end
 
-  it 'skips rows that are not wanted' do
-    expect(subject.rows.map(&:trn)).not_to include('3456789')
+  it 'includes rows that do not have a wanted TRN but have a status of InProgress' do
+    expect(subject.rows.map(&:trn)).to include('3456789')
+  end
+
+  it 'skips rows that are not wanted and have a status other than InProgress' do
+    expect(subject.rows.map(&:trn)).not_to include('4567890')
   end
 
   describe 'extension lengths' do
