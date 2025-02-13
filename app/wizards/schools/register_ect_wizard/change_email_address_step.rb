@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class ChangeProgrammeTypeStep < ProgrammeTypeStep
+    class ChangeEmailAddressStep < EmailAddressStep
       def next_step
         :check_answers
       end

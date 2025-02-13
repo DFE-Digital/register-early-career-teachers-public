@@ -1,4 +1,29 @@
 RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
+  let(:school) { FactoryBot.build(:school) }
+  let(:store) { FactoryBot.build(:session_repository, working_pattern: 'prepopulated_value') }
+  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :working_pattern, school:, store:) }
+
+  describe '#initialize' do
+    let(:working_pattern) { 'provided_value' }
+    subject { described_class.new(wizard:, **params) }
+
+    context 'when the working_pattern is provided' do
+      let(:params) { { working_pattern: } }
+
+      it 'populate the instance from it' do
+        expect(subject.working_pattern).to eq(working_pattern)
+      end
+    end
+
+    context 'when no working_pattern is provided' do
+      let(:params) { {} }
+
+      it 'populate it from the wizard store' do
+        expect(subject.working_pattern).to eq('prepopulated_value')
+      end
+    end
+  end
+
   describe 'validations' do
     subject { described_class.new(working_pattern:) }
 
@@ -30,9 +55,6 @@ RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
   end
 
   describe '#previous_step' do
-    let(:school) { FactoryBot.build(:school) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :working_pattern, school:) }
-
     subject { wizard.current_step }
 
     it 'returns the next step' do
@@ -41,9 +63,6 @@ RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
   end
 
   describe '#next_step' do
-    let(:school) { FactoryBot.build(:school) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :working_pattern, school:) }
-
     subject { wizard.current_step }
 
     context 'when the school is independent' do

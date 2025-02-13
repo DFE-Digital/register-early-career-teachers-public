@@ -100,6 +100,8 @@ Rails.application.routes.draw do
 
       get "national-insurance-number", action: :new
       post "national-insurance-number", action: :create
+      get "change-national-insurance-number", action: :new
+      post "change-national-insurance-number", action: :create
 
       get "trn-not-found", action: :new
       get "not-found", action: :new
@@ -111,27 +113,41 @@ Rails.application.routes.draw do
 
       get "review-ect-details", action: :new
       post "review-ect-details", action: :create
+      get "change-review-ect-details", action: :new
+      post "change-review-ect-details", action: :create
 
       get "email-address", action: :new
       post "email-address", action: :create
+      get "change-email-address", action: :new
+      post "change-email-address", action: :create
 
       get "start-date", action: :new
       post "start-date", action: :create
+      get "change-start-date", action: :new
+      post "change-start-date", action: :create
 
       get "state-school-appropriate-body", action: :new
       post "state-school-appropriate-body", action: :create
+      get "change-state-school-appropriate-body", action: :new
+      post "change-state-school-appropriate-body", action: :create
 
       get "independent-school-appropriate-body", action: :new
       post "independent-school-appropriate-body", action: :create
+      get "change-independent-school-appropriate-body", action: :new
+      post "change-independent-school-appropriate-body", action: :create
 
       get "programme-type", action: :new
       post "programme-type", action: :create
+      get "change-programme-type", action: :new
+      post "change-programme-type", action: :create
 
       get "lead-provider", action: :new
       post "lead-provider", action: :create
 
       get "working-pattern", action: :new
       post "working-pattern", action: :create
+      get "change-working-pattern", action: :new
+      post "change-working-pattern", action: :create
 
       get "check-answers", action: :new
       post "check-answers", action: :create

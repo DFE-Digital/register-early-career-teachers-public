@@ -47,6 +47,19 @@ RSpec.describe 'Registering an ECT' do
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_all_the_ect_data_on_the_page
 
+    when_i_try_to_change_the_name
+    then_i_should_be_taken_to_the_change_name_page
+    when_i_click_the_back_link
+    then_i_should_be_taken_to_the_check_answers_page
+
+    when_i_try_to_change_the_email_address
+    then_i_should_be_taken_to_the_change_email_address_page
+
+    when_i_enter_a_new_ect_email_address
+    and_i_click_continue
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_should_see_the_new_email
+
     when_i_click_confirm_details
     then_i_should_be_taken_to_the_confirmation_page
 
@@ -172,6 +185,34 @@ RSpec.describe 'Registering an ECT' do
     expect(page.get_by_text('Golden Leaf Teaching Hub')).to be_visible
   end
 
+  def when_i_try_to_change_the_name
+    click_change_link_for_field("Name")
+  end
+
+  def then_i_should_be_taken_to_the_change_name_page
+    expect(page.url).to end_with('/schools/register-ect/change-review-ect-details')
+  end
+
+  def when_i_click_the_back_link
+    page.get_by_role('link', name: 'Back').click
+  end
+
+  def when_i_try_to_change_the_email_address
+    click_change_link_for_field("Email address")
+  end
+
+  def then_i_should_be_taken_to_the_change_email_address_page
+    expect(page.url).to end_with('/schools/register-ect/change-email-address')
+  end
+
+  def when_i_enter_a_new_ect_email_address
+    page.fill('#change-email-address-email-field', 'new@example.com')
+  end
+
+  def and_i_should_see_the_new_email
+    expect(page.get_by_text('new@example.com')).to be_visible
+  end
+
   def when_i_click_confirm_details
     page.get_by_role('button', name: 'Confirm details').click
   end
@@ -194,5 +235,10 @@ RSpec.describe 'Registering an ECT' do
 
   def one_month_ago_today
     @one_month_ago_today ||= Time.zone.today.prev_month
+  end
+
+  def click_change_link_for_field(key)
+    row = page.locator("div.govuk-summary-list__row", hasText: key)
+    row.locator("a.govuk-link", hasText: "Change").click
   end
 end

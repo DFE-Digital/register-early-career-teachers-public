@@ -1,10 +1,8 @@
-<%
-  page_data(
+<% page_data(
     title: "Which lead provider will be training #{@ect.full_name}?",
     error: @wizard.current_step.errors.present?,
-    backlink_href:
-  )
-%>
+    backlink_href:,
+) %>
 
 <p class="govuk-body">
 Lead providers are responsible for creating the materials used for training ECTs and mentors.
