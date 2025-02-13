@@ -1,4 +1,35 @@
 RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
+  describe '#initialize' do
+    let(:store) { FactoryBot.build(:session_repository, start_date: prepopulated_start_date) }
+    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:) }
+
+    let(:provided_start_date) do
+      { "1" => "2024", "2" => "12" }
+    end
+
+    let(:prepopulated_start_date) do
+      { "1" => "2025", "2" => "01" }
+    end
+
+    subject { described_class.new(wizard:, **params) }
+
+    context 'when the start_date is provided' do
+      let(:params) { { start_date: provided_start_date } }
+
+      it 'populate the instance from it' do
+        expect(subject.start_date).to eq(provided_start_date)
+      end
+    end
+
+    context 'when no start_date is provided' do
+      let(:params) { {} }
+
+      it 'populate it from the wizard store' do
+        expect(subject.start_date).to eq(prepopulated_start_date)
+      end
+    end
+  end
+
   describe 'validations' do
     subject { described_class.new(start_date:) }
 

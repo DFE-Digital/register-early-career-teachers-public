@@ -24,6 +24,12 @@ module Schools
       def start_date_formatted
         Schools::Validation::ECTStartDate.new(date_as_hash: start_date).formatted_date
       end
+
+    private
+
+      def pre_populate_attributes
+        self.start_date = Schools::Validation::ECTStartDate.new(date_as_hash: ect.start_date).date_as_hash unless start_date
+      end
     end
   end
 end

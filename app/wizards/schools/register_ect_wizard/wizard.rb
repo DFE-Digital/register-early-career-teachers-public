@@ -24,7 +24,14 @@ module Schools
             review_ect_details: ReviewECTDetailsStep,
             start_date: StartDateStep,
             trn_not_found: TRNNotFoundStep,
-            working_pattern: WorkingPatternStep
+            working_pattern: WorkingPatternStep,
+            change_review_ect_details: ChangeReviewECTDetailsStep,
+            change_email_address: ChangeEmailAddressStep,
+            change_start_date: ChangeStartDateStep,
+            change_working_pattern: ChangeWorkingPatternStep,
+            change_programme_type: ChangeProgrammeTypeStep,
+            change_state_school_appropriate_body: ChangeStateSchoolAppropriateBodyStep,
+            change_independent_school_appropriate_body: ChangeIndependentSchoolAppropriateBodyStep
           }
         ]
       end

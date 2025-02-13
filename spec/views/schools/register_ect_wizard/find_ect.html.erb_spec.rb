@@ -3,7 +3,8 @@ RSpec.describe "schools/register_ect_wizard/find_ect.html.erb" do
   let(:continue_path) { schools_register_ect_wizard_find_ect_path }
   let(:step) { Schools::RegisterECTWizard::FindECTStep.new }
   let(:title) { "Find an ECT" }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :find_ect, store: {}) }
+  let(:store) { FactoryBot.build(:session_repository, trn: "1234567") }
+  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :find_ect, store:) }
 
   before do
     assign(:wizard, wizard)
