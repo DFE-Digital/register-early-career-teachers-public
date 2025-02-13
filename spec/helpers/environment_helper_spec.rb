@@ -1,5 +1,3 @@
-require 'ostruct'
-
 RSpec.describe EnvironmentHelper, type: :helper do
   include GovukLinkHelper
   include GovukVisuallyHiddenHelper
