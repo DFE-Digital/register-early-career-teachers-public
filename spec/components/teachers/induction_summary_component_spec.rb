@@ -41,6 +41,49 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
       expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
     end
 
+    context "QTS awarded" do
+      context "when the teacher has a QTS award date" do
+        let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+
+        it "renders QTS awarded" do
+          render_inline(component)
+          expect(page).to have_content("QTS awarded")
+          expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
+        end
+      end
+
+      context "when the teacher does not have a QTS award date" do
+        it "does not render QTS awarded on" do
+          render_inline(component)
+          expect(page).not_to have_content("QTS awarded")
+        end
+      end
+    end
+
+    context "Initial Teacher Training" do
+      context "when teacher has ITT provider name" do
+        let(:teacher) { FactoryBot.create(:teacher, trs_initial_teacher_training_provider_name: "Test University") }
+
+        it "renders ITT section with provider name" do
+          render_inline(component)
+          expect(page).to have_content("Initial teacher training records")
+          expect(page).to have_content("Test University")
+          # FIXME: we have removed this link for MVP
+          # expect(page).to have_link("View", href: ab_teacher_initial_teacher_training_records_path(teacher))
+        end
+      end
+
+      context "when teacher has no ITT provider name" do
+        let(:teacher) { FactoryBot.create(:teacher, trs_initial_teacher_training_provider_name: nil) }
+
+        it "does not render ITT section" do
+          render_inline(component)
+
+          expect(page).not_to have_content("Initial teacher training records")
+        end
+      end
+    end
+
     context "with extensions" do
       let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
 
