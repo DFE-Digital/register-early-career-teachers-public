@@ -1,5 +1,5 @@
 module AppropriateBodies
-  class CurrentTeachers
+  class ECTs
     attr_reader :appropriate_body
 
     def initialize(appropriate_body)
@@ -7,10 +7,19 @@ module AppropriateBodies
     end
 
     def current
+      all.merge(InductionPeriod.ongoing)
+    end
+
+    def former
+      all.merge(InductionPeriod.finished)
+    end
+
+  private
+
+    def all
       Teacher
         .joins(:induction_periods)
         .merge(InductionPeriod.for_appropriate_body(appropriate_body))
-        .merge(InductionPeriod.ongoing)
     end
   end
 end

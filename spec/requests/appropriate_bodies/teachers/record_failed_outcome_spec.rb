@@ -151,6 +151,16 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
   end
 
   describe 'GET /appropriate-body/teachers/:id/record-failed-outcome' do
+    let!(:induction_period) do
+      FactoryBot.create(
+        :induction_period,
+        :fail,
+        teacher:,
+        appropriate_body:,
+        induction_programme: 'fip'
+      )
+    end
+
     context 'when not signed in' do
       it 'redirects to the signin page' do
         get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
