@@ -1,8 +1,8 @@
-# Perform teacher record edits on behalf of an author in a chainable manner and track change events
+# Perform Teacher edits on behalf of an author and track change events:
 #
 # 1. first and last name changes
-# 2. award date changes (wip)
-# 3. jack's PR (wip)
+# 2. QTS award date changes (tbc)
+# 3. ITT provider name changes (tbc)
 #
 class Teachers::Manage
   attr_reader :author, :teacher, :appropriate_body
@@ -19,7 +19,6 @@ class Teachers::Manage
     @new_name = full_name
     record_name_change_event
     teacher.save!
-    self
   end
 
   def update_qts_awarded_on!(trs_qts_awarded_on:)
@@ -28,7 +27,6 @@ class Teachers::Manage
     @new_award_date = teacher.trs_qts_awarded_on
     record_award_change_event
     teacher.save!
-    self
   end
 
   # def update_foo!(foo:)
@@ -36,7 +34,6 @@ class Teachers::Manage
   #   teacher.assign_attributes(foo:)
   #   @foo_after = teacher.foo
   #   teacher.save!
-  #   self
   # end
 
 private
@@ -76,7 +73,7 @@ private
     Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_names)
   end
 
-  # TODO: implement tracking award changes
+  # TODO: implement tracking award changes?
   def record_award_change_event
     return true unless qts_awarded_on_changed?
 

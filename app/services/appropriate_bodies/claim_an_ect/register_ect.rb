@@ -40,7 +40,9 @@ module AppropriateBodies
       end
 
       def update_award
-        manage_teacher.update_qts_awarded_on!(trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on)
+        manage_teacher.update_qts_awarded_on!(
+          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on
+        )
       end
 
       def manage_teacher
