@@ -23,5 +23,5 @@ jobs:
 
     - name: Reseed Staging
       run: |
-        make ci development get-cluster-credentials
+        make ci staging get-cluster-credentials
         kubectl exec -n cpd-development deployment/cpd-ec2-staging-web -- /bin/sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 /usr/local/bin/bundle exec rails db:seed:replant" 
