@@ -47,10 +47,6 @@
       <% row.with_value do %>
         <%= teacher.trs_initial_teacher_training_provider_name %>
       <% end %>
-
-      <% if render_extension_links? %>
-        <% row.with_action(text: "View", visually_hidden_text: "ITT records", href: ab_teacher_initial_teacher_training_records_path(teacher), classes: 'govuk-link--no-visited-state') %>
-      <% end %>
     <% end %>
   <% end %>
 <% end %>

@@ -68,7 +68,8 @@ RSpec.describe Teachers::InductionSummaryComponent, type: :component do
           render_inline(component)
           expect(page).to have_content("Initial teacher training records")
           expect(page).to have_content("Test University")
-          expect(page).to have_link("View", href: ab_teacher_initial_teacher_training_records_path(teacher))
+          # FIXME: we have removed this link for MVP
+          # expect(page).to have_link("View", href: ab_teacher_initial_teacher_training_records_path(teacher))
         end
       end
 
