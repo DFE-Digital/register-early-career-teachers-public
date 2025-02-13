@@ -25,6 +25,8 @@ module Sessions
 
       def organisation_name = appropriate_body.name
 
+      def sign_out_path = '/sign-out'
+
       def to_h
         {
           "type" => self.class.name,
