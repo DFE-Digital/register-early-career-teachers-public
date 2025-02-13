@@ -82,11 +82,11 @@ module AppropriateBodies::Importers
       # with with the establishment number to form the establishment ID (aka the 'DfE number')
       # e.g., 123/1234
       params = case local_authority_code
-               when %r{\A[1-9]\d{2}\z}
+               when %r{\A\d{3}\z}
                  {
                    local_authority_code:
                  }
-               when %r{\A[1-9]\d{3}\z}
+               when %r{\A\d{4}\z}
                  {
                    establishment_number: local_authority_code
                  }
