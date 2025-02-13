@@ -39,6 +39,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
   end
 
   describe "#pass!" do
+    let(:induction_start_date) { Date.new(2024, 1, 1) }
+    let(:fake_teacher_induction) { double(Teachers::Induction, induction_start_date:) }
+
+    before { allow(Teachers::Induction).to receive(:new).with(anything).and_return(fake_teacher_induction) }
+
     context "when happy path" do
       it "updates the induction period with pass outcome" do
         service.pass!
@@ -55,7 +60,8 @@ RSpec.describe AppropriateBodies::RecordOutcome do
           service.pass!
         }.to have_enqueued_job(PassECTInductionJob).with(
           trn: pending_induction_submission.trn,
-          completed_date: pending_induction_submission.finished_on.to_s,
+          start_date: induction_start_date,
+          completed_date: pending_induction_submission.finished_on,
           pending_induction_submission_id: pending_induction_submission.id
         )
       end
@@ -91,6 +97,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
   end
 
   describe "#fail!" do
+    let(:induction_start_date) { Date.new(2024, 1, 1) }
+    let(:fake_teacher_induction) { double(Teachers::Induction, induction_start_date:) }
+
+    before { allow(Teachers::Induction).to receive(:new).with(anything).and_return(fake_teacher_induction) }
+
     context "when successful" do
       it "updates the induction period with fail outcome" do
         service.fail!
@@ -107,7 +118,8 @@ RSpec.describe AppropriateBodies::RecordOutcome do
           service.fail!
         }.to have_enqueued_job(FailECTInductionJob).with(
           trn: pending_induction_submission.trn,
-          completed_date: pending_induction_submission.finished_on.to_s,
+          start_date: induction_start_date,
+          completed_date: pending_induction_submission.finished_on,
           pending_induction_submission_id: pending_induction_submission.id
         )
       end

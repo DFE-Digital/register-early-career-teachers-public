@@ -1,6 +1,7 @@
 RSpec.describe PassECTInductionJob, type: :job do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:trn) { teacher.trn }
+  let(:start_date) { "2023-11-13" }
   let(:completed_date) { "2024-01-13" }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
   let!(:pending_induction_submission_id) { pending_induction_submission.id }
@@ -14,15 +15,16 @@ RSpec.describe PassECTInductionJob, type: :job do
     context "when the API call is successful" do
       before do
         allow(api_client).to receive(:pass_induction!)
-          .with(trn:, completed_date:)
+          .with(trn:, start_date:, completed_date:)
       end
 
       it "calls the API client with correct parameters" do
         expect(api_client).to receive(:pass_induction!)
-          .with(trn:, completed_date:)
+          .with(trn:, start_date:, completed_date:)
 
         described_class.perform_now(
           trn:,
+          start_date:,
           completed_date:,
           pending_induction_submission_id:
         )
@@ -32,6 +34,7 @@ RSpec.describe PassECTInductionJob, type: :job do
         freeze_time do
           described_class.perform_now(
             trn:,
+            start_date:,
             completed_date:,
             pending_induction_submission_id:
           )
