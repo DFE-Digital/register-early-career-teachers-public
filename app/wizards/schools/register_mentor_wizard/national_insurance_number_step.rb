@@ -14,6 +14,7 @@ module Schools
       def next_step
         return :not_found unless mentor.in_trs?
         return :already_active_at_school if mentor.active_at_school?
+        return :cannot_register_mentor if trs_teacher.prohibited_from_teaching?
 
         :review_mentor_details
       end
