@@ -9,7 +9,7 @@ module AppropriateBodies
           appropriate_body: @appropriate_body
         ).search
       )
-      @claimed_teacher_count = AppropriateBodies::ECTs.new(@appropriate_body).current.count
+      @claimed_inductions_count = AppropriateBodies::ECTs.new(@appropriate_body).current.count
     end
 
     def show
