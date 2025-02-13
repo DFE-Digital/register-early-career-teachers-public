@@ -76,7 +76,7 @@ private
 
     teacher_name = ::Teachers::Name.new(teacher).full_name
 
-    expect(page.locator('.govuk-panel')).to have_text(/#{teacher_name} has been released/)
+    expect(page.locator('.govuk-panel')).to have_text(/You've successfully released #{teacher_name}/)
   end
 
   def and_the_pending_induction_submission_delete_at_timestamp_is_set
