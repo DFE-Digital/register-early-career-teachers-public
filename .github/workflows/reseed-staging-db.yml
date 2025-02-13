@@ -17,6 +17,10 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
+    - uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
       with:
         azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
