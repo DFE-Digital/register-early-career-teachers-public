@@ -11,6 +11,8 @@ module Schools
       ects_and_mentors.map do |ect|
         {
           ect:,
+
+          # FIXME: these aren't used
           ect_name: ::Teachers::Name.new(ect.teacher).full_name,
           ect_trn: ect.teacher.trn,
           mentor_name: ::Teachers::Name.new(ect.mentors.last&.teacher).full_name,
