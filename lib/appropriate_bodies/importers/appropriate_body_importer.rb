@@ -6,7 +6,7 @@ module AppropriateBodies::Importers
 
     Row = Struct.new(:legacy_id, :name, :dfe_sign_in_organisation_id, :local_authority_code, :establishment_number) do
       def to_h
-        { name:, legacy_id:, establishment_number:, local_authority_code:, dfe_sign_in_organisation_id: SecureRandom.uuid } # FIXME: fix dfe_sign_in_organisation_id
+        { name:, legacy_id:, establishment_number:, local_authority_code:, dfe_sign_in_organisation_id: }
       end
     end
 
@@ -37,11 +37,7 @@ module AppropriateBodies::Importers
 
       {
         name: select_name(row).strip,
-
-        # FIXME: we'll probably have to supply these ourselves
-        #        and they're not in the sample data, so just
-        #        random values for now
-        dfe_sign_in_organisation_id: SecureRandom.uuid,
+        dfe_sign_in_organisation_id: select_dfe_sign_in_organsation_id(row),
         legacy_id: row['id'],
 
         **extract_local_authority_code_and_establishment_number(row)
@@ -53,6 +49,12 @@ module AppropriateBodies::Importers
         mappings_by_legacy_id[row['id']].fetch('appropriate_body_name')
       else
         row['name']
+      end
+    end
+
+    def select_dfe_sign_in_organsation_id(row)
+      if mappings_by_legacy_id.key?(row['id'])
+        mappings_by_legacy_id[row['id']].fetch('dfe_sign_in_organisation_id')
       end
     end
 
