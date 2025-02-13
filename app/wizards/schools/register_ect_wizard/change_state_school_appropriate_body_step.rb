@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class ChangeProgrammeTypeStep < ProgrammeTypeStep
+    class ChangeStateSchoolAppropriateBodyStep < StateSchoolAppropriateBodyStep
       def next_step
         :check_answers
       end

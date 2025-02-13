@@ -43,6 +43,11 @@ module Schools
       def formatted_trn
         @formatted_trn ||= Validation::TeacherReferenceNumber.new(trn).formatted_trn
       end
+
+      def pre_populate_attributes
+        self.trn = ect.trn
+        self.date_of_birth = Schools::Validation::DateOfBirth.new(ect.date_of_birth).date_as_hash
+      end
     end
   end
 end

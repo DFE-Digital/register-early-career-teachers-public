@@ -1,5 +1,14 @@
 describe Schools::RegisterECTWizard::FindECTStep, type: :model do
-  subject { described_class.new }
+  let(:store) do
+    FactoryBot.build(:session_repository,
+                     trn: "1234567",
+                     trs_first_name: "John",
+                     trs_last_name: "Wayne",
+                     corrected_name: "Jim Wayne",
+                     date_of_birth: "01/01/1990")
+  end
+  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect, store:) }
+  subject { described_class.new(wizard:) }
 
   describe 'validations' do
     ['12345', 'RP99/12345', 'RP / 1234567', '  R P 99 / 1234', 'ZZ-123445 '].each do |trn|

@@ -1,6 +1,7 @@
 RSpec.describe "schools/register_ect_wizard/national_insurance_number.html.erb" do
+  let(:store) { FactoryBot.build(:session_repository, national_insurance_number: "1234567") }
   let(:wizard) do
-    FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number, store: {})
+    FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number, store:)
   end
 
   before do
