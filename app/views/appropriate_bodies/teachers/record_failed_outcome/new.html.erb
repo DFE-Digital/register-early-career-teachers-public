@@ -2,5 +2,5 @@
 
 <%= form_with(model: @pending_induction_submission, url: ab_teacher_record_failed_outcome_path(@teacher), method: 'post') do |f| %>
   <%= render partial: 'appropriate_bodies/teachers/outcome_form', locals: { f: f } %>
-  <%= f.govuk_submit "Record failing outcome for #{Teachers::Name.new(@teacher).full_name}" %>
+  <%= f.govuk_submit "Record failing outcome for #{Teachers::Name.new(@teacher).full_name}", warning: true %>
 <% end %>
