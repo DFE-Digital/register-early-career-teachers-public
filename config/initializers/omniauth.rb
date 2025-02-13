@@ -29,7 +29,7 @@ Rails.application.config.middleware.use(OmniAuth::Builder) do
       path_prefix: '/auth',
       response_type: :code,
       scope: %w[openid profile email organisation],
-      post_logout_redirect_uri: Rails.application.config.dfe_sign_in_sign_out_redirect_uri,
+      post_logout_redirect_uri: Rails.application.config.dfe_sign_in_sign_out_redirect_uri
     )
   end
 
