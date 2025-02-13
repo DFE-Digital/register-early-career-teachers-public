@@ -26,10 +26,10 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename, wanted_trns)
+    def initialize(filename, wanted_trns, csv: nil)
       sorted_wanted_trns = wanted_trns.sort
 
-      file = File.readlines(filename)
+      file = csv || File.readlines(filename)
       file.delete_at(0)
       sorted_lines = file.sort
 
@@ -94,7 +94,7 @@ module AppropriateBodies::Importers
                         end
 
       # FIXME: don't bother recording anything that rounds to 0
-      converted_value.round
+      converted_value.round(1)
     end
   end
 end
