@@ -6,22 +6,26 @@ module AppropriateBodies
       @teacher = teacher
       @pending_induction_submission = pending_induction_submission
       @current_appropriate_body = current_appropriate_body
+      @induction = teacher ? ::Teachers::Induction.new(teacher) : nil
+    end
+
+    def show_inset_text?
+      teacher && induction&.current_induction_period && !claiming_body?(teacher, current_appropriate_body)
+    end
+
+    def show_claim_form?
+      !show_inset_text? && !induction_status.completed?
     end
 
     private
 
-    attr_reader :teacher, :pending_induction_submission, :current_appropriate_body
+    attr_reader :teacher, :pending_induction_submission, :current_appropriate_body, :induction
 
     def claiming_body?(teacher, appropriate_body)
-      return false unless teacher
-
-      current_period = ::Teachers::Induction.new(teacher).current_induction_period
-      return false unless current_period
-
-      current_period.appropriate_body_id == appropriate_body.id
+      induction&.with_appropriate_body?(appropriate_body)
     end
 
-    def induction_status_from(teacher:, pending_induction_submission:)
+    def induction_status
       ::Teachers::InductionStatus.new(
         teacher:,
         induction_periods: teacher&.induction_periods,
