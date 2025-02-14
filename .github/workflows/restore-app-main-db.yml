@@ -10,6 +10,8 @@ on:
         type: choice
         options:
         - development
+        - sandbox
+        - staging
         - test
         - production
       confirm-production:
