@@ -14,7 +14,7 @@ module Schools
       end
 
       def previous_step
-        :start_date
+        :working_pattern
       end
     end
   end
