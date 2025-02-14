@@ -24,7 +24,8 @@ module Schools
             review_ect_details: ReviewECTDetailsStep,
             start_date: StartDateStep,
             trn_not_found: TRNNotFoundStep,
-            working_pattern: WorkingPatternStep
+            working_pattern: WorkingPatternStep,
+            # lead_provider: LeadProviderStep,
           }
         ]
       end
@@ -42,6 +43,10 @@ module Schools
 
       def appropriate_bodies
         @appropriate_bodies ||= AppropriateBody.select(:id, :name).all
+      end
+
+      def lead_providers
+        @lead_providers ||= LeadProvider.select(:id, :name).all
       end
     end
   end

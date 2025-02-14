@@ -70,3 +70,7 @@ shared:
   - created_at
   - updated_at
   - metadata
+  :ect_at_school_periods:
+  - appropriate_body_id
+  - lead_provider_id
+  - programme_type

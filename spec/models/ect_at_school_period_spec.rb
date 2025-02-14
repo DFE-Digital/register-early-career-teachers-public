@@ -2,6 +2,8 @@ describe ECTAtSchoolPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:school).inverse_of(:ect_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:ect_at_school_periods) }
+    it { is_expected.to belong_to(:appropriate_body) }
+    it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to have_many(:mentorship_periods).inverse_of(:mentee) }
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:mentors).through(:mentorship_periods).source(:mentor) }
@@ -14,6 +16,9 @@ describe ECTAtSchoolPeriod do
     it { is_expected.to validate_presence_of(:started_on) }
     it { is_expected.to validate_presence_of(:school_id) }
     it { is_expected.to validate_presence_of(:teacher_id) }
+    # it { is_expected.to validate_presence_of(:appropriate_body_id) }
+    # it { is_expected.to validate_presence_of(:lead_provider_id) }
+    # it { is_expected.to validate_presence_of(:programme_type) }
 
     context "email" do
       it { is_expected.to allow_value(nil).for(:email) }
