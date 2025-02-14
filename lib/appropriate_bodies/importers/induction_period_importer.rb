@@ -157,7 +157,6 @@ module AppropriateBodies::Importers
         .reject { |ip| ip.started_on == Date.new(1, 1, 1) }
         .reject { |ip| ip.finished_on && ip.started_on > ip.finished_on }
         .group_by(&:trn)
-        .select { |_trn, periods| periods.any? { |p| p.finished_on.nil? } }
         .transform_values { |periods| periods.sort_by { |p| [p.started_on, p.length, p.appropriate_body_id] } }
         .each_with_object({}) do |(trn, rows), h|
           keep = []
