@@ -42,6 +42,26 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
     end
   end
 
+  context "when teacher is exempt" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:pending_induction_submission) do
+      FactoryBot.create(
+        :pending_induction_submission,
+        trs_first_name: "John",
+        trs_last_name: "Doe",
+        trs_qts_status_description: "Exempt"
+      )
+    end
+
+    it "renders inset text explaining teacher is exempt" do
+      render_inline(component)
+
+      expect(page).to have_text("You cannot register John Doe")
+      expect(page).to have_text("Our records show that John Doe is exempt from completing their induction")
+      expect(page).not_to have_button("Claim induction")
+    end
+  end
+
   context "when teacher can be claimed" do
     context "when induction is not completed" do
       let(:teacher) { FactoryBot.create(:teacher) }
