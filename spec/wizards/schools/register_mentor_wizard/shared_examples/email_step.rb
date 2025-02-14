@@ -1,5 +1,6 @@
 RSpec.shared_examples "an email step" do |current_step:|
-  subject { described_class.new }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:) }
+  subject { described_class.new(wizard:) }
 
   describe 'validations' do
     it { is_expected.to allow_value('valid@email.com').for(:email) }
