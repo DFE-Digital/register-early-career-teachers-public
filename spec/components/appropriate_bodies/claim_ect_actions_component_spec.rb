@@ -15,9 +15,9 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
 
   subject(:component) do
     described_class.new(
-      teacher: teacher,
-      pending_induction_submission: pending_induction_submission,
-      current_appropriate_body: current_appropriate_body
+      teacher:,
+      pending_induction_submission:,
+      current_appropriate_body:
     )
   end
 
@@ -28,7 +28,7 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
       FactoryBot.create(
         :induction_period,
         :active,
-        teacher: teacher,
+        teacher:,
         appropriate_body: other_appropriate_body
       )
     end

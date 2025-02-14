@@ -29,13 +29,11 @@ module AppropriateBodies
       pending_induction_submission_full_name(pending_induction_submission)
     end
 
-    private
+  private
 
     attr_reader :teacher, :pending_induction_submission, :current_appropriate_body, :induction
 
-    def claiming_body?(teacher, appropriate_body)
-      induction&.with_appropriate_body?(appropriate_body)
-    end
+    include InductionHelper
 
     def induction_status
       ::Teachers::InductionStatus.new(
