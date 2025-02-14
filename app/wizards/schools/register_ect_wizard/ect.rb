@@ -68,7 +68,7 @@ module Schools
 
       def lead_provider
         LeadProvider.find_by_name(lead_provider)
-      end      
+      end
     end
   end
 end

@@ -47,7 +47,7 @@ module Schools
 
       def lead_providers
         @lead_providers ||= LeadProvider.select(:id, :name).all
-      end      
+      end
     end
   end
 end

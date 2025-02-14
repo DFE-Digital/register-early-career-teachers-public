@@ -23,12 +23,12 @@ module ECTHelper
       link_to_assign_mentor(ect)
     end
   end
-  
+
   # TODO: was something planned in Schools::Teacher?
   def ect_status(_ect)
     govuk_tag(text: 'In progress', colour: 'green')
   end
-  
+
   # @param ect [ECTAtSchoolPeriod]
   def ect_programme_type(ect)
     case ect.programme_type
