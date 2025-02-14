@@ -54,7 +54,7 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
 
   describe '#dfe_sign_in_user_id' do
     it 'returns the id of the user in DfE SignIn' do
-      expect(appropriate_body_user.dfe_sign_in_organisation_id).to eql(dfe_sign_in_organisation_id)
+      expect(appropriate_body_user.dfe_sign_in_user_id).to eql(dfe_sign_in_user_id)
     end
   end
 

@@ -48,7 +48,7 @@ RSpec.describe Sessions::Users::SchoolUser do
 
   describe '#dfe_sign_in_user_id' do
     it 'returns the id of the user in DfE SignIn' do
-      expect(school_user.dfe_sign_in_organisation_id).to eql(dfe_sign_in_organisation_id)
+      expect(school_user.dfe_sign_in_user_id).to eql(dfe_sign_in_user_id)
     end
   end
 
