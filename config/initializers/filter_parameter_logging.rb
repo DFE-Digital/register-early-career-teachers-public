@@ -31,6 +31,6 @@ Rails.application.config.filter_parameters += %i[
   trs_email_address
   trs_first_name
   trs_last_name
-trs_date_of_birth
-trs_national_insurance_number
+  trs_date_of_birth
+  trs_national_insurance_number
 ]
