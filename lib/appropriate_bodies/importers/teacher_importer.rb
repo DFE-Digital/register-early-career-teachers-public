@@ -27,7 +27,7 @@ module AppropriateBodies::Importers
     end
 
     def initialize(filename, wanted_trns, csv: nil)
-      sorted_wanted_trns = wanted_trns.sort
+      sorted_wanted_trns = wanted_trns.reject(&:blank?).sort
 
       file = csv || File.readlines(filename)
       file.delete_at(0)
