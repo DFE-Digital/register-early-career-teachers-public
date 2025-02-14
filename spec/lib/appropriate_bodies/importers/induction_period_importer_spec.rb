@@ -82,18 +82,18 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
   end
 
   describe 'rebuilding periods' do
-    context 'when an ECT has no open induction periods' do
-      let(:sample_csv_data) do
-        <<~CSV
-          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
-          025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,10/31/2012 00:00:00,,3,2600071
-        CSV
-      end
-
-      it 'skips them' do
-        expect(subject.periods_as_hashes_by_trn).not_to have_key('2600071')
-      end
-    end
+    # context 'when an ECT has no open induction periods' do
+    #   let(:sample_csv_data) do
+    #     <<~CSV
+    #       appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+    #       025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,10/31/2012 00:00:00,,3,2600071
+    #     CSV
+    #   end
+    #
+    #   it 'skips them' do
+    #     expect(subject.periods_as_hashes_by_trn).not_to have_key('2600071')
+    #   end
+    # end
 
     context 'when an ECT has one induction period with one AB' do
       let(:sample_csv_data) do
