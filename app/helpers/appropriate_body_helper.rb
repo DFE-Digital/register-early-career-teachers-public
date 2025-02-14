@@ -52,6 +52,10 @@ module AppropriateBodyHelper
     end
   end
 
+  def claimed_inductions_text(count)
+    "#{number_with_delimiter(count)} claimed #{'induction'.pluralize(count)}"
+  end
+
 private
 
   def pending_induction_submission_full_name(pending_induction_submission)
