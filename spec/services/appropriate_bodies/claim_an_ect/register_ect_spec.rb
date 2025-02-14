@@ -30,6 +30,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   end
 
   describe "#register" do
+    let(:trn) { "1234567" }
     let(:trs_qts_awarded_on) { Date.new(2023, 5, 2) }
     let(:pending_induction_submission_params) do
       {
@@ -133,6 +134,21 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
           induction_period = InductionPeriod.last
           expect(induction_period.teacher).to eq(existing_teacher)
+        end
+      end
+
+      context 'when the teacher has no existing induction periods' do
+        it "does enqueues BeginECTInductionJob" do
+          expect { subject.register(pending_induction_submission_params) }.to have_enqueued_job(BeginECTInductionJob)
+        end
+      end
+
+      context 'when the teacher has an existing induction period' do
+        let!(:existing_teacher) { FactoryBot.create(:teacher, trn:) }
+        let!(:induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher) }
+
+        it "does not enqueue BeginECTInductionJob" do
+          expect { subject.register(pending_induction_submission_params) }.not_to have_enqueued_job(BeginECTInductionJob)
         end
       end
 
