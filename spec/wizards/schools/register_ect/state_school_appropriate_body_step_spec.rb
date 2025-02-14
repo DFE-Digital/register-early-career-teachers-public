@@ -38,7 +38,7 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
     subject { wizard.current_step }
 
     it 'returns the previous step' do
-      expect(subject.previous_step).to eq(:start_date)
+      expect(subject.previous_step).to eq(:working_pattern)
     end
   end
 
