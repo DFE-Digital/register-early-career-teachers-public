@@ -1,7 +1,6 @@
 <% if show_inset_text? %>
   <%= govuk_inset_text do %>
-    You cannot register <%= pending_induction_submission_full_name(@pending_induction_submission) %>.
-    Our records show that <%= pending_induction_submission_full_name(@pending_induction_submission) %> is completing their induction with another appropriate body.
+    <%= inset_text_message %>
   <% end %>
 <% elsif show_claim_form? %>
   <%= form_with(model: @pending_induction_submission, url: ab_claim_an_ect_check_path(@pending_induction_submission, method: 'patch')) do |f| %>

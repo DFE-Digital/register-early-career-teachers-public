@@ -10,20 +10,30 @@ module AppropriateBodies
     end
 
     def show_inset_text?
-      teacher && induction&.current_induction_period && !claiming_body?(teacher, current_appropriate_body)
+      pending_induction_submission.exempt? || (teacher && induction&.current_induction_period && !claiming_body?(teacher, current_appropriate_body))
     end
 
     def show_claim_form?
       !show_inset_text? && !induction_status.completed?
     end
 
-    private
+    def inset_text_message
+      if pending_induction_submission.exempt?
+        "You cannot register #{name}. Our records show that #{name} is exempt from completing their induction."
+      else
+        "You cannot register #{name}. Our records show that #{name} is completing their induction with another appropriate body."
+      end
+    end
+
+    def name
+      pending_induction_submission_full_name(pending_induction_submission)
+    end
+
+  private
 
     attr_reader :teacher, :pending_induction_submission, :current_appropriate_body, :induction
 
-    def claiming_body?(teacher, appropriate_body)
-      induction&.with_appropriate_body?(appropriate_body)
-    end
+    include InductionHelper
 
     def induction_status
       ::Teachers::InductionStatus.new(
