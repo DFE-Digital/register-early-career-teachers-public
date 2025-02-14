@@ -44,6 +44,10 @@ module Schools
       def appropriate_bodies
         @appropriate_bodies ||= AppropriateBody.select(:id, :name).all
       end
+
+      def lead_providers
+        @lead_providers ||= LeadProvider.select(:id, :name).all
+      end      
     end
   end
 end

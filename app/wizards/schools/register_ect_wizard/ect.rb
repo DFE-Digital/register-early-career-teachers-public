@@ -1,7 +1,7 @@
 module Schools
   module RegisterECTWizard
+    # This class is a decorator for the SessionRepository
     class ECT < SimpleDelegator
-      # This class is a decorator for the SessionRepository
       def full_name
         corrected_name.presence || [trs_first_name, trs_last_name].join(" ").strip
       end
@@ -61,6 +61,14 @@ module Schools
       def active_at_school?(school:)
         ECTAtSchoolPeriods::Search.new.exists?(school_id: school.id, trn:)
       end
+
+      def appropriate_body
+        AppropriateBody.find_by_name(appropriate_body_name)
+      end
+
+      def lead_provider
+        LeadProvider.find_by_name(lead_provider)
+      end      
     end
   end
 end
