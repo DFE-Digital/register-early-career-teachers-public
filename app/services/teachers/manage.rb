@@ -29,12 +29,12 @@ class Teachers::Manage
     teacher.save!
   end
 
-  # def update_foo!(foo:)
-  #   @foo_before = teacher.foo
-  #   teacher.assign_attributes(foo:)
-  #   @foo_after = teacher.foo
-  #   teacher.save!
-  # end
+  def update_itt_provider_name!(trs_initial_teacher_training_provider_name:)
+    @itt_provider_before = teacher.trs_initial_teacher_training_provider_name
+    teacher.assign_attributes(trs_initial_teacher_training_provider_name:)
+    @itt_provider_after = teacher.trs_initial_teacher_training_provider_name
+    teacher.save!
+  end
 
 private
 

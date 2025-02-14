@@ -26,10 +26,10 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename, wanted_trns)
+    def initialize(filename, wanted_trns, csv: nil)
       sorted_wanted_trns = wanted_trns.sort
 
-      file = File.readlines(filename)
+      file = csv || File.readlines(filename)
       file.delete_at(0)
       sorted_lines = file.sort
 
@@ -38,13 +38,15 @@ module AppropriateBodies::Importers
       seek = sorted_wanted_trns.shift
 
       sorted_lines.each do |line|
-        next unless line.start_with?(seek)
+        if line.strip.end_with?('InProgress')
+          wanted_lines << line
+        elsif line.start_with?(seek)
+          wanted_lines << line
 
-        wanted_lines << line
+          break if sorted_wanted_trns.empty?
 
-        break if sorted_wanted_trns.empty?
-
-        seek = sorted_wanted_trns.shift
+          seek = sorted_wanted_trns.shift
+        end
       end
 
       @csv = CSV.parse(wanted_lines.join, headers: %w[trn first_name last_name extension_length extension_length_unit induction_status])
@@ -94,7 +96,7 @@ module AppropriateBodies::Importers
                         end
 
       # FIXME: don't bother recording anything that rounds to 0
-      converted_value.round
+      converted_value.round(1)
     end
   end
 end
