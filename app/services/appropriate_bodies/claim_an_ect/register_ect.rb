@@ -69,6 +69,8 @@ module AppropriateBodies
       end
 
       def send_begin_induction_notification_to_trs
+        return true if @teacher.induction_periods.any?
+
         BeginECTInductionJob.perform_later(
           trn: pending_induction_submission.trn,
           start_date: pending_induction_submission.started_on,
