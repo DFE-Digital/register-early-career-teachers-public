@@ -26,7 +26,10 @@ module Sessions
       end
 
       def organisation_name = school.name
+
       delegate :urn, to: :school, prefix: true, allow_nil: true
+
+      def sign_out_path = '/auth/dfe_sign_in/logout'
 
       def to_h
         {

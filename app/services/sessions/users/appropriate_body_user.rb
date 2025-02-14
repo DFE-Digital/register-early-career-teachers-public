@@ -28,6 +28,8 @@ module Sessions
 
       def organisation_name = appropriate_body.name
 
+      def sign_out_path = '/auth/dfe_sign_in/logout'
+
       def to_h
         {
           "type" => self.class.name,
