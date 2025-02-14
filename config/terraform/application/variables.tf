@@ -108,9 +108,22 @@ variable "gcp_table_deletion_protection" {
   type    = bool
   default = null
 }
+variable "create_bigquery_dataset" {
+  default     = true
+  description = "Create bigquery dataset and events table"
+}
 
 locals {
   postgres_ssl_mode = var.enable_postgres_ssl ? "require" : "disable"
 
   environment_variables = yamldecode(file("${path.module}/config/${var.config}.yml"))
+
+  bigquery_variables = var.create_bigquery_dataset ? {
+    BIGQUERY_PROJECT_ID            = module.dfe_analytics[0].bigquery_project_id
+    BIGQUERY_TABLE_NAME            = module.dfe_analytics[0].bigquery_table_name
+    BIGQUERY_DFE_ANALYTICS_DATASET = module.dfe_analytics[0].bigquery_dataset
+  } : {}
+  bigquery_secrets = var.create_bigquery_dataset ? {
+    GOOGLE_CLOUD_CREDENTIALS = module.dfe_analytics[0].google_cloud_credentials
+  } : {}
 }
