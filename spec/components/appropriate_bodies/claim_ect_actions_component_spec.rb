@@ -49,7 +49,7 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
         :pending_induction_submission,
         trs_first_name: "John",
         trs_last_name: "Doe",
-        trs_qts_status_description: "Exempt"
+        trs_induction_status: "Exempt"
       )
     end
 
