@@ -2,16 +2,18 @@ module Sessions
   class Manager
     class MissingAccessLevel < StandardError; end
 
-    attr_reader :session
+    attr_reader :session, :cookies
 
-    def initialize(session)
+    def initialize(session, cookies)
       @session = session
+      @cookies = cookies
     end
 
-    def begin_session!(session_user)
+    def begin_session!(session_user, id_token: '')
       check_authorisation!(session_user)
       @current_user = nil
       session['user_session'] = session_user.to_h
+      cookies['id_token'] = encrypt_token(id_token)
     end
 
     def current_user
@@ -20,6 +22,7 @@ module Sessions
 
     def end_session!
       session.destroy
+      cookies.delete('id_token')
     end
 
     def requested_path=(path)
@@ -39,6 +42,12 @@ module Sessions
                                     .can_access?
 
       fail(MissingAccessLevel)
+    end
+
+    def encrypt_token(token)
+      secret_key = Rails.application.secret_key_base.byteslice(0, 32)
+      encryptor = ActiveSupport::MessageEncryptor.new(secret_key)
+      Base64.strict_encode64(Zlib::Deflate.deflate(encryptor.encrypt_and_sign(token)))
     end
 
     def load_from_session

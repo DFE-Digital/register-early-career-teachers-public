@@ -13,6 +13,8 @@ module Sessions
         raise UnknownProvider, provider
       end
 
+      def id_token = payload.credentials.id_token
+
     private
 
       attr_reader :payload
