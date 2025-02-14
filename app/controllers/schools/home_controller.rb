@@ -3,16 +3,7 @@ module Schools
     layout "full"
 
     def index
-      @ects = ects_and_mentors
-    end
-
-  private
-
-    def ects_and_mentors
-      ECTAtSchoolPeriod
-        .where(school:)
-        .eager_load(:teacher, :school, mentors: :teacher)
-        .merge(MentorshipPeriod.ongoing)
+      @ects = Schools::Home.new(school:).ects_and_mentors
     end
   end
 end
