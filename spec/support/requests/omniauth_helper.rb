@@ -19,6 +19,7 @@ module OmniAuthHelper
         }
       },
       credentials: {
+        id_token: 'mock_id_token',
         token: 'mock_token',
         refresh_token: 'mock_refresh_token',
         expires_at: Time.current + 1.week
