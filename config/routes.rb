@@ -126,6 +126,9 @@ Rails.application.routes.draw do
       get "programme-type", action: :new
       post "programme-type", action: :create
 
+      get "lead-provider", action: :new
+      post "lead-provider", action: :create
+
       get "working-pattern", action: :new
       post "working-pattern", action: :create
 

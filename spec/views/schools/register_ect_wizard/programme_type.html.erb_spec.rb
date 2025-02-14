@@ -1,39 +1,45 @@
 RSpec.describe "schools/register_ect_wizard/programme_type.html.erb" do
-  let(:back_path) { schools_register_ect_wizard_independent_school_appropriate_body_path }
   let(:school) { double('School', type_name: 'Other independent school', independent?: true) }
-  let(:continue_path) { schools_register_ect_wizard_check_answers_path }
-  let(:step) { Schools::RegisterECTWizard::FindECTStep.new }
+
   let(:ect) { double(full_name: 'John Smith') }
-  let(:title) { "What training programme will #{ect.full_name} follow?" }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :programme_type, store: {}, school:) }
+
+  let(:wizard) do
+    FactoryBot.build(:register_ect_wizard, current_step: :programme_type, store: {}, school:)
+  end
 
   before do
     assign(:wizard, wizard)
     assign(:ect, ect)
   end
 
-  it "sets the page title to 'What training programme will John Smith follow?'" do
+  it "sets the page title" do
     render
-
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+    expect(sanitize(view.content_for(:page_title))).to eql("What training programme will John Smith follow?")
   end
 
-  it "prefixes the page with 'Error:' when the programme type is not selected" do
-    wizard.valid_step?
-    render
+  context 'when the form is invalid' do
+    before do
+      wizard.valid_step?
+      render
+    end
 
-    expect(view.content_for(:page_title)).to start_with('Error:')
+    it "prefixes the page with 'Error:'" do
+      expect(view.content_for(:page_title)).to start_with('Error:')
+    end
+
+    it 'renders an error summary' do
+      expect(view.content_for(:error_summary)).to have_css('.govuk-error-summary')
+    end
   end
 
-  it 'includes a back button that links to the start page of the register ECT journey' do
+  it 'includes a back link' do
     render
-
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: schools_register_ect_wizard_independent_school_appropriate_body_path)
   end
 
-  it 'includes a continue button that posts to the programme type page' do
+  it 'includes a continue button' do
     render
-
     expect(rendered).to have_button('Continue')
+    expect(rendered).to have_selector("form[action='#{schools_register_ect_wizard_programme_type_path}']")
   end
 end

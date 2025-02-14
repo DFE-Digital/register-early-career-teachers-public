@@ -9,16 +9,16 @@ module Schools
         %i[start_date]
       end
 
-      def persist
-        ect.update!(start_date: start_date_formatted)
-      end
-
       def next_step
         :working_pattern
       end
 
       def previous_step
         :email_address
+      end
+
+      def persist
+        ect.update!(start_date: start_date_formatted)
       end
 
       def start_date_formatted

@@ -1,23 +1,43 @@
 describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
-  subject { described_class.new }
+  subject { wizard.current_step }
 
-  describe '#next_step' do
-    it 'returns :confirmation' do
-      expect(subject.next_step).to eq(:confirmation)
+  describe 'steps' do
+    let(:wizard) do
+      FactoryBot.build(:register_ect_wizard, current_step: :check_answers)
     end
-  end
 
-  describe '#previous_step' do
-    it 'returns :programme_type' do
-      expect(subject.previous_step).to eq(:programme_type)
+    describe '#next_step' do
+      it 'returns the next step' do
+        expect(subject.next_step).to eq(:confirmation)
+      end
+    end
+
+    describe '#previous_step' do
+      context 'when the ect programme_type is school_led' do
+        before do
+          allow(wizard.ect).to receive(:provider_led?).and_return(false)
+        end
+
+        it 'returns :programme_type' do
+          expect(subject.previous_step).to eq(:programme_type)
+        end
+      end
+
+      context 'when the ect programme_type is provider_led' do
+        before do
+          allow(wizard.ect).to receive(:provider_led?).and_return(true)
+        end
+
+        it 'returns :lead_provider' do
+          expect(subject.previous_step).to eq(:lead_provider)
+        end
+      end
     end
   end
 
   context '#save!' do
     let(:school) { FactoryBot.create(:school) }
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :check_answers, school:) }
-
-    subject { wizard.current_step }
 
     context 'when the step is not valid' do
       before do

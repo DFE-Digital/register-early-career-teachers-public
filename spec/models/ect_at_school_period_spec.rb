@@ -2,6 +2,8 @@ describe ECTAtSchoolPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:school).inverse_of(:ect_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:ect_at_school_periods) }
+    it { is_expected.to belong_to(:appropriate_body) }
+    it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to have_many(:mentorship_periods).inverse_of(:mentee) }
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:mentors).through(:mentorship_periods).source(:mentor) }
@@ -22,18 +24,17 @@ describe ECTAtSchoolPeriod do
     end
 
     context "teacher distinct period" do
+      let!(:existing_period) { FactoryBot.create(:ect_at_school_period) }
+      let(:teacher_id) { existing_period.teacher_id }
+
+      before { subject.valid? }
+      subject { FactoryBot.build(:ect_at_school_period, teacher_id:, started_on:, finished_on:) }
+
       context "when the period has not finished yet" do
+        let(:started_on) { existing_period.started_on - 1.year }
+        let(:finished_on) { nil }
+
         context "when the teacher has a sibling ect_at_school_period starting later" do
-          let!(:existing_period) { FactoryBot.create(:ect_at_school_period) }
-          let(:teacher_id) { existing_period.teacher_id }
-          let(:started_on) { existing_period.started_on - 1.year }
-
-          subject { FactoryBot.build(:ect_at_school_period, teacher_id:, started_on:, finished_on: nil) }
-
-          before do
-            subject.valid?
-          end
-
           it "add an error" do
             expect(subject.errors.messages).to include(base: ["Teacher ECT periods cannot overlap"])
           end
@@ -41,18 +42,10 @@ describe ECTAtSchoolPeriod do
       end
 
       context "when the period has end date" do
+        let(:started_on) { existing_period.finished_on - 1.day }
+        let(:finished_on) { started_on + 1.day }
+
         context "when the teacher has a sibling ect_at_school_period overlapping" do
-          let!(:existing_period) { FactoryBot.create(:ect_at_school_period) }
-          let(:teacher_id) { existing_period.teacher_id }
-          let(:started_on) { existing_period.finished_on - 1.day }
-          let(:finished_on) { started_on + 1.day }
-
-          subject { FactoryBot.build(:ect_at_school_period, teacher_id:, started_on:, finished_on:) }
-
-          before do
-            subject.valid?
-          end
-
           it "add an error" do
             expect(subject.errors.messages).to include(base: ["Teacher ECT periods cannot overlap"])
           end
@@ -89,17 +82,15 @@ describe ECTAtSchoolPeriod do
     let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 2.years.ago) }
 
     context "when the ect has had no mentorships ever" do
-      it "returns nil" do
-        expect(mentee.current_mentorship).to be_nil
-      end
+      it { expect(mentee.current_mentorship).to be_nil }
     end
 
     context "when the ect has had past mentorships" do
-      let!(:old_mentorship) { FactoryBot.create(:mentorship_period, mentee:, mentor:) }
-
-      it "returns nil" do
-        expect(mentee.current_mentorship).to be_nil
+      before do
+        FactoryBot.create(:mentorship_period, mentee:, mentor:)
       end
+
+      it { expect(mentee.current_mentorship).to be_nil }
     end
 
     context "when the ect has an ongoing mentorship at a school" do
@@ -116,10 +107,8 @@ describe ECTAtSchoolPeriod do
     let(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: 2.years.ago) }
     let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 2.years.ago) }
 
-    subject { mentee.current_mentorship }
-
     context "when the ect has had no mentorships ever" do
-      it { is_expected.to be_nil }
+      it { expect(mentee.current_mentor).to be_nil }
     end
 
     context "when the ect has had past mentorships" do
@@ -127,14 +116,16 @@ describe ECTAtSchoolPeriod do
         FactoryBot.create(:mentorship_period, mentee:, mentor:)
       end
 
-      it { is_expected.to be_nil }
+      it { expect(mentee.current_mentor).to be_nil }
     end
 
     context "when the ect has an ongoing mentorship at a school" do
-      let!(:old_mentorship) { FactoryBot.create(:mentorship_period, mentee:, mentor:) }
-      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :active, mentee:, mentor:) }
+      before do
+        FactoryBot.create(:mentorship_period, mentee:, mentor:)
+        FactoryBot.create(:mentorship_period, :active, mentee:, mentor:)
+      end
 
-      it { is_expected.to eq(ongoing_mentorship) }
+      it { expect(mentee.current_mentor).to eq(mentor) }
     end
   end
 end

@@ -1,0 +1,9 @@
+<div class="govuk-!-margin-top-5">
+  <%= govuk_details(summary_text: 'Find out more about lead providers') do %>
+    <p class="govuk-body">They are organisations that:</p>
+    <%= govuk_list [
+                     "train mentors and trainers who deliver the early career framework training to ECTs",
+                     "report on the progress and effectiveness of the training programme to the Department for Education (DfE)",
+                   ], type: :bullet %>
+  <% end %>
+</div>

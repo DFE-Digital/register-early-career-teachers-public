@@ -6,7 +6,7 @@ module Schools
       end
 
       def previous_step
-        :programme_type
+        ect.provider_led? ? :lead_provider : :programme_type
       end
 
     private
