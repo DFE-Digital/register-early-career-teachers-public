@@ -1,8 +1,6 @@
-require "rails_helper"
-
 RSpec.describe Teachers::Induction do
+  subject(:service) { described_class.new(teacher) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:service) { described_class.new(teacher) }
 
   describe "#current_induction_period" do
     before do

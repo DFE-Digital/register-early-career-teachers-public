@@ -1,7 +1,5 @@
-require "rails_helper"
-
 RSpec.describe Teachers::InductionStatus do
-  subject { Teachers::InductionStatus.new(teacher:, induction_periods:, trs_induction_status:) }
+  subject(:service) { described_class.new(teacher:, induction_periods:, trs_induction_status:) }
 
   context 'when the teacher record exists in our database' do
     let(:trs_induction_status) { nil }
@@ -16,7 +14,7 @@ RSpec.describe Teachers::InductionStatus do
       end
 
       it "has a status of 'In progress'" do
-        expect(subject.induction_status).to eql('In progress')
+        expect(service.induction_status).to eql('In progress')
       end
     end
 
@@ -27,7 +25,7 @@ RSpec.describe Teachers::InductionStatus do
         let(:induction_periods) { FactoryBot.create_list(:induction_period, 2) }
 
         it "has a status of 'Paused'" do
-          expect(subject.induction_status).to eql('Induction paused')
+          expect(service.induction_status).to eql('Induction paused')
         end
       end
 
@@ -40,7 +38,7 @@ RSpec.describe Teachers::InductionStatus do
         end
 
         it "has a status of 'Passed'" do
-          expect(subject.induction_status).to eql('Passed')
+          expect(service.induction_status).to eql('Passed')
         end
       end
 
@@ -53,7 +51,7 @@ RSpec.describe Teachers::InductionStatus do
         end
 
         it "has a status of 'Failed'" do
-          expect(subject.induction_status).to eql('Failed')
+          expect(service.induction_status).to eql('Failed')
         end
       end
     end
@@ -78,7 +76,7 @@ RSpec.describe Teachers::InductionStatus do
           let(:trs_induction_status) { trs_induction_status }
 
           it "has a status of '#{our_description}'" do
-            expect(subject.induction_status).to eql(our_description)
+            expect(service.induction_status).to eql(our_description)
           end
         end
       end
@@ -91,7 +89,7 @@ RSpec.describe Teachers::InductionStatus do
     let(:trs_induction_status) { 'SomethingEntirelyDifferent' }
 
     it "has a status of 'Unknown'" do
-      expect(subject.induction_status).to eql('Unknown')
+      expect(service.induction_status).to eql('Unknown')
     end
   end
 
@@ -109,7 +107,7 @@ RSpec.describe Teachers::InductionStatus do
         let(:trs_induction_status) { status }
 
         it "returns true" do
-          expect(subject).to be_completed
+          expect(service).to be_completed
         end
       end
     end
@@ -124,7 +122,7 @@ RSpec.describe Teachers::InductionStatus do
         let(:trs_induction_status) { status }
 
         it "returns false" do
-          expect(subject).not_to be_completed
+          expect(service).not_to be_completed
         end
       end
     end

@@ -19,7 +19,9 @@ module AppropriateBodies
         # end
         ActiveRecord::Base.transaction do
           steps = [
-            create_or_update_teacher,
+            update_name,
+            update_qts_awarded_on,
+            update_itt_provider_name,
             send_begin_induction_notification_to_trs,
             pending_induction_submission.save(context: :register_ect),
             create_induction_period
@@ -31,26 +33,27 @@ module AppropriateBodies
 
     private
 
-      # FIXME: move this to its own service class
-      def create_or_update_teacher
-        old_name = ::Teachers::Name.new(teacher).full_name_in_trs
-
-        teacher.assign_attributes(
+      def update_name
+        manage_teacher.update_name!(
           trs_first_name: pending_induction_submission.trs_first_name,
-          trs_last_name: pending_induction_submission.trs_last_name,
-          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on,
+          trs_last_name: pending_induction_submission.trs_last_name
+        )
+      end
+
+      def update_qts_awarded_on
+        manage_teacher.update_qts_awarded_on!(
+          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on
+        )
+      end
+
+      def update_itt_provider_name
+        manage_teacher.update_itt_provider_name!(
           trs_initial_teacher_training_provider_name: pending_induction_submission.trs_initial_teacher_training_provider_name
         )
+      end
 
-        new_name = ::Teachers::Name.new(teacher).full_name_in_trs
-
-        teacher.save!
-
-        if old_name && new_name != old_name
-          Events::Record.teacher_name_changed_in_trs!(author:, old_name:, new_name:, teacher:, appropriate_body:)
-        end
-
-        true
+      def manage_teacher
+        @manage_teacher ||= ::Teachers::Manage.new(author:, teacher:, appropriate_body:)
       end
 
       def teacher
