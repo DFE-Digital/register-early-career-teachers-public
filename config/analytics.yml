@@ -41,3 +41,7 @@ shared:
   - number_of_terms
   - created_at
   - updated_at
+  :ect_at_school_periods:
+  - appropriate_body_id
+  - lead_provider_id
+  - programme_type

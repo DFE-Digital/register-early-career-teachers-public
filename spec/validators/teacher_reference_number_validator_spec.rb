@@ -1,4 +1,4 @@
-RSpec.describe TeacherReferenceNumberValidator do
+RSpec.describe TeacherReferenceNumberValidator, type: :model do
   let(:test_class) do
     Class.new do
       include ActiveModel::Model

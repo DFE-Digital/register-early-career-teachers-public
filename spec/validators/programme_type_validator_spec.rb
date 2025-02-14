@@ -1,4 +1,4 @@
-RSpec.describe ProgrammeTypeValidator do
+RSpec.describe ProgrammeTypeValidator, type: :model do
   let(:test_class) do
     Class.new do
       include ActiveModel::Model

@@ -148,7 +148,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_133917) do
     t.uuid "legacy_end_id"
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
+    t.bigint "appropriate_body_id"
+    t.bigint "lead_provider_id"
+    t.string "programme_type"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
+    t.index ["appropriate_body_id"], name: "index_ect_at_school_periods_on_appropriate_body_id"
+    t.index ["lead_provider_id"], name: "index_ect_at_school_periods_on_lead_provider_id"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
     t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
@@ -545,6 +550,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_133917) do
   end
 
   add_foreign_key "dfe_roles", "users"
+  add_foreign_key "ect_at_school_periods", "appropriate_bodies"
+  add_foreign_key "ect_at_school_periods", "lead_providers"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"
   add_foreign_key "events", "appropriate_bodies", on_delete: :nullify

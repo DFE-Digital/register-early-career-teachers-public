@@ -1,44 +1,40 @@
 RSpec.describe "schools/register_ect_wizard/national_insurance_number.html.erb" do
-  let(:back_path) { schools_register_ect_wizard_find_ect_path }
-  let(:continue_path) { schools_register_ect_wizard_national_insurance_number_path }
-  let(:step) { Schools::RegisterECTWizard::NationalInsuranceNumberStep.new }
-  let(:title) { "We cannot find your ECT's details" }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :national_insurance_number, store: {}) }
+  let(:wizard) do
+    FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number, store: {})
+  end
 
   before do
     assign(:wizard, wizard)
   end
 
-  it "sets the page title to 'We cannot find your ECT's details'" do
+  it "sets the page title" do
     render
-
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+    expect(sanitize(view.content_for(:page_title))).to eql("We cannot find your ECT's details")
   end
 
-  it "prefixes the page with 'Error:' when the trn or date of birth values are invalid" do
-    wizard.valid_step?
-    render
+  context 'when the form is invalid' do
+    before do
+      wizard.valid_step?
+      render
+    end
 
-    expect(view.content_for(:page_title)).to start_with('Error:')
+    it "prefixes the page with 'Error:'" do
+      expect(view.content_for(:page_title)).to start_with('Error:')
+    end
+
+    it 'renders an error summary' do
+      expect(view.content_for(:error_summary)).to have_css('.govuk-error-summary')
+    end
   end
 
-  it 'renders an error summary when the trn or date of birth is invalid' do
-    wizard.valid_step?
+  it 'includes a back link' do
     render
-
-    expect(view.content_for(:error_summary)).to have_css('.govuk-error-summary')
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: schools_register_ect_wizard_find_ect_path)
   end
 
-  it 'includes a back button that links to the start page of the register ECT journey' do
+  it 'includes a continue button' do
     render
-
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
-  end
-
-  it 'includes a continue button that submits the form' do
-    render
-
     expect(rendered).to have_button('Continue')
-    expect(rendered).to have_selector("form[action='#{continue_path}']")
+    expect(rendered).to have_selector("form[action='#{schools_register_ect_wizard_national_insurance_number_path}']")
   end
 end
