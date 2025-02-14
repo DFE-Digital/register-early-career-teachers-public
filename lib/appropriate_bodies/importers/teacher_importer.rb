@@ -40,6 +40,8 @@ module AppropriateBodies::Importers
       sorted_lines.each do |line|
         if line.strip.end_with?('InProgress')
           wanted_lines << line
+        if line.strip.end_with?('RequiredToComplete')
+          wanted_lines << line
         elsif line.start_with?(seek)
           wanted_lines << line
 
