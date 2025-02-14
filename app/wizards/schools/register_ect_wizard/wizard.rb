@@ -24,7 +24,8 @@ module Schools
             review_ect_details: ReviewECTDetailsStep,
             start_date: StartDateStep,
             trn_not_found: TRNNotFoundStep,
-            working_pattern: WorkingPatternStep
+            working_pattern: WorkingPatternStep,
+            # lead_provider: LeadProviderStep,
           }
         ]
       end
