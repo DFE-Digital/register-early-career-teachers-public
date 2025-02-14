@@ -1,13 +1,13 @@
 module AppropriateBodies::Importers
   class Importer
-    def initialize(appropriate_body_csv, teachers_csv, induction_period_csv)
+    def initialize(appropriate_body_csv, teachers_csv, induction_period_csv, dfe_sign_in_mapping_csv)
       @induction_periods_grouped_by_trn = InductionPeriodImporter.new(induction_period_csv).periods_by_trn
 
       @active_teachers = @induction_periods_grouped_by_trn.keys
       @teacher_importer_rows = TeacherImporter.new(teachers_csv, @active_teachers).rows
 
       @active_abs = @induction_periods_grouped_by_trn.flat_map { |_trn, ips| ips.map(&:legacy_appropriate_body_id) }.uniq
-      @ab_importer_rows = AppropriateBodyImporter.new(appropriate_body_csv, @active_abs).rows
+      @ab_importer_rows = AppropriateBodyImporter.new(appropriate_body_csv, @active_abs, dfe_sign_in_mapping_csv).rows
     end
 
     def import!
