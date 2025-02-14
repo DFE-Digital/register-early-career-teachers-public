@@ -61,4 +61,22 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
       expect(pending_induction_submission_full_name(pending_induction_submission)).to eql("Joey")
     end
   end
+
+  describe "#claimed_inductions_text" do
+    it "creates the claimed inductions count heading" do
+      expect(claimed_inductions_text(123)).to eql "123 claimed inductions"
+    end
+
+    context "when there is 1 claimed induction" do
+      it "pluralizes the text correctly" do
+        expect(claimed_inductions_text(1)).to eql "1 claimed induction"
+      end
+    end
+
+    context "when there is over 1000 claimed inductions" do
+      it "formats the number for easy reading" do
+        expect(claimed_inductions_text(100_000)).to eql "100,000 claimed inductions"
+      end
+    end
+  end
 end
