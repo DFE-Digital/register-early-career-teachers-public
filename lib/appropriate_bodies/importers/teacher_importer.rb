@@ -26,8 +26,8 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename, wanted_trns, csv: nil)
-      sorted_wanted_trns = wanted_trns.reject(&:blank?).sort
+    def initialize(filename, trns_with_induction_periods, csv: nil)
+      sorted_trns_with_induction_periods = trns_with_induction_periods.reject(&:blank?).sort
 
       file = csv || File.readlines(filename)
       file.delete_at(0)
@@ -35,20 +35,16 @@ module AppropriateBodies::Importers
 
       wanted_lines = []
 
-      seek = sorted_wanted_trns.shift
+      seek = sorted_trns_with_induction_periods.shift
 
       sorted_lines.each do |line|
-        # Possible statuses:
-        # Exempt, Failed, FailedInWales, InProgress, None, Passed, PassedInWales, RequiredToComplete
-        if line.strip.end_with?('InProgress', 'RequiredToComplete')
-          wanted_lines << line
-        elsif line.start_with?(seek)
-          wanted_lines << line
+        next unless line.start_with?(seek)
 
-          break if sorted_wanted_trns.empty?
+        wanted_lines << line
 
-          seek = sorted_wanted_trns.shift
-        end
+        break if sorted_trns_with_induction_periods.empty?
+
+        seek = sorted_trns_with_induction_periods.shift
       end
 
       @csv = CSV.parse(wanted_lines.join, headers: %w[trn first_name last_name extension_length extension_length_unit induction_status])
@@ -56,6 +52,11 @@ module AppropriateBodies::Importers
 
     def rows
       @rows ||= @csv.reject { |row| row['trn'].nil? }.map { |row| Row.new(**build(row)) }
+    end
+
+    def rows_with_wanted_statuses
+      wanted_statuses = (%w[RequiredToComplete InProgress])
+      rows.select { |row| row.induction_status.in?(wanted_statuses) }
     end
 
   private
