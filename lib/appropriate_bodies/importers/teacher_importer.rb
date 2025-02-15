@@ -38,7 +38,9 @@ module AppropriateBodies::Importers
       seek = sorted_wanted_trns.shift
 
       sorted_lines.each do |line|
-        if line.strip.end_with?('InProgress')
+        # Possible statuses:
+        # Exempt, Failed, FailedInWales, InProgress, None, Passed, PassedInWales, RequiredToComplete
+        if line.strip.end_with?('InProgress', 'RequiredToComplete')
           wanted_lines << line
         elsif line.start_with?(seek)
           wanted_lines << line
@@ -53,7 +55,7 @@ module AppropriateBodies::Importers
     end
 
     def rows
-      @rows ||= @csv.map { |row| Row.new(**build(row)) }
+      @rows ||= @csv.reject { |row| row['trn'].nil? }.map { |row| Row.new(**build(row)) }
     end
 
   private

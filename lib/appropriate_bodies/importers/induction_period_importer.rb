@@ -126,8 +126,9 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename, csv: nil)
+    def initialize(filename, cutoff_csv_filename, csv: nil, cutoff_csv: nil)
       @csv = csv || CSV.read(filename, headers: true)
+      @cutoff_csv = cutoff_csv || CSV.read(cutoff_csv_filename, headers: true)
 
       File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
       @import_error_log = Logger.new(IMPORT_ERROR_LOG, File::CREAT)
@@ -137,9 +138,13 @@ module AppropriateBodies::Importers
       @rows ||= @csv.map { |row| Row.new(**build(row)) }
     end
 
+    def old_abs
+      @old_abs ||= @cutoff_csv.map { |r| r['dqt_id'].downcase }
+    end
+
     def build(row)
       {
-        legacy_appropriate_body_id: row['appropriate_body_id'],
+        legacy_appropriate_body_id: row['appropriate_body_id']&.downcase,
         started_on: extract_date(row['started_on']),
         finished_on: extract_date(row['finished_on']),
         induction_programme: row['induction_programme_choice'],
@@ -161,7 +166,27 @@ module AppropriateBodies::Importers
         .each_with_object({}) do |(trn, rows), h|
           keep = []
 
+          cutoff_date = Date.new(2024, 8, 31)
+
           rows.each do |current|
+            if current.legacy_appropriate_body_id.in?(old_abs) && (current.finished_on.nil? || current.finished_on > cutoff_date)
+              current.notes << {
+                heading: "Amended while importing from DQT",
+                body: "Induction period curtailed because it finished after appropriate body status lost",
+                data: { originals: [current.dup] }
+              }
+
+              current.finished_on = if current.started_on >= cutoff_date
+                                      # NOTE: this only affects one record
+                                      current.started_on + 1
+                                    else
+                                      cutoff_date
+                                    end
+
+              keep << current
+              next
+            end
+
             keep << current and next if keep.empty?
             keep << current and next if keep.none? { |already_recorded| current.range.overlap?(already_recorded.range) }
 
