@@ -2,7 +2,7 @@ require 'csv'
 
 module AppropriateBodies::Importers
   class InductionPeriodImporter
-    IMPORT_ERROR_LOG = 'tmp/induction_period_import.log'.freeze
+    IMPORT_ERROR_LOG = 'tmp/induction_period_error.log'.freeze
     LOGFILE = Rails.root.join("log/induction_period_import.log").freeze
     ECF_CUTOFF = Date.new(2021, 9, 1).freeze
 
@@ -158,9 +158,27 @@ module AppropriateBodies::Importers
 
     def periods_by_trn
       rows
-        .reject { |ip| ip.started_on.nil? }
-        .reject { |ip| ip.started_on == Date.new(1, 1, 1) }
-        .reject { |ip| ip.finished_on && ip.started_on > ip.finished_on }
+        .reject { |ip|
+          if ip.started_on.nil?
+            log_error("cannot be imported because started_on is nil", trn: ip.trn, legacy_appropriate_body_id: ip.legacy_appropriate_body_id)
+          else
+            false
+          end
+        }
+        .reject { |ip|
+          if ip.started_on == Date.new(1, 1, 1)
+            log_error("cannot be imported because started_on is 0001-01-01", trn: ip.trn, legacy_appropriate_body_id: ip.legacy_appropriate_body_id)
+          else
+            false
+          end
+        }
+        .reject { |ip|
+          if ip.finished_on && ip.started_on > ip.finished_on
+            log_error("cannot be imported because started_on is greater than finished_on", trn: ip.trn, legacy_appropriate_body_id: ip.legacy_appropriate_body_id)
+          else
+            false
+          end
+        }
         .group_by(&:trn)
         .transform_values { |periods| periods.sort_by { |p| [p.started_on, p.length, p.appropriate_body_id] } }
         .each_with_object({}) do |(trn, rows), h|
@@ -308,15 +326,23 @@ module AppropriateBodies::Importers
                 else # different appropriate bodies
                   case
                   when sibling.started_on == current.started_on
-                    # TODO: work out what to do here
-                    logger.error("siblings with different appropriate bodies that start on the same day found; current: #{current}, sibling: #{sibling}")
+                    keep.delete(sibling)
+                    log_error(
+                      "two induction periods with different appropriate bodies that start on the same day found",
+                      trn: current.trn,
+                      legacy_appropriate_body_id: [current.legacy_appropriate_body_id, sibling.legacy_appropriate_body_id]
+                    )
                   when sibling.range.cover?(current.range) || current.range.cover?(sibling.range)
                     # an induction period from one AB entirely contains one from another,
                     # which do we keep?
                     #
                     # This might never happen in prod so let's ignore it for now
-                    # FIXME: log these
-                    logger.error("periods contained by other period detected; current: #{current}, sibling: #{sibling}")
+                    keep.delete(sibling)
+                    log_error(
+                      "two induction periods with different appropriate bodies where one contains the other",
+                      trn: current.trn,
+                      legacy_appropriate_body_id: [current.legacy_appropriate_body_id, sibling.legacy_appropriate_body_id]
+                    )
                   when sibling.range.cover?(current.started_on) && !sibling.range.cover?(current.finished_on)
                     #                         ┌─────────────────────────────────┐
                     #   Current               │          KEEP                   │
@@ -351,6 +377,16 @@ module AppropriateBodies::Importers
       @logger ||= Logger.new(LOGFILE).tap do |l|
         l.level = Logger::Severity::DEBUG
       end
+    end
+
+    def log_error(message, trn:, legacy_appropriate_body_id:)
+      logger.error(
+        [
+          message,
+          ("trn: #{trn}" if trn),
+          ("appropriate_body_id: #{legacy_appropriate_body_id}" if legacy_appropriate_body_id)
+        ].compact.join(" ")
+      )
     end
 
     def extract_date(datetime)
