@@ -1,59 +1,25 @@
 module Schools
   module Validation
-    class DateOfBirth
-      attr_reader :date_of_birth_as_hash, :format_error
-
-      # Expects value with the format { 1 => year, 2 => month, 3 => day } or a date string or a Date instance
-      def initialize(value)
-        @date_of_birth_as_hash = value.is_a?(Hash) ? value : convert_to_hash(value&.to_date)
-        @format_error = nil
-      end
-
-      def valid?
-        validate
-        format_error.nil?
-      end
+    class DateOfBirth < Date
+      DATE_MISSING_MESSAGE   = "Enter a date of birth".freeze
+      INVALID_FORMAT_MESSAGE = "Enter the date of birth in the correct format, for example 12 03 1998".freeze
+      TOO_OLD_MESSAGE        = "The teacher cannot be more than 100 years old".freeze
+      TOO_YOUNG_MESSAGE      = "The teacher cannot be less than 18 years old".freeze
 
     private
 
-      def convert_to_hash(date)
-        { 3 => date.day, 2 => date.month, 1 => date.year } if date
+      def date_too_young?
+        date > 18.years.ago.to_date
       end
 
-      def validate
-        return @format_error = "Enter a date of birth" if date_missing?
-        return @format_error = "Enter the date of birth in the correct format, for example 12 03 1998" if invalid_date?
-        return @format_error = "The teacher cannot be more than 100 years old" if date_of_birth_too_old?
-        return @format_error = "The teacher cannot be less than 18 years old" if date_of_birth_too_young?
-
-        true
+      def date_too_old?
+        date < 100.years.ago.to_date
       end
 
-      def date_missing?
-        date_of_birth_as_hash.nil?
-      end
+      def extra_validation_error_message
+        return TOO_OLD_MESSAGE if date_too_old?
 
-      def invalid_date?
-        date_of_birth
-        false
-      rescue ArgumentError
-        true
-      end
-
-      def date_of_birth
-        day = date_of_birth_as_hash[3].to_i
-        month = date_of_birth_as_hash[2].to_i
-        year = date_of_birth_as_hash[1].to_i
-
-        @date_of_birth ||= Date.new(year, month, day)
-      end
-
-      def date_of_birth_too_young?
-        date_of_birth > 18.years.ago.to_date
-      end
-
-      def date_of_birth_too_old?
-        date_of_birth < 100.years.ago.to_date
+        TOO_YOUNG_MESSAGE if date_too_young?
       end
     end
   end
