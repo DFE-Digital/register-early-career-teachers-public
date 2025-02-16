@@ -36,7 +36,7 @@ module Schools
 
       def pre_populate_attributes
         self.trn = mentor.trn
-        self.date_of_birth = Schools::Validation::DateOfBirth.new(mentor.date_of_birth).date_of_birth_as_hash
+        self.date_of_birth = Schools::Validation::DateOfBirth.new(mentor.date_of_birth).date_as_hash
       end
 
       def trs_teacher
