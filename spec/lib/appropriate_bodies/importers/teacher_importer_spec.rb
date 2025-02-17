@@ -17,8 +17,8 @@ describe AppropriateBodies::Importers::TeacherImporter do
     expect(subject.rows.map(&:trn)).to include(*wanted_trns)
   end
 
-  it 'includes rows that do not have a wanted TRN but have a status of InProgress' do
-    expect(subject.rows.map(&:trn)).to include('3456789')
+  it 'does not include with a status of InProgress that do not have a wanted TRN' do
+    expect(subject.rows.map(&:trn)).not_to include('3456789')
   end
 
   it 'skips rows that are not wanted and have a status other than InProgress' do

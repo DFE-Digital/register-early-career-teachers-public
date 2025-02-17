@@ -3,8 +3,8 @@ module AppropriateBodies::Importers
     def initialize(appropriate_body_csv:, teachers_csv:, induction_period_csv:, dfe_sign_in_mapping_csv:, admin_csv:, cutoff_csv:)
       @induction_periods_grouped_by_trn = InductionPeriodImporter.new(induction_period_csv, cutoff_csv).periods_by_trn
 
-      @active_teachers = @induction_periods_grouped_by_trn.keys
-      @teacher_importer_rows = TeacherImporter.new(teachers_csv, @active_teachers).rows
+      @trns_with_induction_periods = @induction_periods_grouped_by_trn.keys
+      @teacher_importer_rows = TeacherImporter.new(teachers_csv, @trns_with_induction_periods).rows_with_wanted_statuses
 
       @active_abs = @induction_periods_grouped_by_trn.flat_map { |_trn, ips| ips.map(&:legacy_appropriate_body_id) }.uniq
       @ab_importer_rows = AppropriateBodyImporter.new(appropriate_body_csv, @active_abs, dfe_sign_in_mapping_csv).rows
@@ -51,7 +51,7 @@ module AppropriateBodies::Importers
     def import_induction_periods_rows
       induction_period_rows = []
 
-      @induction_periods_grouped_by_trn.each do |trn, induction_periods|
+      @induction_periods_grouped_by_trn.slice(*teacher_trn_to_id.keys).each do |trn, induction_periods|
         induction_periods.each do |ip|
           begin
             ip.teacher_id = teacher_trn_to_id.fetch(trn)
