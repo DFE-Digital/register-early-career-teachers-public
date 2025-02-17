@@ -1,6 +1,8 @@
 class InductionPeriod < ApplicationRecord
+  VALID_NUMBER_OF_TERMS = { min: 0, max: 16 }.freeze
   include Interval
   include SharedInductionPeriodValidation
+  include SharedNumberOfTermsValidation
 
   # Associations
   belongs_to :appropriate_body
@@ -10,17 +12,6 @@ class InductionPeriod < ApplicationRecord
   # Validations
   validates :started_on,
             presence: true
-
-  validates :number_of_terms,
-            inclusion: {
-              in: 0..16, message: "Terms must be between 0 and 16", if: -> { finished_on.present? }
-            },
-            presence: {
-              message: "Enter a number of terms", if: -> { finished_on.present? }
-            },
-            absence: {
-              message: "Delete the number of terms if the induction has no end date", if: -> { finished_on.blank? }
-            }
 
   validates :induction_programme,
             inclusion: { in: %w[fip cip diy unknown pre_september_2021],

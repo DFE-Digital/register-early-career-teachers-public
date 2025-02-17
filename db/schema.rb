@@ -239,7 +239,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_14_124432) do
 
   create_table "induction_extensions", force: :cascade do |t|
     t.bigint "teacher_id", null: false
-    t.decimal "number_of_terms", precision: 3, scale: 1, null: false
+    t.float "number_of_terms", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["teacher_id"], name: "index_induction_extensions_on_teacher_id"
@@ -252,7 +252,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_14_124432) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.enum "induction_programme", null: false, enum_type: "induction_programme"
-    t.decimal "number_of_terms", precision: 3, scale: 1
+    t.float "number_of_terms"
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.bigint "teacher_id"
     t.enum "outcome", enum_type: "induction_outcomes"
@@ -325,7 +325,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_14_124432) do
     t.enum "induction_programme", enum_type: "induction_programme"
     t.date "started_on"
     t.date "finished_on"
-    t.decimal "number_of_terms", precision: 3, scale: 1
+    t.float "number_of_terms"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "confirmed_at"
