@@ -65,6 +65,22 @@ RSpec.describe 'Claiming an ECT' do
     end
   end
 
+  describe "when the ECT is exempt from induction" do
+    include_context 'fake trs api client that finds teacher with specific induction status', 'Exempt'
+
+    scenario 'Button is hidden and exempt message is shown' do
+      given_i_am_on_the_claim_an_ect_find_page
+      when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
+      and_i_submit_the_form
+
+      now_i_should_be_on_the_claim_an_ect_check_page
+      then_i_should_not_see_the_claim_button
+
+      expect(page.get_by_text('You cannot register Kirk Van Houten')).to be_visible
+      expect(page.get_by_text('Our records show that Kirk Van Houten is exempt from completing their induction')).to be_visible
+    end
+  end
+
 private
 
   def then_i_should_not_see_the_claim_button
