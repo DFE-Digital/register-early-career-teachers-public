@@ -21,4 +21,6 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "TRN" # Teacher Reference Number
   inflect.acronym "TRS" # Teaching Record System
   inflect.acronym "ITT" # Initial teacher training
+  inflect.acronym "OmniAuth"
+  inflect.acronym "OpenID"
 end

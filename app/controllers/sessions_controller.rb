@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    session_manager.begin_session!(session_user)
+    session_manager.begin_session!(session_user, id_token:)
 
     if authenticated?
       redirect_to(login_redirect_path)
@@ -23,8 +23,9 @@ class SessionsController < ApplicationController
 
 private
 
-  def session_user
-    Sessions::Users::Builder.new(omniauth_payload: request.env['omniauth.auth'])
-                            .session_user
+  delegate :session_user, :id_token, to: :user_builder
+
+  def user_builder
+    @user_builder ||= Sessions::Users::Builder.new(omniauth_payload: request.env['omniauth.auth'])
   end
 end

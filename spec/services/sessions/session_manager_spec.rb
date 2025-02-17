@@ -1,5 +1,6 @@
 RSpec.describe Sessions::Manager do
   let(:session) { HashWithIndifferentAccess.new }
+  let(:cookies) { HashWithIndifferentAccess.new }
   let(:email) { 'school_persona@email.com' }
   let(:name) { 'Christopher Lee' }
   let(:school_urn) { FactoryBot.create(:school).urn }
@@ -13,7 +14,7 @@ RSpec.describe Sessions::Manager do
                                     last_active_at:)
   end
 
-  subject(:service) { Sessions::Manager.new(session) }
+  subject(:service) { Sessions::Manager.new(session, cookies) }
 
   before do
     allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_code: 'registerECTsAccess'))
@@ -35,6 +36,11 @@ RSpec.describe Sessions::Manager do
       expect(session['user_session']['last_active_at']).to be_within(1.second).of(last_active_at)
       expect(session['user_session']['dfe_sign_in_organisation_id']).to eql('1')
       expect(session['user_session']['dfe_sign_in_user_id']).to eql('1')
+    end
+
+    it "'stores the id_token encrypted in the 'id_token' cookie'" do
+      service.begin_session!(user, id_token: 'dfe_token')
+      expect(cookies['id_token']).to be_present
     end
 
     context "when the user signs via DfE Sign In but has no 'registerECTsAccess' permissions for their organisation" do
@@ -72,11 +78,17 @@ RSpec.describe Sessions::Manager do
   end
 
   describe '#end_session!' do
-    let(:session) { double('Session') }
+    let(:session) { double('Session', destroy: nil) }
+    let(:cookies) { double('Cookies', delete: nil) }
+
+    before { service.end_session! }
 
     it 'calls destroy on the session object' do
-      expect(session).to receive(:destroy).once
-      service.end_session!
+      expect(session).to have_received(:destroy).once
+    end
+
+    it "'calls delete on the cookies jar object with param 'id_token'" do
+      expect(cookies).to have_received(:delete).with('id_token').once
     end
   end
 
