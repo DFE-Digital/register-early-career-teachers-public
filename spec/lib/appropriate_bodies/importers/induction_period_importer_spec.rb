@@ -141,6 +141,65 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
     end
   end
 
+  describe 'invalid periods' do
+    let(:fake_logger) { double(Logger, error: true) }
+    before { allow(subject).to receive(:logger).and_return(fake_logger) }
+
+    describe 'started_on is nil' do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          025e61e7-ec32-eb11-a813-000d3a228dfc,,,,3,2600071
+        CSV
+      end
+
+      it 'does not import the row' do
+        expect(subject.periods_as_hashes_by_trn).to be_empty
+      end
+
+      it 'logs an error' do
+        subject.periods_as_hashes_by_trn
+        expect(fake_logger).to have_received(:error).once.with(/started_on is nil/)
+      end
+    end
+
+    describe 'started_on is nil' do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/0001 00:00:00,,,3,2600071
+        CSV
+      end
+
+      it 'does not import the row' do
+        expect(subject.periods_as_hashes_by_trn).to be_empty
+      end
+
+      it 'logs an error' do
+        subject.periods_as_hashes_by_trn
+        expect(fake_logger).to have_received(:error).once.with(/started_on is 0001-01-01/)
+      end
+    end
+
+    describe 'started_on is nil' do
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          025e61e7-ec32-eb11-a813-000d3a228dfc,02/02/2023 00:00:00,01/01/2023 00:00:00,,3,2600071
+        CSV
+      end
+
+      it 'does not import the row' do
+        expect(subject.periods_as_hashes_by_trn).to be_empty
+      end
+
+      it 'logs an error' do
+        subject.periods_as_hashes_by_trn
+        expect(fake_logger).to have_received(:error).once.with(/started_on is greater than finished_on/)
+      end
+    end
+  end
+
   describe 'rebuilding periods' do
     context 'when an ECT has one induction period with one AB' do
       let(:sample_csv_data) do
@@ -502,7 +561,63 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
     end
 
     context 'when an ECT has two induction period with different ABs' do
-      xspecify 'when one contains the other'
+      context 'when one contains the other' do
+        let(:sample_csv_data) do
+          <<~CSV
+            appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+            1ddf3e82-c1ae-e311-b8ed-005056822391,02/02/2012 00:00:00,03/03/2012 00:00:00,Full Induction Programme,4,3600071
+            025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,05/05/2012 00:00:00,Full Induction Programme,2,3600071
+            025e61e7-ec32-eb11-a813-000d3a228dfc,03/03/2021 00:00:00,,Full Induction Programme,2,3600071
+          CSV
+        end
+
+        let(:fake_logger) { double(Logger, error: true) }
+
+        before { allow(subject).to receive(:logger).and_return(fake_logger) }
+
+        it 'both are discarded' do
+          expect(subject.periods_as_hashes_by_trn.values.length).to eql(1)
+        end
+
+        it 'logs the error message' do
+          subject.periods_as_hashes_by_trn
+          expect(fake_logger).to have_received(:error).once.with(/two induction periods with different appropriate bodies where one contains the other/)
+        end
+
+        it 'logs the affected IDs' do
+          subject.periods_as_hashes_by_trn
+          expect(fake_logger).to have_received(:error).once.with(/trn: 3600071 appropriate_body_id: \["1ddf3e82-c1ae-e311-b8ed-005056822391", "025e61e7-ec32-eb11-a813-000d3a228dfc"\]/)
+        end
+      end
+
+      context 'when both start on the same day' do
+        let(:sample_csv_data) do
+          <<~CSV
+            appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+            1ddf3e82-c1ae-e311-b8ed-005056822391,02/02/2012 00:00:00,03/03/2012 00:00:00,Full Induction Programme,4,3600071
+            025e61e7-ec32-eb11-a813-000d3a228dfc,02/02/2012 00:00:00,,Full Induction Programme,2,3600071
+            025e61e7-ec32-eb11-a813-000d3a228dfc,03/03/2021 00:00:00,,Full Induction Programme,2,3600071
+          CSV
+        end
+
+        let(:fake_logger) { double(Logger, error: true) }
+
+        before { allow(subject).to receive(:logger).and_return(fake_logger) }
+
+        it 'both are discarded' do
+          expect(subject.periods_as_hashes_by_trn.values.length).to eql(1)
+        end
+
+        it 'logs the error message' do
+          subject.periods_as_hashes_by_trn.values.length
+          expect(fake_logger).to have_received(:error).once.with(/two induction periods with different appropriate bodies that start on the same day found/)
+        end
+
+        it 'logs the affected IDs' do
+          subject.periods_as_hashes_by_trn.values.length
+          expect(fake_logger).to have_received(:error).once.with(/trn: 3600071 appropriate_body_id: \["025e61e7-ec32-eb11-a813-000d3a228dfc", "1ddf3e82-c1ae-e311-b8ed-005056822391"\]/)
+        end
+      end
 
       context 'when the periods do not overlap' do
         let(:sample_csv_data) do
