@@ -4,6 +4,7 @@ provider "google" {
 
 module "dfe_analytics" {
   source = "./vendor/modules/aks//aks/dfe_analytics"
+  count  = var.create_bigquery_dataset ? 1 : 0
 
   azure_resource_prefix = var.azure_resource_prefix
   cluster               = var.cluster

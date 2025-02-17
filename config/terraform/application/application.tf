@@ -15,22 +15,22 @@ module "application_configuration" {
   # Delete for non rails apps
   is_rails_application = true
 
-  config_variables = merge(local.environment_variables,
+  config_variables = merge(
+    local.environment_variables,
+    local.bigquery_variables,
     {
-      ENVIRONMENT_NAME               = var.environment
-      PGSSLMODE                      = local.postgres_ssl_mode
-      BIGQUERY_PROJECT_ID            = module.dfe_analytics.bigquery_project_id
-      BIGQUERY_TABLE_NAME            = module.dfe_analytics.bigquery_table_name
-      BIGQUERY_DFE_ANALYTICS_DATASET = module.dfe_analytics.bigquery_dataset
-
+      ENVIRONMENT_NAME = var.environment
+      PGSSLMODE        = local.postgres_ssl_mode
     }
   )
-  secret_variables = {
-    DATABASE_URL             = module.postgres.url
-    BLAZER_DATABASE_URL      = var.environment == "production" ? module.infrastructure_secrets.map[local.snapshot_db_kv_secret_name] : module.postgres.url
-    REDIS_CACHE_URL          = module.redis-cache.url
-    GOOGLE_CLOUD_CREDENTIALS = module.dfe_analytics.google_cloud_credentials
-  }
+  secret_variables = merge(
+    local.bigquery_secrets,
+    {
+      DATABASE_URL        = module.postgres.url
+      BLAZER_DATABASE_URL = var.environment == "production" ? module.infrastructure_secrets.map[local.snapshot_db_kv_secret_name] : module.postgres.url
+      REDIS_CACHE_URL     = module.redis-cache.url
+    }
+  )
 }
 
 module "web_application" {

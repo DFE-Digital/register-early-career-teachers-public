@@ -1,13 +1,15 @@
 module AppropriateBodies::Importers
   class Importer
-    def initialize(appropriate_body_csv, teachers_csv, induction_period_csv)
-      @induction_periods_grouped_by_trn = InductionPeriodImporter.new(induction_period_csv).periods_by_trn
+    def initialize(appropriate_body_csv:, teachers_csv:, induction_period_csv:, dfe_sign_in_mapping_csv:, admin_csv:, cutoff_csv:)
+      @induction_periods_grouped_by_trn = InductionPeriodImporter.new(induction_period_csv, cutoff_csv).periods_by_trn
 
       @active_teachers = @induction_periods_grouped_by_trn.keys
       @teacher_importer_rows = TeacherImporter.new(teachers_csv, @active_teachers).rows
 
       @active_abs = @induction_periods_grouped_by_trn.flat_map { |_trn, ips| ips.map(&:legacy_appropriate_body_id) }.uniq
-      @ab_importer_rows = AppropriateBodyImporter.new(appropriate_body_csv, @active_abs).rows
+      @ab_importer_rows = AppropriateBodyImporter.new(appropriate_body_csv, @active_abs, dfe_sign_in_mapping_csv).rows
+
+      @admin_csv = CSV.read(admin_csv, headers: true)
     end
 
     def import!
@@ -17,6 +19,7 @@ module AppropriateBodies::Importers
       import_induction_extensions
 
       update_event_titles
+      insert_admins
     end
 
   private
@@ -110,6 +113,12 @@ module AppropriateBodies::Importers
       RELEASE
 
       ActiveRecord::Base.connection.execute(statements.join(';'))
+    end
+
+    def insert_admins
+      @admin_csv.each do |admin|
+        User.create(email: admin['email'], name: admin['name'])
+      end
     end
   end
 end

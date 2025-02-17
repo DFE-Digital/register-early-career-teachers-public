@@ -20,8 +20,17 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
     CSV
   end
 
+  let(:cutoff_csv_data) do
+    <<~CSV
+      dqt_id
+      f4837bce-28ae-46d0-aae7-d49f1d8f62e3
+    CSV
+  end
+
   let(:sample_csv) { CSV.parse(sample_csv_data, headers: true) }
-  subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+  let(:sample_cutoff_csv) { CSV.parse(cutoff_csv_data, headers: true) }
+
+  subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, cutoff_csv: sample_cutoff_csv) }
 
   it 'converts csv rows to Row objects when initialized' do
     expect(subject.rows).to all(be_a(AppropriateBodies::Importers::InductionPeriodImporter::Row))
@@ -81,20 +90,58 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
     end
   end
 
-  describe 'rebuilding periods' do
-    context 'when an ECT has no open induction periods' do
-      let(:sample_csv_data) do
+  describe 'cutoff dates for old appropriate bodies' do
+    context 'when the appropriate body ID appears in the cutoff list' do
+      let(:cutoff_csv_data) do
         <<~CSV
-          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
-          025e61e7-ec32-eb11-a813-000d3a228dfc,01/01/2012 00:00:00,10/31/2012 00:00:00,,3,2600071
+          dqt_id
+          #{ab_1.legacy_id}
         CSV
       end
 
-      it 'skips them' do
-        expect(subject.periods_as_hashes_by_trn).not_to have_key('2600071')
+      let(:sample_csv_data) do
+        <<~CSV
+          appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
+          #{ab_1.legacy_id},01/01/2019 00:00:00,10/31/2024 00:00:00,Core Induction Programme,3,2600071
+          #{ab_1.legacy_id},12/12/2020 00:00:00,,Core Induction Programme,3,2600072
+          #{ab_1.legacy_id},09/05/2024 00:00:00,,Core Induction Programme,3,2600073
+          #{ab_2.legacy_id},01/01/2019 00:00:00,10/31/2024 00:00:00,Core Induction Programme,3,2600074
+        CSV
+      end
+
+      context 'when the finish date is later than the cutoff date' do
+        it 'cuts off the induction period that appears in the cutoff list on 2024-08-31' do
+          row_data = subject.periods_as_hashes_by_trn['2600071'].first
+          expect(row_data.fetch(:finished_on)).to eql(Date.new(2024, 8, 31))
+        end
+      end
+
+      context 'when the finish date is null' do
+        it 'cuts off the induction period that appears in the cutoff list on 2024-08-31' do
+          row_data = subject.periods_as_hashes_by_trn['2600072'].first
+          expect(row_data.fetch(:finished_on)).to eql(Date.new(2024, 8, 31))
+        end
+      end
+
+      context 'when the start date is later than the cutoff date' do
+        it 'it sets the finish date to one day later than the start date' do
+          row_data = subject.periods_as_hashes_by_trn['2600073'].first
+          expect(row_data.fetch(:started_on)).to eql(Date.new(2024, 9, 5))
+          expect(row_data.fetch(:finished_on)).to eql(Date.new(2024, 9, 6))
+        end
+      end
+
+      context 'when the id is not in the cutoff list' do
+        it 'leaves the dates untouched' do
+          row_data = subject.periods_as_hashes_by_trn['2600074'].first
+          expect(row_data.fetch(:started_on)).to eql(Date.new(2019, 1, 1))
+          expect(row_data.fetch(:finished_on)).to eql(Date.new(2024, 10, 31))
+        end
       end
     end
+  end
 
+  describe 'rebuilding periods' do
     context 'when an ECT has one induction period with one AB' do
       let(:sample_csv_data) do
         <<~CSV
@@ -103,7 +150,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         CSV
       end
 
-      subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+      subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, cutoff_csv: sample_cutoff_csv) }
 
       it 'contains the original row untouched' do
         expect(subject.periods_as_hashes_by_trn).to eql(
@@ -135,7 +182,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
           CSV
         end
 
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, cutoff_csv: sample_cutoff_csv) }
 
         it 'combines the two periods so the new period has the earliest start date and the latest finish date' do
           expect(subject.periods_as_hashes_by_trn).to eql(
@@ -175,7 +222,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
           CSV
         end
 
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, cutoff_csv: sample_cutoff_csv) }
 
         it 'it keeps the finished (first) period' do
           expect(subject.periods_as_hashes_by_trn).to eql(
@@ -205,7 +252,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
           CSV
         end
 
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, cutoff_csv: sample_cutoff_csv) }
 
         it 'it keeps the finished (second) period' do
           expect(subject.periods_as_hashes_by_trn).to eql(
@@ -236,7 +283,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
           CSV
         end
 
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, cutoff_csv: sample_cutoff_csv) }
 
         it 'combines the two periods so the new period has the earliest start date and the latest finish date' do
           expect(subject.periods_as_hashes_by_trn).to eql(
@@ -281,7 +328,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
           CSV
         end
 
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, cutoff_csv: sample_cutoff_csv) }
 
         it 'keeps the dates from the first' do
           expect(subject.periods_as_hashes_by_trn).to eql(
@@ -322,7 +369,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
           CSV
         end
 
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, csv: sample_csv) }
+        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, cutoff_csv: sample_cutoff_csv) }
 
         it 'only the second is kept' do
           expect(subject.periods_as_hashes_by_trn).to eql(

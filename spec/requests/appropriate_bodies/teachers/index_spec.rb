@@ -25,6 +25,11 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
         end
       end
 
+      it "displays the count of claimed inductions" do
+        get("/appropriate-body/teachers")
+        expect(response.body).to include("2 claimed inductions")
+      end
+
       context "when there are more than 10 claimed ECTs" do
         it 'displays pagination' do
           FactoryBot.create_list(:teacher, 11, trs_first_name: "John", trs_last_name: "Smith").each do |teacher|

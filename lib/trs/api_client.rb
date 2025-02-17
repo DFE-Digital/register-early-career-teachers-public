@@ -37,20 +37,37 @@ module TRS
     end
 
     def begin_induction!(trn:, start_date:, modified_at: Time.zone.now)
-      update_induction_status(trn:, status: 'InProgress', start_date:, modified_at:)
+      update_induction_status(
+        trn:,
+        status: 'InProgress',
+        start_date: start_date.iso8601,
+        modified_at: modified_at.iso8601(3)
+      )
     end
 
-    def pass_induction!(trn:, completed_date:, modified_at: Time.zone.now)
-      update_induction_status(trn:, status: 'Pass', completed_date:, modified_at:)
+    def pass_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
+      update_induction_status(
+        trn:,
+        status: 'Passed',
+        start_date: start_date.iso8601,
+        completed_date: completed_date.iso8601,
+        modified_at: modified_at.iso8601(3)
+      )
     end
 
-    def fail_induction!(trn:, completed_date:, modified_at: Time.zone.now)
-      update_induction_status(trn:, status: 'Fail', completed_date:, modified_at:)
+    def fail_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
+      update_induction_status(
+        trn:,
+        status: 'Failed',
+        start_date: start_date.iso8601,
+        completed_date: completed_date.iso8601,
+        modified_at: modified_at.iso8601(3)
+      )
     end
 
   private
 
-    def update_induction_status(trn:, status:, modified_at:, start_date: nil, completed_date: nil)
+    def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
       payload = { 'status' => status,
                   'startDate' => start_date,
                   'completedDate' => completed_date,
