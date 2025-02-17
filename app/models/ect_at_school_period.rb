@@ -4,6 +4,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
   # Associations
   belongs_to :school, inverse_of: :ect_at_school_periods
   belongs_to :teacher, inverse_of: :ect_at_school_periods
+  belongs_to :appropriate_body
+  belongs_to :lead_provider
+
   has_many :mentorship_periods, inverse_of: :mentee
   has_many :mentors, through: :mentorship_periods, source: :mentor
   has_many :training_periods, inverse_of: :ect_at_school_period
@@ -11,18 +14,13 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :events
 
   # Validations
-  validates :email,
-            notify_email: true,
-            allow_nil: true
-
-  validates :started_on,
-            presence: true
-
-  validates :school_id,
-            presence: true
-
-  validates :teacher_id,
-            presence: true
+  validates :email, notify_email: true, allow_nil: true
+  validates :started_on, presence: true
+  validates :school_id, presence: true
+  validates :teacher_id, presence: true
+  # validates :appropriate_body_id, presence: true
+  # validates :lead_provider_id, presence: true
+  # validates :programme_type, presence: true
 
   validate :teacher_distinct_period
 
@@ -40,6 +38,12 @@ class ECTAtSchoolPeriod < ApplicationRecord
   end
 
   delegate :trn, to: :teacher
+
+  def attribute_writer_missing(name, value)
+    @missing_attributes ||= {}
+    @missing_attributes[name] = value
+    Rails.logger.debug "Missing attribute: #{name} = #{value}"
+  end
 
 private
 

@@ -7,6 +7,9 @@ describe Schools::RegisterECT do
   let(:email) { "randy@tegridyfarms.com" }
   let(:started_on) { Date.yesterday }
   let(:working_pattern) { "full_time" }
+  let(:programme_type) { "pokemon_led" }
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
   subject(:service) do
     described_class.new(trs_first_name:,
@@ -16,7 +19,10 @@ describe Schools::RegisterECT do
                         corrected_name:,
                         school:,
                         working_pattern:,
-                        email:)
+                        email:,
+                        appropriate_body:,
+                        lead_provider:,
+                        programme_type:)
   end
 
   describe '#register!' do
@@ -57,6 +63,9 @@ describe Schools::RegisterECT do
       expect(ect_at_school_period.started_on).to eq(started_on)
       expect(ect_at_school_period.working_pattern).to eq(working_pattern)
       expect(ect_at_school_period.email).to eq(email)
+      expect(ect_at_school_period.appropriate_body_id).to eq(appropriate_body.id)
+      expect(ect_at_school_period.lead_provider_id).to eq(lead_provider.id)
+      expect(ect_at_school_period.programme_type).to eq(programme_type)
     end
   end
 end
