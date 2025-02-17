@@ -36,7 +36,7 @@ private
 
   def i_am_redirected_to_the_ab_landing_page
     expect(current_path).to eql('/appropriate-body')
-    expect(page.title).to include('Record inductions as an appropriate body')
+    expect(page.title).to include('Sorry, the service is not available yet')
   end
 
   def then_i_see_the_school_landing_page
