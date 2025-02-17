@@ -1,6 +1,38 @@
 RSpec.shared_examples "a review mentor details step" do |current_step:, next_step:|
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:) }
+  let(:store) do
+    FactoryBot.build(:session_repository,
+                     trn: '1234567',
+                     trs_first_name: 'John',
+                     trs_last_name: 'Wayne',
+                     corrected_name: 'Jim Wayne',
+                     date_of_birth: '01/01/1990',
+                     email: 'initial@email.com')
+  end
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:) }
   subject { described_class.new(wizard:) }
+
+  describe '#initialisation' do
+    let(:corrected_name) { 'Right Name' }
+    subject { described_class.new(wizard:, **params) }
+
+    context 'when the corrected name or change name are provided' do
+      let(:params) { { corrected_name: } }
+
+      it 'populate the instance from it' do
+        expect(subject.corrected_name).to eq(corrected_name)
+        expect(subject.change_name).to be_nil
+      end
+    end
+
+    context 'when no corrected_name is provided' do
+      let(:params) { {} }
+
+      it 'populate it from the wizard store' do
+        expect(subject.corrected_name).to eq('Jim Wayne')
+        expect(subject.change_name).to eq('yes')
+      end
+    end
+  end
 
   describe 'validations' do
     it do
@@ -38,7 +70,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
       FactoryBot.build(:register_mentor_wizard, current_step:, step_params:)
     end
 
-    it { expect(wizard.next_step).to eq(next_step) }
+    it { expect(subject.next_step).to eq(next_step) }
   end
 
   context '#save!' do

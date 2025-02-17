@@ -11,8 +11,8 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def ect_start_date(ect)
-    ect_start_date_as_hash = { 1 => ect.started_on.year, 2 => ect.started_on.month, 3 => ect.started_on.day }
-    Schools::Validation::ECTStartDate.new(ect_start_date_as_hash:).formatted_start_date
+    date_as_hash = { 1 => ect.started_on.year, 2 => ect.started_on.month, 3 => ect.started_on.day }
+    Schools::Validation::ECTStartDate.new(date_as_hash:).formatted_date
   end
 
   # @param ect [ECTAtSchoolPeriod]
