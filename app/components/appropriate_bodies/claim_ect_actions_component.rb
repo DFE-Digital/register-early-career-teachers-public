@@ -9,15 +9,15 @@ module AppropriateBodies
       @induction = teacher ? ::Teachers::Induction.new(teacher) : nil
     end
 
-    def show_inset_text?
+    def registration_blocked?
       pending_induction_submission.exempt? || (teacher && induction&.current_induction_period && !claiming_body?(teacher, current_appropriate_body))
     end
 
     def show_claim_form?
-      !show_inset_text? && !induction_status.completed?
+      !registration_blocked? && !induction_status.completed?
     end
 
-    def inset_text_message
+    def blocked_registration_message
       if pending_induction_submission.exempt?
         "You cannot register #{name}. Our records show that #{name} is exempt from completing their induction."
       else
@@ -44,7 +44,7 @@ module AppropriateBodies
     end
 
     def pending_induction_submission_full_name(pending_induction_submission)
-      "#{pending_induction_submission.trs_first_name} #{pending_induction_submission.trs_last_name}"
+      PendingInductionSubmissions::Name.new(pending_induction_submission).full_name
     end
   end
 end
