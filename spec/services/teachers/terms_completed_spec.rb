@@ -1,17 +1,15 @@
 describe Teachers::TermsCompleted do
-  describe '#number_of_terms' do
-    subject { described_class.new(teacher).formatted_terms_completed }
-    let(:teacher) { FactoryBot.create(:teacher) }
+  subject(:service) { described_class.new(teacher) }
+  let(:teacher) { FactoryBot.create(:teacher) }
 
+  describe '#formatted_terms_completed' do
     context 'when the teacher does not have induction periods' do
-      it 'returns nil' do
-        expect(subject).to eq("0.0 of 6.0")
-      end
+      it { expect(service.formatted_terms_completed).to eq("0.0 of 6.0") }
     end
 
     context 'without extensions' do
       it 'returns the default number of terms' do
-        expect(subject).to eq("0.0 of 6.0")
+        expect(service.formatted_terms_completed).to eq("0.0 of 6.0")
       end
 
       context "with extensions" do
@@ -21,7 +19,7 @@ describe Teachers::TermsCompleted do
         end
 
         it 'returns the default number of terms plus the extensions' do
-          expect(subject).to eq("0.0 of 9.1")
+          expect(service.formatted_terms_completed).to eq("0.0 of 9.1")
         end
       end
     end
@@ -31,7 +29,7 @@ describe Teachers::TermsCompleted do
 
       context 'without extensions' do
         it 'returns the default number of terms' do
-          expect(subject).to eq("2.0 of 6.0")
+          expect(service.formatted_terms_completed).to eq("2.0 of 6.0")
         end
 
         context "with extensions" do
@@ -41,7 +39,7 @@ describe Teachers::TermsCompleted do
           end
 
           it 'returns the default number of terms plus the extensions' do
-            expect(subject).to eq("2.0 of 9.1")
+            expect(service.formatted_terms_completed).to eq("2.0 of 9.1")
           end
         end
       end
