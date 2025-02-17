@@ -2,8 +2,7 @@ require 'csv'
 
 module AppropriateBodies::Importers
   class InductionPeriodImporter
-    IMPORT_ERROR_LOG = 'tmp/induction_period_error.log'.freeze
-    LOGFILE = Rails.root.join("log/induction_period_import.log").freeze
+    IMPORT_ERROR_LOG = 'log/induction_period_error.log'.freeze
     ECF_CUTOFF = Date.new(2021, 9, 1).freeze
 
     attr_accessor :csv, :data
@@ -131,7 +130,6 @@ module AppropriateBodies::Importers
       @cutoff_csv = cutoff_csv || CSV.read(cutoff_csv_filename, headers: true)
 
       File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
-      @import_error_log = Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
     def rows
@@ -371,13 +369,11 @@ module AppropriateBodies::Importers
       periods_by_trn.transform_values { |v| v.map(&:to_hash) }
     end
 
-  private
-
     def logger
-      @logger ||= Logger.new(LOGFILE).tap do |l|
-        l.level = Logger::Severity::DEBUG
-      end
+      @logger ||= Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
+
+  private
 
     def log_error(message, trn:, legacy_appropriate_body_id:)
       logger.error(
