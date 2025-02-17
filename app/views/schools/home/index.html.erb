@@ -11,14 +11,14 @@
   </div>
 
   <div class='govuk-grid-column-two-thirds'>
-    <% @relationships.map do |relationship| %>
+    <% @ects.map do |ect| %>
       <%= 
-        govuk_summary_card(title: link_to_ect(relationship[:ect])) do |card|
+        govuk_summary_card(title: link_to_ect(ect)) do |card|
           card.with_summary_list(
             classes: %w[govuk-summary-list--no-border govuk-!-margin-bottom-0],
             rows: [
-              { key: { text: 'Status' }, value: { text: ect_status(relationship[:ect]) } },
-              { key: { text: 'Mentor' }, value: { text: ect_mentor_details(relationship[:ect]) } },
+              { key: { text: 'Status' }, value: { text: ect_status(ect) } },
+              { key: { text: 'Mentor' }, value: { text: ect_mentor_details(ect) } },
             ]
           )
         end 
