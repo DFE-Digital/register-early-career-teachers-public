@@ -195,6 +195,10 @@
   - delivery_partner_id
   - created_at
   - updated_at
+  :teachers:
+  - corrected_name
+  - trs_first_name
+  - trs_last_name
   :pending_induction_submissions:
   - id
   - appropriate_body_id
