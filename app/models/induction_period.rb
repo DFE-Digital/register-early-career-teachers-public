@@ -33,7 +33,7 @@ private
   end
 
   def teacher_distinct_period
-    return unless overlap?
+    return unless overlaps_with_siblings?
 
     if siblings.any? { |s| s.range.include?(started_on) }
       errors.add(:started_on, "Start date cannot overlap another induction period")
@@ -46,7 +46,7 @@ private
     InductionPeriod.siblings_of(self)
   end
 
-  def overlap?
+  def overlaps_with_siblings?
     siblings.overlapping_with(self).exists?
   end
 
