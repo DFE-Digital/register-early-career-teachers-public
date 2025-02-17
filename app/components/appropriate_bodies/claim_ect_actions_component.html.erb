@@ -1,6 +1,6 @@
-<% if show_inset_text? %>
+<% if registration_blocked? %>
   <%= govuk_inset_text do %>
-    <%= inset_text_message %>
+    <%= blocked_registration_message %>
   <% end %>
 <% elsif show_claim_form? %>
   <%= form_with(model: @pending_induction_submission, url: ab_claim_an_ect_check_path(@pending_induction_submission, method: 'patch')) do |f| %>
