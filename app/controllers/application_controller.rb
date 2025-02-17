@@ -52,7 +52,7 @@ private
   end
 
   def session_manager
-    @session_manager ||= Sessions::Manager.new(session)
+    @session_manager ||= Sessions::Manager.new(session, cookies)
   end
 
   def set_sentry_user
