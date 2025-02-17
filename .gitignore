@@ -6,6 +6,7 @@
 .envrc
 .idea
 .vscode
+.rdbgrc*
 
 bin/konduit.sh
 
