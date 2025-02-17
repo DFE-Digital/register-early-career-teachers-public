@@ -3,7 +3,7 @@ module Schools
     class ECTStartDate < Date
       DATE_MISSING_MESSAGE = "Enter the date the ECT started or will start teaching at your school".freeze
       INVALID_FORMAT_MESSAGE = "Enter the start date using the correct format, for example 03 1998".freeze
-      OUT_OF_RANGE_MESSAGE = "The start date must be from within either the current academic year or one of the last 2 academic years"
+      OUT_OF_RANGE_MESSAGE = "The start date must be from within either the current academic year or one of the last 2 academic years".freeze
 
       # date_as_hash: { 1 => year, 2 => month, 3 => day }
       def initialize(date_as_hash:, current_date: nil)

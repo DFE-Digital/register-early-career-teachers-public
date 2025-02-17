@@ -1,6 +1,36 @@
 describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor) }
+  let(:store) do
+    FactoryBot.build(:session_repository,
+                     trn: "1234567",
+                     trs_first_name: "John",
+                     trs_last_name: "Wayne",
+                     corrected_name: "Jim Wayne",
+                     date_of_birth: "01/01/1990")
+  end
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, store:) }
   subject { described_class.new(wizard:) }
+
+  describe '#initialize' do
+    let(:trn) { '3333333' }
+    subject(:instance) { described_class.new(wizard:, **params) }
+
+    context 'when either trn or date_of_birth are provided' do
+      let(:params) { { trn: } }
+
+      it 'populate the instance from it' do
+        expect(instance.trn).to eq(trn)
+      end
+    end
+
+    context 'when no trn or date_of_birth are provided' do
+      let(:params) { {} }
+
+      it 'populate it from the wizard store' do
+        expect(instance.trn).to eq('1234567')
+        expect(instance.date_of_birth).to eq({ 1 => 1990, 2 => 1, 3 => 1 })
+      end
+    end
+  end
 
   describe 'validations' do
     ['12345', 'RP99/12345', 'RP / 1234567', '  R P 99 / 1234', 'ZZ-123445 '].each do |trn|
