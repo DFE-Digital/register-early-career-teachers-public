@@ -2,12 +2,9 @@
 shared:
   :teachers:
   - id
-  - corrected_name
   - created_at
   - updated_at
   - trn
-  - trs_first_name
-  - trs_last_name
   - legacy_id
   - legacy_ect_id
   - legacy_mentor_id
