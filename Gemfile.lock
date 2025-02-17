@@ -431,7 +431,7 @@ GEM
     patience_diff (1.2.0)
       optimist (~> 3.0)
     pg (1.5.9)
-    playwright-ruby-client (1.50.0)
+    playwright-ruby-client (1.50.1)
       concurrent-ruby (>= 1.1.6)
       mime-types (>= 3.0)
     pp (0.6.2)
