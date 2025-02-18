@@ -1,12 +1,16 @@
 module Sessions
   module Users
     class SchoolPersona < User
+      class SchoolPersonaDisabledError < StandardError; end
+
       USER_TYPE = :school_user
       PROVIDER = :persona
 
       attr_reader :name, :school
 
       def initialize(email:, name:, school_urn:, **)
+        fail SchoolPersonaDisabledError unless Rails.application.config.enable_personas
+
         @name = name
         @school = School.find_by!(urn: school_urn)
 

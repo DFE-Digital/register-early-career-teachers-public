@@ -1,12 +1,16 @@
 module Sessions
   module Users
     class DfEPersona < User
+      class DfEPersonaDisabledError < StandardError; end
+
       USER_TYPE = :dfe_staff_user
       PROVIDER = :persona
 
       attr_reader :id, :name, :user
 
       def initialize(email:, **)
+        fail DfEPersonaDisabledError unless Rails.application.config.enable_personas
+
         @user = ::User.find_by!(email:)
         @id = user.id
         @name = user.name
