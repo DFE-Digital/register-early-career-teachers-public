@@ -2,6 +2,7 @@ RSpec.describe EnvironmentHelper, type: :helper do
   include GovukLinkHelper
   include GovukVisuallyHiddenHelper
   include GovukComponentsHelper
+  include ApplicationHelper
 
   before do
     stub_const('ENVIRONMENT_COLOUR', nil)
@@ -31,6 +32,16 @@ RSpec.describe EnvironmentHelper, type: :helper do
 
     it 'has a govuk tag with no colour modifier' do
       expect(subject).to_not match(/govuk-tag--\w+/)
+    end
+
+    context 'when ENVIRONMENT_PHASE_BANNER_TAG is not set' do
+      it 'includes the default text' do
+        expect(subject).to match('This is a new service')
+      end
+
+      it 'includes the support email address' do
+        expect(subject).to match('teacher.induction@education.gov.uk')
+      end
     end
 
     context 'when ENVIRONMENT_COLOUR, ENVIRONMENT_PHASE_BANNER_CONTENT and ENVIRONMENT_PHASE_BANNER_TAG are set' do
