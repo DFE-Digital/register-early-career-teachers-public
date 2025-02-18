@@ -78,5 +78,14 @@ RSpec.describe ApplicationHelper, type: :helper do
         text: 'teacher.induction@education.gov.uk'
       )
     end
+
+    context 'when custom text is passed in' do
+      it 'adds the custom text into the link' do
+        expect(support_mailto_link('feedback')).to have_css(
+          %(a[href='mailto:teacher.induction@education.gov.uk'][class='govuk-link']),
+          text: 'feedback'
+        )
+      end
+    end
   end
 end
