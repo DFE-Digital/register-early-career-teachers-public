@@ -24,6 +24,14 @@ RSpec.describe Sessions::Users::SchoolPersona do
     end
   end
 
+  describe "initializing when disabled" do
+    before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
+
+    it 'fails with a DfEPersonaDisabledError' do
+      expect { subject }.to raise_error(Sessions::Users::SchoolPersona::SchoolPersonaDisabledError)
+    end
+  end
+
   describe '#appropriate_body_user?' do
     it 'returns false' do
       expect(school_persona).not_to be_appropriate_body_user
