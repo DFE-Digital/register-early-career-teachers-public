@@ -31,7 +31,7 @@ module ApplicationHelper
     page_data(**parsed_yaml)
   end
 
-  def support_mailto_link
-    govuk_link_to(Rails.application.config.support_email_address, 'mailto:' + Rails.application.config.support_email_address)
+  def support_mailto_link(text = Rails.application.config.support_email_address)
+    govuk_link_to(text, 'mailto:' + Rails.application.config.support_email_address)
   end
 end
