@@ -1,19 +1,16 @@
 module Schools
   module RegisterMentorWizard
-    class Step < DfE::Wizard::Step
+    class Step < ApplicationWizardStep
       include ActiveRecord::AttributeAssignment
 
       delegate :ect, :mentor, :valid_step?, to: :wizard
 
-      def next_step
-      end
+      def self.permitted_params = []
+
+      def next_step = nil
 
       def save!
         persist if valid_step?
-      end
-
-      def self.permitted_params
-        []
       end
 
     private
@@ -24,13 +21,15 @@ module Schools
         TRS::Teacher.new({})
       end
 
-      def persist
-        mentor.update(step_params)
+      def persist = mentor.update(step_params)
+
+      def pre_populate_attributes
+        self.class.permitted_params.each do |key|
+          send("#{key}=", mentor.send(key))
+        end
       end
 
-      def step_params
-        wizard.step_params.to_h
-      end
+      def step_params = wizard.step_params.to_h
     end
   end
 end

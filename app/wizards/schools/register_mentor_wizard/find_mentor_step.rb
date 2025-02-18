@@ -22,6 +22,10 @@ module Schools
 
     private
 
+      def formatted_trn
+        @formatted_trn ||= Validation::TeacherReferenceNumber.new(trn).formatted_trn
+      end
+
       def persist
         mentor.update(trn: formatted_trn,
                       date_of_birth: date_of_birth.values.join("-"),
@@ -30,12 +34,13 @@ module Schools
                       trs_last_name: trs_teacher.last_name)
       end
 
-      def trs_teacher
-        @trs_teacher ||= fetch_trs_teacher(trn: formatted_trn)
+      def pre_populate_attributes
+        self.trn = mentor.trn
+        self.date_of_birth = Schools::Validation::DateOfBirth.new(mentor.date_of_birth).date_as_hash
       end
 
-      def formatted_trn
-        @formatted_trn ||= Validation::TeacherReferenceNumber.new(trn).formatted_trn
+      def trs_teacher
+        @trs_teacher ||= fetch_trs_teacher(trn: formatted_trn)
       end
     end
   end

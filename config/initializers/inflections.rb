@@ -14,6 +14,7 @@
 ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "API" # Application Programming Interface
   inflect.acronym "DfE" # Department for Education
+  inflect.acronym "ECF" # Early Career Framework
   inflect.acronym "ECT" # Early Career Teacher
   inflect.acronym "ECTs" # Early Career Teachers
   inflect.acronym "GIAS" # Get Information About Schools

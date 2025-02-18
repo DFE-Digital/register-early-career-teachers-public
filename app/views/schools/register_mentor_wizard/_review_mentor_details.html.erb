@@ -32,10 +32,9 @@ end %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
   <%= f.govuk_radio_buttons_fieldset :change_name, legend: { text: "Are these details correct for the mentor?" } do %>
-    <%= f.govuk_radio_button :change_name, :no, checked: !@mentor.corrected_name?, label: { text: "Yes" }, link_errors: true %>
-    <%= f.govuk_radio_button :change_name, :yes, checked: @mentor.corrected_name?, label: { text: "No, they changed their name or it's spelt wrong" } do %>
+    <%= f.govuk_radio_button :change_name, :no, label: { text: "Yes" }, link_errors: true %>
+    <%= f.govuk_radio_button :change_name, :yes, label: { text: "No, they changed their name or it's spelt wrong" } do %>
       <%= f.govuk_text_field :corrected_name,
-                             value: @mentor.corrected_name,
                              label: {
                                text: "Enter the correct full name"
                              },
