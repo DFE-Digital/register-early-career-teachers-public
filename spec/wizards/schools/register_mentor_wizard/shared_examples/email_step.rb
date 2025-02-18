@@ -1,5 +1,36 @@
 RSpec.shared_examples "an email step" do |current_step:|
-  subject { described_class.new }
+  let(:store) do
+    FactoryBot.build(:session_repository,
+                     trn: "1234567",
+                     trs_first_name: "John",
+                     trs_last_name: "Wayne",
+                     corrected_name: "Jim Wayne",
+                     date_of_birth: "01/01/1990",
+                     email: 'initial@email.com')
+  end
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:) }
+  subject { described_class.new(wizard:) }
+
+  describe '#initialize' do
+    let(:email) { 'provided@email.example' }
+    subject { described_class.new(wizard:, **params) }
+
+    context 'when the email is provided' do
+      let(:params) { { email: } }
+
+      it 'populate the instance from it' do
+        expect(subject.email).to eq(email)
+      end
+    end
+
+    context 'when no email is provided' do
+      let(:params) { {} }
+
+      it 'populate it from the wizard store' do
+        expect(subject.email).to eq('initial@email.com')
+      end
+    end
+  end
 
   describe 'validations' do
     it { is_expected.to allow_value('valid@email.com').for(:email) }

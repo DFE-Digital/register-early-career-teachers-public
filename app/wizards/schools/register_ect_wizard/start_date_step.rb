@@ -22,7 +22,7 @@ module Schools
       end
 
       def start_date_formatted
-        Schools::Validation::ECTStartDate.new(ect_start_date_as_hash: start_date).formatted_start_date
+        Schools::Validation::ECTStartDate.new(date_as_hash: start_date).formatted_date
       end
     end
   end

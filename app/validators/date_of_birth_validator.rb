@@ -3,7 +3,7 @@ class DateOfBirthValidator < ActiveModel::EachValidator
     date_of_birth = Schools::Validation::DateOfBirth.new(value)
 
     unless date_of_birth.valid?
-      record.errors.add(attribute, date_of_birth.format_error)
+      record.errors.add(attribute, date_of_birth.error_message)
     end
   end
 end
