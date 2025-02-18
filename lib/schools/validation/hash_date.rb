@@ -1,6 +1,6 @@
 module Schools
   module Validation
-    class Date
+    class HashDate
       DATE_MISSING_MESSAGE = "Enter a date".freeze
       INVALID_FORMAT_MESSAGE = "Enter the date in the correct format, for example 12 03 1998".freeze
 
@@ -12,7 +12,7 @@ module Schools
       end
 
       def valid?
-        validate
+        @error_message = validate
         error_message.blank?
       end
 
@@ -22,12 +22,8 @@ module Schools
         { 3 => date.day, 2 => date.month, 1 => date.year } if date
       end
 
-      def date
-        day = date_as_hash[3].to_i
-        month = date_as_hash[2].to_i
-        year = date_as_hash[1].to_i
-
-        @date ||= ::Date.new(year, month, day)
+      def value_as_date
+        @value_as_date ||= Date.new(*date_as_hash.values_at(1, 2, 3).map(&:to_i))
       end
 
       def date_missing?
@@ -37,17 +33,17 @@ module Schools
       def extra_validation_error_message = nil
 
       def invalid_date?
-        date
+        value_as_date
         false
       rescue ArgumentError
         true
       end
 
       def validate
-        return @error_message = self.class::DATE_MISSING_MESSAGE if date_missing?
-        return @error_message = self.class::INVALID_FORMAT_MESSAGE if invalid_date?
+        return self.class::DATE_MISSING_MESSAGE if date_missing?
+        return self.class::INVALID_FORMAT_MESSAGE if invalid_date?
 
-        @error_message = extra_validation_error_message
+        extra_validation_error_message
       end
     end
   end
