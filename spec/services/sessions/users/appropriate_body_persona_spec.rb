@@ -26,6 +26,14 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     end
   end
 
+  describe "initializing when disabled" do
+    before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
+
+    it 'fails with a DfEPersonaDisabledError' do
+      expect { subject }.to raise_error(Sessions::Users::AppropriateBodyPersona::AppropriateBodyPersonaDisabledError)
+    end
+  end
+
   describe '#appropriate_body' do
     it 'returns the appropriate_body associated to the persona' do
       expect(appropriate_body_persona.appropriate_body).to eql(appropriate_body)

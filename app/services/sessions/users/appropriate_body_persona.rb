@@ -1,12 +1,16 @@
 module Sessions
   module Users
     class AppropriateBodyPersona < User
+      class AppropriateBodyPersonaDisabledError < StandardError; end
+
       USER_TYPE = :appropriate_body_user
       PROVIDER = :persona
 
       attr_reader :appropriate_body, :name
 
       def initialize(email:, name:, appropriate_body_id:, **)
+        fail AppropriateBodyPersonaDisabledError unless Rails.application.config.enable_personas
+
         @appropriate_body = AppropriateBody.find(appropriate_body_id)
         @name = name
 
