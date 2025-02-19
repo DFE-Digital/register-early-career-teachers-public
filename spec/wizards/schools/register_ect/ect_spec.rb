@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 describe Schools::RegisterECTWizard::ECT do
   let(:school) { FactoryBot.create(:school) }
   let(:store) do
