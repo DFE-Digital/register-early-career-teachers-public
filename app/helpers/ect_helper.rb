@@ -36,12 +36,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def ect_programme_type(ect)
-    case ect.programme_type
-    when 'provider_led' then 'Provider-led'
-    when 'school_led' then 'School-led'
-    else
-      'Unknown'
-    end
+    ProgrammeTypeValidator::VALID_PROGRAMME_TYPES.fetch(ect.programme_type, 'Programme type is not recognised')
   end
 
 private

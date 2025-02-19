@@ -3,6 +3,7 @@ module Schools
     class StateSchoolAppropriateBodyStep < Step
       attr_accessor :appropriate_body_id
 
+      # OPTIMIZE: Validate appropriate_body_id against a list of known appropriate bodies
       validates :appropriate_body_id, presence: {
         message: "Enter the name of the appropriate body which will be supporting the ECT's induction"
       }

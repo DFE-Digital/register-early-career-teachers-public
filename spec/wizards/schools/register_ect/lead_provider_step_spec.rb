@@ -11,8 +11,18 @@ RSpec.describe Schools::RegisterECTWizard::LeadProviderStep, type: :model do
       end
     end
 
-    context 'when the lead_provider_id is present' do
+    context 'when the lead_provider_id is not known' do
       let(:lead_provider_id) { '1' }
+
+      it 'is not valid' do
+        expect(subject).not_to be_valid
+        expect(subject.errors[:lead_provider_id]).to include("Enter the name of a known lead provider")
+      end
+    end
+
+    context 'when the lead_provider_id is present and the lead provider exists' do
+      let(:lead_provider_id) { lead_provider.id }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
       it { expect(subject).to be_valid }
     end

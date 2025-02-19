@@ -45,6 +45,7 @@ module Schools
         @appropriate_bodies ||= AppropriateBody.select(:id, :name).all
       end
 
+      # OPTIMIZE: May eventually depend on the ECT being registered and move to Schools::RegisterECTWizard::ECT
       def lead_providers
         @lead_providers ||= LeadProvider.select(:id, :name).all
       end
