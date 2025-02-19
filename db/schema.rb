@@ -40,7 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_133917) do
     t.integer "local_authority_code"
     t.integer "establishment_number"
     t.uuid "dfe_sign_in_organisation_id"
-    t.uuid "legacy_id"
+    t.uuid "dqt_id"
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_bodies_on_dfe_sign_in_organisation_id", unique: true
   end
 
