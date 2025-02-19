@@ -24,6 +24,12 @@ describe Schools::Home do
                       mentor_at_school_period: mentor_period,
                       ect_at_school_period: nil,
                       started_on: 1.year.ago)
+
+    FactoryBot.create(:mentorship_period,
+                      mentor: mentor_period,
+                      mentee: ect_period,
+                      started_on: 2.years.ago,
+                      finished_on: 1.year.ago)
     FactoryBot.create(:mentorship_period, :active,
                       mentor: mentor_period,
                       mentee: ect_period,
