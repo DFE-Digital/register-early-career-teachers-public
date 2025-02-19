@@ -3,9 +3,7 @@ module Schools
     class LeadProviderStep < Step
       attr_accessor :lead_provider_id
 
-      validates :lead_provider_id, presence: {
-        message: "Enter the name of the lead provider which will be supporting the ECT's induction"
-      }
+      validates_with LeadProviderValidator
 
       def self.permitted_params
         %i[lead_provider_id]

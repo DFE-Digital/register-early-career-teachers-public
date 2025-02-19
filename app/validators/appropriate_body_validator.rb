@@ -1,4 +1,5 @@
 class AppropriateBodyValidator < ActiveModel::Validator
+  # OPTIMIZE: Validate appropriate_body_id against a list of known appropriate bodies
   def validate(record)
     if record.appropriate_body_type.blank?
       record.errors.add(:appropriate_body_type, "Select the appropriate body which will be supporting the ECT's induction")
