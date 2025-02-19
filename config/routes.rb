@@ -89,7 +89,8 @@ Rails.application.routes.draw do
   end
 
   namespace :schools do
-    get "/home/ects", to: "home#index", as: :ects_home
+    get "/home/ects", to: "ects#index", as: :ects_home
+    get "/home/mentors", to: "mentors#index", as: :mentors_home
 
     namespace :register_ect_wizard, path: "register-ect" do
       get "what-you-will-need", as: :start, action: :start
@@ -137,11 +138,13 @@ Rails.application.routes.draw do
   end
 
   namespace :schools, path: :school do
-    resources :ects, only: %i[show] do
+    resources :ects, only: %i[index show] do
       resource :mentorship, only: %i[new create] do
         get :confirmation, on: :collection
       end
     end
+
+    resources :mentors, only: %i[index]
 
     namespace :register_mentor_wizard, path: "register-mentor" do
       get "what-you-will-need", as: :start, action: :start

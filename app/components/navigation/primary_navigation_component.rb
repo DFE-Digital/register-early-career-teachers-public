@@ -38,6 +38,7 @@ module Navigation
         ],
         school_user: [
           { text: "Your ECTs", href: schools_ects_home_path },
+          { text: "Your Mentors", href: schools_mentors_home_path },
         ]
       }.fetch(current_user_type)
     end
