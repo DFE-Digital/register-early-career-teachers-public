@@ -3,8 +3,7 @@ module Schools
     layout "full"
 
     def index
-      teacher_service = Schools::Teacher.new(school.urn)
-      @relationships = teacher_service.fetch_etcs_and_mentors
+      @ects = Schools::Home.new(school:).ects_with_mentors
     end
   end
 end

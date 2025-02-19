@@ -24,9 +24,14 @@ module ECTHelper
     end
   end
 
-  # TODO: was something planned in Schools::Teacher?
-  def ect_status(_ect)
-    govuk_tag(text: 'In progress', colour: 'green')
+  # TODO: "status" is yet to be clarified this is just a simple placeholder
+  # @param ect [ECTAtSchoolPeriod]
+  def ect_status(ect)
+    if ect.current_mentor.present?
+      govuk_tag(text: 'Registered', colour: 'green')
+    else
+      govuk_tag(text: 'Mentor required', colour: 'red')
+    end
   end
 
 private
