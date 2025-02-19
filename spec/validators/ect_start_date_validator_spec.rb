@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 describe ECTStartDateValidator do
   context "when date is in an invalid format" do
     let(:start_date) { { 1 => "invalid year", 2 => "invalid month" } }

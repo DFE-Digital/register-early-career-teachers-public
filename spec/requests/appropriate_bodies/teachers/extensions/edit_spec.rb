@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe "Appropriate Body teacher extensions edit", type: :request do
   include AuthHelper
   include ActionView::Helpers::SanitizeHelper

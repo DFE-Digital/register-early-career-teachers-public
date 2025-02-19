@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe "Appropriate Body teacher extensions new", type: :request do
   include AuthHelper
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }

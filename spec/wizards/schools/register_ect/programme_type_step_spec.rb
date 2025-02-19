@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
   describe 'validations' do
     subject { described_class.new(programme_type:) }
