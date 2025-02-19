@@ -6,7 +6,7 @@ module Schools
       @school = school
     end
 
-    def ects_and_mentors
+    def ects_with_mentors
       ECTAtSchoolPeriod
         .where(school:)
         .eager_load(:teacher, :school, mentors: :teacher)

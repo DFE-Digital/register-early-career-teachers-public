@@ -30,9 +30,9 @@ describe Schools::Home do
                       started_on: 1.year.ago)
   end
 
-  describe '#ects_and_mentors' do
-    it "returns the school's ECTs and mentors" do
-      expect(service.ects_and_mentors).to eq([ect_period])
+  describe '#ects_with_mentors' do
+    it "returns actively mentored ECTs and their mentors" do
+      expect(service.ects_with_mentors).to eq([ect_period])
     end
   end
 end

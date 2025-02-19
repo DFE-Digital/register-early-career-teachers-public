@@ -3,7 +3,7 @@ module Schools
     layout "full"
 
     def index
-      @ects = Schools::Home.new(school:).ects_and_mentors
+      @ects = Schools::Home.new(school:).ects_with_mentors
     end
   end
 end
