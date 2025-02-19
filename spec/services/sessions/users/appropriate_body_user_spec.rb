@@ -28,6 +28,23 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
+  context 'initialisation' do
+    describe "when an appropriate body can't be found from the given dfe_sign_in_organisation_id" do
+      let(:unknown_organisation_id) { SecureRandom.uuid }
+      subject do
+        described_class.new(email:,
+                            name:,
+                            dfe_sign_in_organisation_id: unknown_organisation_id,
+                            dfe_sign_in_user_id:,
+                            last_active_at:)
+      end
+
+      it 'fails with an UnknownOrganisationId error' do
+        expect { subject }.to raise_error(described_class::UnknownOrganisationId, unknown_organisation_id)
+      end
+    end
+  end
+
   describe '#appropriate_body' do
     it 'returns the appropriate_body associated to the persona' do
       expect(appropriate_body_user.appropriate_body).to eql(appropriate_body)

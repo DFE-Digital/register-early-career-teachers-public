@@ -1,17 +1,19 @@
 module Sessions
   module Users
     class DfEUser < User
+      class UnknownUserEmail < StandardError; end
+
       USER_TYPE = :dfe_staff_user
       PROVIDER = :otp
 
       attr_reader :id, :name, :user
 
       def initialize(email:, **)
-        @user = Admin::UserSearch.new.find_by_email_case_insensitively!(email)
+        @user = user_from(email)
         @id = user.id
         @name = user.name
 
-        super(email:, **)
+        super(email: user.email, **)
       end
 
       def event_author_params
@@ -33,6 +35,14 @@ module Sessions
           "email" => email,
           "last_active_at" => last_active_at
         }
+      end
+
+    private
+
+      def user_from(email)
+        ::User.find_by(email: email.downcase).tap do |user|
+          raise(UnknownUserEmail, email) unless user
+        end
       end
     end
   end

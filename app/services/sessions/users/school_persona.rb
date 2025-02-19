@@ -2,6 +2,7 @@ module Sessions
   module Users
     class SchoolPersona < User
       class SchoolPersonaDisabledError < StandardError; end
+      class UnknownSchoolURN < StandardError; end
 
       USER_TYPE = :school_user
       PROVIDER = :persona
@@ -12,7 +13,7 @@ module Sessions
         fail SchoolPersonaDisabledError unless Rails.application.config.enable_personas
 
         @name = name
-        @school = School.find_by!(urn: school_urn)
+        @school = school_from(school_urn)
 
         super(email:, **)
       end
@@ -39,6 +40,14 @@ module Sessions
           "last_active_at" => last_active_at,
           "school_urn" => school_urn.presence,
         }
+      end
+
+    private
+
+      def school_from(urn)
+        ::School.find_by(urn:).tap do |school|
+          raise(UnknownSchoolURN, urn) unless school
+        end
       end
     end
   end
