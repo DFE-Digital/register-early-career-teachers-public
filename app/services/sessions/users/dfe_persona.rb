@@ -2,6 +2,7 @@ module Sessions
   module Users
     class DfEPersona < User
       class DfEPersonaDisabledError < StandardError; end
+      class UnknownUserEmail < StandardError; end
 
       USER_TYPE = :dfe_staff_user
       PROVIDER = :persona
@@ -11,11 +12,11 @@ module Sessions
       def initialize(email:, **)
         fail DfEPersonaDisabledError unless Rails.application.config.enable_personas
 
-        @user = ::User.find_by!(email:)
+        @user = user_from(email)
         @id = user.id
         @name = user.name
 
-        super(email:, **)
+        super(email: user.email, **)
       end
 
       def event_author_params
@@ -37,6 +38,14 @@ module Sessions
           "email" => email,
           "last_active_at" => last_active_at
         }
+      end
+
+    private
+
+      def user_from(email)
+        ::User.find_by(email: email.downcase).tap do |user|
+          raise(UnknownUserEmail, email) unless user
+        end
       end
     end
   end

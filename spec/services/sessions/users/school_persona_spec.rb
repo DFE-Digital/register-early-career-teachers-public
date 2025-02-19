@@ -24,11 +24,22 @@ RSpec.describe Sessions::Users::SchoolPersona do
     end
   end
 
-  describe "initializing when disabled" do
-    before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
+  context 'initialisation' do
+    describe "when personas are disabled" do
+      before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
 
-    it 'fails with a DfEPersonaDisabledError' do
-      expect { subject }.to raise_error(Sessions::Users::SchoolPersona::SchoolPersonaDisabledError)
+      it 'fails with a DfEPersonaDisabledError' do
+        expect { subject }.to raise_error(described_class::SchoolPersonaDisabledError)
+      end
+    end
+
+    describe "when there is no school with the given urn" do
+      let(:unknown_urn) { 'A123456' }
+      subject(:school_persona) { described_class.new(email:, name:, school_urn: unknown_urn, last_active_at:) }
+
+      it 'fails with an UnknownSchoolURN error' do
+        expect { subject }.to raise_error(described_class::UnknownSchoolURN, unknown_urn)
+      end
     end
   end
 
