@@ -7,7 +7,7 @@ module Sessions
       attr_reader :id, :name, :user
 
       def initialize(email:, **)
-        @user = ::User.find_by!(email:)
+        @user = Admin::UserSearch.new.find_by_email_case_insensitively!(email)
         @id = user.id
         @name = user.name
 
