@@ -102,6 +102,24 @@ RSpec.describe Sessions::Users::Builder do
       end
     end
 
+    context 'when the organisation is unknown and Personas are disabled' do
+      before do
+        allow(Rails.application.config).to receive(:enable_personas).and_return(false)
+      end
+
+      let(:provider) { 'something_unexpected' }
+      let(:uid) { Faker::Internet.uuid }
+      let(:appropriate_body_id) { nil }
+      let(:school_urn) { nil }
+      let(:dfe_staff) { nil }
+      let(:organisation_id) { 'c399f5a7-44e4-4c86-bb4a-e3e2dbe69421' }
+      let(:organisation_urn) { nil }
+
+      it 'raises an UnknownProvider error' do
+        expect { subject }.to raise_error(described_class::UnknownOrganisation, Regexp.new(organisation_id))
+      end
+    end
+
     context 'when the provider is unknown' do
       let(:provider) { 'something_unexpected' }
       let(:uid) { Faker::Internet.uuid }
