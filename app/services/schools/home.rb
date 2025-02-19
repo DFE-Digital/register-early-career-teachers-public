@@ -12,5 +12,11 @@ module Schools
         .eager_load(:teacher, :school, mentors: :teacher)
         .merge(MentorshipPeriod.ongoing)
     end
+
+    def mentors_with_ects
+      MentorAtSchoolPeriod
+        .where(school:)
+        .eager_load(:teacher, :school)
+    end
   end
 end

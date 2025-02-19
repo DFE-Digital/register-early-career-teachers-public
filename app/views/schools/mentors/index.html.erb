@@ -1,0 +1,32 @@
+<% 
+  page_data(
+    title: "Mentors", 
+    error: false, 
+    caption: @school.name, 
+    caption_size: 'l'
+  ) 
+%>
+
+<p class="govuk-body">To add a new mentor you need to <%= govuk_link_to("assign one to an ECT", schools_ects_home_path) %>.</p>
+
+<hr class="govuk-section-break--m" />
+
+<div class="govuk-grid-row">
+
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">Search by name or teacher reference number (TRN)</h2>
+  </div>
+
+  <div class='govuk-grid-column-two-thirds'>
+    <% @mentors.map do |mentor| %>
+      <%= 
+        govuk_summary_card(title: link_to_mentor(mentor)) do |card|
+          card.with_summary_list(
+            classes: %w[govuk-summary-list--no-border govuk-!-margin-bottom-0],
+            rows: []
+          )
+        end 
+      %>
+    <% end %>
+  </div>
+</div>
