@@ -2,15 +2,19 @@ module Sessions
   module Users
     class Builder
       class UnknownProvider < StandardError; end
+      class UnknownOrganisation < StandardError; end
 
       def session_user
         return appropriate_body_user if appropriate_body_user?
         return school_user if school_user?
+
+        raise(UnknownOrganisation, organisation) unless Rails.application.config.enable_personas
+
         return dfe_persona if dfe_persona?
         return school_persona if school_persona?
         return appropriate_body_persona if appropriate_body_persona?
 
-        raise UnknownProvider, provider
+        raise(UnknownProvider, provider)
       end
 
       def id_token = payload.credentials.id_token
