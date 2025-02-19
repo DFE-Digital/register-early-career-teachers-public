@@ -10,6 +10,6 @@ module TeacherHelper
   end
 
   def teacher_induction_date_hint_text
-    "For example, 20 4 #{Time.zone.today.year.pred}"
+    "For example, 20 4 #{Date.current.year.pred}"
   end
 end
