@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe AppropriateBodyValidator do
   let(:test_class) do
     Class.new do

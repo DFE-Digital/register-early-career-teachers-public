@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
   describe 'validations' do
     subject { described_class.new(working_pattern:) }
