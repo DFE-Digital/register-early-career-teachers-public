@@ -54,6 +54,30 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
   end
 
+  describe '#cant_use_email?' do
+    context 'when there is an active ECT with the email in use' do
+      before { FactoryBot.create(:ect_at_school_period, :active, email: mentor.email) }
+
+      it 'returns true' do
+        expect(mentor.cant_use_email?).to be_truthy
+      end
+    end
+
+    context 'when there is an active mentor with the email in use' do
+      before { FactoryBot.create(:mentor_at_school_period, :active, email: mentor.email) }
+
+      it 'returns true' do
+        expect(mentor.cant_use_email?).to be_truthy
+      end
+    end
+
+    context 'otherwise' do
+      it 'returns false' do
+        expect(mentor.cant_use_email?).to be_falsey
+      end
+    end
+  end
+
   describe '#email' do
     it 'returns the email address' do
       expect(mentor.email).to eq("dusty@rhodes.com")
