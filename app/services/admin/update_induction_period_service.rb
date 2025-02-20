@@ -49,10 +49,8 @@ module Admin
       )
     end
 
-    def earliest_period?
-      !InductionPeriod.where(teacher:)
-        .where("started_on < ?", induction_period.started_on)
-        .exists?
+    def earlier_periods?
+      !InductionPeriod.where(teacher:).started_before(induction_period.started_on).exists?
     end
   end
 end
