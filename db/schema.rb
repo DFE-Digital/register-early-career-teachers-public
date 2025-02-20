@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_14_124432) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -281,7 +281,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_14_124432) do
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
-    t.index ["teacher_id", "started_on"], name: "index_mentor_at_school_periods_on_teacher_id_started_on", unique: true
     t.index ["teacher_id"], name: "index_mentor_at_school_periods_on_teacher_id"
   end
 
