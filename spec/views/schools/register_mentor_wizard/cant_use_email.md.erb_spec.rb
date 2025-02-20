@@ -1,11 +1,15 @@
 RSpec.describe 'schools/register_mentor_wizard/cant_use_email.md.erb' do
-  let(:title) { 'This email is already in use for a different ECT or mentor' }
-  let(:back_path) { schools_register_mentor_wizard_find_mentor_path }
+  let(:back_path) { schools_register_mentor_wizard_email_address_path }
+  let(:store) { double(trs_first_name: "John", trs_last_name: "Waters", email: 'a@email.com') }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :cant_use_email, store:) }
 
-  before { render }
+  before do
+    assign(:wizard, wizard)
+    render
+  end
 
-  it "sets the page title" do
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+  context 'page title' do
+    it { expect(sanitize(view.content_for(:page_title))).to eql('This email is already in use for a different ECT or mentor') }
   end
 
   it 'includes a back button that links to find-mentor page of the journey' do

@@ -4,7 +4,6 @@ RSpec.describe "schools/register_mentor_wizard/already_active_at_school.md.erb" 
   let(:store) { double(trs_first_name: "John", trs_last_name: "Waters", corrected_name: "Jim Waters") }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :already_active_at_school, store:) }
   let(:mentor) { wizard.mentor }
-  let(:title) { "This mentor has already been registered" }
 
   before do
     assign(:wizard, wizard)
@@ -13,8 +12,8 @@ RSpec.describe "schools/register_mentor_wizard/already_active_at_school.md.erb" 
     render
   end
 
-  it "sets the page title to 'This mentor has already been registered'" do
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+  context "page title" do
+    it { expect(sanitize(view.content_for(:page_title))).to eql("This mentor has already been registered") }
   end
 
   it 'includes no back button' do

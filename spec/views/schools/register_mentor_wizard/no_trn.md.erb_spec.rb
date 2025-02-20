@@ -8,8 +8,8 @@ RSpec.describe "schools/register_mentor_wizard/no_trn.md.erb" do
     render
   end
 
-  it "sets the page title to 'You cannot register a mentor without a TRN'" do
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+  context "page title" do
+    it { expect(sanitize(view.content_for(:page_title))).to eql('You cannot register a mentor without a TRN') }
   end
 
   it 'includes no back button' do

@@ -2,7 +2,6 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   let(:back_path) { schools_register_mentor_wizard_email_address_path }
   let(:confirm_details_path) { schools_register_mentor_wizard_check_answers_path }
   let(:ect_name) { "Michael Dixon" }
-  let(:title) { "Check your answers and confirm mentor details" }
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: "1234567",
@@ -21,10 +20,10 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
     assign(:mentor, mentor)
   end
 
-  it "sets the page title to 'Check mentor details'" do
-    render
+  context 'page title' do
+    before { render }
 
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+    it { expect(sanitize(view.content_for(:page_title))).to eql('Check your answers and confirm mentor details') }
   end
 
   it 'includes a back button that links to trn and dob page of the journey' do
