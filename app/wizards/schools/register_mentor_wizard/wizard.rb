@@ -17,9 +17,10 @@ module Schools
             email_address: EmailAddressStep,
             find_mentor: FindMentorStep,
             national_insurance_number: NationalInsuranceNumberStep,
-            not_found: NotFoundStep,
             no_trn: NoTRNStep,
+            not_found: NotFoundStep,
             review_mentor_details: ReviewMentorDetailsStep,
+            review_mentor_eligibility: ReviewMentorEligibilityStep,
             trn_not_found: TRNNotFoundStep,
           }
         ]
