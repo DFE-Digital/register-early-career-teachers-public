@@ -19,6 +19,10 @@ module Schools
         :review_mentor_details
       end
 
+      def previous_step
+        :find_mentor
+      end
+
     private
 
       def persist

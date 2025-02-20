@@ -1,7 +1,6 @@
 RSpec.describe "schools/register_mentor_wizard/national_insurance_number.html.erb" do
   let(:back_path) { schools_register_mentor_wizard_find_mentor_path }
   let(:continue_path) { schools_register_mentor_wizard_national_insurance_number_path }
-  let(:title) { "We cannot find the mentor's details" }
   let(:wizard) do
     FactoryBot.build(:register_mentor_wizard,
                      current_step: :national_insurance_number,
@@ -12,10 +11,10 @@ RSpec.describe "schools/register_mentor_wizard/national_insurance_number.html.er
     assign(:wizard, wizard)
   end
 
-  it "sets the page title to 'We cannot find the mentor's details'" do
-    render
+  context 'page title' do
+    before { render }
 
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+    it { expect(sanitize(view.content_for(:page_title))).to eql("We cannot find the mentor's details") }
   end
 
   it "prefixes the page with 'Error:' when the national insurance number is invalid" do

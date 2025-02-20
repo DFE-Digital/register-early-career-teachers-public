@@ -130,6 +130,6 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def when_i_click_back
-    page.get_by_role('link', name: 'Back').click
+    page.get_by_role('link', name: 'Back', exact: true).click
   end
 end

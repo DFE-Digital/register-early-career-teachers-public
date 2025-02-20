@@ -17,6 +17,12 @@ module Schools
         :email_address
       end
 
+      def previous_step
+        return :find_mentor if mentor.matches_trs_dob?
+
+        :national_insurance_number
+      end
+
     private
 
       def formatted_name

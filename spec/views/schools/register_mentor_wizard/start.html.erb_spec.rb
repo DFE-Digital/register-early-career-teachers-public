@@ -2,16 +2,16 @@ RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
   let(:back_path) { schools_ects_home_path }
   let(:continue_path) { schools_register_mentor_wizard_find_mentor_path }
   let(:ect_name) { 'James Lorie' }
-  let(:title) { "What you'll need to add a new mentor for #{ect_name}" }
+  let(:title) {}
 
   before do
     assign(:ect_name, ect_name)
   end
 
-  it "sets the page title to 'What you'll need to add a new mentor for <ect_name>'" do
-    render
+  context "page title" do
+    before { render }
 
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+    it { expect(sanitize(view.content_for(:page_title))).to eql("What you'll need to add a new mentor for #{ect_name}") }
   end
 
   it 'includes a back button that links to the school home page' do
