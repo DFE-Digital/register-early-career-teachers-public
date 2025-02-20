@@ -40,18 +40,36 @@ describe Builders::Teacher do
     end
 
     context "when a teacher with the same TRN already exists" do
-      before do
-        FactoryBot.create(:teacher, trn:)
+      let!(:existing_record) { FactoryBot.create(:teacher, trn:, trs_first_name: "Tucker", trs_last_name: "Jenkins") }
+
+      it "returns the matched teacher record" do
+        expect(subject.build.id).to eq existing_record.id
       end
 
-      it "creates a migration failure record" do
-        allow_any_instance_of(::FailureManager).to receive(:record_failure)
-
-        subject.build
+      it "does not raise an error" do
+        expect {
+          subject.build
+        }.not_to raise_error
       end
 
-      it "returns nil" do
-        expect(subject.build).to be_nil
+      context "when the name does not match the trs name" do
+        it "sets the corrected_name" do
+          subject.build
+
+          expect(existing_record.reload.corrected_name).to eq full_name
+        end
+      end
+
+      context "when the corrected_name is already set" do
+        let!(:existing_record) do
+          FactoryBot.create(:teacher, trn:, trs_first_name: "Tucker", trs_last_name: "Jenkins", corrected_name: "Bert Ward")
+        end
+
+        it "does not change the corrected_name" do
+          expect {
+            subject.build
+          }.not_to(change { existing_record.corrected_name })
+        end
       end
     end
   end
