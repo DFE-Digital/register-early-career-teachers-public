@@ -1,6 +1,8 @@
 module Sessions
   module Users
     class AppropriateBodyUser < User
+      class UnknownOrganisationId < StandardError; end
+
       USER_TYPE = :appropriate_body_user
       PROVIDER = :dfe_sign_in
 
@@ -8,7 +10,7 @@ module Sessions
 
       def initialize(email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, **)
         @name = name
-        @appropriate_body = AppropriateBody.find_by!(dfe_sign_in_organisation_id:)
+        @appropriate_body = appropriate_body_from(dfe_sign_in_organisation_id)
         @dfe_sign_in_organisation_id = dfe_sign_in_organisation_id
         @dfe_sign_in_user_id = dfe_sign_in_user_id
 
@@ -39,6 +41,14 @@ module Sessions
           "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id,
           "dfe_sign_in_user_id" => dfe_sign_in_user_id
         }
+      end
+
+    private
+
+      def appropriate_body_from(dfe_sign_in_organisation_id)
+        ::AppropriateBody.find_by(dfe_sign_in_organisation_id:).tap do |appropriate_body|
+          raise(UnknownOrganisationId, dfe_sign_in_organisation_id) unless appropriate_body
+        end
       end
     end
   end

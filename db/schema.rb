@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_20_133917) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
   enable_extension "unaccent"
@@ -146,7 +147,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.uuid "legacy_start_id"
     t.uuid "legacy_end_id"
     t.enum "working_pattern", enum_type: "working_pattern"
-    t.string "email"
+    t.citext "email"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
@@ -175,7 +176,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.enum "author_type", null: false, enum_type: "event_author_types"
     t.integer "author_id"
     t.text "author_name"
-    t.text "author_email"
+    t.citext "author_email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "metadata"
@@ -277,7 +278,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.uuid "legacy_start_id"
     t.uuid "legacy_end_id"
-    t.string "email"
+    t.citext "email"
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
@@ -328,7 +329,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "confirmed_at"
-    t.string "trs_email_address"
+    t.citext "trs_email_address"
     t.jsonb "trs_alerts"
     t.date "trs_induction_start_date"
     t.string "trs_induction_status_description"
@@ -535,7 +536,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
 
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
-    t.string "email", null: false
+    t.citext "email", null: false
     t.string "otp_secret"
     t.datetime "otp_verified_at"
     t.datetime "created_at", null: false
