@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 describe Admin::CurrentTeachers do
   describe '#current' do
     context 'with appropriate body IDs' do

@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 describe DateOfBirthValidator do
   let(:test_class) do
     Class.new do

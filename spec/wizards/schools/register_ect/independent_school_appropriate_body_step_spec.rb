@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep, type: :model do
   describe 'validations' do
     subject { described_class.new(appropriate_body_name:, appropriate_body_type:) }
