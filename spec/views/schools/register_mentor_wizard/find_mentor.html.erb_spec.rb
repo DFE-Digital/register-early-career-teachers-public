@@ -2,17 +2,16 @@ RSpec.describe "schools/register_mentor_wizard/find_mentor.html.erb" do
   let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
   let(:back_path) { schools_register_mentor_wizard_start_path(ect_id: ect.id) }
   let(:continue_path) { schools_register_mentor_wizard_find_mentor_path }
-  let(:title) { "Find a mentor" }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, ect_id: ect.id) }
 
   before do
     assign(:wizard, wizard)
   end
 
-  it "sets the page title to 'Find a mentor'" do
-    render
+  context "page title" do
+    before { render }
 
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+    it { expect(sanitize(view.content_for(:page_title))).to eql('Find a mentor') }
   end
 
   it "prefixes the page with 'Error:' when the trn or date of birth values are invalid" do
