@@ -11,3 +11,6 @@ ENABLE_BLAZER: true
 DFE_ANALYTICS_ENABLED: false
 TRS_API_BASE_URL: 'https://preprod.teacher-qualifications-api.education.gov.uk'
 TRS_API_VERSION: 'Next'
+ENCRYPTION_PRIMARY_KEY: review_primary_key
+ENCRYPTION_DETERMINISTIC_KEY: review_deterministic_key
+ENCRYPTION_DERIVATION_SALT: review_derivation_salt

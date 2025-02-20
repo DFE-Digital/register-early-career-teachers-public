@@ -43,7 +43,7 @@ module Sessions
     private
 
       def user_from(email)
-        ::User.find_by(email: email.downcase).tap do |user|
+        ::User.find_by(email:).tap do |user|
           raise(UnknownUserEmail, email) unless user
         end
       end
