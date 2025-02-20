@@ -6,7 +6,7 @@ module Schools
       end
 
       def previous_step
-        :email_address
+        mentor.funding_available? ? :review_mentor_eligibility : :email_address
       end
 
     private

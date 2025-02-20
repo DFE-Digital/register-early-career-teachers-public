@@ -1,4 +1,4 @@
-describe Schools::EligibleMentors do
+RSpec.describe Schools::EligibleMentors do
   let(:school) { FactoryBot.create(:school) }
   let(:ect) { FactoryBot.create(:ect_at_school_period, :active, started_on: 2.years.ago) }
 

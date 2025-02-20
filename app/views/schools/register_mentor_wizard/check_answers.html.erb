@@ -1,24 +1,36 @@
-<% page_data(title: "Check your answers and confirm mentor details",
-             backlink_href: @wizard.previous_step_path) %>
+<% 
+  page_data(
+    title: "Check your answers and confirm mentor details", 
+    backlink_href: @wizard.previous_step_path
+  ) 
+%>
+<%= 
+  govuk_summary_list do |summary_list|
+    summary_list.with_row do |row|
+      row.with_key(text: 'Teacher reference number (TRN)')
+      row.with_value(text: @mentor.trn)
+    end
 
-<%= govuk_summary_list do |summary_list|
-  summary_list.with_row do |row|
-    row.with_key(text: 'Teacher reference number (TRN)')
-    row.with_value(text: @mentor.trn)
-  end
+    summary_list.with_row do |row|
+      row.with_key(text: 'Name')
+      row.with_value(text: @mentor.full_name)
+      row.with_action(text: 'Change', href: schools_register_mentor_wizard_change_mentor_details_path)
+    end
 
-  summary_list.with_row do |row|
-    row.with_key(text: 'Name')
-    row.with_value(text: @mentor.full_name)
-    row.with_action(text: 'Change', href: schools_register_mentor_wizard_change_mentor_details_path)
-  end
+    summary_list.with_row do |row|
+      row.with_key(text: 'Email address')
+      row.with_value(text: @mentor.email)
+      row.with_action(text: 'Change', href: schools_register_mentor_wizard_change_email_address_path)
+    end
 
-  summary_list.with_row do |row|
-    row.with_key(text: 'Email address')
-    row.with_value(text: @mentor.email)
-    row.with_action(text: 'Change', href: schools_register_mentor_wizard_change_email_address_path)
-  end
-end %>
+    if @mentor.funding_available?
+      summary_list.with_row do |row|
+        row.with_key(text: 'Lead provider')
+        row.with_value(text: @wizard.ect.lead_provider.name)
+      end
+    end
+  end 
+%>
 
 <%= govuk_inset_text(text: "#{@mentor.full_name} will mentor #{@ect_name}") %>
 
