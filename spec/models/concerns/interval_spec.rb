@@ -74,6 +74,30 @@ describe Interval do
         expect(DummyMentor.containing_period(FakePeriod.new('2021-09-01', '2023-12-31'))).to be_empty
       end
     end
+
+    describe '.started_before' do
+      it 'returns records where the started_on date is earlier than the provided date' do
+        expect(DummyMentor.started_before(Date.yesterday).to_sql).to end_with(%("started_on" < '#{Date.yesterday.iso8601}'))
+      end
+    end
+
+    describe '.started_on_or_after' do
+      it 'returns records where the started_on date is equal to or later than the provided date' do
+        expect(DummyMentor.started_on_or_after(Date.yesterday).to_sql).to end_with(%("started_on" >= '#{Date.yesterday.iso8601}'))
+      end
+    end
+
+    describe '.finished_before' do
+      it 'returns records where the finished_on date is earlier than the provided date' do
+        expect(DummyMentor.finished_before(Date.yesterday).to_sql).to end_with(%("finished_on" < '#{Date.yesterday.iso8601}'))
+      end
+    end
+
+    describe '.finished_on_or_after' do
+      it 'returns records where the finished_on date is equal to or later than the provided date' do
+        expect(DummyMentor.finished_on_or_after(Date.yesterday).to_sql).to end_with(%("finished_on" >= '#{Date.yesterday.iso8601}'))
+      end
+    end
   end
 
   describe "#finish!" do
