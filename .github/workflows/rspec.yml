@@ -23,6 +23,9 @@ jobs:
       ANALYTICS_DB_PASSWORD: ""
       ANALYTICS_DB_HOSTNAME: 127.0.0.1
       ANALYTICS_DB_PORT: 5432
+      ENCRYPTION_PRIMARY_KEY: test_primary_key
+      ENCRYPTION_DETERMINISTIC_KEY: test_deterministic_key
+      ENCRYPTION_DERIVATION_SALT: test_derivation_salt
       CI: true
 
     services:
