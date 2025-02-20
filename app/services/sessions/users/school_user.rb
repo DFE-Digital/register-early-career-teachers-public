@@ -1,6 +1,8 @@
 module Sessions
   module Users
     class SchoolUser < User
+      class UnknownOrganisationURN < StandardError; end
+
       USER_TYPE = :school_user
       PROVIDER = :dfe_sign_in
 
@@ -8,7 +10,7 @@ module Sessions
 
       def initialize(email:, name:, school_urn:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, **)
         @name = name
-        @school = School.find_by!(urn: school_urn)
+        @school = school_from(school_urn)
         @dfe_sign_in_organisation_id = dfe_sign_in_organisation_id
         @dfe_sign_in_user_id = dfe_sign_in_user_id
 
@@ -41,6 +43,14 @@ module Sessions
           "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id,
           "dfe_sign_in_user_id" => dfe_sign_in_user_id
         }
+      end
+
+    private
+
+      def school_from(urn)
+        ::School.find_by(urn:).tap do |school|
+          raise(UnknownOrganisationURN, urn) unless school
+        end
       end
     end
   end

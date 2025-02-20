@@ -24,11 +24,32 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
-  describe "initializing when disabled" do
-    before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
+  context 'initialisation' do
+    describe "when personas are disabled" do
+      before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
 
-    it 'fails with a DfEPersonaDisabledError' do
-      expect { subject }.to raise_error(Sessions::Users::DfEPersona::DfEPersonaDisabledError)
+      it 'fails with a DfEPersonaDisabledError' do
+        expect { subject }.to raise_error(described_class::DfEPersonaDisabledError)
+      end
+    end
+
+    describe "when there is no user with the given email" do
+      let(:unknown_email) { Faker::Internet.email }
+      subject(:dfe_persona) { described_class.new(email: unknown_email, last_active_at:) }
+
+      it 'fails with an UnknownUserEmail error' do
+        expect { subject }.to raise_error(described_class::UnknownUserEmail, unknown_email)
+      end
+    end
+
+    describe "when there is a user with the given email lowercased" do
+      let(:similar_email) { 'DfE_User@email.com' }
+      subject(:dfe_persona) { described_class.new(email: similar_email, last_active_at:) }
+
+      it "instantiates Sessions::Users::DfEPersona from the database user" do
+        expect(subject).to be_a(described_class)
+        expect(subject.email).to eq('dfe_user@email.com')
+      end
     end
   end
 

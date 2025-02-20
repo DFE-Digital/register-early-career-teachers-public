@@ -24,6 +24,27 @@ RSpec.describe Sessions::Users::DfEUser do
     end
   end
 
+  context 'initialisation' do
+    describe "when there is no user with the given email" do
+      let(:unknown_email) { Faker::Internet.email }
+      subject { described_class.new(email: unknown_email, last_active_at:) }
+
+      it 'fails with an UnknownUserEmail error' do
+        expect { subject }.to raise_error(described_class::UnknownUserEmail, unknown_email)
+      end
+    end
+
+    describe "when there is a user with the given email lowercased" do
+      let(:similar_email) { 'DfE_User@email.com' }
+      subject { described_class.new(email: similar_email, last_active_at:) }
+
+      it "instantiates Sessions::Users::DfEUser from the database user" do
+        expect(subject).to be_a(described_class)
+        expect(subject.email).to eq('dfe_user@email.com')
+      end
+    end
+  end
+
   describe '#appropriate_body_user?' do
     it 'returns false' do
       expect(dfe_user).not_to be_appropriate_body_user

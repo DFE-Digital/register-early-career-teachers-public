@@ -28,6 +28,24 @@ RSpec.describe Sessions::Users::SchoolUser do
     end
   end
 
+  context 'initialisation' do
+    describe "when there is no school with the given urn" do
+      let(:unknown_urn) { 'A123456' }
+      subject do
+        described_class.new(email:,
+                            name:,
+                            school_urn: unknown_urn,
+                            dfe_sign_in_organisation_id:,
+                            dfe_sign_in_user_id:,
+                            last_active_at:)
+      end
+
+      it 'fails with an UnknownOrganisationURN error' do
+        expect { subject }.to raise_error(described_class::UnknownOrganisationURN, unknown_urn)
+      end
+    end
+  end
+
   describe '#appropriate_body_user?' do
     it 'returns false' do
       expect(school_user).not_to be_appropriate_body_user

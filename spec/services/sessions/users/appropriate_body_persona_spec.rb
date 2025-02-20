@@ -4,14 +4,15 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
   let(:email) { 'appropriate_body_persona@email.com' }
   let(:name) { 'Christopher Lee' }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_id) { appropriate_body.id }
   let(:last_active_at) { 4.minutes.ago }
 
   subject(:appropriate_body_persona) do
-    described_class.new(email:, name:, appropriate_body_id: appropriate_body.id, last_active_at:)
+    described_class.new(email:, name:, appropriate_body_id:, last_active_at:)
   end
 
   it_behaves_like 'a session user' do
-    let(:user_props) { { email:, name:, appropriate_body_id: appropriate_body.id } }
+    let(:user_props) { { email:, name:, appropriate_body_id: } }
   end
 
   describe '.PROVIDER' do
@@ -26,11 +27,21 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     end
   end
 
-  describe "initializing when disabled" do
-    before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
+  context 'initialisation' do
+    describe "when personas are disabled" do
+      before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
 
-    it 'fails with a DfEPersonaDisabledError' do
-      expect { subject }.to raise_error(Sessions::Users::AppropriateBodyPersona::AppropriateBodyPersonaDisabledError)
+      it 'fails with a DfEPersonaDisabledError' do
+        expect { subject }.to raise_error(described_class::AppropriateBodyPersonaDisabledError)
+      end
+    end
+
+    describe "when an appropriate body can't be found from the given id" do
+      let(:appropriate_body_id) { SecureRandom.uuid }
+
+      it 'fails with an UnknownAppropriateBodyId error' do
+        expect { subject }.to raise_error(described_class::UnknownAppropriateBodyId, appropriate_body_id)
+      end
     end
   end
 
@@ -42,7 +53,7 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
 
   describe '#appropriate_body_id' do
     it 'returns the appropriate_body_id of the persona' do
-      expect(appropriate_body_persona.appropriate_body_id).to eql(appropriate_body.id)
+      expect(appropriate_body_persona.appropriate_body_id).to eql(appropriate_body_id)
     end
   end
 
@@ -99,7 +110,7 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
         'email' => email,
         'name' => name,
         'last_active_at' => last_active_at,
-        'appropriate_body_id' => appropriate_body.id
+        'appropriate_body_id' => appropriate_body_id
       })
     end
   end
