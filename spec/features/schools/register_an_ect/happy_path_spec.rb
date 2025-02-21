@@ -194,7 +194,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def when_i_click_the_back_link
-    page.get_by_role('link', name: 'Back').click
+    page.get_by_role('link', name: 'Back', exact: true).click
   end
 
   def when_i_try_to_change_the_email_address
