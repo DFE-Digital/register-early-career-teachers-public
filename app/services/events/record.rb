@@ -20,7 +20,9 @@ module Events
                 :provider_partnership,
                 :lead_provider,
                 :delivery_partner,
-                :user
+                :user,
+                :modifications,
+                :metadata
 
     def initialize(
       author:,
@@ -40,7 +42,9 @@ module Events
       provider_partnership: nil,
       lead_provider: nil,
       delivery_partner: nil,
-      user: nil
+      user: nil,
+      modifications: nil,
+      metadata: nil
     )
       @author = author
       @event_type = event_type
@@ -60,6 +64,8 @@ module Events
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
       @user = user
+      @modifications = DescribeModifications.new(modifications).describe
+      @metadata = metadata || modifications
     end
 
     def record_event!
@@ -108,10 +114,20 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
+    # Admin events
+
+    def self.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
+      event_type = :admin_updates_induction_period
+
+      heading = 'Induction period updated by admin'
+
+      new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
+    end
+
   private
 
     def attributes
-      { **event_attributes, **author_attributes, **relationship_attributes }
+      { **event_attributes, **author_attributes, **relationship_attributes, **changelog_attributes }
     end
 
     def event_attributes
@@ -150,6 +166,10 @@ module Events
         delivery_partner:,
         user:
       }.compact
+    end
+
+    def changelog_attributes
+      { modifications:, metadata: }.compact
     end
 
     def check_relationship_attributes_are_persisted
