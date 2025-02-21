@@ -1,6 +1,6 @@
 module Schools
   module RegisterMentorWizard
-    class Wizard < DfE::Wizard::Base
+    class Wizard < ApplicationWizard
       attr_accessor :store, :ect_id
 
       steps do
@@ -26,19 +26,55 @@ module Schools
         ]
       end
 
-      def self.step?(step_name)
-        Array(steps).first[step_name].present?
-      end
+      def self.step?(step_name) = Array(steps).first[step_name].present?
 
       delegate :save!, to: :current_step
       delegate :reset, to: :mentor
 
-      def ect
-        @ect ||= ECTAtSchoolPeriod.find(ect_id)
+      def ect = @ect ||= ECTAtSchoolPeriod.find(ect_id)
+
+      def allowed_steps
+        @allowed_steps ||=
+          begin
+            return [:confirmation] if mentor.registered
+
+            steps = %i[no_trn find_mentor]
+            return steps unless [mentor.trn, mentor.date_of_birth].all?
+            return steps + %i[trn_not_found] unless mentor.national_insurance_number || mentor.in_trs?
+            return steps + %i[cannot_mentor_themself] if mentor.trn == ect.trn
+
+            unless mentor.matches_trs_dob?
+              steps << :national_insurance_number
+              return steps unless mentor.national_insurance_number
+              return steps + %i[not_found] unless mentor.in_trs?
+            end
+
+            if mentor.active_at_school?
+              steps << :already_active_at_school
+              return steps unless mentor.already_active_at_school
+
+              return [:confirmation]
+            end
+
+            return steps + %i[cannot_register_mentor] if trs_teacher.prohibited_from_teaching?
+
+            steps += %i[review_mentor_details email_address]
+            return steps unless mentor.email
+            return steps + %i[cant_use_email] if mentor.cant_use_email?
+
+            steps << :review_mentor_eligibility if mentor.funding_available?
+            steps += %i[change_mentor_details change_email_address check_answers]
+
+            steps
+          end
       end
 
       def mentor
         @mentor ||= Mentor.new(store)
+      end
+
+      def trs_teacher
+        current_step.fetch_trs_teacher(trn: mentor.trn)
       end
     end
   end
