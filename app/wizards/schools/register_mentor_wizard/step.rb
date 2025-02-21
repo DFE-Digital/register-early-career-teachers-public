@@ -11,13 +11,13 @@ module Schools
         persist if valid_step?
       end
 
-    private
-
       def fetch_trs_teacher(**args)
         ::TRS::APIClient.new.find_teacher(**args)
       rescue TRS::Errors::TeacherNotFound
         TRS::Teacher.new({})
       end
+
+    private
 
       def persist = mentor.update(step_params)
 

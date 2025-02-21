@@ -61,7 +61,9 @@ module Schools
                                     school_urn:,
                                     email:,
                                     **check_ero_mentor.to_h)
-                               .register!
+                               .register!.tap do
+          self.registered = true
+        end
       end
 
       def school
