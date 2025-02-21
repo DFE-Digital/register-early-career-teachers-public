@@ -140,6 +140,15 @@ describe InductionPeriod do
         it { is_expected.to validate_absence_of(:number_of_terms).with_message("Delete the number of terms if the induction has no end date") }
       end
 
+      context "when number_of_terms contains non-numeric characters" do
+        subject { FactoryBot.build(:induction_period, number_of_terms: "4.r5", finished_on: Date.current) }
+
+        it "is invalid" do
+          expect(subject).not_to be_valid
+          expect(subject.errors[:number_of_terms]).to include("Number of terms must be a number with up to 1 decimal place")
+        end
+      end
+
       context "when number_of_terms has more than 1 decimal place" do
         subject { FactoryBot.build(:induction_period, number_of_terms: 3.45, finished_on: Date.current) }
 
