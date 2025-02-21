@@ -33,8 +33,28 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
 
     describe '#previous_step' do
       it 'returns the previous step' do
-        expect(subject.previous_step).to eq(:start_date)
+        expect(subject.previous_step).to eq(:working_pattern)
       end
+    end
+  end
+
+  describe '#next_step' do
+    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body) }
+
+    subject { wizard.current_step }
+
+    it 'returns the next step' do
+      expect(subject.next_step).to eq(:programme_type)
+    end
+  end
+
+  describe '#previous_step' do
+    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body) }
+
+    subject { wizard.current_step }
+
+    it 'returns the previous step' do
+      expect(subject.previous_step).to eq(:working_pattern)
     end
   end
 
