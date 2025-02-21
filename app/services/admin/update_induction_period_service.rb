@@ -12,11 +12,9 @@ module Admin
     def update_induction!
       validate_can_update!
 
-      previous_start_date = induction_period.started_on
-
       ActiveRecord::Base.transaction do
         induction_period.update!(params)
-        notify_trs_of_start_date_change(previous_start_date)
+        notify_trs_of_start_date_change
       end
 
       true
@@ -32,8 +30,8 @@ module Admin
       raise RecordedOutcomeError, "Cannot edit induction period with recorded outcome" if induction_period.outcome.present?
     end
 
-    def notify_trs_of_start_date_change(previous_start_date)
-      return unless earliest_period? && previous_start_date != induction_period.started_on
+    def notify_trs_of_start_date_change
+      return if ect_has_earlier_induction_periods?
 
       BeginECTInductionJob.perform_later(
         trn: teacher.trn,
@@ -41,9 +39,10 @@ module Admin
       )
     end
 
-    def earliest_period?
-      !InductionPeriod.where(teacher:)
-        .where("started_on < ?", induction_period.started_on)
+    def ect_has_earlier_induction_periods?
+      InductionPeriod
+        .siblings_of(induction_period)
+        .started_before(induction_period.started_on)
         .exists?
     end
   end
