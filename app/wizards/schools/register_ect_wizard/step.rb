@@ -2,7 +2,7 @@
 
 module Schools
   module RegisterECTWizard
-    class Step < DfE::Wizard::Step
+    class Step < ApplicationWizardStep
       include ActiveRecord::AttributeAssignment
 
       delegate :ect, :school, :valid_step?, to: :wizard
@@ -29,6 +29,12 @@ module Schools
 
       def persist
         ect.update(step_params)
+      end
+
+      def pre_populate_attributes
+        self.class.permitted_params.each do |key|
+          send("#{key}=", ect.send(key))
+        end
       end
 
       def step_params

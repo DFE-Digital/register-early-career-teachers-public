@@ -1,45 +1,10 @@
+require_relative './shared_examples/state_school_appropriate_body_view'
+
 RSpec.describe "schools/register_ect_wizard/state_school_appropriate_body.html.erb" do
-  let(:back_path) { schools_register_ect_wizard_working_pattern_path }
-  let(:continue_path) { schools_register_ect_wizard_check_answers_path }
-  let(:step) { Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep.new }
-  let(:ect) { double(full_name: 'John Smith') }
-  let(:title) { "Which appropriate body will be supporting #{ect.full_name}'s induction?" }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :state_school_appropriate_body, store: {}) }
-
-  it "sets the page title to 'Which appropriate body will be supporting John Smith's induction?'" do
-    assign(:wizard, wizard)
-    assign(:ect, ect)
-
-    render
-
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
-  end
-
-  it "prefixes the page with 'Error:' when the appropriate body value missing" do
-    assign(:wizard, wizard)
-    assign(:ect, ect)
-
-    wizard.valid_step?
-    render
-
-    expect(view.content_for(:page_title)).to start_with('Error:')
-  end
-
-  it 'includes a back button that links to the start date step' do
-    assign(:wizard, wizard)
-    assign(:ect, ect)
-
-    render
-
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
-  end
-
-  it 'includes a continue button that posts to the appropriate body page' do
-    assign(:wizard, wizard)
-    assign(:ect, ect)
-
-    render
-
-    expect(rendered).to have_button('Continue')
-  end
+  it_behaves_like "a state school appropriate body view",
+                  current_step: :state_school_appropriate_body,
+                  back_path: :schools_register_ect_wizard_working_pattern_path,
+                  back_step_name: 'working pattern',
+                  continue_path: :schools_register_ect_wizard_state_school_appropriate_body_path,
+                  continue_step_name: 'state school appropriate body'
 end

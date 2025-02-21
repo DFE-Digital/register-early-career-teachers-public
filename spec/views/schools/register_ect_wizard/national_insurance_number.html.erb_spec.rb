@@ -3,7 +3,8 @@ RSpec.describe "schools/register_ect_wizard/national_insurance_number.html.erb" 
   let(:continue_path) { schools_register_ect_wizard_national_insurance_number_path }
   let(:step) { Schools::RegisterECTWizard::NationalInsuranceNumberStep.new }
   let(:title) { "We cannot find your ECT's details" }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :national_insurance_number, store: {}) }
+  let(:store) { FactoryBot.build(:session_repository, national_insurance_number: "1234567") }
+  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :national_insurance_number, store:) }
 
   before do
     assign(:wizard, wizard)
