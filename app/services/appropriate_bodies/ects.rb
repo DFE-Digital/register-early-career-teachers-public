@@ -7,7 +7,15 @@ module AppropriateBodies
     end
 
     def current
-      all.merge(InductionPeriod.ongoing)
+      latest_period_ids = InductionPeriod
+        .select('DISTINCT ON (teacher_id) induction_periods.id')
+        .order('teacher_id, started_on DESC')
+
+      Teacher
+        .joins(:induction_periods)
+        .where(induction_periods: { id: latest_period_ids, appropriate_body: })
+        .merge(InductionPeriod.ongoing.or(InductionPeriod.with_outcome))
+        .distinct
     end
 
     def former
