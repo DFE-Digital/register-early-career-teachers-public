@@ -1,5 +1,5 @@
 RSpec.describe "schools/register_ect_wizard/state_school_appropriate_body.html.erb" do
-  let(:back_path) { schools_register_ect_wizard_start_date_path }
+  let(:back_path) { schools_register_ect_wizard_working_pattern_path }
   let(:continue_path) { schools_register_ect_wizard_check_answers_path }
   let(:step) { Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep.new }
   let(:ect) { double(full_name: 'John Smith') }
