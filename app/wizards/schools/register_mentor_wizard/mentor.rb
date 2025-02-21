@@ -41,13 +41,14 @@ module Schools
         trs_date_of_birth.to_date == date_of_birth.to_date
       end
 
-      def register!
+      def register!(author:)
         Schools::RegisterMentor.new(trs_first_name:,
                                     trs_last_name:,
                                     corrected_name:,
                                     trn:,
                                     school_urn:,
-                                    email:)
+                                    email:,
+                                    author:)
                                .register!
       end
 

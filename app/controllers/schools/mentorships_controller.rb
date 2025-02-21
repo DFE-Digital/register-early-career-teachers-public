@@ -4,11 +4,11 @@ module Schools
     before_action :register_mentor, only: :create, if: :register_new_mentor?
 
     def new
-      @mentor_form = AssignMentorForm.new(ect:)
+      @mentor_form = AssignMentorForm.new(ect:, current_user:)
     end
 
     def create
-      @mentor_form = AssignMentorForm.new(ect:, mentor_id:)
+      @mentor_form = AssignMentorForm.new(ect:, mentor_id:, current_user:)
 
       if @mentor_form.save
         redirect_to confirmation_schools_ect_mentorship_path(@ect)

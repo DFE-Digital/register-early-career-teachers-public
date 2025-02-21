@@ -9,7 +9,7 @@ module Schools
 
       def persist
         mentor.update!(already_active_at_school: true)
-        AssignMentor.new(ect:, mentor: mentor.active_record_at_school).assign!
+        AssignMentor.new(ect:, mentor: mentor.active_record_at_school, author: current_user).assign!
       end
     end
   end

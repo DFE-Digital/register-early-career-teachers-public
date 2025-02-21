@@ -7,8 +7,12 @@ module Schools
 
     private
 
+      def registered_mentor
+        mentor.register!(author: current_user)
+      end
+
       def persist
-        AssignMentor.new(ect:, mentor: mentor.register!).assign!
+        AssignMentor.new(ect:, mentor: registered_mentor, author: current_user).assign!
       end
     end
   end

@@ -2,7 +2,7 @@ module Schools
   class AssignMentorForm
     include ActiveModel::Model
 
-    attr_accessor :ect, :mentor_id
+    attr_accessor :current_user, :ect, :mentor_id
 
     validates :ect, presence: { message: "ECT missing or not registered at this school" }
     validates :mentor_id, presence: { message: "Select a mentor from the list provided or choose to register a new mentor" }
@@ -34,7 +34,7 @@ module Schools
     end
 
     def persisted?
-      AssignMentor.new(ect:, mentor:).assign || errors.add(:base, "Mentorship failed to register")
+      AssignMentor.new(ect:, mentor:, author: current_user).assign || errors.add(:base, "Mentorship failed to register")
     end
   end
 end

@@ -1,7 +1,7 @@
 module Schools
   module RegisterMentorWizard
     class Wizard < DfE::Wizard::Base
-      attr_accessor :store, :ect_id
+      attr_accessor :current_user, :store, :ect_id
 
       steps do
         [

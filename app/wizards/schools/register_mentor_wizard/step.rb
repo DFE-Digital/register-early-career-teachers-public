@@ -3,7 +3,7 @@ module Schools
     class Step < ApplicationWizardStep
       include ActiveRecord::AttributeAssignment
 
-      delegate :ect, :mentor, :valid_step?, to: :wizard
+      delegate :current_user, :ect, :mentor, :valid_step?, to: :wizard
 
       def self.permitted_params = []
 

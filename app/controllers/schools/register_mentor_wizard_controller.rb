@@ -31,6 +31,7 @@ module Schools
         current_step:,
         step_params: params,
         ect_id: session[:register_mentor_for_ect_id],
+        current_user:,
         store:
       )
       @ect_name = Teachers::Name.new(@wizard.ect.teacher).full_name
