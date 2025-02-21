@@ -173,7 +173,7 @@ describe Events::Record do
           heading: 'Induction period updated by admin',
           event_type: :admin_updates_induction_period,
           happened_at: Time.zone.now,
-          modifications: ["Started on changed from #{3.weeks.ago.to_date} to #{2.weeks.ago.to_date}"],
+          modifications: ["Started on changed from '#{3.weeks.ago.to_date.to_formatted_s(:govuk_short)}' to '#{2.weeks.ago.to_date.to_formatted_s(:govuk_short)}'"],
           metadata: raw_modifications,
           **author_params
         )

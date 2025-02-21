@@ -21,8 +21,27 @@ module Events
       return if modifications.nil?
 
       modifications.map do |attribute_name, modification|
-        "#{attribute_name.humanize} changed from #{modification[0]} to #{modification[1]}"
+        if modification[0].blank?
+          "#{attribute_name.humanize} set to #{format(modification[1])}"
+        elsif modification[1].blank?
+          "#{attribute_name.humanize} #{format(modification[0])} removed"
+        else
+          "#{attribute_name.humanize} changed from #{format(modification[0])} to #{format(modification[1])}"
+        end
       end
+    end
+
+  private
+
+    def format(value)
+      formatted_value = case value
+                        when Date
+                          value.to_formatted_s(:govuk_short)
+                        else
+                          value
+                        end
+
+      %('#{formatted_value}')
     end
   end
 end
