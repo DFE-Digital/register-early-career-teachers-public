@@ -294,6 +294,7 @@
   - created_at
   - updated_at
   - metadata
+  - modifications
   :ect_at_school_periods:
   - id
   - school_id

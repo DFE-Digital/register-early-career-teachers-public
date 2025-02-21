@@ -8,7 +8,8 @@ module Admin
       @induction_period = InductionPeriod.find(params[:id])
       service = UpdateInductionPeriodService.new(
         induction_period: @induction_period,
-        params: induction_period_params
+        params: induction_period_params,
+        author: current_user
       )
 
       if service.update_induction!

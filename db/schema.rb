@@ -185,6 +185,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_21_132033) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "metadata"
+    t.string "modifications", array: true
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"
