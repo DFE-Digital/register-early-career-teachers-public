@@ -3,7 +3,6 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
   let(:ect_name) { "Michale Dixon" }
   let(:your_ects_path) { schools_ects_home_path }
   let(:mentor) { wizard.mentor }
-  let(:title) { "You've assigned #{mentor.full_name} as a mentor" }
   let(:store) { double(trs_first_name: "John", trs_last_name: "Wayne", corrected_name: nil, already_active_at_school:) }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :confirmation, store:) }
 
@@ -15,8 +14,8 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
     render
   end
 
-  it "sets the page title to 'You've assigned <mentor name> as a mentor'" do
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+  context "page title" do
+    it { expect(sanitize(view.content_for(:page_title))).to eql("You've assigned #{mentor.full_name} as a mentor") }
   end
 
   it 'includes no back button' do

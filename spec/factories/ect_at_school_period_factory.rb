@@ -7,6 +7,7 @@ FactoryBot.define do
 
     started_on { generate(:base_ect_date) }
     finished_on { started_on + 5.days }
+    email { Faker::Internet.email }
 
     trait :active do
       finished_on { nil }

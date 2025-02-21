@@ -5,6 +5,10 @@ module Schools
         :confirmation
       end
 
+      def previous_step
+        :email_address
+      end
+
     private
 
       def persist

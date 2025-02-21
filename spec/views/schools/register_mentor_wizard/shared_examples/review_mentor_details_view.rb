@@ -1,5 +1,3 @@
-require 'ostruct'
-
 RSpec.shared_examples "a review mentor details step view" do |current_step:,
                                                               back_path:,
                                                               back_step_name:,
@@ -9,7 +7,6 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
                                                               check_details_step_name:|
   let(:date_of_birth) { "1950/1/1" }
   let(:national_insurance_number) { "AD12345ED" }
-  let(:title) { "Check mentor details" }
   let(:email) { nil }
   let(:store) do
     FactoryBot.build(:session_repository,
@@ -30,10 +27,10 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
     assign(:mentor, mentor)
   end
 
-  it "sets the page title to 'Check mentor details'" do
-    render
+  context 'page title' do
+    before { render }
 
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+    it { expect(sanitize(view.content_for(:page_title))).to eql('Check mentor details') }
   end
 
   it "prefixes the page with 'Error:' when any step data is invalid" do

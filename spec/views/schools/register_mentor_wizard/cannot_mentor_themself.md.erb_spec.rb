@@ -1,13 +1,15 @@
 RSpec.describe "schools/register_mentor_wizard/cannot_mentor_themself.md.erb" do
   let(:back_path) { schools_register_mentor_wizard_find_mentor_path }
-  let(:title) { 'You cannot assign an ECT as their own mentor' }
+  let(:store) { double(trs_first_name: "John", trs_last_name: "Waters") }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :cannot_mentor_themself, store:) }
 
   before do
+    assign(:wizard, wizard)
     render
   end
 
-  it "sets the page title to 'You cannot assign an ECT as their own mentor'" do
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+  context 'page title' do
+    it { expect(sanitize(view.content_for(:page_title))).to eql('You cannot assign an ECT as their own mentor') }
   end
 
   it 'includes a back button that links to find-mentor page of the journey' do

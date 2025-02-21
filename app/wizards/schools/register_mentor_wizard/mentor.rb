@@ -15,12 +15,16 @@ module Schools
         @active_record_at_school ||= MentorAtSchoolPeriods::Search.new.mentor_periods(trn:, urn: school_urn).ongoing.last
       end
 
-      def full_name
-        @full_name ||= (corrected_name || trs_full_name).strip
+      def cant_use_email?
+        email_in_use_by_active_ect? || email_in_use_by_active_mentor?
       end
 
-      def trs_full_name
-        @trs_full_name ||= [trs_first_name, trs_last_name].join(" ")
+      def corrected_name?
+        corrected_name.present?
+      end
+
+      def full_name
+        @full_name ||= (corrected_name || trs_full_name).strip
       end
 
       def govuk_date_of_birth
@@ -29,10 +33,6 @@ module Schools
 
       def in_trs?
         trs_first_name.present?
-      end
-
-      def corrected_name?
-        corrected_name.present?
       end
 
       def matches_trs_dob?
@@ -55,7 +55,19 @@ module Schools
         @school ||= School.find_by_urn(school_urn)
       end
 
+      def trs_full_name
+        @trs_full_name ||= [trs_first_name, trs_last_name].join(" ")
+      end
+
     private
+
+      def email_in_use_by_active_mentor?
+        MentorAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).ongoing.exists?
+      end
+
+      def email_in_use_by_active_ect?
+        ECTAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).ongoing.exists?
+      end
 
       # The wizard store object where we delegate the rest of methods
       def wizard_store

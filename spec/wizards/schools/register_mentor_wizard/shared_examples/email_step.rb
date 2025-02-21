@@ -1,4 +1,4 @@
-RSpec.shared_examples "an email step" do |current_step:|
+RSpec.shared_examples "an email step" do |current_step:, previous_step:|
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: "1234567",
@@ -47,5 +47,15 @@ RSpec.shared_examples "an email step" do |current_step:|
     end
 
     it { expect(wizard.next_step).to eq(:check_answers) }
+  end
+
+  describe '#previous_step' do
+    let(:step_params) do
+      ActionController::Parameters.new("email_address" => { "email" => 'valid@email.com' })
+    end
+
+    subject { FactoryBot.build(:register_mentor_wizard, current_step:, step_params:).current_step }
+
+    it { expect(subject.previous_step).to eq(previous_step) }
   end
 end

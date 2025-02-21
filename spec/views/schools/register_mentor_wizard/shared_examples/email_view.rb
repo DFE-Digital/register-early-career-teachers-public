@@ -1,6 +1,5 @@
 RSpec.shared_examples "an email address step view" do |current_step:, back_path:, back_step_name:, continue_path:, continue_step_name:|
   let(:mentor) { wizard.mentor }
-  let(:title) { "What is Jim Waters's email address?" }
   let(:email) { nil }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:) }
   let(:store) do
@@ -18,10 +17,10 @@ RSpec.shared_examples "an email address step view" do |current_step:, back_path:
     assign(:mentor, mentor)
   end
 
-  it "sets the page title to 'What is Jim Waters's email address'" do
-    render
+  context 'page title' do
+    before { render }
 
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+    it { expect(sanitize(view.content_for(:page_title))).to eql("What is Jim Waters's email address?") }
   end
 
   context "when the email is invalid" do
