@@ -86,7 +86,7 @@ module Migration
     end
 
     def fetch_migrated_periods_by_type(klass)
-      klass.where(legacy_start_id: id).or(klass.where(legacy_end_id: id)).order(:started_on)
+      klass.where(ecf_start_induction_record_id: id).or(klass.where(ecf_end_induction_record_id: id)).order(:started_on)
     end
 
     def induction_programme

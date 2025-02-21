@@ -46,14 +46,14 @@ describe Builders::MentorshipPeriods do
       expect(periods.first.mentor).to eq mentor_period_1
       expect(periods.first.started_on).to eq mentorship_period_1.start_date
       expect(periods.first.finished_on).to eq mentorship_period_1.end_date
-      expect(periods.first.legacy_start_id).to eq mentorship_period_1.start_source_id
-      expect(periods.first.legacy_end_id).to eq mentorship_period_1.end_source_id
+      expect(periods.first.ecf_start_induction_record_id).to eq mentorship_period_1.start_source_id
+      expect(periods.first.ecf_end_induction_record_id).to eq mentorship_period_1.end_source_id
 
       expect(periods.last.mentor).to eq mentor_period_2
       expect(periods.last.started_on).to eq mentorship_period_2.start_date
       expect(periods.last.finished_on).to eq mentorship_period_2.end_date
-      expect(periods.last.legacy_start_id).to eq mentorship_period_2.start_source_id
-      expect(periods.last.legacy_end_id).to eq mentorship_period_2.end_source_id
+      expect(periods.last.ecf_start_induction_record_id).to eq mentorship_period_2.start_source_id
+      expect(periods.last.ecf_end_induction_record_id).to eq mentorship_period_2.end_source_id
     end
 
     context "when there is no ECTAtSchoolPeriod that contains the training dates" do
