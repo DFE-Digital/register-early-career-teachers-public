@@ -88,11 +88,13 @@ hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn
 jamie_parsons = Teacher.create!(trs_first_name: 'Jamie', trs_last_name: 'Parsons', trn: '1237894')
 harriet_walter = Teacher.create!(trs_first_name: 'Harriet', trs_last_name: 'Walter', trn: '2017654')
 hugh_laurie = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Laurie', trn: '4786654')
+stephen_fry = Teacher.create!(trs_first_name: 'Stephen', trs_last_name: 'Fry', trn: '4786655')
 andre_roussimoff = Teacher.create!(trs_first_name: 'André', trs_last_name: 'Roussimoff', trn: '8886654')
 imogen_stubbs = Teacher.create!(trs_first_name: 'Imogen', trs_last_name: 'Stubbs', trn: '6352869')
 gemma_jones = Teacher.create!(trs_first_name: 'Gemma', trs_last_name: 'Jones', trn: '9578426')
 anthony_hopkins = Teacher.create!(trs_first_name: 'Anthony', trs_last_name: 'Hopkins', trn: '6228282')
 john_withers = Teacher.create!(trs_first_name: 'John', trs_last_name: 'Withers', corrected_name: 'Old Man Withers', trn: '8590123')
+helen_mirren = Teacher.create!(trs_first_name: 'Helen', trs_last_name: 'Mirren', corrected_name: 'Dame Helen Mirren', trn: '0000007')
 
 print_seed_info("Adding schools")
 
@@ -517,6 +519,36 @@ TrainingPeriod.create!(
   provider_partnership: meadow_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
+print_seed_info("Stephen Fry (ECT)", indent: 2, colour: ECT_COLOUR)
+
+stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
+  teacher: stephen_fry,
+  school: brookfield_school,
+  email: 'stephen.fry@sausage.com',
+  started_on: 2.years.ago
+).tap { |sp| describe_ect_at_school_period(sp) }
+
+TrainingPeriod.create!(
+  ect_at_school_period: stephen_fry_ect_at_brookfield_school,
+  started_on: 2.years.ago,
+  provider_partnership: meadow_grain_partnership_2022
+).tap { |tp| describe_training_period(tp) }
+
+print_seed_info("Helen Mirren (mentor)", indent: 2, colour: MENTOR_COLOUR)
+
+helen_mirren_mentoring_at_brookfield_school = MentorAtSchoolPeriod.create!(
+  teacher: helen_mirren,
+  school: brookfield_school,
+  email: 'helen.mirren@titania.com',
+  started_on: 2.years.ago
+).tap { |sp| describe_mentor_at_school_period(sp) }
+
+TrainingPeriod.create!(
+  mentor_at_school_period: helen_mirren_mentoring_at_brookfield_school,
+  started_on: 2.years.ago,
+  provider_partnership: meadow_grain_partnership_2022
+).tap { |tp| describe_training_period(tp) }
+
 print_seed_info("John Withers (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
 john_withers_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
@@ -556,6 +588,13 @@ MentorshipPeriod.create!(
 MentorshipPeriod.create!(
   mentor: andre_roussimoff_mentoring_at_ackley_bridge,
   mentee: kate_winslet_ect_at_ackley_bridge,
+  started_on: 1.year.ago,
+  finished_on: nil
+).tap { |mp| describe_mentorship_period(mp) }
+
+MentorshipPeriod.create!(
+  mentor: helen_mirren_mentoring_at_brookfield_school,
+  mentee: stephen_fry_ect_at_brookfield_school,
   started_on: 1.year.ago,
   finished_on: nil
 ).tap { |mp| describe_mentorship_period(mp) }
