@@ -6,7 +6,7 @@ module AppropriateBodies
       @pagy, @teachers = pagy(
         ::Teachers::Search.new(
           query_string: params[:q],
-          appropriate_body: @appropriate_body
+          appropriate_bodies: @appropriate_body
         ).search
       )
       @claimed_inductions_count = AppropriateBodies::ECTs.new(@appropriate_body).current.count

@@ -8,6 +8,7 @@ class Teacher < ApplicationRecord
   has_many :mentor_at_school_periods, inverse_of: :teacher
   has_many :induction_extensions, inverse_of: :teacher
   has_many :induction_periods
+  has_many :appropriate_bodies, through: :induction_periods
   has_many :events
 
   # TODO: remove after migration complete
