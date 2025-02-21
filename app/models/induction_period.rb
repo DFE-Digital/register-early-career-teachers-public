@@ -17,6 +17,11 @@ class InductionPeriod < ApplicationRecord
             inclusion: { in: %w[fip cip diy unknown pre_september_2021],
                          message: "Choose an induction programme" }
 
+  validates :outcome,
+            inclusion: { in: %w[pass fail],
+                         message: "Outcome must be either pass or fail",
+                         allow_nil: true }
+
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
 

@@ -7,7 +7,14 @@ module AppropriateBodies
     end
 
     def current
-      all.merge(InductionPeriod.ongoing)
+      Teacher
+        .joins(:induction_periods)
+        .merge(InductionPeriod.for_appropriate_body(appropriate_body))
+        .where(
+          "induction_periods.id IN (SELECT ip2.id FROM induction_periods ip2 " \
+          "WHERE ip2.teacher_id = teachers.id ORDER BY ip2.started_on DESC LIMIT 1)"
+        )
+        .distinct
     end
 
     def former
