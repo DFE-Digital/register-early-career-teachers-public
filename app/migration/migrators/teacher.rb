@@ -36,7 +36,7 @@ module Migrators
       trn = teacher_profile.trn
       full_name = teacher_profile.user.full_name
 
-      builder = Builders::Teacher.new(trn:, full_name:, legacy_id: teacher_profile.user_id)
+      builder = Builders::Teacher.new(trn:, full_name:, ecf_user_id: teacher_profile.user_id)
       teacher = builder.build
       if teacher.nil?
         failure_manager.record_failure(teacher_profile, builder.error)
@@ -58,11 +58,11 @@ module Migrators
             training_period_data = TrainingPeriodExtractor.new(induction_records:)
 
             if participant_profile.ect?
-              teacher.update!(legacy_ect_id: participant_profile.id)
+              teacher.update!(ecf_ect_profile_id: participant_profile.id)
               sp_success = Builders::ECT::SchoolPeriods.new(teacher:, school_periods:).build
               tp_success = Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
             else
-              teacher.update!(legacy_mentor_id: participant_profile.id)
+              teacher.update!(ecf_mentor_profile_id: participant_profile.id)
               sp_success = Builders::Mentor::SchoolPeriods.new(teacher:, school_periods:).build
               tp_success = Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
             end

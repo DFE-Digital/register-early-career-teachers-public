@@ -31,7 +31,7 @@ private
       elsif current_mentor_id != mentor_id
         current_mentor_id = mentor_id
 
-        mentor_teacher = ::Teacher.find_by(legacy_mentor_id: mentor_id)
+        mentor_teacher = ::Teacher.find_by(ecf_mentor_profile_id: mentor_id)
 
         current_period = Migration::MentorshipPeriodData.new(mentor_teacher:,
                                                              start_date: induction_record.start_date,

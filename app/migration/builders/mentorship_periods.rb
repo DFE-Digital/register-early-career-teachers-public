@@ -41,8 +41,8 @@ module Builders
                                    mentor: mentor_period,
                                    started_on: period.start_date,
                                    finished_on: period.end_date,
-                                   legacy_start_id: period.start_source_id,
-                                   legacy_end_id: period.end_source_id)
+                                   ecf_start_induction_record_id: period.start_source_id,
+                                   ecf_end_induction_record_id: period.end_source_id)
       rescue ActiveRecord::ActiveRecordError => e
         log_period_error(period:, message: e.message)
         success = false

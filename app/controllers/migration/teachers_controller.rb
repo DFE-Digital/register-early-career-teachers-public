@@ -42,23 +42,23 @@ private
   end
 
   def ect_profile
-    @ect_profile = if teacher.legacy_ect_id.present?
+    @ect_profile = if teacher.ecf_ect_profile_id.present?
                      Migration::ParticipantProfilePresenter.new(
-                       Migration::ParticipantProfile.find(teacher.legacy_ect_id)
+                       Migration::ParticipantProfile.find(teacher.ecf_ect_profile_id)
                      )
                    end
   end
 
   def mentor_profile
-    @mentor_profile = if teacher.legacy_mentor_id.present?
+    @mentor_profile = if teacher.ecf_mentor_profile_id.present?
                         Migration::ParticipantProfilePresenter.new(
-                          Migration::ParticipantProfile.find(teacher.legacy_mentor_id)
+                          Migration::ParticipantProfile.find(teacher.ecf_mentor_profile_id)
                         )
                       end
   end
 
   def user
-    @user ||= Migration::User.find(teacher.legacy_id)
+    @user ||= Migration::User.find(teacher.ecf_user_id)
   end
 
   def teacher

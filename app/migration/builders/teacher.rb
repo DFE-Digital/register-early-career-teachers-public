@@ -1,11 +1,11 @@
 module Builders
   class Teacher
-    attr_reader :trn, :full_name, :legacy_id, :error
+    attr_reader :trn, :full_name, :ecf_user_id, :error
 
-    def initialize(trn:, full_name:, legacy_id: nil)
+    def initialize(trn:, full_name:, ecf_user_id: nil)
       @trn = trn
       @full_name = full_name
-      @legacy_id = legacy_id
+      @ecf_user_id = ecf_user_id
       @error = nil
     end
 
@@ -27,7 +27,7 @@ module Builders
   private
 
     def create_teacher!
-      ::Teacher.create!(trn:, trs_first_name: parser.first_name, trs_last_name: parser.last_name, legacy_id:)
+      ::Teacher.create!(trn:, trs_first_name: parser.first_name, trs_last_name: parser.last_name, ecf_user_id:)
     end
 
     def update_teacher!(teacher:)
