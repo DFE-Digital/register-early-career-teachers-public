@@ -32,11 +32,11 @@ module Migration
 
     def build_matched_attrs
       attrs = {
-        started_on: mentorship_period.legacy_start_id,
-        mentor: mentorship_period.legacy_start_id,
+        started_on: mentorship_period.ecf_start_induction_record_id,
+        mentor: mentorship_period.ecf_start_induction_record_id,
       }
-      if mentorship_period.legacy_end_id.present?
-        attrs[:finished_on] = mentorship_period.legacy_end_id
+      if mentorship_period.ecf_end_induction_record_id.present?
+        attrs[:finished_on] = mentorship_period.ecf_end_induction_record_id
       end
 
       attrs
