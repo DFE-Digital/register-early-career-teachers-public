@@ -2,8 +2,9 @@ module Schools
   class MentorsController < SchoolsController
     layout "full"
 
+    # TODO: increase the pagination limit to 20
     def index
-      @mentors = Schools::Home.new(school:).mentors_with_ects
+      @pagy, @mentors = pagy(Schools::Home.new(school:).mentors_with_ects, limit: 2)
     end
   end
 end
