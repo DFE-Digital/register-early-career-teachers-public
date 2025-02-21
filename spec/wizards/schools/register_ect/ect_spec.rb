@@ -1,4 +1,6 @@
-describe Schools::RegisterECTWizard::ECT do
+RSpec.describe Schools::RegisterECTWizard::ECT do
+  subject(:ect) { described_class.new(store) }
+
   let(:school) { FactoryBot.create(:school) }
   let(:store) do
     FactoryBot.build(:session_repository,
@@ -14,8 +16,6 @@ describe Schools::RegisterECTWizard::ECT do
                      trs_national_insurance_number: "OWAD23455",
                      working_pattern: "full_time")
   end
-
-  subject(:ect) { described_class.new(store) }
 
   describe '#email' do
     it 'returns the email address' do
@@ -148,31 +148,39 @@ describe Schools::RegisterECTWizard::ECT do
   end
 
   describe '#formatted_appropriate_body_name' do
-    context "when appropriate_body_name is 'ISTIP'" do
-      it "returns 'Independent Schools Teacher Induction Panel (ISTIP)'" do
-        store.appropriate_body_name = 'ISTIP'
+    context "when appropriate_body_type is 'teaching_induction_panel'" do
+      before do
+        store.appropriate_body_type = 'teaching_induction_panel'
+      end
+
+      specify do
         expect(ect.formatted_appropriate_body_name).to eq('Independent Schools Teacher Induction Panel (ISTIP)')
       end
     end
 
-    context "when appropriate_body_name is not 'ISTIP'" do
-      it 'returns the appropriate_body_name' do
-        store.appropriate_body_name = 'Another body'
+    context "when appropriate_body_type is not 'teaching_induction_panel'" do
+      before do
+        FactoryBot.create(:appropriate_body, id: 1, name: 'Another body')
+        store.appropriate_body_type = 'teaching_school_hub'
+        store.appropriate_body_id = '1'
+      end
+
+      it 'returns the name' do
         expect(ect.formatted_appropriate_body_name).to eq('Another body')
       end
     end
   end
 
   describe '#active_at_school?' do
+    let(:teacher) { FactoryBot.create(:teacher, trn: ect.trn) }
+
     it 'returns true if the ECT is registered at the given school' do
-      teacher = FactoryBot.create(:teacher, trn: ect.trn)
       FactoryBot.create(:ect_at_school_period, :active, teacher:, school:)
 
       expect(ect.active_at_school?(school:)).to be_truthy
     end
 
     it 'returns false if the ECT is not registered at the given school' do
-      teacher = FactoryBot.create(:teacher, trn: ect.trn)
       FactoryBot.create(:ect_at_school_period, teacher:)
 
       expect(ect.active_at_school?(school:)).to be_falsey

@@ -1,4 +1,4 @@
-describe DateOfBirthValidator do
+RSpec.describe DateOfBirthValidator, type: :model do
   let(:test_class) do
     Class.new do
       include ActiveModel::Model

@@ -8,34 +8,47 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
            start_date: 'September 2022',
            formatted_programme_type: 'School-led',
            formatted_appropriate_body_name: 'Teaching Regulation Agency',
-           formatted_working_pattern: 'Full time')
+           formatted_lead_provider_name: 'Acme Lead Provider',
+           formatted_working_pattern: 'Full time',
+           provider_led?: false)
   end
-  let(:title) { "Check your answers before submitting" }
-  let(:back_path) { schools_register_ect_wizard_programme_type_path }
-  let(:continue_path) { schools_register_ect_wizard_check_answers_path }
-  let(:wizard) { Schools::RegisterECTWizard::Wizard.new(current_step: :check_answers, store: {}) }
+
+  let(:wizard) do
+    FactoryBot.build(:register_ect_wizard, current_step: :check_answers, store: {})
+  end
 
   before do
+    allow(wizard.ect).to receive(:provider_led?).and_return(false)
     assign(:ect, ect)
     assign(:wizard, wizard)
+    render
   end
 
-  it "sets the page title to 'Check your answers before submitting'" do
-    render
-
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+  it "sets the page title" do
+    expect(sanitize(view.content_for(:page_title))).to eql("Check your answers before submitting")
   end
 
-  it 'includes a back button that links to the email address step' do
-    render
+  describe 'back link' do
+    context 'when the registration is school-led' do
+      it 'links to the programme type step' do
+        expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: schools_register_ect_wizard_programme_type_path)
+      end
+    end
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+    context 'when the registration is provider-led' do
+      before do
+        allow(wizard.ect).to receive(:provider_led?).and_return(true)
+        render
+      end
+
+      it 'links to the lead provider step' do
+        expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: schools_register_ect_wizard_lead_provider_path)
+      end
+    end
   end
 
-  it 'includes a continue button that posts to the check answers page' do
-    render
-
+  it 'includes a continue button' do
     expect(rendered).to have_button('Confirm details')
-    expect(rendered).to have_selector("form[action='#{continue_path}']")
+    expect(rendered).to have_selector("form[action='#{schools_register_ect_wizard_check_answers_path}']")
   end
 end

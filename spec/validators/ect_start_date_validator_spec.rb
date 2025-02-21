@@ -1,4 +1,4 @@
-describe ECTStartDateValidator do
+RSpec.describe ECTStartDateValidator, type: :model do
   context "when date is in an invalid format" do
     let(:start_date) { { 1 => "invalid year", 2 => "invalid month" } }
     let(:test_class) do

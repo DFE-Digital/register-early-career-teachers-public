@@ -23,46 +23,53 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
     context 'when the programme_type is present and a known value' do
       let(:programme_type) { 'provider_led' }
 
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
+      it { expect(subject).to be_valid }
     end
   end
 
-  describe '#next_step' do
+  describe 'steps' do
     let(:school) { FactoryBot.build(:school) }
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :programme_type, school:) }
 
     subject { wizard.current_step }
 
-    it 'returns the next step' do
-      expect(subject.next_step).to eq(:check_answers)
-    end
-  end
+    describe '#next_step' do
+      context 'when programme_type is provider_led' do
+        before do
+          allow(wizard.ect).to receive(:provider_led?).and_return(true)
+        end
 
-  describe '#previous_step' do
-    let(:school) { FactoryBot.build(:school) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :programme_type, school:) }
-
-    subject { wizard.current_step }
-
-    context 'when the school is independent' do
-      before do
-        allow(school).to receive(:independent?).and_return(true)
+        it 'returns the next step' do
+          expect(subject.next_step).to eq(:lead_provider)
+        end
       end
 
-      it 'returns :independent_school_appropriate_body' do
-        expect(subject.previous_step).to eq(:independent_school_appropriate_body)
+      context 'when programme_type is school_led' do
+        it 'returns the next step' do
+          expect(subject.next_step).to eq(:check_answers)
+        end
       end
     end
 
-    context 'when the school is state-funded' do
-      before do
-        allow(school).to receive(:independent?).and_return(false)
+    describe '#previous_step' do
+      context 'when the school is independent' do
+        before do
+          allow(school).to receive(:independent?).and_return(true)
+        end
+
+        it 'returns :independent_school_appropriate_body' do
+          expect(subject.previous_step).to eq(:independent_school_appropriate_body)
+        end
       end
 
-      it 'returns :state_school_appropriate_body' do
-        expect(subject.previous_step).to eq(:state_school_appropriate_body)
+      context 'when the school is state-funded' do
+        before do
+          allow(school).to receive(:independent?).and_return(false)
+        end
+
+        it 'returns :state_school_appropriate_body' do
+          expect(subject.previous_step).to eq(:state_school_appropriate_body)
+        end
       end
     end
   end
