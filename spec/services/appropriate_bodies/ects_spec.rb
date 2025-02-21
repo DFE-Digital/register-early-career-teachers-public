@@ -9,21 +9,21 @@ describe AppropriateBodies::ECTs do
       teacher = FactoryBot.create(:teacher)
       # Earlier induction period with another AB
       FactoryBot.create(:induction_period,
-        teacher:,
-        appropriate_body: other_appropriate_body,
-        started_on: 1.year.ago,
-        finished_on: 6.months.ago,
-        number_of_terms: 3,
-        induction_programme: 'fip')
+                        teacher:,
+                        appropriate_body: other_appropriate_body,
+                        started_on: 1.year.ago,
+                        finished_on: 6.months.ago,
+                        number_of_terms: 3,
+                        induction_programme: 'fip')
       # Latest induction period with current AB
       FactoryBot.create(:induction_period,
-        teacher:,
-        appropriate_body:,
-        started_on: 6.months.ago,
-        finished_on: 1.month.ago,
-        outcome: 'pass',
-        number_of_terms: 3,
-        induction_programme: 'fip')
+                        teacher:,
+                        appropriate_body:,
+                        started_on: 6.months.ago,
+                        finished_on: 1.month.ago,
+                        outcome: 'pass',
+                        number_of_terms: 3,
+                        induction_programme: 'fip')
 
       expect(subject.current).to include(teacher)
     end
@@ -32,21 +32,21 @@ describe AppropriateBodies::ECTs do
       teacher = FactoryBot.create(:teacher)
       # Earlier induction period with current AB
       FactoryBot.create(:induction_period,
-        teacher:,
-        appropriate_body:,
-        started_on: 1.year.ago,
-        finished_on: 6.months.ago,
-        outcome: 'pass',
-        number_of_terms: 3,
-        induction_programme: 'fip')
+                        teacher:,
+                        appropriate_body:,
+                        started_on: 1.year.ago,
+                        finished_on: 6.months.ago,
+                        outcome: 'pass',
+                        number_of_terms: 3,
+                        induction_programme: 'fip')
       # Latest induction period with another AB
       FactoryBot.create(:induction_period,
-        teacher:,
-        appropriate_body: other_appropriate_body,
-        started_on: 6.months.ago,
-        finished_on: 1.month.ago,
-        number_of_terms: 3,
-        induction_programme: 'fip')
+                        teacher:,
+                        appropriate_body: other_appropriate_body,
+                        started_on: 6.months.ago,
+                        finished_on: 1.month.ago,
+                        number_of_terms: 3,
+                        induction_programme: 'fip')
 
       expect(subject.current).not_to include(teacher)
     end
@@ -55,20 +55,20 @@ describe AppropriateBodies::ECTs do
       teacher = FactoryBot.create(:teacher)
       # Earlier finished period with another AB
       FactoryBot.create(:induction_period,
-        teacher:,
-        appropriate_body: other_appropriate_body,
-        started_on: 1.year.ago,
-        finished_on: 6.months.ago,
-        number_of_terms: 3,
-        induction_programme: 'fip')
+                        teacher:,
+                        appropriate_body: other_appropriate_body,
+                        started_on: 1.year.ago,
+                        finished_on: 6.months.ago,
+                        number_of_terms: 3,
+                        induction_programme: 'fip')
       # Latest ongoing period with current AB
       FactoryBot.create(:induction_period,
-        teacher:,
-        appropriate_body:,
-        started_on: 6.months.ago,
-        finished_on: nil,
-        number_of_terms: nil,
-        induction_programme: 'fip')
+                        teacher:,
+                        appropriate_body:,
+                        started_on: 6.months.ago,
+                        finished_on: nil,
+                        number_of_terms: nil,
+                        induction_programme: 'fip')
 
       expect(subject.current).to include(teacher)
     end
@@ -77,22 +77,22 @@ describe AppropriateBodies::ECTs do
       teacher = FactoryBot.create(:teacher)
       # Earlier period with pass outcome
       FactoryBot.create(:induction_period,
-        teacher:,
-        appropriate_body:,
-        started_on: 1.year.ago,
-        finished_on: 6.months.ago,
-        outcome: 'pass',
-        number_of_terms: 3,
-        induction_programme: 'fip')
+                        teacher:,
+                        appropriate_body:,
+                        started_on: 1.year.ago,
+                        finished_on: 6.months.ago,
+                        outcome: 'pass',
+                        number_of_terms: 3,
+                        induction_programme: 'fip')
       # Latest period with fail outcome
       FactoryBot.create(:induction_period,
-        teacher:,
-        appropriate_body:,
-        started_on: 6.months.ago,
-        finished_on: 1.month.ago,
-        outcome: 'fail',
-        number_of_terms: 3,
-        induction_programme: 'fip')
+                        teacher:,
+                        appropriate_body:,
+                        started_on: 6.months.ago,
+                        finished_on: 1.month.ago,
+                        outcome: 'fail',
+                        number_of_terms: 3,
+                        induction_programme: 'fip')
 
       expect(subject.current).to include(teacher)
     end
