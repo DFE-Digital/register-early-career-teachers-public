@@ -153,4 +153,31 @@ describe Events::Record do
       end
     end
   end
+
+  describe '.record_admin_updates_induction_period!' do
+    let(:three_weeks_ago) { 3.weeks.ago.to_date }
+    let(:two_weeks_ago) { 2.weeks.ago.to_date }
+    let(:induction_period) { FactoryBot.create(:induction_period, :active, started_on: three_weeks_ago) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      induction_period.assign_attributes(started_on: two_weeks_ago)
+      raw_modifications = induction_period.changes
+
+      freeze_time do
+        Events::Record.record_admin_updates_induction_period!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          induction_period:,
+          teacher:,
+          appropriate_body:,
+          heading: 'Induction period updated by admin',
+          event_type: :admin_updates_induction_period,
+          happened_at: Time.zone.now,
+          modifications: ["Started on changed from #{3.weeks.ago.to_date} to #{2.weeks.ago.to_date}"],
+          metadata: raw_modifications,
+          **author_params
+        )
+      end
+    end
+  end
 end

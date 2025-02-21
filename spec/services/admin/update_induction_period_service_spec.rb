@@ -1,8 +1,10 @@
 require "rails_helper"
 
 RSpec.describe Admin::UpdateInductionPeriodService do
-  subject(:service) { described_class.new(induction_period:, params:) }
+  subject(:service) { described_class.new(induction_period:, params:, author:) }
 
+  let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
+  let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:induction_period) do
     FactoryBot.create(
