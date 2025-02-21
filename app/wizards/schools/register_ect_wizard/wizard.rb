@@ -10,6 +10,8 @@ module Schools
           {
             already_active_at_school: AlreadyActiveAtSchoolStep,
             cannot_register_ect: CannotRegisterECTStep,
+            change_lead_provider: ChangeLeadProviderStep,
+            change_programme_type: ChangeProgrammeTypeStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep,
             email_address: EmailAddressStep,
