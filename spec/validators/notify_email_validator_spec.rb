@@ -1,4 +1,4 @@
-RSpec.describe NotifyEmailValidator do
+RSpec.describe NotifyEmailValidator, type: :model do
   # Test cases from https://github.com/alphagov/notifications-utils/blob/2432e1881cf7a5005a8d69c2ddc1597add96acc3/tests/test_recipient_validation.py
   # This file lifted from ECF1
   # The following valid emails addresses are not accepted: japanese-info@例え.テスト, info@german-financial-services.vermögensberatung

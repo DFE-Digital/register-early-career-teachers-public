@@ -10,13 +10,17 @@ module Schools
       end
 
       def next_step
-        :check_answers
+        ect.provider_led? ? :lead_provider : :check_answers
       end
 
       def previous_step
         return :independent_school_appropriate_body if school_independent?
 
         :state_school_appropriate_body
+      end
+
+      def persist
+        ect.update!(programme_type:)
       end
     end
   end

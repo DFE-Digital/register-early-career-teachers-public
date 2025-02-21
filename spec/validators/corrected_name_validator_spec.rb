@@ -1,4 +1,4 @@
-describe CorrectedNameValidator, type: :model do
+RSpec.describe CorrectedNameValidator, type: :model do
   let(:test_class) do
     Class.new do
       include ActiveModel::Model
