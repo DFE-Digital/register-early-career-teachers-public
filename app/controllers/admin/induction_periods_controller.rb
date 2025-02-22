@@ -1,5 +1,7 @@
 module Admin
   class InductionPeriodsController < AdminController
+    include EditableByAdmin
+
     def edit
       @induction_period = InductionPeriod.find(params[:id])
     end
@@ -9,7 +11,8 @@ module Admin
       service = UpdateInductionPeriodService.new(
         induction_period: @induction_period,
         params: induction_period_params,
-        author: current_user
+        author: current_user,
+        editable_by_admin_params: editable_by_admin_params(params.require(:induction_period))
       )
 
       if service.update_induction!

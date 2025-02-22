@@ -3,6 +3,7 @@ class InductionPeriod < ApplicationRecord
   OUTCOMES = %w[pass fail].freeze
 
   include Interval
+  include EditableByAdmin
   include SharedInductionPeriodValidation
   include SharedNumberOfTermsValidation
 

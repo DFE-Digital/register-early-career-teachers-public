@@ -24,8 +24,9 @@
           width: 4,
           inputmode: "numeric" %>
 
-
       <%= f.govuk_collection_radio_buttons :induction_programme, induction_programme_choices, :identifier, :name, legend: { text: 'Induction programme' }  %>
+
+      <%= render partial: 'admin/shared/editable_by_admin_fields', locals: { f: } %>
 
       <%= f.submit "Update", class: "govuk-button" %>
     <% end %>
