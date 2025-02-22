@@ -1,6 +1,7 @@
 class InductionPeriod < ApplicationRecord
   VALID_NUMBER_OF_TERMS = { min: 0, max: 16 }.freeze
   include Interval
+  include EditableByAdmin
   include SharedInductionPeriodValidation
   include SharedNumberOfTermsValidation
 

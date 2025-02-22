@@ -1,4 +1,4 @@
-<% 
+<%
   page_data(
     title: "Edit induction period",
     error: @induction_period.errors.present?,
@@ -26,8 +26,9 @@
           max: 12.0,
           step: 0.1 %>
 
-
       <%= f.govuk_collection_radio_buttons :induction_programme, induction_programme_choices, :identifier, :name, legend: { text: 'Induction programme' }  %>
+
+      <%= render partial: 'admin/shared/editable_by_admin_fields', locals: { f: } %>
 
       <%= f.submit "Update", class: "govuk-button" %>
     <% end %>
