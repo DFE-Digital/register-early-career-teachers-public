@@ -1,8 +1,6 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <% page_data(title: "Appropriate bodies") %>
-  </div>
+<% page_data(title: "Appropriate bodies") %>
 
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <%= form_with method: :get do |f| %>
       <%=
@@ -18,7 +16,7 @@
 
     <% @appropriate_bodies.each do |appropriate_body| %>
       <%=
-        govuk_summary_card(title: govuk_link_to(appropriate_body.name, "#")) do |card|
+        govuk_summary_card(title: govuk_link_to(appropriate_body.name, admin_appropriate_body_path(appropriate_body))) do |card|
 
           card.with_summary_list do |summary_list|
             summary_list.with_row do |row|
