@@ -41,7 +41,9 @@ Rails.application.routes.draw do
 
     resources :organisations, only: %i[index] do
       collection do
-        resources :appropriate_bodies, only: %i[index], path: 'appropriate-bodies'
+        resources :appropriate_bodies, only: %i[index show], path: 'appropriate-bodies' do
+          resources :current_ects, only: :index, path: 'current-ects', controller: 'appropriate_bodies/current_ects'
+        end
         resources :schools, only: %i[index show], param: :urn
       end
     end
