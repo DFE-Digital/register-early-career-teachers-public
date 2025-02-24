@@ -14,25 +14,45 @@ describe InductionPeriod do
     it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
 
     describe 'overlapping periods' do
+      let(:started_on_message) { 'Start date cannot overlap another induction period' }
+      let(:finished_on_message) { 'End date cannot overlap another induction period' }
       let(:teacher) { FactoryBot.create(:teacher) }
       let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
       context '#teacher_distinct_period' do
-        PeriodHelpers::PeriodExamples.period_examples.each do |test|
+        PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
-            let!(:existing_period) do
-              FactoryBot.create(:induction_period, teacher:, started_on: test.existing_period_range.first, finished_on: test.existing_period_range.last)
+            before do
+              FactoryBot.create(:induction_period, teacher:,
+                                                   started_on: test.existing_period_range.first,
+                                                   finished_on: test.existing_period_range.last)
+              induction_period.valid?
             end
 
-            it "is #{test.expected_valid ? 'valid' : 'invalid'}" do
-              induction_period = FactoryBot.build(:induction_period, teacher:, started_on: test.new_period_range.first, finished_on: test.new_period_range.last)
-              induction_period.valid?
-              message = 'Induction periods cannot overlap'
+            let(:induction_period) do
+              FactoryBot.build(:induction_period, teacher:,
+                                                  started_on: test.new_period_range.first,
+                                                  finished_on: test.new_period_range.last)
+            end
 
+            let(:messages) { induction_period.errors.messages }
+
+            it "is #{test.expected_valid ? 'valid' : 'invalid'}" do
               if test.expected_valid
-                expect(induction_period.errors.messages[:base]).not_to include(message)
+                expect(messages).not_to have_key(:started_on)
+                expect(messages).not_to have_key(:finished_on)
               else
-                expect(induction_period.errors.messages[:base]).to include(message)
+                case index
+                when 0
+                  expect(messages[:started_on]).to include(started_on_message)
+                  expect(messages).not_to have_key(:finished_on)
+                when 1
+                  expect(messages[:started_on]).to include(started_on_message)
+                  expect(messages).not_to have_key(:finished_on)
+                when 2
+                  expect(messages).not_to have_key(:started_on)
+                  expect(messages[:finished_on]).to include(finished_on_message)
+                end
               end
             end
           end
@@ -63,25 +83,19 @@ describe InductionPeriod do
       context "when started_on is today" do
         before { induction_period.started_on = Date.current }
 
-        it "is valid" do
-          expect(induction_period).to be_valid
-        end
+        it { expect(induction_period).to be_valid }
       end
 
       context "when started_on is in the past" do
         before { induction_period.started_on = Date.current - 1.day }
 
-        it "is valid" do
-          expect(induction_period).to be_valid
-        end
+        it { expect(induction_period).to be_valid }
       end
 
       context "when started_on is in the future" do
         before { induction_period.started_on = Date.current + 1.day }
 
-        it "is invalid" do
-          expect(induction_period).not_to be_valid
-        end
+        it { expect(induction_period).not_to be_valid }
 
         it "adds the correct error message" do
           induction_period.valid?
@@ -96,25 +110,19 @@ describe InductionPeriod do
       context "when finished_on is today" do
         before { induction_period.finished_on = Date.current }
 
-        it "is valid" do
-          expect(induction_period).to be_valid
-        end
+        it { expect(induction_period).to be_valid }
       end
 
       context "when finished_on is in the past" do
         before { induction_period.finished_on = Date.current - 1.day }
 
-        it "is valid" do
-          expect(induction_period).to be_valid
-        end
+        it { expect(induction_period).to be_valid }
       end
 
       context "when finished_on is in the future" do
         before { induction_period.finished_on = Date.current + 1.day }
 
-        it "is invalid" do
-          expect(induction_period).not_to be_valid
-        end
+        it { expect(induction_period).not_to be_valid }
 
         it "adds the correct error message" do
           induction_period.valid?
@@ -126,11 +134,13 @@ describe InductionPeriod do
     describe "number_of_terms" do
       context "when finished_on is empty" do
         subject { FactoryBot.build(:induction_period, :active) }
+
         it { is_expected.not_to validate_presence_of(:number_of_terms) }
       end
 
       context "when finished_on is present" do
         subject { FactoryBot.build(:induction_period) }
+
         it { is_expected.to validate_presence_of(:number_of_terms).with_message("Enter a number of terms") }
       end
 

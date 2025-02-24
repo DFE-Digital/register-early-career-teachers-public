@@ -10,9 +10,9 @@
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= f.govuk_collection_select(:appropriate_body_name,
+  <%= f.govuk_collection_select(:appropriate_body_id,
                                 @wizard.appropriate_bodies,
-                                :name,
+                                :id,
                                 :name,
                                 label: { text: "Enter appropriate body name" },
                                 options: { include_blank: true },

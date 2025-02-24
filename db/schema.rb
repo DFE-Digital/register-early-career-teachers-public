@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_21_132033) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
   enable_extension "unaccent"
@@ -39,7 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.integer "local_authority_code"
     t.integer "establishment_number"
     t.uuid "dfe_sign_in_organisation_id"
-    t.uuid "legacy_id"
+    t.uuid "dqt_id"
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_bodies_on_dfe_sign_in_organisation_id", unique: true
   end
 
@@ -143,11 +144,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.uuid "legacy_start_id"
-    t.uuid "legacy_end_id"
+    t.uuid "ecf_start_induction_record_id"
+    t.uuid "ecf_end_induction_record_id"
     t.enum "working_pattern", enum_type: "working_pattern"
-    t.string "email"
+    t.citext "email"
+    t.bigint "appropriate_body_id"
+    t.bigint "lead_provider_id"
+    t.string "programme_type"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
+    t.index ["appropriate_body_id"], name: "index_ect_at_school_periods_on_appropriate_body_id"
+    t.index ["lead_provider_id"], name: "index_ect_at_school_periods_on_lead_provider_id"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
     t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
@@ -175,10 +181,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.enum "author_type", null: false, enum_type: "event_author_types"
     t.integer "author_id"
     t.text "author_name"
-    t.text "author_email"
+    t.citext "author_email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "metadata"
+    t.string "modifications", array: true
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"
@@ -275,9 +282,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.uuid "legacy_start_id"
-    t.uuid "legacy_end_id"
-    t.string "email"
+    t.uuid "ecf_start_induction_record_id"
+    t.uuid "ecf_end_induction_record_id"
+    t.citext "email"
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
@@ -292,8 +299,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.uuid "legacy_start_id"
-    t.uuid "legacy_end_id"
+    t.uuid "ecf_start_induction_record_id"
+    t.uuid "ecf_end_induction_record_id"
     t.index "ect_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_finished_on_IS_NULL_afd5cf131d", unique: true, where: "(finished_on IS NULL)"
     t.index ["ect_at_school_period_id", "started_on"], name: "index_mentorship_periods_on_ect_at_school_period_id_started_on", unique: true
     t.index ["ect_at_school_period_id"], name: "index_mentorship_periods_on_ect_at_school_period_id"
@@ -328,7 +335,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "confirmed_at"
-    t.string "trs_email_address"
+    t.citext "trs_email_address"
     t.jsonb "trs_alerts"
     t.date "trs_induction_start_date"
     t.string "trs_induction_status_description"
@@ -499,9 +506,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.string "trs_first_name", null: false
     t.string "trs_last_name", null: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
-    t.uuid "legacy_id"
-    t.uuid "legacy_ect_id"
-    t.uuid "legacy_mentor_id"
+    t.uuid "ecf_user_id"
+    t.uuid "ecf_ect_profile_id"
+    t.uuid "ecf_mentor_profile_id"
     t.date "trs_qts_awarded_on"
     t.string "trs_qts_status_description"
     t.string "trs_induction_status", limit: 16
@@ -523,8 +530,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
     t.bigint "ect_at_school_period_id"
     t.bigint "mentor_at_school_period_id"
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.uuid "legacy_start_id"
-    t.uuid "legacy_end_id"
+    t.uuid "ecf_start_induction_record_id"
+    t.uuid "ecf_end_induction_record_id"
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"
@@ -535,7 +542,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
 
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
-    t.string "email", null: false
+    t.citext "email", null: false
     t.string "otp_secret"
     t.datetime "otp_verified_at"
     t.datetime "created_at", null: false
@@ -544,6 +551,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_114713) do
   end
 
   add_foreign_key "dfe_roles", "users"
+  add_foreign_key "ect_at_school_periods", "appropriate_bodies"
+  add_foreign_key "ect_at_school_periods", "lead_providers"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"
   add_foreign_key "events", "appropriate_bodies", on_delete: :nullify

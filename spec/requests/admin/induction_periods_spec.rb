@@ -43,6 +43,27 @@ RSpec.describe Admin::InductionPeriodsController do
           expect(induction_period.induction_programme).to eq(valid_params[:induction_period][:induction_programme])
         end
 
+        it "triggers the creation of an admin updates induction period event" do
+          allow(Events::Record).to receive(:record_admin_updates_induction_period!).once.and_call_original
+
+          induction_period.assign_attributes(valid_params[:induction_period])
+          expected_modifications = induction_period.changes
+
+          patch admin_teacher_induction_period_path(induction_period.teacher, induction_period), params: valid_params
+
+          expect(Events::Record).to have_received(:record_admin_updates_induction_period!).once.with(
+            hash_including(
+              {
+                induction_period:,
+                teacher: induction_period.teacher,
+                appropriate_body: induction_period.appropriate_body,
+                modifications: expected_modifications,
+                author: kind_of(Sessions::User),
+              }
+            )
+          )
+        end
+
         context "when updating earliest period start date" do
           let!(:teacher) { FactoryBot.create(:teacher) }
           let!(:earliest_period) { FactoryBot.create(:induction_period, teacher:, started_on: 2.years.ago, finished_on: 18.months.ago) }
@@ -90,7 +111,7 @@ RSpec.describe Admin::InductionPeriodsController do
               induction_period: { started_on: 7.months.ago }
             }
             expect(response).to be_unprocessable
-            expect(sanitize(response.body)).to include("Induction periods cannot overlap")
+            expect(sanitize(response.body)).to include("Start date cannot overlap another induction period")
           end
         end
 

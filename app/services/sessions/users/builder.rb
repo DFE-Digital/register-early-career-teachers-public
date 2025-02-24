@@ -3,21 +3,28 @@ module Sessions
     class Builder
       class UnknownProvider < StandardError; end
       class UnknownOrganisation < StandardError; end
+      class UnknownPersonaType < StandardError; end
+
+      def id_token = payload.credentials.id_token
 
       def session_user
-        return appropriate_body_user if appropriate_body_user?
-        return school_user if school_user?
+        if dfe_sign_in?
+          return appropriate_body_user if appropriate_body_user?
+          return school_user if school_user?
 
-        raise(UnknownOrganisation, organisation) unless Rails.application.config.enable_personas
+          raise(UnknownOrganisation, organisation)
+        end
 
-        return dfe_persona if dfe_persona?
-        return school_persona if school_persona?
-        return appropriate_body_persona if appropriate_body_persona?
+        if persona?
+          return dfe_persona if dfe_persona?
+          return school_persona if school_persona?
+          return appropriate_body_persona if appropriate_body_persona?
+
+          raise(UnknownPersonaType)
+        end
 
         raise(UnknownProvider, provider)
       end
-
-      def id_token = payload.credentials.id_token
 
     private
 
@@ -32,7 +39,7 @@ module Sessions
       def provider = (@provider ||= payload.provider.to_sym)
       def uid = (@uid ||= payload.uid)
       def user_info = (@user_info ||= payload.info)
-      def persona? = provider == :persona
+      def persona? = Rails.application.config.enable_personas && provider == :persona
       def dfe_sign_in? = provider == :dfe_sign_in
 
       delegate :appropriate_body_id, to: :user_info
@@ -44,12 +51,11 @@ module Sessions
       delegate :school_urn, to: :user_info
 
       # User?
-      def appropriate_body_organisation? = AppropriateBody.exists?(dfe_sign_in_organisation_id: organisation.id)
-      def appropriate_body_user? = dfe_sign_in? && appropriate_body_organisation?
-      def school_user? = dfe_sign_in? && organisation.urn.present?
-      def appropriate_body_persona? = persona? && appropriate_body_id.present?
-      def dfe_persona? = persona? && ActiveModel::Type::Boolean.new.cast(dfe_staff)
-      def school_persona? = persona? && school_urn.present?
+      def appropriate_body_user? = AppropriateBody.exists?(dfe_sign_in_organisation_id: organisation.id)
+      def school_user? = organisation.urn.present? && School.exists?(urn: organisation.urn)
+      def appropriate_body_persona? = appropriate_body_id.present?
+      def dfe_persona? = ActiveModel::Type::Boolean.new.cast(dfe_staff)
+      def school_persona? = school_urn.present?
 
       # Appropriate Body users
       def appropriate_body_persona

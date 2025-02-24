@@ -9,7 +9,7 @@ module Migration
     end
 
     def source_records
-      source_ids = [school_period.legacy_start_id, school_period.legacy_end_id].compact_blank
+      source_ids = [school_period.ecf_start_induction_record_id, school_period.ecf_end_induction_record_id].compact_blank
       Migration::InductionRecordPresenter.wrap(Migration::InductionRecord.where(id: source_ids).order(:start_date))
     end
 

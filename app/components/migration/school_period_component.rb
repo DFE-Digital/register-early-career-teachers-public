@@ -30,11 +30,11 @@ module Migration
 
     def build_matched_attrs
       attrs = {
-        started_on: school_period.legacy_start_id,
-        school: school_period.legacy_start_id,
+        started_on: school_period.ecf_start_induction_record_id,
+        school: school_period.ecf_start_induction_record_id,
       }
-      if school_period.legacy_end_id.present?
-        attrs[:finished_on] = school_period.legacy_end_id
+      if school_period.ecf_end_induction_record_id.present?
+        attrs[:finished_on] = school_period.ecf_end_induction_record_id
       end
 
       attrs

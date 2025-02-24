@@ -30,12 +30,12 @@ describe Builders::Teacher do
       expect(teacher.trs_last_name).to eq "Thompson"
     end
 
-    context "when a legacy_id is supplied" do
-      let(:legacy_id) { SecureRandom.uuid }
+    context "when an ECF User ID is supplied" do
+      let(:ecf_user_id) { SecureRandom.uuid }
 
-      it "stores the legacy_id" do
-        teacher = described_class.new(trn:, full_name:, legacy_id:).build
-        expect(teacher.legacy_id).to eq legacy_id
+      it "stores the id" do
+        teacher = described_class.new(trn:, full_name:, ecf_user_id:).build
+        expect(teacher.ecf_user_id).to eq ecf_user_id
       end
     end
 
