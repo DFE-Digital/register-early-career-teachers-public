@@ -29,8 +29,7 @@ private
         # FIXME: recording a FIP programme without a partnership means that we cannot
         # add a training_period for it, so it doesn't make sense to include these but
         # is that the correct approach?
-        next if record_programme.training_programme == "full_induction_programme"
-          && record_programme.partnership.nil?
+        next if record_programme.training_programme == "full_induction_programme" && record_programme.partnership.nil?
 
         current_programme = record_programme
 
