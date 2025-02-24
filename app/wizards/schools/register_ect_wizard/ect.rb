@@ -1,7 +1,7 @@
 module Schools
   module RegisterECTWizard
+    # This class is a decorator for the SessionRepository
     class ECT < SimpleDelegator
-      # This class is a decorator for the SessionRepository
       def full_name
         corrected_name.presence || [trs_first_name, trs_last_name].join(" ").strip
       end
@@ -32,6 +32,18 @@ module Schools
         trs_induction_status == 'Exempt'
       end
 
+      def teaching_induction_panel?
+        appropriate_body_type == 'teaching_induction_panel'
+      end
+
+      def provider_led?
+        programme_type == 'provider_led'
+      end
+
+      def school_led?
+        programme_type == 'school_led'
+      end
+
       def formatted_programme_type
         programme_type.capitalize.dasherize
       end
@@ -41,7 +53,11 @@ module Schools
       end
 
       def formatted_appropriate_body_name
-        appropriate_body_name == 'ISTIP' ? 'Independent Schools Teacher Induction Panel (ISTIP)' : appropriate_body_name
+        teaching_induction_panel? ? 'Independent Schools Teacher Induction Panel (ISTIP)' : appropriate_body.name
+      end
+
+      def formatted_lead_provider_name
+        lead_provider&.name
       end
 
       def register!(school)
@@ -52,12 +68,22 @@ module Schools
                                  school:,
                                  started_on: Date.parse(start_date),
                                  working_pattern:,
-                                 email:)
-                            .register!
+                                 email:,
+                                 appropriate_body:,
+                                 lead_provider:,
+                                 programme_type:).register!
       end
 
       def active_at_school?(school:)
         ECTAtSchoolPeriods::Search.new.exists?(school_id: school.id, trn:)
+      end
+
+      def appropriate_body
+        AppropriateBody.find_by_id(appropriate_body_id)
+      end
+
+      def lead_provider
+        LeadProvider.find(lead_provider_id) if provider_led?
       end
     end
   end

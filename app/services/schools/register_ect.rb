@@ -1,8 +1,12 @@
 module Schools
   class RegisterECT
-    attr_reader :corrected_name, :trs_first_name, :trs_last_name, :email, :started_on, :school, :teacher, :trn, :working_pattern
+    attr_reader :corrected_name, :trs_first_name, :trs_last_name, :email, :started_on,
+                :school, :teacher, :trn, :working_pattern,
+                :appropriate_body, :lead_provider, :programme_type
 
-    def initialize(trs_first_name:, trs_last_name:, email:, trn:, school:, corrected_name:, started_on:, working_pattern:)
+    def initialize(trs_first_name:, trs_last_name:, email:, trn:, school:,
+                   corrected_name:, started_on:, working_pattern:,
+                   appropriate_body:, programme_type:, lead_provider:)
       @trs_first_name = trs_first_name
       @trs_last_name = trs_last_name
       @started_on = started_on
@@ -11,6 +15,9 @@ module Schools
       @school = school
       @working_pattern = working_pattern
       @email = email
+      @appropriate_body = appropriate_body
+      @programme_type = programme_type
+      @lead_provider = lead_provider
     end
 
     def register!
@@ -34,7 +41,8 @@ module Schools
     end
 
     def start_at_school!
-      teacher.ect_at_school_periods.create!(school:, started_on:, working_pattern:, email:)
+      teacher.ect_at_school_periods.create!(school:, started_on:, working_pattern:, email:,
+                                            appropriate_body:, lead_provider:, programme_type:)
     end
   end
 end

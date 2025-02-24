@@ -1,4 +1,4 @@
-RSpec.describe WorkingPatternValidator do
+RSpec.describe WorkingPatternValidator, type: :model do
   let(:test_class) do
     Class.new do
       include ActiveModel::Model

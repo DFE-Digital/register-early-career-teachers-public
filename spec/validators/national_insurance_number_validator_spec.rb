@@ -1,4 +1,4 @@
-describe NationalInsuranceNumberValidator, type: :model do
+RSpec.describe NationalInsuranceNumberValidator, type: :model do
   let(:test_class) do
     Class.new do
       include ActiveModel::Model

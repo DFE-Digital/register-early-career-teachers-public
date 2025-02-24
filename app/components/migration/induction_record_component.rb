@@ -9,7 +9,7 @@ module Migration
     def migrated_mentor
       return unless mentor_present?
 
-      Teacher.find_by(legacy_mentor_id: induction_record.mentor_profile_id)
+      Teacher.find_by(ecf_mentor_profile_id: induction_record.mentor_profile_id)
     end
 
     def mentor_present?

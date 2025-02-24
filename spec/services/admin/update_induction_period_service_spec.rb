@@ -1,8 +1,10 @@
 require "rails_helper"
 
 RSpec.describe Admin::UpdateInductionPeriodService do
-  subject(:service) { described_class.new(induction_period:, params:) }
+  subject(:service) { described_class.new(induction_period:, params:, author:) }
 
+  let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
+  let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:induction_period) do
     FactoryBot.create(
@@ -89,7 +91,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
           it "raises an error" do
             expect { service.update_induction! }.to raise_error(
               ActiveRecord::RecordInvalid,
-              "Validation failed: Induction periods cannot overlap"
+              "Validation failed: Started on Start date cannot overlap another induction period"
             )
           end
         end
@@ -108,7 +110,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
           it "raises an error" do
             expect { service.update_induction! }.to raise_error(
               ActiveRecord::RecordInvalid,
-              "Validation failed: Induction periods cannot overlap"
+              "Validation failed: Finished on End date cannot overlap another induction period"
             )
           end
         end

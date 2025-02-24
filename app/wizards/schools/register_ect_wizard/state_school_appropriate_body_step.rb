@@ -1,12 +1,15 @@
 module Schools
   module RegisterECTWizard
     class StateSchoolAppropriateBodyStep < Step
-      attr_accessor :appropriate_body_name
+      attr_accessor :appropriate_body_id
 
-      validates :appropriate_body_name, presence: { message: "Enter the name of the appropriate body which will be supporting the ECT's induction" }
+      # OPTIMIZE: Validate appropriate_body_id against a list of known appropriate bodies
+      validates :appropriate_body_id, presence: {
+        message: "Enter the name of the appropriate body which will be supporting the ECT's induction"
+      }
 
       def self.permitted_params
-        %i[appropriate_body_name]
+        %i[appropriate_body_id]
       end
 
       def next_step
@@ -14,7 +17,11 @@ module Schools
       end
 
       def previous_step
-        :start_date
+        :working_pattern
+      end
+
+      def persist
+        ect.update!(appropriate_body_id:)
       end
     end
   end

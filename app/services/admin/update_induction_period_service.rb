@@ -2,20 +2,24 @@ module Admin
   class UpdateInductionPeriodService
     class RecordedOutcomeError < StandardError; end
 
-    attr_reader :induction_period, :params
+    attr_reader :induction_period, :params, :author
 
-    def initialize(induction_period:, params:)
+    def initialize(induction_period:, params:, author:)
       @induction_period = induction_period
       @params = params
+      @author = author
     end
 
     def update_induction!
       validate_can_update!
 
       previous_start_date = induction_period.started_on
+      induction_period.assign_attributes(params)
+      modifications = induction_period.changes
 
       ActiveRecord::Base.transaction do
-        induction_period.update!(params)
+        induction_period.save!
+        record_admin_update_event(modifications)
         notify_trs_of_start_date_change(previous_start_date)
       end
 
@@ -26,6 +30,10 @@ module Admin
 
     def teacher
       @teacher ||= induction_period.teacher
+    end
+
+    def record_admin_update_event(modifications)
+      Events::Record.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher: induction_period.teacher, appropriate_body: induction_period.appropriate_body)
     end
 
     def validate_can_update!

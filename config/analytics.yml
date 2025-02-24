@@ -5,9 +5,9 @@ shared:
   - created_at
   - updated_at
   - trn
-  - legacy_id
-  - legacy_ect_id
-  - legacy_mentor_id
+  - ecf_user_id
+  - ecf_ect_profile_id
+  - ecf_mentor_profile_id
   - trs_qts_awarded_on
   - trs_qts_status_description
   - trs_induction_status
@@ -22,7 +22,7 @@ shared:
   - local_authority_code
   - establishment_number
   - dfe_sign_in_organisation_id
-  - legacy_id
+  - dqt_id
   :induction_periods:
   - id
   - appropriate_body_id
@@ -41,3 +41,7 @@ shared:
   - number_of_terms
   - created_at
   - updated_at
+  :ect_at_school_periods:
+  - appropriate_body_id
+  - lead_provider_id
+  - programme_type

@@ -3,6 +3,7 @@ describe Teacher do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
     it { is_expected.to have_many(:induction_periods) }
+    it { is_expected.to have_many(:appropriate_bodies).through(:induction_periods) }
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
   end

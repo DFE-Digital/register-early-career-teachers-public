@@ -29,3 +29,14 @@
     )
   end
 %>
+<%= 
+  govuk_summary_card(title: 'School requested details') do |card|
+    card.with_summary_list(
+      rows: [
+        { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name } },
+        { key: { text: 'Programme type' },   value: { text: ect_programme_type(@ect) } },
+        { key: { text: 'Lead provider' },    value: { text: @ect.lead_provider&.name } },
+      ]
+    )
+  end
+%>

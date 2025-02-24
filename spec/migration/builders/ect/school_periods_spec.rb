@@ -22,14 +22,14 @@ describe Builders::ECT::SchoolPeriods do
       expect(periods.first.school).to eq school_1
       expect(periods.first.started_on).to eq period_1.start_date
       expect(periods.first.finished_on).to eq period_1.end_date
-      expect(periods.first.legacy_start_id).to eq period_1.start_source_id
-      expect(periods.first.legacy_end_id).to eq period_1.end_source_id
+      expect(periods.first.ecf_start_induction_record_id).to eq period_1.start_source_id
+      expect(periods.first.ecf_end_induction_record_id).to eq period_1.end_source_id
 
       expect(periods.last.school).to eq school_2
       expect(periods.last.started_on).to eq period_2.start_date
       expect(periods.last.finished_on).to be_blank
-      expect(periods.last.legacy_start_id).to eq period_2.start_source_id
-      expect(periods.last.legacy_end_id).to eq period_2.end_source_id
+      expect(periods.last.ecf_start_induction_record_id).to eq period_2.start_source_id
+      expect(periods.last.ecf_end_induction_record_id).to eq period_2.end_source_id
     end
 
     context "when the school does not exist" do

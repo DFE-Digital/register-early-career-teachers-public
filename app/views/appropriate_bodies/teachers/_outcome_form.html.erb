@@ -4,7 +4,8 @@
   f.govuk_date_field :finished_on,
     legend: {
       text: "When did they move from #{@appropriate_body.name}?"
-    }
+    },
+      hint: { text: teacher_induction_date_hint_text }
 %>
 
 <%=

@@ -16,8 +16,8 @@ module Builders
                                       school:,
                                       started_on: period.start_date,
                                       finished_on: period.end_date,
-                                      legacy_start_id: period.start_source_id,
-                                      legacy_end_id: period.end_source_id)
+                                      ecf_start_induction_record_id: period.start_source_id,
+                                      ecf_end_induction_record_id: period.end_source_id)
         rescue ActiveRecord::ActiveRecordError => e
           ::TeacherMigrationFailure.create!(teacher:, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
           success = false
