@@ -56,6 +56,16 @@ module AppropriateBodyHelper
     "#{number_with_delimiter(count)} claimed #{'induction'.pluralize(count)}"
   end
 
+  def trs_alerts_text(alerts_present)
+    if alerts_present
+      link = govuk_link_to("Check a teacher's record service", 'https://www.gov.uk/guidance/check-a-teachers-record')
+
+      safe_join(["Yes", %(Use the #{link} to get more information.).html_safe], tag.br)
+    else
+      "No"
+    end
+  end
+
 private
 
   def pending_induction_submission_full_name(pending_induction_submission)
