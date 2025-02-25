@@ -1,0 +1,61 @@
+<% page_data(
+  caption: @appropriate_body.name,
+  title: "Current ECTs",
+  backlink_href: admin_appropriate_body_path(@appropriate_body)
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m">
+      <%= claimed_inductions_text(@claimed_inductions_count) %>
+    </h2>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <%= form_with method: :get do |f| %>
+      <%= f.govuk_text_field(
+            "q",
+            value: params[:q],
+            label: { text: "Search ECTs", size: "s" },
+            hint: { text: "Enter a name or TRN" },
+          )
+      %>
+
+      <div class="govuk-button-group">
+        <%= f.govuk_submit("Search") %>
+        <%= govuk_link_to("Reset", admin_appropriate_body_current_ects_path(@appropriate_body), secondary: true) %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="govuk-grid-column-two-thirds">
+    <% @teachers.each do |teacher| %>
+      <%=
+        govuk_summary_card(title: Teachers::Name.new(teacher).full_name) do |card|
+          card.with_action { govuk_link_to("Show", admin_teacher_path(teacher)) }
+          card.with_summary_list(
+            actions: false,
+            rows: [
+              { key: { text: "TRN" }, value: { text: teacher.trn } },
+              {
+                key: { text: "Status" },
+                value: {
+                  text: govuk_tag(
+                    **Teachers::InductionStatus.new(
+                      teacher:,
+                      induction_periods: teacher.induction_periods,
+                      trs_induction_status: teacher.trs_induction_status
+                    ).status_tag_kwargs
+                  )
+                },
+              },
+            ]
+          )
+        end
+      %>
+    <% end %>
+
+    <%= govuk_pagination pagy: @pagy %>
+  </div>
+</div>
