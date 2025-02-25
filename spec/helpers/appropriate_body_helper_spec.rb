@@ -79,4 +79,23 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
       end
     end
   end
+
+  describe '#trs_alerts_text' do
+    context 'when alerts are present' do
+      it 'returns yes' do
+        expect(trs_alerts_text(true)).to include('Yes')
+      end
+
+      it 'also returns a sentence about getting more info' do
+        expect(trs_alerts_text(true)).to include('Use the', 'to get more information')
+        expect(trs_alerts_text(true)).to include('https://www.gov.uk/guidance/check-a-teachers-record')
+      end
+    end
+
+    context 'when alerts are absent' do
+      it 'returns no' do
+        expect(trs_alerts_text(false)).to include('No')
+      end
+    end
+  end
 end
