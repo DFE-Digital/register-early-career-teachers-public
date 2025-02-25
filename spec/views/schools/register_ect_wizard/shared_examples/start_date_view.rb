@@ -2,7 +2,7 @@ RSpec.shared_examples "a start date view" do |current_step:, back_path:, back_st
   let(:ect) { wizard.ect }
   let(:title) { "What is the date #{ect.full_name} started or will start teaching as an ECT at your school?" }
   let(:start_date) { nil }
-  let(:store) { FactoryBot.build(:session_repository, start_date:, full_name: 'John Smith') }
+  let(:store) { FactoryBot.build(:session_repository, start_date:, trs_first_name: 'John', trs_last_name: 'Smith') }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, store:) }
 
   before do
@@ -13,7 +13,7 @@ RSpec.shared_examples "a start date view" do |current_step:, back_path:, back_st
   it "sets the page title to 'What is the date John Smith started or will start teaching as an ECT at your school?'" do
     render
 
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+    expect(sanitize(view.content_for(:page_title))).to eql("What is the date John Smith started or will start teaching as an ECT at your school?")
   end
 
   context "when the start date is invalid" do
