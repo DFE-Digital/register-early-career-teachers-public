@@ -41,7 +41,8 @@ module Admin
     end
 
     def notify_trs_of_start_date_change(previous_start_date)
-      return unless earliest_period? && previous_start_date != induction_period.started_on
+      return if teacher_has_earlier_induction_periods?
+      return if previous_start_date == induction_period.started_on
 
       BeginECTInductionJob.perform_later(
         trn: teacher.trn,
@@ -49,8 +50,8 @@ module Admin
       )
     end
 
-    def earlier_periods?
-      !InductionPeriod.where(teacher:).started_before(induction_period.started_on).exists?
+    def teacher_has_earlier_induction_periods?
+      InductionPeriod.where(teacher:).started_before(induction_period.started_on).exists?
     end
   end
 end
