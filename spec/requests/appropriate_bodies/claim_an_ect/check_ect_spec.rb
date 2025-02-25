@@ -18,13 +18,33 @@ RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT
     context 'when signed in as an appropriate body user' do
       let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
-      xit 'finds the right PendingInductionSubmission record and renders the page' do
+      it 'finds the right PendingInductionSubmission record and renders the page' do
         allow(PendingInductionSubmissions::Search).to receive(:new).and_call_original
 
         get("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}/edit")
 
         expect(PendingInductionSubmissions::Search).to have_received(:new).once
         expect(response).to be_successful
+      end
+
+      context 'when alerts are present' do
+        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_alerts: %w[some alerts]) }
+
+        it 'includes info about the check a teachers record service' do
+          get("/appropriate-body/claim-an-ect/check-ect/#{pending_induction_submission.id}/edit")
+
+          expect(response.parsed_body.at_css('.govuk-summary-list').text).to include(/Use the Check a teacher.s record service to get more information/)
+        end
+      end
+
+      context 'when alerts are absent' do
+        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_alerts: %w[]) }
+
+        it 'does not include info about the check a teachers record service' do
+          get("/appropriate-body/claim-an-ect/check-ect/#{pending_induction_submission.id}/edit")
+
+          expect(response.parsed_body.at_css('.govuk-summary-list').text).not_to include(/Use the Check a teacher.s record service to get more information/)
+        end
       end
     end
   end
