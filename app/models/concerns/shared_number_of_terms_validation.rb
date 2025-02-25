@@ -3,6 +3,7 @@ module SharedNumberOfTermsValidation
 
   included do
     validates :number_of_terms,
+              numericality: { message: "Number of terms must be a number with up to 1 decimal place", allow_nil: true },
               terms_range: true,
               presence: {
                 message: "Enter a number of terms",
