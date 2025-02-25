@@ -153,6 +153,14 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
     end
   end
 
+  describe '#previous_step' do
+    subject { wizard.current_step }
+
+    it 'returns :find_mentor' do
+      expect(subject.previous_step).to eq(:find_mentor)
+    end
+  end
+
   context '#save!' do
     context 'when the step is not valid' do
       let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number) }

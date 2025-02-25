@@ -10,7 +10,13 @@ module Schools
       end
 
       def next_step
+        return :cant_use_email if mentor.cant_use_email?
+
         :check_answers
+      end
+
+      def previous_step
+        :review_mentor_details
       end
     end
   end

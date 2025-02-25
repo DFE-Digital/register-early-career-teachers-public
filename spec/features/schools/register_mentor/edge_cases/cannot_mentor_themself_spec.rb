@@ -12,7 +12,7 @@ RSpec.describe 'Registering a mentor' do
     when_i_click_continue
     then_i_should_be_taken_to_the_find_mentor_page
 
-    when_i_submit_the_trn_of_the_ect
+    when_i_submit_the_details_of_the_ect
     then_i_should_be_taken_to_the_cannot_mentor_themself_page
 
     when_i_click_on_assign_a_different_mentor
@@ -56,7 +56,7 @@ RSpec.describe 'Registering a mentor' do
     expect(page.url).to end_with(path)
   end
 
-  def when_i_submit_the_trn_of_the_ect
+  def when_i_submit_the_details_of_the_ect
     page.get_by_label('trn').fill(@ect.trn)
     page.get_by_label('day').fill('1')
     page.get_by_label('month').fill('2')
@@ -70,10 +70,5 @@ RSpec.describe 'Registering a mentor' do
 
   def when_i_click_on_assign_a_different_mentor
     page.get_by_role('link', name: 'Assign a different mentor').click
-  end
-
-  def then_i_should_be_taken_to_the_find_mentor_page
-    path = '/school/register-mentor/find-mentor'
-    expect(page.url).to end_with(path)
   end
 end

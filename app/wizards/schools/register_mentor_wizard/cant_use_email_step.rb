@@ -1,12 +1,12 @@
 module Schools
   module RegisterMentorWizard
-    class ChangeMentorDetailsStep < ReviewMentorDetailsStep
+    class CantUseEmailStep < Step
       def next_step
-        :check_answers
+        :email_address
       end
 
       def previous_step
-        :check_answers
+        :email_address
       end
     end
   end
