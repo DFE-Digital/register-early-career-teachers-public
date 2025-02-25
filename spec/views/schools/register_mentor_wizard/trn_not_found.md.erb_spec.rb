@@ -2,12 +2,13 @@ RSpec.describe "schools/register_mentor_wizard/trn_not_found.md.erb" do
   let(:find_a_lost_trn_path) { "https://find-a-lost-trn.education.gov.uk/start" }
   let(:review_teacher_record_path) { "https://www.gov.uk/guidance/check-a-teachers-record" }
   let(:try_again_path) { schools_register_mentor_wizard_find_mentor_path }
-  let(:title) { "We're unable to match the mentor with the details you provided" }
 
-  it "sets the page title to 'We're unable to match the mentor with the details you provided'" do
-    render
+  context "page title" do
+    it do
+      render
 
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+      expect(sanitize(view.content_for(:page_title))).to eql("We're unable to match the mentor with the details you provided")
+    end
   end
 
   it 'includes no back button' do

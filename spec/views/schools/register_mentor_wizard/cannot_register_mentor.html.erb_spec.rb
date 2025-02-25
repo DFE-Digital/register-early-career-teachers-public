@@ -1,14 +1,14 @@
 RSpec.describe "schools/register_mentor_wizard/cannot_register_mentor" do
   let(:mentor) { double('Mentor', full_name: 'Jane Smith') }
-  let(:title) { "You cannot register #{mentor.full_name}" }
+  let(:title) {}
 
   before do
     assign(:mentor, mentor)
     render
   end
 
-  it "sets the page title to 'You cannot register Jane Smith'" do
-    expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
+  context 'page title' do
+    it { expect(sanitize(view.content_for(:page_title))).to eql('You cannot register Jane Smith') }
   end
 
   it "displays the cannot register mentor message" do
