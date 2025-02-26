@@ -12,7 +12,10 @@ module Interval
     scope :finished, -> { where.not(finished_on: nil) }
     scope :earliest_first, -> { order(started_on: 'asc') }
     scope :latest_first, -> { order(started_on: 'desc') }
-
+    scope :started_before, ->(date) { where(started_on: ...date) }
+    scope :started_on_or_after, ->(date) { where(started_on: date..) }
+    scope :finished_before, ->(date) { where(finished_on: ...date) }
+    scope :finished_on_or_after, ->(date) { where(finished_on: date..) }
     scope :containing_period, ->(period) { where("range @> daterange(?, ?)", period.started_on, period.finished_on) }
   end
 
