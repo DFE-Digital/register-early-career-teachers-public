@@ -1,4 +1,29 @@
 RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
+  let(:store) { FactoryBot.build(:session_repository, email: 'prepopulated@example.com') }
+  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :email_address, store:) }
+  subject { described_class.new(wizard:) }
+
+  describe '#initialize' do
+    subject { described_class.new(wizard:, **params) }
+
+    context 'when the email is provided' do
+      let(:provided_email) { 'provided@example.com' }
+      let(:params) { { email: provided_email } }
+
+      it 'populate the instance from it' do
+        expect(subject.email).to eq(provided_email)
+      end
+    end
+
+    context 'when no email is provided' do
+      let(:params) { {} }
+
+      it 'populate it from the wizard store' do
+        expect(subject.email).to eq('prepopulated@example.com')
+      end
+    end
+  end
+
   describe 'validations' do
     subject { described_class.new(email:) }
 

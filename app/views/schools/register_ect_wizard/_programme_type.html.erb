@@ -1,10 +1,8 @@
-<% 
-  page_data(
-    title: "What training programme will #{@ect.full_name} follow?", 
-    error: @wizard.current_step.errors.present?, 
-    backlink_href:
-  ) 
-%>
+<% page_data(
+    title: "What training programme will #{@ect.full_name} follow?",
+    error: @wizard.current_step.errors.present?,
+    backlink_href:,
+) %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>

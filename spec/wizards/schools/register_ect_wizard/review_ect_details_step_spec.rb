@@ -1,7 +1,34 @@
 describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
-  describe 'validations' do
-    subject { described_class.new(change_name:, corrected_name:) }
+  let(:change_name) { "yes" }
+  let(:corrected_name) { "Jane Smith" }
+  let(:store) { FactoryBot.build(:session_repository, change_name:, corrected_name:) }
+  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :review_ect_details, store:) }
+  subject { described_class.new(wizard:) }
 
+  describe '#initialize' do
+    subject { described_class.new(wizard:, **params) }
+
+    context 'when the change_name is provided' do
+      let(:change_name) { 'no' }
+      let(:params) { { change_name: } }
+
+      it 'populate the instance from it' do
+        expect(subject.change_name).to eq(change_name)
+        expect(subject.corrected_name).to be_nil
+      end
+    end
+
+    context 'when no attributes are provided' do
+      let(:params) { {} }
+
+      it 'populate it from the wizard store' do
+        expect(subject.change_name).to eq('yes')
+        expect(subject.corrected_name).to eq('Jane Smith')
+      end
+    end
+  end
+
+  describe 'validations' do
     context 'when change_name is "yes" and a corrected_name is present' do
       let(:change_name) { "yes" }
       let(:corrected_name) { "John Doe" }
@@ -32,16 +59,12 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
   end
 
   describe '#next_step' do
-    subject { described_class.new }
-
     it 'returns :check_answers' do
       expect(subject.next_step).to eq(:email_address)
     end
   end
 
   describe '#previous_step' do
-    subject { described_class.new }
-
     it 'returns :find_ect' do
       expect(subject.previous_step).to eq(:find_ect)
     end
