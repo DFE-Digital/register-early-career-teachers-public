@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin::UpdateInductionPeriodService do
+RSpec.describe Admin::UpdateInductionPeriod do
   subject(:service) { described_class.new(induction_period:, params:, author:) }
 
   let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
@@ -41,7 +41,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
 
       it "raises an error" do
         expect { service.update_induction! }.to raise_error(
-          Admin::UpdateInductionPeriodService::RecordedOutcomeError,
+          Admin::UpdateInductionPeriod::RecordedOutcomeError,
           "Cannot edit induction period with recorded outcome"
         )
       end
