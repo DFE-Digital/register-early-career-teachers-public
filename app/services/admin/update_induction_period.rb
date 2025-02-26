@@ -10,7 +10,7 @@ module Admin
       @author = author
     end
 
-    def update_induction!
+    def update_induction_period!
       validate_can_update!
 
       previous_start_date = induction_period.started_on
