@@ -1,4 +1,28 @@
 RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type: :model do
+  let(:store) { FactoryBot.build(:session_repository, appropriate_body_id: '123') }
+  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body, store:) }
+
+  describe '#initialize' do
+    let(:appropriate_body_id) { 'provided_ab_name' }
+    subject { described_class.new(wizard:, **params) }
+
+    context 'when the appropriate_body_id is provided' do
+      let(:params) { { appropriate_body_id: } }
+
+      it 'populate the instance from it' do
+        expect(subject.appropriate_body_id).to eq(appropriate_body_id)
+      end
+    end
+
+    context 'when no appropriate_body_id is provided' do
+      let(:params) { {} }
+
+      it 'populate it from the wizard store' do
+        expect(subject.appropriate_body_id).to eq('123')
+      end
+    end
+  end
+
   describe 'validations' do
     subject { described_class.new(appropriate_body_id:) }
 
@@ -39,8 +63,6 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
   end
 
   describe '#next_step' do
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body) }
-
     subject { wizard.current_step }
 
     it 'returns the next step' do
@@ -49,8 +71,6 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
   end
 
   describe '#previous_step' do
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body) }
-
     subject { wizard.current_step }
 
     it 'returns the previous step' do

@@ -1,8 +1,8 @@
 RSpec.describe "schools/register_ect_wizard/lead_provider.html.erb" do
   let(:ect) { double(full_name: 'John Smith') }
-
+  let(:store) { FactoryBot.build(:session_repository, lead_provider_id: "1") }
   let(:wizard) do
-    FactoryBot.build(:register_ect_wizard, current_step: :lead_provider, store: {})
+    FactoryBot.build(:register_ect_wizard, current_step: :lead_provider, store:)
   end
 
   before do

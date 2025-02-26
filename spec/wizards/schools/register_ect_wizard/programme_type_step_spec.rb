@@ -1,4 +1,29 @@
 RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
+  describe '#initialize' do
+    let(:school) { FactoryBot.build(:school) }
+    let(:store) { FactoryBot.build(:session_repository, programme_type: 'prepopulated_programme_type') }
+    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :programme_type, school:, store:) }
+
+    let(:programme_type) { 'provided_programme_type' }
+    subject { described_class.new(wizard:, **params) }
+
+    context 'when the programme_type is provided' do
+      let(:params) { { programme_type: } }
+
+      it 'populate the instance from it' do
+        expect(subject.programme_type).to eq(programme_type)
+      end
+    end
+
+    context 'when no programme_type is provided' do
+      let(:params) { {} }
+
+      it 'populate it from the wizard store' do
+        expect(subject.programme_type).to eq('prepopulated_programme_type')
+      end
+    end
+  end
+
   describe 'validations' do
     subject { described_class.new(programme_type:) }
 
