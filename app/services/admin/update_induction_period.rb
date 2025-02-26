@@ -1,5 +1,5 @@
 module Admin
-  class UpdateInductionPeriodService
+  class UpdateInductionPeriod
     class RecordedOutcomeError < StandardError; end
 
     attr_reader :induction_period, :params, :author
