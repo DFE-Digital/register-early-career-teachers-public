@@ -37,6 +37,14 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   delegate :trn, to: :teacher
 
+  def provider_led?
+    programme_type == 'provider_led'
+  end
+
+  def school_led?
+    programme_type == 'school_led'
+  end
+
 private
 
   def teacher_distinct_period
