@@ -1,7 +1,7 @@
 <%
   page_data(
     title: "Extensions",
-    caption: Teachers::Name.new(@teacher).full_name,
+    caption: teacher_full_name(@teacher),
     caption_size: 'm',
     backlink_href: ab_teacher_path(@teacher)
   )

@@ -1,5 +1,5 @@
 <% page_data(
-  title: "Release #{Teachers::Name.new(@teacher).full_name}",
+  title: "Release #{teacher_full_name(@teacher)}",
   error: @pending_induction_submission.errors.any?,
   backlink_href: ab_teacher_path(@teacher)
 ) %>
