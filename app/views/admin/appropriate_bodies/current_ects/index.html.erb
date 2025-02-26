@@ -32,7 +32,7 @@
   <div class="govuk-grid-column-two-thirds">
     <% @teachers.each do |teacher| %>
       <%=
-        govuk_summary_card(title: Teachers::Name.new(teacher).full_name) do |card|
+        govuk_summary_card(title: teacher_full_name(teacher)) do |card|
           card.with_action { govuk_link_to("Show", admin_teacher_path(teacher)) }
           card.with_summary_list(
             actions: false,

@@ -18,7 +18,7 @@
                                                size: 'l' } do %>
     <% @mentor_form.eligible_mentors.each_with_index do |mentor, i| %>
       <%= f.govuk_radio_button :mentor_id, mentor.id,
-                               label: { text: Teachers::Name.new(mentor.teacher).full_name },
+                               label: { text: teacher_full_name(mentor.teacher) },
                                link_errors: i == 0 %>
     <% end %>
     <%= f.govuk_radio_divider %>

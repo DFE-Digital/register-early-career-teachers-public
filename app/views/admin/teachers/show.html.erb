@@ -1,7 +1,7 @@
 <%
   page_data(
-    title: Teachers::Name.new(@teacher).full_name,
-    caption: "TRN: #{@teacher.trn}",
+    title: teacher_full_name(@teacher),
+    caption: teacher_trn(@teacher),
     caption_size: 'm',
     error: false,
     backlink_href: admin_teachers_path(page: @page)
