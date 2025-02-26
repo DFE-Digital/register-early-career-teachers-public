@@ -13,7 +13,7 @@ on:
         - sandbox
         - staging
         - test
-        - production
+        # - production
       confirm-production:
         description: Must be set to true if restoring production
         required: true
@@ -35,7 +35,9 @@ env:
 jobs:
   restore:
     name: Restore AKS Database
-    if: ${{ inputs.environment != 'production' || (inputs.environment == 'production' && inputs.confirm-production == 'true' )  }}
+    # Swap comments on the next 2 lines to be able to restore production's main db.
+    # if: ${{ inputs.environment != 'production' || (inputs.environment == 'production' && inputs.confirm-production == 'true' )  }}
+    if: ${{ inputs.environment != 'production' }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     concurrency: deploy_${{ inputs.environment }}
