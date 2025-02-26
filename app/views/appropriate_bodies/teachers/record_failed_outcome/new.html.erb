@@ -1,14 +1,14 @@
 <% page_data(
-    title: "Record failed outcome for #{Teachers::Name.new(@teacher).full_name}",
+    title: "Record failed outcome for #{teacher_full_name(@teacher)}",
     error: @pending_induction_submission.errors.any?,
     backlink_href: ab_teacher_path(@teacher)
   )
 %>
 
 <p class="govuk-body">
-  <%= Teachers::Name.new(@teacher).full_name %> can appeal this outcome. You must tell them about their right to appeal and the appeal process.
+  <%= teacher_full_name(@teacher) %> can appeal this outcome. You must tell them about their right to appeal and the appeal process.
 </p>
 <%= form_with(model: @pending_induction_submission, url: ab_teacher_record_failed_outcome_path(@teacher), method: 'post') do |f| %>
   <%= render partial: 'appropriate_bodies/teachers/outcome_form', locals: { f: f } %>
-  <%= f.govuk_submit "Record failing outcome for #{Teachers::Name.new(@teacher).full_name}", warning: true %>
+  <%= f.govuk_submit "Record failing outcome for #{teacher_full_name(@teacher)}", warning: true %>
 <% end %>

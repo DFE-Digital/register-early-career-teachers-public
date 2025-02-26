@@ -1,8 +1,17 @@
 RSpec.describe TeacherHelper, type: :helper do
-  let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Barry', trs_last_name: 'White') }
+  let(:teacher) do
+    FactoryBot.create(:teacher,
+                      trn: '1234567',
+                      trs_first_name: 'Barry',
+                      trs_last_name: 'White')
+  end
 
   describe '#teacher_full_name' do
     it { expect(teacher_full_name(teacher)).to eq('Barry White') }
+  end
+
+  describe '#teacher_trn' do
+    it { expect(teacher_trn(teacher)).to eq('TRN: 1234567') }
   end
 
   describe "#teacher_date_of_birth_hint_text" do

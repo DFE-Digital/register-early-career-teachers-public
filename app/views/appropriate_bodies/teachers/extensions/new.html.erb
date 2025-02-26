@@ -1,7 +1,7 @@
 <%
   page_data(
-    title: "How many terms do you want to extend #{Teachers::Name.new(@teacher).full_name}’s induction by?",
-    caption: Teachers::Name.new(@teacher).full_name,
+    title: "How many terms do you want to extend #{teacher_full_name(@teacher)}’s induction by?",
+    caption: teacher_full_name(@teacher),
     caption_size: 'm',
     backlink_href: ab_teacher_path(@teacher)
   )
@@ -25,7 +25,7 @@
     </ul>
 
     <p class="govuk-body">
-      <%= Teachers::Name.new(@teacher).full_name %> can appeal an extension to their induction. You must tell them about their right to appeal and the appeal process.
+      <%= teacher_full_name(@teacher) %> can appeal an extension to their induction. You must tell them about their right to appeal and the appeal process.
     </p>
 
     <%= form_with(

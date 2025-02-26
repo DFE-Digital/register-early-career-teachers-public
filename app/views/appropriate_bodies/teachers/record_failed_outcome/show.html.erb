@@ -1,11 +1,11 @@
 <% page_data(
-  title: "You have recorded a failing outcome for #{Teachers::Name.new(@teacher).full_name}",
+  title: "You have recorded a failing outcome for #{teacher_full_name(@teacher)}",
   header: false)
 %>
 
 <%= govuk_panel(
   title_text: "Success",
-  text: "You have recorded a failing outcome for #{Teachers::Name.new(@teacher).full_name}"
+  text: "You have recorded a failing outcome for #{teacher_full_name(@teacher)}"
 ) %>
 
 <%= govuk_button_link_to("Return to the homepage", ab_teachers_path, secondary: true) %>

@@ -1,8 +1,12 @@
 module TeacherHelper
-  # TODO: this helper could get used loads
   # @param teacher [Teacher]
   def teacher_full_name(teacher)
     ::Teachers::Name.new(teacher).full_name
+  end
+
+  # @param teacher [Teacher]
+  def teacher_trn(teacher)
+    "TRN: #{teacher.trn}"
   end
 
   def teacher_date_of_birth_hint_text
