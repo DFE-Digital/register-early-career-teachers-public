@@ -25,13 +25,19 @@ private
       record_programme = induction_record.induction_programme
 
       if current_programme != record_programme
+
+        # FIXME: recording a FIP programme without a partnership means that we cannot
+        # add a training_period for it, so it doesn't make sense to include these but
+        # is that the correct approach?
+        next if record_programme.training_programme == "full_induction_programme" && record_programme.partnership.nil?
+
         current_programme = record_programme
 
         lead_provider = current_programme.partnership&.lead_provider&.name
         delivery_partner = current_programme.partnership&.delivery_partner&.name
         core_materials = current_programme.core_induction_programme&.name
 
-        # might want to filter out FIP without partnership or CIP without materials?
+        # TODO: check - should we skip CIP without materials?
         current_period = Migration::TrainingPeriodData.new(training_programme: current_programme.training_programme,
                                                            lead_provider:,
                                                            delivery_partner:,
