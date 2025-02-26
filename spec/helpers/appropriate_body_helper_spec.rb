@@ -4,12 +4,12 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
   include GovukVisuallyHiddenHelper
 
   describe "#induction_programme_choices" do
-    it "returns an array of InductionProgrammeChoice" do
+    it "returns an array of FormChoice" do
       expect(induction_programme_choices).to be_an(Array)
-      expect(induction_programme_choices).to all(be_a(AppropriateBodyHelper::InductionProgrammeChoice))
+      expect(induction_programme_choices).to all(be_a(AppropriateBodyHelper::FormChoice))
     end
 
-    it "has keys for the old (pre-2025) induction choices" do
+    it "has identifiers for the old (pre-2025) induction choices" do
       expect(induction_programme_choices.map(&:identifier)).to eql(%w[fip cip diy])
     end
 
@@ -19,6 +19,21 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
         'Core induction programme',
         'School-based induction programme'
       ])
+    end
+  end
+
+  describe "#induction_outcome_choices" do
+    it "returns an array of FormChoice" do
+      expect(induction_outcome_choices).to be_an(Array)
+      expect(induction_outcome_choices).to all(be_a(AppropriateBodyHelper::FormChoice))
+    end
+
+    it "has identifiers for induction outcomes" do
+      expect(induction_outcome_choices.map(&:identifier)).to eql(%w[pass fail])
+    end
+
+    it "has names for induction outcomes" do
+      expect(induction_outcome_choices.map(&:name)).to eql(%w[Passed Failed])
     end
   end
 

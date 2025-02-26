@@ -1,13 +1,13 @@
-<% 
+<%
   page_data(
-    title: teacher_full_name(@ect.teacher), 
+    title: teacher_full_name(@ect.teacher),
     backlink_href: schools_ects_home_path,
     caption: teacher_trn(@ect.teacher),
-    caption_size: 'l',    
-  ) 
+    caption_size: 'l',
+  )
 %>
-<h2 class='govuk-heading-m'>Personal details</h2>
-<%= 
+<h2 class='govuk-heading-m'>ECT details</h2>
+<%=
   govuk_summary_list(
     rows: [
       { key: { text: 'Name' },              value: { text: teacher_full_name(@ect.teacher) } },
@@ -18,19 +18,9 @@
     ]
   )
 %>
-<%= 
-  govuk_summary_card(title: 'Current training details') do |card|
-    card.with_summary_list(
-      rows: [
-        { key: { text: 'Appropriate body (reported by AB)' }, value: { text: @ect.teacher.induction_periods.last&.appropriate_body&.name } },
-        { key: { text: 'Programme type (reported by AB)' },   value: { text: induction_programme_choice_name(@ect.teacher.induction_periods.last&.induction_programme) } },
-        { key: { text: 'Lead provider (reported by LP)' },    value: { text: @ect.training_periods.last&.provider_partnership&.lead_provider&.name } },
-      ]
-    )
-  end
-%>
-<%= 
-  govuk_summary_card(title: 'School requested details') do |card|
+<h2 class='govuk-heading-m'>ECTE training details</h2>
+<%=
+  govuk_summary_card(title: 'Reported to us by your school') do |card|
     card.with_summary_list(
       rows: [
         { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name } },
@@ -38,5 +28,44 @@
         { key: { text: 'Lead provider' },    value: { text: @ect.lead_provider&.name } },
       ]
     )
+  end
+%>
+<%=
+  if @ect.provider_led?
+    govuk_summary_card(title: 'Reported to us by your lead provider') do |card|
+      if (period = @ect.training_periods.last)    
+        card.with_summary_list(
+          rows: [
+            { key: { text: 'Lead provider' },    value: { text: period.lead_provider.name } },
+            { key: { text: 'Delivery partner' }, value: { text: period.delivery_partner.name } },
+          ]
+        )
+      else
+        card.with_summary_list do |summary_list|
+          summary_list.with_row do |row|
+            row.with_value(text: 'Your lead provider nas not reported any information to us yet.')
+          end
+        end
+      end      
+    end
+  end
+%>
+<%=
+  govuk_summary_card(title: 'Reported to us by your appropriate body') do |card|
+    if @ect.teacher.induction_periods.any?
+      card.with_summary_list(
+        rows: [
+          { key: { text: 'Appropriate body' },      value: { text: teacher_induction_ab_name(@ect.teacher) } },
+          { key: { text: 'Programme type' },        value: { text: teacher_induction_programme(@ect.teacher) } },
+          { key: { text: 'Induction start date' },  value: { text: teacher_induction_start_date(@ect.teacher) } },
+        ]
+      )
+    else
+      card.with_summary_list do |summary_list|
+        summary_list.with_row do |row|
+          row.with_value(text: 'Your appropriate body nas not reported any information to us yet.')
+        end
+      end
+    end
   end
 %>
