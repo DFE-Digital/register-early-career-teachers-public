@@ -12,7 +12,7 @@ module Admin
         author: current_user
       )
 
-      if service.update_induction!
+      if service.update_induction_period!
         redirect_to admin_teacher_path(@induction_period.teacher),
                     notice: "Induction period updated successfully"
       end
