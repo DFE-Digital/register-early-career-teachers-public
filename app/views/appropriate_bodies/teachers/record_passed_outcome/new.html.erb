@@ -1,10 +1,10 @@
 <% page_data(
-  title: "Record passed outcome for #{Teachers::Name.new(@teacher).full_name}",
+  title: "Record passed outcome for #{teacher_full_name(@teacher)}",
   error: @pending_induction_submission.errors.any?,
   backlink_href: ab_teacher_path(@teacher)
 ) %>
 
 <%= form_with(model: @pending_induction_submission, url: ab_teacher_record_passed_outcome_path(@teacher), method: 'post') do |f| %>
   <%= render partial: 'appropriate_bodies/teachers/outcome_form', locals: { f: f } %>
-  <%= f.govuk_submit "Record pass outcome for #{Teachers::Name.new(@teacher).full_name}" %>
+  <%= f.govuk_submit "Record pass outcome for #{teacher_full_name(@teacher)}" %>
 <% end %>
