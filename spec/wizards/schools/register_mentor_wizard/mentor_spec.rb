@@ -55,25 +55,25 @@ describe Schools::RegisterMentorWizard::Mentor do
   end
 
   describe '#cant_use_email?' do
-    context 'when there is an active ECT with the email in use' do
-      before { FactoryBot.create(:ect_at_school_period, :active, email: mentor.email) }
+    let(:teacher_email_service) { instance_double(Schools::TeacherEmail) }
 
-      it 'returns true' do
-        expect(mentor.cant_use_email?).to be_truthy
+    before do
+      allow(Schools::TeacherEmail).to receive(:new).with(email: mentor.email, trn: mentor.trn).and_return(teacher_email_service)
+    end
+
+    context "when the email is used in an ongoing school period" do
+      before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(true) }
+
+      it "returns true" do
+        expect(subject.cant_use_email?).to be true
       end
     end
 
-    context 'when there is an active mentor with the email in use' do
-      before { FactoryBot.create(:mentor_at_school_period, :active, email: mentor.email) }
+    context "when the email is not used in an ongoing school period" do
+      before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(false) }
 
-      it 'returns true' do
-        expect(mentor.cant_use_email?).to be_truthy
-      end
-    end
-
-    context 'otherwise' do
-      it 'returns false' do
-        expect(mentor.cant_use_email?).to be_falsey
+      it "returns false" do
+        expect(subject.cant_use_email?).to be false
       end
     end
   end

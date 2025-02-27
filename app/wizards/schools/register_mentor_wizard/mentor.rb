@@ -16,7 +16,7 @@ module Schools
       end
 
       def cant_use_email?
-        email_in_use_by_active_ect? || email_in_use_by_active_mentor?
+        Schools::TeacherEmail.new(email:, trn:).is_currently_used?
       end
 
       def corrected_name?
@@ -60,14 +60,6 @@ module Schools
       end
 
     private
-
-      def email_in_use_by_active_mentor?
-        MentorAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).ongoing.exists?
-      end
-
-      def email_in_use_by_active_ect?
-        ECTAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).ongoing.exists?
-      end
 
       # The wizard store object where we delegate the rest of methods
       def wizard_store
