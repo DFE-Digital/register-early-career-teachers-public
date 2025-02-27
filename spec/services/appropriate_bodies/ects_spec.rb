@@ -4,7 +4,7 @@ describe AppropriateBodies::ECTs do
   let(:teacher) { FactoryBot.create(:teacher) }
   subject { AppropriateBodies::ECTs.new(appropriate_body) }
 
-  describe "#current" do
+  describe "#current_or_completeed_while_at_appropriate_body" do
     it 'returns teachers whose latest induction period is with this AB' do
       # Earlier induction period with another AB
       FactoryBot.create(:induction_period,
@@ -24,7 +24,7 @@ describe AppropriateBodies::ECTs do
                         number_of_terms: 3,
                         induction_programme: 'fip')
 
-      expect(subject.current).to include(teacher)
+      expect(subject.current_or_completeed_while_at_appropriate_body).to include(teacher)
     end
 
     it 'does not return teachers whose latest induction period is with another AB' do
@@ -34,7 +34,6 @@ describe AppropriateBodies::ECTs do
                         appropriate_body:,
                         started_on: 1.year.ago,
                         finished_on: 6.months.ago,
-                        outcome: 'pass',
                         number_of_terms: 3,
                         induction_programme: 'fip')
       # Latest induction period with another AB
@@ -43,10 +42,11 @@ describe AppropriateBodies::ECTs do
                         appropriate_body: other_appropriate_body,
                         started_on: 6.months.ago,
                         finished_on: 1.month.ago,
+                        outcome: 'pass', # pass or fail should be on last IP
                         number_of_terms: 3,
                         induction_programme: 'fip')
 
-      expect(subject.current).not_to include(teacher)
+      expect(subject.current_or_completeed_while_at_appropriate_body).not_to include(teacher)
     end
 
     it 'returns teachers with ongoing induction periods' do
@@ -67,7 +67,7 @@ describe AppropriateBodies::ECTs do
                         number_of_terms: nil,
                         induction_programme: 'fip')
 
-      expect(subject.current).to include(teacher)
+      expect(subject.current_or_completeed_while_at_appropriate_body).to include(teacher)
     end
 
     it 'returns teachers with failed outcomes' do
@@ -90,7 +90,7 @@ describe AppropriateBodies::ECTs do
                         number_of_terms: 3,
                         induction_programme: 'fip')
 
-      expect(subject.current).to include(teacher)
+      expect(subject.current_or_completeed_while_at_appropriate_body).to include(teacher)
     end
 
     it 'does not return teachers with finished induction periods that have no outcome' do
@@ -104,7 +104,7 @@ describe AppropriateBodies::ECTs do
                         number_of_terms: 3,
                         induction_programme: 'fip')
 
-      expect(subject.current).not_to include(teacher)
+      expect(subject.current_or_completeed_while_at_appropriate_body).not_to include(teacher)
     end
   end
 
