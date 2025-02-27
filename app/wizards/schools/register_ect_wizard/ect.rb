@@ -2,6 +2,10 @@ module Schools
   module RegisterECTWizard
     # This class is a decorator for the SessionRepository
     class ECT < SimpleDelegator
+      def cant_use_email?
+        Schools::TeacherEmail.new(email:, trn:).is_currently_used?
+      end
+
       def full_name
         corrected_name.presence || [trs_first_name, trs_last_name].join(" ").strip
       end

@@ -186,4 +186,28 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       expect(ect.active_at_school?(school:)).to be_falsey
     end
   end
+
+  describe '#cant_use_email?' do
+    let(:teacher_email_service) { instance_double(Schools::TeacherEmail) }
+
+    before do
+      allow(Schools::TeacherEmail).to receive(:new).with(email: ect.email, trn: ect.trn).and_return(teacher_email_service)
+    end
+
+    context "when the email is used in an ongoing school period" do
+      before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(true) }
+
+      it "returns true" do
+        expect(subject.cant_use_email?).to be true
+      end
+    end
+
+    context "when the email is not used in an ongoing school period" do
+      before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(false) }
+
+      it "returns false" do
+        expect(subject.cant_use_email?).to be false
+      end
+    end
+  end
 end
