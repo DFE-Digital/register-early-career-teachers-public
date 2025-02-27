@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Teachers::PersonalDetailsComponent, type: :component do
+RSpec.describe Teachers::Details::PersonalDetailsComponent, type: :component do
   include TeacherHelper
 
   let(:teacher) { FactoryBot.create(:teacher) }

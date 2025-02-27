@@ -1,5 +1,5 @@
 module Teachers
-  class Details < ViewComponent::Base
+  class DetailsComponent < ViewComponent::Base
     renders_one :personal_details
     renders_one :itt_details
     renders_one :induction_summary
