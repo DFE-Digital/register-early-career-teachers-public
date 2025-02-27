@@ -6,11 +6,11 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
 
   describe 'GET /appropriate-body/claim-an-ect/register-ect/:id/edit' do
     context 'when not signed in' do
-      it 'redirects to the root page' do
+      it 'redirects to the signin page' do
         get("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}/edit")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to end_with(root_url)
+        expect(response.redirect_url).to end_with('/sign-in')
       end
     end
 
@@ -33,11 +33,11 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
 
   describe 'POST /appropriate-body/claim-an-ect/register-ect/:id' do
     context 'when not signed in' do
-      it 'redirects to the root page' do
+      it 'redirects to the signin page' do
         patch("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response.redirect_url).to end_with('/sign-in')
       end
     end
 
@@ -125,11 +125,11 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
 
   describe 'GET /appropriate-body/claim-an-ect/register-ect/:id' do
     context 'when not signed in' do
-      it 'redirects to the root page' do
+      it 'redirects to the signin page' do
         get("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response.redirect_url).to end_with('/sign-in')
       end
     end
 

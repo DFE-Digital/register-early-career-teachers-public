@@ -7,11 +7,11 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
 
   describe 'GET /school/ects/:id/mentorship/new' do
     context 'when not signed in' do
-      it 'redirects to the root page' do
+      it 'redirects to the sign in page' do
         get("/school/ects/#{ect.id}/mentorship/new")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response.redirect_url).to end_with('/sign-in')
       end
     end
 
@@ -33,11 +33,11 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
 
   describe 'POST /school/ects/:id/mentorship' do
     context 'when not signed in' do
-      it 'redirects to the root page' do
+      it 'redirects to the sign in page' do
         post("/school/ects/#{ect.id}/mentorship")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response.redirect_url).to end_with('/sign-in')
       end
     end
 
@@ -90,11 +90,11 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
 
   describe 'GET /school/ects/:id/mentorship/confirmation' do
     context 'when not signed in' do
-      it 'redirects to the root page' do
+      it 'redirects to the sign in page' do
         get("/school/ects/#{ect.id}/mentorship/confirmation")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response.redirect_url).to end_with('/sign-in')
       end
     end
 
