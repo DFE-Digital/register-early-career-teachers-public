@@ -4,11 +4,11 @@ RSpec.describe 'Appropriate body releasing an ECT' do
 
   describe 'GET /appropriate-body/teachers/:id/release/new' do
     context 'when not signed in' do
-      it 'redirects to the root page' do
+      it 'redirects to the signin page' do
         get("/appropriate-body/teachers/#{teacher.id}/release/new")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response.redirect_url).to end_with('/sign-in')
       end
     end
 
@@ -37,11 +37,11 @@ RSpec.describe 'Appropriate body releasing an ECT' do
 
   describe 'POST /appropriate-body/teachers/:id/release' do
     context 'when not signed in' do
-      it 'redirects to the root page' do
+      it 'redirects to the signin page' do
         post("/appropriate-body/teachers/#{teacher.id}/release")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response.redirect_url).to end_with('/sign-in')
       end
     end
 
