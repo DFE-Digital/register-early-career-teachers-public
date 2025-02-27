@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Teachers::PastInductionPeriodsComponent, type: :component do
+RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :component do
   include AppropriateBodyHelper
 
   let(:teacher) { FactoryBot.create(:teacher) }

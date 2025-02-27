@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Teachers::Details, type: :component do
+RSpec.describe Teachers::DetailsComponent, type: :component do
   include ActionView::Helpers::TagHelper
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:component) { described_class.new(teacher:) }
