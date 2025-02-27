@@ -31,7 +31,8 @@ class InductionPeriod < ApplicationRecord
   scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
   scope :siblings_of, ->(instance) { for_teacher(instance.teacher).excluding(instance) }
   scope :ongoing, -> { where(finished_on: nil) }
-  scope :with_outcome, -> { where(outcome: OUTCOMES) }
+  scope :with_outcome, -> { where.not(outcome: nil) }
+  scope :without_outcome, -> { where(outcome: nil) }
 
 private
 
