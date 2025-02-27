@@ -87,6 +87,8 @@
 %>
 
 <% if @teacher.present? %>
-  <%= render Teachers::CurrentInductionPeriodComponent.new(teacher: @teacher) %>
-  <%= render Teachers::PastInductionPeriodsComponent.new(teacher: @teacher) %>
+  <%= render Teachers::Details.new(teacher: @teacher) do |component|
+    component.with_current_induction_period { render(Teachers::CurrentInductionPeriodComponent.new(teacher: @teacher)) }
+    component.with_past_induction_periods { render(Teachers::PastInductionPeriodsComponent.new(teacher: @teacher)) }
+  end %>
 <% end %>
