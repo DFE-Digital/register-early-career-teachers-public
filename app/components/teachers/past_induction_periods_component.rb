@@ -23,6 +23,8 @@ module Teachers
     end
 
     def edit_link(period)
+      return unless can_edit?(period)
+
       helpers.govuk_link_to('Edit', helpers.edit_admin_teacher_induction_period_path(teacher_id: teacher.id, id: period.id), no_visited_state: true)
     end
   end

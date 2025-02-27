@@ -1,0 +1,17 @@
+<h2 class="govuk-heading-m">Initial teacher training details</h2>
+
+<%= govuk_summary_list do |sl| %>
+  <% if teacher.trs_qts_awarded_on.present? %>
+    <% sl.with_row do |row| %>
+      <% row.with_key(text: "QTS awarded") %>
+      <% row.with_value(text: teacher.trs_qts_awarded_on.to_fs(:govuk)) %>
+    <% end %>
+  <% end %>
+
+  <% if teacher.trs_initial_teacher_training_provider_name.present? %>
+    <% sl.with_row do |row| %>
+      <% row.with_key(text: "Initial teacher training provider") %>
+      <% row.with_value(text: teacher.trs_initial_teacher_training_provider_name) %>
+    <% end %>
+  <% end %>
+<% end %>
