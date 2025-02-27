@@ -5,8 +5,7 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
   include Rails.application.routes.url_helpers
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:kwargs) { { teacher: } }
-  let(:component) { described_class.new(**kwargs) }
+  let(:component) { described_class.new(teacher:) }
 
   context "when teacher has no current induction period" do
     it "does not render" do
@@ -17,8 +16,7 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
   context "when teacher has a current induction period" do
     let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Test AB") }
     let!(:current_period) do
-      FactoryBot.create(:induction_period,
-                        :active,
+      FactoryBot.create(:induction_period, :active,
                         teacher:,
                         appropriate_body:,
                         started_on: 6.months.ago,
@@ -39,17 +37,44 @@ RSpec.describe Teachers::CurrentInductionPeriodComponent, type: :component do
       expect(page).to have_content(6.months.ago.to_date.to_fs(:govuk))
     end
 
-    it "doesn't include a release link by default" do
+    it "includes a release link when enable_release is true" do
+      component = described_class.new(teacher:, enable_release: true)
       render_inline(component)
-      expect(page).not_to have_text "Release"
+      expect(page).to have_link("Release", href: new_ab_teacher_release_ect_path(teacher))
     end
 
-    context 'when enable_release: true' do
-      let(:kwargs) { { teacher:, enable_release: true } }
+    it "does not include a release link when enable_release is false" do
+      component = described_class.new(teacher:, enable_release: false)
+      render_inline(component)
+      expect(page).not_to have_link("Release")
+    end
 
-      it 'includes a release link' do
+    it "includes an edit link when enable_edit is true" do
+      component = described_class.new(teacher:, enable_edit: true)
+      render_inline(component)
+      expect(page).to have_link("Edit", href: edit_admin_teacher_induction_period_path(teacher_id: teacher.id, id: current_period.id))
+    end
+
+    it "does not include an edit link when enable_edit is false" do
+      component = described_class.new(teacher:, enable_edit: false)
+      render_inline(component)
+      expect(page).not_to have_link("Edit")
+    end
+
+    context "when the induction period has an outcome" do
+      let!(:current_period) do
+        FactoryBot.create(:induction_period, :active,
+                          teacher:,
+                          appropriate_body:,
+                          started_on: 6.months.ago,
+                          outcome: "pass",
+                          induction_programme: "cip")
+      end
+
+      it "does not include an edit link when " do
+        component = described_class.new(teacher:, enable_edit: true)
         render_inline(component)
-        expect(page).to have_link("Release", href: new_ab_teacher_release_ect_path(teacher))
+        expect(page).not_to have_link("Edit")
       end
     end
   end

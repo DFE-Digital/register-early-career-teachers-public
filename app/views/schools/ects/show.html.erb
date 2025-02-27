@@ -1,42 +1,46 @@
-<% 
+<%
   page_data(
-    title: teacher_full_name(@ect.teacher), 
+    title: teacher_full_name(@ect.teacher),
     backlink_href: schools_ects_home_path,
     caption: teacher_trn(@ect.teacher),
-    caption_size: 'l',    
-  ) 
-%>
-<h2 class='govuk-heading-m'>Personal details</h2>
-<%= 
-  govuk_summary_list(
-    rows: [
-      { key: { text: 'Name' },              value: { text: teacher_full_name(@ect.teacher) } },
-      { key: { text: 'Email address' },     value: { text: @ect.email } },
-      { key: { text: 'Mentor' },            value: { text: ect_mentor_details(@ect) } },
-      { key: { text: 'School start date' }, value: { text: ect_start_date(@ect) } },
-      { key: { text: 'Working pattern' },   value: { text: @ect.working_pattern&.humanize } },
-    ]
+    caption_size: 'l',
   )
 %>
-<%= 
-  govuk_summary_card(title: 'Current training details') do |card|
-    card.with_summary_list(
-      rows: [
-        { key: { text: 'Appropriate body (reported by AB)' }, value: { text: @ect.teacher.induction_periods.last&.appropriate_body&.name } },
-        { key: { text: 'Programme type (reported by AB)' },   value: { text: induction_programme_choice_name(@ect.teacher.induction_periods.last&.induction_programme) } },
-        { key: { text: 'Lead provider (reported by LP)' },    value: { text: @ect.training_periods.last&.provider_partnership&.lead_provider&.name } },
-      ]
-    )
-  end
+<%= render Teachers::Details.new(teacher: @ect.teacher) do |component|
+  component.with_personal_details { render(Teachers::PersonalDetailsComponent.new(teacher: @ect.teacher)) }
+  component.with_itt_details { render(Teachers::ITTDetailsComponent.new(teacher: @ect.teacher)) }
+  component.with_induction_summary { render(Teachers::InductionSummaryComponent.new(teacher: @ect.teacher)) }
+  component.with_current_induction_period { render(Teachers::CurrentInductionPeriodComponent.new(teacher: @ect.teacher)) }
+  component.with_past_induction_periods { render(Teachers::PastInductionPeriodsComponent.new(teacher: @ect.teacher)) }
+end %>
+
+<h2 class='govuk-heading-m'>Additional details</h2>
+<%=
+  govuk_summary_list(
+    rows: [
+      { key: { text: 'Mentor' }, value: { text: ect_mentor_details(@ect) } },
+      { key: { text: 'School start date' }, value: { text: ect_start_date(@ect) } },
+      { key: { text: 'Working pattern' }, value: { text: @ect.working_pattern&.humanize } },
+    ].compact_blank
+  )
 %>
-<%= 
-  govuk_summary_card(title: 'School requested details') do |card|
-    card.with_summary_list(
-      rows: [
-        { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name } },
-        { key: { text: 'Programme type' },   value: { text: ect_programme_type(@ect) } },
-        { key: { text: 'Lead provider' },    value: { text: @ect.lead_provider&.name } },
-      ]
-    )
-  end
-%>
+
+<%= govuk_summary_card(title: 'Current training details') do |card|
+  card.with_summary_list(
+    rows: [
+      { key: { text: 'Appropriate body (reported by AB)' }, value: { text: @ect.teacher.induction_periods.last&.appropriate_body&.name } },
+      { key: { text: 'Programme type (reported by AB)' },   value: { text: induction_programme_choice_name(@ect.teacher.induction_periods.last&.induction_programme) } },
+      { key: { text: 'Lead provider (reported by LP)' },    value: { text: @ect.training_periods.last&.provider_partnership&.lead_provider&.name } },
+    ]
+  )
+end %>
+
+<%= govuk_summary_card(title: 'School requested details') do |card|
+  card.with_summary_list(
+    rows: [
+      { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name } },
+      { key: { text: 'Programme type' },   value: { text: ect_programme_type(@ect) } },
+      { key: { text: 'Lead provider' },    value: { text: @ect.lead_provider&.name } },
+    ]
+  )
+end %>
