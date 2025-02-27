@@ -27,17 +27,17 @@ class MentorAtSchoolPeriod < ApplicationRecord
   # Scopes
   scope :for_school, ->(school_id) { where(school_id:) }
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
-  scope :siblings_of, ->(instance) { for_teacher(instance.teacher_id).where.not(id: instance.id) }
-  scope :school_siblings_of, ->(instance) { siblings_of(instance).for_school(instance.school_id) }
+
+  # Instance methods
+  def siblings
+    return MentorAtSchoolPeriod.none unless teacher
+
+    teacher.mentor_at_school_periods.for_school(school_id).excluding(self)
+  end
 
 private
 
-  def siblings
-    self.class.where(teacher_id:).where.not(id:)
-  end
-
   def teacher_school_distinct_period
-    overlapping_siblings = MentorAtSchoolPeriod.school_siblings_of(self).overlapping_with(self).exists?
-    errors.add(:base, "Teacher School Mentor periods cannot overlap") if overlapping_siblings
+    errors.add(:base, "Teacher School Mentor periods cannot overlap") if overlaps_with_siblings?
   end
 end

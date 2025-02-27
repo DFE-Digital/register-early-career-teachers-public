@@ -82,21 +82,18 @@ describe MentorAtSchoolPeriod do
         expect(described_class.for_teacher(teacher.id)).to match_array([period_1, period_2, period_3])
       end
     end
+  end
 
-    describe ".siblings_of" do
-      let!(:mentor_at_school_period) { FactoryBot.build(:mentor_at_school_period, teacher:, school:, started_on: "2022-01-01", finished_on: "2023-01-01") }
+  describe "#siblings" do
+    let!(:teacher) { FactoryBot.create(:teacher) }
+    let!(:school) { FactoryBot.create(:school) }
+    let!(:school_2) { FactoryBot.create(:school) }
+    let!(:period_1) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: '2023-01-01', finished_on: '2023-06-01') }
+    let!(:period_2) { FactoryBot.create(:mentor_at_school_period, teacher:, school: school_2, started_on: "2023-06-01", finished_on: "2024-01-01") }
+    let!(:mentor_at_school_period) { FactoryBot.build(:mentor_at_school_period, teacher:, school: school_2, started_on: "2022-01-01", finished_on: "2023-01-01") }
 
-      it "returns mentor periods only for the specified instance's teacher excluding the instance" do
-        expect(described_class.siblings_of(mentor_at_school_period)).to match_array([period_1, period_2, period_3])
-      end
-    end
-
-    describe ".school_siblings_of" do
-      let!(:mentor_at_school_period) { FactoryBot.build(:mentor_at_school_period, teacher:, school: school_2, started_on: "2022-01-01", finished_on: "2023-01-01") }
-
-      it "returns mentor periods for the specified instance's teacher and school excluding the instance" do
-        expect(described_class.school_siblings_of(mentor_at_school_period)).to match_array([period_2])
-      end
+    it "returns mentor periods for the specified instance's teacher and school excluding the instance" do
+      expect(mentor_at_school_period.siblings).to match_array([period_2])
     end
   end
 end

@@ -7,7 +7,6 @@ module Interval
 
     # Scopes
     scope :overlapping_with, ->(period) { where("range && daterange(?, ?)", period.started_on, period.finished_on) }
-
     scope :ongoing, -> { where(finished_on: nil) }
     scope :finished, -> { where.not(finished_on: nil) }
     scope :earliest_first, -> { order(started_on: 'asc') }
@@ -32,4 +31,18 @@ module Interval
 
     errors.add(:finished_on, "The finish date must be later than the start date (#{started_on.to_fs(:govuk)})") if finished_on <= started_on
   end
+
+  def overlaps_with_siblings? = siblings.overlapping_with(self).exists?
+
+  def predecessors = siblings.started_before(started_on)
+
+  def predecessors? = predecessors.exists?
+
+  def siblings =  raise(NotImplementedError)
+
+  def siblings? = siblings.exists?
+
+  def successors = finished_on ? siblings.started_on_or_after(finished_on) : self.class.none
+
+  def successors? = successors.exists?
 end
