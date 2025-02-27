@@ -5,11 +5,11 @@ RSpec.describe "Appropriate Body teacher extensions index", type: :request do
   let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
 
   describe 'when not signed in' do
-    it 'redirects to the signin page' do
+    it 'redirects to the root page' do
       get("/appropriate-body/teachers/#{teacher.id}/extensions")
 
       expect(response).to be_redirection
-      expect(response.redirect_url).to end_with('/sign-in')
+      expect(response.redirect_url).to eql(root_url)
     end
   end
 

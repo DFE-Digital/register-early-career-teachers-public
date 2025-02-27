@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Admin teachers index", type: :request do
   describe "GET /admin/teachers" do
-    it "redirects to sign-in" do
+    it "redirects to sign in path" do
       get "/admin/teachers"
       expect(response).to redirect_to(sign_in_path)
     end

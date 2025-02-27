@@ -30,7 +30,7 @@ class OTPSessionsController < ApplicationController
       session_manager.begin_session!(session_user)
 
       if authenticated?
-        redirect_to(login_redirect_path)
+        redirect_to(post_login_redirect_path)
       else
         session_manager.end_session!
         redirect_to(otp_sign_in_path)
