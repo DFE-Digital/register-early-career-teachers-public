@@ -1,6 +1,9 @@
 FakePeriod = Struct.new(:started_on, :finished_on)
 
 describe Interval do
+  let(:school_id) { FactoryBot.create(:school, urn: "1234567").id }
+  let(:teacher_id) { FactoryBot.create(:teacher, trs_first_name: "Teacher", trs_last_name: "One").id }
+
   describe "validations" do
     context "period dates" do
       context "when finished_on is earlier than started_on" do
@@ -30,9 +33,7 @@ describe Interval do
   end
 
   describe "scopes" do
-    let!(:teacher_id) { FactoryBot.create(:teacher, trs_first_name: "Teacher", trs_last_name: "One").id }
     let!(:teacher_2_id) { FactoryBot.create(:teacher, trs_first_name: "Teacher", trs_last_name: "Two").id }
-    let!(:school_id) { FactoryBot.create(:school, urn: "1234567").id }
     let!(:period_1) { DummyMentor.create(teacher_id:, school_id:, started_on: '2023-01-01', finished_on: '2023-06-01') }
     let!(:period_2) { DummyMentor.create(teacher_id:, school_id:, started_on: '2023-07-01', finished_on: '2023-12-01') }
     let!(:period_3) { DummyMentor.create(teacher_id:, school_id:, started_on: '2024-01-01', finished_on: nil) }
@@ -129,9 +130,135 @@ describe Interval do
       it { is_expected.not_to be_ongoing }
     end
   end
+
+  describe '#overlaps_with_siblings?' do
+    subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
+
+    context 'when there are sibling intervals overlapping' do
+      before { DummyMentor.create(teacher_id:, school_id:, started_on: Date.yesterday, finished_on: Date.current) }
+
+      it 'returns true' do
+        expect(interval.overlaps_with_siblings?).to be_truthy
+      end
+    end
+
+    context 'when there are no sibling intervals overlapping' do
+      before { DummyMentor.create(teacher_id:, school_id:, started_on: 1.week.ago, finished_on: 5.days.ago) }
+
+      it 'returns false' do
+        expect(interval.overlaps_with_siblings?).to be_falsey
+      end
+    end
+  end
+
+  describe '#predecessors' do
+    subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
+
+    context 'when there are sibling intervals starting earlier' do
+      let!(:predecessor) { DummyMentor.create(teacher_id:, school_id:, started_on: 2.weeks.ago, finished_on: 5.days.ago) }
+
+      it 'returns them' do
+        expect(interval.predecessors).to match_array([predecessor])
+      end
+    end
+
+    context 'when there are no sibling intervals starting earlier' do
+      it 'returns no intervals' do
+        expect(interval.predecessors).to be_empty
+      end
+    end
+  end
+
+  describe '#predecessors?' do
+    subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
+
+    context 'when there are sibling intervals starting earlier' do
+      before { DummyMentor.create(teacher_id:, school_id:, started_on: 2.weeks.ago, finished_on: 5.days.ago) }
+
+      it 'returns true' do
+        expect(interval.predecessors?).to be_truthy
+      end
+    end
+
+    context 'when there are no sibling intervals starting earlier' do
+      it 'returns false' do
+        expect(interval.predecessors?).to be_falsey
+      end
+    end
+  end
+
+  describe '#siblings' do
+    subject { AnotherDummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
+
+    it 'raises a NotImplementedError exception' do
+      expect { subject.siblings }.to raise_error(NotImplementedError)
+    end
+  end
+
+  describe '#siblings?' do
+    subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
+
+    context 'when there are sibling intervals' do
+      before { DummyMentor.create(teacher_id:, school_id:, started_on: 2.weeks.ago, finished_on: 5.days.ago) }
+
+      it 'returns true' do
+        expect(interval.siblings?).to be_truthy
+      end
+    end
+
+    context 'when there are no sibling intervals' do
+      it 'returns false' do
+        expect(interval.siblings?).to be_falsey
+      end
+    end
+  end
+
+  describe '#successors' do
+    subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: 1.day.ago) }
+
+    context 'when there are sibling intervals starting later' do
+      let!(:successor) { DummyMentor.create(teacher_id:, school_id:, started_on: 1.day.ago, finished_on: nil) }
+
+      it 'returns them' do
+        expect(interval.successors).to match_array([successor])
+      end
+    end
+
+    context 'when there are no sibling intervals starting later' do
+      it 'returns no intervals' do
+        expect(interval.successors).to be_empty
+      end
+    end
+  end
+
+  describe '#successors?' do
+    subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: 1.day.ago) }
+
+    context 'when there are sibling intervals starting later' do
+      before { DummyMentor.create(teacher_id:, school_id:, started_on: 1.day.ago, finished_on: nil) }
+
+      it 'returns true' do
+        expect(interval.successors?).to be_truthy
+      end
+    end
+
+    context 'when there are no sibling intervals starting later' do
+      it 'returns false' do
+        expect(interval.successors?).to be_falsey
+      end
+    end
+  end
 end
 
 class DummyMentor < ApplicationRecord
+  include Interval
+
+  self.table_name = "mentor_at_school_periods"
+
+  def siblings = self.class.all.excluding(self)
+end
+
+class AnotherDummyMentor < ApplicationRecord
   include Interval
 
   self.table_name = "mentor_at_school_periods"

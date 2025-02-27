@@ -146,29 +146,29 @@ describe MentorshipPeriod do
         expect(MentorshipPeriod.for_mentor(456).to_sql).to end_with(%(WHERE "mentorship_periods"."mentor_at_school_period_id" = 456))
       end
     end
+  end
 
-    describe ".mentee_siblings_of" do
-      let!(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01') }
-      let!(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: '2021-01-01') }
-      let!(:period_1) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: '2022-01-01', finished_on: '2022-06-01') }
-      let!(:period_2) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: '2022-06-01', finished_on: '2023-01-01') }
+  describe "#mentee_siblings" do
+    let!(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01') }
+    let!(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: '2021-01-01') }
+    let!(:period_1) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: '2022-01-01', finished_on: '2022-06-01') }
+    let!(:period_2) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: '2022-06-01', finished_on: '2023-01-01') }
 
-      let!(:unrelated_mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01') }
-      let!(:unrelated_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: unrelated_mentee, started_on: '2022-06-01', finished_on: '2023-01-01') }
+    let!(:unrelated_mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01') }
+    let!(:unrelated_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: unrelated_mentee, started_on: '2022-06-01', finished_on: '2023-01-01') }
 
-      subject { MentorshipPeriod.mentee_siblings_of(period_1) }
+    subject { period_1.mentee_siblings }
 
-      it "only returns records that belong to the same mentee" do
-        expect(subject).to include(period_2)
-      end
+    it "only returns records that belong to the same mentee" do
+      expect(subject).to include(period_2)
+    end
 
-      it "doesn't include itself" do
-        expect(subject).not_to include(period_1)
-      end
+    it "doesn't include itself" do
+      expect(subject).not_to include(period_1)
+    end
 
-      it "doesn't include periods that belong to other mentees" do
-        expect(subject).not_to include(unrelated_period)
-      end
+    it "doesn't include periods that belong to other mentees" do
+      expect(subject).not_to include(unrelated_period)
     end
   end
 end
