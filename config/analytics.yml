@@ -5,9 +5,6 @@ shared:
   - created_at
   - updated_at
   - trn
-  - ecf_user_id
-  - ecf_ect_profile_id
-  - ecf_mentor_profile_id
   - trs_qts_awarded_on
   - trs_qts_status_description
   - trs_induction_status
