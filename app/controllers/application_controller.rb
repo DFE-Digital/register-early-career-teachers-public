@@ -40,7 +40,7 @@ private
     return if authenticated?
 
     session_manager.requested_path = request.fullpath
-    redirect_to(sign_in_path)
+    redirect_to(root_path)
   end
 
   def authenticated?
