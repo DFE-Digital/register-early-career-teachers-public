@@ -157,6 +157,9 @@ Rails.application.routes.draw do
       get "change-lead-provider", action: :new
       post "change-lead-provider", action: :create
 
+      get "cant-use-email", action: :new
+      post "cant-use-email", action: :create
+
       get "confirmation", action: :new
     end
   end
