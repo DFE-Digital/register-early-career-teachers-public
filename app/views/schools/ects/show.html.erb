@@ -6,12 +6,12 @@
     caption_size: 'l',
   )
 %>
-<%= render Teachers::Details.new(teacher: @ect.teacher) do |component|
-  component.with_personal_details { render(Teachers::PersonalDetailsComponent.new(teacher: @ect.teacher)) }
-  component.with_itt_details { render(Teachers::ITTDetailsComponent.new(teacher: @ect.teacher)) }
-  component.with_induction_summary { render(Teachers::InductionSummaryComponent.new(teacher: @ect.teacher)) }
-  component.with_current_induction_period { render(Teachers::CurrentInductionPeriodComponent.new(teacher: @ect.teacher)) }
-  component.with_past_induction_periods { render(Teachers::PastInductionPeriodsComponent.new(teacher: @ect.teacher)) }
+<%= render Teachers::DetailsComponent.new(teacher: @ect.teacher) do |component|
+  component.with_personal_details { render(Teachers::Details::PersonalDetailsComponent.new(teacher: @ect.teacher)) }
+  component.with_itt_details { render(Teachers::Details::ITTDetailsComponent.new(teacher: @ect.teacher)) }
+  component.with_induction_summary { render(Teachers::Details::InductionSummaryComponent.new(teacher: @ect.teacher)) }
+  component.with_current_induction_period { render(Teachers::Details::CurrentInductionPeriodComponent.new(teacher: @ect.teacher)) }
+  component.with_past_induction_periods { render(Teachers::Details::PastInductionPeriodsComponent.new(teacher: @ect.teacher)) }
 end %>
 
 <h2 class='govuk-heading-m'>Additional details</h2>
