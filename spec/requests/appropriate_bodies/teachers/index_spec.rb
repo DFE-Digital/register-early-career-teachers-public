@@ -4,11 +4,11 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
 
   describe 'GET /appropriate-body/teachers' do
     context 'when not signed in' do
-      it 'redirects to the signin page' do
+      it 'redirects to the root page' do
         get("/appropriate-body/teachers")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to end_with('/sign-in')
+        expect(response.redirect_url).to eql(root_url)
       end
     end
 
