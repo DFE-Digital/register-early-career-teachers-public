@@ -1,6 +1,6 @@
 RSpec.describe "Viewing the appropriate bodies index", type: :request do
   describe "GET /admin/appropriate-bodies" do
-    it "redirects to sign-in" do
+    it "redirects to sign in path" do
       get "/admin/organisations/appropriate-bodies"
       expect(response).to redirect_to(sign_in_path)
     end

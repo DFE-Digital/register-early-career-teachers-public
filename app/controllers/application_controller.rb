@@ -40,14 +40,19 @@ private
     return if authenticated?
 
     session_manager.requested_path = request.fullpath
-    redirect_to(sign_in_path)
+
+    redirect_to(pre_login_redirect_path(request.fullpath))
   end
 
   def authenticated?
     current_user.present?
   end
 
-  def login_redirect_path
+  def pre_login_redirect_path(requested_path)
+    requested_path.start_with?("/admin") ? sign_in_path : root_path
+  end
+
+  def post_login_redirect_path
     session_manager.requested_path || admin_home_path || ab_home_path || school_home_path || fail(UnredirectableError)
   end
 
