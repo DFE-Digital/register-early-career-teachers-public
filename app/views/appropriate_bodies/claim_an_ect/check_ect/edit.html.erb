@@ -32,7 +32,7 @@
 
     sl.with_row do |r|
       r.with_key(text: "Has alerts")
-      r.with_value(text: @pending_induction_submission.trs_alerts.present? ? "Yes" : "No")
+      r.with_value(text: trs_alerts_text(@pending_induction_submission.trs_alerts.present?) )
     end
   end
 %>
