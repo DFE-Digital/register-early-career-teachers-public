@@ -5,6 +5,7 @@ ENVIRONMENT_PHASE_BANNER_CONTENT: This is the migration environment.
 ENABLE_MIGRATION_TESTING: true
 ENABLE_SCHOOLS_INTERFACE: true
 ENABLE_SENTRY: true
+SENTRY_ENVIRONMENT: migration
 ENABLE_PERSONAS: false
 SERVICE_URL: 'https://cpd-ec2-migration-web.teacherservices.cloud'
 DFE_ANALYTICS_ENABLED: false
