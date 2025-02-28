@@ -45,11 +45,11 @@ module AppropriateBodies
       end
 
       def find_current_teacher
-        AppropriateBodies::ECTs.new(@appropriate_body).current.find_by!(id: params[:teacher_id])
+        AppropriateBodies::ECTs.new(@appropriate_body).current_or_completed_while_at_appropriate_body.find_by!(id: params[:teacher_id])
       end
 
       def find_former_teacher
-        AppropriateBodies::ECTs.new(@appropriate_body).former.find_by!(id: params[:teacher_id])
+        AppropriateBodies::ECTs.new(@appropriate_body).current_or_completed_while_at_appropriate_body.find_by!(id: params[:teacher_id])
       end
     end
   end

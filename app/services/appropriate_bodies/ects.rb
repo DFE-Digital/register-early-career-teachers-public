@@ -25,7 +25,7 @@ module AppropriateBodies
       @scope.merge(InductionPeriod.with_outcome)
     end
 
-    def current_or_completeed_while_at_appropriate_body
+    def current_or_completed_while_at_appropriate_body
       current.or(completed_while_at_appropriate_body)
     end
   end
