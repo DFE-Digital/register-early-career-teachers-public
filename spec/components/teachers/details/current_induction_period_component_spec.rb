@@ -43,8 +43,8 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
       expect(page).to have_link("Release", href: new_ab_teacher_release_ect_path(teacher))
     end
 
-    it "does not include a release link when enable_release is false" do
-      component = described_class.new(teacher:, enable_release: false)
+    it "does not include a release link when enable_release nil" do
+      component = described_class.new(teacher:)
       render_inline(component)
       expect(page).not_to have_link("Release")
     end
@@ -55,8 +55,8 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
       expect(page).to have_link("Edit", href: edit_admin_teacher_induction_period_path(teacher_id: teacher.id, id: current_period.id))
     end
 
-    it "does not include an edit link when enable_edit is false" do
-      component = described_class.new(teacher:, enable_edit: false)
+    it "does not include an edit link when edit_release nil" do
+      component = described_class.new(teacher:)
       render_inline(component)
       expect(page).not_to have_link("Edit")
     end
@@ -71,7 +71,7 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
                           induction_programme: "cip")
       end
 
-      it "does not include an edit link when " do
+      it "does not include an edit link even when enable_edit true" do
         component = described_class.new(teacher:, enable_edit: true)
         render_inline(component)
         expect(page).not_to have_link("Edit")
