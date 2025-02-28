@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
     session_manager.begin_session!(session_user, id_token:)
 
     if authenticated?
-      redirect_to(login_redirect_path)
+      redirect_to(post_login_redirect_path)
     else
       session_manager.end_session!
       redirect_to(sign_in_path)

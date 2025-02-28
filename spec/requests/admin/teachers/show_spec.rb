@@ -7,7 +7,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
   let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
 
   describe "GET /admin/teachers/:id" do
-    it "redirects to sign-in" do
+    it "redirects to sign in path" do
       get admin_teacher_path(teacher)
       expect(response).to redirect_to(sign_in_path)
     end

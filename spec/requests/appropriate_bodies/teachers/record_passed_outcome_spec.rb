@@ -23,11 +23,11 @@ RSpec.describe 'Appropriate body recording a passed outcome for a teacher' do
 
   describe 'GET /appropriate-body/teachers/:teacher_id/record-passed-outcome/new' do
     context 'when not signed in' do
-      it 'redirects to the signin page' do
+      it 'redirects to the root page' do
         get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome/new")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to end_with('/sign-in')
+        expect(response.redirect_url).to eql(root_url)
       end
     end
 
@@ -51,11 +51,11 @@ RSpec.describe 'Appropriate body recording a passed outcome for a teacher' do
 
   describe 'POST /appropriate-body/teachers/:teacher_id/record-passed-outcome' do
     context 'when not signed in' do
-      it 'redirects to the signin page' do
+      it 'redirects to the root page' do
         post("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to end_with('/sign-in')
+        expect(response.redirect_url).to eql(root_url)
       end
     end
 
@@ -162,11 +162,11 @@ RSpec.describe 'Appropriate body recording a passed outcome for a teacher' do
     end
 
     context 'when not signed in' do
-      it 'redirects to the signin page' do
+      it 'redirects to the root page' do
         get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome")
 
         expect(response).to be_redirection
-        expect(response.redirect_url).to end_with('/sign-in')
+        expect(response.redirect_url).to eql(root_url)
       end
     end
 
