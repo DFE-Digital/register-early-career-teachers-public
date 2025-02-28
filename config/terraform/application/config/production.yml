@@ -1,5 +1,6 @@
 ---
 ENABLE_SENTRY: true
+SENTRY_ENVIRONMENT: production
 ENABLE_PERSONAS: false
 ENABLE_BLAZER: true
 DFE_SIGN_IN_API_AUDIENCE: signin.education.gov.uk
