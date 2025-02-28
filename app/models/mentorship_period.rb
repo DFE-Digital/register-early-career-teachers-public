@@ -32,7 +32,13 @@ class MentorshipPeriod < ApplicationRecord
   # Scopes
   scope :for_mentee, ->(id) { where(ect_at_school_period_id: id) }
   scope :for_mentor, ->(id) { where(mentor_at_school_period_id: id) }
-  scope :mentee_siblings_of, ->(instance) { for_mentee(instance.ect_at_school_period_id).where.not(id: instance.id) }
+
+  # Instance methods
+  def mentee_siblings
+    return MentorshipPeriod.none unless mentee
+
+    mentee.mentorship_periods.excluding(self)
+  end
 
 private
 
@@ -49,9 +55,7 @@ private
   end
 
   def mentee_distinct_period
-    return unless MentorshipPeriod.mentee_siblings_of(self).overlapping_with(self).exists?
-
-    errors.add(:base, "Mentee periods cannot overlap")
+    errors.add(:base, "Mentee periods cannot overlap") if overlaps_with_mentee_siblings?
   end
 
   def not_self_mentoring
@@ -60,4 +64,6 @@ private
 
     errors.add(:base, "A mentee cannot mentor themself")
   end
+
+  def overlaps_with_mentee_siblings? = mentee_siblings.overlapping_with(self).exists?
 end

@@ -67,14 +67,6 @@ describe ECTAtSchoolPeriod do
         expect(described_class.for_teacher(teacher.id)).to match_array([period_1, period_2, period_3])
       end
     end
-
-    describe ".siblings_of" do
-      let(:ect_at_school_period) { FactoryBot.build(:ect_at_school_period, teacher:, school:, started_on: "2022-01-01", finished_on: "2023-01-01") }
-
-      it "returns ect periods only for the specified instance's teacher excluding the instance" do
-        expect(described_class.siblings_of(ect_at_school_period)).to match_array([period_1, period_2, period_3])
-      end
-    end
   end
 
   describe "#current_mentorship" do
@@ -125,7 +117,21 @@ describe ECTAtSchoolPeriod do
         FactoryBot.create(:mentorship_period, :active, mentee:, mentor:)
       end
 
-      it { expect(mentee.current_mentor).to eq(mentor) }
+      it { expect(mentee.current_mentor).to eql(mentor) }
+    end
+  end
+
+  describe "#siblings" do
+    let!(:teacher) { FactoryBot.create(:teacher) }
+    let!(:school) { FactoryBot.create(:school) }
+    let!(:period_1) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: '2023-01-01', finished_on: '2023-06-01') }
+    let!(:period_2) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: "2023-06-01", finished_on: "2024-01-01") }
+    let!(:period_3) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: '2024-01-01', finished_on: nil) }
+    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
+    let(:ect_at_school_period) { FactoryBot.build(:ect_at_school_period, teacher:, school:, started_on: "2022-01-01", finished_on: "2023-01-01") }
+
+    it "returns ect periods only for the specified instance's teacher excluding the instance" do
+      expect(ect_at_school_period.siblings).to match_array([period_1, period_2, period_3])
     end
   end
 end

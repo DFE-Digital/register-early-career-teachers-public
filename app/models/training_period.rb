@@ -16,25 +16,13 @@ class TrainingPeriod < ApplicationRecord
             presence: true
 
   validate :one_id_of_trainee_present
-  validate :trainee_distinct_period, if: -> { ect_at_school_period.present? }
-  validate :mentor_distinct_period, if: -> { mentor_at_school_period.present? }
-
-  validate :enveloped_by_ect_at_school_period,
-           if: -> { ect_at_school_period.present? && started_on.present? }
-  validate :enveloped_by_mentor_at_school_period,
-           if: -> { mentor_at_school_period.present? && started_on.present? }
+  validate :trainee_distinct_period
+  validate :enveloped_by_trainee_at_school_period
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
   scope :for_mentor, ->(mentor_at_school_period_id) { where(mentor_at_school_period_id:) }
   scope :for_provider_partnership, ->(provider_partnership_id) { where(provider_partnership_id:) }
-  scope :ect_siblings_of, ->(instance) { for_ect(instance.ect_at_school_period_id).where.not(id: instance.id) }
-  scope :mentor_siblings_of, ->(instance) { for_mentor(instance.mentor_at_school_period_id).where.not(id: instance.id) }
-
-  def self.trainee_siblings_of(instance)
-    scope = where.not(id: instance.id)
-    instance.for_ect? ? scope.ect_siblings_of(instance) : scope.mentor_siblings_of(instance)
-  end
 
   # Instance methods
   def for_ect?
@@ -43,6 +31,16 @@ class TrainingPeriod < ApplicationRecord
 
   def for_mentor?
     mentor_at_school_period_id.present?
+  end
+
+  def trainee
+    ect_at_school_period || mentor_at_school_period
+  end
+
+  def trainee_siblings
+    return TrainingPeriod.none unless trainee
+
+    trainee.training_periods.excluding(self)
   end
 
 private
@@ -54,24 +52,22 @@ private
   end
 
   def trainee_distinct_period
-    overlapping_siblings = TrainingPeriod.trainee_siblings_of(self).overlapping_with(self).exists?
-    errors.add(:base, "Trainee periods cannot overlap") if overlapping_siblings
+    errors.add(:base, "Trainee training periods cannot overlap") if overlaps_with_trainee_siblings?
   end
 
-  def mentor_distinct_period
-    overlapping_siblings = TrainingPeriod.mentor_siblings_of(self).overlapping_with(self).exists?
-    errors.add(:base, "Mentor periods cannot overlap") if overlapping_siblings
+  def enveloped_by_trainee_at_school_period
+    return if (trainee_started_on_at_school..trainee_finished_on_at_school).cover?(started_on..finished_on)
+
+    errors.add(:base, "Date range is not contained by the period the trainee is at the school")
   end
 
-  def enveloped_by_ect_at_school_period
-    return if (ect_at_school_period.started_on..ect_at_school_period.finished_on).cover?(started_on..finished_on)
+  def overlaps_with_trainee_siblings? = trainee_siblings.overlapping_with(self).exists?
 
-    errors.add(:base, "Date range is not contained by the ECT at school period")
+  def trainee_started_on_at_school
+    ect_at_school_period&.started_on || mentor_at_school_period&.started_on
   end
 
-  def enveloped_by_mentor_at_school_period
-    return if (mentor_at_school_period.started_on..mentor_at_school_period.finished_on).cover?(started_on..finished_on)
-
-    errors.add(:base, "Date range is not contained by the ECT at school period")
+  def trainee_finished_on_at_school
+    ect_at_school_period&.finished_on || mentor_at_school_period&.finished_on
   end
 end
