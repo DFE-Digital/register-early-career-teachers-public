@@ -10,6 +10,7 @@ FactoryBot.define do
     email { Faker::Internet.email }
 
     trait :active do
+      started_on { generate(:base_ect_date) + 1.year }
       finished_on { nil }
     end
   end
