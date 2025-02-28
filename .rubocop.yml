@@ -62,3 +62,6 @@ Lint/MissingSuper:
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: always
+
+Style/Lambda:
+  EnforcedStyle: literal
