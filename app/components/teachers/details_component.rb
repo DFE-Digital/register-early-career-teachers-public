@@ -12,12 +12,7 @@ module Teachers
       Teachers::Details::InductionSummaryComponent.new(teacher:)
     }
 
-    renders_one :current_induction_period, lambda {
-      # Set enable_release based on mode and context
-      # Only appropriate bodies can release ECTs, and only in the teacher show context
-      enable_release = mode == :appropriate_body && context == :teacher_show
-      enable_edit = mode == :admin
-
+    renders_one :current_induction_period, lambda { |enable_release: nil, enable_edit: nil|
       Teachers::Details::CurrentInductionPeriodComponent.new(
         teacher:,
         enable_release:,
@@ -25,18 +20,17 @@ module Teachers
       )
     }
 
-    renders_one :past_induction_periods, lambda {
-      Teachers::Details::PastInductionPeriodsComponent.new(teacher:)
+    renders_one :past_induction_periods, lambda { |enable_edit: nil|
+      Teachers::Details::PastInductionPeriodsComponent.new(teacher:, enable_edit:)
     }
 
-    attr_reader :teacher, :mode, :context
+    attr_reader :teacher, :mode
 
-    def initialize(mode:, teacher:, context: :default)
+    def initialize(mode:, teacher:)
       fail unless mode.in?(%i[admin appropriate_body school])
 
       @teacher = teacher
       @mode = mode
-      @context = context
     end
   end
 end
