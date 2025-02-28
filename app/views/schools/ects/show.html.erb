@@ -6,7 +6,7 @@
     caption_size: 'l',
   )
 %>
-<%= render Teachers::DetailsComponent.new(teacher: @ect.teacher) do |component|
+<%= render Teachers::DetailsComponent.new(mode: :school, teacher: @ect.teacher) do |component|
   component.with_personal_details { render(Teachers::Details::PersonalDetailsComponent.new(teacher: @ect.teacher)) }
   component.with_itt_details { render(Teachers::Details::ITTDetailsComponent.new(teacher: @ect.teacher)) }
   component.with_induction_summary { render(Teachers::Details::InductionSummaryComponent.new(teacher: @ect.teacher)) }

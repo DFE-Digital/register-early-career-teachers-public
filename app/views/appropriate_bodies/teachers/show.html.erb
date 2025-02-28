@@ -13,7 +13,7 @@
   <%= govuk_link_to("Fail induction", new_ab_teacher_record_failed_outcome_path(@teacher)) %>
 </div>
 
-<%= render Teachers::DetailsComponent.new(mode: :appropriate_body, teacher: @teacher) do |component|
+<%= render Teachers::DetailsComponent.new(mode: :appropriate_body, teacher: @teacher, context: :teacher_show) do |component|
   component.with_induction_summary
   component.with_current_induction_period
   component.with_past_induction_periods
