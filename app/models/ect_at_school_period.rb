@@ -23,15 +23,16 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   # Scopes
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
-  scope :siblings_of, ->(instance) { for_teacher(instance.teacher_id).where.not(id: instance.id) }
 
   # Instance methods
-  def current_mentorship
-    mentorship_periods.ongoing.last
-  end
+  def current_mentorship = mentorship_periods.ongoing.last
 
-  def current_mentor
-    current_mentorship&.mentor
+  def current_mentor = current_mentorship&.mentor
+
+  def siblings
+    return ECTAtSchoolPeriod.none unless teacher
+
+    teacher.ect_at_school_periods.excluding(self)
   end
 
   delegate :trn, to: :teacher
@@ -39,7 +40,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
 private
 
   def teacher_distinct_period
-    overlapping_siblings = ECTAtSchoolPeriod.siblings_of(self).overlapping_with(self).exists?
-    errors.add(:base, "Teacher ECT periods cannot overlap") if overlapping_siblings
+    errors.add(:base, "Teacher ECT periods cannot overlap") if overlaps_with_siblings?
   end
 end

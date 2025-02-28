@@ -22,14 +22,20 @@ class InductionPeriod < ApplicationRecord
 
   scope :for_teacher, ->(teacher) { where(teacher:) }
   scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
-  scope :siblings_of, ->(instance) { for_teacher(instance.teacher).excluding(instance) }
+
+  # Instance methods
+  def siblings
+    return InductionPeriod.none unless teacher
+
+    teacher.induction_periods.excluding(self)
+  end
 
 private
 
-  def valid_date_order?
-    return true if started_on.blank? || finished_on.blank?
+  def start_date_after_qts_date
+    return if teacher.blank?
 
-    started_on <= finished_on
+    ensure_start_date_after_qts_date(teacher.trs_qts_awarded_on)
   end
 
   def teacher_distinct_period
@@ -42,17 +48,9 @@ private
     end
   end
 
-  def siblings
-    InductionPeriod.siblings_of(self)
-  end
+  def valid_date_order?
+    return true if started_on.blank? || finished_on.blank?
 
-  def overlaps_with_siblings?
-    siblings.overlapping_with(self).exists?
-  end
-
-  def start_date_after_qts_date
-    return if teacher.blank?
-
-    ensure_start_date_after_qts_date(teacher.trs_qts_awarded_on)
+    started_on <= finished_on
   end
 end
