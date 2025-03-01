@@ -298,6 +298,7 @@
   - updated_at
   - metadata
   - modifications
+  - zendesk_ticket_url
   :ect_at_school_periods:
   - id
   - school_id
