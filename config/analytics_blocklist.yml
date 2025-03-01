@@ -344,3 +344,8 @@
   - year
   - created_at
   - updated_at
+  :early_roll_out_mentors:
+  - id
+  - trn
+  - created_at
+  - updated_at
