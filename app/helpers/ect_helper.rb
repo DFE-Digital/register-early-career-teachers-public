@@ -36,7 +36,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def ect_programme_type(ect)
-    ProgrammeTypeValidator::VALID_PROGRAMME_TYPES.fetch(ect.programme_type, 'Programme type is not recognised')
+    ::PROGRAMME_TYPES.fetch(ect.programme_type.to_sym, 'Programme type is not recognised')
   end
 
 private
