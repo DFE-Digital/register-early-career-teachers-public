@@ -10,6 +10,7 @@ module Schools
       end
 
       def next_step
+        return :use_previous_ect_choices if school.choices?
         return :independent_school_appropriate_body if school_independent?
 
         :state_school_appropriate_body
