@@ -7,6 +7,7 @@ ENABLE_PERSONA_AVATARS: false
 ENABLE_SCHOOLS_INTERFACE: true
 TEST_GUIDANCE: true
 ENABLE_SENTRY: true
+SENTRY_ENVIRONMENT: staging
 ENABLE_BLAZER: true
 DFE_SIGN_IN_API_AUDIENCE: signin.education.gov.uk
 DFE_SIGN_IN_API_BASE_URL: 'https://dev-api.signin.education.gov.uk'
