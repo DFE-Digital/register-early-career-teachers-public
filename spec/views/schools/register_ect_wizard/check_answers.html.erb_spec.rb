@@ -6,9 +6,10 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
            email: 'foo@bar.com',
            govuk_date_of_birth: '12 January 1931',
            start_date: 'September 2022',
-           formatted_programme_type: 'School-led',
-           formatted_appropriate_body_name: 'Teaching Regulation Agency',
-           formatted_lead_provider_name: 'Acme Lead Provider',
+           programme_type: 'school_led',
+           appropriate_body_type: 'teaching_school_hub',
+           appropriate_body: double(name: 'Teaching Regulation Agency'),
+           lead_provider: double(name: 'Acme Lead Provider'),
            formatted_working_pattern: 'Full time',
            provider_led?: false)
   end

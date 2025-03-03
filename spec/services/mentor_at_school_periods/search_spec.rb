@@ -5,7 +5,7 @@ describe MentorAtSchoolPeriods::Search do
     let(:conditions) { {} }
 
     it 'returns all the MentorAtSchoolPeriods' do
-      expect(subject.to_sql).to eq(%(SELECT "mentor_at_school_periods".* FROM "mentor_at_school_periods"))
+      expect(subject.to_sql).to eq(%(SELECT "mentor_at_school_periods".* FROM "mentor_at_school_periods" ORDER BY "mentor_at_school_periods"."created_at" ASC))
     end
   end
 
