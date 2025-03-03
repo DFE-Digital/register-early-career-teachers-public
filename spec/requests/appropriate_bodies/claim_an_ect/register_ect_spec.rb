@@ -60,6 +60,8 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
         end
 
         before do
+          allow_any_instance_of(Schools::Validation::HashDate).to receive(:valid?).and_return(true)
+
           allow_any_instance_of(AppropriateBodies::ClaimAnECT::RegisterECT).to receive(:register).and_call_original
         end
 

@@ -81,7 +81,57 @@ RSpec.describe 'Claiming an ECT' do
     end
   end
 
+  describe "when the AB enters an unsupported date" do
+    before do
+      teacher = FactoryBot.create(:teacher, trn: '1234567')
+      other_body = FactoryBot.create(:appropriate_body)
+      FactoryBot.create(:induction_period, teacher:, started_on: 14.months.ago, finished_on: 13.months.ago, appropriate_body: other_body)
+    end
+
+    include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+
+    scenario 'validation returns an error' do
+      given_i_am_on_the_claim_an_ect_find_page
+      when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
+      and_i_submit_the_form
+
+      now_i_should_be_on_the_claim_an_ect_check_page
+      when_i_begin_the_claim_process
+
+      now_i_should_be_on_the_claim_an_ect_register_page
+
+      # Dates that do not exist, especially last day of month plus one
+      page.get_by_label('Day').fill('31')
+      page.get_by_label('Month').fill('09')
+      @start_year = Time.zone.today.year - 1
+      page.get_by_label('Year').fill(@start_year.to_s)
+
+      and_choose_an_induction_programme
+      and_i_submit_the_form
+      now_i_should_be_on_the_register_an_ect_form_page
+
+      expect(page.get_by_role("link", name: "Enter the date in the correct format, for example 12 03 1998")).to be_visible
+      expect(PendingInductionSubmission.last.reload.started_on).to be_nil
+
+      # Negative integers
+      page.get_by_label('Day').fill('-2')
+      page.get_by_label('Month').fill('09')
+      @start_year = Time.zone.today.year - 1
+      page.get_by_label('Year').fill(@start_year.to_s)
+
+      and_i_submit_the_form
+      now_i_should_be_on_the_register_an_ect_form_page
+
+      expect(page.get_by_role("link", name: "Enter positive numbers only")).to be_visible
+      expect(PendingInductionSubmission.last.reload.started_on).to be_nil
+    end
+  end
+
 private
+
+  def now_i_should_be_on_the_register_an_ect_form_page
+    expect(page.url).to end_with("/appropriate-body/claim-an-ect/register-ect/#{PendingInductionSubmission.last.id}?method=patch")
+  end
 
   def then_i_should_not_see_the_claim_button
     expect(page.get_by_role('button', name: "Claim induction")).not_to be_visible
