@@ -1,0 +1,36 @@
+<% page_data(title: "Programme choices used by your school previously",
+             error: @wizard.current_step.errors.present?,
+             backlink_href: @wizard.previous_step_path) %>
+
+<p class="govuk-body">You used these programme choices the last time you registered an ECT.</p>
+
+<%= govuk_summary_list do |summary_list|
+  summary_list.with_row do |row|
+    row.with_key(text: 'Appropriate body')
+    row.with_value(text: appropriate_body_name(appropriate_body_type: @school.chosen_appropriate_body_type,
+                                               appropriate_body: @school.chosen_appropriate_body))
+  end
+
+  summary_list.with_row do |row|
+    row.with_key(text: 'Programme type')
+    row.with_value(text: programme_type_name(@school.chosen_programme_type))
+  end
+
+  if @school.provider_led_programme_type_chosen?
+    summary_list.with_row do |row|
+      row.with_key(text: 'Lead provider')
+      row.with_value(text: @school.chosen_lead_provider_name)
+    end
+  end
+end %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_radio_buttons_fieldset :use_previous_ect_choices, legend: { text: "Do you want to use the same choices for #{@ect.full_name}?" } do %>
+    <%= f.govuk_radio_button :use_previous_ect_choices, :yes, label: { text: "Yes" }, link_errors: true %>
+    <%= f.govuk_radio_button :use_previous_ect_choices, :no, label: { text: "No" } %>
+  <% end %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>
