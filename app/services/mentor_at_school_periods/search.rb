@@ -3,7 +3,7 @@ module MentorAtSchoolPeriods
     attr_reader :scope
 
     def initialize
-      @scope = MentorAtSchoolPeriod.all
+      @scope = MentorAtSchoolPeriod.all.order(:created_at)
     end
 
     def mentor_periods(urn: nil, trn: nil)
