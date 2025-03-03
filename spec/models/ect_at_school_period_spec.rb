@@ -17,11 +17,76 @@ describe ECTAtSchoolPeriod do
     it { is_expected.to validate_presence_of(:school_id) }
     it { is_expected.to validate_presence_of(:teacher_id) }
 
+    context "appropriate_body_id" do
+      context "when appropriate_body_type is 'teaching_school_hub'" do
+        before { subject.appropriate_body_type = 'teaching_school_hub' }
+
+        it do
+          is_expected.to validate_presence_of(:appropriate_body_id)
+                           .with_message('Must contain the id of an AppropriateBody')
+        end
+
+        it do
+          is_expected.not_to validate_absence_of(:appropriate_body_id)
+        end
+      end
+
+      context "when appropriate_body_type is not 'teaching_school_hub'" do
+        before { subject.appropriate_body_type = 'teaching_induction_panel' }
+
+        it { is_expected.not_to validate_presence_of(:appropriate_body_id) }
+        it { is_expected.to validate_absence_of(:appropriate_body_id).with_message('Must be nil') }
+      end
+    end
+
+    context "appropriate_body_type" do
+      subject { FactoryBot.build(:ect_at_school_period) }
+
+      it do
+        is_expected.to validate_inclusion_of(:appropriate_body_type)
+                         .in_array(%w[teaching_induction_panel teaching_school_hub])
+                         .with_message("Must be nil or teaching_induction_panel or teaching_school_hub")
+                         .allow_nil
+      end
+
+      context "when appropriate_body_id is present" do
+        before { subject.appropriate_body_id = 1 }
+
+        it { is_expected.to validate_presence_of(:appropriate_body_type).with_message("Must be 'teaching_school_hub'") }
+      end
+    end
+
     context "email" do
       it { is_expected.to allow_value(nil).for(:email) }
       it { is_expected.to allow_value("test@example.com").for(:email) }
       it { is_expected.not_to allow_value("invalid_email").for(:email) }
     end
+
+    context "lead_provider_id" do
+      subject { FactoryBot.build(:ect_at_school_period) }
+
+      context "when programme_type is 'provider_led'" do
+        before { subject.programme_type = 'provider_led' }
+
+        it do
+          is_expected.to validate_presence_of(:lead_provider_id)
+                           .with_message('Must contain the id of a LeadProvider')
+                           .allow_nil
+        end
+
+        it do
+          is_expected.not_to validate_absence_of(:lead_provider_id)
+        end
+      end
+
+      context "when programme_type is not 'provider_led'" do
+        before { subject.programme_type = 'school_led' }
+
+        it { is_expected.not_to validate_presence_of(:lead_provider_id) }
+        it { is_expected.to validate_absence_of(:lead_provider_id).with_message('Must be nil') }
+      end
+    end
+
 
     describe 'overlapping periods' do
       let(:started_on_message) { 'Start date cannot overlap another Teacher ECT period' }
@@ -33,15 +98,15 @@ describe ECTAtSchoolPeriod do
           context test.description do
             before do
               FactoryBot.create(:ect_at_school_period, teacher:,
-                                                       started_on: test.existing_period_range.first,
-                                                       finished_on: test.existing_period_range.last)
+                                started_on: test.existing_period_range.first,
+                                finished_on: test.existing_period_range.last)
               period.valid?
             end
 
             let(:period) do
               FactoryBot.build(:ect_at_school_period, teacher:,
-                                                      started_on: test.new_period_range.first,
-                                                      finished_on: test.new_period_range.last)
+                               started_on: test.new_period_range.first,
+                               finished_on: test.new_period_range.last)
             end
 
             let(:messages) { period.errors.messages }
@@ -64,8 +129,14 @@ describe ECTAtSchoolPeriod do
                 end
               end
             end
-          end
-        end
+
+            context "programme_type" do
+      subject { FactoryBot.build(:ect_at_school_period) }
+
+      it do
+        is_expected.to validate_inclusion_of(:programme_type)
+                         .in_array(%w[provider_led school_led])
+                         .with_message("Must be provider_led or school_led")
       end
     end
   end
