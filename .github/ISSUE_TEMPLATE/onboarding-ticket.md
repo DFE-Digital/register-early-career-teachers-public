@@ -15,10 +15,14 @@ assignees: ''
   - [ ] First request they're invited to the [DfE Digital organisation](https://dfe.service-now.com.mcas.ms/serviceportal?id=sc_cat_item&sys_id=0aacf3a81ba52110b192ec69b04bcb14) on ServiceNow
   - [ ] Once they're in, add them to the [ecf2-cpd team](https://github.com/orgs/DFE-Digital/teams/ecf2-cpd)
 - [ ] Lucidspark
-- [ ] JIRA (optional)
 - [ ] Read-only Zendesk
-- [ ] Slack
-- [ ] Slack channels (ECF 2, Support, CPD)
+- [ ] **Slack**  
+  - [ ] Invite them to the workspace  
+  - [ ] Add them to the relevant Slack channels:  
+    - [ ] **#register-early-career-teachers** – Team updates and discussions  
+    - [ ] **#cpd** – Comms and discussions for the whole of the CPD programme
+    - [ ] **#cpd-support** – Support related to CPD  
+    - [ ] **#register-early-career-teacher-alerts** *(Optional, mainly for devs)* – Alerts and notifications  
 - [ ] Looker studio dashboards
 - [ ] GovUK Notify (optional)
 - [ ] ECF1 admin console (optional)
