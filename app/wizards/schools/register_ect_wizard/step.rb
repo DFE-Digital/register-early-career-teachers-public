@@ -3,8 +3,6 @@
 module Schools
   module RegisterECTWizard
     class Step < ApplicationWizardStep
-      include ActiveRecord::AttributeAssignment
-
       delegate :ect, :school, :valid_step?, to: :wizard
       delegate :independent?, to: :school, prefix: true
 
