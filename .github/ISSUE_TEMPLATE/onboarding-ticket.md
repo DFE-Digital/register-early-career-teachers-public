@@ -17,8 +17,13 @@ assignees: ''
 - [ ] Lucidspark
 - [ ] JIRA (optional)
 - [ ] Read-only Zendesk
-- [ ] Slack
-- [ ] Slack channels (ECF 2, Support, CPD)
+- [ ] **Slack**  
+  - [ ] Invite them to the workspace  
+  - [ ] Add them to the relevant Slack channels:  
+    - [ ] **#register-early-career-teachers** – Team updates and discussions  
+    - [ ] **#cpd** – Comms and discussions for the whole of the CPD programme
+    - [ ] **#cpd-support** – Support related to CPD  
+    - [ ] **#register-early-career-teacher-alerts** *(Optional, mainly for devs)* – Alerts and notifications  
 - [ ] Looker studio dashboards
 - [ ] GovUK Notify (optional)
 - [ ] ECF1 admin console (optional)
