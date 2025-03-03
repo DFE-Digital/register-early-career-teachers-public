@@ -2,12 +2,12 @@ module Schools
   module RegisterECTWizard
     # This class is a decorator for the SessionRepository
     class ECT < SimpleDelegator
-      def active_at_school?
-        active_record_at_school.present?
+      def active_at_school?(urn)
+        active_record_at_school(urn).present?
       end
 
-      def active_record_at_school
-        @active_record_at_school ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn:, urn: school_urn).ongoing.last
+      def active_record_at_school(urn)
+        @active_record_at_school ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn:, urn:).ongoing.last
       end
 
       def appropriate_body

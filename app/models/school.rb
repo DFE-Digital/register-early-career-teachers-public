@@ -82,26 +82,36 @@ class School < ApplicationRecord
            :local_authority_code,
            :local_authority_name,
            :name,
-           :primary_contact_email,
            :opened_on,
+           :primary_contact_email,
            :phase_name,
            :postcode,
-           :type_name,
            :secondary_contact_email,
            :section_41_approved,
            :status,
+           :type_name,
            :ukprn,
            :website,
            to: :gias_school
 
-  def choices?
-    chosen_appropriate_body_type && chosen_programme_type
-  end
+  # chosen_appropriate_body_name
+  delegate :name, to: :chosen_appropriate_body, prefix: true, allow_nil: true
+
+  # chosen_lead_provider_name
+  delegate :name, to: :chosen_lead_provider, prefix: true, allow_nil: true
 
   def independent? = GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(type_name)
 
-  # lead_provider_name
-  delegate :name, to: :lead_provider, prefix: true, allow_nil: true
+  def programme_choices
+    {
+      appropriate_body_id: chosen_appropriate_body_id,
+      appropriate_body_type: chosen_appropriate_body_type,
+      programme_type: chosen_programme_type,
+      lead_provider_id: chosen_lead_provider_id
+    }.compact
+  end
+
+  def programme_choices? = chosen_appropriate_body_type && chosen_programme_type
 
   def to_param = urn
 end

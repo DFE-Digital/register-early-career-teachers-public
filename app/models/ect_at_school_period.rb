@@ -11,7 +11,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   enum :programme_type,
        { provider_led: "provider_led",
          school_led: "school_led" },
-       validate: true,
+       validate: { allow_nil: true },
        suffix: :programme_type
 
   # Associations
@@ -65,7 +65,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
   validates :programme_type,
             inclusion: {
               in: School.chosen_programme_types.keys,
-              message: "Must be #{School.chosen_programme_types.keys.join(' or ')}"
+              message: "Must be nil or #{School.chosen_programme_types.keys.join(' or ')}",
+              allow_nil: true
             }
 
   validates :school_id,
@@ -83,6 +84,12 @@ class ECTAtSchoolPeriod < ApplicationRecord
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
 
   # Instance methods
+  # appropriate_body_name
+  delegate :name, to: :appropriate_body, prefix: true, allow_nil: true
+
+  # lead_provider_name
+  delegate :name, to: :lead_provider, prefix: true, allow_nil: true
+
   def current_mentorship = mentorship_periods.ongoing.last
 
   def current_mentor = current_mentorship&.mentor
