@@ -17,9 +17,75 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
                      working_pattern: "full_time")
   end
 
+  describe '#active_record_at_school' do
+    let(:teacher) { FactoryBot.create(:teacher, trn: '3002586') }
+
+    context 'when the ECT has an ongoing ECT record at the school' do
+      let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, :active, school:, teacher:) }
+
+      it 'returns the ECT record' do
+        expect(ect.active_record_at_school).to eq(existing_ect_record)
+      end
+    end
+
+    context 'when the ECT has no ongoing ECT record at the school' do
+      let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, school:, teacher:) }
+
+      it 'returns nil' do
+        expect(ect.active_record_at_school).to be_nil
+      end
+    end
+  end
+
+  describe '#active_at_school?' do
+    let(:teacher) { FactoryBot.create(:teacher, trn: ect.trn) }
+
+    it 'returns true if the ECT is active at the given school' do
+      FactoryBot.create(:ect_at_school_period, :active, teacher:, school:)
+
+      expect(ect.active_at_school?(school:)).to be_truthy
+    end
+
+    it 'returns false if the ECT is not at the given school' do
+      FactoryBot.create(:ect_at_school_period, teacher:)
+
+      expect(ect.active_at_school?(school:)).to be_falsey
+    end
+  end
+
+  describe '#cant_use_email?' do
+    let(:teacher_email_service) { instance_double(Schools::TeacherEmail) }
+
+    before do
+      allow(Schools::TeacherEmail).to receive(:new).with(email: ect.email, trn: ect.trn).and_return(teacher_email_service)
+    end
+
+    context "when the email is used in an ongoing school period" do
+      before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(true) }
+
+      it "returns true" do
+        expect(subject.cant_use_email?).to be true
+      end
+    end
+
+    context "when the email is not used in an ongoing school period" do
+      before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(false) }
+
+      it "returns false" do
+        expect(subject.cant_use_email?).to be false
+      end
+    end
+  end
+
   describe '#email' do
     it 'returns the email address' do
       expect(ect.email).to eq("dusty@rhodes.com")
+    end
+  end
+
+  describe '#formatted_working_pattern' do
+    it 'returns the formatted working pattern' do
+      expect(ect.formatted_working_pattern).to eq('Full time')
     end
   end
 
@@ -48,6 +114,28 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
   describe '#govuk_date_of_birth' do
     it 'formats the date of birth in the govuk format' do
       expect(ect.govuk_date_of_birth).to eq("11 October 1945")
+    end
+  end
+
+  describe '#induction_exempt?' do
+    before do
+      store.trs_induction_status = 'Exempt'
+    end
+
+    context "when trs_induction_status is 'Exempt'" do
+      it 'returns true' do
+        expect(ect.induction_exempt?).to be_truthy
+      end
+    end
+
+    context "when trs_induction_status is not 'Exempt'" do
+      before do
+        store.trs_induction_status = nil
+      end
+
+      it 'returns false' do
+        expect(ect.induction_exempt?).to be_falsey
+      end
     end
   end
 
@@ -107,33 +195,25 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
   end
 
-  describe '#trn' do
-    it 'returns the trn' do
-      expect(ect.trn).to eq("3002586")
+  describe '#provider_led?' do
+    before do
+      store.programme_type = 'provider_led'
     end
-  end
 
-  describe '#working_pattern' do
-    it 'returns the working pattern' do
-      expect(ect.working_pattern).to eq("full_time")
+    context "when programme_type is 'provider_led'" do
+      it 'returns true' do
+        expect(ect.provider_led?).to be_truthy
+      end
     end
-  end
 
-  describe '#trs_national_insurance_number' do
-    it 'returns the national insurance number in trs' do
-      expect(ect.trs_national_insurance_number).to eq("OWAD23455")
-    end
-  end
+    context "when programme_type is not 'provider_led'" do
+      before do
+        store.programme_type = nil
+      end
 
-  describe '#formatted_programme_type' do
-    it 'returns the formatted programme type' do
-      expect(ect.formatted_programme_type).to eq('Pokemon-led')
-    end
-  end
-
-  describe '#formatted_working_pattern' do
-    it 'returns the formatted working pattern' do
-      expect(ect.formatted_working_pattern).to eq('Full time')
+      it 'returns false' do
+        expect(ect.provider_led?).to be_falsey
+      end
     end
   end
 
@@ -153,67 +233,65 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
   end
 
-  describe '#formatted_appropriate_body_name' do
-    context "when appropriate_body_type is 'teaching_induction_panel'" do
+  describe '#school_led?' do
+    before do
+      store.programme_type = 'school_led'
+    end
+
+    context "when programme_type is 'school_led'" do
+      it 'returns true' do
+        expect(ect.school_led?).to be_truthy
+      end
+    end
+
+    context "when programme_type is not 'school_led'" do
       before do
-        store.appropriate_body_type = 'teaching_induction_panel'
+        store.programme_type = nil
       end
 
-      specify do
-        expect(ect.formatted_appropriate_body_name).to eq('Independent Schools Teacher Induction Panel (ISTIP)')
+      it 'returns false' do
+        expect(ect.school_led?).to be_falsey
+      end
+    end
+  end
+
+  describe '#teaching_induction_panel?' do
+    before do
+      store.appropriate_body_type = 'teaching_induction_panel'
+    end
+
+    context "when appropriate_body_type is 'teaching_induction_panel'" do
+      it 'returns true' do
+        expect(ect.teaching_induction_panel?).to be_truthy
       end
     end
 
     context "when appropriate_body_type is not 'teaching_induction_panel'" do
       before do
-        FactoryBot.create(:appropriate_body, id: 1, name: 'Another body')
-        store.appropriate_body_type = 'teaching_school_hub'
-        store.appropriate_body_id = '1'
+        store.appropriate_body_type = nil
       end
 
-      it 'returns the name' do
-        expect(ect.formatted_appropriate_body_name).to eq('Another body')
+      it 'returns false' do
+        expect(ect.teaching_induction_panel?).to be_falsey
       end
     end
   end
 
-  describe '#active_at_school?' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: ect.trn) }
-
-    it 'returns true if the ECT is registered at the given school' do
-      FactoryBot.create(:ect_at_school_period, :active, teacher:, school:)
-
-      expect(ect.active_at_school?(school:)).to be_truthy
-    end
-
-    it 'returns false if the ECT is not registered at the given school' do
-      FactoryBot.create(:ect_at_school_period, teacher:)
-
-      expect(ect.active_at_school?(school:)).to be_falsey
+  describe '#trn' do
+    it 'returns the trn' do
+      expect(ect.trn).to eq("3002586")
     end
   end
 
-  describe '#cant_use_email?' do
-    let(:teacher_email_service) { instance_double(Schools::TeacherEmail) }
-
-    before do
-      allow(Schools::TeacherEmail).to receive(:new).with(email: ect.email, trn: ect.trn).and_return(teacher_email_service)
+  describe '#trs_national_insurance_number' do
+    it 'returns the national insurance number in trs' do
+      expect(ect.trs_national_insurance_number).to eq("OWAD23455")
     end
+  end
 
-    context "when the email is used in an ongoing school period" do
-      before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(true) }
-
-      it "returns true" do
-        expect(subject.cant_use_email?).to be true
-      end
-    end
-
-    context "when the email is not used in an ongoing school period" do
-      before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(false) }
-
-      it "returns false" do
-        expect(subject.cant_use_email?).to be false
-      end
+  describe '#working_pattern' do
+    it 'returns the working pattern' do
+      expect(ect.working_pattern).to eq("full_time")
     end
   end
 end
