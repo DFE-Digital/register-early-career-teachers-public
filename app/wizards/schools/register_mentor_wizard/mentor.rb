@@ -41,13 +41,26 @@ module Schools
         trs_date_of_birth.to_date == date_of_birth.to_date
       end
 
+      def funding_available?
+        if (record = Teacher.find_by(trn:))
+          record.eligible_for_mentor_funding?
+        else
+          !check_ero_mentor.early_roll_out_mentor?
+        end
+      end
+
+      def check_ero_mentor
+        @check_ero_mentor ||= CheckEarlyRollOutMentor.new(trn)
+      end
+
       def register!
         Schools::RegisterMentor.new(trs_first_name:,
                                     trs_last_name:,
                                     corrected_name:,
                                     trn:,
                                     school_urn:,
-                                    email:)
+                                    email:,
+                                    **check_ero_mentor.to_h)
                                .register!
       end
 

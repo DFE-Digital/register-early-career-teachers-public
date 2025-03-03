@@ -1,7 +1,14 @@
 RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
-  let(:back_path) { schools_register_mentor_wizard_email_address_path }
-  let(:confirm_details_path) { schools_register_mentor_wizard_check_answers_path }
-  let(:ect_name) { "Michael Dixon" }
+  let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'FraggleRock') }
+
+  let(:teacher) do
+    FactoryBot.create(:teacher, trn: '1234568')
+  end
+
+  let(:ect) do
+    FactoryBot.create(:ect_at_school_period, :active, teacher:, lead_provider:)
+  end
+
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: "1234567",
@@ -11,56 +18,116 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
                      email: "john.wayne@example.com")
   end
 
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :check_answers, store:) }
+  let(:wizard) do
+    FactoryBot.build(:register_mentor_wizard, current_step: :check_answers, ect_id: ect.id, store:)
+  end
+
   let(:mentor) { wizard.mentor }
 
   before do
     assign(:wizard, wizard)
-    assign(:ect_name, ect_name)
     assign(:mentor, mentor)
+    assign(:ect_name, "Michael Dixon")
   end
 
-  context 'page title' do
+  describe 'page title' do
+    let(:title) { sanitize(view.content_for(:page_title)) }
     before { render }
 
-    it { expect(sanitize(view.content_for(:page_title))).to eql('Check your answers and confirm mentor details') }
+    it { expect(title).to eql("Check your answers and confirm mentor details") }
   end
 
-  it 'includes a back button that links to trn and dob page of the journey' do
-    render
+  describe 'back link' do
+    let(:backlink) { view.content_for(:backlink_or_breadcrumb) }
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+    context 'without exemption' do
+      before { render }
+
+      it { expect(backlink).to have_link('Back', href: schools_register_mentor_wizard_review_mentor_eligibility_path) }
+    end
+
+    context 'with legacy exemption' do
+      before do
+        FactoryBot.create(:early_roll_out_mentor, trn: mentor.trn)
+        render
+      end
+
+      it { expect(backlink).to have_link('Back', href: schools_register_mentor_wizard_email_address_path) }
+    end
+
+    context 'with existing training exemption' do
+      before do
+        FactoryBot.create(:teacher,
+                          trn: mentor.trn,
+                          mentor_completion_date: Time.zone.today,
+                          mentor_completion_reason: 'completed_declaration_received')
+
+        render
+      end
+
+      it { expect(backlink).to have_link('Back', href: schools_register_mentor_wizard_email_address_path) }
+    end
   end
 
-  it 'displays TRN, Name and Email address' do
-    render
+  describe 'summary' do
+    context 'without exemption' do
+      before { render }
 
-    expect(rendered).to have_element(:dt, text: "Teacher reference number (TRN)")
-    expect(rendered).to have_element(:dd, text: "1234567")
-    expect(rendered).to have_element(:dt, text: "Name")
-    expect(rendered).to have_element(:dd, text: "Jim Wayne")
-    expect(rendered).to have_element(:dt, text: "Email address")
-    expect(rendered).to have_element(:dd, text: "john.wayne@example.com")
+      it 'displays TRN, Name and Email address, lead provider' do
+        expect(rendered).to have_element(:dt, text: "Teacher reference number (TRN)")
+        expect(rendered).to have_element(:dd, text: "1234567")
+        expect(rendered).to have_element(:dt, text: "Name")
+        expect(rendered).to have_element(:dd, text: "Jim Wayne")
+        expect(rendered).to have_element(:dt, text: "Email address")
+        expect(rendered).to have_element(:dd, text: "john.wayne@example.com")
+        expect(rendered).to have_element(:dt, text: "Lead provider")
+        expect(rendered).to have_element(:dd, text: "FraggleRock")
+      end
+    end
+
+    context 'with legacy exemption' do
+      before do
+        FactoryBot.create(:early_roll_out_mentor, trn: mentor.trn)
+        render
+      end
+
+      it 'hides lead provider' do
+        expect(rendered).not_to have_element(:dt, text: "Lead provider")
+        expect(rendered).not_to have_element(:dd, text: "FraggleRock")
+      end
+    end
+
+    context 'with existing training exemption' do
+      before do
+        FactoryBot.create(:teacher,
+                          trn: mentor.trn,
+                          mentor_completion_date: Time.zone.today,
+                          mentor_completion_reason: 'completed_declaration_received')
+
+        render
+      end
+
+      it 'hides lead provider' do
+        expect(rendered).not_to have_element(:dt, text: "Lead provider")
+        expect(rendered).not_to have_element(:dd, text: "FraggleRock")
+      end
+    end
   end
 
   it 'includes an inset with the names of the mentor and ECT associated' do
     render
-
     expect(rendered).to have_selector(".govuk-inset-text", text: 'Jim Wayne will mentor Michael Dixon', visible: true)
-    expect(rendered).to have_selector("form[action='#{confirm_details_path}']")
   end
 
   it 'includes a Confirm details button that posts to the check answers page' do
     render
-
     expect(rendered).to have_button('Confirm details')
-    expect(rendered).to have_selector("form[action='#{confirm_details_path}']")
+    expect(rendered).to have_selector("form[action='#{schools_register_mentor_wizard_check_answers_path}']")
   end
 
-  it "has change links" do
+  it 'has change links' do
     render
-
-    expect(rendered).to have_link("Change", href: schools_register_mentor_wizard_change_mentor_details_path)
-    expect(rendered).to have_link("Change", href: schools_register_mentor_wizard_change_email_address_path)
+    expect(rendered).to have_link('Change', href: schools_register_mentor_wizard_change_mentor_details_path)
+    expect(rendered).to have_link('Change', href: schools_register_mentor_wizard_change_email_address_path)
   end
 end
