@@ -71,7 +71,6 @@ describe ECTAtSchoolPeriod do
         it do
           is_expected.to validate_presence_of(:lead_provider_id)
                            .with_message('Must contain the id of a LeadProvider')
-                           .allow_nil
         end
 
         it do
@@ -136,7 +135,8 @@ describe ECTAtSchoolPeriod do
       it do
         is_expected.to validate_inclusion_of(:programme_type)
                          .in_array(%w[provider_led school_led])
-                         .with_message("Must be provider_led or school_led")
+                         .with_message("Must be nil or provider_led or school_led")
+                         .allow_nil
       end
     end
   end
@@ -204,7 +204,9 @@ describe ECTAtSchoolPeriod do
         FactoryBot.create(:mentorship_period, :active, mentee:, mentor:, started_on: 1.year.ago)
       end
 
-      it { expect(mentee.current_mentor).to eql(mentor) }
+      it "returns the mentor associated to that mentorship" do
+        expect(mentee.current_mentor).to eql(mentor)
+      end
     end
   end
 

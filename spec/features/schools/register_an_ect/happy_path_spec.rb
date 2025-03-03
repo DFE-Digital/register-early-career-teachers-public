@@ -1,6 +1,7 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client'
 
+  let(:school) { FactoryBot.create(:school, :state, :with_programme_choices) }
   let(:trn) { '9876543' }
 
   before do
@@ -35,6 +36,11 @@ RSpec.describe 'Registering an ECT' do
 
     when_i_select_full_time
     and_i_click_continue
+    then_i_should_be_taken_to_the_use_previous_ect_choices_page
+    and_i_should_see_the_previous_programme_choices
+
+    when_i_select_that_i_dont_want_to_use_the_school_previous_choices
+    and_i_click_continue
     then_i_should_be_taken_to_the_appropriate_bodies_page
 
     when_i_select_an_appropriate_body
@@ -60,6 +66,14 @@ RSpec.describe 'Registering an ECT' do
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_the_new_email
 
+    when_i_try_to_change_the_programme_type
+    then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
+
+    when_i_select_that_i_want_to_use_the_school_previous_choices
+    and_i_click_continue
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_should_see_all_the_new_programme_choices
+
     when_i_click_confirm_details
     then_i_should_be_taken_to_the_confirmation_page
 
@@ -69,7 +83,6 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user
-    school = FactoryBot.create(:school, gias_school: FactoryBot.create(:gias_school, :state_school_type))
     sign_in_as_school_user(school:)
   end
 
@@ -158,6 +171,20 @@ RSpec.describe 'Registering an ECT' do
     page.get_by_label('year').fill(one_month_ago_today.year.to_s)
   end
 
+  def then_i_should_be_taken_to_the_use_previous_ect_choices_page
+    expect(page.url).to end_with('/schools/register-ect/use-previous-ect-choices')
+  end
+
+  def and_i_should_see_the_previous_programme_choices
+    expect(page.get_by_text(school.chosen_appropriate_body.name)).to be_visible
+    expect(page.get_by_text('Provider-Led')).to be_visible
+    expect(page.get_by_text(school.chosen_lead_provider_name)).to be_visible
+  end
+
+  def when_i_select_that_i_dont_want_to_use_the_school_previous_choices
+    page.get_by_label("No").check
+  end
+
   def then_i_should_be_taken_to_the_appropriate_bodies_page
     expect(page.url).to end_with('/schools/register-ect/state-school-appropriate-body')
   end
@@ -185,7 +212,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def when_i_try_to_change_the_name
-    click_change_link_for_field("Name")
+    page.get_by_role('link', name: 'change name').first.click
   end
 
   def then_i_should_be_taken_to_the_change_name_page
@@ -197,7 +224,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def when_i_try_to_change_the_email_address
-    click_change_link_for_field("Email address")
+    page.get_by_role('link', name: 'change email address').first.click
   end
 
   def then_i_should_be_taken_to_the_change_email_address_page
@@ -210,6 +237,25 @@ RSpec.describe 'Registering an ECT' do
 
   def and_i_should_see_the_new_email
     expect(page.get_by_text('new@example.com')).to be_visible
+  end
+
+  def when_i_try_to_change_the_programme_type
+    page.get_by_role('link', name: 'change programme type').first.click
+  end
+
+  def then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
+    expect(page.url).to end_with('/schools/register-ect/change-use-previous-ect-choices')
+  end
+
+  def when_i_select_that_i_want_to_use_the_school_previous_choices
+    page.get_by_label("Yes").check
+  end
+
+  def and_i_should_see_all_the_new_programme_choices
+    expect(page.get_by_text(trn)).to be_visible
+    expect(page.get_by_text(school.chosen_appropriate_body_name)).to be_visible
+    expect(page.get_by_text('Provider-led')).to be_visible
+    expect(page.get_by_text(school.chosen_lead_provider_name)).to be_visible
   end
 
   def when_i_click_confirm_details
@@ -234,10 +280,5 @@ RSpec.describe 'Registering an ECT' do
 
   def one_month_ago_today
     @one_month_ago_today ||= Time.zone.today.prev_month
-  end
-
-  def click_change_link_for_field(key)
-    row = page.locator("div.govuk-summary-list__row", hasText: key)
-    row.locator("a.govuk-link", hasText: "Change").click
   end
 end
