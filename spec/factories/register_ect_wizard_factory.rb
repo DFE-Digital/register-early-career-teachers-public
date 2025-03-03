@@ -5,7 +5,7 @@ FactoryBot.define do
 
     current_step { :find_ect }
     step_params { {} }
-    store { FactoryBot.create(:session_repository) }
-    school { FactoryBot.create(:school, gias_school: FactoryBot.create(:gias_school, :state_school_type)) }
+    store { FactoryBot.build(:session_repository) }
+    school { FactoryBot.create(:school, :state) }
   end
 end

@@ -57,13 +57,23 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
 
       subject { described_class.new(ect:, mentor_id: mentor.id) }
 
+      # it 'adds a new mentorship for the ect and the mentor starting today' do
+      #   expect(ect.current_mentor).to be_nil
+      #   expect(subject.save).to be_truthy
+      #   debugger
+      #   expect(ect.current_mentor).to eq(mentor)
+      #   expect(ect.current_mentorship.started_on).to eq(Date.current)
+      # end
+
       it 'adds a new mentorship for the ect and the mentor starting today' do
         expect(ect.current_mentor).to be_nil
 
-        expect(subject.save).to be_truthy
-
-        expect(ect.current_mentor).to eq(mentor)
-        expect(ect.current_mentorship.started_on).to eq(Date.current)
+        if subject.save
+          expect(ect.current_mentor).to eq(mentor)
+          expect(ect.current_mentorship.started_on).to eq(Date.current)
+        else
+          raise(subject.errors.messages.to_s)
+        end
       end
     end
   end

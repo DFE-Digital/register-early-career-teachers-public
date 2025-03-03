@@ -1,9 +1,9 @@
 RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
-  describe '#initialize' do
-    let(:school) { FactoryBot.build(:school) }
-    let(:store) { FactoryBot.build(:session_repository, programme_type: 'prepopulated_programme_type') }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :programme_type, school:, store:) }
+  let(:school) { FactoryBot.build(:school) }
+  let(:store) { FactoryBot.build(:session_repository, programme_type: 'prepopulated_programme_type') }
+  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :programme_type, school:, store:) }
 
+  describe '#initialize' do
     let(:programme_type) { 'provided_programme_type' }
     subject { described_class.new(wizard:, **params) }
 
@@ -53,9 +53,6 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
   end
 
   describe 'steps' do
-    let(:school) { FactoryBot.build(:school) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :programme_type, school:) }
-
     subject { wizard.current_step }
 
     describe '#next_step' do
@@ -78,9 +75,7 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
 
     describe '#previous_step' do
       context 'when the school is independent' do
-        before do
-          allow(school).to receive(:independent?).and_return(true)
-        end
+        let(:school) { FactoryBot.create(:school, :independent) }
 
         it 'returns :independent_school_appropriate_body' do
           expect(subject.previous_step).to eq(:independent_school_appropriate_body)
@@ -88,9 +83,7 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
       end
 
       context 'when the school is state-funded' do
-        before do
-          allow(school).to receive(:independent?).and_return(false)
-        end
+        let(:school) { FactoryBot.create(:school, :state) }
 
         it 'returns :state_school_appropriate_body' do
           expect(subject.previous_step).to eq(:state_school_appropriate_body)
