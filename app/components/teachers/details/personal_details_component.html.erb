@@ -1,0 +1,8 @@
+<h2 class='govuk-heading-m'>Personal details</h2>
+<%=
+  govuk_summary_list(
+    rows: [
+      { key: { text: 'Name' }, value: { text: helpers.teacher_full_name(teacher) } },
+    ].compact_blank
+  )
+%>

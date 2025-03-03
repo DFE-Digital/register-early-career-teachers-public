@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Teachers::InductionSummaryComponent, type: :component do
+RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
   include AppropriateBodyHelper
   include Rails.application.routes.url_helpers
 

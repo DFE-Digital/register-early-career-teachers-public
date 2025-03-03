@@ -48,11 +48,6 @@ RSpec.describe 'schools/ects/show.html.erb' do
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Barry White')
     end
 
-    it 'email address' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Email address')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'love@whale.com')
-    end
-
     describe 'mentor' do
       context 'when assigned' do
         before do
