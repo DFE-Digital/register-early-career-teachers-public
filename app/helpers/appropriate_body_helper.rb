@@ -1,30 +1,16 @@
 module AppropriateBodyHelper
-  InductionProgrammeChoice = Struct.new(:identifier, :name)
-  InductionOutcomeChoice = Struct.new(:identifier, :name)
+  FormChoice = Data.define(:identifier, :name)
 
   def induction_programme_choices
-    [
-      InductionProgrammeChoice.new(identifier: 'fip', name: 'Full induction programme'),
-      InductionProgrammeChoice.new(identifier: 'cip', name: 'Core induction programme'),
-      InductionProgrammeChoice.new(identifier: 'diy', name: 'School-based induction programme')
-    ]
+    ::INDUCTION_PROGRAMMES.map { |key, value| FormChoice.new(key.to_s, value) }
   end
 
-  def induction_programme_choice_name(identifier)
-    # FIXME: this is a temporary solution until we have real induction programme data
-    induction_programme_choices.find { |choice| choice.identifier == identifier }&.name
-  end
-
+  # TODO: not currently in use?
   def induction_outcome_choices
-    [
-      InductionProgrammeChoice.new(identifier: 'pass', name: 'Passed'),
-      InductionProgrammeChoice.new(identifier: 'fail', name: 'Failed'),
-    ]
+    ::INDUCTION_OUTCOMES.map { |key, value| FormChoice.new(key.to_s, value) }
   end
 
   def summary_card_for_teacher(teacher:)
-    induction_start_date = Teachers::InductionPeriod.new(teacher).induction_start_date&.to_fs(:govuk)
-
     govuk_summary_card(title: Teachers::Name.new(teacher).full_name) do |card|
       card.with_action { govuk_link_to("Show", ab_teacher_path(teacher)) }
       card.with_summary_list(
@@ -33,7 +19,7 @@ module AppropriateBodyHelper
           { key: { text: "TRN" }, value: { text: teacher.trn } },
           {
             key: { text: "Induction start date" },
-            value: { text: induction_start_date },
+            value: { text: Teachers::InductionPeriod.new(teacher).formatted_induction_start_date },
           },
           {
             key: { text: "Status" },
