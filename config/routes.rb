@@ -151,6 +151,11 @@ Rails.application.routes.draw do
       get "change-working-pattern", action: :new
       post "change-working-pattern", action: :create
 
+      get "use-previous-ect-choices", action: :new
+      post "use-previous-ect-choices", action: :create
+      get "change-use-previous-ect-choices", action: :new
+      post "change-use-previous-ect-choices", action: :create
+
       get "check-answers", action: :new
       post "check-answers", action: :create
 
@@ -202,6 +207,7 @@ Rails.application.routes.draw do
       post "email-address", action: :create
       get "change-email-address", action: :new
       post "change-email-address", action: :create
+
       get "cant-use-email", action: :new
       post "cant-use-email", action: :create
 
