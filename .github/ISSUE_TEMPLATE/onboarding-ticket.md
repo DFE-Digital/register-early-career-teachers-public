@@ -15,7 +15,6 @@ assignees: ''
   - [ ] First request they're invited to the [DfE Digital organisation](https://dfe.service-now.com.mcas.ms/serviceportal?id=sc_cat_item&sys_id=0aacf3a81ba52110b192ec69b04bcb14) on ServiceNow
   - [ ] Once they're in, add them to the [ecf2-cpd team](https://github.com/orgs/DFE-Digital/teams/ecf2-cpd)
 - [ ] Lucidspark
-- [ ] JIRA (optional)
 - [ ] Read-only Zendesk
 - [ ] **Slack**  
   - [ ] Invite them to the workspace  
