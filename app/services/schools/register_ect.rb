@@ -1,29 +1,50 @@
 module Schools
   class RegisterECT
-    attr_reader :corrected_name, :trs_first_name, :trs_last_name, :email, :started_on,
-                :school, :teacher, :trn, :working_pattern,
-                :appropriate_body, :lead_provider, :programme_type
+    attr_reader :appropriate_body,
+                :appropriate_body_type,
+                :corrected_name,
+                :email,
+                :lead_provider,
+                :programme_type,
+                :school,
+                :started_on,
+                :teacher,
+                :trn,
+                :trs_first_name,
+                :trs_last_name,
+                :working_pattern
 
-    def initialize(trs_first_name:, trs_last_name:, email:, trn:, school:,
-                   corrected_name:, started_on:, working_pattern:,
-                   appropriate_body:, programme_type:, lead_provider:)
+    def initialize(appropriate_body:,
+                   appropriate_body_type:,
+                   corrected_name:,
+                   email:,
+                   lead_provider:,
+                   programme_type:,
+                   school:,
+                   started_on:,
+                   trn:,
+                   trs_first_name:,
+                   trs_last_name:,
+                   working_pattern:)
+      @appropriate_body = appropriate_body
+      @appropriate_body_type = appropriate_body_type
+      @corrected_name = corrected_name
+      @email = email
+      @lead_provider = lead_provider
+      @programme_type = programme_type
+      @school = school
+      @started_on = started_on
+      @trn = trn
       @trs_first_name = trs_first_name
       @trs_last_name = trs_last_name
-      @started_on = started_on
-      @corrected_name = corrected_name
-      @trn = trn
-      @school = school
       @working_pattern = working_pattern
-      @email = email
-      @appropriate_body = appropriate_body
-      @programme_type = programme_type
-      @lead_provider = lead_provider
     end
 
     def register!
       ActiveRecord::Base.transaction do
         create_teacher!
         start_at_school!
+        update_school_choices!
       end
     end
 
@@ -41,8 +62,21 @@ module Schools
     end
 
     def start_at_school!
-      teacher.ect_at_school_periods.create!(school:, started_on:, working_pattern:, email:,
-                                            appropriate_body:, lead_provider:, programme_type:)
+      teacher.ect_at_school_periods.create!(school:,
+                                            started_on:,
+                                            working_pattern:,
+                                            email:,
+                                            appropriate_body:,
+                                            appropriate_body_type:,
+                                            lead_provider:,
+                                            programme_type:)
+    end
+
+    def update_school_choices!
+      school.update!(chosen_appropriate_body: appropriate_body,
+                     chosen_appropriate_body_type: appropriate_body_type,
+                     chosen_lead_provider: lead_provider,
+                     chosen_programme_type: programme_type)
     end
   end
 end
