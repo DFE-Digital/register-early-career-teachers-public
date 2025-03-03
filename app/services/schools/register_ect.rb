@@ -42,9 +42,9 @@ module Schools
 
     def register!
       ActiveRecord::Base.transaction do
+        update_school_choices!
         create_teacher!
         start_at_school!
-        update_school_choices!
       end
     end
 
@@ -62,14 +62,14 @@ module Schools
     end
 
     def start_at_school!
-      teacher.ect_at_school_periods.create!(school:,
-                                            started_on:,
-                                            working_pattern:,
-                                            email:,
-                                            appropriate_body:,
+      teacher.ect_at_school_periods.create!(appropriate_body:,
                                             appropriate_body_type:,
+                                            email:,
                                             lead_provider:,
-                                            programme_type:)
+                                            programme_type:,
+                                            school:,
+                                            started_on:,
+                                            working_pattern:)
     end
 
     def update_school_choices!

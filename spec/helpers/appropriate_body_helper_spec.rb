@@ -6,7 +6,7 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
   describe '#appropriate_body_name' do
     context "when appropriate_body_type is 'teaching_induction_panel'" do
       specify do
-        expect(appropriate_body_name(appropiate_body_type: 'teaching_induction_panel'))
+        expect(appropriate_body_name(appropriate_body_type: 'teaching_induction_panel'))
           .to eq('Independent Schools Teacher Induction Panel (ISTIP)')
       end
     end

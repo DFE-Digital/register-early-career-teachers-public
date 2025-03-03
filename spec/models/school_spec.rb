@@ -87,6 +87,5 @@ describe School do
                          .allow_nil
       end
     end
-
   end
 end

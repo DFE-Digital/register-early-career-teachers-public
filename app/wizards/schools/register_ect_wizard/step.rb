@@ -1,20 +1,14 @@
-# frozen_string_literal: true
-
 module Schools
   module RegisterECTWizard
     class Step < ApplicationWizardStep
       delegate :ect, :school, :valid_step?, to: :wizard
-      delegate :independent?, to: :school, prefix: true
 
-      def next_step
-      end
+      def self.permitted_params = []
+
+      def next_step = nil
 
       def save!
         persist if valid_step?
-      end
-
-      def self.permitted_params
-        []
       end
 
     private
@@ -25,9 +19,7 @@ module Schools
         TRS::Teacher.new({})
       end
 
-      def persist
-        ect.update(step_params)
-      end
+      def persist = ect.update(step_params)
 
       def pre_populate_attributes
         self.class.permitted_params.each do |key|
@@ -35,9 +27,7 @@ module Schools
         end
       end
 
-      def step_params
-        wizard.step_params.to_h
-      end
+      def step_params = wizard.step_params.to_h
     end
   end
 end

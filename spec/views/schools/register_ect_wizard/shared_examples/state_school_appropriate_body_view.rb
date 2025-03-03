@@ -18,8 +18,7 @@ RSpec.shared_examples "a state school appropriate body view" do |current_step:, 
 
   context "when the appropriate body name is invalid" do
     before do
-
-    wizard.valid_step?
+      wizard.valid_step?
       render
     end
 

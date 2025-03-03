@@ -7,7 +7,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
                      corrected_name: nil,
                      date_of_birth: "11-10-1945",
                      email: "dusty@rhodes.com",
-                     programme_type: "pokemon_led",
+                     programme_type: "school_led",
                      start_date: 'January 2025',
                      trn: "3002586",
                      trs_first_name: "Dusty",
@@ -24,7 +24,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, :active, school:, teacher:) }
 
       it 'returns the ECT record' do
-        expect(ect.active_record_at_school).to eq(existing_ect_record)
+        expect(ect.active_record_at_school(school.urn)).to eq(existing_ect_record)
       end
     end
 
@@ -32,7 +32,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, school:, teacher:) }
 
       it 'returns nil' do
-        expect(ect.active_record_at_school).to be_nil
+        expect(ect.active_record_at_school(school.urn)).to be_nil
       end
     end
   end
@@ -43,13 +43,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     it 'returns true if the ECT is active at the given school' do
       FactoryBot.create(:ect_at_school_period, :active, teacher:, school:)
 
-      expect(ect.active_at_school?(school:)).to be_truthy
+      expect(ect.active_at_school?(school.urn)).to be_truthy
     end
 
     it 'returns false if the ECT is not at the given school' do
       FactoryBot.create(:ect_at_school_period, teacher:)
 
-      expect(ect.active_at_school?(school:)).to be_falsey
+      expect(ect.active_at_school?(school.urn)).to be_falsey
     end
   end
 

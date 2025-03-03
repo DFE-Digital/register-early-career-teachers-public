@@ -1,13 +1,14 @@
 RSpec.describe "schools/register_ect_wizard/lead_provider.html.erb" do
-  let(:ect) { double(full_name: 'John Smith') }
-  let(:store) { FactoryBot.build(:session_repository, lead_provider_id: "1") }
+  let(:store) do
+    FactoryBot.build(:session_repository, lead_provider_id: "1", trs_first_name: 'John', trs_last_name: 'Smith')
+  end
   let(:wizard) do
     FactoryBot.build(:register_ect_wizard, current_step: :lead_provider, store:)
   end
 
   before do
     assign(:wizard, wizard)
-    assign(:ect, ect)
+    assign(:ect, wizard.ect)
   end
 
   it "sets the page title" do

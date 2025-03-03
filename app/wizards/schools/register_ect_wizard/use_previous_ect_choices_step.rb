@@ -15,7 +15,7 @@ module Schools
 
       def next_step
         return :check_answers if use_previous_ect_choices
-        return :independent_school_appropriate_body if school_independent?
+        return :independent_school_appropriate_body if school.independent?
 
         :state_school_appropriate_body
       end
@@ -26,21 +26,8 @@ module Schools
 
     private
 
-      def choices
-        use_previous_ect_choices ? previous_ect_choices : {}
-      end
-
       def persist
-        ect.update!(use_previous_ect_choices:, **choices)
-      end
-
-      def previous_ect_choices
-        {
-          appropriate_body_id: school.chosen_appropriate_body_id,
-          appropriate_body_type: school.chosen_appropriate_body_type,
-          programme_type: chosen_programme_type,
-          lead_provider_id: chosen_lead_provider_id
-        }
+        ect.update!(use_previous_ect_choices:, **school.programme_choices)
       end
     end
   end
