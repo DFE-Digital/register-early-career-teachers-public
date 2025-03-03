@@ -39,6 +39,12 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
   end
 
+  describe '#trs_full_name' do
+    it 'returns the full name of the ECT' do
+      expect(ect.trs_full_name).to eq("Dusty Rhodes")
+    end
+  end
+
   describe '#govuk_date_of_birth' do
     it 'formats the date of birth in the govuk format' do
       expect(ect.govuk_date_of_birth).to eq("11 October 1945")
