@@ -36,29 +36,38 @@ private
   end
 
   def update_existing_teacher(teacher)
-    if author.present? && appropriate_body.present?
-      manage = Teachers::Manage.new(author:, teacher:, appropriate_body:)
+    return false unless author.present? && appropriate_body.present?
 
-      name_changed = teacher.trs_first_name != trs_first_name || teacher.trs_last_name != trs_last_name
+    manage = Teachers::Manage.new(author:, teacher:, appropriate_body:)
 
-      if name_changed
-        manage.update_name!(
-          trs_first_name:,
-          trs_last_name:
-        )
-      end
-
-      manage.update_qts_awarded_on!(
-        trs_qts_awarded_on:
-      )
-    else
-      teacher.update!(
-        trs_first_name:,
-        trs_last_name:,
-        trs_qts_awarded_on:
-      )
-    end
+    update_name_if_changed(manage, teacher)
+    update_qts_awarded_on_if_changed(manage, teacher)
 
     teacher
+  end
+
+  def update_name_if_changed(manage, teacher)
+    return unless name_changed?(teacher)
+
+    manage.update_name!(
+      trs_first_name:,
+      trs_last_name:
+    )
+  end
+
+  def update_qts_awarded_on_if_changed(manage, teacher)
+    return unless qts_awarded_on_changed?(teacher)
+
+    manage.update_qts_awarded_on!(
+      trs_qts_awarded_on:
+    )
+  end
+
+  def name_changed?(teacher)
+    teacher.trs_first_name != trs_first_name || teacher.trs_last_name != trs_last_name
+  end
+
+  def qts_awarded_on_changed?(teacher)
+    teacher.trs_qts_awarded_on != trs_qts_awarded_on
   end
 end
