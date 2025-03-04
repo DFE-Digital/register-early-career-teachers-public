@@ -1,4 +1,4 @@
-describe Schools::RegisterECT do
+RSpec.describe Schools::RegisterECT do
   let(:trs_first_name) { "Dusty" }
   let(:trs_last_name) { "Rhodes" }
   let(:corrected_name) { "Randy Marsh" }

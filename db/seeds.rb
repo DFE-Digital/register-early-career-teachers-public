@@ -81,8 +81,8 @@ end
 
 print_seed_info("Adding teachers")
 
-emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456')
-kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457')
+emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456', mentor_completion_date: 1.year.from_now)
+kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', mentor_completion_reason: 'completed_declaration_received')
 alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589')
 hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894')
 jamie_parsons = Teacher.create!(trs_first_name: 'Jamie', trs_last_name: 'Parsons', trn: '1237894')
@@ -132,7 +132,7 @@ brookfield_school = schools_indexed_by_urn.fetch(2_976_163)
 print_seed_info("Adding appropriate bodies")
 
 AppropriateBody.create!(name: 'Canvas Teaching School Hub', local_authority_code: 109, establishment_number: 2367)
-AppropriateBody.create!(name: 'South Yorkshire Studio Hub', local_authority_code: 678, establishment_number: 9728)
+south_yorkshire_studio_hub = AppropriateBody.create!(name: 'South Yorkshire Studio Hub', local_authority_code: 678, establishment_number: 9728)
 AppropriateBody.create!(name: 'Ochre Education Partnership', local_authority_code: 238, establishment_number: 6582)
 umber_teaching_school_hub = AppropriateBody.create!(name: 'Umber Teaching School Hub', local_authority_code: 957, establishment_number: 7361, dfe_sign_in_organisation_id: 'd245ec79-534e-4547-a7e4-ccd98803b627')
 golden_leaf_teaching_school_hub = AppropriateBody.create!(name: 'Golden Leaf Teaching School Hub', local_authority_code: 648, establishment_number: 3986)
@@ -252,7 +252,10 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   teacher: kate_winslet,
   school: ackley_bridge,
   email: 'kate.winslet@titanic.com',
-  started_on: 1.year.ago
+  started_on: 1.year.ago,
+  lead_provider: grove_institute,
+  appropriate_body: golden_leaf_teaching_school_hub,
+  programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -294,7 +297,10 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   teacher: alan_rickman,
   school: ackley_bridge,
   email: 'alan.rickman@diehard.com',
-  started_on: 2.years.ago
+  started_on: 2.years.ago,
+  lead_provider: wildflower_trust,
+  appropriate_body: golden_leaf_teaching_school_hub,
+  programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -332,7 +338,10 @@ hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   teacher: hugh_grant,
   school: abbey_grove_school,
   email: 'hugh.grant@wonka.com',
-  started_on: 2.years.ago
+  started_on: 2.years.ago,
+  lead_provider: grove_institute,
+  appropriate_body: golden_leaf_teaching_school_hub,
+  programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -367,7 +376,10 @@ jamie_parsons_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   teacher: jamie_parsons,
   school: abbey_grove_school,
   email: 'jamie.parsons@aol.com',
-  started_on: 2.years.ago
+  started_on: 2.years.ago,
+  lead_provider: wildflower_trust,
+  appropriate_body: golden_leaf_teaching_school_hub,
+  programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -447,7 +459,10 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
   teacher: imogen_stubbs,
   school: mallory_towers,
   email: 'imogen.stubbs@eriktheviking.com',
-  started_on: 2.years.ago
+  started_on: 2.years.ago,
+  lead_provider: wildflower_trust,
+  appropriate_body: golden_leaf_teaching_school_hub,
+  programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -475,7 +490,10 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   teacher: gemma_jones,
   school: mallory_towers,
   email: 'gemma.jones@rocketman.com',
-  started_on: 21.months.ago
+  started_on: 21.months.ago,
+  lead_provider: wildflower_trust,
+  appropriate_body: golden_leaf_teaching_school_hub,
+  programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -510,6 +528,9 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   teacher: anthony_hopkins,
   school: brookfield_school,
   email: 'anthony.hopkins@favabeans.com',
+  lead_provider: national_meadows_institute,
+  appropriate_body: umber_teaching_school_hub,
+  programme_type: 'provider_led',
   started_on: 2.years.ago
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -525,7 +546,10 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   teacher: stephen_fry,
   school: brookfield_school,
   email: 'stephen.fry@sausage.com',
-  started_on: 2.years.ago
+  started_on: 2.years.ago,
+  lead_provider: national_meadows_institute,
+  appropriate_body: south_yorkshire_studio_hub,
+  programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -609,3 +633,11 @@ YAML.load_file(Rails.root.join('config/personas.yml'))
       .tap { |user| user.dfe_roles.create! }
       .then { |user| describe_user(user) }
 end
+
+print_seed_info('Adding funding exemptions:', colour: :red)
+
+# completed_during_early_roll_out
+EarlyRollOutMentor.create!(trn: imogen_stubbs.trn)
+EarlyRollOutMentor.create!(trn: harriet_walter.trn)
+EarlyRollOutMentor.create!(trn: '3002582') # Robson Scottie
+EarlyRollOutMentor.create!(trn: '3002580') # Muhammed Ali
