@@ -25,58 +25,40 @@ class Teachers::CreateOrUpdate
 private
 
   def create_new_teacher
-    teacher = Teacher.create!(
+    Teachers::Create.new(
       trn:,
       trs_first_name:,
       trs_last_name:,
-      trs_qts_awarded_on:
-    )
-
-    record_teacher_created_event(teacher) if author.present? && appropriate_body.present?
-
-    teacher
+      trs_qts_awarded_on:,
+      author:,
+      appropriate_body:
+    ).create_teacher
   end
 
   def update_existing_teacher(teacher)
-    name_changed = teacher.trs_first_name != trs_first_name || teacher.trs_last_name != trs_last_name
+    if author.present? && appropriate_body.present?
+      manage = Teachers::Manage.new(author:, teacher:, appropriate_body:)
 
-    if name_changed
-      old_name = Teachers::Name.new(teacher).full_name_in_trs
+      name_changed = teacher.trs_first_name != trs_first_name || teacher.trs_last_name != trs_last_name
 
+      if name_changed
+        manage.update_name!(
+          trs_first_name:,
+          trs_last_name:
+        )
+      end
+
+      manage.update_qts_awarded_on!(
+        trs_qts_awarded_on:
+      )
+    else
       teacher.update!(
         trs_first_name:,
         trs_last_name:,
         trs_qts_awarded_on:
       )
-
-      record_name_change_event(teacher, old_name) if author.present? && appropriate_body.present?
-    else
-      teacher.update!(trs_qts_awarded_on:)
     end
 
     teacher
-  end
-
-  def record_teacher_created_event(teacher)
-    Events::Record.new(
-      author:,
-      event_type: :teacher_record_created,
-      heading: "Teacher record created for #{Teachers::Name.new(teacher).full_name_in_trs}",
-      happened_at: Time.zone.now,
-      teacher:,
-      appropriate_body:
-    ).record_event!
-  end
-
-  def record_name_change_event(teacher, old_name)
-    new_name = Teachers::Name.new(teacher).full_name_in_trs
-
-    Events::Record.teacher_name_changed_in_trs!(
-      old_name:,
-      new_name:,
-      author:,
-      teacher:,
-      appropriate_body:
-    )
   end
 end

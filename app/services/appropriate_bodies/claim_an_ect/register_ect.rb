@@ -35,7 +35,7 @@ module AppropriateBodies
       def create_or_update_teacher
         return true unless pending_induction_submission.valid?(:register_ect)
 
-        teacher = ::Teachers::CreateOrUpdate.new(
+        @teacher = ::Teachers::CreateOrUpdate.new(
           trn: pending_induction_submission.trn,
           trs_first_name: pending_induction_submission.trs_first_name,
           trs_last_name: pending_induction_submission.trs_last_name,
@@ -44,7 +44,7 @@ module AppropriateBodies
           appropriate_body:
         ).create_or_update
 
-        teacher.persisted?
+        @teacher.persisted?
       end
 
       def update_itt_provider_name
@@ -59,9 +59,7 @@ module AppropriateBodies
         @manage_teacher ||= ::Teachers::Manage.new(author:, teacher:, appropriate_body:)
       end
 
-      def teacher
-        @teacher ||= Teacher.find_by(trn: pending_induction_submission.trn)
-      end
+      attr_reader :teacher
 
       def create_induction_period
         return true unless pending_induction_submission.valid?(:register_ect)
