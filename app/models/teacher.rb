@@ -3,6 +3,12 @@ class Teacher < ApplicationRecord
 
   self.ignored_columns = %i[search]
 
+  enum :mentor_completion_reason, {
+    completed_declaration_received: 'completed_declaration_received',
+    completed_during_early_roll_out: 'completed_during_early_roll_out',
+    started_not_completed: 'started_not_completed',
+  }
+
   # Associations
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
@@ -32,4 +38,13 @@ class Teacher < ApplicationRecord
       FullTextSearch::Query.new(query_string).search_by_all_prefixes
     )
   }
+
+  # Instance methods
+  def eligible_for_mentor_funding?
+    mentor_completion_date.blank? && mentor_completion_reason.blank?
+  end
+
+  def ineligible_for_mentor_funding?
+    !eligible_for_mentor_funding?
+  end
 end

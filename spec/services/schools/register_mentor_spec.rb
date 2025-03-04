@@ -1,4 +1,4 @@
-describe Schools::RegisterMentor do
+RSpec.describe Schools::RegisterMentor do
   let(:trs_first_name) { "Dusty" }
   let(:trs_last_name) { "Rhodes" }
   let(:corrected_name) { "Randy Marsh" }
@@ -6,6 +6,8 @@ describe Schools::RegisterMentor do
   let(:school) { FactoryBot.create(:school) }
   let(:email) { "randy@tegridyfarms.com" }
   let(:started_on) { Date.yesterday }
+  let(:mentor_completion_date) { Date.new(2021, 4, 19) }
+  let(:mentor_completion_reason) { 'completed_during_early_roll_out' }
 
   subject(:service) do
     described_class.new(trs_first_name:,
@@ -14,13 +16,15 @@ describe Schools::RegisterMentor do
                         trn:,
                         school_urn: school.urn,
                         email:,
-                        started_on:)
+                        started_on:,
+                        mentor_completion_date:,
+                        mentor_completion_reason:)
   end
 
   describe '#call' do
     let(:mentor_at_school_period) { MentorAtSchoolPeriod.first }
 
-    context "when a Teacher record with the same trn don't exist" do
+    context "when a Teacher record with the same trn doesn't exist" do
       let(:teacher) { Teacher.first }
 
       it 'creates a new Teacher record' do
@@ -29,23 +33,22 @@ describe Schools::RegisterMentor do
         expect(teacher.trs_last_name).to eq(trs_last_name)
         expect(teacher.corrected_name).to eq(corrected_name)
         expect(teacher.trn).to eq(trn)
+        expect(teacher.mentor_completion_reason).to eq(mentor_completion_reason)
+        expect(teacher.mentor_completion_date).to eq(mentor_completion_date)
       end
     end
 
-    context "when a Teacher record with the same trn exists but has no mentor records" do
+    context "when a Teacher record with the same trn exists" do
       let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
-      it "doesn't create a new Teacher record" do
-        expect { service.register! }.to_not change(Teacher, :count)
+      context "without MentorATSchoolPeriod records" do
+        it { expect { service.register! }.to_not change(Teacher, :count) }
       end
-    end
 
-    context "when a Teacher record with the same trn exists and has mentor records" do
-      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
-      let!(:mentor) { FactoryBot.create(:mentor_at_school_period, teacher:) }
+      context "with MentorATSchoolPeriod records" do
+        before { FactoryBot.create(:mentor_at_school_period, teacher:) }
 
-      it "raise an exception" do
-        expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
+        it { expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid) }
       end
     end
 
@@ -63,7 +66,9 @@ describe Schools::RegisterMentor do
                             corrected_name:,
                             trn:,
                             school_urn: school.urn,
-                            email:)
+                            email:,
+                            mentor_completion_date:,
+                            mentor_completion_reason:)
       end
 
       it "current date is assigned" do

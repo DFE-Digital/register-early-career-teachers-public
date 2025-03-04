@@ -1,4 +1,4 @@
-describe Schools::Home do
+RSpec.describe Schools::Home do
   subject(:service) { described_class.new(school:) }
 
   let(:school) { FactoryBot.create(:school) }

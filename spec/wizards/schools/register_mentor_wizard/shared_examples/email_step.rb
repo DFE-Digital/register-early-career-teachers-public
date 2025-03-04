@@ -1,4 +1,4 @@
-RSpec.shared_examples "an email step" do |current_step:, previous_step:|
+RSpec.shared_examples "an email step" do |current_step:, previous_step:, next_step:|
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: "1234567",
@@ -43,10 +43,10 @@ RSpec.shared_examples "an email step" do |current_step:, previous_step:|
     end
 
     let(:wizard) do
-      FactoryBot.build(:register_mentor_wizard, current_step:, step_params:)
+      FactoryBot.build(:register_mentor_wizard, current_step:, store:, step_params:)
     end
 
-    it { expect(wizard.next_step).to eq(:check_answers) }
+    it { expect(wizard.next_step).to eq(next_step) }
   end
 
   describe '#previous_step' do

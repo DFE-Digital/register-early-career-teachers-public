@@ -195,21 +195,21 @@ Rails.application.routes.draw do
 
       get "review-mentor-details", action: :new
       post "review-mentor-details", action: :create
-
-      get "email-address", action: :new
-      post "email-address", action: :create
-
-      get "cant-use-email", action: :new
-      post "cant-use-email", action: :create
-
-      get "check-answers", action: :new
-      post "check-answers", action: :create
-
       get "change-mentor-details", action: :new
       post "change-mentor-details", action: :create
 
+      get "email-address", action: :new
+      post "email-address", action: :create
       get "change-email-address", action: :new
       post "change-email-address", action: :create
+      get "cant-use-email", action: :new
+      post "cant-use-email", action: :create
+
+      get "review-mentor-eligibility", action: :new
+      post "review-mentor-eligibility", action: :create
+
+      get "check-answers", action: :new
+      post "check-answers", action: :create
 
       get "confirmation", action: :new
     end
