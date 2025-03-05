@@ -12,4 +12,11 @@
 <%= render(Teachers::CurrentInductionPeriodComponent.new(teacher: @teacher, enable_edit: true)) %>
 <%= render(Teachers::PastInductionPeriodsComponent.new(teacher: @teacher, enable_edit: true)) %>
 
+<h2 class='govuk-heading-m'>Timeline</h2>
+<% if @events.any? %>
+  <%= render(TimelineComponent.new(@events)) %>
+<% else %>
+  <p class='govuk-body'>No timeline of events for this teacher.</p>
+<% end %>
+
 <%= govuk_warning_text(text: "Some of this teacher's records could not be migrated") if @teacher.has_migration_failures? %>
