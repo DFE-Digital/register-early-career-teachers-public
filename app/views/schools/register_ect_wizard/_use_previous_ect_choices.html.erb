@@ -27,7 +27,9 @@ end %>
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= f.govuk_radio_buttons_fieldset :use_previous_ect_choices, legend: { text: "Do you want to use the same choices for #{@ect.full_name}?" } do %>
+  <%= f.govuk_radio_buttons_fieldset :use_previous_ect_choices,
+                                     legend: { text: "Do you want to use the same choices for #{@ect.full_name}?" },
+                                     inline: true do %>
     <%= f.govuk_radio_button :use_previous_ect_choices, :true, label: { text: "Yes" }, link_errors: true %>
     <%= f.govuk_radio_button :use_previous_ect_choices, :false, label: { text: "No" } %>
   <% end %>
