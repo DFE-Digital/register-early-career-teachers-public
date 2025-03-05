@@ -3,13 +3,15 @@ class School < ApplicationRecord
   enum :chosen_appropriate_body_type,
        { teaching_induction_panel: "teaching_induction_panel",
          teaching_school_hub: "teaching_school_hub" },
-       validate: { allow_nil: true },
+       validate: { message: "Must be nil or teaching_induction_panel or teaching_school_hub",
+                   allow_nil: true },
        suffix: :ab_type_chosen
 
   enum :chosen_programme_type,
        { provider_led: "provider_led",
          school_led: "school_led" },
-       validate: { allow_nil: true },
+       validate: { message: "Must be nil or provider_led or school_led",
+                   allow_nil: true },
        suffix: :programme_type_chosen
 
   # Associations
@@ -24,42 +26,37 @@ class School < ApplicationRecord
   has_many :mentor_teachers, -> { distinct }, through: :mentor_at_school_periods, source: :teacher
 
   # Validations
-  validates :chosen_appropriate_body_type,
-            inclusion: {
-              in: School.chosen_appropriate_body_types.keys,
-              message: "Must be nil or #{School.chosen_appropriate_body_types.keys.join(' or ')}",
-              allow_nil: true
-            },
-            presence: {
-              message: "Must be 'teaching_school_hub'",
-              if: -> { chosen_appropriate_body_id }
-            }
-
   validates :chosen_appropriate_body_id,
             presence: {
-              message: "Must contain the id of an AppropriateBody",
+              message: 'Must contain the id of an AppropriateBody',
               if: -> { teaching_school_hub_ab_type_chosen? }
             },
             absence: {
-              message: "Must be nil",
+              message: 'Must be nil',
               unless: -> { teaching_school_hub_ab_type_chosen? }
+            }
+
+  validates :chosen_appropriate_body_type,
+            presence: {
+              message: 'Must be teaching_school_hub',
+              if: -> { state? },
+              allow_nil: true
             }
 
   validates :chosen_lead_provider_id,
             presence: {
-              message: "Must contain the id of a LeadProvider",
+              message: 'Must contain the id of a LeadProvider',
               if: -> { provider_led_programme_type_chosen? }
             },
             absence: {
-              message: "Must be nil",
+              message: 'Must be nil',
               unless: -> { provider_led_programme_type_chosen? }
             }
 
   validates :chosen_programme_type,
-            inclusion: {
-              in: School.chosen_programme_types.keys,
-              message: "Must be nil or #{School.chosen_programme_types.keys.join(' or ')}",
-              allow_nil: true
+            presence: {
+              message: 'Must be provider_led',
+              if: -> { chosen_appropriate_body_id }
             }
 
   validates :urn,
@@ -92,7 +89,8 @@ class School < ApplicationRecord
            :type_name,
            :ukprn,
            :website,
-           to: :gias_school
+           to: :gias_school,
+           allow_nil: true
 
   # chosen_appropriate_body_name
   delegate :name, to: :chosen_appropriate_body, prefix: true, allow_nil: true
@@ -112,6 +110,8 @@ class School < ApplicationRecord
   end
 
   def programme_choices? = chosen_appropriate_body_type && chosen_programme_type
+
+  def state? = GIAS::Types::STATE_SCHOOL_TYPES.include?(type_name)
 
   def to_param = urn
 end

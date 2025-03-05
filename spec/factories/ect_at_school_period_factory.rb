@@ -4,7 +4,9 @@ FactoryBot.define do
   factory(:ect_at_school_period) do
     association :school
     association :teacher
+
     provider_led
+    teaching_induction_panel
 
     started_on { generate(:base_ect_date) }
     finished_on { started_on + 1.day }
@@ -24,6 +26,16 @@ FactoryBot.define do
 
     trait :school_led do
       programme_type { 'school_led' }
+    end
+
+    trait :teaching_induction_panel do
+      appropriate_body_type { 'teaching_induction_panel' }
+      appropriate_body { nil }
+    end
+
+    trait :teaching_school_hub do
+      appropriate_body_type { 'teaching_school_hub' }
+      appropriate_body { association :appropriate_body }
     end
   end
 end
