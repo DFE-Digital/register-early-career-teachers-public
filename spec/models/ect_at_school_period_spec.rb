@@ -41,7 +41,7 @@ describe ECTAtSchoolPeriod do
 
         it do
           is_expected.to validate_presence_of(:appropriate_body_id)
-                           .with_message('Must contain the id of an AppropriateBody')
+                           .with_message('Must contain the ID of an appropriate body')
         end
 
         it do
@@ -63,14 +63,14 @@ describe ECTAtSchoolPeriod do
       it do
         is_expected.to validate_inclusion_of(:appropriate_body_type)
                          .in_array(%w[teaching_induction_panel teaching_school_hub])
-                         .with_message("Must be teaching_induction_panel or teaching_school_hub")
+                         .with_message("Must be teaching induction panel or teaching school hub")
       end
 
       context "for a state school" do
         let(:school) { FactoryBot.build(:school, :state_funded) }
         subject { FactoryBot.build(:ect_at_school_period, school:) }
 
-        it { is_expected.to validate_presence_of(:appropriate_body_type).with_message("Must be teaching_school_hub") }
+        it { is_expected.to validate_presence_of(:appropriate_body_type).with_message("Must be teaching school hub") }
       end
     end
 
@@ -100,15 +100,15 @@ describe ECTAtSchoolPeriod do
           context test.description do
             before do
               FactoryBot.create(:ect_at_school_period, teacher:,
-                                started_on: test.existing_period_range.first,
-                                finished_on: test.existing_period_range.last)
+                                                       started_on: test.existing_period_range.first,
+                                                       finished_on: test.existing_period_range.last)
               period.valid?
             end
 
             let(:period) do
               FactoryBot.build(:ect_at_school_period, teacher:,
-                               started_on: test.new_period_range.first,
-                               finished_on: test.new_period_range.last)
+                                                      started_on: test.new_period_range.first,
+                                                      finished_on: test.new_period_range.last)
             end
 
             let(:messages) { period.errors.messages }
@@ -142,13 +142,13 @@ describe ECTAtSchoolPeriod do
       it do
         is_expected.to validate_inclusion_of(:programme_type)
                          .in_array(%w[provider_led school_led])
-                         .with_message("Must be provider_led or school_led")
+                         .with_message("Must be provider-led or school-led")
       end
 
       context "when appropriate_body has been set" do
         subject { FactoryBot.build(:ect_at_school_period, appropriate_body_id: 123) }
 
-        it { is_expected.to validate_presence_of(:programme_type).with_message("Must be provider_led") }
+        it { is_expected.to validate_presence_of(:programme_type).with_message("Must be provider-led") }
       end
     end
   end
