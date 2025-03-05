@@ -12,4 +12,10 @@ RSpec.describe Schools::RegisterECTWizard::ChangeReviewECTDetailsStep, type: :mo
       expect(subject.next_step).to eq(:check_answers)
     end
   end
+
+  describe "#previous_step" do
+    it "returns :check_answers" do
+      expect(subject.next_step).to eq(:check_answers)
+    end
+  end
 end
