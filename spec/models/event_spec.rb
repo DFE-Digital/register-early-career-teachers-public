@@ -18,6 +18,20 @@ describe Event do
     it { is_expected.to belong_to(:author).class_name('User').optional }
   end
 
+  describe 'scopes' do
+    describe '#earliest_first' do
+      it 'adds an order by clause for happened_at asc to the query' do
+        expect(Event.earliest_first.to_sql).to include('ORDER BY "events"."happened_at" ASC')
+      end
+    end
+
+    describe '#latest_first' do
+      it 'adds an order by clause for happened_at desc to the query' do
+        expect(Event.latest_first.to_sql).to include('ORDER BY "events"."happened_at" DESC')
+      end
+    end
+  end
+
   describe 'validations' do
     it { is_expected.to validate_presence_of(:heading) }
     it { is_expected.to validate_presence_of(:event_type) }

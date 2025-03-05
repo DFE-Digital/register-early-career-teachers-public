@@ -36,6 +36,9 @@ class Event < ApplicationRecord
   validate :check_author_present
   validate :event_happened_in_the_past
 
+  scope :earliest_first, -> { order(happened_at: 'asc') }
+  scope :latest_first, -> { order(happened_at: 'desc') }
+
 private
 
   def check_author_present
