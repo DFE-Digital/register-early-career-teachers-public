@@ -1,7 +1,7 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client'
 
-  let(:school) { FactoryBot.create(:school, :state, :provider_led_chosen, :teaching_school_hub_chosen) }
+  let(:school) { FactoryBot.create(:school, :state_funded, :provider_led_chosen, :teaching_school_hub_chosen) }
   let(:trn) { '9876543' }
 
   before do

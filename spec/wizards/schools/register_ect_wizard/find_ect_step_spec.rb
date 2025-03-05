@@ -35,7 +35,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
   end
 
   describe '#next_step' do
-    let(:school) { FactoryBot.create(:school, :state) }
+    let(:school) { FactoryBot.create(:school, :state_funded) }
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect, step_params:, school:) }
     let(:step_params) do
       ActionController::Parameters.new(

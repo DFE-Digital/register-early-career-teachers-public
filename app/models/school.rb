@@ -39,7 +39,7 @@ class School < ApplicationRecord
   validates :chosen_appropriate_body_type,
             presence: {
               message: 'Must be teaching_school_hub',
-              if: -> { state? },
+              if: -> { state_funded? },
               allow_nil: true
             }
 
@@ -111,7 +111,7 @@ class School < ApplicationRecord
 
   def programme_choices? = chosen_appropriate_body_type && chosen_programme_type
 
-  def state? = GIAS::Types::STATE_SCHOOL_TYPES.include?(type_name)
+  def state_funded? = GIAS::Types::STATE_SCHOOL_TYPES.include?(type_name)
 
   def to_param = urn
 end
