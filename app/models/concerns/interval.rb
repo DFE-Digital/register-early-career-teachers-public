@@ -18,31 +18,55 @@ module Interval
     scope :containing_period, ->(period) { where("range @> daterange(?, ?)", period.started_on, period.finished_on) }
   end
 
-  def ongoing?
-    finished_on.nil?
+  # Validations
+  def period_dates_validation
+    return if incomplete?
+
+    errors.add(:finished_on, "The finish date must be later than the start date (#{started_on.to_fs(:govuk)})") if invalid_date_order?
   end
 
+  def overlap_validation(name:)
+    return unless has_overlap_with_siblings?
+
+    if siblings.any? { |s| s.range.include?(started_on) }
+      errors.add(:started_on, "Start date cannot overlap another #{name} period")
+    elsif siblings.any? { |s| s.range.include?(finished_on) }
+      errors.add(:finished_on, "End date cannot overlap another #{name} period")
+    end
+  end
+
+  # Actions
   def finish!(finished_on = Date.current)
     update!(finished_on:)
   end
 
-  def period_dates_validation
-    return if [started_on, finished_on].any?(&:blank?)
-
-    errors.add(:finished_on, "The finish date must be later than the start date (#{started_on.to_fs(:govuk)})") if finished_on <= started_on
-  end
-
-  def overlaps_with_siblings? = siblings.overlapping_with(self).exists?
-
+  # Associations
   def predecessors = siblings.started_before(started_on)
 
-  def predecessors? = predecessors.exists?
-
-  def siblings =  raise(NotImplementedError)
-
-  def siblings? = siblings.exists?
+  def siblings = raise(NotImplementedError)
 
   def successors = finished_on ? siblings.started_on_or_after(finished_on) : self.class.none
 
-  def successors? = successors.exists?
+  # Predicates
+  def valid_date_order?
+    return true if incomplete?
+
+    started_on <= finished_on
+  end
+
+  def invalid_date_order?
+    finished_on <= started_on
+  end
+
+  def ongoing? = finished_on.nil?
+
+  def incomplete? = [started_on, finished_on].any?(&:blank?)
+
+  def has_overlap_with_siblings? = siblings.overlapping_with(self).exists?
+
+  def has_predecessors? = predecessors.exists?
+
+  def has_siblings? = siblings.exists?
+
+  def has_successors? = successors.exists?
 end

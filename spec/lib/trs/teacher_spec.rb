@@ -142,17 +142,13 @@ RSpec.describe TRS::Teacher do
         }
       end
 
-      it 'returns true' do
-        expect(subject.prohibited_from_teaching?).to be true
-      end
+      it { is_expected.to be_prohibited_from_teaching }
     end
 
     context 'when teacher has no alerts' do
       let(:data) { { 'alerts' => [] } }
 
-      it 'returns false' do
-        expect(subject.prohibited_from_teaching?).to be false
-      end
+      it { is_expected.not_to be_prohibited_from_teaching }
     end
 
     context "when teacher has different type of alert" do
@@ -166,9 +162,7 @@ RSpec.describe TRS::Teacher do
         }
       end
 
-      it "returns false" do
-        expect(subject.prohibited_from_teaching?).to be false
-      end
+      it { is_expected.not_to be_prohibited_from_teaching }
     end
   end
 end

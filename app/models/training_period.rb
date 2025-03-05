@@ -37,7 +37,7 @@ class TrainingPeriod < ApplicationRecord
     ect_at_school_period || mentor_at_school_period
   end
 
-  def trainee_siblings
+  def siblings
     return TrainingPeriod.none unless trainee
 
     trainee.training_periods.excluding(self)
@@ -52,7 +52,7 @@ private
   end
 
   def trainee_distinct_period
-    errors.add(:base, "Trainee training periods cannot overlap") if overlaps_with_trainee_siblings?
+    overlap_validation(name: 'Trainee')
   end
 
   def enveloped_by_trainee_at_school_period
@@ -60,8 +60,6 @@ private
 
     errors.add(:base, "Date range is not contained by the period the trainee is at the school")
   end
-
-  def overlaps_with_trainee_siblings? = trainee_siblings.overlapping_with(self).exists?
 
   def trainee_started_on_at_school
     ect_at_school_period&.started_on || mentor_at_school_period&.started_on

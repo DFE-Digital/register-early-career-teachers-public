@@ -39,18 +39,6 @@ private
   end
 
   def teacher_distinct_period
-    return unless overlaps_with_siblings?
-
-    if siblings.any? { |s| s.range.include?(started_on) }
-      errors.add(:started_on, "Start date cannot overlap another induction period")
-    elsif siblings.any? { |s| s.range.include?(finished_on) }
-      errors.add(:finished_on, "End date cannot overlap another induction period")
-    end
-  end
-
-  def valid_date_order?
-    return true if started_on.blank? || finished_on.blank?
-
-    started_on <= finished_on
+    overlap_validation(name: 'induction')
   end
 end

@@ -38,6 +38,6 @@ class MentorAtSchoolPeriod < ApplicationRecord
 private
 
   def teacher_school_distinct_period
-    errors.add(:base, "Teacher School Mentor periods cannot overlap") if overlaps_with_siblings?
+    overlap_validation(name: 'Teacher School Mentor')
   end
 end
