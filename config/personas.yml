@@ -54,3 +54,13 @@
   image: personas/serena.png
   alt: Serena from Sailor Moon leaping in the air.
   type: School user
+
+- name: Felix Starling
+  email: felix@example.com
+  appropriate_body_name: Null
+  dfe_staff: No
+  school_name: Greyfriars School
+  school_type: State-funded
+  image: personas/felix.png
+  alt: Felix with a celestial-themed magical outfit.
+  type: School user
