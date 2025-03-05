@@ -19,7 +19,7 @@ class AddProgrammeChoicesToSchools < ActiveRecord::Migration[8.0]
     add_column :schools, :chosen_programme_type, :programme_type
 
     ECTAtSchoolPeriod.find_each do |ect|
-      if ect.school.state?
+      if ect.school.state_funded?
         raise('appropriate body must be set') if ect.appropriate_body_id.nil?
 
         ect.update_column(:appropriate_body_type, 'teaching_school_hub')

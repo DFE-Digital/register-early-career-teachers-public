@@ -83,7 +83,7 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
       end
 
       context 'when the school is state-funded' do
-        let(:school) { FactoryBot.create(:school, :state) }
+        let(:school) { FactoryBot.create(:school, :state_funded) }
 
         it 'returns :state_school_appropriate_body' do
           expect(subject.previous_step).to eq(:state_school_appropriate_body)

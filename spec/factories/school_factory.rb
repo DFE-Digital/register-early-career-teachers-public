@@ -1,13 +1,13 @@
 FactoryBot.define do
   factory(:school) do
     urn { Faker::Number.unique.decimal_part(digits: 7).to_s }
-    state
+    state_funded
 
     trait :independent do
       gias_school { association :gias_school, :independent_school_type, urn: }
     end
 
-    trait :state do
+    trait :state_funded do
       gias_school { association :gias_school, :state_school_type, urn: }
     end
 

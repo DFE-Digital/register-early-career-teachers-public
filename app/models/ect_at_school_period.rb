@@ -40,7 +40,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   validates :appropriate_body_type,
             presence: {
               message: "Must be teaching_school_hub",
-              if: -> { school&.state? }
+              if: -> { school&.state_funded? }
             }
 
   validates :email,

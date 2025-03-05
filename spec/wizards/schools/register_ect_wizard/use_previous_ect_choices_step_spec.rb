@@ -46,7 +46,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       end
 
       context 'for state-funded schools' do
-        let(:school) { FactoryBot.create(:school, :state) }
+        let(:school) { FactoryBot.create(:school, :state_funded) }
 
         it { expect(subject.next_step).to eq(:state_school_appropriate_body) }
       end
