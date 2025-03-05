@@ -17,6 +17,8 @@ module Schools
       end
 
       def previous_step
+        return :use_previous_ect_choices if school.programme_choices?
+
         :working_pattern
       end
 
