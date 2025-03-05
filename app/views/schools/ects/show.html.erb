@@ -33,7 +33,7 @@
 <%=
   if @ect.provider_led?
     govuk_summary_card(title: 'Reported to us by your lead provider') do |card|
-      if (period = @ect.training_periods.last)    
+      if (period = @ect.training_periods.order(:started_on).last)    
         card.with_summary_list(
           rows: [
             { key: { text: 'Lead provider' },    value: { text: period.lead_provider.name } },
