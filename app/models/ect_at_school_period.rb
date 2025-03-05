@@ -5,13 +5,13 @@ class ECTAtSchoolPeriod < ApplicationRecord
   enum :appropriate_body_type,
        { teaching_induction_panel: "teaching_induction_panel",
          teaching_school_hub: "teaching_school_hub" },
-       validate: { message: "Must be teaching_induction_panel or teaching_school_hub" },
+       validate: { message: "Must be teaching induction panel or teaching school hub" },
        suffix: :ab_type
 
   enum :programme_type,
        { provider_led: "provider_led",
          school_led: "school_led" },
-       validate: { message: "Must be provider_led or school_led" },
+       validate: { message: "Must be provider-led or school-led" },
        suffix: :programme_type
 
   # Associations
@@ -29,7 +29,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   # Validations
   validates :appropriate_body_id,
             presence: {
-              message: "Must contain the id of an AppropriateBody",
+              message: "Must contain the ID of an appropriate body",
               if: -> { teaching_school_hub_ab_type? }
             },
             absence: {
@@ -39,7 +39,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   validates :appropriate_body_type,
             presence: {
-              message: "Must be teaching_school_hub",
+              message: "Must be teaching school hub",
               if: -> { school&.state_funded? }
             }
 
@@ -55,7 +55,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   validates :programme_type,
             presence: {
-              message: "Must be provider_led",
+              message: "Must be provider-led",
               if: -> { appropriate_body_id }
             }
 
