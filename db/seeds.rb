@@ -695,7 +695,7 @@ end
 print_seed_info('Adding funding exemptions:')
 
 # completed_during_early_roll_out
-EarlyRollOutMentor.create!(trn: imogen_stubbs.trn).tap { describe_ero_mentor(imogen_stubbs) }
+EarlyRollOutMentor.create!(trn: hugh_laurie.trn).tap { describe_ero_mentor(hugh_laurie) }
 EarlyRollOutMentor.create!(trn: harriet_walter.trn).tap { describe_ero_mentor(harriet_walter) }
 EarlyRollOutMentor.create!(trn: '3002582').tap { describe_ero_mentor('Robson Scottie') }
 EarlyRollOutMentor.create!(trn: '3002580').tap { describe_ero_mentor('Muhammed Ali') }
