@@ -26,8 +26,10 @@ module Schools
 
     private
 
+      def choices = use_previous_ect_choices ? school.programme_choices : {}
+
       def persist
-        ect.update!(use_previous_ect_choices:, **school.programme_choices)
+        ect.update!(use_previous_ect_choices:, **choices)
       end
     end
   end
