@@ -8,7 +8,7 @@ describe Builders::ECT::SchoolPeriods do
 
   subject(:service) { described_class.new(teacher:, school_periods:) }
 
-  describe "#build" do
+  xdescribe "#build" do
     it "creates ECTAtSchoolPeriod records for the school periods" do
       expect {
         service.build

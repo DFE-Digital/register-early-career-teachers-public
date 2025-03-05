@@ -42,7 +42,7 @@ describe School do
 
         it do
           is_expected.to validate_presence_of(:chosen_appropriate_body_id)
-                           .with_message('Must contain the id of an AppropriateBody')
+                           .with_message('Must contain the ID of an appropriate body')
         end
 
         it do
@@ -64,7 +64,7 @@ describe School do
       it do
         is_expected.to validate_inclusion_of(:chosen_appropriate_body_type)
                          .in_array(%w[teaching_induction_panel teaching_school_hub])
-                         .with_message("Must be nil or teaching_induction_panel or teaching_school_hub")
+                         .with_message("Must be nil or teaching induction panel or teaching school hub")
                          .allow_nil
       end
 
@@ -73,7 +73,7 @@ describe School do
 
         it do
           is_expected.to validate_presence_of(:chosen_appropriate_body_type)
-                           .with_message("Must be teaching_school_hub")
+                           .with_message("Must be teaching school hub")
                            .allow_nil
         end
       end
@@ -95,14 +95,14 @@ describe School do
       it do
         is_expected.to validate_inclusion_of(:chosen_programme_type)
                          .in_array(%w[provider_led school_led])
-                         .with_message("Must be nil or provider_led or school_led")
+                         .with_message("Must be nil or provider-led or school-led")
                          .allow_nil
       end
 
       context "when chosen_appropriate_body has been set" do
         subject { FactoryBot.build(:school, chosen_appropriate_body_id: 123) }
 
-        it { is_expected.to validate_presence_of(:chosen_programme_type).with_message("Must be provider_led") }
+        it { is_expected.to validate_presence_of(:chosen_programme_type).with_message("Must be provider-led") }
       end
     end
   end

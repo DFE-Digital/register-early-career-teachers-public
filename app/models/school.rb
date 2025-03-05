@@ -3,14 +3,14 @@ class School < ApplicationRecord
   enum :chosen_appropriate_body_type,
        { teaching_induction_panel: "teaching_induction_panel",
          teaching_school_hub: "teaching_school_hub" },
-       validate: { message: "Must be nil or teaching_induction_panel or teaching_school_hub",
+       validate: { message: "Must be nil or teaching induction panel or teaching school hub",
                    allow_nil: true },
        suffix: :ab_type_chosen
 
   enum :chosen_programme_type,
        { provider_led: "provider_led",
          school_led: "school_led" },
-       validate: { message: "Must be nil or provider_led or school_led",
+       validate: { message: "Must be nil or provider-led or school-led",
                    allow_nil: true },
        suffix: :programme_type_chosen
 
@@ -28,7 +28,7 @@ class School < ApplicationRecord
   # Validations
   validates :chosen_appropriate_body_id,
             presence: {
-              message: 'Must contain the id of an AppropriateBody',
+              message: 'Must contain the ID of an appropriate body',
               if: -> { teaching_school_hub_ab_type_chosen? }
             },
             absence: {
@@ -38,14 +38,14 @@ class School < ApplicationRecord
 
   validates :chosen_appropriate_body_type,
             presence: {
-              message: 'Must be teaching_school_hub',
+              message: 'Must be teaching school hub',
               if: -> { state_funded? },
               allow_nil: true
             }
 
   validates :chosen_lead_provider_id,
             presence: {
-              message: 'Must contain the id of a LeadProvider',
+              message: 'Must contain the id of a lead provider',
               if: -> { provider_led_programme_type_chosen? }
             },
             absence: {
@@ -55,7 +55,7 @@ class School < ApplicationRecord
 
   validates :chosen_programme_type,
             presence: {
-              message: 'Must be provider_led',
+              message: 'Must be provider-led',
               if: -> { chosen_appropriate_body_id }
             }
 
