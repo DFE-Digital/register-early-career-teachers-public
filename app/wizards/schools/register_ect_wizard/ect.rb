@@ -7,7 +7,7 @@ module Schools
       end
 
       def full_name
-        (corrected_name.presence || trs_full_name).strip
+        (corrected_name.presence || trs_full_name)&.strip
       end
 
       def govuk_date_of_birth
@@ -91,7 +91,7 @@ module Schools
       end
 
       def trs_full_name
-        [trs_first_name, trs_last_name].join(" ").strip
+        Teachers::Name.new(self).full_name_in_trs
       end
     end
   end
