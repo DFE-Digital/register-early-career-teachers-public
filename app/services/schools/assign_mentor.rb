@@ -8,12 +8,6 @@ module Schools
       @started_on = started_on
     end
 
-    def assign
-      assign!
-    rescue ActiveRecord::RecordInvalid
-      false
-    end
-
     def assign!
       ActiveRecord::Base.transaction do
         finish_current_mentorship!

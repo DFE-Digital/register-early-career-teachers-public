@@ -104,7 +104,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
       end
 
       it 'instantiates a new Schools::AssignMentorForm and renders the page' do
-        Schools::AssignMentor.new(ect:, mentor:).assign
+        Schools::AssignMentor.new(ect:, mentor:).assign!
         allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
         get("/school/ects/#{ect.id}/mentorship/confirmation")
