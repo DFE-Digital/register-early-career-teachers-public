@@ -69,7 +69,7 @@ describe School do
       end
 
       context "for a state school" do
-        subject { FactoryBot.build(:school, :state) }
+        subject { FactoryBot.build(:school, :state_funded) }
 
         it do
           is_expected.to validate_presence_of(:chosen_appropriate_body_type)
