@@ -159,7 +159,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
     t.citext "email"
     t.bigint "appropriate_body_id"
     t.bigint "lead_provider_id"
-    t.string "programme_type"
+    t.enum "programme_type", enum_type: "programme_type"
     t.enum "appropriate_body_type", enum_type: "appropriate_body_type"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["appropriate_body_id"], name: "index_ect_at_school_periods_on_appropriate_body_id"

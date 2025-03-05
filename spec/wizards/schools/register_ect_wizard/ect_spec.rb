@@ -7,6 +7,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
                      corrected_name: nil,
                      date_of_birth: "11-10-1945",
                      email: "dusty@rhodes.com",
+                     appropriate_body_type: 'teaching_induction_panel',
                      programme_type: "school_led",
                      start_date: 'January 2025',
                      trn: "3002586",
@@ -230,6 +231,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       expect(ect_at_school_period.school_id).to eq(school.id)
       expect(ect_at_school_period.started_on).to eq(Date.parse('January 2025'))
       expect(ect_at_school_period.email).to eq('dusty@rhodes.com')
+      expect(ect_at_school_period.appropriate_body_type).to eq('teaching_induction_panel')
     end
   end
 

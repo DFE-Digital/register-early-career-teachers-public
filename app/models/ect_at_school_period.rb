@@ -5,13 +5,13 @@ class ECTAtSchoolPeriod < ApplicationRecord
   enum :appropriate_body_type,
        { teaching_induction_panel: "teaching_induction_panel",
          teaching_school_hub: "teaching_school_hub" },
-       validate: { allow_nil: true },
+       validate: { message: "Must be teaching_induction_panel or teaching_school_hub" },
        suffix: :ab_type
 
   enum :programme_type,
        { provider_led: "provider_led",
          school_led: "school_led" },
-       validate: { allow_nil: true },
+       validate: { message: "Must be provider_led or school_led" },
        suffix: :programme_type
 
   # Associations
@@ -38,14 +38,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
             }
 
   validates :appropriate_body_type,
-            inclusion: {
-              in: ECTAtSchoolPeriod.appropriate_body_types.keys,
-              message: "Must be nil or #{ECTAtSchoolPeriod.appropriate_body_types.keys.join(' or ')}",
-              allow_nil: true
-            },
             presence: {
-              message: "Must be 'teaching_school_hub'",
-              if: -> { appropriate_body_id }
+              message: "Must be teaching_school_hub",
+              if: -> { school&.state? }
             }
 
   validates :email,
@@ -53,20 +48,15 @@ class ECTAtSchoolPeriod < ApplicationRecord
             allow_nil: true
 
   validates :lead_provider_id,
-            presence: {
-              message: "Must contain the id of a LeadProvider",
-              if: -> { provider_led_programme_type? }
-            },
             absence: {
               message: "Must be nil",
-              unless: -> { provider_led_programme_type? }
+              if: -> { school_led_programme_type? }
             }
 
   validates :programme_type,
-            inclusion: {
-              in: School.chosen_programme_types.keys,
-              message: "Must be nil or #{School.chosen_programme_types.keys.join(' or ')}",
-              allow_nil: true
+            presence: {
+              message: "Must be provider_led",
+              if: -> { appropriate_body_id }
             }
 
   validates :school_id,
