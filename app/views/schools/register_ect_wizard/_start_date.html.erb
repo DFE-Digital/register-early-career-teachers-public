@@ -1,7 +1,7 @@
 <% page_data(
     title: "What is the date #{@ect.full_name} started or will start teaching as an ECT at your school?",
     error: @wizard.current_step.errors.present?,
-    backlink_href:,
+    backlink_href: @wizard.previous_step_path,
 ) %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>

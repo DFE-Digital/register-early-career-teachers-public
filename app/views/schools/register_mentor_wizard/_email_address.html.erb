@@ -1,6 +1,6 @@
 <% page_data(title: "What is #{@mentor.full_name}'s email address?",
              error: @wizard.current_step.errors.present?,
-             backlink_href:) %>
+             backlink_href: @wizard.previous_step_path) %>
 
 <p class="govuk-body">We need an email so we can ask for their consent to share their details if needed for
   training.</p>
