@@ -23,31 +23,47 @@ describe ECTAtSchoolPeriod do
       it { is_expected.not_to allow_value("invalid_email").for(:email) }
     end
 
-    context "teacher distinct period" do
-      let!(:existing_period) { FactoryBot.create(:ect_at_school_period) }
-      let(:teacher_id) { existing_period.teacher_id }
+    describe 'overlapping periods' do
+      let(:started_on_message) { 'Start date cannot overlap another Teacher ECT period' }
+      let(:finished_on_message) { 'End date cannot overlap another Teacher ECT period' }
+      let(:teacher) { FactoryBot.create(:teacher) }
 
-      before { subject.valid? }
-      subject { FactoryBot.build(:ect_at_school_period, teacher_id:, started_on:, finished_on:) }
+      context '#teacher_distinct_period' do
+        PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
+          context test.description do
+            before do
+              FactoryBot.create(:ect_at_school_period, teacher:,
+                                                       started_on: test.existing_period_range.first,
+                                                       finished_on: test.existing_period_range.last)
+              period.valid?
+            end
 
-      context "when the period has not finished yet" do
-        let(:started_on) { existing_period.started_on - 1.year }
-        let(:finished_on) { nil }
+            let(:period) do
+              FactoryBot.build(:ect_at_school_period, teacher:,
+                                                      started_on: test.new_period_range.first,
+                                                      finished_on: test.new_period_range.last)
+            end
 
-        context "when the teacher has a sibling ect_at_school_period starting later" do
-          it "add an error" do
-            expect(subject.errors.messages).to include(base: ["Teacher ECT periods cannot overlap"])
-          end
-        end
-      end
+            let(:messages) { period.errors.messages }
 
-      context "when the period has end date" do
-        let(:started_on) { existing_period.finished_on - 1.day }
-        let(:finished_on) { started_on + 1.day }
-
-        context "when the teacher has a sibling ect_at_school_period overlapping" do
-          it "add an error" do
-            expect(subject.errors.messages).to include(base: ["Teacher ECT periods cannot overlap"])
+            it "is #{test.expected_valid ? 'valid' : 'invalid'}" do
+              if test.expected_valid
+                expect(messages).not_to have_key(:started_on)
+                expect(messages).not_to have_key(:finished_on)
+              else
+                case index
+                when 0
+                  expect(messages[:started_on]).to include(started_on_message)
+                  expect(messages).not_to have_key(:finished_on)
+                when 1
+                  expect(messages[:started_on]).to include(started_on_message)
+                  expect(messages).not_to have_key(:finished_on)
+                when 2
+                  expect(messages).not_to have_key(:started_on)
+                  expect(messages[:finished_on]).to include(finished_on_message)
+                end
+              end
+            end
           end
         end
       end

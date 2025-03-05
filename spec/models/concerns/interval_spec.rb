@@ -104,13 +104,13 @@ describe Interval do
   describe "#finish!" do
     subject(:interval) { DummyInterval.new(started_on: 1.week.ago) }
 
-    context "when no finished_on date provided" do
+    context "without finished_on" do
       it "sets the current date as the end date of the interval" do
         expect { interval.finish! }.to change(interval, :finished_on).from(nil).to(Date.current)
       end
     end
 
-    context "when finished_on date provided" do
+    context "with finished_on" do
       it "sets it as the end date of the interval" do
         expect { interval.finish!(Date.yesterday) }.to change(interval, :finished_on).from(nil).to(Date.yesterday)
       end
@@ -118,72 +118,64 @@ describe Interval do
   end
 
   describe '#ongoing?' do
-    context 'when finished_on is nil' do
+    context 'without finished_on' do
       subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: nil) }
 
       it { is_expected.to be_ongoing }
     end
 
-    context 'when finished_on is present' do
+    context 'with finished_on' do
       subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.ago) }
 
       it { is_expected.not_to be_ongoing }
     end
   end
 
-  describe '#overlaps_with_siblings?' do
+  describe '#has_overlap_with_siblings?' do
     subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
 
-    context 'when there are sibling intervals overlapping' do
+    context 'with overlapping sibling intervals' do
       before { DummyMentor.create(teacher_id:, school_id:, started_on: Date.yesterday, finished_on: Date.current) }
 
-      it 'returns true' do
-        expect(interval.overlaps_with_siblings?).to be_truthy
-      end
+      it { is_expected.to have_overlap_with_siblings }
     end
 
-    context 'when there are no sibling intervals overlapping' do
+    context 'without overlapping sibling intervals' do
       before { DummyMentor.create(teacher_id:, school_id:, started_on: 1.week.ago, finished_on: 5.days.ago) }
 
-      it 'returns false' do
-        expect(interval.overlaps_with_siblings?).to be_falsey
-      end
+      it { is_expected.to_not have_overlap_with_siblings }
     end
   end
 
   describe '#predecessors' do
     subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
 
-    context 'when there are sibling intervals starting earlier' do
+    context 'with sibling intervals starting earlier' do
       let!(:predecessor) { DummyMentor.create(teacher_id:, school_id:, started_on: 2.weeks.ago, finished_on: 5.days.ago) }
 
-      it 'returns them' do
+      it 'returns previous intervals' do
         expect(interval.predecessors).to match_array([predecessor])
       end
     end
 
-    context 'when there are no sibling intervals starting earlier' do
+    context 'without sibling intervals starting earlier' do
       it 'returns no intervals' do
         expect(interval.predecessors).to be_empty
       end
     end
   end
 
-  describe '#predecessors?' do
+  describe '#has_predecessors?' do
     subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
 
-    context 'when there are sibling intervals starting earlier' do
+    context 'with sibling intervals starting earlier' do
       before { DummyMentor.create(teacher_id:, school_id:, started_on: 2.weeks.ago, finished_on: 5.days.ago) }
 
-      it 'returns true' do
-        expect(interval.predecessors?).to be_truthy
-      end
+      it { is_expected.to have_predecessors }
     end
 
-    context 'when there are no sibling intervals starting earlier' do
-      it 'returns false' do
-        expect(interval.predecessors?).to be_falsey
-      end
+    context 'without sibling intervals starting earlier' do
+      it { is_expected.not_to have_predecessors }
     end
   end
 
@@ -198,18 +190,14 @@ describe Interval do
   describe '#siblings?' do
     subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
 
-    context 'when there are sibling intervals' do
+    context 'with sibling intervals' do
       before { DummyMentor.create(teacher_id:, school_id:, started_on: 2.weeks.ago, finished_on: 5.days.ago) }
 
-      it 'returns true' do
-        expect(interval.siblings?).to be_truthy
-      end
+      it { is_expected.to have_siblings }
     end
 
-    context 'when there are no sibling intervals' do
-      it 'returns false' do
-        expect(interval.siblings?).to be_falsey
-      end
+    context 'without sibling intervals' do
+      it { is_expected.not_to have_siblings }
     end
   end
 
@@ -231,21 +219,17 @@ describe Interval do
     end
   end
 
-  describe '#successors?' do
+  describe '#has_successors?' do
     subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: 1.day.ago) }
 
-    context 'when there are sibling intervals starting later' do
+    context 'with sibling intervals starting later' do
       before { DummyMentor.create(teacher_id:, school_id:, started_on: 1.day.ago, finished_on: nil) }
 
-      it 'returns true' do
-        expect(interval.successors?).to be_truthy
-      end
+      it { is_expected.to have_successors }
     end
 
-    context 'when there are no sibling intervals starting later' do
-      it 'returns false' do
-        expect(interval.successors?).to be_falsey
-      end
+    context 'without sibling intervals starting later' do
+      it { is_expected.not_to have_successors }
     end
   end
 end
