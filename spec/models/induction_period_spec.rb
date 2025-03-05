@@ -17,7 +17,6 @@ describe InductionPeriod do
       let(:started_on_message) { 'Start date cannot overlap another induction period' }
       let(:finished_on_message) { 'End date cannot overlap another induction period' }
       let(:teacher) { FactoryBot.create(:teacher) }
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
       context '#teacher_distinct_period' do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
@@ -26,16 +25,16 @@ describe InductionPeriod do
               FactoryBot.create(:induction_period, teacher:,
                                                    started_on: test.existing_period_range.first,
                                                    finished_on: test.existing_period_range.last)
-              induction_period.valid?
+              period.valid?
             end
 
-            let(:induction_period) do
+            let(:period) do
               FactoryBot.build(:induction_period, teacher:,
                                                   started_on: test.new_period_range.first,
                                                   finished_on: test.new_period_range.last)
             end
 
-            let(:messages) { induction_period.errors.messages }
+            let(:messages) { period.errors.messages }
 
             it "is #{test.expected_valid ? 'valid' : 'invalid'}" do
               if test.expected_valid
