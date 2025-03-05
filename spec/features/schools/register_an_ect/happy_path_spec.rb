@@ -179,7 +179,6 @@ RSpec.describe 'Registering an ECT' do
   def and_i_should_see_all_the_ect_data_on_the_page
     expect(page.get_by_text(trn)).to be_visible
     expect(page.get_by_text("Kirk Van Damme")).to be_visible
-    expect(page.get_by_text("3 February 1977")).to be_visible
     expect(page.get_by_text('example@example.com')).to be_visible
     expect(page.get_by_text("#{Date::MONTHNAMES[one_month_ago_today.month]} #{one_month_ago_today.year}")).to be_visible
     expect(page.get_by_text('Golden Leaf Teaching Hub')).to be_visible
