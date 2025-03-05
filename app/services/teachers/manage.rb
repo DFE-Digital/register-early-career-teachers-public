@@ -114,17 +114,15 @@ private
   end
 
   # Records an event for a QTS award date change
-  # TODO: implement tracking award changes
   def record_award_change_event
     return true unless qts_awarded_on_changed?
 
-    :no_op
-    # Events::Record.qts_awarded_on_changed_in_trs!(
-    #   old_award_date:,
-    #   new_award_date:,
-    #   author:,
-    #   teacher:,
-    #   appropriate_body:
-    # )
+    Events::Record.teacher_qts_awarded_on_changed_in_trs!(
+      old_award_date:,
+      new_award_date:,
+      author:,
+      teacher:,
+      appropriate_body:
+    )
   end
 end

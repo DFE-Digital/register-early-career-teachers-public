@@ -114,6 +114,17 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
+    def self.teacher_qts_awarded_on_changed_in_trs!(old_award_date:, new_award_date:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+      event_type = :teacher_qts_awarded_on_updated_by_trs
+
+      old_date_formatted = old_award_date&.to_fs(:govuk)
+      new_date_formatted = new_award_date&.to_fs(:govuk)
+
+      heading = "QTS award date changed from #{old_date_formatted} to #{new_date_formatted}"
+
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
     def self.teacher_record_created!(author:, teacher:, appropriate_body:, trn:, happened_at: Time.zone.now)
       event_type = :teacher_record_created
       heading = "Teacher record created with TRN #{trn}"
