@@ -9,6 +9,10 @@ def print_seed_info(text, indent: 0, colour: nil)
   end
 end
 
+def teacher_name(teacher)
+  Teachers::Name.new(teacher).full_name
+end
+
 def describe_period_duration(period)
   period.finished_on ? "between #{period.started_on} and #{period.finished_on}" : "since #{period.started_on}"
 end
@@ -40,6 +44,34 @@ def describe_induction_period(ip)
   suffix = "(induction period)"
 
   print_seed_info("* is having their induction overseen by #{ip.appropriate_body.name} (AB) #{describe_period_duration(ip)} #{suffix}", indent: 4)
+
+  author_attributes = {
+    author_email: 'fkend@appropriate-body.org',
+    author_name: 'Felicity Kendall',
+    author_type: 'appropriate_body_user',
+  }
+
+  Event.create!(
+    event_type: 'appropriate_body_claims_teacher',
+    induction_period: ip,
+    teacher: ip.teacher,
+    appropriate_body: ip.appropriate_body,
+    heading: "#{teacher_name(ip.teacher)} was claimed by #{ip.appropriate_body.name}",
+    happened_at: ip.started_on.at_midday + rand(-300..300).minutes,
+    **author_attributes
+  )
+
+  if ip.finished_on
+    Event.create!(
+      event_type: 'appropriate_body_claims_teacher',
+      induction_period: ip,
+      teacher: ip.teacher,
+      appropriate_body: ip.appropriate_body,
+      heading: "#{teacher_name(ip.teacher)} was released by #{ip.appropriate_body.name}",
+      happened_at: ip.finished_on.at_midday + rand(-300..300).minutes,
+      **author_attributes
+    )
+  end
 end
 
 def describe_training_period(tp)
@@ -274,6 +306,15 @@ TrainingPeriod.create!(
   started_on: 1.year.ago,
   provider_partnership: grove_artisan_partnership_2023
 ).tap { |tp| describe_training_period(tp) }
+
+InductionPeriod.create!(
+  teacher: kate_winslet,
+  started_on: 3.years.ago,
+  finished_on: 2.years.ago,
+  number_of_terms: 3,
+  appropriate_body: golden_leaf_teaching_school_hub,
+  induction_programme: 'fip'
+).tap { |ip| describe_induction_period(ip) }
 
 InductionPeriod.create!(
   teacher: kate_winslet,
