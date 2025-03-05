@@ -112,9 +112,9 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         }
       end
 
-      it "can perform jobs without erroring" do
-        subject.register(pending_induction_submission_params)
-        perform_enqueued_jobs
+      it "doesn't create a teacher or induction period" do
+        expect(subject.register(pending_induction_submission_params)).to be_falsey
+        expect(pending_induction_submission.errors).not_to be_empty
       end
     end
 
@@ -154,28 +154,27 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
       context "when the teacher's name changes" do
         let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567", trs_first_name: "Jonathan", trs_last_name: "Dole") }
+        let(:manage_teacher_instance) { instance_double(Teachers::Manage, update_teacher!: existing_teacher) }
 
         before do
+          allow(Teachers::Manage).to receive(:new).and_return(manage_teacher_instance)
           subject.register(pending_induction_submission_params)
           existing_teacher.reload
         end
 
-        it 'records the name change' do
-          expect(existing_teacher.trs_first_name).to eql(pending_induction_submission_params[:trs_first_name])
-          expect(existing_teacher.trs_last_name).to eql(pending_induction_submission_params[:trs_last_name])
-          expect(Events::Record).to have_received(:new).with(
-            hash_including(
-              author:,
-              event_type: :teacher_name_updated_by_trs,
-              appropriate_body:,
-              teacher: existing_teacher,
-              heading: "Name changed from Jonathan Dole to John Doe"
-            )
+        it 'uses the Teachers::Manage service to update the teacher' do
+          expect(Teachers::Manage).to have_received(:new).with(
+            author:,
+            teacher: an_instance_of(Teacher),
+            appropriate_body:
           )
 
-          perform_enqueued_jobs
-
-          expect(Event.all.map(&:event_type)).to match_array(%w[teacher_name_updated_by_trs appropriate_body_claims_teacher])
+          expect(manage_teacher_instance).to have_received(:update_teacher!).with(
+            trs_first_name: "John",
+            trs_last_name: "Doe",
+            trs_qts_awarded_on: Date.new(2023, 5, 2),
+            trs_initial_teacher_training_provider_name: "ITT"
+          )
         end
 
         it 'saves the pending_induction_submission' do

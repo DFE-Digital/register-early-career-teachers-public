@@ -114,6 +114,13 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
+    def self.teacher_record_created!(author:, teacher:, appropriate_body:, trn:, happened_at: Time.zone.now)
+      event_type = :teacher_record_created
+      heading = "Teacher record created with TRN #{trn}"
+
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
     # Admin events
 
     def self.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)

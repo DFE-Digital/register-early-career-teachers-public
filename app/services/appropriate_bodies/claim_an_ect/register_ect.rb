@@ -19,9 +19,7 @@ module AppropriateBodies
         # end
         ActiveRecord::Base.transaction do
           steps = [
-            update_name,
-            update_qts_awarded_on,
-            update_itt_provider_name,
+            update_teacher,
             send_begin_induction_notification_to_trs,
             pending_induction_submission.save(context: :register_ect),
             create_induction_period
@@ -33,21 +31,11 @@ module AppropriateBodies
 
     private
 
-      def update_name
-        manage_teacher.update_name!(
+      def update_teacher
+        manage_teacher.update_teacher!(
           trs_first_name: pending_induction_submission.trs_first_name,
-          trs_last_name: pending_induction_submission.trs_last_name
-        )
-      end
-
-      def update_qts_awarded_on
-        manage_teacher.update_qts_awarded_on!(
-          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on
-        )
-      end
-
-      def update_itt_provider_name
-        manage_teacher.update_itt_provider_name!(
+          trs_last_name: pending_induction_submission.trs_last_name,
+          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on,
           trs_initial_teacher_training_provider_name: pending_induction_submission.trs_initial_teacher_training_provider_name
         )
       end
@@ -72,7 +60,7 @@ module AppropriateBodies
       end
 
       def send_begin_induction_notification_to_trs
-        return true if @teacher.induction_periods.any?
+        return true if teacher.induction_periods.any?
 
         BeginECTInductionJob.perform_later(
           trn: pending_induction_submission.trn,
