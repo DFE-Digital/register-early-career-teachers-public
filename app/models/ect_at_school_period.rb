@@ -40,6 +40,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
 private
 
   def teacher_distinct_period
-    errors.add(:base, "Teacher ECT periods cannot overlap") if overlaps_with_siblings?
+    overlap_validation(name: 'Teacher ECT')
   end
 end
