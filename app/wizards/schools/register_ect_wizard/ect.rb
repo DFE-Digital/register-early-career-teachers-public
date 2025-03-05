@@ -77,11 +77,11 @@ module Schools
       end
 
       def register!(school)
-        Schools::RegisterECT.new(appropriate_body:,
+        Schools::RegisterECT.new(appropriate_body: (appropriate_body if teaching_school_hub?),
                                  appropriate_body_type:,
                                  corrected_name:,
                                  email:,
-                                 lead_provider:,
+                                 lead_provider: (lead_provider if provider_led?),
                                  programme_type:,
                                  school:,
                                  started_on: Date.parse(start_date),
@@ -98,6 +98,10 @@ module Schools
 
       def teaching_induction_panel?
         appropriate_body_type == 'teaching_induction_panel'
+      end
+
+      def teaching_school_hub?
+        appropriate_body_type == 'teaching_school_hub'
       end
 
       def trs_full_name
