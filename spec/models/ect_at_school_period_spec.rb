@@ -70,8 +70,8 @@ describe ECTAtSchoolPeriod do
   end
 
   describe "#current_mentorship" do
-    let(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: 2.years.ago) }
-    let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 2.years.ago) }
+    let(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
 
     context "when the ect has had no mentorships ever" do
       it { expect(mentee.current_mentorship).to be_nil }
@@ -79,7 +79,7 @@ describe ECTAtSchoolPeriod do
 
     context "when the ect has had past mentorships" do
       before do
-        FactoryBot.create(:mentorship_period, mentee:, mentor:)
+        FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago)
       end
 
       it { expect(mentee.current_mentorship).to be_nil }
@@ -96,8 +96,8 @@ describe ECTAtSchoolPeriod do
   end
 
   describe "#current_mentor" do
-    let(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: 2.years.ago) }
-    let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 2.years.ago) }
+    let(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
 
     context "when the ect has had no mentorships ever" do
       it { expect(mentee.current_mentor).to be_nil }
@@ -113,8 +113,8 @@ describe ECTAtSchoolPeriod do
 
     context "when the ect has an ongoing mentorship at a school" do
       before do
-        FactoryBot.create(:mentorship_period, mentee:, mentor:)
-        FactoryBot.create(:mentorship_period, :active, mentee:, mentor:)
+        FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago)
+        FactoryBot.create(:mentorship_period, :active, mentee:, mentor:, started_on: 1.year.ago)
       end
 
       it { expect(mentee.current_mentor).to eql(mentor) }
