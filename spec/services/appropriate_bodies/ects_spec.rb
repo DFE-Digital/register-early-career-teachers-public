@@ -5,130 +5,161 @@ describe AppropriateBodies::ECTs do
   subject { AppropriateBodies::ECTs.new(appropriate_body) }
 
   describe "#current_or_completed_while_at_appropriate_body" do
-    it 'returns teachers whose latest induction period is with this AB' do
-      # Earlier induction period with another AB
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body: other_appropriate_body,
-                        started_on: 1.year.ago,
-                        finished_on: 6.months.ago,
-                        number_of_terms: 3,
-                        induction_programme: 'fip')
-      # Latest induction period with current AB
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body:,
-                        started_on: 6.months.ago,
-                        finished_on: 1.month.ago,
-                        outcome: 'pass',
-                        number_of_terms: 3,
-                        induction_programme: 'fip')
+    context 'when the latest induction period is with this appropriate body' do
+      let!(:earlier_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body: other_appropriate_body,
+                          started_on: 1.year.ago,
+                          finished_on: 6.months.ago,
+                          number_of_terms: 3,
+                          induction_programme: 'fip')
+      end
 
-      expect(subject.current_or_completed_while_at_appropriate_body).to include(teacher)
+      let!(:latest_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body:,
+                          started_on: 6.months.ago,
+                          finished_on: 1.month.ago,
+                          outcome: 'pass',
+                          number_of_terms: 3,
+                          induction_programme: 'fip')
+      end
+
+      it 'includes the teacher' do
+        expect(subject.current_or_completed_while_at_appropriate_body).to include(teacher)
+      end
     end
 
-    it 'does not return teachers whose latest induction period is with another AB' do
-      # Earlier induction period with current AB
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body:,
-                        started_on: 1.year.ago,
-                        finished_on: 6.months.ago,
-                        number_of_terms: 3,
-                        induction_programme: 'fip')
-      # Latest induction period with another AB
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body: other_appropriate_body,
-                        started_on: 6.months.ago,
-                        finished_on: 1.month.ago,
-                        outcome: 'pass', # pass or fail should be on last IP
-                        number_of_terms: 3,
-                        induction_programme: 'fip')
+    context 'when the latest induction period is with another appropriate body' do
+      let!(:earlier_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body:,
+                          started_on: 1.year.ago,
+                          finished_on: 6.months.ago,
+                          number_of_terms: 3,
+                          induction_programme: 'fip')
+      end
 
-      expect(subject.current_or_completed_while_at_appropriate_body).not_to include(teacher)
+      let!(:latest_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body: other_appropriate_body,
+                          started_on: 6.months.ago,
+                          finished_on: 1.month.ago,
+                          outcome: 'pass', # pass or fail should be on last IP
+                          number_of_terms: 3,
+                          induction_programme: 'fip')
+      end
+
+      it 'excludes the teacher' do
+        expect(subject.current_or_completed_while_at_appropriate_body).not_to include(teacher)
+      end
     end
 
-    it 'returns teachers with ongoing induction periods' do
-      # Earlier finished period with another AB
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body: other_appropriate_body,
-                        started_on: 1.year.ago,
-                        finished_on: 6.months.ago,
-                        number_of_terms: 3,
-                        induction_programme: 'fip')
-      # Latest ongoing period with current AB
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body:,
-                        started_on: 6.months.ago,
-                        finished_on: nil,
-                        number_of_terms: nil,
-                        induction_programme: 'fip')
+    context 'when the teacher has an ongoing induction period with this appropriate body' do
+      let!(:earlier_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body: other_appropriate_body,
+                          started_on: 1.year.ago,
+                          finished_on: 6.months.ago,
+                          number_of_terms: 3,
+                          induction_programme: 'fip')
+      end
 
-      expect(subject.current_or_completed_while_at_appropriate_body).to include(teacher)
+      let!(:ongoing_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body:,
+                          started_on: 6.months.ago,
+                          finished_on: nil,
+                          number_of_terms: nil,
+                          induction_programme: 'fip')
+      end
+
+      it 'includes the teacher' do
+        expect(subject.current_or_completed_while_at_appropriate_body).to include(teacher)
+      end
     end
 
-    it 'returns teachers with failed outcomes' do
-      # Earlier period with pass outcome
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body:,
-                        started_on: 1.year.ago,
-                        finished_on: 6.months.ago,
-                        outcome: 'pass',
-                        number_of_terms: 3,
-                        induction_programme: 'fip')
-      # Latest period with fail outcome
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body:,
-                        started_on: 6.months.ago,
-                        finished_on: 1.month.ago,
-                        outcome: 'fail',
-                        number_of_terms: 3,
-                        induction_programme: 'fip')
+    context 'when the teacher has a failed outcome with this appropriate body' do
+      let!(:earlier_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body:,
+                          started_on: 1.year.ago,
+                          finished_on: 6.months.ago,
+                          outcome: 'pass',
+                          number_of_terms: 3,
+                          induction_programme: 'fip')
+      end
 
-      expect(subject.current_or_completed_while_at_appropriate_body).to include(teacher)
+      let!(:failed_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body:,
+                          started_on: 6.months.ago,
+                          finished_on: 1.month.ago,
+                          outcome: 'fail',
+                          number_of_terms: 3,
+                          induction_programme: 'fip')
+      end
+
+      it 'includes the teacher' do
+        expect(subject.current_or_completed_while_at_appropriate_body).to include(teacher)
+      end
     end
 
-    it 'does not return teachers with finished induction periods that have no outcome' do
-      # Latest period with no outcome
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body:,
-                        started_on: 6.months.ago,
-                        finished_on: 1.month.ago,
-                        outcome: nil,
-                        number_of_terms: 3,
-                        induction_programme: 'fip')
+    context 'when the teacher has a finished induction period with no outcome' do
+      let!(:induction_period_without_outcome) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body:,
+                          started_on: 6.months.ago,
+                          finished_on: 1.month.ago,
+                          outcome: nil,
+                          number_of_terms: 3,
+                          induction_programme: 'fip')
+      end
 
-      expect(subject.current_or_completed_while_at_appropriate_body).not_to include(teacher)
+      it 'excludes the teacher' do
+        expect(subject.current_or_completed_while_at_appropriate_body).not_to include(teacher)
+      end
     end
   end
 
   describe "#former" do
-    it 'returns teachers with finished induction periods' do
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body:,
-                        finished_on: 1.month.ago,
-                        number_of_terms: 3,
-                        induction_programme: 'fip')
+    context 'when the teacher has a finished induction period' do
+      let!(:finished_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body:,
+                          finished_on: 1.month.ago,
+                          number_of_terms: 3,
+                          induction_programme: 'fip')
+      end
 
-      expect(subject.former).to include(teacher)
+      it 'includes the teacher' do
+        expect(subject.former).to include(teacher)
+      end
     end
 
-    it 'does not return teachers with ongoing induction periods' do
-      FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body:,
-                        finished_on: nil,
-                        number_of_terms: nil,
-                        induction_programme: 'fip')
+    context 'when the teacher has an ongoing induction period' do
+      let!(:ongoing_induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          appropriate_body:,
+                          finished_on: nil,
+                          number_of_terms: nil,
+                          induction_programme: 'fip')
+      end
 
-      expect(subject.former).not_to include(teacher)
+      it 'excludes the teacher' do
+        expect(subject.former).not_to include(teacher)
+      end
     end
   end
 end

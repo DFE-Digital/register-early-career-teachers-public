@@ -23,36 +23,78 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
         end
       end
 
-      it "displays the count of claimed inductions" do
-        get("/appropriate-body/teachers")
-        expect(response.body).to include("2 claimed inductions")
+      context "when viewing the index page" do
+        before do
+          get("/appropriate-body/teachers")
+        end
+
+        it "displays the count of claimed inductions" do
+          expect(response.body).to include("2 claimed inductions")
+        end
+
+        it 'renders the page successfully' do
+          expect(response).to be_successful
+        end
+
+        it 'displays the teachers' do
+          expect(response.body).to include(emma.trs_first_name, john.trs_first_name)
+        end
       end
 
       context "when there are more than 10 claimed ECTs" do
-        it 'displays pagination' do
-          FactoryBot.create_list(:teacher, 11, trs_first_name: "John", trs_last_name: "Smith").each do |teacher|
-            FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
+        let!(:additional_teachers) do
+          FactoryBot.create_list(:teacher, 11, trs_first_name: "John", trs_last_name: "Smith").tap do |teachers|
+            teachers.each do |teacher|
+              FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
+            end
           end
+        end
 
+        before do
           get("/appropriate-body/teachers")
+        end
 
+        it 'displays pagination' do
           expect(response.body).to include('govuk-pagination')
         end
       end
 
-      it 'finds the right PendingInductionSubmission record and renders the page' do
-        get("/appropriate-body/teachers")
+      context "with a query parameter for a name" do
+        before do
+          get("/appropriate-body/teachers?q=emma")
+        end
 
-        expect(response).to be_successful
-        expect(response.body).to include(emma.trs_first_name, john.trs_first_name)
+        it "returns a successful response" do
+          expect(response).to be_successful
+        end
+
+        it "includes the matching teacher" do
+          expect(response.body).to include(emma.trs_first_name)
+        end
+
+        it "excludes non-matching teachers" do
+          expect(response.body).not_to include(john.trs_first_name)
+        end
       end
 
-      context "with a query parameter" do
-        it "filters the list of teachers" do
-          get("/appropriate-body/teachers?q=emma")
-          expect(response).to be_successful
+      context "with a query parameter for a TRN" do
+        let(:teacher_with_trn) { FactoryBot.create(:teacher, trn: '1234567') }
 
-          expect(response.body).to include(emma.trs_first_name)
+        before do
+          FactoryBot.create(:induction_period, :active, teacher: teacher_with_trn, appropriate_body:)
+          get("/appropriate-body/teachers?q=1234567")
+        end
+
+        it "returns a successful response" do
+          expect(response).to be_successful
+        end
+
+        it "includes the matching teacher" do
+          expect(response.body).to include(teacher_with_trn.trn)
+        end
+
+        it "excludes non-matching teachers" do
+          expect(response.body).not_to include(emma.trs_first_name)
           expect(response.body).not_to include(john.trs_first_name)
         end
       end
