@@ -9,6 +9,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
   let(:current_school) { FactoryBot.create(:school, urn: '987654') }
   let(:requested_lead_provider) { FactoryBot.create(:lead_provider, name: 'Requested LP') }
   let(:requested_appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Requested AB') }
+  let(:programme_type) { 'provider_led' }
 
   before do
     FactoryBot.create(:ect_at_school_period, teacher:,
@@ -26,7 +27,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
                                              appropriate_body: requested_appropriate_body,
                                              school: current_school,
                                              working_pattern: 'full_time',
-                                             programme_type: 'provider_led',
+                                             programme_type:,
                                              email: 'love@whale.com')
   end
 
@@ -131,6 +132,14 @@ RSpec.describe 'schools/ects/show.html.erb' do
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 1.year.ago.to_date.to_fs(:govuk))
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Requested LP')
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Requested AB')
+    end
+
+    context 'when school led' do
+      let(:programme_type) { 'school_led' }
+
+      it 'hides Lead Provider' do
+        expect(rendered).not_to have_css('dd.govuk-summary-list__value', text: 'Requested LP')
+      end
     end
   end
 end

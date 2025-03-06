@@ -566,6 +566,18 @@ TrainingPeriod.create!(
   provider_partnership: meadow_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
+print_seed_info("Harriet Walter (ECT) with multiple induction periods", indent: 2, colour: ECT_COLOUR)
+
+ECTAtSchoolPeriod.create!(
+  teacher: harriet_walter,
+  school: brookfield_school,
+  email: 'harriet-walter@history.com',
+  started_on: 2.years.ago,
+  lead_provider: national_meadows_institute,
+  appropriate_body: south_yorkshire_studio_hub,
+  programme_type: 'provider_led'
+).tap { |sp| describe_ect_at_school_period(sp) }
+
 print_seed_info("Helen Mirren (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
 helen_mirren_mentoring_at_brookfield_school = MentorAtSchoolPeriod.create!(
