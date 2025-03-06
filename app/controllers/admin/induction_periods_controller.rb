@@ -1,5 +1,20 @@
 module Admin
   class InductionPeriodsController < AdminController
+    def new
+      @induction_period = InductionPeriod.new(teacher:)
+    end
+
+    def create
+      @induction_period = InductionPeriod.new(teacher:, **induction_period_params)
+
+      if @induction_period.save
+        redirect_to admin_teacher_path(@induction_period.teacher),
+                    notice: "Induction period created successfully"
+      else
+        render :new
+      end
+    end
+
     def edit
       @induction_period = InductionPeriod.find(params[:id])
     end
@@ -27,8 +42,16 @@ module Admin
 
     def induction_period_params
       params.require(:induction_period).permit(
-        :started_on, :finished_on, :number_of_terms, :induction_programme
+        :started_on,
+        :finished_on,
+        :number_of_terms,
+        :induction_programme,
+        :appropriate_body_id
       )
+    end
+
+    def teacher
+      Teacher.find(params[:teacher_id])
     end
   end
 end
