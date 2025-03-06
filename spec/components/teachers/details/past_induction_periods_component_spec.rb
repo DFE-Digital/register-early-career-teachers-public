@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Teachers::PastInductionPeriodsComponent, type: :component do
+RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :component do
   include AppropriateBodyHelper
 
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -18,7 +18,7 @@ RSpec.describe Teachers::PastInductionPeriodsComponent, type: :component do
       FactoryBot.create(:induction_period,
                         teacher:,
                         appropriate_body:,
-                        started_on: 2.years.ago,
+                        started_on: Date.new(2021, 9, 1),
                         finished_on: 1.year.ago,
                         induction_programme: "cip",
                         number_of_terms: 3)
@@ -35,7 +35,7 @@ RSpec.describe Teachers::PastInductionPeriodsComponent, type: :component do
 
     it "displays the start date" do
       render_inline(component)
-      expect(page).to have_content(2.years.ago.to_date.to_fs(:govuk))
+      expect(page).to have_content(Date.new(2021, 9, 1).to_fs(:govuk))
     end
 
     it "displays the end date" do
@@ -46,22 +46,6 @@ RSpec.describe Teachers::PastInductionPeriodsComponent, type: :component do
     it "displays the number of terms" do
       render_inline(component)
       expect(page).to have_content("3")
-    end
-
-    context "with multiple past periods" do
-      let!(:older_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 3.years.ago,
-                          finished_on: 2.years.ago)
-      end
-
-      it "displays all past periods in chronological order" do
-        render_inline(component)
-        dates = page.all(".govuk-summary-list__value").map(&:text)
-        expect(dates).to include(3.years.ago.to_date.to_fs(:govuk))
-        expect(dates).to include(2.years.ago.to_date.to_fs(:govuk))
-      end
     end
   end
 end

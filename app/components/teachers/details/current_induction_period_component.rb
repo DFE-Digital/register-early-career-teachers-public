@@ -1,4 +1,4 @@
-module Teachers
+module Teachers::Details
   class CurrentInductionPeriodComponent < ViewComponent::Base
     attr_reader :teacher, :induction, :enable_release, :enable_edit
 
