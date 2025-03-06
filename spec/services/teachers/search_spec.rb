@@ -1,4 +1,53 @@
 describe Teachers::Search do
+  describe '#initialize' do
+    context 'with default parameters' do
+      subject { described_class.new }
+
+      it 'sets the scope to all teachers' do
+        expect(subject.scope).to eq(Teacher.all)
+      end
+    end
+
+    context 'with appropriate_bodies parameter' do
+      let(:ab) { FactoryBot.create(:appropriate_body) }
+      let(:ects_service) { instance_double(AppropriateBodies::ECTs) }
+      let(:ects_scope) { instance_double(ActiveRecord::Relation) }
+
+      before do
+        allow(AppropriateBodies::ECTs).to receive(:new).with(ab).and_return(ects_service)
+        allow(ects_service).to receive(:current_or_completed_while_at_appropriate_body).and_return(ects_scope)
+      end
+
+      subject { described_class.new(appropriate_bodies: ab) }
+
+      it 'applies appropriate_bodies filter' do
+        subject
+        expect(AppropriateBodies::ECTs).to have_received(:new).with(ab)
+      end
+    end
+
+    context 'with query_string parameter' do
+      let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Unique', trs_last_name: 'Name') }
+
+      before do
+        allow(Teacher).to receive(:search).and_return(Teacher.where(id: teacher.id))
+      end
+
+      subject { described_class.new(query_string: 'Unique Name') }
+
+      it 'applies query matching' do
+        expect(subject.scope).to include(teacher)
+        expect(subject.scope.count).to eq(1)
+      end
+    end
+
+    context 'with nil query_string' do
+      it 'ignores nil query strings' do
+        expect { described_class.new(query_string: nil) }.not_to raise_error
+      end
+    end
+  end
+
   describe '#search' do
     let(:ab1) { FactoryBot.create(:appropriate_body) }
     let(:ab2) { FactoryBot.create(:appropriate_body) }
