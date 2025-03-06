@@ -19,6 +19,10 @@ module Schools
         :review_ect_details
       end
 
+      def previous_step
+        :find_ect
+      end
+
     private
 
       def persist

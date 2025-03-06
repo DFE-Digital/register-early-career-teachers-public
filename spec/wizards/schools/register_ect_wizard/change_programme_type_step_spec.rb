@@ -12,4 +12,10 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
       expect(subject.next_step).to eq(:check_answers)
     end
   end
+
+  describe "#previous_step" do
+    it "returns :check_answers" do
+      expect(subject.next_step).to eq(:check_answers)
+    end
+  end
 end
