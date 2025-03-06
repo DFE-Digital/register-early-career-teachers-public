@@ -88,4 +88,30 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe '#smart_quotes' do
+    it 'converts straight single quotes to smart single quotes' do
+      expect(helper.smart_quotes("It's a test")).to eq("It’s a test")
+    end
+
+    it 'converts straight double quotes to smart double quotes' do
+      expect(helper.smart_quotes('"Hello"')).to eq('“Hello”')
+    end
+
+    it 'does not alter text without quotes' do
+      expect(helper.smart_quotes("Just some plain text")).to eq("Just some plain text")
+    end
+
+    it 'handles mixed quotes correctly' do
+      expect(helper.smart_quotes(%q('Hello' "world"))).to eq("‘Hello’ “world”")
+    end
+
+    it 'returns nil if input is nil' do
+      expect(helper.smart_quotes(nil)).to be_nil
+    end
+
+    it 'returns an empty string if input is blank' do
+      expect(helper.smart_quotes("")).to eq("")
+    end
+  end
 end

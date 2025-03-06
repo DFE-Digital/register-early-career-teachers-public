@@ -34,4 +34,19 @@ module ApplicationHelper
   def support_mailto_link(text = Rails.application.config.support_email_address)
     govuk_link_to(text, 'mailto:' + Rails.application.config.support_email_address)
   end
+
+  def ruby_pants_options
+    {
+      double_left_quote: '“',
+      double_right_quote: '”',
+      single_left_quote: '‘',
+      single_right_quote: '’',
+    }
+  end
+
+  def smart_quotes(string)
+    return string if string.blank?
+
+    RubyPants.new(string, %i[quotes], ruby_pants_options).to_html
+  end
 end
