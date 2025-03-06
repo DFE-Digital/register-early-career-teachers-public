@@ -42,6 +42,9 @@ gem "rotp"
 gem "rubyzip"
 gem "savon"
 
+# Render smart quotes
+gem 'rubypants'
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
