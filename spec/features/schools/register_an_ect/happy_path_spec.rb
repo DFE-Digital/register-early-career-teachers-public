@@ -178,7 +178,7 @@ RSpec.describe 'Registering an ECT' do
   def and_i_should_see_the_previous_programme_choices
     expect(page.get_by_text(school.chosen_appropriate_body.name)).to be_visible
     expect(page.get_by_text('Provider-Led')).to be_visible
-    expect(page.get_by_text(school.chosen_lead_provider_name)).to be_visible
+    expect(page.get_by_text(school.chosen_lead_provider_name).first).to be_visible
   end
 
   def when_i_select_that_i_dont_want_to_use_the_school_previous_choices
