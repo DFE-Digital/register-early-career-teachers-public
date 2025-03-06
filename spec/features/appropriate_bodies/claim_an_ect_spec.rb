@@ -122,7 +122,7 @@ RSpec.describe 'Claiming an ECT' do
       and_i_submit_the_form
       now_i_should_be_on_the_register_an_ect_form_page
 
-      expect(page.get_by_role("link", name: "Enter positive numbers only")).to be_visible
+      expect(page.get_by_role("link", name: "Enter the date in the correct format, for example 12 03 1998")).to be_visible
       expect(PendingInductionSubmission.last.reload.started_on).to be_nil
     end
   end

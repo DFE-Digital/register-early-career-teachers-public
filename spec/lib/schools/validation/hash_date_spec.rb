@@ -26,6 +26,6 @@ RSpec.describe Schools::Validation::HashDate do
     end
 
     it { expect(hash_date).not_to be_valid }
-    it { expect(hash_date.error_message).to eq('Enter positive numbers only') }
+    it { expect(hash_date.error_message).to eq('Enter the date in the correct format, for example 12 03 1998') }
   end
 end
