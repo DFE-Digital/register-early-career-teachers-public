@@ -3,28 +3,6 @@ RSpec.describe 'Claiming an ECT' do
 
   before { sign_in_as_appropriate_body_user(appropriate_body:) }
 
-  describe "when the ECT is already claimed by another appropriate body" do
-    include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
-
-    before do
-      other_body = FactoryBot.create(:appropriate_body)
-      teacher = FactoryBot.create(:teacher, trn: '1234567')
-      FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_body)
-    end
-
-    scenario 'Button is hidden when induction is ongoing' do
-      given_i_am_on_the_claim_an_ect_find_page
-      when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
-      and_i_submit_the_form
-
-      now_i_should_be_on_the_claim_an_ect_check_page
-      then_i_should_not_see_the_claim_button
-
-      expect(page.get_by_text('You cannot register Kirk Van Houten')).to be_visible
-      expect(page.get_by_text('Our records show that Kirk Van Houten is completing their induction with another appropriate body.')).to be_visible
-    end
-  end
-
   describe "when the ECT has not passed the induction" do
     before do
       teacher = FactoryBot.create(:teacher, trn: '1234567')
@@ -49,6 +27,28 @@ RSpec.describe 'Claiming an ECT' do
 
       now_i_should_be_on_the_confirmation_page
       and_the_data_i_submitted_should_be_saved_on_the_pending_record
+    end
+  end
+
+  describe "when the ECT is already claimed by another appropriate body" do
+    include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+
+    before do
+      other_body = FactoryBot.create(:appropriate_body)
+      teacher = FactoryBot.create(:teacher, trn: '1234567')
+      FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_body)
+    end
+
+    scenario 'Button is hidden when induction is ongoing' do
+      given_i_am_on_the_claim_an_ect_find_page
+      when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
+      and_i_submit_the_form
+
+      now_i_should_be_on_the_claim_an_ect_check_page
+      then_i_should_not_see_the_claim_button
+
+      expect(page.get_by_text('You cannot register Kirk Van Houten')).to be_visible
+      expect(page.get_by_text('Our records show that Kirk Van Houten is completing their induction with another appropriate body.')).to be_visible
     end
   end
 

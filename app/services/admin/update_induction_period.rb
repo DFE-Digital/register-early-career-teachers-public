@@ -28,12 +28,16 @@ module Admin
 
   private
 
-    def teacher
-      @teacher ||= induction_period.teacher
-    end
+    delegate :teacher, :appropriate_body, to: :induction_period
 
     def record_admin_update_event(modifications)
-      Events::Record.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher: induction_period.teacher, appropriate_body: induction_period.appropriate_body)
+      Events::Record.record_admin_updates_induction_period!(
+        author:,
+        modifications:,
+        induction_period:,
+        teacher:,
+        appropriate_body:
+      )
     end
 
     def validate_can_update!
