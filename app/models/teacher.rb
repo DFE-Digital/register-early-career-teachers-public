@@ -32,7 +32,7 @@ class Teacher < ApplicationRecord
             teacher_reference_number: true
 
   # Scopes
-  scope :search, lambda { |query_string|
+  scope :search, ->(query_string) {
     where(
       "teachers.search @@ to_tsquery('unaccented', ?)",
       FullTextSearch::Query.new(query_string).search_by_all_prefixes

@@ -1,4 +1,4 @@
-module Teachers
+module Teachers::Details
   class InductionSummaryComponent < ViewComponent::Base
     attr_reader :teacher, :induction, :induction_periods, :is_admin
 
