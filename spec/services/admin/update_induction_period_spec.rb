@@ -57,7 +57,7 @@ RSpec.describe Admin::UpdateInductionPeriod do
         it "raises an error" do
           expect { service.update_induction_period! }.to raise_error(
             ActiveRecord::RecordInvalid,
-            "Validation failed: Finished on The finish date must be later than the start date (31 December 2023)"
+            "Validation failed: Finished on The end date must be later than the start date (31 December 2023)"
           )
         end
       end

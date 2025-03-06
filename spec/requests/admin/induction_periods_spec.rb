@@ -95,7 +95,7 @@ RSpec.describe Admin::InductionPeriodsController do
           it "returns error" do
             patch admin_teacher_induction_period_path(induction_period.teacher, induction_period), params: invalid_params
             expect(response).to be_unprocessable
-            expect(response.body).to include("The finish date must be later than the start date")
+            expect(response.body).to include("The end date must be later than the start date")
           end
         end
 

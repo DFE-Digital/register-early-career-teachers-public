@@ -49,8 +49,8 @@ Rails.application.routes.draw do
     end
 
     resources :teachers, only: %i[index show] do
-      resources :induction_periods, only: %i[edit update], path: 'induction-periods'
       resource :timeline, only: %i[show], controller: 'teachers/timeline'
+      resources :induction_periods, only: %i[new create edit update], path: 'induction-periods', controller: 'teachers/induction_periods'
     end
   end
 

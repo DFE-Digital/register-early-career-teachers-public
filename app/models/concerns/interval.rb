@@ -22,7 +22,7 @@ module Interval
   def period_dates_validation
     return if incomplete?
 
-    errors.add(:finished_on, "The finish date must be later than the start date (#{started_on.to_fs(:govuk)})") if invalid_date_order?
+    errors.add(:finished_on, "The end date must be later than the start date (#{started_on.to_fs(:govuk)})") if invalid_date_order?
   end
 
   def overlap_validation(name:)
@@ -69,4 +69,9 @@ module Interval
   def has_siblings? = siblings.exists?
 
   def has_successors? = successors.exists?
+
+  # Methods
+  def last_finished_sibling
+    siblings.finished.earliest_first.last
+  end
 end
