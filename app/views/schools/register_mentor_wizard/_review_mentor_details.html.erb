@@ -1,6 +1,6 @@
 <% page_data(title: "Check mentor details",
              error: @wizard.current_step.errors.present?,
-             backlink_href:) %>
+             backlink_href: @wizard.previous_step_path) %>
 
 <p>There is a teacher record that matches the details you have provided.</p>
 
