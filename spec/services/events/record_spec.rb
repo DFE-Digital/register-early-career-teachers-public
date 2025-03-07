@@ -154,6 +154,75 @@ describe Events::Record do
     end
   end
 
+  describe '.teacher_created_in_trs!' do
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.teacher_created_in_trs!(author:, teacher:, appropriate_body:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          appropriate_body:,
+          heading: 'Rhys Ifans was created in TRS',
+          event_type: :teacher_created_in_trs,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.qts_awarded_on_changed_in_trs!' do
+    let(:old_award_date) { 3.weeks.ago.to_date }
+    let(:new_award_date) { 2.weeks.ago.to_date }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.qts_awarded_on_changed_in_trs!(
+          old_award_date:,
+          new_award_date:,
+          author:,
+          teacher:,
+          appropriate_body:
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          appropriate_body:,
+          heading: "QTS award date changed from #{old_award_date} to #{new_award_date}",
+          event_type: :qts_awarded_on_updated_by_trs,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.itt_provider_name_changed_in_trs!' do
+    let(:itt_provider_before) { 'Old ITT Provider' }
+    let(:itt_provider_after) { 'New ITT Provider' }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.itt_provider_name_changed_in_trs!(
+          itt_provider_before:,
+          itt_provider_after:,
+          author:,
+          teacher:,
+          appropriate_body:
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          appropriate_body:,
+          heading: "ITT provider name changed from #{itt_provider_before} to #{itt_provider_after}",
+          event_type: :itt_provider_name_updated_by_trs,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe '.record_admin_updates_induction_period!' do
     let(:three_weeks_ago) { 3.weeks.ago.to_date }
     let(:two_weeks_ago) { 2.weeks.ago.to_date }

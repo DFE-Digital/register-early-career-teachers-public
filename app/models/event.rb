@@ -6,6 +6,9 @@ class Event < ApplicationRecord
     appropriate_body_fails_teacher
     appropriate_body_passes_teacher
     teacher_name_updated_by_trs
+    teacher_created_in_trs
+    qts_awarded_on_updated_by_trs
+    itt_provider_name_updated_by_trs
     import_from_dqt
   ].freeze
 

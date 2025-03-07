@@ -114,6 +114,27 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
+    def self.teacher_created_in_trs!(author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+      event_type = :teacher_created_in_trs
+      heading = "#{Teachers::Name.new(teacher).full_name_in_trs} was created in TRS"
+
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
+    def self.qts_awarded_on_changed_in_trs!(old_award_date:, new_award_date:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+      event_type = :qts_awarded_on_updated_by_trs
+      heading = "QTS award date changed from #{old_award_date} to #{new_award_date}"
+
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
+    def self.itt_provider_name_changed_in_trs!(itt_provider_before:, itt_provider_after:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+      event_type = :itt_provider_name_updated_by_trs
+      heading = "ITT provider name changed from #{itt_provider_before} to #{itt_provider_after}"
+
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
     # Admin events
 
     def self.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)

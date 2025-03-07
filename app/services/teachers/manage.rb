@@ -8,9 +8,30 @@ class Teachers::Manage
   attr_reader :author, :teacher, :appropriate_body
 
   def initialize(author:, teacher:, appropriate_body:)
-    @author = author
     @teacher = teacher
     @appropriate_body = appropriate_body
+    @author = author
+  end
+
+  def self.find_or_initialize_by(trn:, trs_first_name:, trs_last_name:, event_metadata:)
+    teacher = Teacher.find_by(trn:)
+    is_new_record = teacher.nil?
+
+    if is_new_record
+      teacher = Teacher.new(trn:, trs_first_name:, trs_last_name:)
+      teacher.save!
+      Events::Record.teacher_created_in_trs!(
+        author: event_metadata[:author],
+        teacher:,
+        appropriate_body: event_metadata[:appropriate_body]
+      )
+    end
+
+    new(
+      author: event_metadata[:author],
+      teacher:,
+      appropriate_body: event_metadata[:appropriate_body]
+    )
   end
 
   def update_name!(trs_first_name:, trs_last_name:)
@@ -33,12 +54,13 @@ class Teachers::Manage
     @itt_provider_before = teacher.trs_initial_teacher_training_provider_name
     teacher.assign_attributes(trs_initial_teacher_training_provider_name:)
     @itt_provider_after = teacher.trs_initial_teacher_training_provider_name
+    record_itt_provider_change_event
     teacher.save!
   end
 
 private
 
-  attr_reader :new_name, :old_name, :new_award_date, :old_award_date
+  attr_reader :new_name, :old_name, :new_award_date, :old_award_date, :itt_provider_before, :itt_provider_after
 
   def full_name
     ::Teachers::Name.new(teacher).full_name_in_trs
@@ -46,15 +68,15 @@ private
 
   # State ----------------------------------------------------------------------
   def name_changed?
-    return false if old_name.nil?
-
     new_name != old_name
   end
 
   def qts_awarded_on_changed?
-    return false if teacher.trs_qts_awarded_on.nil?
-
     new_award_date != old_award_date
+  end
+
+  def itt_provider_name_changed?
+    itt_provider_after != itt_provider_before
   end
 
   # Deltas ---------------------------------------------------------------------
@@ -66,6 +88,10 @@ private
     { old_award_date:, new_award_date: }
   end
 
+  def changed_itt_provider_name
+    { itt_provider_before:, itt_provider_after: }
+  end
+
   # Events ---------------------------------------------------------------------
   def record_name_change_event
     return true unless name_changed?
@@ -73,11 +99,15 @@ private
     Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_names)
   end
 
-  # TODO: implement tracking award changes?
   def record_award_change_event
     return true unless qts_awarded_on_changed?
 
-    :no_op
-    # Events::Record.qts_awarded_on_changed_in_trs!(author:, teacher:, appropriate_body:, **manage_teacher.changed_qts_awarded_on)
+    Events::Record.qts_awarded_on_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_qts_awarded_on)
+  end
+
+  def record_itt_provider_change_event
+    return true unless itt_provider_name_changed?
+
+    Events::Record.itt_provider_name_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_itt_provider_name)
   end
 end
