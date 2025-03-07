@@ -7,10 +7,31 @@
 class Teachers::Manage
   attr_reader :author, :teacher, :appropriate_body
 
-  def initialize(author:, teacher:, appropriate_body:)
-    @author = author
+  def initialize(author:, teacher:, appropriate_body:, is_new_record:)
     @teacher = teacher
     @appropriate_body = appropriate_body
+    @author = author
+    @is_new_record = is_new_record
+  end
+
+  def self.find_or_initialize_by(trn:, trs_first_name:, trs_last_name:, event_metadata:)
+    teacher = Teacher.find_or_initialize_by(trn:)
+
+    if teacher.new_record?
+      teacher.assign_attributes(
+        trs_first_name:,
+        trs_last_name:
+      )
+      teacher.save!
+      # Events::Record.teacher_created_in_trs!(author:, teacher:, appropriate_body:)
+    end
+
+    new(
+      author: event_metadata[:author],
+      teacher:,
+      appropriate_body: event_metadata[:appropriate_body],
+      is_new_record: teacher.new_record?
+    )
   end
 
   def update_name!(trs_first_name:, trs_last_name:)
@@ -68,6 +89,7 @@ private
 
   # Events ---------------------------------------------------------------------
   def record_name_change_event
+    return true if @is_new_record
     return true unless name_changed?
 
     Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_names)
@@ -75,6 +97,7 @@ private
 
   # TODO: implement tracking award changes?
   def record_award_change_event
+    return true if @is_new_record
     return true unless qts_awarded_on_changed?
 
     :no_op
