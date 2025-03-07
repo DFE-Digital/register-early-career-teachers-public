@@ -22,8 +22,10 @@ module Schools
         :working_pattern
       end
 
+    private
+
       def persist
-        ect.update!(appropriate_body_id:)
+        ect.update!(appropriate_body_type: 'teaching_school_hub', appropriate_body_id:)
       end
     end
   end

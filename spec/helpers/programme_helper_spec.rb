@@ -1,4 +1,4 @@
-RSpec.describe ProgrammeTypeHelper, type: :helper do
+RSpec.describe ProgrammeHelper, type: :helper do
   describe '#programme_type_name' do
     context "for 'provider_led'" do
       it { expect(programme_type_name('provider_led')).to eq('Provider-led') }
