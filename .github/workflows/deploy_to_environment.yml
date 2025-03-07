@@ -13,11 +13,9 @@ on:
         required: true
         default: migration
         type: environment
-        options:
-          - migration
-          - production
-          - sandbox
-          - staging
+      pull-request-number:
+        description: Pull request number for a review app
+        required: false
 
 permissions:
   id-token: write
@@ -65,3 +63,4 @@ jobs:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
           commit-sha: ${{ github.sha }}
+          pull-request-number: ${{ inputs.pull-request-number }}
