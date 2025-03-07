@@ -207,6 +207,8 @@
   - ecf_user_id
   - ecf_ect_profile_id
   - ecf_mentor_profile_id
+  - mentor_completion_date
+  - mentor_completion_reason
   :pending_induction_submissions:
   - id
   - appropriate_body_id
