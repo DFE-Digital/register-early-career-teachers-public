@@ -255,7 +255,8 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   started_on: 1.year.ago,
   lead_provider: grove_institute,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'school_led'
+  programme_type: 'school_led',
+  working_pattern: 'full_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -300,7 +301,8 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   started_on: 2.years.ago,
   lead_provider: wildflower_trust,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'provider_led'
+  programme_type: 'provider_led',
+  working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -341,7 +343,8 @@ hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   started_on: 2.years.ago,
   lead_provider: grove_institute,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'school_led'
+  programme_type: 'school_led',
+  working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -379,7 +382,8 @@ jamie_parsons_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   started_on: 2.years.ago,
   lead_provider: wildflower_trust,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'school_led'
+  programme_type: 'school_led',
+  working_pattern: 'full_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -462,7 +466,8 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
   started_on: 2.years.ago,
   lead_provider: wildflower_trust,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'school_led'
+  programme_type: 'school_led',
+  working_pattern: 'full_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -493,7 +498,8 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   started_on: 21.months.ago,
   lead_provider: wildflower_trust,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'provider_led'
+  programme_type: 'provider_led',
+  working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -531,7 +537,8 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   lead_provider: national_meadows_institute,
   appropriate_body: umber_teaching_school_hub,
   programme_type: 'provider_led',
-  started_on: 2.years.ago
+  started_on: 2.years.ago,
+  working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -549,7 +556,8 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   started_on: 2.years.ago,
   lead_provider: national_meadows_institute,
   appropriate_body: south_yorkshire_studio_hub,
-  programme_type: 'provider_led'
+  programme_type: 'provider_led',
+  working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -557,6 +565,18 @@ TrainingPeriod.create!(
   started_on: 2.years.ago,
   provider_partnership: meadow_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
+
+print_seed_info("Harriet Walter (ECT) with multiple induction periods", indent: 2, colour: ECT_COLOUR)
+
+ECTAtSchoolPeriod.create!(
+  teacher: harriet_walter,
+  school: brookfield_school,
+  email: 'harriet-walter@history.com',
+  started_on: 2.years.ago,
+  lead_provider: national_meadows_institute,
+  appropriate_body: south_yorkshire_studio_hub,
+  programme_type: 'provider_led'
+).tap { |sp| describe_ect_at_school_period(sp) }
 
 print_seed_info("Helen Mirren (mentor)", indent: 2, colour: MENTOR_COLOUR)
 

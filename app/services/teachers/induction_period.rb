@@ -9,6 +9,22 @@ class Teachers::InductionPeriod
     first_induction_period&.started_on
   end
 
+  def formatted_induction_start_date
+    induction_start_date&.to_fs(:govuk)
+  end
+
+  def induction_programme
+    return unless last_induction_period
+
+    ::INDUCTION_PROGRAMMES[last_induction_period.induction_programme.to_sym]
+  end
+
+  def appropriate_body_name
+    return unless last_induction_period
+
+    last_induction_period.appropriate_body.name
+  end
+
   def active_induction_period
     # FIXME: this works if finished_on cannot be set to a future date
     # If that becomes possible, this query will need to be updated
@@ -18,6 +34,14 @@ class Teachers::InductionPeriod
 private
 
   def first_induction_period
-    @first_induction_period ||= teacher.induction_periods.first
+    induction_periods.first
+  end
+
+  def last_induction_period
+    induction_periods.last
+  end
+
+  def induction_periods
+    @induction_periods ||= teacher.induction_periods.order(:started_on)
   end
 end

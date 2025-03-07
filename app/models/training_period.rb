@@ -5,8 +5,12 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
   belongs_to :provider_partnership
+
   has_many :declarations, inverse_of: :training_period
   has_many :events
+
+  has_one :lead_provider, through: :provider_partnership
+  has_one :delivery_partner, through: :provider_partnership
 
   # Validations
   validates :started_on,
