@@ -6,41 +6,76 @@
     caption_size: 'l',
   )
 %>
-<%= render Teachers::DetailsComponent.new(mode: :school, teacher: @ect.teacher) do |component|
-  component.with_personal_details
-  component.with_itt_details
-  component.with_induction_summary
-  component.with_current_induction_period
-  component.with_past_induction_periods
-end %>
-
-<h2 class='govuk-heading-m'>Additional details</h2>
+<h2 class='govuk-heading-m'>ECT details</h2>
 <%=
   govuk_summary_list(
     rows: [
-      { key: { text: 'Mentor' }, value: { text: ect_mentor_details(@ect) } },
+      { key: { text: 'Name' },              value: { text: teacher_full_name(@ect.teacher) } },
+      { key: { text: 'Email address' },     value: { text: @ect.email } },
+      { key: { text: 'Mentor' },            value: { text: ect_mentor_details(@ect) } },
       { key: { text: 'School start date' }, value: { text: ect_start_date(@ect) } },
-      { key: { text: 'Working pattern' }, value: { text: @ect.working_pattern&.humanize } },
-    ].compact_blank
+      { key: { text: 'Working pattern' },   value: { text: @ect.working_pattern&.humanize } },
+    ]
   )
 %>
-
-<%= govuk_summary_card(title: 'Current training details') do |card|
-  card.with_summary_list(
-    rows: [
-      { key: { text: 'Appropriate body (reported by AB)' }, value: { text: @ect.teacher.induction_periods.last&.appropriate_body&.name } },
-      { key: { text: 'Programme type (reported by AB)' },   value: { text: induction_programme_choice_name(@ect.teacher.induction_periods.last&.induction_programme) } },
-      { key: { text: 'Lead provider (reported by LP)' },    value: { text: @ect.training_periods.last&.provider_partnership&.lead_provider&.name } },
-    ]
-  )
-end %>
-
-<%= govuk_summary_card(title: 'School requested details') do |card|
-  card.with_summary_list(
-    rows: [
-      { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name } },
-      { key: { text: 'Programme type' },   value: { text: ect_programme_type(@ect) } },
-      { key: { text: 'Lead provider' },    value: { text: @ect.lead_provider&.name } },
-    ]
-  )
-end %>
+<h2 class='govuk-heading-m'>ECTE training details</h2>
+<%=
+  govuk_summary_card(title: 'Reported to us by your school') do |card|
+    if @ect.provider_led?
+      card.with_summary_list(
+        rows: [
+          { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name } },
+          { key: { text: 'Programme type' },   value: { text: ect_programme_type(@ect) } },
+          { key: { text: 'Lead provider' },    value: { text: @ect.lead_provider&.name } },
+        ]
+      )
+    else
+      # TODO: Improve display of AB name when ISTIP
+      card.with_summary_list(
+        rows: [
+          { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name || 'Independent Schools Teacher Induction Panel (ISTIP)' } },
+          { key: { text: 'Programme type' },   value: { text: ect_programme_type(@ect) } },
+        ]
+      )
+    end
+  end
+%>
+<%=
+  if @ect.provider_led?
+    govuk_summary_card(title: 'Reported to us by your lead provider') do |card|
+      if (period = @ect.training_periods.earliest_first.last)    
+        card.with_summary_list(
+          rows: [
+            { key: { text: 'Lead provider' },    value: { text: period.lead_provider.name } },
+            { key: { text: 'Delivery partner' }, value: { text: period.delivery_partner.name } },
+          ]
+        )
+      else
+        card.with_summary_list do |summary_list|
+          summary_list.with_row do |row|
+            row.with_value(text: 'Your lead provider has not reported any information to us yet.')
+          end
+        end
+      end      
+    end
+  end
+%>
+<%=
+  govuk_summary_card(title: 'Reported to us by your appropriate body') do |card|
+    if @ect.teacher.induction_periods.any?
+      card.with_summary_list(
+        rows: [
+          { key: { text: 'Appropriate body' },      value: { text: teacher_induction_ab_name(@ect.teacher) } },
+          { key: { text: 'Programme type' },        value: { text: teacher_induction_programme(@ect.teacher) } },
+          { key: { text: 'Induction start date' },  value: { text: teacher_induction_start_date(@ect.teacher) } },
+        ]
+      )
+    else
+      card.with_summary_list do |summary_list|
+        summary_list.with_row do |row|
+          row.with_value(text: 'Your appropriate body has not reported any information to us yet.')
+        end
+      end
+    end
+  end
+%>
