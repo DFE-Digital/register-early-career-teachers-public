@@ -102,7 +102,11 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
       end
 
       it 'updates the wizard ect appropriate_body_id' do
-        expect { subject.save! }.to change(subject.ect, :appropriate_body_id).from(nil).to('1')
+        expect { subject.save! }
+          .to change(subject.ect, :appropriate_body_id)
+                .from(nil).to('1')
+                .and change(subject.ect, :appropriate_body_type)
+                       .from(nil).to('teaching_school_hub')
       end
     end
   end

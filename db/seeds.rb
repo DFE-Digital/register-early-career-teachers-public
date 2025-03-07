@@ -581,7 +581,7 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led',
   working_pattern: 'part_time',
-  appropriate_body_type: 'teaching_school_hub',
+  appropriate_body_type: 'teaching_school_hub'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 brookfield_school.update!(chosen_lead_provider: national_meadows_institute,
@@ -603,6 +603,7 @@ ECTAtSchoolPeriod.create!(
   email: 'harriet-walter@history.com',
   started_on: 2.years.ago,
   lead_provider: national_meadows_institute,
+  appropriate_body_type: 'teaching_school_hub',
   appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }

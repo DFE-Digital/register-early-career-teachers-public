@@ -22,6 +22,8 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
     allow(wizard.ect).to receive(:provider_led?).and_return(false)
     assign(:ect, ect)
     assign(:wizard, wizard)
+    assign(:school, wizard.school)
+
     render
   end
 
