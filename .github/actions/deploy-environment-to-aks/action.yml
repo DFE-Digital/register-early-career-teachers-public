@@ -8,8 +8,14 @@ inputs:
   docker-image-tag:
     description: The Docker image tag to deploy
     required: true
-  azure-credentials:
-    description: JSON object containing a key for the service principal authorised on the Azure subscription
+  azure-client-id:
+    description: Azure service principal or managed identity client ID when using OIDC
+    required: true
+  azure-subscription-id:
+    description: Azure service principal or managed identity subscription ID when using OIDC
+    required: true
+  azure-tenant-id:
+    description: Azure service principal or managed identity tenant ID when using OIDC
     required: true
   pull-request-number:
     description: The pull request number which triggered this deploy. If set, this will automatically seed the database.

@@ -31,7 +31,9 @@ jobs:
 
       - uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Set Azure environment variables
         run: |
@@ -55,6 +57,8 @@ jobs:
         uses: ./.github/actions/directly-backup-and-restore-snapshot-database
         with:
           environment: ${{ inputs.environment || 'production' }}
-          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           app-name: ${{ env.SERVICE_NAME }}-${{ inputs.environment || 'production' }}-web
           slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}

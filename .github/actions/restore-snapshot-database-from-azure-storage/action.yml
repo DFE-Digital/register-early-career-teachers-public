@@ -16,22 +16,15 @@ inputs:
   cluster:
     description: Cluster being used. Test or Production.
     required: true
-  azure-credentials:
-    description: 'A JSON string containing service principal credentials e.g. {"client_id": "x", "client_secret": "x", "subscription_id": "x", "tenant_id": "x"}'
-    required: false
-    default: ''
   azure-client-id:
     description: Azure service principal or managed identity client ID when using OIDC
-    required: false
-    default: ''
+    required: true
   azure-subscription-id:
     description: Azure service principal or managed identity subscription ID when using OIDC
-    required: false
-    default: ''
+    required: true
   azure-tenant-id:
     description: Azure service principal or managed identity tenant ID when using OIDC
-    required: false
-    default: ''
+    required: true
   backup-file:
     description: Name of the backup file to restore. Must include the .gz extension if the remote file has it.
     required: true

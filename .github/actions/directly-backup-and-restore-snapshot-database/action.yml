@@ -5,8 +5,14 @@ inputs:
   environment:
     description: The name of the environment
     required: true
-  azure-credentials:
-    description: Azure credentials
+  azure-client-id:
+    description: Azure service principal or managed identity client ID when using OIDC
+    required: true
+  azure-subscription-id:
+    description: Azure service principal or managed identity subscription ID when using OIDC
+    required: true
+  azure-tenant-id:
+    description: Azure service principal or managed identity tenant ID when using OIDC
     required: true
   app-name:
     description: Name of the app deployment
