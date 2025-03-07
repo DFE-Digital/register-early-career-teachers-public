@@ -211,3 +211,40 @@ The fail process takes place with the following steps:
   - partial terms must be entered as decimals
   - value must be between 0 and 16 weeks
 
+## Extensions
+
+If an ECT's induction is [interrupted by more than 30 working days](/policy/induction-arrangements-for-school-teachers-in-england#para-8-1) it can be extended.
+
+Extensions are recorded at the teacher level, **induction periods are not extended**.
+
+The extension record just holds the number of terms.
+
+The number of terms value refers to full time equivalent (FTE) terms.
+
+The number of extensions must be:
+  - present
+  - a numeric value
+  - between 0.1 and 16 (used to keep the value sensible, not a policy-enforced limit)
+  - 0 or 1 decimal place (1 and 1.5 are valid, 1.25 is not)
+
+There is no validation preventing a teacher having an unlimited number of extensions.
+
+### Viewing extensions
+
+When an ECT has extensions the view ECT screen displays the sum of all extensions and has a 'View' link that takes you to the extensions page.
+
+When an ECT has no extensions the view ECT screen shows 'None' and has a 'Add' link that takes you to the extensions page.
+
+### Adding an extension
+
+1. From the view ECT screen click 'Add' or 'View' in the 'Extensions' row
+2. Click the 'Add extension' button
+3. Enter a number in the 'Number of terms' field. The number must adhere to the validation rules above.
+4. Click 'Add extension'
+
+### Editing an extension
+
+1. From the view ECT screen click 'Add' or 'View' in the 'Extensions' row
+2. Click the 'Edit' link next to the extension you intend to modify
+3. Enter a number in the 'Number of terms' field. The number must adhere to the validation rules above.
+4. Click 'Update extension'
