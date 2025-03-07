@@ -50,7 +50,7 @@ module Schools
       end
 
       def lead_provider
-        @lead_provider ||= LeadProvider.find(lead_provider_id) if provider_led?
+        @lead_provider ||= LeadProvider.find(lead_provider_id) if lead_provider_id
       end
 
       # lead_provider_name
