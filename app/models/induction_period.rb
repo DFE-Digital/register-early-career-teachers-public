@@ -1,5 +1,7 @@
 class InductionPeriod < ApplicationRecord
   VALID_NUMBER_OF_TERMS = { min: 0, max: 16 }.freeze
+  OUTCOMES = %w[pass fail].freeze
+
   include Interval
   include SharedInductionPeriodValidation
   include SharedNumberOfTermsValidation
@@ -17,13 +19,20 @@ class InductionPeriod < ApplicationRecord
             inclusion: { in: %w[fip cip diy unknown pre_september_2021],
                          message: "Choose an induction programme" }
 
+  validates :outcome,
+            inclusion: { in: OUTCOMES,
+                         message: "Outcome must be either pass or fail",
+                         allow_nil: true }
+
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
 
   scope :for_teacher, ->(teacher) { where(teacher:) }
   scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
+  scope :ongoing, -> { where(finished_on: nil) }
+  scope :with_outcome, -> { where.not(outcome: nil) }
+  scope :without_outcome, -> { where(outcome: nil) }
 
-  # Instance methods
   def siblings
     return InductionPeriod.none unless teacher
 
