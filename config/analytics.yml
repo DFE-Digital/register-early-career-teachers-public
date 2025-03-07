@@ -11,7 +11,6 @@ shared:
     - dqt_id
   :ect_at_school_periods:
     - appropriate_body_id
-    - appropriate_body_type
     - lead_provider_id
     - programme_type
   :induction_extensions:
@@ -32,11 +31,6 @@ shared:
     - range
     - teacher_id
     - outcome
-  :schools:
-    - chosen_appropriate_body_type
-    - chosen_appropriate_body_id
-    - chosen_lead_provider_id
-    - chosen_programme_type
   :teachers:
     - id
     - created_at
