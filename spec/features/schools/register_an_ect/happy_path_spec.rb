@@ -41,7 +41,7 @@ RSpec.describe 'Registering an ECT' do
 
     when_i_select_that_i_dont_want_to_use_the_school_previous_choices
     and_i_click_continue
-    then_i_should_be_taken_to_the_appropriate_bodies_page
+    then_i_should_be_taken_to_the_appropriate_body_page
 
     when_i_select_an_appropriate_body
     and_i_click_continue
@@ -185,7 +185,7 @@ RSpec.describe 'Registering an ECT' do
     page.get_by_label("No").check
   end
 
-  def then_i_should_be_taken_to_the_appropriate_bodies_page
+  def then_i_should_be_taken_to_the_appropriate_body_page
     expect(page.url).to end_with('/schools/register-ect/state-school-appropriate-body')
   end
 

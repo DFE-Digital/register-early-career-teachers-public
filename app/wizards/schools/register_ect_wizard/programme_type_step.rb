@@ -19,6 +19,8 @@ module Schools
         :state_school_appropriate_body
       end
 
+    private
+
       def persist
         ect.update!(programme_type:)
       end

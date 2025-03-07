@@ -6,6 +6,8 @@ module Schools
       end
 
       def previous_step
+        return :use_previous_ect_choices if ect.use_previous_ect_choices
+
         ect.provider_led? ? :lead_provider : :programme_type
       end
 
