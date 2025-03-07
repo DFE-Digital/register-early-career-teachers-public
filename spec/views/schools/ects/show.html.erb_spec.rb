@@ -134,11 +134,19 @@ RSpec.describe 'schools/ects/show.html.erb' do
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Requested AB')
     end
 
-    context 'when school led' do
+    context 'when school-led' do
       let(:programme_type) { 'school_led' }
 
       it 'hides Lead Provider' do
         expect(rendered).not_to have_css('dd.govuk-summary-list__value', text: 'Requested LP')
+      end
+    end
+
+    context 'when school is independent' do
+      let(:requested_appropriate_body) { nil }
+
+      it 'replaces AB name with ISTIP' do
+        expect(rendered).not_to have_css('dd.govuk-summary-list__value', text: 'Independent Schools Teacher Induction Panel (ISTIP)')
       end
     end
   end
