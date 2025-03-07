@@ -8,9 +8,16 @@ class Teachers::Manage
   attr_reader :author, :teacher, :appropriate_body
 
   def initialize(author:, teacher:, appropriate_body:)
-    @author = author
     @teacher = teacher
+
+    # Who you are:
+    @author = author
     @appropriate_body = appropriate_body
+  end
+
+  def self.find_or_initialize_by(trn:, trs_first_name:, trs_first_name:, event_stuff:)
+    # if the teacher exists, find them
+    # if they don't create them and log an event
   end
 
   def update_name!(trs_first_name:, trs_last_name:)

@@ -8,9 +8,8 @@ module AppropriateBodies
       def update
         register_ect = AppropriateBodies::ClaimAnECT::RegisterECT
           .new(
-            appropriate_body: @appropriate_body,
             pending_induction_submission: find_pending_induction_submission,
-            author: current_user
+            event_stuff:
           )
 
         if register_ect.register(update_params)

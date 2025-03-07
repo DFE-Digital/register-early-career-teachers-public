@@ -9,6 +9,10 @@ private
     @appropriate_body = AppropriateBody.find(current_user.appropriate_body_id)
   end
 
+  def set_event_stuff
+    @event_stuff = EventStuff.new(author: current_user, appropriate_body: @appropriate_body)
+  end
+
   def authorised?
     # FIXME: make this work with DfE Sign-in
 
