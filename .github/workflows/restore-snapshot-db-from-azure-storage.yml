@@ -35,10 +35,6 @@ on:
         required: true
         default: production
         type: string
-      azure-credentials:
-        description: Azure credentials
-        type: string
-        required: false
       backup-file:
         description: |
           Backup file name (without extension). Default is cpdec2_[env]_adhoc_YYYY-MM-DD. Set it explicitly when backing up a point-in-time (PTR) server. (Optional)
@@ -78,6 +74,7 @@ jobs:
 
           # Set Azure environment variables
           echo "CLUSTER=$(jq -r '.cluster' ${tf_vars_file})" >> $GITHUB_ENV
+          echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
           echo "RESOURCE_GROUP_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-rg" >> $GITHUB_ENV
           echo "STORAGE_ACCOUNT_NAME=${AZURE_RESOURCE_PREFIX}${SERVICE_SHORT}dbbkp${CONFIG_SHORT}sa" >> $GITHUB_ENV
           echo "DB_SERVER=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg" >> $GITHUB_ENV
@@ -113,6 +110,7 @@ jobs:
         with:
           storage-account: ${{ env.STORAGE_ACCOUNT_NAME }}
           app-name: ${{ env.SERVICE_NAME }}-${{ env.DEPLOY_ENV }}-web
+          namespace: ${{ env.NAMESPACE }}
           resource-group: ${{ env.RESOURCE_GROUP_NAME }}
           cluster: ${{ env.CLUSTER }}
           azure-client-id: ${{ secrets.azure-client-id || secrets.AZURE_CLIENT_ID }}
