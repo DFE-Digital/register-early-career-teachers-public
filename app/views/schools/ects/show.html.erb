@@ -30,9 +30,10 @@
         ]
       )
     else
+      # TODO: Improve display of AB name when ISTIP
       card.with_summary_list(
         rows: [
-          { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name } },
+          { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name || 'Independent Schools Teacher Induction Panel (ISTIP)' } },
           { key: { text: 'Programme type' },   value: { text: ect_programme_type(@ect) } },
         ]
       )
