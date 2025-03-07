@@ -32,6 +32,9 @@ env:
   SERVICE_SHORT: cpdec2
   TF_VARS_PATH: config/terraform/application/config
 
+permissions:
+  id-token: write
+
 jobs:
   restore:
     name: Restore AKS Database

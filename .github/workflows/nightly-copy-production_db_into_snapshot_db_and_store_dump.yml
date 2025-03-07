@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "15 4 * * *" # 04:15 UTC
 
+permissions:
+  id-token: write
+
 jobs:
   generate-day_of_week:
     runs-on: ubuntu-latest
