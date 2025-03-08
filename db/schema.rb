@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "appropriate_body_type", ["teaching_induction_panel", "teaching_school_hub"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
@@ -26,6 +27,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
   create_enum "induction_outcomes", ["fail", "pass"]
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "mentor_completion_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
+  create_enum "programme_type", ["provider_led", "school_led"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "academic_years", primary_key: "year", id: :serial, force: :cascade do |t|
@@ -157,7 +159,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
     t.citext "email"
     t.bigint "appropriate_body_id"
     t.bigint "lead_provider_id"
-    t.string "programme_type"
+    t.enum "programme_type", enum_type: "programme_type"
+    t.enum "appropriate_body_type", enum_type: "appropriate_body_type"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["appropriate_body_id"], name: "index_ect_at_school_periods_on_appropriate_body_id"
     t.index ["lead_provider_id"], name: "index_ect_at_school_periods_on_lead_provider_id"
@@ -371,6 +374,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
     t.integer "urn", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.enum "chosen_appropriate_body_type", enum_type: "appropriate_body_type"
+    t.bigint "chosen_appropriate_body_id"
+    t.bigint "chosen_lead_provider_id"
+    t.enum "chosen_programme_type", enum_type: "programme_type"
+    t.index ["chosen_appropriate_body_id"], name: "index_schools_on_chosen_appropriate_body_id"
+    t.index ["chosen_lead_provider_id"], name: "index_schools_on_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true
   end
 
@@ -590,7 +599,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
   add_foreign_key "provider_partnerships", "academic_years", primary_key: "year"
   add_foreign_key "provider_partnerships", "delivery_partners"
   add_foreign_key "provider_partnerships", "lead_providers"
+  add_foreign_key "schools", "appropriate_bodies", column: "chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
+  add_foreign_key "schools", "lead_providers", column: "chosen_lead_provider_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

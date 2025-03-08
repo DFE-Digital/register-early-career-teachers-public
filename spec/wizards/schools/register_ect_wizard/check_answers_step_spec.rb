@@ -37,7 +37,8 @@ describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
 
   context '#save!' do
     let(:school) { FactoryBot.create(:school) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :check_answers, school:) }
+    let(:store) { FactoryBot.build(:session_repository, school_urn: school.urn) }
+    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :check_answers, store:) }
 
     context 'when the step is not valid' do
       before do

@@ -1,8 +1,6 @@
 module Schools
   module RegisterMentorWizard
     class Step < ApplicationWizardStep
-      include ActiveRecord::AttributeAssignment
-
       delegate :ect, :mentor, :valid_step?, to: :wizard
 
       def self.permitted_params = []

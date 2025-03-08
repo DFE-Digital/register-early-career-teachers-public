@@ -1,10 +1,26 @@
 module ECTAtSchoolPeriods
   class Search
-    def exists?(school_id:, trn:)
-      ECTAtSchoolPeriod.joins(:teacher)
-                       .where(teachers: { trn: }, school_id:)
-                       .ongoing
-                       .exists?
+    attr_reader :scope
+
+    def initialize
+      @scope = ECTAtSchoolPeriod.all.order(:created_at)
+    end
+
+    def ect_periods(urn: nil, trn: nil)
+      where_school_urn_is(urn) if urn
+      where_teacher_trn_is(trn) if trn
+
+      @scope
+    end
+
+  private
+
+    def where_school_urn_is(urn)
+      @scope = scope.joins(:school).where(school: { urn: })
+    end
+
+    def where_teacher_trn_is(trn)
+      @scope = scope.joins(:teacher).where(teacher: { trn: })
     end
   end
 end

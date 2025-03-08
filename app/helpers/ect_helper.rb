@@ -34,11 +34,6 @@ module ECTHelper
     end
   end
 
-  # @param ect [ECTAtSchoolPeriod]
-  def ect_programme_type(ect)
-    ::PROGRAMME_TYPES.fetch(ect.programme_type.to_sym, 'Programme type is not recognised')
-  end
-
 private
 
   def assign_or_create_mentor_link(ect)

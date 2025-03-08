@@ -1,4 +1,6 @@
 RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep, type: :model do
+  let(:school) { FactoryBot.create(:school, :independent) }
+
   describe '#initialize' do
     let(:store) { FactoryBot.build(:session_repository, appropriate_body_id: '123', appropriate_body_type: 'prepopulated_type') }
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :independent_school_appropriate_body, store:) }
@@ -61,7 +63,7 @@ RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep,
     subject { wizard.current_step }
 
     let(:wizard) do
-      FactoryBot.build(:register_ect_wizard, current_step: :independent_school_appropriate_body)
+      FactoryBot.build(:register_ect_wizard, current_step: :independent_school_appropriate_body, school:)
     end
 
     describe '#next_step' do
@@ -71,8 +73,18 @@ RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep,
     end
 
     describe '#previous_step' do
-      it 'returns the previous step' do
-        expect(subject.previous_step).to eq(:working_pattern)
+      context 'when the school has no programme choices' do
+        it 'returns the previous step' do
+          expect(subject.previous_step).to eq(:working_pattern)
+        end
+      end
+
+      context 'when the school has programme choices' do
+        let(:school) { FactoryBot.create(:school, :independent, :teaching_induction_panel_chosen, :school_led_chosen) }
+
+        it 'returns the previous step' do
+          expect(subject.previous_step).to eq(:use_previous_ect_choices)
+        end
       end
     end
   end
