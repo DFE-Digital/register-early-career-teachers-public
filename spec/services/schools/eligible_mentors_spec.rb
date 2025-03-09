@@ -14,7 +14,9 @@ RSpec.describe Schools::EligibleMentors do
     context "when the school has active mentors registered" do
       let!(:active_mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, :active, school:, started_on: 2.years.ago) }
 
-      it { is_expected.to match_array(active_mentors) }
+      it "returns those mentors" do
+        expect(subject.to_a).to match_array(active_mentors)
+      end
     end
 
     context "when the ect is also a mentor at the school" do
@@ -24,7 +26,9 @@ RSpec.describe Schools::EligibleMentors do
         FactoryBot.create(:mentor_at_school_period, :active, school:, teacher: ect.teacher, started_on: 2.years.ago)
       end
 
-      it { is_expected.to match_array(mentors_excluding_ect) }
+      it "returns those mentors excluding themself" do
+        expect(subject.to_a).to match_array(mentors_excluding_ect)
+      end
     end
   end
 end

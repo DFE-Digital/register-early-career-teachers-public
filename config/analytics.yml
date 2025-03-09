@@ -1,44 +1,44 @@
 ---
 shared:
-  :teachers:
-  - id
-  - created_at
-  - updated_at
-  - trn
-  - trs_qts_awarded_on
-  - trs_qts_status_description
-  - trs_induction_status
-  - trs_initial_teacher_training_provider_name
-  - trs_initial_teacher_training_end_date
-  - trs_data_last_refreshed_at
   :appropriate_bodies:
-  - id
-  - name
-  - created_at
-  - updated_at
-  - local_authority_code
-  - establishment_number
-  - dfe_sign_in_organisation_id
-  - dqt_id
-  :induction_periods:
-  - id
-  - appropriate_body_id
-  - started_on
-  - finished_on
-  - created_at
-  - updated_at
-  - induction_programme
-  - number_of_terms
-  - range
-  - teacher_id
-  - outcome
-  :induction_extensions:
-  - id
-  - teacher_id
-  - number_of_terms
-  - created_at
-  - updated_at
+    - id
+    - name
+    - created_at
+    - updated_at
+    - local_authority_code
+    - establishment_number
+    - dfe_sign_in_organisation_id
+    - dqt_id
   :ect_at_school_periods:
-  - appropriate_body_id
-  - lead_provider_id
-  - programme_type
+    - appropriate_body_id
+    - lead_provider_id
+    - programme_type
+  :induction_extensions:
+    - id
+    - teacher_id
+    - number_of_terms
+    - created_at
+    - updated_at
+  :induction_periods:
+    - id
+    - appropriate_body_id
+    - started_on
+    - finished_on
+    - created_at
+    - updated_at
+    - induction_programme
+    - number_of_terms
+    - range
+    - teacher_id
+    - outcome
+  :teachers:
+    - id
+    - created_at
+    - updated_at
+    - trn
+    - trs_qts_awarded_on
+    - trs_qts_status_description
+    - trs_induction_status
+    - trs_initial_teacher_training_provider_name
+    - trs_initial_teacher_training_end_date
+    - trs_data_last_refreshed_at

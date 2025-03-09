@@ -189,10 +189,14 @@
   - created_at
   - updated_at
   :schools:
+  - chosen_appropriate_body_type
+  - chosen_appropriate_body_id
+  - chosen_lead_provider_id
+  - chosen_programme_type
   - id
-  - urn
   - created_at
   - updated_at
+  - urn
   :provider_partnerships:
   - id
   - academic_year_id
@@ -301,6 +305,7 @@
   - metadata
   - modifications
   :ect_at_school_periods:
+  - appropriate_body_type
   - id
   - school_id
   - teacher_id

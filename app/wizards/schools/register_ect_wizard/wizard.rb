@@ -18,6 +18,7 @@ module Schools
             change_review_ect_details: ChangeReviewECTDetailsStep,
             change_start_date: ChangeStartDateStep,
             change_state_school_appropriate_body: ChangeStateSchoolAppropriateBodyStep,
+            change_use_previous_ect_choices: ChangeUsePreviousECTChoicesStep,
             change_working_pattern: ChangeWorkingPatternStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep,
@@ -34,6 +35,7 @@ module Schools
             start_date: StartDateStep,
             state_school_appropriate_body: StateSchoolAppropriateBodyStep,
             trn_not_found: TRNNotFoundStep,
+            use_previous_ect_choices: UsePreviousECTChoicesStep,
             working_pattern: WorkingPatternStep,
           }
         ]
@@ -48,15 +50,6 @@ module Schools
 
       def ect
         @ect ||= ECT.new(store)
-      end
-
-      def appropriate_bodies
-        @appropriate_bodies ||= AppropriateBody.select(:id, :name).all
-      end
-
-      # OPTIMIZE: May eventually depend on the ECT being registered and move to Schools::RegisterECTWizard::ECT
-      def lead_providers
-        @lead_providers ||= LeadProvider.select(:id, :name).all
       end
     end
   end

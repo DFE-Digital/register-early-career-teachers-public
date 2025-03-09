@@ -1,4 +1,24 @@
 describe ECTAtSchoolPeriod do
+  describe "enums" do
+    it do
+      is_expected.to define_enum_for(:appropriate_body_type)
+                       .with_values({ teaching_induction_panel: 'teaching_induction_panel',
+                                      teaching_school_hub: 'teaching_school_hub' })
+                       .validating
+                       .with_suffix(:ab_type)
+                       .backed_by_column_of_type(:enum)
+    end
+
+    it do
+      is_expected.to define_enum_for(:programme_type)
+                       .with_values({ provider_led: "provider_led",
+                                      school_led: "school_led" })
+                       .validating
+                       .with_suffix(:programme_type)
+                       .backed_by_column_of_type(:enum)
+    end
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:school).inverse_of(:ect_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:ect_at_school_periods) }
@@ -11,16 +31,63 @@ describe ECTAtSchoolPeriod do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:ect_at_school_period) }
-
     it { is_expected.to validate_presence_of(:started_on) }
     it { is_expected.to validate_presence_of(:school_id) }
     it { is_expected.to validate_presence_of(:teacher_id) }
+
+    context "appropriate_body_id" do
+      context "when appropriate_body_type is 'teaching_school_hub'" do
+        subject { FactoryBot.build(:ect_at_school_period, :teaching_school_hub) }
+
+        it do
+          is_expected.to validate_presence_of(:appropriate_body_id)
+                           .with_message('Must contain the ID of an appropriate body')
+        end
+
+        it do
+          is_expected.not_to validate_absence_of(:appropriate_body_id)
+        end
+      end
+
+      context "when appropriate_body_type is not 'teaching_school_hub'" do
+        subject { FactoryBot.build(:ect_at_school_period, :teaching_induction_panel) }
+
+        it { is_expected.not_to validate_presence_of(:appropriate_body_id) }
+        it { is_expected.to validate_absence_of(:appropriate_body_id).with_message('Must be nil') }
+      end
+    end
+
+    context "appropriate_body_type" do
+      subject { FactoryBot.build(:ect_at_school_period) }
+
+      it do
+        is_expected.to validate_inclusion_of(:appropriate_body_type)
+                         .in_array(%w[teaching_induction_panel teaching_school_hub])
+                         .with_message("Must be teaching induction panel or teaching school hub")
+      end
+
+      context "for a state school" do
+        let(:school) { FactoryBot.build(:school, :state_funded) }
+        subject { FactoryBot.build(:ect_at_school_period, school:) }
+
+        it { is_expected.to validate_presence_of(:appropriate_body_type).with_message("Must be teaching school hub") }
+      end
+    end
 
     context "email" do
       it { is_expected.to allow_value(nil).for(:email) }
       it { is_expected.to allow_value("test@example.com").for(:email) }
       it { is_expected.not_to allow_value("invalid_email").for(:email) }
+    end
+
+    context "lead_provider_id" do
+      subject { FactoryBot.build(:ect_at_school_period) }
+
+      context "when programme_type is 'school_led'" do
+        subject { FactoryBot.build(:ect_at_school_period, :school_led) }
+
+        it { is_expected.to validate_absence_of(:lead_provider_id).with_message('Must be nil') }
+      end
     end
 
     describe 'overlapping periods' do
@@ -66,6 +133,22 @@ describe ECTAtSchoolPeriod do
             end
           end
         end
+      end
+    end
+
+    context "programme_type" do
+      subject { FactoryBot.build(:ect_at_school_period) }
+
+      it do
+        is_expected.to validate_inclusion_of(:programme_type)
+                         .in_array(%w[provider_led school_led])
+                         .with_message("Must be provider-led or school-led")
+      end
+
+      context "when appropriate_body has been set" do
+        subject { FactoryBot.build(:ect_at_school_period, appropriate_body_id: 123) }
+
+        it { is_expected.to validate_presence_of(:programme_type).with_message("Must be provider-led") }
       end
     end
   end
@@ -133,7 +216,9 @@ describe ECTAtSchoolPeriod do
         FactoryBot.create(:mentorship_period, :active, mentee:, mentor:, started_on: 1.year.ago)
       end
 
-      it { expect(mentee.current_mentor).to eql(mentor) }
+      it "returns the mentor associated to that mentorship" do
+        expect(mentee.current_mentor).to eql(mentor)
+      end
     end
   end
 

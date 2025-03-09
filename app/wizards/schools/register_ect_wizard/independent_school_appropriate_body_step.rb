@@ -13,12 +13,14 @@ module Schools
         :programme_type
       end
 
-      def previous_step
-        :working_pattern
-      end
-
       def persist
         ect.update!(appropriate_body_id:, appropriate_body_type:)
+      end
+
+      def previous_step
+        return :use_previous_ect_choices if school.programme_choices?
+
+        :working_pattern
       end
     end
   end
