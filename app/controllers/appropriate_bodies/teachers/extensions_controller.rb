@@ -1,51 +1,49 @@
 module AppropriateBodies
   module Teachers
     class ExtensionsController < AppropriateBodiesController
+      before_action :teacher, only: :index
+
       def index
-        @teacher = find_teacher
       end
 
       def new
-        @teacher = find_teacher
-        @extension = @teacher.induction_extensions.build
+        @extension = teacher.induction_extensions.build
       end
 
       def create
-        @teacher = find_teacher
-        @extension = @teacher.induction_extensions.build(extension_params)
-
-        create_service = ::Teachers::Extensions::CreateExtension.new(@teacher, extension_params)
-        if create_service.create_extension
-          redirect_to ab_teacher_path(@teacher), notice: "Extension was successfully added."
+        if manage_extensions.create_or_update!(number_of_terms: extension_params[:number_of_terms])
+          redirect_to ab_teacher_path(teacher), alert: "Extension was successfully added."
         else
-          @extension = create_service.extension
+          @extension = manage_extensions.induction_extension
           render :new, status: :unprocessable_entity
         end
       end
 
       def edit
-        @teacher = find_teacher
-        @extension = @teacher.induction_extensions.find(params[:id])
+        @extension = teacher.induction_extensions.find(params[:id])
       end
 
       def update
-        @teacher = find_teacher
-        @extension = @teacher.induction_extensions.find(params[:id])
-
-        update_service = ::Teachers::Extensions::UpdateExtension.new(@extension, extension_params)
-
-        if update_service.update_extension
-          redirect_to ab_teacher_path(@teacher), notice: "Extension was successfully updated."
+        if manage_extensions.create_or_update!(id: params[:id], number_of_terms: extension_params[:number_of_terms])
+          redirect_to ab_teacher_path(teacher), alert: "Extension was successfully updated."
         else
-          @extension = update_service.extension
+          @extension = manage_extensions.induction_extension
           render :edit, status: :unprocessable_entity
         end
       end
 
     private
 
-      def find_teacher
-        AppropriateBodies::ECTs.new(@appropriate_body).current.find_by!(id: params[:teacher_id])
+      def manage_extensions
+        @manage_extensions ||= ::InductionExtensions::Manage.new(
+          author: current_user,
+          appropriate_body: @appropriate_body,
+          teacher:
+        )
+      end
+
+      def teacher
+        @teacher ||= AppropriateBodies::ECTs.new(@appropriate_body).current.find_by!(id: params[:teacher_id])
       end
 
       def extension_params
