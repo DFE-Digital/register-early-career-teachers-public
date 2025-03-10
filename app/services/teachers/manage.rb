@@ -14,34 +14,42 @@ class Teachers::Manage
   end
 
   def update_name!(trs_first_name:, trs_last_name:)
-    @old_name = full_name
-    teacher.assign_attributes(trs_first_name:, trs_last_name:)
-    @new_name = full_name
-    record_name_change_event
-    teacher.save!
+    Teacher.transaction do
+      @old_name = full_name
+      teacher.assign_attributes(trs_first_name:, trs_last_name:)
+      @new_name = full_name
+      record_name_change_event
+      teacher.save!
+    end
   end
 
   def update_qts_awarded_on!(trs_qts_awarded_on:)
-    @old_award_date = teacher.trs_qts_awarded_on
-    teacher.assign_attributes(trs_qts_awarded_on:)
-    @new_award_date = teacher.trs_qts_awarded_on
-    record_award_change_event
-    teacher.save!
+    Teacher.transaction do
+      @old_award_date = teacher.trs_qts_awarded_on
+      teacher.assign_attributes(trs_qts_awarded_on:)
+      @new_award_date = teacher.trs_qts_awarded_on
+      record_award_change_event
+      teacher.save!
+    end
   end
 
   def update_itt_provider_name!(trs_initial_teacher_training_provider_name:)
-    @itt_provider_before = teacher.trs_initial_teacher_training_provider_name
-    teacher.assign_attributes(trs_initial_teacher_training_provider_name:)
-    @itt_provider_after = teacher.trs_initial_teacher_training_provider_name
-    teacher.save!
+    Teacher.transaction do
+      @itt_provider_before = teacher.trs_initial_teacher_training_provider_name
+      teacher.assign_attributes(trs_initial_teacher_training_provider_name:)
+      @itt_provider_after = teacher.trs_initial_teacher_training_provider_name
+      teacher.save!
+    end
   end
 
   def update_trs_induction_status!(trs_induction_status:)
-    @induction_status_before = teacher.trs_induction_status
-    teacher.assign_attributes(trs_induction_status:)
-    @induction_status_after = teacher.trs_induction_status
-    record_induction_status_change_event
-    teacher.save!
+    Teacher.transaction do
+      @induction_status_before = teacher.trs_induction_status
+      teacher.assign_attributes(trs_induction_status:)
+      @induction_status_after = teacher.trs_induction_status
+      record_induction_status_change_event
+      teacher.save!
+    end
   end
 
 private
