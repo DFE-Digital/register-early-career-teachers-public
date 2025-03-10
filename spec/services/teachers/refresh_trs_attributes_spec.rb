@@ -24,6 +24,34 @@ describe Teachers::RefreshTRSAttributes do
       end
     end
 
+    describe 'using Teachers::Manage' do
+      let(:fake_manage) { double(Teachers::Manage, update_name!: true, update_qts_awarded_on!: true, update_itt_provider_name!: true) }
+
+      before do
+        allow(Teachers::Manage).to receive(:new).with(
+          hash_including(teacher:, author: an_instance_of(Events::SystemAuthor), appropriate_body: nil)
+        ).and_return(fake_manage)
+      end
+
+      it 'uses Teachers::Manage#update_name! to update the name' do
+        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+
+        expect(fake_manage).to have_received(:update_name!).once.with(trs_first_name: 'Kirk', trs_last_name: 'Van Houten')
+      end
+
+      it 'uses Teachers::Manage#update_qts_awarded_on! to update the QTS award date' do
+        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+
+        expect(fake_manage).to have_received(:update_qts_awarded_on!).once.with(trs_qts_awarded_on: 3.years.ago.to_date)
+      end
+
+      it 'uses Teachers::Manage#update_itt_provider_name! to update the ITT provider name' do
+        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+
+        expect(fake_manage).to have_received(:update_itt_provider_name!).once.with(trs_initial_teacher_training_provider_name: 'Example Provider Ltd.')
+      end
+    end
+
     it 'adds a teacher_name_updated_by_trs event' do
       expect(teacher.events).to be_empty
 
