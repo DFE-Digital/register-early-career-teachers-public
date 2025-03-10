@@ -4,6 +4,16 @@ RSpec.describe Teachers::InductionStatus do
   context 'when the teacher record exists in our database' do
     let(:trs_induction_status) { nil }
 
+    context 'when the ECT has no induction periods' do
+      let(:teacher) { FactoryBot.create(:teacher) }
+      let(:induction_periods) { [] }
+      let(:trs_induction_status) { 'Exempt' }
+
+      it "returns the TRS induction status" do
+        expect(service.induction_status).to eql('Exempt')
+      end
+    end
+
     context 'when the ECT has an open induction period' do
       let(:teacher) { FactoryBot.create(:teacher) }
       let(:induction_periods) do
