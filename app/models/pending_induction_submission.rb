@@ -72,6 +72,7 @@ class PendingInductionSubmission < ApplicationRecord
             on: :register_ect
   validate :no_future_induction_periods, if: -> { started_on.present? }, on: :register_ect
 
+  # Instance methods
   def exempt?
     trs_induction_status == "Exempt"
   end
