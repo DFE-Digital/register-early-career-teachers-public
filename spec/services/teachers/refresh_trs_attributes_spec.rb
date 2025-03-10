@@ -25,7 +25,7 @@ describe Teachers::RefreshTRSAttributes do
     end
 
     describe 'using Teachers::Manage' do
-      let(:fake_manage) { double(Teachers::Manage, update_name!: true, update_qts_awarded_on!: true, update_itt_provider_name!: true) }
+      let(:fake_manage) { double(Teachers::Manage, update_name!: true, update_qts_awarded_on!: true, update_itt_provider_name!: true, update_trs_induction_status!: true) }
 
       before do
         allow(Teachers::Manage).to receive(:new).with(
@@ -59,7 +59,7 @@ describe Teachers::RefreshTRSAttributes do
 
       perform_enqueued_jobs
 
-      expect(teacher.events.last.event_type).to eql('teacher_name_updated_by_trs')
+      expect(teacher.events.last(2).map(&:event_type)).to eql(%w[teacher_name_updated_by_trs teacher_induction_status_updated_by_trs])
     end
   end
 end

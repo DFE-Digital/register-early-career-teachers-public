@@ -36,9 +36,17 @@ class Teachers::Manage
     teacher.save!
   end
 
+  def update_trs_induction_status!(trs_induction_status:)
+    @induction_status_before = teacher.trs_induction_status
+    teacher.assign_attributes(trs_induction_status:)
+    @induction_status_after = teacher.trs_induction_status
+    record_induction_status_change_event
+    teacher.save!
+  end
+
 private
 
-  attr_reader :new_name, :old_name, :new_award_date, :old_award_date
+  attr_reader :new_name, :old_name, :new_award_date, :old_award_date, :old_induction_status, :new_induction_status
 
   def full_name
     ::Teachers::Name.new(teacher).full_name_in_trs
@@ -57,6 +65,10 @@ private
     new_award_date != old_award_date
   end
 
+  def induction_status_changed?
+    induction_status_before != induction_status_after
+  end
+
   # Deltas ---------------------------------------------------------------------
   def changed_names
     { old_name:, new_name: }
@@ -64,6 +76,10 @@ private
 
   def changed_qts_awarded_on
     { old_award_date:, new_award_date: }
+  end
+
+  def changed_status
+    { old_induction_status:, new_induction_status: }
   end
 
   # Events ---------------------------------------------------------------------
@@ -79,5 +95,9 @@ private
 
     :no_op
     # Events::Record.qts_awarded_on_changed_in_trs!(author:, teacher:, appropriate_body:, **manage_teacher.changed_qts_awarded_on)
+  end
+
+  def record_induction_status_change_event
+    Events::Record.teacher_induction_status_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_status)
   end
 end
