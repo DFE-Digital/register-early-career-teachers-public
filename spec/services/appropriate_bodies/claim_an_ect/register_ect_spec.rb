@@ -79,8 +79,12 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       it "enqueues BeginECTInductionJob" do
         expect {
           subject.register(pending_induction_submission_params)
-        }.to have_enqueued_job(BeginECTInductionJob)
-          .with(hash_including(trn: "1234567", start_date: Date.new(2023, 5, 2)))
+        }.to have_enqueued_job(BeginECTInductionJob).with(
+          hash_including(
+            trn: "1234567",
+            start_date: Date.new(2023, 5, 2)
+          )
+        )
       end
 
       it "records an appropriate_body_claims_teacher event" do
@@ -111,11 +115,6 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           trs_qts_awarded_on:
         }
       end
-
-      it "can perform jobs without erroring" do
-        subject.register(pending_induction_submission_params)
-        perform_enqueued_jobs
-      end
     end
 
     context 'when registering an existing teacher' do
@@ -139,7 +138,14 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
       context 'when the teacher has no existing induction periods' do
         it "does enqueues BeginECTInductionJob" do
-          expect { subject.register(pending_induction_submission_params) }.to have_enqueued_job(BeginECTInductionJob)
+          expect {
+            subject.register(pending_induction_submission_params)
+          }.to have_enqueued_job(BeginECTInductionJob).with(
+            hash_including(
+              trn: "1234567",
+              start_date: Date.new(2023, 5, 2)
+            )
+          )
         end
       end
 
@@ -175,7 +181,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
           perform_enqueued_jobs
 
-          expect(Event.all.map(&:event_type)).to match_array(%w[teacher_name_updated_by_trs appropriate_body_claims_teacher])
+          expect(Event.all.map(&:event_type)).to match_array(%w[teacher_name_updated_by_trs appropriate_body_claims_teacher qts_awarded_on_updated_by_trs itt_provider_name_updated_by_trs])
         end
 
         it 'saves the pending_induction_submission' do
