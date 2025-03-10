@@ -200,4 +200,24 @@ describe Events::Record do
       end
     end
   end
+
+  describe '.teacher_induction_status_changed_in_trs' do
+    let(:old_induction_status) { 'InProgress' }
+    let(:new_induction_status) { 'Exempt' }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.teacher_induction_status_changed_in_trs!(author:, teacher:, appropriate_body:, old_induction_status:, new_induction_status:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          appropriate_body:,
+          heading: "Induction status changed from 'InProgress' to 'Exempt'",
+          event_type: :teacher_name_updated_by_trs,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
 end
