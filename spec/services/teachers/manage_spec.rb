@@ -21,7 +21,7 @@ RSpec.describe Teachers::Manage do
           author_type: :dfe_staff_user,
           event_type: :teacher_name_updated_by_trs,
           happened_at: Time.zone.now,
-          heading: 'Name changed from Barry Allen to John Doe',
+          heading: "Name changed from 'Barry Allen' to 'John Doe'",
           teacher:
         )
       end
