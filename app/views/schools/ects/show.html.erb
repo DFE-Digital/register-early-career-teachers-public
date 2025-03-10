@@ -7,17 +7,9 @@
   )
 %>
 <h2 class='govuk-heading-m'>ECT details</h2>
-<%=
-  govuk_summary_list(
-    rows: [
-      { key: { text: 'Name' },              value: { text: teacher_full_name(@ect.teacher) } },
-      { key: { text: 'Email address' },     value: { text: @ect.email } },
-      { key: { text: 'Mentor' },            value: { text: ect_mentor_details(@ect) } },
-      { key: { text: 'School start date' }, value: { text: ect_start_date(@ect) } },
-      { key: { text: 'Working pattern' },   value: { text: @ect.working_pattern&.humanize } },
-    ]
-  )
-%>
+
+<%= render Schools::TeacherProfileSummaryListComponent.new(@ect) %>
+
 <h2 class='govuk-heading-m'>ECTE training details</h2>
 <%=
   govuk_summary_card(title: 'Reported to us by your school') do |card|
