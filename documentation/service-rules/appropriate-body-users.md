@@ -213,7 +213,14 @@ The fail process takes place with the following steps:
 
 ## Extensions
 
-If an ECT's induction is [interrupted by more than 30 working days](/policy/induction-arrangements-for-school-teachers-in-england#para-8-1) it can be extended.
+An ECT's induction must be extended if it is [interrupted by more than 30 working days for ad hoc purposes](/policy/induction-arrangements-for-school-teachers-in-england#para-8-1).
+
+An ECT's induction may be extended if:
+- It is interrupted by statutory maternity, paternity, adoption, shared parental, parental bereavement or carer’s leave
+- The ECT is determined not to have met the Teaching Standards when they were due to complete their induction, and an Appropriate Body makes a decision that an extension to their induction is appropriate.
+
+Appropriate Bodies only need to record the latter type of extension on the service, where an induction has been extended due to the ECT failing to meet the Teaching Standards. ECTs are able to appeal this type of extension.
+
 
 Extensions are recorded at the teacher level, **induction periods are not extended**.
 
