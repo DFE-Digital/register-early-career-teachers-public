@@ -61,5 +61,9 @@
       row.with_key(text: "Training status")
       row.with_value(text: induction_record.training_status)
     end
+    list.with_row do |row|
+      row.with_key(text: "Created at")
+      row.with_value(text: induction_record.created_at)
+    end
   end
 end %>
