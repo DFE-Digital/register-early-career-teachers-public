@@ -5,8 +5,14 @@ inputs:
   environment:
     description: The name of the environment
     required: true
-  azure-credentials:
-    description: Azure credentials
+  azure-client-id:
+    description: Azure service principal or managed identity client ID when using OIDC
+    required: true
+  azure-subscription-id:
+    description: Azure service principal or managed identity subscription ID when using OIDC
+    required: true
+  azure-tenant-id:
+    description: Azure service principal or managed identity tenant ID when using OIDC
     required: true
   app-name:
     description: Name of the app deployment
@@ -22,14 +28,24 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Set Azure environment variables
+      shell: bash
+      run: |
+        tf_vars_file=${TF_VARS_PATH}/${{ inputs.environment }}.tfvars.json
+        echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
+
     - name: Login
       uses: azure/login@v1
       with:
-        creds: ${{ inputs.azure-credentials }}
+        client-id: ${{ inputs.azure-client-id }}
+        subscription-id: ${{ inputs.azure-subscription-id }}
+        tenant-id: ${{ inputs.azure-tenant-id }}
 
     - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
       with:
-        azure-credentials: ${{ inputs.azure-credentials }}
+        azure-client-id: ${{ inputs.azure-client-id }}
+        azure-subscription-id: ${{ inputs.azure-subscription-id }}
+        azure-tenant-id: ${{ inputs.azure-tenant-id }}
 
     - name: Set AKS credentials
       shell: bash
@@ -45,11 +61,11 @@ runs:
     - name: Backup database
       shell: bash
       run: |
-        bin/konduit.sh cpd-ec2-${{ inputs.environment }}-web -- pg_dump -E utf8 --compress=1 --clean --if-exists --no-privileges --no-owner --verbose -f backup-${{ inputs.environment }}.sql.gz
+        bin/konduit.sh -n ${{ env.NAMESPACE }} cpd-ec2-${{ inputs.environment }}-web -- pg_dump -E utf8 --compress=1 --clean --if-exists --no-privileges --no-owner --verbose -f backup-${{ inputs.environment }}.sql.gz
 
     - name: Restore snapshot database
       shell: bash
-      run: bin/konduit.sh -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -i backup-${{ inputs.environment }}.sql.gz -c -t 7200 cpd-ec2-${{ inputs.environment }}-web -- psql
+      run: bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -i backup-${{ inputs.environment }}.sql.gz -c -t 7200 cpd-ec2-${{ inputs.environment }}-web -- psql
 
     - name: Summary
       if: success()
