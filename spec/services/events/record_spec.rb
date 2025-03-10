@@ -180,4 +180,24 @@ describe Events::Record do
       end
     end
   end
+
+  describe '.teacher_name_changed_in_trs' do
+    let(:old_name) { 'Wilfred Bramble' }
+    let(:new_name) { 'Willy Brambs' }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, old_name:, new_name:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          appropriate_body:,
+          heading: "Name changed from 'Wilfred Bramble' to 'Willy Brambs'",
+          event_type: :teacher_name_updated_by_trs,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
 end
