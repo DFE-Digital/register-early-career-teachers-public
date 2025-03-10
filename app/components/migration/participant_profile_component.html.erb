@@ -51,5 +51,9 @@
       row.with_key(text: "Cohort changed after payments frozen")
       row.with_value(text: participant_profile.cohort_changed_after_payments_frozen.to_s)
     end
+    list.with_row do |row|
+      row.with_key(text: "Created at")
+      row.with_value(text: participant_profile.created_at)
+    end
   end
 end %>
