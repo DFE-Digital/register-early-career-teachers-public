@@ -9,27 +9,27 @@ class Teachers::InductionStatus
 
   def status_tag_kwargs
     case induction_info
-    in { teacher_present: true, has_an_open_induction_period: true }
+    in { teacher_with_induction_periods_present: true, has_an_open_induction_period: true }
       in_progress
-    in { teacher_present: true, has_an_open_induction_period: false, has_an_induction_outcome: false }
+    in { teacher_with_induction_periods_present: true, has_an_open_induction_period: false, has_an_induction_outcome: false }
       paused
-    in { teacher_present: true, has_an_open_induction_period: false, induction_outcome: 'pass' }
+    in { teacher_with_induction_periods_present: true, has_an_open_induction_period: false, induction_outcome: 'pass' }
       passed
-    in { teacher_present: true, has_an_open_induction_period: false, induction_outcome: 'fail' }
+    in { teacher_with_induction_periods_present: true, has_an_open_induction_period: false, induction_outcome: 'fail' }
       failed
-    in { teacher_present: false, trs_induction_status: 'RequiredToComplete' }
+    in { teacher_with_induction_periods_present: false, trs_induction_status: 'RequiredToComplete' }
       required_to_complete
-    in { teacher_present: false, trs_induction_status: 'Exempt' }
+    in { teacher_with_induction_periods_present: false, trs_induction_status: 'Exempt' }
       exempt
-    in { teacher_present: false, trs_induction_status: 'InProgress' }
+    in { teacher_with_induction_periods_present: false, trs_induction_status: 'InProgress' }
       in_progress
-    in { teacher_present: false, trs_induction_status: 'Failed' }
+    in { teacher_with_induction_periods_present: false, trs_induction_status: 'Failed' }
       failed
-    in { teacher_present: false, trs_induction_status: 'Passed' }
+    in { teacher_with_induction_periods_present: false, trs_induction_status: 'Passed' }
       passed
-    in { teacher_present: false, trs_induction_status: 'FailedInWales' }
+    in { teacher_with_induction_periods_present: false, trs_induction_status: 'FailedInWales' }
       failed_in_wales
-    in { teacher_present: false, trs_induction_status: 'None' }
+    in { teacher_with_induction_periods_present: false, trs_induction_status: 'None' }
       none
     else
       unknown
@@ -54,7 +54,7 @@ private
     {
       has_an_open_induction_period: has_any_open_induction_periods?,
       has_an_induction_outcome: has_an_induction_outcome?,
-      teacher_present: teacher.present?,
+      teacher_with_induction_periods_present: teacher.present? && induction_periods.present?,
       induction_outcome:,
       trs_induction_status:,
     }
