@@ -1,25 +1,32 @@
 module AppropriateBodies
   class ECTs
-    attr_reader :appropriate_body
+    attr_reader :scope, :appropriate_body
 
     def initialize(appropriate_body)
+      @scope = Teacher.joins(:induction_periods)
+                      .merge(InductionPeriod.for_appropriate_body(appropriate_body))
+
       @appropriate_body = appropriate_body
     end
 
     def current
-      all.merge(InductionPeriod.ongoing)
+      @scope.merge(InductionPeriod.ongoing)
     end
 
     def former
-      all.merge(InductionPeriod.finished)
+      @scope.merge(InductionPeriod.finished.without_outcome)
     end
 
-  private
-
     def all
-      Teacher
-        .joins(:induction_periods)
-        .merge(InductionPeriod.for_appropriate_body(appropriate_body))
+      @scope
+    end
+
+    def completed_while_at_appropriate_body
+      @scope.merge(InductionPeriod.with_outcome)
+    end
+
+    def current_or_completed_while_at_appropriate_body
+      current.or(completed_while_at_appropriate_body)
     end
   end
 end
