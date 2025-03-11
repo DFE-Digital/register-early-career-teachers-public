@@ -50,3 +50,7 @@
     <% end %>
   <% end %>
 <% end %>
+
+<p class='govuk-!-text-align-right govuk-!-margin-bottom-0'>
+  <%= govuk_link_to('Add an induction period', new_admin_teacher_induction_period_path(teacher_id: teacher.id)) %>
+</p>
