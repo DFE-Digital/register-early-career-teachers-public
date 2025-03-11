@@ -24,9 +24,23 @@ on:
         - 'false'
         - 'true'
       backup-file:
-        description: Name of the backup file in Azure storage. e.g. cpdec2_prod_2024-08-09.sql.gz. The default value is today's scheduled backup.
+        description: Name of the backup file in Azure storage. e.g. cpdec2_pd_adhoc_2024-08-09.sql.gz. The default value is today's adhoc backup.
         type: string
         required: false
+      from-environment:
+        description: Environment of the Azure Storage account containing the backup-file
+        required: true
+        default: development,dv
+        type: choice
+        options:
+          - development,dv
+          - migration,mg
+          - sandbox,sb
+          - staging,st
+          - production,pd
+
+permissions:
+ id-token: write
 
 env:
   SERVICE_NAME: cpd-ec2
@@ -65,8 +79,18 @@ jobs:
         # Set Azure environment variables
         echo "CLUSTER=$(jq -r '.cluster' ${tf_vars_file})" >> $GITHUB_ENV
         echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
-        echo "RESOURCE_GROUP_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-rg" >> $GITHUB_ENV
-        echo "STORAGE_ACCOUNT_NAME=${AZURE_RESOURCE_PREFIX}${SERVICE_SHORT}dbbkp${CONFIG_SHORT}sa" >> $GITHUB_ENV
+
+        FROM_ENV="${{ github.event.inputs.from-environment }}"
+        FROM_ENV_NAME=$(echo "$FROM_ENV" | cut -d',' -f1)
+        FROM_ENV_CONFIG_SHORT=$(echo "$FROM_ENV" | cut -d',' -f2)
+        echo "FROM_ENV=${FROM_ENV}" >> $GITHUB_ENV
+        echo "FROM_ENV_CONFIG_SHORT=${FROM_ENV_CONFIG_SHORT}" >> $GITHUB_ENV
+        echo "RESOURCE_GROUP_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${FROM_ENV_CONFIG_SHORT}-rg" >> $GITHUB_ENV
+        if [ $FROM_ENV_NAME != "production" ]; then
+          echo "STORAGE_ACCOUNT_NAME=${AZURE_RESOURCE_PREFIX}${SERVICE_SHORT}${FROM_ENV_CONFIG_SHORT}tfsa" >> $GITHUB_ENV
+        else
+          echo "STORAGE_ACCOUNT_NAME=${AZURE_RESOURCE_PREFIX}${SERVICE_SHORT}dbbkp${FROM_ENV_CONFIG_SHORT}sa" >> $GITHUB_ENV
+        fi
         echo "APP_NAME=${SERVICE_NAME}-${{ inputs.environment }}-web" >> $GITHUB_ENV
         echo "DB_SERVER=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg" >> $GITHUB_ENV
         echo "KEYVAULT_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-inf-kv" >> $GITHUB_ENV
@@ -82,7 +106,7 @@ jobs:
         if [ "${{ inputs.backup-file }}" != "" ]; then
           BACKUP_FILE=${{ inputs.backup-file }}
         else
-          BACKUP_FILE=${SERVICE_SHORT}_${CONFIG_SHORT}_${TODAY}.sql.gz
+          BACKUP_FILE=${SERVICE_SHORT}_${{ env.FROM_ENV_CONFIG_SHORT }}_adhoc_${TODAY}.sql.gz
         fi
         echo "BACKUP_FILE=$BACKUP_FILE" >> $GITHUB_ENV
         echo "BACKUP_FILE_IN_STORAGE=${STORAGE_ACCOUNT_NAME} / database-backup / ${BACKUP_FILE}" >> $GITHUB_ENV
@@ -114,8 +138,8 @@ jobs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_USERNAME: CI Deployment
-        SLACK_TITLE: ${{ inputs.environment }} database restore succeeded
-        SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.BACKUP_FILE_IN_STORAGE }} succeeded!
+        SLACK_TITLE: ${{ inputs.environment }} database restore success
+        SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.FROM_ENV }} - ${{ env.BACKUP_FILE_IN_STORAGE }} succeeded!
         SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
         SLACK_COLOR: success
         SLACK_FOOTER: Sent from restore-app-main workflow
@@ -126,7 +150,7 @@ jobs:
       env:
         SLACK_USERNAME: CI Deployment
         SLACK_TITLE: ${{ inputs.environment }} database restore failure
-        SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.BACKUP_FILE_IN_STORAGE }} failed!
+        SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.FROM_ENV }} - ${{ env.BACKUP_FILE_IN_STORAGE }} failed!
         SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
         SLACK_COLOR: failure
         SLACK_FOOTER: Sent from restore-app-main workflow
