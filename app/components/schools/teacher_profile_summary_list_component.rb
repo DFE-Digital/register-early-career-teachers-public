@@ -17,6 +17,10 @@ module Schools
       ]
     end
 
+    def call
+      safe_join([tag.h2('ECT details', class: 'govuk-heading-m'), govuk_summary_list(rows:)])
+    end
+
   private
 
     def name_row
