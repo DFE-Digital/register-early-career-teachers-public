@@ -100,11 +100,11 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       end
     end
 
-    context "when pending_induction_submission isn't valid" do
+    describe 'rolling back transactions' do
       let(:pending_induction_submission_params) do
         {
           induction_programme: "fip",
-          started_on: Date.new(2000, 5, 2),
+          started_on:,
           trn: "1234567",
           trs_first_name: "John",
           trs_last_name: "Doe",
@@ -112,9 +112,20 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         }
       end
 
-      it "can perform jobs without erroring" do
-        subject.register(pending_induction_submission_params)
-        perform_enqueued_jobs
+      context "when pending_induction_submission isn't valid" do
+        let(:started_on) { Date.new(2000, 5, 2) }
+
+        it "rolls back the transaction and creates no teacher" do
+          expect { subject.register(pending_induction_submission_params) }.not_to change(Teacher, :count)
+        end
+      end
+
+      context "when pending_induction_submission is valid" do
+        let(:started_on) { Date.yesterday }
+
+        it "rolls back the transaction and creates no teacher" do
+          expect { subject.register(pending_induction_submission_params) }.to change(Teacher, :count)
+        end
       end
     end
 

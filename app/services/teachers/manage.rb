@@ -13,6 +13,27 @@ class Teachers::Manage
     @appropriate_body = appropriate_body
   end
 
+  def self.find_or_initialize_by(trn:, trs_first_name:, trs_last_name:, event_metadata:)
+    teacher = Teacher.find_or_initialize_by(trn:) do |t|
+      t.trs_first_name = trs_first_name
+      t.trs_last_name = trs_last_name
+    end
+
+    if teacher.new_record? && teacher.save
+      Events::Record.teacher_imported_from_trs!(
+        author: event_metadata[:author],
+        teacher:,
+        appropriate_body: event_metadata[:appropriate_body]
+      )
+    end
+
+    new(
+      author: event_metadata[:author],
+      teacher:,
+      appropriate_body: event_metadata[:appropriate_body]
+    )
+  end
+
   def update_name!(trs_first_name:, trs_last_name:)
     Teacher.transaction do
       @old_name = full_name
