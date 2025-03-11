@@ -27,9 +27,7 @@ module Teachers
     def where_appropriate_bodies_in(appropriate_bodies)
       return if appropriate_bodies == :ignore
 
-      @scope
-        .merge!(@scope.joins(:appropriate_bodies).where(induction_periods: { appropriate_body: appropriate_bodies }))
-        .merge!(::InductionPeriod.ongoing)
+      @scope = AppropriateBodies::ECTs.new(appropriate_bodies).current_or_completed_while_at_appropriate_body
     end
 
     def with_trns(trns)

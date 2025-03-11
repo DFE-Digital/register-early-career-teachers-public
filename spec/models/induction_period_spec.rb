@@ -61,6 +61,24 @@ describe InductionPeriod do
 
     it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy unknown pre_september_2021]).with_message("Choose an induction programme") }
 
+    describe "outcome validation" do
+      subject { FactoryBot.build(:induction_period) }
+
+      it { is_expected.to allow_value('pass').for(:outcome) }
+      it { is_expected.to allow_value('fail').for(:outcome) }
+      it { is_expected.to allow_value(nil).for(:outcome) }
+      it { is_expected.not_to allow_value('invalid').for(:outcome) }
+
+      context "when an invalid outcome is provided" do
+        before { subject.outcome = 'invalid' }
+
+        it "adds the correct error message" do
+          subject.valid?
+          expect(subject.errors[:outcome]).to include("Outcome must be either pass or fail")
+        end
+      end
+    end
+
     describe '#started_on_from_september_2021_onwards' do
       context 'when started_on before September 2021' do
         subject { FactoryBot.build(:induction_period, started_on:) }
