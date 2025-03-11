@@ -73,6 +73,20 @@ class Teachers::Manage
     end
   end
 
+  def update_trs_attributes!(trs_qts_status_description:, trs_qts_awarded_on:, trs_initial_teacher_training_provider_name:, trs_initial_teacher_training_end_date:, trs_data_last_refreshed_at:)
+    Teacher.transaction do
+      teacher.assign_attributes(
+        trs_qts_status_description:,
+        trs_qts_awarded_on:,
+        trs_initial_teacher_training_provider_name:,
+        trs_initial_teacher_training_end_date:,
+        trs_data_last_refreshed_at:
+      )
+      record_teacher_trs_attribute_update(modifications: teacher.changes)
+      teacher.save!
+    end
+  end
+
 private
 
   attr_reader :new_name, :old_name, :new_award_date, :old_award_date, :old_induction_status, :new_induction_status
@@ -128,5 +142,9 @@ private
 
   def record_induction_status_change_event
     Events::Record.teacher_induction_status_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_status)
+  end
+
+  def record_teacher_trs_attribute_update(modifications:)
+    Events::Record.teacher_attributes_updated_from_trs!(author:, teacher:, modifications:)
   end
 end
