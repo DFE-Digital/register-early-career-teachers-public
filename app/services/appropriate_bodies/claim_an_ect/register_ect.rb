@@ -53,11 +53,16 @@ module AppropriateBodies
       end
 
       def manage_teacher
-        @manage_teacher ||= ::Teachers::Manage.new(author:, teacher:, appropriate_body:)
+        @manage_teacher ||= ::Teachers::Manage.find_or_initialize_by(
+          trn: pending_induction_submission.trn,
+          trs_first_name: pending_induction_submission.trs_first_name,
+          trs_last_name: pending_induction_submission.trs_last_name,
+          event_metadata: { author:, appropriate_body: }
+        )
       end
 
       def teacher
-        @teacher ||= Teacher.find_or_initialize_by(trn: pending_induction_submission.trn)
+        @teacher ||= manage_teacher.teacher
       end
 
       def create_induction_period
@@ -72,7 +77,7 @@ module AppropriateBodies
       end
 
       def send_begin_induction_notification_to_trs
-        return true if @teacher.induction_periods.any?
+        return true if teacher.induction_periods.any?
 
         BeginECTInductionJob.perform_later(
           trn: pending_induction_submission.trn,
