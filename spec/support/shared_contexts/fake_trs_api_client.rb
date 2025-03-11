@@ -39,7 +39,7 @@ end
 
 shared_context 'fake trs api client that finds teacher that has passed their induction' do
   before do
-    allow(TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(induction_status: 'Pass'))
+    allow(TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(induction_status: 'Passed'))
   end
 end
 
@@ -53,7 +53,7 @@ shared_context 'fake trs api returns a teacher and then a teacher that has compl
   before do
     allow(TRS::APIClient).to receive(:new).and_return(
       TRS::FakeAPIClient.new,
-      TRS::FakeAPIClient.new(induction_status: 'Pass')
+      TRS::FakeAPIClient.new(induction_status: 'Passed')
     )
   end
 end
