@@ -111,10 +111,16 @@ describe Events::Record do
           appropriate_body:,
           heading: 'Rhys Ifans was claimed by Burns Slant Drilling Co.',
           event_type: :appropriate_body_claims_teacher,
-          happened_at: Time.zone.now,
+          happened_at: induction_period.started_on,
           **author_params
         )
       end
+    end
+
+    it 'fails when induction period is missing' do
+      expect {
+        Events::Record.record_appropriate_body_fails_teacher_event(author:, teacher:, appropriate_body:, induction_period: nil)
+      }.to raise_error(Events::NoInductionPeriod)
     end
   end
 
@@ -129,10 +135,16 @@ describe Events::Record do
           appropriate_body:,
           heading: 'Rhys Ifans passed induction',
           event_type: :appropriate_body_passes_teacher,
-          happened_at: Time.zone.now,
+          happened_at: induction_period.finished_on,
           **author_params
         )
       end
+    end
+
+    it 'fails when induction period is missing' do
+      expect {
+        Events::Record.record_appropriate_body_fails_teacher_event(author:, teacher:, appropriate_body:, induction_period: nil)
+      }.to raise_error(Events::NoInductionPeriod)
     end
   end
 
@@ -147,10 +159,16 @@ describe Events::Record do
           appropriate_body:,
           heading: 'Rhys Ifans failed induction',
           event_type: :appropriate_body_fails_teacher,
-          happened_at: Time.zone.now,
+          happened_at: induction_period.finished_on,
           **author_params
         )
       end
+    end
+
+    it 'fails when induction period is missing' do
+      expect {
+        Events::Record.record_appropriate_body_fails_teacher_event(author:, teacher:, appropriate_body:, induction_period: nil)
+      }.to raise_error(Events::NoInductionPeriod)
     end
   end
 
