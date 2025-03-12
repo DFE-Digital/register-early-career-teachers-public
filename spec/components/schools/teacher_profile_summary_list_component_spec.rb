@@ -44,4 +44,10 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     expect(page).to have_selector(".govuk-summary-list__row", text: "Working pattern")
     expect(page).to have_text('Full time')
   end
+
+  describe '#rows' do
+    it 'returns the correct number of rows' do
+      expect(described_class.new(mentee).rows.count).to eq(5)
+    end
+  end
 end
