@@ -18,10 +18,12 @@ School users are also known as:
 * school induction tutors (SITs)
 * school induction coordinators
 
-##How the service works for schools
+## How the service works for schools
 
 [Accessing the service](#accessing_the_service)
+
 [Giving details for an early career teacher](#giving_details_for_an_ect)
+
 [Assigning a mentor to an early career teacher](#assigning_a_mentor)
  
  
