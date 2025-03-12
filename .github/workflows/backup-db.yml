@@ -138,8 +138,19 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_USERNAME: CI Deployment
-          SLACK_TITLE: ${{ env.APP_NAME }} - ${{ env.DEPLOY_ENV }} database backup job succeeded
-          SLACK_MESSAGE: ${{ env.DEPLOY_ENV }} database dump stored in Azure Storage (${{ env.STORAGE_ACCOUNT_NAME }} / database-backup / ${{ env.BACKUP_FILE }}.sql) - Success
+          SLACK_TITLE: ${{ env.DEPLOY_ENV }} database backup success
+          SLACK_MESSAGE: ${{ env.APP_NAME }} - ${{ env.DEPLOY_ENV }} database dump stored in Azure Storage (${{ env.STORAGE_ACCOUNT_NAME }} / database-backup / ${{ env.BACKUP_FILE }}.sql) - Succeeded
           SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
           SLACK_COLOR: success
+          SLACK_FOOTER: Sent from backup-db workflow
+
+      - name: Notify Slack channel on job failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_USERNAME: CI Deployment
+          SLACK_TITLE: ${{ env.DEPLOY_ENV }} database backup failure
+          SLACK_MESSAGE: ${{ env.APP_NAME }} - ${{ env.DEPLOY_ENV }} database dump to be stored in Azure Storage (${{ env.STORAGE_ACCOUNT_NAME }} / database-backup / ${{ env.BACKUP_FILE }}.sql) - Failed!
+          SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+          SLACK_COLOR: failure
           SLACK_FOOTER: Sent from backup-db workflow
