@@ -23,9 +23,15 @@ on:
 
   workflow_call:
     secrets:
-      azure-credentials:
-        description: Azure credentials
-        required: false
+      azure-client-id:
+        description: Azure service principal or managed identity client ID when using OIDC
+        required: true
+      azure-subscription-id:
+        description: Azure service principal or managed identity subscription ID when using OIDC
+        required: true
+      azure-tenant-id:
+        description: Azure service principal or managed identity tenant ID when using OIDC
+        required: true
     inputs:
       environment:
         description: Environment to backup
@@ -49,6 +55,9 @@ env:
   SERVICE_SHORT: cpdec2
   TF_VARS_PATH: config/terraform/application/config
 
+permissions:
+  id-token: write
+
 jobs:
   backup:
     name: Backup database
@@ -65,7 +74,9 @@ jobs:
 
       - uses: azure/login@v2
         with:
-          creds: ${{ secrets.azure-credentials || secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.azure-client-id || secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.azure-subscription-id || secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.azure-tenant-id || secrets.AZURE_TENANT_ID }}
 
       - name: Set Azure environment variables
         run: |
@@ -75,6 +86,7 @@ jobs:
 
           # Set Azure environment variables
           echo "CLUSTER=$(jq -r '.cluster' ${tf_vars_file})" >> $GITHUB_ENV
+          echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
           echo "RESOURCE_GROUP_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-rg" >> $GITHUB_ENV
           echo "STORAGE_ACCOUNT_NAME=${AZURE_RESOURCE_PREFIX}${SERVICE_SHORT}dbbkp${CONFIG_SHORT}sa" >> $GITHUB_ENV
           echo "DB_SERVER=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg" >> $GITHUB_ENV
@@ -112,8 +124,11 @@ jobs:
           storage-account: ${{ env.STORAGE_ACCOUNT_NAME }}
           resource-group: ${{ env.RESOURCE_GROUP_NAME }}
           app-name: ${{ env.APP_NAME }}
+          namespace: ${{ env.NAMESPACE }}
           cluster: ${{ env.CLUSTER }}
-          azure-credentials: ${{ secrets.azure-credentials || secrets.AZURE_CREDENTIALS }}
+          azure-client-id: ${{ secrets.azure-client-id || secrets.AZURE_CLIENT_ID }}
+          azure-subscription-id: ${{ secrets.azure-subscription-id || secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-tenant-id: ${{ secrets.azure-tenant-id || secrets.AZURE_TENANT_ID }}
           backup-file: ${{ env.BACKUP_FILE }}.sql
           db-server-name: ${{ inputs.db-server }}
           slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
