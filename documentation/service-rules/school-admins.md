@@ -18,7 +18,19 @@ School users are also known as:
 * school induction tutors (SITs)
 * school induction coordinators
 
-## Getting access to the service
+##How the service works for schools
+
+[Accessing the service](#accessing_the_service)
+[Giving details for an early career teacher](#giving_details_for_an_ect)
+[Assigning a mentor to an early career teacher](#assigning_a_mentor)
+ 
+ 
+
+<a id="accessing_the_service"></a>
+
+## Accessing the service
+
+### Getting access to the service via DfE Sign in
 
 For a school admin to get access to the service, they will need to use [DfE Sign in](https://services.signin.education.gov.uk/).
 
@@ -33,11 +45,13 @@ You can read more about why we chose to do this in [our design history](https://
 
 To get access to the service, a school will need to request for approval. This is checked and actioned by whoever at their school has approval permissions. Once this is done, they will be able to sign into the service and view the records for their school.
 
-## Accessing the service
+### Number of users that can access the service
 
 We will not limit the number of users per school. This means multiple people can get access, unlike in ECF1. Schools will manage the users who can access the service for their school themselves via DfE Sign In.
 
 You can read more about [why we made this decision in our design history](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/allowing-multiple-school-accounts/).
+
+<a id="giving_details_for_an_ect"></a>
 
 ## Giving details for an ECT
 
@@ -241,6 +255,8 @@ The school start date provided might impact what lead provider information a sch
 If a school has registered an ECT using previously used programme details, if they decide to change the appropriate body, lead provider, delivery partner or programme type, we'd also just take them back to the question if they want to use previously used programme details again. This simplifies the build and also makes sure they don't pick any options that might not be feasible.
 
 Once a school confirms the details, it saves the details for that ECT. The ECT record is created, with a status of 'mentor required'. It creates an ECT record that can be viewed on the 'ECTs' page. However, registration is still not finished!
+
+<a id="assigning_a_mentor"></a>
 
 ## Assigning a mentor to an ECT
 
