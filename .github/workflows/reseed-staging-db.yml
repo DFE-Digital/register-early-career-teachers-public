@@ -19,13 +19,17 @@ jobs:
 
     - uses: Azure/login@v2
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
     - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
       with:
-        azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+        azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
     - name: Reseed Staging
       run: |
         make ci staging get-cluster-credentials
-        kubectl exec -n cpd-development deployment/cpd-ec2-staging-web -- /bin/sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 /usr/local/bin/bundle exec rails db:seed:replant" 
+        kubectl exec -n cpd-development deployment/cpd-ec2-staging-web -- /bin/sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 /usr/local/bin/bundle exec rails db:seed:replant"
