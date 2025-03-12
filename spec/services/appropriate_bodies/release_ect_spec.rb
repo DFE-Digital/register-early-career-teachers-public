@@ -58,6 +58,8 @@ describe AppropriateBodies::ReleaseECT do
     it "records the event" do
       subject.release!
 
+      induction_period.reload
+
       expect(Events::Record).to have_received(:new).with(
         hash_including(
           author:,

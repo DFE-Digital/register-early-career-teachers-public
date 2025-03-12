@@ -51,7 +51,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
 
             expect(last_event.appropriate_body).to eql(appropriate_body)
             expect(last_event.teacher).to eql(teacher)
-            expect(last_event.happened_at).to eql(Time.zone.now)
+            expect(last_event.happened_at.to_date).to eql(started_on)
           end
         end
 
