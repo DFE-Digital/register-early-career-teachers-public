@@ -1,25 +1,19 @@
 require "rails_helper"
 
 RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
-  let(:teacher) { FactoryBot.create(:teacher, trn: '9876543', trs_first_name: 'Kakarot', trs_last_name: 'SSJ') }
-  let(:teacher_2) { FactoryBot.create(:teacher, trn: '987654', trs_first_name: 'Naruto', trs_last_name: 'Ninetails') }
-  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
-  let(:mentor_2) { FactoryBot.create(:mentor_at_school_period, :active, teacher: teacher_2, started_on: 3.years.ago) }
-  let(:ect) do
-    FactoryBot.create(:ect_at_school_period, :active, teacher:, started_on: Date.new(2021, 9, 1),
+  let(:mentee_teacher) { FactoryBot.create(:teacher, trn: '9876543', trs_first_name: 'Kakarot', trs_last_name: 'SSJ') }
+  let(:mentor_teacher) { FactoryBot.create(:teacher, trn: '987654', trs_first_name: 'Naruto', trs_last_name: 'Ninetails') }
+  let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
+  let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor_teacher, started_on: 3.years.ago) }
+  let(:mentee) do
+    FactoryBot.create(:ect_at_school_period, :active, teacher: mentee_teacher, started_on: Date.new(2021, 9, 1),
                                                       email: 'foobarect@madeup.com', working_pattern: 'full_time')
   end
 
-  let!(:ongoing_mentorship) do
-    FactoryBot.create(:mentorship_period, :active, mentee: ect, mentor:, started_on: 3.years.ago, finished_on: 2.years.ago)
-  end
-
-  let!(:ongoing_mentorship_2) do
-    FactoryBot.create(:mentorship_period, :active, mentee: ect, mentor: mentor_2, started_on: 2.years.ago)
-  end
-
   before do
-    render_inline(described_class.new(ect))
+    FactoryBot.create(:mentorship_period, :active, mentee:, mentor: previous_mentor, started_on: 3.years.ago, finished_on: 2.years.ago)
+    FactoryBot.create(:mentorship_period, :active, mentee:, mentor: current_mentor, started_on: 2.years.ago)
+    render_inline(described_class.new(mentee))
   end
 
   it "renders the summary list container" do
