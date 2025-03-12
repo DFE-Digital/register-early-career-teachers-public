@@ -20,19 +20,21 @@ on:
 
   workflow_call:
     secrets:
-      azure-credentials:
-        description: Azure credentials
-        required: false
+      azure-client-id:
+        description: Azure service principal or managed identity client ID when using OIDC
+        required: true
+      azure-subscription-id:
+        description: Azure service principal or managed identity subscription ID when using OIDC
+        required: true
+      azure-tenant-id:
+        description: Azure service principal or managed identity tenant ID when using OIDC
+        required: true
     inputs:
       environment:
         description: Environment to backup
         required: true
         default: production
         type: string
-      azure-credentials:
-        description: Azure credentials
-        type: string
-        required: false
       backup-file:
         description: |
           Backup file name (without extension). Default is cpdec2_[env]_adhoc_YYYY-MM-DD. Set it explicitly when backing up a point-in-time (PTR) server. (Optional)
@@ -44,6 +46,9 @@ env:
   SERVICE_NAME: cpd-ec2
   SERVICE_SHORT: cpdec2
   TF_VARS_PATH: config/terraform/application/config
+
+permissions:
+  id-token: write
 
 jobs:
   backup:
@@ -60,7 +65,9 @@ jobs:
 
       - uses: azure/login@v2
         with:
-          creds: ${{ secrets.azure-credentials || secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.azure-client-id || secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.azure-subscription-id || secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.azure-tenant-id || secrets.AZURE_TENANT_ID }}
 
       - name: Set Azure environment variables
         run: |
@@ -70,6 +77,7 @@ jobs:
 
           # Set Azure environment variables
           echo "CLUSTER=$(jq -r '.cluster' ${tf_vars_file})" >> $GITHUB_ENV
+          echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
           echo "RESOURCE_GROUP_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-rg" >> $GITHUB_ENV
           echo "STORAGE_ACCOUNT_NAME=${AZURE_RESOURCE_PREFIX}${SERVICE_SHORT}dbbkp${CONFIG_SHORT}sa" >> $GITHUB_ENV
           echo "DB_SERVER=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg" >> $GITHUB_ENV
@@ -105,8 +113,11 @@ jobs:
         with:
           storage-account: ${{ env.STORAGE_ACCOUNT_NAME }}
           app-name: ${{ env.SERVICE_NAME }}-${{ env.DEPLOY_ENV }}-web
+          namespace: ${{ env.NAMESPACE }}
           resource-group: ${{ env.RESOURCE_GROUP_NAME }}
           cluster: ${{ env.CLUSTER }}
-          azure-credentials: ${{ secrets.azure-credentials || secrets.AZURE_CREDENTIALS }}
+          azure-client-id: ${{ secrets.azure-client-id || secrets.AZURE_CLIENT_ID }}
+          azure-subscription-id: ${{ secrets.azure-subscription-id || secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-tenant-id: ${{ secrets.azure-tenant-id || secrets.AZURE_TENANT_ID }}
           backup-file: ${{ env.BACKUP_FILE }}.sql.gz
           slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}

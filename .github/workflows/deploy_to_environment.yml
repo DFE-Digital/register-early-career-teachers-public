@@ -13,11 +13,9 @@ on:
         required: true
         default: migration
         type: environment
-        options:
-          - migration
-          - production
-          - sandbox
-          - staging
+      pull-request-number:
+        description: Pull request number for a review app
+        required: false
 
 permissions:
   id-token: write
@@ -60,6 +58,9 @@ jobs:
         with:
           environment: ${{ inputs.environment }}
           docker-image-tag: ${{ needs.docker.outputs.docker-image-tag }}
-          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           statuscake-api-token: ${{ secrets.STATUSCAKE_API_TOKEN }}
           commit-sha: ${{ github.sha }}
+          pull-request-number: ${{ inputs.pull-request-number }}
