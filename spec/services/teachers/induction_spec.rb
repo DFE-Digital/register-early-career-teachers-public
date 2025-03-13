@@ -3,32 +3,32 @@ RSpec.describe Teachers::Induction do
 
   let(:teacher) { FactoryBot.create(:teacher) }
 
-  let(:current_period) do
+  let(:induction_period_unfinished) do
     FactoryBot.create(:induction_period, :active, teacher:, started_on: 6.months.ago)
   end
 
-  let(:recent_finish) do
+  let(:induction_period_finished_one_year_ago) do
     FactoryBot.create(:induction_period, teacher:, started_on: 2.years.ago, finished_on: 1.year.ago)
   end
 
-  let(:older_finish) do
+  let(:induction_period_finished_two_years_ago) do
     FactoryBot.create(:induction_period, teacher:, started_on: 3.years.ago, finished_on: 2.years.ago)
   end
 
   describe "#current_induction_period" do
     context 'with ongoing period' do
       before do
-        current_period
-        recent_finish
+        induction_period_unfinished
+        induction_period_finished_one_year_ago
       end
 
       it "returns the current active induction period" do
-        expect(service.current_induction_period).to eq(current_period)
+        expect(service.current_induction_period).to eq(induction_period_unfinished)
       end
     end
 
     context 'without ongoing period' do
-      before { recent_finish }
+      before { induction_period_finished_one_year_ago }
 
       it { expect(service.current_induction_period).to be_nil }
     end
@@ -36,21 +36,24 @@ RSpec.describe Teachers::Induction do
 
   describe "#past_induction_periods" do
     before do
-      current_period
-      recent_finish
-      older_finish
+      induction_period_unfinished
+      induction_period_finished_one_year_ago
+      induction_period_finished_two_years_ago
     end
 
     it "returns completed induction periods ordered by finish date descending (most recent completed first)" do
-      expect(service.past_induction_periods).to eq([recent_finish, older_finish])
+      expect(service.past_induction_periods).to eq([
+        induction_period_finished_one_year_ago,
+        induction_period_finished_two_years_ago
+      ])
     end
   end
 
   describe "#induction_start_date" do
     context "with induction periods" do
       before do
-        recent_finish
-        older_finish
+        induction_period_finished_one_year_ago
+        induction_period_finished_two_years_ago
       end
 
       it "returns the start date of the first induction period" do
@@ -65,7 +68,7 @@ RSpec.describe Teachers::Induction do
 
   describe "#has_induction_periods?" do
     context "when teacher has induction periods" do
-      before { recent_finish }
+      before { induction_period_finished_one_year_ago }
 
       it { is_expected.to have_induction_periods }
     end
