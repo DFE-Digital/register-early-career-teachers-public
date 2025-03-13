@@ -1,4 +1,7 @@
 class ApplicationWizardStep < DfE::Wizard::Step
+  include ActiveModel::Attributes
+  include ActiveRecord::AttributeAssignment
+
   # Populate a step attributes if no values are provided at initialization time.
   # Usually to be populated from the wizard store.
   def initialize(args = {})

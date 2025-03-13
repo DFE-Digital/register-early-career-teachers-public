@@ -1,9 +1,14 @@
 RSpec.shared_examples "a programme type view" do |current_step:, back_path:, back_step_name:, continue_path:, continue_step_name:|
   let(:ect) { wizard.ect }
-  let(:school) { double('School', type_name: 'Other independent school', independent?: true) }
+  let(:school) { FactoryBot.create(:school, :independent) }
   let(:programme_type) { nil }
-  let(:store) { FactoryBot.build(:session_repository, programme_type:, trs_first_name: 'John', trs_last_name: 'Smith') }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, store:, school:) }
+  let(:store) do
+    FactoryBot.build(:session_repository,
+                     programme_type:,
+                     trs_first_name: 'John',
+                     trs_last_name: 'Smith')
+  end
+  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, school:, store:) }
 
   before do
     assign(:wizard, wizard)

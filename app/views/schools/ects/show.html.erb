@@ -15,26 +15,30 @@
     if @ect.provider_led?
       card.with_summary_list(
         rows: [
-          { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name } },
-          { key: { text: 'Programme type' },   value: { text: ect_programme_type(@ect) } },
-          { key: { text: 'Lead provider' },    value: { text: @ect.lead_provider&.name } },
+          { key: { text: 'Appropriate body' },
+            value: { text: appropriate_body_name(appropriate_body_type: @ect.appropriate_body_type,
+                                                 appropriate_body: @ect.appropriate_body) } },
+          { key: { text: 'Programme type' },   value: { text: programme_type_name(@ect.programme_type) } },
+          { key: { text: 'Lead provider' },    value: { text: @ect.lead_provider_name } },
         ]
       )
     else
-      # TODO: Improve display of AB name when ISTIP
       card.with_summary_list(
         rows: [
-          { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body&.name || 'Independent Schools Teacher Induction Panel (ISTIP)' } },
-          { key: { text: 'Programme type' },   value: { text: ect_programme_type(@ect) } },
+          { key: { text: 'Appropriate body' },
+            value: { text:appropriate_body_name(appropriate_body_type: @ect.appropriate_body_type,
+                                                appropriate_body: @ect.appropriate_body) } },
+          { key: { text: 'Programme type' },   value: { text: programme_type_name(@ect.programme_type)  } },
         ]
       )
     end
   end
 %>
+
 <%=
   if @ect.provider_led?
     govuk_summary_card(title: 'Reported to us by your lead provider') do |card|
-      if (period = @ect.training_periods.earliest_first.last)    
+      if (period = @ect.training_periods.earliest_first.last)
         card.with_summary_list(
           rows: [
             { key: { text: 'Lead provider' },    value: { text: period.lead_provider.name } },
@@ -47,10 +51,11 @@
             row.with_value(text: 'Your lead provider has not reported any information to us yet.')
           end
         end
-      end      
+      end
     end
   end
 %>
+
 <%=
   govuk_summary_card(title: 'Reported to us by your appropriate body') do |card|
     if @ect.teacher.induction_periods.any?

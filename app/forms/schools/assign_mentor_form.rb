@@ -34,7 +34,11 @@ module Schools
     end
 
     def persisted?
-      AssignMentor.new(ect:, mentor:).assign! || errors.add(:base, "Mentorship failed to register")
+      AssignMentor.new(ect:, mentor:).assign!
+      true
+    rescue StandardError => e
+      errors.add(:base, e.to_s)
+      false
     end
   end
 end

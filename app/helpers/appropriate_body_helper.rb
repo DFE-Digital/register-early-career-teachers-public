@@ -1,6 +1,12 @@
 module AppropriateBodyHelper
   FormChoice = Data.define(:identifier, :name)
 
+  def appropriate_body_name(appropriate_body_type:, appropriate_body: nil)
+    return appropriate_body&.name unless appropriate_body_type == 'teaching_induction_panel'
+
+    AppropriateBody::NAME_FOR_TEACHING_INDUCTION_PANEL_TYPE
+  end
+
   def induction_programme_choices
     ::INDUCTION_PROGRAMMES.map { |key, value| FormChoice.new(key.to_s, value) }
   end

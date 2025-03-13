@@ -17,6 +17,8 @@ module Schools
         :programme_type
       end
 
+    private
+
       def persist
         ect.update!(lead_provider_id:)
       end

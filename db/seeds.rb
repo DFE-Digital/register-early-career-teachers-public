@@ -85,7 +85,7 @@ emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson
 kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', mentor_completion_reason: 'completed_declaration_received')
 alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589')
 hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894')
-jamie_parsons = Teacher.create!(trs_first_name: 'Jamie', trs_last_name: 'Parsons', trn: '1237894')
+colin_firth = Teacher.create!(trs_first_name: 'Colin', trs_last_name: 'Firth', trn: '1237894')
 harriet_walter = Teacher.create!(trs_first_name: 'Harriet', trs_last_name: 'Walter', trn: '2017654')
 hugh_laurie = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Laurie', trn: '4786654')
 stephen_fry = Teacher.create!(trs_first_name: 'Stephen', trs_last_name: 'Fry', trn: '4786655')
@@ -107,6 +107,7 @@ school_data = [
   { urn: 2_921_596, name: "St Clare's School" },
   { urn: 2_976_163, name: "Brookfield School" },
   { urn: 4_594_193, name: "Crunchem Hall Primary School" },
+  { urn: 6_384_201, name: "Greyfriars School" }
 ]
 
 schools = school_data.map do |school_args|
@@ -253,10 +254,11 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   school: ackley_bridge,
   email: 'kate.winslet@titanic.com',
   started_on: 1.year.ago,
-  lead_provider: grove_institute,
+  lead_provider: nil,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'school_led',
-  working_pattern: 'full_time'
+  working_pattern: 'full_time',
+  appropriate_body_type: 'teaching_school_hub',
+  programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -301,9 +303,15 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   started_on: 2.years.ago,
   lead_provider: wildflower_trust,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'provider_led',
-  working_pattern: 'part_time'
+  working_pattern: 'part_time',
+  appropriate_body_type: 'teaching_school_hub',
+  programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
+
+ackley_bridge.update!(chosen_lead_provider: wildflower_trust,
+                      chosen_appropriate_body: golden_leaf_teaching_school_hub,
+                      chosen_appropriate_body_type: 'teaching_school_hub',
+                      chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: alan_rickman_ect_at_ackley_bridge,
@@ -341,10 +349,11 @@ hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   school: abbey_grove_school,
   email: 'hugh.grant@wonka.com',
   started_on: 2.years.ago,
-  lead_provider: grove_institute,
+  lead_provider: nil,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'school_led',
-  working_pattern: 'part_time'
+  working_pattern: 'part_time',
+  appropriate_body_type: 'teaching_school_hub',
+  programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -373,28 +382,34 @@ InductionExtension.create!(
   number_of_terms: 1
 ).tap { |ext| describe_extension(ext) }
 
-print_seed_info("Jamie Parsons (ECT)", indent: 2, colour: ECT_COLOUR)
+print_seed_info("Colin Firth (ECT)", indent: 2, colour: ECT_COLOUR)
 
-jamie_parsons_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
-  teacher: jamie_parsons,
+colin_firth_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
+  teacher: colin_firth,
   school: abbey_grove_school,
-  email: 'jamie.parsons@aol.com',
+  email: 'colin.firth@aol.com',
   started_on: 2.years.ago,
-  lead_provider: wildflower_trust,
+  lead_provider: nil,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'school_led',
-  working_pattern: 'full_time'
+  working_pattern: 'full_time',
+  appropriate_body_type: 'teaching_school_hub',
+  programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
+abbey_grove_school.update!(chosen_lead_provider: nil,
+                           chosen_appropriate_body: golden_leaf_teaching_school_hub,
+                           chosen_appropriate_body_type: 'teaching_school_hub',
+                           chosen_programme_type: 'school_led')
+
 TrainingPeriod.create!(
-  ect_at_school_period: jamie_parsons_ect_at_abbey_grove,
+  ect_at_school_period: colin_firth_ect_at_abbey_grove,
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
   provider_partnership: grove_artisan_partnership_2021
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
-  teacher: jamie_parsons,
+  teacher: colin_firth,
   appropriate_body: golden_leaf_teaching_school_hub,
   started_on: 2.years.ago + 3.days,
   finished_on: 1.week.ago,
@@ -403,12 +418,12 @@ InductionPeriod.create!(
 ).tap { |ip| describe_induction_period(ip) }
 
 InductionExtension.create!(
-  teacher: jamie_parsons,
+  teacher: colin_firth,
   number_of_terms: 1.5
 ).tap { |ext| describe_extension(ext) }
 
 InductionExtension.create!(
-  teacher: jamie_parsons,
+  teacher: colin_firth,
   number_of_terms: 1
 ).tap { |ext| describe_extension(ext) }
 
@@ -464,10 +479,11 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
   school: mallory_towers,
   email: 'imogen.stubbs@eriktheviking.com',
   started_on: 2.years.ago,
-  lead_provider: wildflower_trust,
+  lead_provider: nil,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'school_led',
-  working_pattern: 'full_time'
+  working_pattern: 'full_time',
+  appropriate_body_type: 'teaching_school_hub',
+  programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -498,9 +514,15 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   started_on: 21.months.ago,
   lead_provider: wildflower_trust,
   appropriate_body: golden_leaf_teaching_school_hub,
-  programme_type: 'provider_led',
-  working_pattern: 'part_time'
+  working_pattern: 'part_time',
+  appropriate_body_type: 'teaching_school_hub',
+  programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
+
+mallory_towers.update!(chosen_lead_provider: wildflower_trust,
+                       chosen_appropriate_body: golden_leaf_teaching_school_hub,
+                       chosen_appropriate_body_type: 'teaching_school_hub',
+                       chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: gemma_jones_at_malory_towers,
@@ -536,6 +558,7 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   email: 'anthony.hopkins@favabeans.com',
   lead_provider: national_meadows_institute,
   appropriate_body: umber_teaching_school_hub,
+  appropriate_body_type: 'teaching_school_hub',
   programme_type: 'provider_led',
   started_on: 2.years.ago,
   working_pattern: 'part_time'
@@ -557,8 +580,14 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   lead_provider: national_meadows_institute,
   appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led',
-  working_pattern: 'part_time'
+  working_pattern: 'part_time',
+  appropriate_body_type: 'teaching_school_hub'
 ).tap { |sp| describe_ect_at_school_period(sp) }
+
+brookfield_school.update!(chosen_lead_provider: national_meadows_institute,
+                          chosen_appropriate_body: south_yorkshire_studio_hub,
+                          chosen_appropriate_body_type: 'teaching_school_hub',
+                          chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: stephen_fry_ect_at_brookfield_school,
@@ -574,6 +603,7 @@ ECTAtSchoolPeriod.create!(
   email: 'harriet-walter@history.com',
   started_on: 2.years.ago,
   lead_provider: national_meadows_institute,
+  appropriate_body_type: 'teaching_school_hub',
   appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }

@@ -1,6 +1,5 @@
 RSpec.shared_examples "a start date view" do |current_step:, back_path:, back_step_name:, continue_path:, continue_step_name:|
   let(:ect) { wizard.ect }
-  let(:title) { "What is the date #{ect.full_name} started or will start teaching as an ECT at your school?" }
   let(:start_date) { nil }
   let(:store) { FactoryBot.build(:session_repository, start_date:, trs_first_name: 'John', trs_last_name: 'Smith') }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, store:) }

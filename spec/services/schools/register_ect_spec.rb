@@ -1,28 +1,30 @@
 RSpec.describe Schools::RegisterECT do
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_type) { 'teaching_school_hub' }
+  let(:corrected_name) { "Randy Marsh" }
+  let(:email) { "randy@tegridyfarms.com" }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:programme_type) { 'provider_led' }
+  let(:school) { FactoryBot.create(:school) }
+  let(:started_on) { Date.yesterday }
+  let(:trn) { "3002586" }
   let(:trs_first_name) { "Dusty" }
   let(:trs_last_name) { "Rhodes" }
-  let(:corrected_name) { "Randy Marsh" }
-  let(:trn) { "3002586" }
-  let(:school) { FactoryBot.create(:school) }
-  let(:email) { "randy@tegridyfarms.com" }
-  let(:started_on) { Date.yesterday }
   let(:working_pattern) { "full_time" }
-  let(:programme_type) { "pokemon_led" }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
   subject(:service) do
-    described_class.new(trs_first_name:,
-                        trs_last_name:,
-                        trn:,
-                        started_on:,
+    described_class.new(appropriate_body:,
+                        appropriate_body_type:,
                         corrected_name:,
-                        school:,
-                        working_pattern:,
                         email:,
-                        appropriate_body:,
                         lead_provider:,
-                        programme_type:)
+                        programme_type:,
+                        school:,
+                        started_on:,
+                        trn:,
+                        trs_first_name:,
+                        trs_last_name:,
+                        working_pattern:)
   end
 
   describe '#register!' do
@@ -49,8 +51,9 @@ RSpec.describe Schools::RegisterECT do
     end
 
     context "when a Teacher record with the same trn exists and has ect records" do
-      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
-      let!(:mentor) { FactoryBot.create(:ect_at_school_period, teacher:) }
+      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+
+      before { FactoryBot.create(:ect_at_school_period, teacher:) }
 
       it "raise an exception" do
         expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
@@ -66,6 +69,17 @@ RSpec.describe Schools::RegisterECT do
       expect(ect_at_school_period.appropriate_body_id).to eq(appropriate_body.id)
       expect(ect_at_school_period.lead_provider_id).to eq(lead_provider.id)
       expect(ect_at_school_period.programme_type).to eq(programme_type)
+    end
+
+    it 'sets ab and provider choices to the school' do
+      expect { service.register! }
+        .to change(school, :chosen_appropriate_body_type)
+              .to(appropriate_body_type)
+              .and change(school, :chosen_appropriate_body_id)
+                     .to(appropriate_body.id)
+                     .and change(school, :chosen_programme_type)
+                            .to(programme_type)
+                            .and change(school, :chosen_lead_provider_id).to(lead_provider.id)
     end
   end
 end
