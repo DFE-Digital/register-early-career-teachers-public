@@ -1,6 +1,8 @@
-describe PendingInductionSubmission do
+RSpec.describe PendingInductionSubmission do
   it { is_expected.to be_a_kind_of(Interval) }
   it { is_expected.to be_a_kind_of(SharedInductionPeriodValidation) }
+
+  it_behaves_like 'an induction period'
 
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
@@ -51,22 +53,6 @@ describe PendingInductionSubmission do
         ["111/1111", "AAAA/BBB", "1234/12345"].each do |id|
           it { is_expected.not_to allow_value(id).for(:establishment_id).on(:find_ect).with_message("Enter an establishment ID in the format 1234/567") }
         end
-      end
-
-      describe '#started_on_from_september_2021_onwards' do
-        context 'when started_on before September 2021' do
-          subject { FactoryBot.build(:pending_induction_submission, started_on:) }
-          let(:started_on) { Date.new(2021, 8, 31) }
-          before { subject.valid?(:register_ect) }
-
-          it 'has a suitable error message' do
-            expect(subject.errors.messages[:started_on]).to include("Enter a start date after 1 September 2021")
-          end
-        end
-
-        it { is_expected.not_to allow_values(Date.new(2021, 8, 31)).on(:register_ect).for(:started_on) }
-        it { is_expected.to allow_values(Date.new(2021, 9, 1), Date.new(2021, 9, 2)).on(:register_ect).for(:started_on) }
-        it { is_expected.to allow_values(Date.new(2021, 8, 31)).for(:started_on) }
       end
     end
 
