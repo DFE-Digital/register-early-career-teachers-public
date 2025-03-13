@@ -1,6 +1,19 @@
 class ECTAtSchoolPeriod < ApplicationRecord
   include Interval
 
+  # Enums
+  enum :appropriate_body_type,
+       { teaching_induction_panel: "teaching_induction_panel",
+         teaching_school_hub: "teaching_school_hub" },
+       validate: { message: "Must be teaching induction panel or teaching school hub" },
+       suffix: :ab_type
+
+  enum :programme_type,
+       { provider_led: "provider_led",
+         school_led: "school_led" },
+       validate: { message: "Must be provider-led or school-led" },
+       suffix: :programme_type
+
   # Associations
   belongs_to :school, inverse_of: :ect_at_school_periods
   belongs_to :teacher, inverse_of: :ect_at_school_periods
@@ -14,10 +27,46 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :events
 
   # Validations
-  validates :email, notify_email: true, allow_nil: true
-  validates :started_on, presence: true
-  validates :school_id, presence: true
-  validates :teacher_id, presence: true
+  validates :appropriate_body_id,
+            presence: {
+              message: "Must contain the ID of an appropriate body",
+              if: -> { teaching_school_hub_ab_type? }
+            },
+            absence: {
+              message: "Must be nil",
+              unless: -> { teaching_school_hub_ab_type? }
+            }
+
+  validates :appropriate_body_type,
+            presence: {
+              message: "Must be teaching school hub",
+              if: -> { school&.state_funded? }
+            }
+
+  validates :email,
+            notify_email: true,
+            allow_nil: true
+
+  validates :lead_provider_id,
+            absence: {
+              message: "Must be nil",
+              if: -> { school_led_programme_type? }
+            }
+
+  validates :programme_type,
+            presence: {
+              message: "Must be provider-led",
+              if: -> { appropriate_body_id }
+            }
+
+  validates :school_id,
+            presence: true
+
+  validates :started_on,
+            presence: true
+
+  validates :teacher_id,
+            presence: true
 
   validate :teacher_distinct_period
 
@@ -25,6 +74,12 @@ class ECTAtSchoolPeriod < ApplicationRecord
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
 
   # Instance methods
+  # appropriate_body_name
+  delegate :name, to: :appropriate_body, prefix: true, allow_nil: true
+
+  # lead_provider_name
+  delegate :name, to: :lead_provider, prefix: true, allow_nil: true
+
   def current_mentorship = mentorship_periods.ongoing.last
 
   def current_mentor = current_mentorship&.mentor

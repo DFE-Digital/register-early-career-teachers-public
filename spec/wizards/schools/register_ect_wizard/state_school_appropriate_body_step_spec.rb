@@ -1,6 +1,7 @@
 RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type: :model do
+  let(:school) { FactoryBot.create(:school, :state_funded) }
   let(:store) { FactoryBot.build(:session_repository, appropriate_body_id: '123') }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body, store:) }
+  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body, store:, school:) }
 
   describe '#initialize' do
     let(:appropriate_body_id) { 'provided_ab_name' }
@@ -45,10 +46,6 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
   describe 'steps' do
     subject { wizard.current_step }
 
-    let(:wizard) do
-      FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body)
-    end
-
     describe '#next_step' do
       it 'returns the next step' do
         expect(subject.next_step).to eq(:programme_type)
@@ -56,25 +53,21 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
     end
 
     describe '#previous_step' do
-      it 'returns the previous step' do
-        expect(subject.previous_step).to eq(:working_pattern)
+      subject { wizard.current_step }
+
+      context 'when the school has no programme choices' do
+        it 'returns the previous step' do
+          expect(subject.previous_step).to eq(:working_pattern)
+        end
       end
-    end
-  end
 
-  describe '#next_step' do
-    subject { wizard.current_step }
+      context 'when the school has programme choices' do
+        let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_chosen, :provider_led_chosen) }
 
-    it 'returns the next step' do
-      expect(subject.next_step).to eq(:programme_type)
-    end
-  end
-
-  describe '#previous_step' do
-    subject { wizard.current_step }
-
-    it 'returns the previous step' do
-      expect(subject.previous_step).to eq(:working_pattern)
+        it 'returns the previous step' do
+          expect(subject.previous_step).to eq(:use_previous_ect_choices)
+        end
+      end
     end
   end
 
@@ -109,7 +102,11 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
       end
 
       it 'updates the wizard ect appropriate_body_id' do
-        expect { subject.save! }.to change(subject.ect, :appropriate_body_id).from(nil).to('1')
+        expect { subject.save! }
+          .to change(subject.ect, :appropriate_body_id)
+                .from(nil).to('1')
+                .and change(subject.ect, :appropriate_body_type)
+                       .from(nil).to('teaching_school_hub')
       end
     end
   end

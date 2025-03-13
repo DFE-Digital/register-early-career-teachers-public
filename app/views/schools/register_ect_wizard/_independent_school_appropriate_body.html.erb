@@ -22,7 +22,7 @@
       label: { text: "A different appropriate body (teaching school hub)" } do %>
 
       <%= f.govuk_collection_select(:appropriate_body_id,
-                                    @wizard.appropriate_bodies,
+                                    @ect.possible_appropriate_bodies,
                                     :id,
                                     :name,
                                     label: { text: "Enter appropriate body name" },

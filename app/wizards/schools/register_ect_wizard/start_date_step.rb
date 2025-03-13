@@ -17,18 +17,18 @@ module Schools
         :email_address
       end
 
+    private
+
       def persist
         ect.update!(start_date: start_date_formatted)
       end
 
-      def start_date_formatted
-        Schools::Validation::ECTStartDate.new(date_as_hash: start_date).formatted_date
-      end
-
-    private
-
       def pre_populate_attributes
         self.start_date = Schools::Validation::ECTStartDate.new(date_as_hash: ect.start_date).date_as_hash unless start_date
+      end
+
+      def start_date_formatted
+        Schools::Validation::ECTStartDate.new(date_as_hash: start_date).formatted_date
       end
     end
   end

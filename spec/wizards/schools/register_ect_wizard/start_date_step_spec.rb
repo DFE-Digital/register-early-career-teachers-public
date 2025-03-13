@@ -1,16 +1,13 @@
 RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
+  let(:prepopulated_start_date) { { "1" => "2025", "2" => "01" } }
+  let(:provided_start_date) { { "1" => "2024", "2" => "12" } }
+  let(:school) { FactoryBot.build(:school) }
+  let(:step_params) { {} }
+  let(:store) { FactoryBot.build(:session_repository, start_date: prepopulated_start_date) }
+  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, school:, store:, step_params:) }
+  subject { wizard.current_step }
+
   describe '#initialize' do
-    let(:store) { FactoryBot.build(:session_repository, start_date: prepopulated_start_date) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:) }
-
-    let(:provided_start_date) do
-      { "1" => "2024", "2" => "12" }
-    end
-
-    let(:prepopulated_start_date) do
-      { "1" => "2025", "2" => "01" }
-    end
-
     subject { described_class.new(wizard:, **params) }
 
     context 'when the start_date is provided' do
@@ -52,22 +49,12 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
   end
 
   describe '#next_step' do
-    let(:school) { FactoryBot.build(:school) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, school:) }
-
-    subject { wizard.current_step }
-
     it 'returns the next step' do
       expect(subject.next_step).to eq(:working_pattern)
     end
   end
 
   describe '#previous_step' do
-    let(:school) { FactoryBot.build(:school) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, school:) }
-
-    subject { wizard.current_step }
-
     it 'returns the previous step' do
       expect(subject.previous_step).to eq(:email_address)
     end
@@ -79,9 +66,6 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         "start_date" => { "start_date(1i)" => "2024", "start_date(2i)" => "07" }
       )
     end
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, step_params:) }
-
-    subject { wizard.current_step }
 
     context 'when the step is not valid' do
       before do
@@ -94,13 +78,9 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
 
     context 'when the step is valid' do
-      before do
-        allow(subject).to receive(:valid?).and_return(true)
-      end
-
       it 'updates the wizard ect start date' do
         expect { subject.save! }
-          .to change(subject.ect, :start_date).from(nil).to('July 2024')
+          .to change(subject.ect, :start_date).to('July 2024')
       end
     end
   end

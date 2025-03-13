@@ -15,21 +15,19 @@ We will let the lead provider know your school wants to work with them so they c
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= 
+  <%=
     f.govuk_collection_radio_buttons(:lead_provider_id,
-                                @wizard.lead_providers,
-                                :id,
-                                :name,
-                                legend: { 
-                                  text: 'Select lead provider', 
-                                  hidden: true 
-                                }
-    ) 
+                                     @ect.possible_lead_providers,
+                                     :id,
+                                     :name,
+                                     legend: {
+                                       text: 'Select lead provider',
+                                       hidden: true
+                                     }
+    )
   %>
 
   <%= render 'schools/register_ect_wizard/lead_provider_details' %>
 
   <%= f.govuk_submit "Continue" %>
 <% end %>
-
-
