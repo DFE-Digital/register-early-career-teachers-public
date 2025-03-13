@@ -23,7 +23,7 @@ jobs:
     needs: generate-day_of_week
     with:
       environment: production
-      backup-file: cpdec2_production_adhoc_${{ needs.generate-day_of_week.outputs.today_day }}
+      backup-file: cpdec2_production_nightly_copy_${{ needs.generate-day_of_week.outputs.today_day }}
     secrets:
       azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
       azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -36,7 +36,7 @@ jobs:
     uses: ./.github/workflows/restore-snapshot-db-from-azure-storage.yml
     with:
       environment: production
-      backup-file: cpdec2_production_adhoc_${{ needs.generate-day_of_week.outputs.today_day }}
+      backup-file: cpdec2_production_nightly_copy_${{ needs.generate-day_of_week.outputs.today_day }}
     secrets:
       azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
       azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
