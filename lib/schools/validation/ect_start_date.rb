@@ -2,7 +2,7 @@ module Schools
   module Validation
     class ECTStartDate < HashDate
       DATE_MISSING_MESSAGE = "Enter the date the ECT started or will start teaching at your school".freeze
-      INVALID_FORMAT_MESSAGE = "Enter the start date using the correct format, for example 03 1998".freeze
+      INVALID_FORMAT_MESSAGE = "Enter the start date using the correct format, for example 09 1999".freeze
       OUT_OF_RANGE_MESSAGE = "The start date must be from within either the current academic year or one of the last 2 academic years".freeze
 
       # date_as_hash: { 1 => year, 2 => month, 3 => day }
