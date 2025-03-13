@@ -32,7 +32,7 @@ School users are also known as:
 
 ## Accessing the service
 
-### Getting access to the service via DfE Sign in
+### Getting access to the service via DfE Sign-in
 
 For a school admin to get access to the service, they will need to use [DfE Sign in](https://services.signin.education.gov.uk/).
 
