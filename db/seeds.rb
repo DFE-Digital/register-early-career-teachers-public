@@ -1,4 +1,4 @@
-# some sample users/personas to test personas/otp
+# some sample users/personas
 
 ECT_COLOUR = :magenta
 MENTOR_COLOUR = :yellow
