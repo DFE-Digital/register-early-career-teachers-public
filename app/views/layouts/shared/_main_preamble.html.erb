@@ -3,3 +3,7 @@
 <% if flash[:notice] %>
   <%= govuk_notification_banner(title_text: "Important", text: flash[:notice]) %>
 <% end %>
+
+<% if flash[:alert] %>
+  <%= govuk_notification_banner(title_text: "Success", text: flash[:alert], success: true) %>
+<% end %>

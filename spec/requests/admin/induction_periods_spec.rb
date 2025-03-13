@@ -3,6 +3,53 @@ RSpec.describe Admin::InductionPeriodsController do
 
   include_context 'sign in as DfE user'
 
+  describe "GET /admin/induction_periods/new" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+
+    it "returns success" do
+      get new_admin_teacher_induction_period_path(teacher)
+      expect(response).to be_successful
+    end
+  end
+
+  describe "POST /admin/induction_periods" do
+    let!(:induction_period) { FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 6.months.ago) }
+
+    before do
+      post(admin_teacher_induction_periods_path(induction_period.teacher), params:)
+    end
+
+    context 'with valid params' do
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:params) do
+        {
+          induction_period: {
+            appropriate_body_id: appropriate_body.id,
+            started_on: 2.years.ago,
+            finished_on: 18.months.ago,
+            number_of_terms: 3,
+            induction_programme: "cip"
+          }
+        }
+      end
+
+      it "returns success" do
+        expect(flash[:alert]).to eq("Induction period created successfully")
+      end
+    end
+
+    context "with invalid params" do
+      let(:params) do
+        { induction_period: { started_on: 2.years.ago } }
+      end
+
+      it "returns errors" do
+        expect(response.body).to include("End date is required for inserted periods")
+        expect(response.body).to include("Select an appropriate body")
+      end
+    end
+  end
+
   describe "GET /admin/induction_periods/:id/edit" do
     let(:induction_period) { FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 6.months.ago) }
 
@@ -32,7 +79,7 @@ RSpec.describe Admin::InductionPeriodsController do
           patch admin_teacher_induction_period_path(induction_period.teacher, induction_period), params: valid_params
 
           expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
-          expect(flash[:notice]).to eq("Induction period updated successfully")
+          expect(flash[:alert]).to eq("Induction period updated successfully")
 
           induction_period.reload
           expect(induction_period.started_on).to eq(valid_params[:induction_period][:started_on])

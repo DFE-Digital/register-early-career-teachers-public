@@ -1,33 +1,33 @@
 describe Admin::CurrentTeachers do
   describe '#current' do
-    let(:teacher1) { FactoryBot.create(:teacher) }
-    let(:teacher2) { FactoryBot.create(:teacher) }
-    let(:teacher3) { FactoryBot.create(:teacher) }
-    let(:ab1) { FactoryBot.create(:appropriate_body) }
-    let(:ab2) { FactoryBot.create(:appropriate_body) }
+    let(:teacher_1) { FactoryBot.create(:teacher) }
+    let(:teacher_2) { FactoryBot.create(:teacher) }
+    let(:teacher_3) { FactoryBot.create(:teacher) }
+    let(:appropriate_body_1) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_2) { FactoryBot.create(:appropriate_body) }
 
     context 'with an appropriate body' do
       before do
         FactoryBot.create(
           :induction_period,
           :active,
-          teacher: teacher1,
-          appropriate_body: ab1,
+          teacher: teacher_1,
+          appropriate_body: appropriate_body_1,
           started_on: 1.month.ago.to_date,
           induction_programme: 'fip'
         )
         FactoryBot.create(
           :induction_period,
           :active,
-          teacher: teacher2,
-          appropriate_body: ab2,
+          teacher: teacher_2,
+          appropriate_body: appropriate_body_2,
           started_on: 1.month.ago.to_date,
           induction_programme: 'fip'
         )
         FactoryBot.create(
           :induction_period,
-          teacher: teacher3,
-          appropriate_body: ab1,
+          teacher: teacher_3,
+          appropriate_body: appropriate_body_1,
           started_on: 2.months.ago.to_date,
           finished_on: 1.month.ago.to_date,
           induction_programme: 'fip'
@@ -35,11 +35,11 @@ describe Admin::CurrentTeachers do
       end
 
       it 'returns teachers with ongoing induction periods for the given appropriate bodies' do
-        result = described_class.new([ab1.id]).current
+        result = described_class.new([appropriate_body_1.id]).current
 
-        expect(result).to include(teacher1)
-        expect(result).not_to include(teacher2)
-        expect(result).not_to include(teacher3)
+        expect(result).to include(teacher_1)
+        expect(result).not_to include(teacher_2)
+        expect(result).not_to include(teacher_3)
       end
     end
 
@@ -48,13 +48,13 @@ describe Admin::CurrentTeachers do
         FactoryBot.create(
           :induction_period,
           :active,
-          teacher: teacher1,
+          teacher: teacher_1,
           started_on: 1.month.ago.to_date,
           induction_programme: 'fip'
         )
         FactoryBot.create(
           :induction_period,
-          teacher: teacher2,
+          teacher: teacher_2,
           started_on: 2.months.ago.to_date,
           finished_on: 1.month.ago.to_date,
           induction_programme: 'fip'
@@ -64,8 +64,8 @@ describe Admin::CurrentTeachers do
       it 'returns all teachers with ongoing induction periods' do
         result = described_class.new([]).current
 
-        expect(result).to include(teacher1)
-        expect(result).not_to include(teacher2)
+        expect(result).to include(teacher_1)
+        expect(result).not_to include(teacher_2)
       end
     end
 
@@ -74,16 +74,16 @@ describe Admin::CurrentTeachers do
         FactoryBot.create(
           :induction_period,
           :active,
-          teacher: teacher1,
-          appropriate_body: ab1,
+          teacher: teacher_1,
+          appropriate_body: appropriate_body_1,
           started_on: 1.month.ago.to_date,
           induction_programme: 'fip'
         )
 
         FactoryBot.create(
           :induction_period,
-          teacher: teacher1,
-          appropriate_body: ab1,
+          teacher: teacher_1,
+          appropriate_body: appropriate_body_1,
           started_on: 3.months.ago.to_date,
           finished_on: 2.months.ago.to_date,
           induction_programme: 'fip'
@@ -91,7 +91,7 @@ describe Admin::CurrentTeachers do
       end
 
       it 'returns distinct teachers' do
-        result = described_class.new([ab1.id]).current
+        result = described_class.new([appropriate_body_1.id]).current
 
         expect(result.count).to eq(1)
       end
