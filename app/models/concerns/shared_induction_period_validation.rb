@@ -2,12 +2,12 @@ module SharedInductionPeriodValidation
   extend ActiveSupport::Concern
 
   included do
-    validates :appropriate_body_id,
-              presence: { message: "Select an appropriate body" }
+    validate :started_on_from_september_2021_onwards, if: -> { started_on.present? }, on: :register_ect
 
-    validate :started_on_from_september_2021_onwards, if: -> { started_on.present? }
+    validates :appropriate_body_id, presence: { message: "Select an appropriate body" }
 
     validate :started_on_not_in_future, if: -> { started_on.present? }
+
     validate :finished_on_not_in_future, if: -> { finished_on.present? }
   end
 
