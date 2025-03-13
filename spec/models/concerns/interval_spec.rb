@@ -239,7 +239,7 @@ describe Interval do
       let!(:ongoing_interval) { DummyMentor.create(teacher_id:, school_id:, started_on: 1.day.ago, finished_on: nil) }
 
       it 'returns last finished sibling' do
-        expect(second_interval.last_finished_sibling).to eq(fourth_interval)
+        expect(second_interval.last_finished_sibling.id).to eq(fourth_interval.id)
       end
     end
 

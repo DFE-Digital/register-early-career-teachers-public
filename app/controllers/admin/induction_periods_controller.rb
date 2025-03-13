@@ -9,7 +9,7 @@ module Admin
 
       if @induction_period.save
         redirect_to admin_teacher_path(@induction_period.teacher),
-                    notice: "Induction period created successfully"
+                    alert: "Induction period created successfully"
       else
         render :new
       end
@@ -29,7 +29,7 @@ module Admin
 
       if service.update_induction_period!
         redirect_to admin_teacher_path(@induction_period.teacher),
-                    notice: "Induction period updated successfully"
+                    alert: "Induction period updated successfully"
       end
     rescue UpdateInductionPeriod::RecordedOutcomeError => e
       @induction_period.errors.add(:base, e.message)
