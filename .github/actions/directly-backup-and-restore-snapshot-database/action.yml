@@ -81,7 +81,7 @@ runs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_USERNAME: CI Deployment
-        SLACK_TITLE: Direct copy ${{ inputs.environment }}->snapshot database succeeded
+        SLACK_TITLE: Direct copy ${{ inputs.environment }}->snapshot database success
         SLACK_MESSAGE: ${{ inputs.app-name }} - the direct copy of ${{ inputs.environment }}->snapshot db succeeded
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
         SLACK_COLOR: success
@@ -92,7 +92,7 @@ runs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_USERNAME: CI Deployment
-        SLACK_TITLE: Direct copy ${{ inputs.environment }}->snapshot database failed
+        SLACK_TITLE: Direct copy ${{ inputs.environment }}->snapshot database failure
         SLACK_MESSAGE: ${{ inputs.app-name }} - the direct copy of ${{ inputs.environment }}->snapshot db failed
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
         SLACK_COLOR: failures
