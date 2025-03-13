@@ -1,17 +1,17 @@
+---
+inherit_from: .rubocop_todo.yml
+
 inherit_gem:
   rubocop-govuk:
     - config/default.yml
     - config/rails.yml
+    - config/rspec.yml    
 
 AllCops:
-  Exclude:
-    - node_modules/**/*
-    - bin/bundle
-    - db/schema.rb
-    - vendor/bundle/**/*
+  TargetRubyVersion: 3.3.4
 
 Style/StringLiterals:
-  Enabled: false
+  EnforcedStyle: single_quotes
 
 Style/EmptyMethod:
   EnforcedStyle: expanded
