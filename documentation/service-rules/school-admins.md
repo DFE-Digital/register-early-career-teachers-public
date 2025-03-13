@@ -370,7 +370,7 @@ We’re also working on a way for a school to tell us if the lead provider for a
 
 ### Checking answers for the registration of a new mentor
 
-We play back all the details submitted for that mentor, and remind the school user of the ECT the mentor will be assigned to.
+We play back all the details submitted for that mentor and remind the school user of the ECT to whom the mentor will be assigned.
 
 Once the school user confirms these details, they have finished:
 
