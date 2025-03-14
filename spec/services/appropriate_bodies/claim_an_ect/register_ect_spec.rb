@@ -2,7 +2,10 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   include ActiveJob::TestHelper
   include_context 'fake trs api client'
 
-  before { allow(Events::Record).to receive(:new).and_call_original }
+  before do
+    allow(Events::Record).to receive(:new).and_call_original
+    allow(Events::Record).to receive(:teacher_name_changed_in_trs!).and_call_original
+  end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
@@ -74,6 +77,11 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         expect(induction_period.started_on).to eq(Date.new(2023, 5, 2))
         expect(induction_period.appropriate_body).to eq(appropriate_body)
         expect(induction_period.induction_programme).to eq("fip")
+      end
+
+      it "uses the Teachers::CreateOrUpdate service" do
+        expect_any_instance_of(Teachers::CreateOrUpdate).to receive(:create_or_update).and_call_original
+        subject.register(pending_induction_submission_params)
       end
 
       it "enqueues BeginECTInductionJob" do
@@ -163,13 +171,13 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         it 'records the name change' do
           expect(existing_teacher.trs_first_name).to eql(pending_induction_submission_params[:trs_first_name])
           expect(existing_teacher.trs_last_name).to eql(pending_induction_submission_params[:trs_last_name])
-          expect(Events::Record).to have_received(:new).with(
+          expect(Events::Record).to have_received(:teacher_name_changed_in_trs!).with(
             hash_including(
+              old_name: "Jonathan Dole",
+              new_name: "John Doe",
               author:,
-              event_type: :teacher_name_updated_by_trs,
-              appropriate_body:,
               teacher: existing_teacher,
-              heading: "Name changed from Jonathan Dole to John Doe"
+              appropriate_body:
             )
           )
 
