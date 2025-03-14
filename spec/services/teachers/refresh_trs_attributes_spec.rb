@@ -15,7 +15,7 @@ describe Teachers::RefreshTRSAttributes do
         # these values are returned by the fake API client
         expect(teacher.trs_first_name).to eql('Kirk')
         expect(teacher.trs_last_name).to eql('Van Houten')
-        expect(teacher.trs_induction_status).to eql('Pass')
+        expect(teacher.trs_induction_status).to eql('Passed')
         expect(teacher.trs_qts_awarded_on).to eql(3.years.ago.to_date)
         expect(teacher.trs_qts_status_description).to eql('Passed')
         expect(teacher.trs_initial_teacher_training_provider_name).to eql('Example Provider Ltd.')
