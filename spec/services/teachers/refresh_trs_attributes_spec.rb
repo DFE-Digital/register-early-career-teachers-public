@@ -25,7 +25,7 @@ describe Teachers::RefreshTRSAttributes do
     end
 
     describe 'using Teachers::Manage' do
-      let(:fake_manage) { double(Teachers::Manage, update_name!: true, update_qts_awarded_on!: true, update_itt_provider_name!: true, update_trs_induction_status!: true) }
+      let(:fake_manage) { double(Teachers::Manage, update_name!: true, update_trs_attributes!: true, update_trs_induction_status!: true) }
 
       before do
         allow(Teachers::Manage).to receive(:new).with(
@@ -39,16 +39,10 @@ describe Teachers::RefreshTRSAttributes do
         expect(fake_manage).to have_received(:update_name!).once.with(trs_first_name: 'Kirk', trs_last_name: 'Van Houten')
       end
 
-      it 'uses Teachers::Manage#update_qts_awarded_on! to update the QTS award date' do
+      it 'uses Teachers::Manage#update_trs_induction_status! to update the induction status' do
         Teachers::RefreshTRSAttributes.new(teacher).refresh!
 
-        expect(fake_manage).to have_received(:update_qts_awarded_on!).once.with(trs_qts_awarded_on: 3.years.ago.to_date)
-      end
-
-      it 'uses Teachers::Manage#update_itt_provider_name! to update the ITT provider name' do
-        Teachers::RefreshTRSAttributes.new(teacher).refresh!
-
-        expect(fake_manage).to have_received(:update_itt_provider_name!).once.with(trs_initial_teacher_training_provider_name: 'Example Provider Ltd.')
+        expect(fake_manage).to have_received(:update_trs_induction_status!).once.with(trs_induction_status: 'Passed')
       end
     end
 
@@ -59,7 +53,9 @@ describe Teachers::RefreshTRSAttributes do
 
       perform_enqueued_jobs
 
-      expect(teacher.events.last(2).map(&:event_type)).to eql(%w[teacher_name_updated_by_trs teacher_induction_status_updated_by_trs])
+      expected_events = %w[teacher_name_updated_by_trs teacher_induction_status_updated_by_trs teacher_attributes_updated_from_trs]
+
+      expect(teacher.events.last(expected_events.count).map(&:event_type)).to eql(expected_events)
     end
   end
 end
