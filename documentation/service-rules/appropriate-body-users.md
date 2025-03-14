@@ -175,7 +175,7 @@ The pass process takes place with the following steps:
 2. Pass the ECT by entering the following information:
     * The end date of the induction period
     * The number of terms carried out during the induction period
-3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period. The 'Pass' state and induction completion date are written to the teacher's record via the TRS API.
+3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period. The 'Passed' state and induction completion date are written to the teacher's record via the TRS API.
 
 ### Validation
 
@@ -198,7 +198,7 @@ The fail process takes place with the following steps:
 2. Fail the ECT by entering the following information:
     * The end date of the induction period
     * The number of terms carried out during the induction period
-3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period. The 'Pass' state and induction completion date are written to the teacher's record via the TRS API.
+3. When submitted the current (open) induction period is updated with the provided end date and number of terms. This closes the induction period. The 'Failed' state and induction completion date are written to the teacher's record via the TRS API.
 
 ### Validation
 

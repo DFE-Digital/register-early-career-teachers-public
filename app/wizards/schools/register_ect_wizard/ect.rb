@@ -38,7 +38,7 @@ module Schools
       end
 
       def induction_completed?
-        trs_induction_status == 'Pass'
+        trs_induction_status == 'Passed'
       end
 
       def induction_exempt?
