@@ -5,5 +5,5 @@
 <% end %>
 
 <% if flash[:alert] %>
-  <%= govuk_notification_banner(title_text: "Success", text: flash[:alert], success: true) %>
+  <%= govuk_notification_banner(title_text: "Success", text: flash[:alert], success: true, classes: 'govuk-notification-banner__heading') %>
 <% end %>
