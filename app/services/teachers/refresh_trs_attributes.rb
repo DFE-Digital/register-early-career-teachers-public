@@ -11,7 +11,7 @@ module Teachers
         manage_teacher.update_name!(trs_first_name: trs_teacher.first_name, trs_last_name: trs_teacher.last_name)
         manage_teacher.update_trs_induction_status!(trs_induction_status: trs_teacher.induction_status)
 
-        teacher.assign_attributes(
+        manage_teacher.update_trs_attributes!(
           trs_qts_status_description: trs_teacher.qts_status_description,
           trs_qts_awarded_on: trs_teacher.qts_awarded_on,
           trs_initial_teacher_training_provider_name: trs_teacher.initial_teacher_training_provider_name,
