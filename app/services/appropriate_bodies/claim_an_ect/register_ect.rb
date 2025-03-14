@@ -62,7 +62,7 @@ module AppropriateBodies
       end
 
       def teacher
-        @teacher ||= manage_teacher.teacher
+        @manage_teacher.teacher
       end
 
       def create_induction_period
@@ -77,7 +77,7 @@ module AppropriateBodies
       end
 
       def send_begin_induction_notification_to_trs
-        return true if teacher.induction_periods.any?
+        return true if ::Teachers::Induction.new(teacher).has_induction_periods?
 
         BeginECTInductionJob.perform_later(
           trn: pending_induction_submission.trn,
