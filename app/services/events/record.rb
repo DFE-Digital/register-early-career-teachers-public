@@ -1,6 +1,7 @@
 module Events
   class InvalidAuthor < StandardError; end
   class NotPersistedRecord < StandardError; end
+  class NoInductionPeriod < StandardError; end
 
   class Record
     attr_reader :author,
@@ -77,30 +78,42 @@ module Events
 
     # Appropriate body events
 
-    def self.record_appropriate_body_claims_teacher_event!(author:, appropriate_body:, induction_period:, teacher:, happened_at: Time.zone.now)
+    def self.record_appropriate_body_claims_teacher_event!(author:, appropriate_body:, induction_period:, teacher:)
+      fail(NoInductionPeriod) unless induction_period
+
       event_type = :appropriate_body_claims_teacher
       heading = "#{Teachers::Name.new(teacher).full_name} was claimed by #{appropriate_body.name}"
+      happened_at = induction_period.started_on
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_releases_teacher_event!(author:, appropriate_body:, induction_period:, teacher:, happened_at: Time.zone.now)
+    def self.record_appropriate_body_releases_teacher_event!(author:, appropriate_body:, induction_period:, teacher:)
+      fail(NoInductionPeriod) unless induction_period
+
       event_type = :appropriate_body_releases_teacher
       heading = "#{Teachers::Name.new(teacher).full_name} was released by #{appropriate_body.name}"
+      happened_at = induction_period.finished_on
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:, happened_at: Time.zone.now)
+    def self.record_appropriate_body_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
+      fail(NoInductionPeriod) unless induction_period
+
       event_type = :appropriate_body_passes_teacher
       heading = "#{Teachers::Name.new(teacher).full_name} passed induction"
+      happened_at = induction_period.finished_on
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_fails_teacher_event(author:, appropriate_body:, induction_period:, teacher:, happened_at: Time.zone.now)
+    def self.record_appropriate_body_fails_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
+      fail(NoInductionPeriod) unless induction_period
+
       event_type = :appropriate_body_fails_teacher
       heading = "#{Teachers::Name.new(teacher).full_name} failed induction"
+      happened_at = induction_period.finished_on
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
