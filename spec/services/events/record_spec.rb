@@ -181,7 +181,7 @@ describe Events::Record do
     end
   end
 
-  describe '.teacher_name_changed_in_trs' do
+  describe '.teacher_name_changed_in_trs!' do
     let(:old_name) { 'Wilfred Bramble' }
     let(:new_name) { 'Willy Brambs' }
 
@@ -201,7 +201,7 @@ describe Events::Record do
     end
   end
 
-  describe '.teacher_induction_status_changed_in_trs' do
+  describe '.teacher_induction_status_changed_in_trs!' do
     let(:old_induction_status) { 'InProgress' }
     let(:new_induction_status) { 'Exempt' }
 
@@ -215,6 +215,49 @@ describe Events::Record do
           heading: "Induction status changed from 'InProgress' to 'Exempt'",
           event_type: :teacher_induction_status_updated_by_trs,
           happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.teacher_imported_from_trs!' do
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.teacher_imported_from_trs!(author:, teacher:, appropriate_body:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          appropriate_body:,
+          heading: "Imported from TRS",
+          event_type: :teacher_imported_from_trs,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.teacher_attributes_updated_from_trs!' do
+    it 'queues a RecordEventJob with the correct values' do
+      teacher.assign_attributes(trs_first_name: 'Otto', trs_last_name: 'Hightower')
+      modifications = teacher.changes
+      freeze_time do
+        Events::Record.teacher_attributes_updated_from_trs!(author:, teacher:, modifications:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "TRS attributes updated",
+          event_type: :teacher_attributes_updated_from_trs,
+          happened_at: Time.zone.now,
+          metadata: {
+            "trs_first_name" => %w[Rhys Otto],
+            "trs_last_name" => %w[Ifans Hightower],
+          },
+          modifications: [
+            "TRS first name changed from 'Rhys' to 'Otto'",
+            "TRS last name changed from 'Ifans' to 'Hightower'"
+          ],
           **author_params
         )
       end
