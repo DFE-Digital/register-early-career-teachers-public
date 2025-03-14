@@ -70,7 +70,10 @@ class PendingInductionSubmission < ApplicationRecord
               message: "TRS Induction Status is not known",
             },
             on: :register_ect
-  validate :no_future_induction_periods, if: -> { started_on.present? }, on: :register_ect
+
+  validate :no_future_induction_periods,
+           if: -> { started_on.present? },
+           on: :register_ect
 
   def exempt?
     trs_induction_status == "Exempt"

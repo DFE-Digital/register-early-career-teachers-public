@@ -14,7 +14,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
 
     it "adds an error" do
       subject.valid?
-      expect(subject.errors[:start_date]).to include("Enter the start date using the correct format, for example 03 1998")
+      expect(subject.errors[:start_date]).to include("Enter the start date using the correct format, for example 09 1999")
     end
   end
 
@@ -139,7 +139,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
   end
 
   context "when the start date has invalid month or year values" do
-    let(:error_message) { "Enter the start date using the correct format, for example 03 1998" }
+    let(:error_message) { "Enter the start date using the correct format, for example 09 1999" }
     let(:test_class) do
       Class.new do
         include ActiveModel::Model
