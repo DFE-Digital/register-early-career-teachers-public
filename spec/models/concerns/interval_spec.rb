@@ -9,24 +9,20 @@ describe Interval do
       context "when finished_on is earlier than started_on" do
         subject { DummyMentor.new(started_on: Date.yesterday, finished_on: 2.days.ago) }
 
-        before do
-          subject.valid?
-        end
+        before { subject.valid? }
 
-        it "add an error" do
-          expect(subject.errors.messages).to include(finished_on: ["The finish date must be later than the start date (#{Date.yesterday.to_fs(:govuk)})"])
+        it "adds an error" do
+          expect(subject.errors.messages).to include(finished_on: ["The end date must be later than the start date (#{Date.yesterday.to_fs(:govuk)})"])
         end
       end
 
       context "when finished_on matches started_on" do
         subject { DummyMentor.new(started_on: Date.yesterday, finished_on: Date.yesterday) }
 
-        before do
-          subject.valid?
-        end
+        before { subject.valid? }
 
-        it "add an error" do
-          expect(subject.errors.messages).to include(finished_on: ["The finish date must be later than the start date (#{Date.yesterday.to_fs(:govuk)})"])
+        it "adds an error" do
+          expect(subject.errors.messages).to include(finished_on: ["The end date must be later than the start date (#{Date.yesterday.to_fs(:govuk)})"])
         end
       end
     end
@@ -230,6 +226,27 @@ describe Interval do
 
     context 'without sibling intervals starting later' do
       it { is_expected.not_to have_successors }
+    end
+  end
+
+  describe '#last_finished_sibling' do
+    subject(:second_interval) { DummyMentor.create(teacher_id:, school_id:, started_on: 19.days.ago, finished_on: 13.days.ago) }
+
+    context 'with finished siblings' do
+      let!(:first_interval) { DummyMentor.create(teacher_id:, school_id:, started_on: 30.days.ago, finished_on: 20.days.ago) }
+      let!(:third_interval) { DummyMentor.create(teacher_id:, school_id:, started_on: 12.days.ago, finished_on: 6.days.ago) }
+      let!(:fourth_interval) { DummyMentor.create(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: 2.days.ago) }
+      let!(:ongoing_interval) { DummyMentor.create(teacher_id:, school_id:, started_on: 1.day.ago, finished_on: nil) }
+
+      it 'returns last finished sibling' do
+        expect(second_interval.last_finished_sibling.id).to eq(fourth_interval.id)
+      end
+    end
+
+    context 'without finished siblings' do
+      let!(:ongoing_interval) { DummyMentor.create(teacher_id:, school_id:, started_on: 1.day.ago, finished_on: nil) }
+
+      it { expect(second_interval.last_finished_sibling).to be_nil }
     end
   end
 end
