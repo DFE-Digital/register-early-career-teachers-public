@@ -1,5 +1,3 @@
-# some sample users/personas
-
 ECT_COLOUR = :magenta
 MENTOR_COLOUR = :yellow
 
@@ -9,6 +7,10 @@ def print_seed_info(text, indent: 0, colour: nil)
   else
     puts "🌱 " + (" " * indent) + text
   end
+end
+
+def teacher_name(teacher)
+  Teachers::Name.new(teacher).full_name
 end
 
 def describe_period_duration(period)
@@ -42,6 +44,34 @@ def describe_induction_period(ip)
   suffix = "(induction period)"
 
   print_seed_info("* is having their induction overseen by #{ip.appropriate_body.name} (AB) #{describe_period_duration(ip)} #{suffix}", indent: 4)
+
+  author_attributes = {
+    author_email: 'fkend@appropriate-body.org',
+    author_name: 'Felicity Kendall',
+    author_type: 'appropriate_body_user',
+  }
+
+  Event.create!(
+    event_type: 'appropriate_body_claims_teacher',
+    induction_period: ip,
+    teacher: ip.teacher,
+    appropriate_body: ip.appropriate_body,
+    heading: "#{teacher_name(ip.teacher)} was claimed by #{ip.appropriate_body.name}",
+    happened_at: ip.started_on.at_midday + rand(-300..300).minutes,
+    **author_attributes
+  )
+
+  if ip.finished_on
+    Event.create!(
+      event_type: 'appropriate_body_claims_teacher',
+      induction_period: ip,
+      teacher: ip.teacher,
+      appropriate_body: ip.appropriate_body,
+      heading: "#{teacher_name(ip.teacher)} was released by #{ip.appropriate_body.name}",
+      happened_at: ip.finished_on.at_midday + rand(-300..300).minutes,
+      **author_attributes
+    )
+  end
 end
 
 def describe_training_period(tp)
@@ -77,6 +107,16 @@ end
 
 def describe_user(user)
   print_seed_info("Added DfE staff user #{user.name} #{user.email}", indent: 2)
+end
+
+def describe_ero_mentor(mentor)
+  if mentor.is_a?(Teacher)
+    mentor_name = Colourize.text("#{mentor.trs_first_name} #{mentor.trs_last_name}", MENTOR_COLOUR)
+
+    print_seed_info(mentor_name, indent: 2)
+  else
+    print_seed_info(Colourize.text(mentor, :red), indent: 2)
+  end
 end
 
 print_seed_info("Adding teachers")
@@ -215,7 +255,7 @@ _wildflower_rising_partnership_2024 = ProviderPartnership.create!(
   delivery_partner: rising_minds
 ).tap { |pp| describe_provider_partnership(pp) }
 
-print_seed_info("Adding teachers:")
+print_seed_info("Adding teacher histories:")
 
 print_seed_info("Emma Thompson (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
@@ -266,6 +306,15 @@ TrainingPeriod.create!(
   started_on: 1.year.ago,
   provider_partnership: grove_artisan_partnership_2023
 ).tap { |tp| describe_training_period(tp) }
+
+InductionPeriod.create!(
+  teacher: kate_winslet,
+  started_on: 3.years.ago,
+  finished_on: 2.years.ago,
+  number_of_terms: 3,
+  appropriate_body: golden_leaf_teaching_school_hub,
+  induction_programme: 'fip'
+).tap { |ip| describe_induction_period(ip) }
 
 InductionPeriod.create!(
   teacher: kate_winslet,
@@ -673,7 +722,7 @@ MentorshipPeriod.create!(
   finished_on: nil
 ).tap { |mp| describe_mentorship_period(mp) }
 
-print_seed_info("Adding persona users")
+print_seed_info("Adding persona users:")
 
 YAML.load_file(Rails.root.join('config/personas.yml'))
     .select { |p| p['type'] == 'DfE staff' }
@@ -684,10 +733,10 @@ YAML.load_file(Rails.root.join('config/personas.yml'))
       .then { |user| describe_user(user) }
 end
 
-print_seed_info('Adding funding exemptions:', colour: :red)
+print_seed_info('Adding funding exemptions:')
 
 # completed_during_early_roll_out
-EarlyRollOutMentor.create!(trn: imogen_stubbs.trn)
-EarlyRollOutMentor.create!(trn: harriet_walter.trn)
-EarlyRollOutMentor.create!(trn: '3002582') # Robson Scottie
-EarlyRollOutMentor.create!(trn: '3002580') # Muhammed Ali
+EarlyRollOutMentor.create!(trn: hugh_laurie.trn).tap { describe_ero_mentor(hugh_laurie) }
+EarlyRollOutMentor.create!(trn: harriet_walter.trn).tap { describe_ero_mentor(harriet_walter) }
+EarlyRollOutMentor.create!(trn: '3002582').tap { describe_ero_mentor('Robson Scottie') }
+EarlyRollOutMentor.create!(trn: '3002580').tap { describe_ero_mentor('Muhammed Ali') }
