@@ -1,7 +1,5 @@
 class ModifyGIASSchools < ActiveRecord::Migration[7.2]
   def change
-    # rubocop:disable Rails/NotNullColumn
-    # rubocop:disable Rails/BulkChangeTable
     change_table :gias_schools do |t|
       t.rename :school_status, :status
 
@@ -33,7 +31,5 @@ class ModifyGIASSchools < ActiveRecord::Migration[7.2]
     remove_column :schools, :name, :string, null: false
 
     add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
-    # rubocop:enable Rails/BulkChangeTable
-    # rubocop:enable Rails/NotNullColumn
   end
 end

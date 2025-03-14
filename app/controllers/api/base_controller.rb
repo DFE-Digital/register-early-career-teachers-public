@@ -1,4 +1,4 @@
 module API
-  class BaseController < ActionController::Base # rubocop:disable Rails/ApplicationController
+  class BaseController < ActionController::Base
   end
 end

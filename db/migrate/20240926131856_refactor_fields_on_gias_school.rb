@@ -1,6 +1,4 @@
 class RefactorFieldsOnGIASSchool < ActiveRecord::Migration[7.2]
-  # rubocop:disable Rails/NotNullColumn
-  # rubocop:disable Rails/BulkChangeTable
   def change
     change_table :gias_schools do |t|
       t.remove :administrative_district_code, type: :string, null: false
@@ -21,6 +19,4 @@ class RefactorFieldsOnGIASSchool < ActiveRecord::Migration[7.2]
     drop_enum :induction_eligibility_status, %w[eligible ineligible]
     remove_foreign_key :gias_school_links, :gias_schools, column: :link_urn, primary_key: :urn, if_exists: true
   end
-  # rubocop:enable Rails/BulkChangeTable
-  # rubocop:enable Rails/NotNullColumn
 end
