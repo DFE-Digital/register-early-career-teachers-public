@@ -154,6 +154,25 @@ describe Events::Record do
     end
   end
 
+  describe '.teacher_record_created!' do
+    let(:trn) { '1234567' }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.teacher_record_created!(author:, teacher:, appropriate_body:, trn:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          appropriate_body:,
+          heading: "Teacher record created with TRN #{trn}",
+          event_type: :teacher_record_created,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe '.record_admin_updates_induction_period!' do
     let(:three_weeks_ago) { 3.weeks.ago.to_date }
     let(:two_weeks_ago) { 2.weeks.ago.to_date }
