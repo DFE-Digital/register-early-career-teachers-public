@@ -123,9 +123,16 @@ module Events
 
     def self.teacher_imported_from_trs!(author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
       event_type = :teacher_imported_from_trs
-      heading = "#{Teachers::Name.new(teacher).full_name_in_trs} was created in TRS"
+      heading = "Imported from TRS"
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
+    def self.teacher_attributes_updated_from_trs!(author:, teacher:, modifications:, happened_at: Time.zone.now)
+      event_type = :teacher_attributes_updated_from_trs
+      heading = "TRS attributes updated"
+
+      new(event_type:, author:, modifications:, teacher:, heading:, happened_at:).record_event!
     end
 
     # Admin events
