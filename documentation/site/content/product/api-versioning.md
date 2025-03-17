@@ -1,8 +1,6 @@
 ---
-title: Lead providers
+title: API versioning guidalines
 ---
-
-# API Change Management Guidelines
 
 ## Breaking and Non-Breaking Changes Explained
 
