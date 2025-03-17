@@ -51,6 +51,8 @@ Rails.application.routes.draw do
     resources :teachers, only: %i[index show] do
       resources :induction_periods, only: %i[edit update], path: 'induction-periods'
       resource :timeline, only: %i[show], controller: 'teachers/timeline'
+      resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
+      resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: 'teachers/record_failed_outcome'
     end
   end
 
