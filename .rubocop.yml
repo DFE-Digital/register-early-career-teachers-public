@@ -1,10 +1,14 @@
 ---
 inherit_from: .rubocop_todo.yml
 
+plugins: 
+  - rubocop-performance
+  - rubocop-factory_bot
+
 inherit_gem:
   rubocop-govuk:
     - config/default.yml
-    - config/rails.yml
+#     - config/rails.yml
     - config/rspec.yml    
 
 AllCops:
@@ -43,16 +47,16 @@ Style/SignalException:
 Style/StringConcatenation:
   Enabled: false
 
-Rails/UniqueValidationWithoutIndex:
-  Enabled: false
+# Rails/UniqueValidationWithoutIndex:
+#   Enabled: false
 
-Rails/Output:
-  Exclude:
-    - db/seeds*
+# Rails/Output:
+#   Exclude:
+#     - db/seeds*
 
-Rails/SaveBang:
-  Exclude:
-    - app/services/**/*
+# Rails/SaveBang:
+#   Exclude:
+#     - app/services/**/*
 
 Naming/MethodParameterName:
   Enabled: false
