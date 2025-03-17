@@ -5,7 +5,7 @@ module Admin
     def index
       @appropriate_bodies = AppropriateBody.order(:name)
       @pagy, @teachers = pagy(
-        Teachers::Search.new(
+        ::Teachers::Search.new(
           query_string: params[:q]
         ).search
       )
@@ -13,7 +13,9 @@ module Admin
 
     def show
       @page = params[:page] || 1
-      @teacher = TeacherPresenter.new(Teacher.find_by(id: params[:id]))
+      teacher = Teacher.find_by(id: params[:id])
+      @teacher = TeacherPresenter.new(teacher)
+      @events = teacher.events.latest_first
     end
   end
 end
