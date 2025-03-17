@@ -24,6 +24,28 @@ describe Teachers::RefreshTRSAttributes do
       end
     end
 
+    describe 'using Teachers::Manage' do
+      let(:fake_manage) { double(Teachers::Manage, update_name!: true, update_trs_attributes!: true, update_trs_induction_status!: true) }
+
+      before do
+        allow(Teachers::Manage).to receive(:new).with(
+          hash_including(teacher:, author: an_instance_of(Events::SystemAuthor), appropriate_body: nil)
+        ).and_return(fake_manage)
+      end
+
+      it 'uses Teachers::Manage#update_name! to update the name' do
+        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+
+        expect(fake_manage).to have_received(:update_name!).once.with(trs_first_name: 'Kirk', trs_last_name: 'Van Houten')
+      end
+
+      it 'uses Teachers::Manage#update_trs_induction_status! to update the induction status' do
+        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+
+        expect(fake_manage).to have_received(:update_trs_induction_status!).once.with(trs_induction_status: 'Passed')
+      end
+    end
+
     it 'adds a teacher_name_updated_by_trs event' do
       expect(teacher.events).to be_empty
 
@@ -31,7 +53,9 @@ describe Teachers::RefreshTRSAttributes do
 
       perform_enqueued_jobs
 
-      expect(teacher.events.last.event_type).to eql('teacher_name_updated_by_trs')
+      expected_events = %w[teacher_name_updated_by_trs teacher_induction_status_updated_by_trs teacher_attributes_updated_from_trs]
+
+      expect(teacher.events.last(expected_events.count).map(&:event_type)).to eql(expected_events)
     end
   end
 end
