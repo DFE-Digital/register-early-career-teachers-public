@@ -3,8 +3,8 @@ FactoryBot.define do
     association :appropriate_body
     sequence(:trn, 3_000_000)
     date_of_birth { Faker::Date.between(from: 80.years.ago, to: 20.years.ago) }
-    trs_first_name { Faker::Name.first_name }
-    trs_last_name { Faker::Name.last_name }
+    sequence(:trs_first_name) { |n| "First name #{n}" }
+    sequence(:trs_last_name) { |n| "Last name #{n}" }
     trs_induction_status { "None" }
     started_on { 1.year.ago }
     trs_qts_awarded_on { 2.years.ago }
