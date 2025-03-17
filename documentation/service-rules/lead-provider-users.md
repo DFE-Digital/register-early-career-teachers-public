@@ -12,8 +12,8 @@ When we decide to make a change to an API, our technical team must consider how 
 
 This means they may not be able to:
 
-- Process the data provided by the API  
-- Submit requests via the API  
+- Process the data provided by the API
+- Submit requests via the API
 
 ## Breaking Changes
 
@@ -21,13 +21,14 @@ A breaking change disrupts the existing functionality or behaviour of the API, c
 
 Breaking changes include:
 
-- Removing an existing endpoint  
-- Changing the data structure, field values or format in which we serve data to lead providers  
-- Introducing new validation rules or required fields  
+- Removing an existing endpoint
+- Changing the data structure, field values or format in which we serve data to lead providers
+- Introducing new validation rules or required fields
 
 ### Example: Changing the Response Format of an Existing Endpoint
 
 #### From:
+
 ```json
 {
   "participant_id": "21412-12121",
@@ -37,6 +38,7 @@ Breaking changes include:
 ```
 
 #### To:
+
 ```json
 {
   "participant_id": "21412-12121",
@@ -44,6 +46,7 @@ Breaking changes include:
   "is_active": true
 }
 ```
+
 This is a breaking change because it changes a field name and data type. Lead providers rely on expecting a specific field name or value. Both changes could break existing integrations for providers who expect a `status` field with a "string" rather than `is_active` and `true` or `false`.
 
 ## Non-Breaking Changes
@@ -52,9 +55,9 @@ A non-breaking change does not break or disrupt existing functionality or behavi
 
 Non-breaking changes include:
 
-- New endpoints (for example, ECF transfers)  
-- Adding optional fields to the request body  
-- Adding new optional filters to an endpoint (e.g., a non-required ability to filter by cohort on the get declarations endpoint)  
+- New endpoints (for example, ECF transfers)
+- Adding optional fields to the request body
+- Adding new optional filters to an endpoint (e.g., a non-required ability to filter by cohort on the get declarations endpoint)
 
 ### Example: Introducing `evidence_held` as an Optional Field in the Request Body to Start Declarations for Cohort 2025
 
@@ -81,7 +84,7 @@ For cohort 2025 and onwards, evidence types will be an optional field that provi
 | `course_identifier` | Yes            | String | The type of course the participant is enrolled on <br> Possible values: `ecf-induction`, `ecf-mentor` |
 | `evidence_held`  | No             | String | The type of evidence the lead provider holds <br> Possible values: `training-event-attended`, `self-study-material-completed`, `other`, `materials-engaged-with-offline` |
 
-This is a non-breaking change because providers are still able to submit start declarations without supplying an evidence types. If the field was mandatory, providers would encounter an error message when submitting requests. 
+This is a non-breaking change because providers are still able to submit start declarations without supplying an evidence types. If the field was mandatory, providers would encounter an error message when submitting requests.
 
 In this instance, providers can update their integrations to submit start declarations and evidence types whenever they are ready and continue to submit start declarations without an evidence type for the time being.
 
@@ -90,13 +93,12 @@ In this instance, providers can update their integrations to submit start declar
 Release management is crucial to ensure that Lead Providers have a positive experience when adopting the changes for our API. It's the DfE's responsibility to ensure that providers are **well-informed**, **prepared** and **supported** throughout the release. This ensures that the delivery of the ECF training is not impacted. For any changes breaking or non-breaking LPDOB:
 
 - Engage with providers as early as possible, ensuring they have visibility of the upcoming changes and are consulted.
-- Share detailed specifications, release note and updated guidance are shared as soon as they are available. This helps providers assess the impact on their systems and plan necessary updates.  
-- Attend check-ins and engaging with technical teams for lead providers to walk through the changes, answer questions, and gather feedback on any implementation concerns.  
+- Share detailed specifications, release note and updated guidance are shared as soon as they are available. This helps providers assess the impact on their systems and plan necessary updates.
+- Attend check-ins and engaging with technical teams for lead providers to walk through the changes, answer questions, and gather feedback on any implementation concerns.
 - Release the updated API into the sandbox environment, allowing providers to conduct testing and validate integrations before changes go live.
-- For breaking changes, retrieve feedback from providers on their timelines to integrate and test. 
+- For breaking changes, retrieve feedback from providers on their timelines to integrate and test.
 
 We appreciate that these changes can have huge ramifications on their integrations and thus their ability to deliver of the ECF policy.
- 
 
 ## Versioning and Managing Changes
 
