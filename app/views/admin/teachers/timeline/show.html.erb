@@ -1,0 +1,15 @@
+<%
+  page_data(
+    title: smart_quotes(teacher_full_name(@teacher) + "'s timeline"),
+    caption: teacher_trn(@teacher),
+    caption_size: 'm',
+    error: false,
+    backlink_href: admin_teacher_path(@teacher)
+  )
+%>
+
+<% if @events.any? %>
+  <%= render(TimelineComponent.new(@events)) %>
+<% else %>
+  <p class='govuk-body'>No timeline of events for this teacher.</p>
+<% end %>

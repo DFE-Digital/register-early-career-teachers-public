@@ -16,5 +16,9 @@ FactoryBot.define do
     trait(:school_user) do
       author_type { :school_user }
     end
+
+    trait(:with_body) do
+      body { Faker::Lorem.paragraph }
+    end
   end
 end
