@@ -6,7 +6,7 @@ describe 'Events::List' do
   end
 
   describe '.for_teacher' do
-    it 'selects only events with a teacher_id matching the provided teacher' do
+    it 'only selects events with a teacher_id matching the provided teacher' do
       teacher = FactoryBot.create(:teacher)
 
       expect(Events::List.new.for_teacher(teacher).to_sql).to include(%(WHERE "events"."teacher_id" = #{teacher.id}))
