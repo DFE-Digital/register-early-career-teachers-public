@@ -4,7 +4,10 @@
   backlink_href: ab_teacher_path(@teacher)
 ) %>
 
-<%= form_with(model: @pending_induction_submission, url: ab_teacher_record_passed_outcome_path(@teacher), method: 'post') do |f| %>
-  <%= render partial: 'appropriate_bodies/teachers/outcome_form', locals: { f: f } %>
-  <%= f.govuk_submit "Record pass outcome for #{teacher_full_name(@teacher)}" %>
-<% end %>
+<%= render Teachers::RecordOutcomeComponent.new(
+  teacher: @teacher,
+  pending_induction_submission: @pending_induction_submission,
+  mode: :appropriate_body,
+  outcome_type: :passed,
+  appropriate_body: @appropriate_body
+) %>
