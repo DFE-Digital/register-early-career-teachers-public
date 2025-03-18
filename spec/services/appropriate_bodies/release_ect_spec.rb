@@ -40,7 +40,7 @@ describe AppropriateBodies::ReleaseECT do
     end
   end
 
-  describe 'release!' do
+  describe '#release!' do
     it 'closes the induction period setting the finished_on date and number_of_terms' do
       expect(induction_period.number_of_terms).to be_blank
       expect(induction_period.finished_on).to be_blank
