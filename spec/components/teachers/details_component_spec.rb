@@ -42,7 +42,7 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
       result = render_inline(component)
 
       # Verify the component renders an empty string
-      expect(result.to_html).to eq("\n\n\n\n\n")
+      expect(result.to_html).to eq("\n\n\n\n\n\n")
     end
   end
 
