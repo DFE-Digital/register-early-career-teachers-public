@@ -34,6 +34,10 @@ module AppropriateBodies
     end
 
     def ongoing_induction_period
+      @ongoing_induction_period ||= find_ongoing_induction_period
+    end
+
+    def find_ongoing_induction_period
       ongoing_induction_periods = InductionPeriod.ongoing.for_teacher(teacher)
 
       if ongoing_induction_periods.count.zero?
