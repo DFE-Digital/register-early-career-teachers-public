@@ -1,5 +1,5 @@
 ---
-title: API versioning guidalines
+title: API Change Management Guidelines
 ---
 
 ## Breaking and Non-Breaking Changes Explained
