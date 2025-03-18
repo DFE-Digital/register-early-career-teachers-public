@@ -8,12 +8,8 @@
   )
 %>
 
-<div class="govuk-button-group">
-  <%= govuk_button_link_to("Pass induction", new_admin_teacher_record_passed_outcome_path(@teacher)) %>
-  <%= govuk_link_to("Fail induction", new_admin_teacher_record_failed_outcome_path(@teacher)) %>
-</div>
-
 <%= render Teachers::DetailsComponent.new(mode: :admin, teacher: @teacher) do |component|
+  component.with_induction_outcome_actions
   component.with_induction_summary(is_admin: true)
   component.with_current_induction_period(enable_edit: true)
   component.with_past_induction_periods(enable_edit: true)
