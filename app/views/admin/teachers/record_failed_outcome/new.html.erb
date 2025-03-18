@@ -4,7 +4,9 @@
   backlink_href: admin_teacher_path(@teacher)
 ) %>
 
-<%= form_with(model: @pending_induction_submission, url: admin_teacher_record_failed_outcome_path(@teacher), method: 'post') do |f| %>
-  <%= render partial: 'shared/outcome_form', locals: { f: f } %>
-  <%= f.govuk_submit "Record fail outcome for #{teacher_full_name(@teacher)}" %>
-<% end %>
+<%= render Teachers::RecordOutcomeComponent.new(
+  teacher: @teacher,
+  pending_induction_submission: @pending_induction_submission,
+  mode: :admin,
+  outcome_type: :failed
+) %>

@@ -1,0 +1,15 @@
+<% if show_appeal_notice? %>
+<p class="govuk-body">
+  <%= teacher_full_name %> can appeal this outcome. You must tell them about their right to appeal and the appeal process.
+</p>
+<% end %>
+
+<%= form_with(model: pending_induction_submission, url: form_url, method: 'post') do |f| %>
+  <%= render Teachers::OutcomeFormComponent.new(
+    form: f,
+    teacher: teacher,
+    is_admin: is_admin,
+    appropriate_body: appropriate_body
+  ) %>
+  <%= f.govuk_submit submit_text, warning: warning? %>
+<% end %>
