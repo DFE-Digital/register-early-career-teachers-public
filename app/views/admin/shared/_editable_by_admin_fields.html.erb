@@ -1,0 +1,14 @@
+<h2 class="govuk-heading-m">Reasons for making the change</h2>
+<%=
+  f.govuk_text_field(
+    :zendesk_ticket_url,
+    label: { text: "Zendesk ticket URL" },
+  )
+%>
+
+<%=
+  f.govuk_text_area(
+    :body,
+    label: { text: "Why are you making this change?" },
+  )
+%>

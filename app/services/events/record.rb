@@ -23,7 +23,8 @@ module Events
                 :delivery_partner,
                 :user,
                 :modifications,
-                :metadata
+                :metadata,
+                :zendesk_ticket_url
 
     def initialize(
       author:,
@@ -45,7 +46,8 @@ module Events
       delivery_partner: nil,
       user: nil,
       modifications: nil,
-      metadata: nil
+      metadata: nil,
+      zendesk_ticket_url: nil
     )
       @author = author
       @event_type = event_type
@@ -67,6 +69,7 @@ module Events
       @user = user
       @modifications = DescribeModifications.new(modifications).describe
       @metadata = metadata || modifications
+      @zendesk_ticket_url = zendesk_ticket_url
     end
 
     def record_event!
@@ -150,12 +153,15 @@ module Events
 
     # Admin events
 
-    def self.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
+    def self.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher:, appropriate_body:, editable_by_admin_params:, happened_at: Time.zone.now)
       event_type = :admin_updates_induction_period
 
       heading = 'Induction period updated by admin'
 
-      new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
+      body = editable_by_admin_params[:body]
+      zendesk_ticket_url = editable_by_admin_params[:zendesk_ticket_url]
+
+      new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:, body:, zendesk_ticket_url:).record_event!
     end
 
   private
@@ -170,6 +176,7 @@ module Events
         heading:,
         body:,
         happened_at:,
+        zendesk_ticket_url:
       }.compact
     end
 
