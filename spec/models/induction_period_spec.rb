@@ -77,7 +77,7 @@ RSpec.describe InductionPeriod do
         before { subject.outcome = 'invalid' }
 
         it do
-          is_expected.not_to be_valid
+          expect(subject).not_to be_valid
           expect(subject.errors[:outcome]).to include("Outcome must be either pass or fail")
         end
       end
@@ -102,7 +102,7 @@ RSpec.describe InductionPeriod do
         let(:started_on) { Date.current + 1.day }
 
         it do
-          is_expected.not_to be_valid
+          expect(subject).not_to be_valid
           expect(subject.errors[:started_on]).to include("Start date cannot be in the future")
         end
       end
@@ -127,7 +127,7 @@ RSpec.describe InductionPeriod do
         let(:finished_on) { Date.current + 1.day }
 
         it do
-          is_expected.not_to be_valid
+          expect(subject).not_to be_valid
           expect(subject.errors[:finished_on]).to include("End date cannot be in the future")
         end
       end
@@ -156,7 +156,7 @@ RSpec.describe InductionPeriod do
         subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: "4.r5", finished_on: Date.current) }
 
         it do
-          is_expected.not_to be_valid
+          expect(subject).not_to be_valid
           expect(subject.errors[:number_of_terms]).to include("Number of terms must be a number with up to 1 decimal place")
         end
       end
@@ -165,7 +165,7 @@ RSpec.describe InductionPeriod do
         subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: 3.45, finished_on: Date.current) }
 
         it do
-          is_expected.not_to be_valid
+          expect(subject).not_to be_valid
           expect(subject.errors[:number_of_terms]).to include("Terms can only have up to 1 decimal place")
         end
       end
@@ -207,15 +207,15 @@ RSpec.describe InductionPeriod do
     subject { induction_period_1.siblings }
 
     it "only returns records that belong to the same mentee" do
-      is_expected.to include(induction_period_2)
+      expect(subject).to include(induction_period_2)
     end
 
     it "doesn't include itself" do
-      is_expected.not_to include(induction_period_1)
+      expect(subject).not_to include(induction_period_1)
     end
 
     it "doesn't include periods that belong to other mentees" do
-      is_expected.not_to include(unrelated_induction_period)
+      expect(subject).not_to include(unrelated_induction_period)
     end
   end
 end
