@@ -1,17 +1,25 @@
+---
+inherit_from: .rubocop_todo.yml
+
+plugins: 
+  - rubocop-performance
+  - rubocop-factory_bot
+
 inherit_gem:
   rubocop-govuk:
     - config/default.yml
     - config/rails.yml
+    - config/rspec.yml    
+
+inherit_mode:
+  merge:
+    - Exclude
 
 AllCops:
-  Exclude:
-    - node_modules/**/*
-    - bin/bundle
-    - db/schema.rb
-    - vendor/bundle/**/*
+  TargetRubyVersion: 3.3.4
 
 Style/StringLiterals:
-  Enabled: false
+  EnforcedStyle: single_quotes
 
 Style/EmptyMethod:
   EnforcedStyle: expanded
@@ -43,6 +51,12 @@ Style/SignalException:
 Style/StringConcatenation:
   Enabled: false
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
+
+Style/Lambda:
+  EnforcedStyle: literal
+
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
 
@@ -59,9 +73,3 @@ Naming/MethodParameterName:
 
 Lint/MissingSuper:
   Enabled: false
-
-Style/HashSyntax:
-  EnforcedShorthandSyntax: always
-
-Style/Lambda:
-  EnforcedStyle: literal
