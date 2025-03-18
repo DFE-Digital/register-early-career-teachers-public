@@ -3,34 +3,39 @@ module AppropriateBodies
     class ReleaseECTController < AppropriateBodiesController
       def new
         @teacher = find_current_teacher
-
         @pending_induction_submission = PendingInductionSubmission.new
+      rescue ActiveRecord::RecordNotFound
+        redirect_to ab_teacher_path(params[:teacher_id]), notice: "No active induction period found"
       end
 
       def create
         @teacher = find_current_teacher
-        @pending_induction_submission = PendingInductionSubmissions::Build.closing_induction_period(
-          ::Teachers::InductionPeriod.new(@teacher).active_induction_period,
-          **pending_induction_submission_params,
-          **pending_induction_submission_attributes
-        ).pending_induction_submission
 
-        release_ect = AppropriateBodies::ReleaseECT.new(
-          appropriate_body: @appropriate_body,
-          pending_induction_submission: @pending_induction_submission,
-          author: current_user
-        )
+        if current_teacher_ongoing_induction_period.present?
 
-        PendingInductionSubmission.transaction do
-          if @pending_induction_submission.save(context: :release_ect) && release_ect.release!
-            redirect_to(ab_teacher_release_ect_path(@teacher))
-          else
-            render :new
+          @pending_induction_submission = PendingInductionSubmissions::Build.closing_induction_period(
+            current_teacher_ongoing_induction_period,
+            **pending_induction_submission_params,
+            **pending_induction_submission_attributes
+          ).pending_induction_submission
+
+          release_ect = AppropriateBodies::ReleaseECT.new(
+            appropriate_body: @appropriate_body,
+            pending_induction_submission: @pending_induction_submission,
+            author: current_user
+          )
+
+          PendingInductionSubmission.transaction do
+            if @pending_induction_submission.save(context: :release_ect) && release_ect.release!
+              redirect_to(ab_teacher_release_ect_path(@teacher))
+            else
+              render :new
+            end
           end
+
+        else
+          redirect_to ab_teacher_path(@teacher)
         end
-      rescue ::AppropriateBodies::Errors::ECTHasNoOngoingInductionPeriods => e
-        @pending_induction_submission.errors.add(:base, message: e.message)
-        render :new
       end
 
       def show
@@ -53,6 +58,10 @@ module AppropriateBodies
 
       def find_former_teacher
         AppropriateBodies::ECTs.new(@appropriate_body).former.find_by!(id: params[:teacher_id])
+      end
+
+      def current_teacher_ongoing_induction_period
+        @current_teacher_ongoing_induction_period ||= ::Teachers::InductionPeriod.new(@teacher).ongoing_induction_period
       end
     end
   end

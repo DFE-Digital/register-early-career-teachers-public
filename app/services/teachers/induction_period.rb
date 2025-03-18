@@ -25,9 +25,11 @@ class Teachers::InductionPeriod
     last_induction_period.appropriate_body.name
   end
 
-  def active_induction_period
-    # FIXME: this works if finished_on cannot be set to a future date
-    # If that becomes possible, this query will need to be updated
+  # FIXME: this works if finished_on cannot be set to a future date
+  # If that becomes possible, this query will need to be updated
+  #
+  # @return [InductionPeriod, nil]
+  def ongoing_induction_period
     teacher.induction_periods.ongoing.first
   end
 

@@ -6,7 +6,7 @@ module PendingInductionSubmissions
       @pending_induction_submission = PendingInductionSubmission.new(...)
     end
 
-    # build a PendingInductionSubmission with the started_on date of the inductoin period
+    # build a PendingInductionSubmission with the started_on date of the induction period
     # it'll be closing populated so we can compare it to the finish date when applying
     # validation
     def self.closing_induction_period(induction_period, **attributes)

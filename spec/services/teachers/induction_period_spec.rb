@@ -24,33 +24,22 @@ describe Teachers::InductionPeriod do
     end
   end
 
-  context '#active_induction_period' do
-    before do
-      InductionPeriod.new(
-        appropriate_body: FactoryBot.create(:appropriate_body),
-        teacher:,
-        started_on: Date.new(2023, 10, 3),
-        finished_on: Date.new(2023, 12, 3)
-      )
-    end
-
-    context 'when teacher does not have an active induction period' do
-      it { expect(service.active_induction_period).to be_nil }
-    end
-
-    context "when the teacher has an active induction period" do
-      let!(:active_induction_period) do
-        FactoryBot.create(
-          :induction_period,
-          :active,
-          appropriate_body: FactoryBot.create(:appropriate_body),
-          teacher:,
-          started_on: Date.new(2024, 10, 3)
-        )
+  context '#ongoing_induction_period' do
+    context 'without ongoing induction period' do
+      before do
+        FactoryBot.create(:induction_period, teacher:, started_on: '2023-10-3', finished_on: '2023-12-3')
       end
 
-      it 'returns the active induction period for the teacher' do
-        expect(service.active_induction_period).to eq(active_induction_period)
+      it { expect(service.ongoing_induction_period).to be_nil }
+    end
+
+    context "with ongoing induction period" do
+      let!(:ongoing_induction_period) do
+        FactoryBot.create(:induction_period, :active, teacher:, started_on: '2023-10-3')
+      end
+
+      it 'returns the active open induction period' do
+        expect(service.ongoing_induction_period).to eq(ongoing_induction_period)
       end
     end
   end
