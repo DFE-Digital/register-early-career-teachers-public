@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Admin::UpdateInductionPeriodService do
+RSpec.describe Admin::UpdateInductionPeriod do
   subject(:service) { described_class.new(induction_period:, params:, author:) }
 
   let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
@@ -17,7 +17,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
   end
   let(:params) { {} }
 
-  describe "#update" do
+  describe "#update_induction_period" do
     context "with valid params" do
       let(:params) do
         {
@@ -29,7 +29,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
       end
 
       it "updates the induction period" do
-        expect { service.update_induction! }.to change { induction_period.reload.started_on }.to(Date.parse("2024-01-01"))
+        expect { service.update_induction_period! }.to change { induction_period.reload.started_on }.to(Date.parse("2024-01-01"))
           .and change { induction_period.reload.finished_on }.to(Date.parse("2024-12-31"))
           .and change { induction_period.reload.number_of_terms }.to(3)
           .and change { induction_period.reload.induction_programme }.to("cip")
@@ -40,8 +40,8 @@ RSpec.describe Admin::UpdateInductionPeriodService do
       let(:induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: "2023-06-01", finished_on: "2023-12-31", outcome: "pass") }
 
       it "raises an error" do
-        expect { service.update_induction! }.to raise_error(
-          Admin::UpdateInductionPeriodService::RecordedOutcomeError,
+        expect { service.update_induction_period! }.to raise_error(
+          Admin::UpdateInductionPeriod::RecordedOutcomeError,
           "Cannot edit induction period with recorded outcome"
         )
       end
@@ -57,7 +57,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
         end
 
         it "raises an error" do
-          expect { service.update_induction! }.to raise_error(
+          expect { service.update_induction_period! }.to raise_error(
             ActiveRecord::RecordInvalid,
             "Validation failed: Finished on The finish date must be later than the start date (31 December 2023)"
           )
@@ -69,7 +69,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
         let(:params) { { started_on: "2022-12-31" } }
 
         it "raises an error" do
-          expect { service.update_induction! }.to raise_error(
+          expect { service.update_induction_period! }.to raise_error(
             ActiveRecord::RecordInvalid,
             "Validation failed: Started on Start date cannot be before QTS award date (1 January 2023)"
           )
@@ -89,7 +89,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
           let(:params) { { started_on: "2023-05-01" } }
 
           it "raises an error" do
-            expect { service.update_induction! }.to raise_error(
+            expect { service.update_induction_period! }.to raise_error(
               ActiveRecord::RecordInvalid,
               "Validation failed: Started on Start date cannot overlap another induction period"
             )
@@ -108,7 +108,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
           let(:params) { { finished_on: "2023-12-01" } }
 
           it "raises an error" do
-            expect { service.update_induction! }.to raise_error(
+            expect { service.update_induction_period! }.to raise_error(
               ActiveRecord::RecordInvalid,
               "Validation failed: Finished on End date cannot overlap another induction period"
             )
@@ -125,7 +125,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
       end
 
       it "enqueues BeginECTInductionJob" do
-        service.update_induction!
+        service.update_induction_period!
 
         expect(BeginECTInductionJob).to have_received(:perform_later).with(
           trn: teacher.trn,
@@ -143,7 +143,7 @@ RSpec.describe Admin::UpdateInductionPeriodService do
         end
 
         it "does not enqueue BeginECTInductionJob" do
-          service.update_induction!
+          service.update_induction_period!
 
           expect(BeginECTInductionJob).not_to have_received(:perform_later)
         end
