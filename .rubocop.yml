@@ -8,11 +8,17 @@ plugins:
 inherit_gem:
   rubocop-govuk:
     - config/default.yml
-#     - config/rails.yml
+    - config/rails.yml
     - config/rspec.yml    
+
+inherit_mode:
+  merge:
+    - Exclude
 
 AllCops:
   TargetRubyVersion: 3.3.4
+
+# Style
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
@@ -47,25 +53,29 @@ Style/SignalException:
 Style/StringConcatenation:
   Enabled: false
 
-# Rails/UniqueValidationWithoutIndex:
-#   Enabled: false
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
 
-# Rails/Output:
-#   Exclude:
-#     - db/seeds*
+Style/Lambda:
+  EnforcedStyle: literal
 
-# Rails/SaveBang:
-#   Exclude:
-#     - app/services/**/*
+# Rails
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
+
+Rails/Output:
+  Exclude:
+    - db/seeds*
+
+Rails/SaveBang:
+  Exclude:
+    - app/services/**/*
+
+# Other
 
 Naming/MethodParameterName:
   Enabled: false
 
 Lint/MissingSuper:
   Enabled: false
-
-Style/HashSyntax:
-  EnforcedShorthandSyntax: always
-
-Style/Lambda:
-  EnforcedStyle: literal
