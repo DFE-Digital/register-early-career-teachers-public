@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Teachers::Details::PersonalDetailsComponent, type: :component do
   include TeacherHelper
 

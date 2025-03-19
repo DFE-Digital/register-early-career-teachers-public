@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Teachers::Extensions::CreateExtension do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:service) { described_class.new(teacher, valid_params) }

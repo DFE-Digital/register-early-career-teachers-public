@@ -1,5 +1,3 @@
-require "rails_helper"
-
 describe TestGuidanceComponent, type: :component do
   it "renders when TEST_GUIDANCE is true" do
     with_env_var("TEST_GUIDANCE", "true") do

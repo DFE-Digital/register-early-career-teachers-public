@@ -1,4 +1,3 @@
-require "rails_helper"
 require "dfe/analytics/rspec/matchers"
 
 RSpec.describe "DfE Analytics", type: :request do

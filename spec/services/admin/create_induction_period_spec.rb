@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Admin::CreateInductionPeriod do
   let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
