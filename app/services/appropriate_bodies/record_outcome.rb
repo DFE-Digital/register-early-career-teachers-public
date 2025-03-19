@@ -44,7 +44,8 @@ module AppropriateBodies
     end
 
     def record_pass_induction_event!
-      Events::Record.record_appropriate_body_passes_teacher_event(
+      Events::Record.public_send(
+        "record_#{user_type}_passes_teacher_event",
         author:,
         teacher:,
         appropriate_body:,
@@ -53,12 +54,21 @@ module AppropriateBodies
     end
 
     def record_fail_induction_event!
-      Events::Record.record_appropriate_body_fails_teacher_event(
+      Events::Record.public_send(
+        "record_#{user_type}_fails_teacher_event",
         author:,
         teacher:,
         appropriate_body:,
         induction_period: ongoing_induction_period
       )
+    end
+
+    def user_type
+      if author.dfe_user?
+        :admin
+      else
+        :appropriate_body
+      end
     end
 
     def close_induction_period(outcome)

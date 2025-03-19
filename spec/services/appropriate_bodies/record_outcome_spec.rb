@@ -78,6 +78,36 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
         expect(Event.last.event_type).to eq("appropriate_body_passes_teacher")
       end
+
+      context "when the author is a DfE user" do
+        let(:dfe_user) { FactoryBot.create(:user, email: 'dfe_user@education.gov.uk') }
+        let(:author) do
+          Sessions::Users::DfEUser.new(
+            email: dfe_user.email
+          )
+        end
+
+        before do
+          allow(author).to receive(:dfe_user?).and_return(true)
+        end
+
+        it "records an admin pass event" do
+          allow(Events::Record).to receive(:record_admin_passes_teacher_event).and_call_original
+
+          service.pass!
+
+          expect(Events::Record).to have_received(:record_admin_passes_teacher_event).with(
+            appropriate_body:,
+            teacher:,
+            induction_period:,
+            author:
+          )
+
+          perform_enqueued_jobs
+
+          expect(Event.last.event_type).to eq("admin_passes_teacher")
+        end
+      end
     end
 
     context "when induction period update fails" do
@@ -141,6 +171,36 @@ RSpec.describe AppropriateBodies::RecordOutcome do
         perform_enqueued_jobs
 
         expect(Event.last.event_type).to eq("appropriate_body_fails_teacher")
+      end
+
+      context "when the author is a DfE user" do
+        let(:dfe_user) { FactoryBot.create(:user, email: 'dfe_user@education.gov.uk') }
+        let(:author) do
+          Sessions::Users::DfEUser.new(
+            email: dfe_user.email
+          )
+        end
+
+        before do
+          allow(author).to receive(:dfe_user?).and_return(true)
+        end
+
+        it "records an admin fail event" do
+          allow(Events::Record).to receive(:record_admin_fails_teacher_event).and_call_original
+
+          service.fail!
+
+          expect(Events::Record).to have_received(:record_admin_fails_teacher_event).with(
+            appropriate_body:,
+            teacher:,
+            induction_period:,
+            author:
+          )
+
+          perform_enqueued_jobs
+
+          expect(Event.last.event_type).to eq("admin_fails_teacher")
+        end
       end
     end
 
