@@ -21,7 +21,7 @@ describe Schools::RegisterMentorWizard::Mentor do
       let!(:existing_mentor_record) { FactoryBot.create(:mentor_at_school_period, :active, school:, teacher:) }
 
       it 'returns true' do
-        expect(mentor.active_at_school?).to eq(true)
+        expect(mentor.active_at_school?).to be(true)
       end
     end
 
@@ -29,7 +29,7 @@ describe Schools::RegisterMentorWizard::Mentor do
       let!(:existing_mentor_record) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
 
       it 'returns false' do
-        expect(mentor.active_at_school?).to eq(false)
+        expect(mentor.active_at_school?).to be(false)
       end
     end
   end

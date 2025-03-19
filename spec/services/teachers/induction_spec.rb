@@ -1,5 +1,6 @@
 RSpec.describe Teachers::Induction do
   subject(:service) { described_class.new(teacher) }
+
   let(:teacher) { FactoryBot.create(:teacher) }
 
   describe "#current_induction_period" do

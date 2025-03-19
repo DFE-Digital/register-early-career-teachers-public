@@ -56,6 +56,7 @@ describe Event do
 
     describe '#event_happened_in_the_past' do
       subject { FactoryBot.build(:event, happened_at:) }
+
       before { subject.valid? }
 
       context 'when happened_at is in the past' do

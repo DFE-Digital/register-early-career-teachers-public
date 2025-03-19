@@ -46,7 +46,7 @@ RSpec.describe Schools::RegisterECT do
       let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
       it "doesn't create a new Teacher record" do
-        expect { service.register! }.to_not change(Teacher, :count)
+        expect { service.register! }.not_to change(Teacher, :count)
       end
     end
 
