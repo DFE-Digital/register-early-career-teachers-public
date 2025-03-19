@@ -30,6 +30,7 @@ RSpec.describe TeacherHelper, type: :helper do
 
       it { expect(teacher_induction_start_date(teacher)).to eq(1.year.ago.to_date.to_fs(:govuk)) }
     end
+
     context 'when not training' do
       it { expect(teacher_induction_start_date(teacher)).to be_nil }
     end

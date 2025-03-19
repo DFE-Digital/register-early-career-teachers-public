@@ -1,5 +1,6 @@
 RSpec.describe Schools::CheckEarlyRollOutMentor do
   subject(:service) { described_class.new(trn) }
+
   let(:trn) { '7654321' }
 
   describe '#early_roll_out_mentor?' do

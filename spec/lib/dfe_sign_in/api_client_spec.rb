@@ -47,7 +47,7 @@ describe DfESignIn::APIClient do
     it 'allows the timeout to be overridden' do
       api_client = DfESignIn::APIClient.new(timeout: 8)
 
-      expect(api_client.connection.options.timeout).to eql(8)
+      expect(api_client.connection.options.timeout).to be(8)
     end
 
     it 'constructs the JWT using the correct values' do

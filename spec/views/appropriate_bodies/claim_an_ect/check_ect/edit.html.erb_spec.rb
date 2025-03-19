@@ -45,7 +45,7 @@ RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
         render
         expect(rendered).to have_text('You cannot register Anna Chancellor')
         expect(rendered).to have_text('completing their induction with another appropriate body')
-        expect(rendered).to_not have_button('Claim induction')
+        expect(rendered).not_to have_button('Claim induction')
       end
     end
   end

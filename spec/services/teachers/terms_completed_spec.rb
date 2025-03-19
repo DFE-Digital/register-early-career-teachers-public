@@ -1,5 +1,6 @@
 describe Teachers::TermsCompleted do
   subject(:service) { described_class.new(teacher) }
+
   let(:teacher) { FactoryBot.create(:teacher) }
 
   describe '#formatted_terms_completed' do
