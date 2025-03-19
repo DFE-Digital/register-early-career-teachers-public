@@ -1,7 +1,7 @@
 RSpec.describe "schools/register_mentor_wizard/already_active_at_school.md.erb" do
   let(:assign_mentor_path) { wizard.current_step_path }
   let(:ect_name) { Faker::Name.name }
-  let(:store) { double(trs_first_name: "John", trs_last_name: "Waters", corrected_name: "Jim Waters") }
+  let(:store) { double(trs_first_name: "John", trs_last_name: "Waters", change_name: "yes", corrected_name: "Jim Waters") }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :already_active_at_school, store:) }
   let(:mentor) { wizard.mentor }
 
