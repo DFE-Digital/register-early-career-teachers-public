@@ -141,8 +141,16 @@ RSpec.describe 'schools/ects/show.html.erb' do
       let(:programme_type) { 'school_led' }
       let(:requested_lead_provider) { nil }
 
-      it 'hides Lead Provider' do
-        expect(rendered).not_to have_css('dd.govuk-summary-list__value', text: 'Requested LP')
+      it 'does not render the lead provider summary card' do
+        expect(rendered).not_to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
+      end
+    end
+
+    context 'when provider-led' do
+      let(:programme_type) { 'provider_led' }
+
+      it 'renders the lead provider summary card' do
+        expect(rendered).to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
       end
     end
 

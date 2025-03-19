@@ -9,69 +9,12 @@
 
 <%= render Schools::TeacherProfileSummaryListComponent.new(@ect) %>
 
-<h2 class='govuk-heading-m'>ECTE training details</h2>
-<%=
-  govuk_summary_card(title: 'Reported to us by your school') do |card|
-    if @ect.provider_led?
-      card.with_summary_list(
-        rows: [
-          { key: { text: 'Appropriate body' },
-            value: { text: appropriate_body_name(appropriate_body_type: @ect.appropriate_body_type,
-                                                 appropriate_body: @ect.appropriate_body) } },
-          { key: { text: 'Programme type' },   value: { text: programme_type_name(@ect.programme_type) } },
-          { key: { text: 'Lead provider' },    value: { text: @ect.lead_provider_name } },
-        ]
-      )
-    else
-      card.with_summary_list(
-        rows: [
-          { key: { text: 'Appropriate body' },
-            value: { text:appropriate_body_name(appropriate_body_type: @ect.appropriate_body_type,
-                                                appropriate_body: @ect.appropriate_body) } },
-          { key: { text: 'Programme type' },   value: { text: programme_type_name(@ect.programme_type)  } },
-        ]
-      )
-    end
-  end
-%>
+<h2 class="govuk-heading-m">ECTE training details</h2>
 
-<%=
-  if @ect.provider_led?
-    govuk_summary_card(title: 'Reported to us by your lead provider') do |card|
-      if (period = @ect.training_periods.earliest_first.last)
-        card.with_summary_list(
-          rows: [
-            { key: { text: 'Lead provider' },    value: { text: period.lead_provider.name } },
-            { key: { text: 'Delivery partner' }, value: { text: period.delivery_partner.name } },
-          ]
-        )
-      else
-        card.with_summary_list do |summary_list|
-          summary_list.with_row do |row|
-            row.with_value(text: 'Your lead provider has not reported any information to us yet.')
-          end
-        end
-      end
-    end
-  end
-%>
+<%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your school', ect: @ect, data_source: :school) %>
 
-<%=
-  govuk_summary_card(title: 'Reported to us by your appropriate body') do |card|
-    if @ect.teacher.induction_periods.any?
-      card.with_summary_list(
-        rows: [
-          { key: { text: 'Appropriate body' },      value: { text: teacher_induction_ab_name(@ect.teacher) } },
-          { key: { text: 'Programme type' },        value: { text: teacher_induction_programme(@ect.teacher) } },
-          { key: { text: 'Induction start date' },  value: { text: teacher_induction_start_date(@ect.teacher) } },
-        ]
-      )
-    else
-      card.with_summary_list do |summary_list|
-        summary_list.with_row do |row|
-          row.with_value(text: 'Your appropriate body has not reported any information to us yet.')
-        end
-      end
-    end
-  end
-%>
+<% if @ect.provider_led? %>
+  <%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your lead provider', ect: @ect, data_source: :lead_provider) %>
+<% end %>
+
+<%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your appropriate body', ect: @ect, data_source: :appropriate_body) %>
