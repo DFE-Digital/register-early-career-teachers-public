@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe "Admin root", type: :request do
   describe "GET /admin" do
     it "redirects to teachers path" do

@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe "Participant declarations API", type: :request do
   describe "#create" do
     it "returns method not allowed" do

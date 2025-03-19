@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
   let(:teacher) { nil }
   let(:current_appropriate_body) { FactoryBot.create(:appropriate_body) }

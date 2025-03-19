@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe AppropriateBodies::RecordOutcome do
   include ActiveJob::TestHelper
   include_context 'fake trs api client'
