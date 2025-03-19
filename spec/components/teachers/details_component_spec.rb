@@ -92,4 +92,26 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
       expect(Teachers::Details::PersonalDetailsComponent).to have_received(:new).with(teacher:)
     end
   end
+
+  describe "InductionSummaryComponent" do
+    before do
+      allow(Teachers::Details::InductionSummaryComponent).to receive(:new).and_call_original
+    end
+
+    context "when is_admin is true" do
+      it "passes the correct is_admin argument to InductionSummaryComponent" do
+        render_inline(component) { |c| c.with_induction_summary(is_admin: true) }
+
+        expect(Teachers::Details::InductionSummaryComponent).to have_received(:new).with(teacher:, is_admin: true)
+      end
+    end
+
+    context "when is_admin is not specified" do
+      it "defaults is_admin to false" do
+        render_inline(component, &:with_induction_summary)
+
+        expect(Teachers::Details::InductionSummaryComponent).to have_received(:new).with(teacher:, is_admin: false)
+      end
+    end
+  end
 end
