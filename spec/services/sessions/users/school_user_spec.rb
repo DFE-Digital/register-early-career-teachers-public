@@ -18,13 +18,13 @@ RSpec.describe Sessions::Users::SchoolUser do
 
   describe '.PROVIDER' do
     it 'returns :dfe_sign_in' do
-      expect(described_class::PROVIDER).to eql(:dfe_sign_in)
+      expect(described_class::PROVIDER).to be(:dfe_sign_in)
     end
   end
 
   describe '.USER_TYPE' do
     it 'returns :school_user' do
-      expect(described_class::USER_TYPE).to eql(:school_user)
+      expect(described_class::USER_TYPE).to be(:school_user)
     end
   end
 

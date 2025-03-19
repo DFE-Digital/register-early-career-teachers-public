@@ -143,7 +143,7 @@ describe Interval do
     context 'without overlapping sibling intervals' do
       before { DummyMentor.create(teacher_id:, school_id:, started_on: 1.week.ago, finished_on: 5.days.ago) }
 
-      it { is_expected.to_not have_overlap_with_siblings }
+      it { is_expected.not_to have_overlap_with_siblings }
     end
   end
 

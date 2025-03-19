@@ -17,13 +17,13 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
 
   describe '.PROVIDER' do
     it 'returns :persona' do
-      expect(described_class::PROVIDER).to eql(:persona)
+      expect(described_class::PROVIDER).to be(:persona)
     end
   end
 
   describe '.USER_TYPE' do
     it 'returns :appropriate_body_user' do
-      expect(described_class::USER_TYPE).to eql(:appropriate_body_user)
+      expect(described_class::USER_TYPE).to be(:appropriate_body_user)
     end
   end
 
