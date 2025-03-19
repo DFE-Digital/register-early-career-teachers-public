@@ -18,25 +18,11 @@ module Teachers
     end
 
     def backlink_href
-      if is_admin
-        admin_teacher_path(teacher)
-      else
-        ab_teacher_path(teacher)
-      end
+      public_send("#{user_type}_teacher_path", teacher)
     end
 
     def form_url
-      if is_admin
-        if outcome_type == :passed
-          admin_teacher_record_passed_outcome_path(teacher)
-        else
-          admin_teacher_record_failed_outcome_path(teacher)
-        end
-      elsif outcome_type == :passed
-        ab_teacher_record_passed_outcome_path(teacher)
-      else
-        ab_teacher_record_failed_outcome_path(teacher)
-      end
+      public_send("#{user_type}_teacher_record_#{outcome_type}_outcome_path", teacher)
     end
 
     def submit_text
@@ -52,6 +38,10 @@ module Teachers
     end
 
   private
+
+    def user_type
+      is_admin ? :admin : :ab
+    end
 
     def teacher_full_name
       ::Teachers::Name.new(teacher).full_name
