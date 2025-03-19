@@ -22,6 +22,10 @@ RSpec.describe Admin::CreateInductionPeriod do
   describe '#create_induction_period!' do
     include ActiveJob::TestHelper
 
+    before do
+      allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+    end
+
     it 'returns a saved induction period record' do
       expect(subject).to be_a(InductionPeriod)
       expect(subject).to be_persisted
