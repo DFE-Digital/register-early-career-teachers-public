@@ -56,9 +56,12 @@ module Schools
               return [:confirmation]
             end
 
-            return steps + %i[cannot_register_mentor] if trs_teacher.prohibited_from_teaching?
+            return steps + %i[cannot_register_mentor] if mentor.prohibited_from_teaching
 
-            steps += %i[review_mentor_details email_address]
+            steps << :review_mentor_details
+            return steps unless mentor.change_name
+
+            steps << :email_address
             return steps unless mentor.email
             return steps + %i[cant_use_email] if mentor.cant_use_email?
 
@@ -71,10 +74,6 @@ module Schools
 
       def mentor
         @mentor ||= Mentor.new(store)
-      end
-
-      def trs_teacher
-        current_step.fetch_trs_teacher(trn: mentor.trn)
       end
     end
   end
