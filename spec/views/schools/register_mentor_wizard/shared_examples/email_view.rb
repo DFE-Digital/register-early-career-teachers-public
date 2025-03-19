@@ -8,6 +8,7 @@ RSpec.shared_examples "an email address step view" do |current_step:, back_path:
                      trs_first_name: "John",
                      trs_last_name: "Waters",
                      trs_date_of_birth: "1950-01-01",
+                     change_name: "yes",
                      corrected_name: "Jim Waters",
                      email:)
   end

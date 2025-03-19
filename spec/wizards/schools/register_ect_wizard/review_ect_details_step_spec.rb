@@ -101,7 +101,10 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
 
       it 'updates the wizard ect corrected name' do
         expect { subject.save! }
-          .to change(subject.ect, :corrected_name).from(nil).to('John Smith')
+          .to change(subject.ect, :corrected_name)
+                .from(nil).to('John Smith')
+                .and change(subject.ect, :change_name)
+                       .from(nil).to('yes')
       end
     end
   end
