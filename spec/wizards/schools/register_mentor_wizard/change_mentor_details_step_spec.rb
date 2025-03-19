@@ -13,6 +13,7 @@ describe Schools::RegisterMentorWizard::ChangeMentorDetailsStep, type: :model do
                        trn: '1234567',
                        trs_first_name: 'John',
                        trs_last_name: 'Wayne',
+                       change_name: 'yes',
                        corrected_name: 'Jim Wayne',
                        date_of_birth: '01/01/1990',
                        email: 'initial@email.com')

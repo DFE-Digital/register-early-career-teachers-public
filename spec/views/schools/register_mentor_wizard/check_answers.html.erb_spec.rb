@@ -14,6 +14,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
                      trn: "1234567",
                      trs_first_name: "John",
                      trs_last_name: "Wayne",
+                     change_name: 'yes',
                      corrected_name: "Jim Wayne",
                      email: "john.wayne@example.com")
   end
