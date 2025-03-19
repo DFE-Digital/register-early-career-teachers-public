@@ -14,6 +14,7 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
                      trs_first_name: "John",
                      trs_last_name: "Wayne",
                      trs_date_of_birth: "1950-01-01",
+                     change_name: "no",
                      corrected_name: nil,
                      date_of_birth:,
                      national_insurance_number:,
@@ -34,6 +35,7 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
   end
 
   it "prefixes the page with 'Error:' when any step data is invalid" do
+    store.change_name = 'yes'
     store.corrected_name = 'a' * 100
     wizard.valid_step?
 

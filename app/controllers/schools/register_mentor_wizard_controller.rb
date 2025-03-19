@@ -1,8 +1,8 @@
 module Schools
   class RegisterMentorWizardController < SchoolsController
     before_action :initialize_wizard, only: %i[new create]
-    before_action :check_allowed_step, except: %i[start]
     before_action :reset_wizard, only: :new
+    before_action :check_allowed_step, except: %i[start]
 
     FORM_KEY = :register_mentor_wizard
     WIZARD_CLASS = Schools::RegisterMentorWizard::Wizard.freeze
