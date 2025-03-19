@@ -1,5 +1,6 @@
 describe Teachers::FullNameParser do
   subject(:service) { described_class.new(full_name:) }
+
   let(:full_name) { "\t Mrs. Alison Walnut Curtains-Handbag (Maiden-name ) \n" }
 
   describe '#first_name' do

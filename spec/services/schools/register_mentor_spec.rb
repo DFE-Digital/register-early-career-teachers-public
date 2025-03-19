@@ -42,7 +42,7 @@ RSpec.describe Schools::RegisterMentor do
       let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
       context "without MentorATSchoolPeriod records" do
-        it { expect { service.register! }.to_not change(Teacher, :count) }
+        it { expect { service.register! }.not_to change(Teacher, :count) }
       end
 
       context "with MentorATSchoolPeriod records" do

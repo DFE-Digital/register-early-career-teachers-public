@@ -14,13 +14,13 @@ RSpec.describe Sessions::Users::DfEPersona do
 
   describe '.PROVIDER' do
     it 'returns :persona' do
-      expect(described_class::PROVIDER).to eql(:persona)
+      expect(described_class::PROVIDER).to be(:persona)
     end
   end
 
   describe '.USER_TYPE' do
     it 'returns :dfe_staff_user' do
-      expect(described_class::USER_TYPE).to eql(:dfe_staff_user)
+      expect(described_class::USER_TYPE).to be(:dfe_staff_user)
     end
   end
 

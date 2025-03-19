@@ -1,5 +1,6 @@
 describe Teachers::InductionPeriod do
   subject(:service) { described_class.new(teacher) }
+
   let(:teacher) { FactoryBot.create(:teacher) }
 
   context '#induction_start_date' do

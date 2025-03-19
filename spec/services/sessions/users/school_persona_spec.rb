@@ -14,13 +14,13 @@ RSpec.describe Sessions::Users::SchoolPersona do
 
   describe '.PROVIDER' do
     it 'returns :persona' do
-      expect(described_class::PROVIDER).to eql(:persona)
+      expect(described_class::PROVIDER).to be(:persona)
     end
   end
 
   describe '.USER_TYPE' do
     it 'returns :school_user' do
-      expect(described_class::USER_TYPE).to eql(:school_user)
+      expect(described_class::USER_TYPE).to be(:school_user)
     end
   end
 

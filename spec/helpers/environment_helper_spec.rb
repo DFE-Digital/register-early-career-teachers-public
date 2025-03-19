@@ -12,7 +12,7 @@ RSpec.describe EnvironmentHelper, type: :helper do
 
   describe '#environment_specific_header_colour_class' do
     it('is nil when no colour is set (defaults to blue)') do
-      expect(environment_specific_header_colour_class).to be(nil)
+      expect(environment_specific_header_colour_class).to be_nil
     end
 
     context "when ENVIRONMENT_COLOUR is set to 'pink'" do
@@ -31,7 +31,7 @@ RSpec.describe EnvironmentHelper, type: :helper do
     end
 
     it 'has a govuk tag with no colour modifier' do
-      expect(subject).to_not match(/govuk-tag--\w+/)
+      expect(subject).not_to match(/govuk-tag--\w+/)
     end
 
     context 'when ENVIRONMENT_PHASE_BANNER_TAG is not set' do
