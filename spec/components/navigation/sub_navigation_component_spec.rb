@@ -1,5 +1,3 @@
-require "rails_helper"
-
 class TestSubNavigationStructureTwoLevels < Navigation::Structures::BaseSubNavigation
   def get
     [

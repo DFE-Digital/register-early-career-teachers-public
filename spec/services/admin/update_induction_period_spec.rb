@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Admin::UpdateInductionPeriod do
   subject(:service) { described_class.new(induction_period:, params:, author:) }
 

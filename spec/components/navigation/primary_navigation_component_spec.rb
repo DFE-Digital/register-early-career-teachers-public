@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
   let(:current_path) { "/" }
   let(:current_user_type) { nil }

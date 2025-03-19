@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :component do
   include AppropriateBodyHelper
 

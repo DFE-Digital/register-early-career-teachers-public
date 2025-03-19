@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe "Admin::Teachers#show", type: :request do
   include ActionView::Helpers::SanitizeHelper
 
