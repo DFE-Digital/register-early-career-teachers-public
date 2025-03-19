@@ -25,6 +25,7 @@ FactoryBot.define do
 
     trait :school_led do
       programme_type { 'school_led' }
+      lead_provider { nil }
     end
 
     trait :teaching_induction_panel do
