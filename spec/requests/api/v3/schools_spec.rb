@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe "Schools API", type: :request do
   describe "#index" do
     it "returns method not allowed" do

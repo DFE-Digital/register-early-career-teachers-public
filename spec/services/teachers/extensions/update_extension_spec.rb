@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Teachers::Extensions::UpdateExtension do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 1) }

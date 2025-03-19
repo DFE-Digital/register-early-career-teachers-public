@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
   let(:mentee_teacher) { FactoryBot.create(:teacher, trn: '9876543', trs_first_name: 'Kakarot', trs_last_name: 'SSJ') }
   let(:mentor_teacher) { FactoryBot.create(:teacher, trn: '987654', trs_first_name: 'Naruto', trs_last_name: 'Ninetails') }

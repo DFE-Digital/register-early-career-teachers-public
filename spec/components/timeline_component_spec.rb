@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe TimelineComponent, type: :component do
   let(:component) { TimelineComponent.new(events) }
 

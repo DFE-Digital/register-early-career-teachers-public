@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe MarkdownRenderer do
   let(:template) { double("template") }
   let(:erb_handler) { double("erb_handler") }
