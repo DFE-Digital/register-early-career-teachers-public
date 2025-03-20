@@ -67,8 +67,9 @@ describe ECTAtSchoolPeriod do
       end
 
       context "for a state school" do
-        let(:school) { FactoryBot.build(:school, :state_funded) }
         subject { FactoryBot.build(:ect_at_school_period, school:) }
+
+        let(:school) { FactoryBot.build(:school, :state_funded) }
 
         it { is_expected.to validate_presence_of(:appropriate_body_type).with_message("Must be teaching school hub") }
       end

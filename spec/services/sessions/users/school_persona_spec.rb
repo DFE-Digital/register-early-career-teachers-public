@@ -1,12 +1,12 @@
 require_relative 'session_user_context'
 
 RSpec.describe Sessions::Users::SchoolPersona do
+  subject(:school_persona) { described_class.new(email:, name:, school_urn: school.urn, last_active_at:) }
+
   let(:email) { 'school_persona@email.com' }
   let(:last_active_at) { 4.minutes.ago }
   let(:name) { 'Christopher Lee' }
   let(:school) { FactoryBot.create(:school) }
-
-  subject(:school_persona) { described_class.new(email:, name:, school_urn: school.urn, last_active_at:) }
 
   it_behaves_like 'a session user' do
     let(:user_props) { { email:, name:, school_urn: school.urn } }
@@ -34,8 +34,9 @@ RSpec.describe Sessions::Users::SchoolPersona do
     end
 
     describe "when there is no school with the given urn" do
-      let(:unknown_urn) { 'A123456' }
       subject(:school_persona) { described_class.new(email:, name:, school_urn: unknown_urn, last_active_at:) }
+
+      let(:unknown_urn) { 'A123456' }
 
       it 'fails with an UnknownSchoolURN error' do
         expect { subject }.to raise_error(described_class::UnknownSchoolURN, unknown_urn)

@@ -1,4 +1,6 @@
 RSpec.describe Admin::CreateInductionPeriod do
+  subject { Admin::CreateInductionPeriod.new(author:, **params).create_induction_period! }
+
   let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
 
@@ -14,8 +16,6 @@ RSpec.describe Admin::CreateInductionPeriod do
   let(:params) do
     { author:, appropriate_body_id:, teacher_id:, started_on:, finished_on:, induction_programme:, number_of_terms: }
   end
-
-  subject { Admin::CreateInductionPeriod.new(author:, **params).create_induction_period! }
 
   describe '#create_induction_period!' do
     include ActiveJob::TestHelper

@@ -1,4 +1,6 @@
 RSpec.describe AppropriateBodyValidator, type: :model do
+  subject { test_class.new(appropriate_body_type:, appropriate_body_id:) }
+
   let(:test_class) do
     Class.new do
       include ActiveModel::Model
@@ -7,9 +9,6 @@ RSpec.describe AppropriateBodyValidator, type: :model do
       validates_with AppropriateBodyValidator
     end
   end
-
-  subject { test_class.new(appropriate_body_type:, appropriate_body_id:) }
-
   let(:appropriate_body_type) { '' }
   let(:appropriate_body_id) { '' }
 

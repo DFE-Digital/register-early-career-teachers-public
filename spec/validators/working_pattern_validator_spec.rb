@@ -1,4 +1,6 @@
 RSpec.describe WorkingPatternValidator, type: :model do
+  subject { test_class.new(working_pattern:) }
+
   let(:test_class) do
     Class.new do
       include ActiveModel::Model
@@ -7,8 +9,6 @@ RSpec.describe WorkingPatternValidator, type: :model do
       validates :working_pattern, working_pattern: true
     end
   end
-
-  subject { test_class.new(working_pattern:) }
 
   context 'when working_pattern is valid' do
     %w[part_time full_time].each do |valid_value|

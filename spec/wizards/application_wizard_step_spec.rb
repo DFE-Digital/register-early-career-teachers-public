@@ -1,12 +1,11 @@
 RSpec.describe ApplicationWizardStep, type: :model do
   let(:permitted_params) { %i[param1 param2] }
+  let(:instance) { described_class.new(params) }
 
   before do
     described_class.class_exec(permitted_params) { |permitted_params| attr_accessor(*permitted_params) }
     allow(described_class).to receive(:permitted_params).and_return(permitted_params)
   end
-
-  let(:instance) { described_class.new(params) }
 
   describe '#initialize' do
     context 'when permitted params are provided' do

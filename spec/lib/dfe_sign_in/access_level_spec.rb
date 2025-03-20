@@ -1,6 +1,8 @@
 describe 'DfESignIn::AccessLevel' do
   describe '.from_response_body' do
     # https://github.com/DFE-Digital/login.dfe.public-api?tab=readme-ov-file#get-user-access-to-service
+    subject { DfESignIn::AccessLevel.from_response_body(role_data) }
+
     let(:role_data) do
       {
         "userId" => "user-id",
@@ -35,8 +37,6 @@ describe 'DfESignIn::AccessLevel' do
       }
     end
 
-    subject { DfESignIn::AccessLevel.from_response_body(role_data) }
-
     it('assigns user_id') { expect(subject.user_id).to eql('user-id') }
     it('assigns service_id') { expect(subject.service_id).to eql('service-id') }
     it('assigns organisation_id') { expect(subject.organisation_id).to eql('organisation-id') }
@@ -61,6 +61,8 @@ describe 'DfESignIn::AccessLevel' do
   end
 
   describe '#has_register_ect_access_role?' do
+    subject { DfESignIn::AccessLevel.from_response_body(role_data).has_register_ect_access_role? }
+
     let(:role_data) do
       {
         "userId" => "user-id",
@@ -79,8 +81,6 @@ describe 'DfESignIn::AccessLevel' do
         ]
       }
     end
-
-    subject { DfESignIn::AccessLevel.from_response_body(role_data).has_register_ect_access_role? }
 
     context 'when the role is registerECTsAccess' do
       let(:code) { 'registerECTsAccess' }

@@ -1,10 +1,10 @@
 RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
+  subject { described_class.new(current_path:, current_user_type:) }
+
   let(:current_path) { "/" }
   let(:current_user_type) { nil }
   let(:nav_selector) { 'nav.govuk-service-navigation__wrapper' }
   let(:nav_list_selector) { "#{nav_selector} ul#register-early-career-teachers-service-navigation-list" }
-
-  subject { described_class.new(current_path:, current_user_type:) }
 
   def validate_navigation_items(expected_items)
     expect(rendered_content).to have_css(nav_list_selector)

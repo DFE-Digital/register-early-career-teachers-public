@@ -16,12 +16,12 @@ describe ProviderPartnership do
     context "uniqueness of academic_year scoped to lead_provider_id and delivery_partner_id" do
       context "when the provider partnership matches the lead_provider_id, delivery_partner_id and academic_year values
                of an existing provider partnership" do
+        subject { FactoryBot.build(:provider_partnership, academic_year_id:, lead_provider_id:, delivery_partner_id:) }
+
         let!(:existing_partnership) { FactoryBot.create(:provider_partnership) }
         let(:academic_year_id) { existing_partnership.academic_year_id }
         let(:lead_provider_id) { existing_partnership.lead_provider_id }
         let(:delivery_partner_id) { existing_partnership.delivery_partner_id }
-
-        subject { FactoryBot.build(:provider_partnership, academic_year_id:, lead_provider_id:, delivery_partner_id:) }
 
         before do
           subject.valid?

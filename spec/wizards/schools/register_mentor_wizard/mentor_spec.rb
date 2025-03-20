@@ -1,4 +1,6 @@
 describe Schools::RegisterMentorWizard::Mentor do
+  subject(:mentor) { described_class.new(store) }
+
   let(:school) { FactoryBot.create(:school) }
   let(:store) do
     FactoryBot.build(:session_repository,
@@ -11,8 +13,6 @@ describe Schools::RegisterMentorWizard::Mentor do
                      email: 'dusty@rhodes.com',
                      school_urn: school.urn)
   end
-
-  subject(:mentor) { described_class.new(store) }
 
   describe '#active_at_school?' do
     let(:teacher) { FactoryBot.create(:teacher, trn: '3002586') }

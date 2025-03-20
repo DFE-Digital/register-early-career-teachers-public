@@ -9,6 +9,8 @@ describe Teachers::Search do
     end
 
     context 'with appropriate_bodies parameter' do
+      subject { described_class.new(appropriate_bodies: ab) }
+
       let(:ab) { FactoryBot.create(:appropriate_body) }
       let(:ects_service) { instance_double(AppropriateBodies::ECTs) }
       let(:ects_scope) { instance_double(ActiveRecord::Relation) }
@@ -18,8 +20,6 @@ describe Teachers::Search do
         allow(ects_service).to receive(:current_or_completed_while_at_appropriate_body).and_return(ects_scope)
       end
 
-      subject { described_class.new(appropriate_bodies: ab) }
-
       it 'applies appropriate_bodies filter' do
         subject
         expect(AppropriateBodies::ECTs).to have_received(:new).with(ab)
@@ -27,13 +27,13 @@ describe Teachers::Search do
     end
 
     context 'with query_string parameter' do
+      subject { described_class.new(query_string: 'Unique Name') }
+
       let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Unique', trs_last_name: 'Name') }
 
       before do
         allow(Teacher).to receive(:search).and_return(Teacher.where(id: teacher.id))
       end
-
-      subject { described_class.new(query_string: 'Unique Name') }
 
       it 'applies query matching' do
         expect(subject.scope).to include(teacher)
@@ -74,8 +74,9 @@ describe Teachers::Search do
       end
 
       context 'when multiple appropriate bodies are provided' do
-        let!(:induction_period3) { FactoryBot.create(:induction_period, :active, teacher: teacher3, appropriate_body: ab3) }
         subject { Teachers::Search.new(appropriate_bodies: [ab1, ab3]) }
+
+        let!(:induction_period3) { FactoryBot.create(:induction_period, :active, teacher: teacher3, appropriate_body: ab3) }
 
         it 'includes teachers with ongoing induction periods with the specified appropriate bodies' do
           expect(subject.search).to include(teacher1, teacher3)

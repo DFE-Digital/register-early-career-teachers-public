@@ -4,8 +4,9 @@ RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :working_pattern, school:, store:) }
 
   describe '#initialize' do
-    let(:working_pattern) { 'provided_value' }
     subject { described_class.new(wizard:, **params) }
+
+    let(:working_pattern) { 'provided_value' }
 
     context 'when the working_pattern is provided' do
       let(:params) { { working_pattern: } }
@@ -87,6 +88,8 @@ RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
   end
 
   context '#save!' do
+    subject { wizard.current_step }
+
     let(:step_params) do
       ActionController::Parameters.new(
         "working_pattern" => {
@@ -95,8 +98,6 @@ RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
       )
     end
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :working_pattern, step_params:) }
-
-    subject { wizard.current_step }
 
     context 'when the step is not valid' do
       before do

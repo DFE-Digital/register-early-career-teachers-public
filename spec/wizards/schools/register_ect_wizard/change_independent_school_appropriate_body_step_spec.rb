@@ -1,10 +1,10 @@
 RSpec.describe Schools::RegisterECTWizard::ChangeIndependentSchoolAppropriateBodyStep, type: :model do
+  subject { described_class.new(wizard:, appropriate_body_id: '123', appropriate_body_type: 'Some Teaching School Hub') }
+
   let(:school) { FactoryBot.create(:school, :independent) }
   let(:wizard) do
     FactoryBot.build(:register_ect_wizard, current_step: :change_independent_school_appropriate_body, school:)
   end
-
-  subject { described_class.new(wizard:, appropriate_body_id: '123', appropriate_body_type: 'Some Teaching School Hub') }
 
   describe "inheritance" do
     it "inherits from IndependentSchoolAppropriateBodyStep" do

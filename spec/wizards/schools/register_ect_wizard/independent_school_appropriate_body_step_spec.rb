@@ -2,12 +2,13 @@ RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep,
   let(:school) { FactoryBot.create(:school, :independent) }
 
   describe '#initialize' do
+    subject { described_class.new(wizard:, **params) }
+
     let(:store) { FactoryBot.build(:session_repository, appropriate_body_id: '123', appropriate_body_type: 'prepopulated_type') }
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :independent_school_appropriate_body, store:) }
 
     let(:appropriate_body_id) { 'provided_name' }
     let(:appropriate_body_type) { 'provided_type' }
-    subject { described_class.new(wizard:, **params) }
 
     context 'when the appropriate_body_id is provided' do
       let(:params) { { appropriate_body_id:, appropriate_body_type: } }
@@ -90,6 +91,8 @@ RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep,
   end
 
   describe '#save!' do
+    subject { wizard.current_step }
+
     let(:step_params) do
       ActionController::Parameters.new(
         "independent_school_appropriate_body" => {
@@ -102,8 +105,6 @@ RSpec.describe Schools::RegisterECTWizard::IndependentSchoolAppropriateBodyStep,
     let(:wizard) do
       FactoryBot.build(:register_ect_wizard, current_step: :independent_school_appropriate_body, step_params:)
     end
-
-    subject { wizard.current_step }
 
     context 'when invalid' do
       before do

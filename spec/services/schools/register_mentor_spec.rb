@@ -1,14 +1,4 @@
 RSpec.describe Schools::RegisterMentor do
-  let(:trs_first_name) { "Dusty" }
-  let(:trs_last_name) { "Rhodes" }
-  let(:corrected_name) { "Randy Marsh" }
-  let(:trn) { "3002586" }
-  let(:school) { FactoryBot.create(:school) }
-  let(:email) { "randy@tegridyfarms.com" }
-  let(:started_on) { Date.yesterday }
-  let(:mentor_completion_date) { Date.new(2021, 4, 19) }
-  let(:mentor_completion_reason) { 'completed_during_early_roll_out' }
-
   subject(:service) do
     described_class.new(trs_first_name:,
                         trs_last_name:,
@@ -20,6 +10,16 @@ RSpec.describe Schools::RegisterMentor do
                         mentor_completion_date:,
                         mentor_completion_reason:)
   end
+
+  let(:trs_first_name) { "Dusty" }
+  let(:trs_last_name) { "Rhodes" }
+  let(:corrected_name) { "Randy Marsh" }
+  let(:trn) { "3002586" }
+  let(:school) { FactoryBot.create(:school) }
+  let(:email) { "randy@tegridyfarms.com" }
+  let(:started_on) { Date.yesterday }
+  let(:mentor_completion_date) { Date.new(2021, 4, 19) }
+  let(:mentor_completion_reason) { 'completed_during_early_roll_out' }
 
   describe '#call' do
     let(:mentor_at_school_period) { MentorAtSchoolPeriod.first }

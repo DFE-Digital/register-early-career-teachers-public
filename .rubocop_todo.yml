@@ -124,11 +124,6 @@ RSpec/ImplicitSubject:
 RSpec/IndexedLet:
   Enabled: false
 
-# Offense count: 122
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/LeadingSubject:
-  Enabled: false
-
 # Offense count: 91
 RSpec/LetSetup:
   Enabled: false
@@ -196,28 +191,6 @@ RSpec/RepeatedExampleGroupDescription:
     - 'spec/requests/pages_spec.rb'
     - 'spec/views/appropriate_bodies/claim_an_ect/check_ect/edit.html.erb_spec.rb'
     - 'spec/wizards/schools/register_mentor_wizard/national_insurance_number_step_spec.rb'
-
-# Offense count: 13
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AutoCorrect.
-RSpec/ScatteredLet:
-  Exclude:
-    - 'spec/features/appropriate_bodies/record_failed_outcome_spec.rb'
-    - 'spec/features/appropriate_bodies/record_passed_outcome_spec.rb'
-    - 'spec/features/appropriate_bodies/release_an_ect_spec.rb'
-    - 'spec/models/mentorship_period_spec.rb'
-    - 'spec/models/training_period_spec.rb'
-    - 'spec/validators/appropriate_body_validator_spec.rb'
-    - 'spec/views/schools/ects/show.html.erb_spec.rb'
-    - 'spec/wizards/application_wizard_step_spec.rb'
-
-# Offense count: 4
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AutoCorrect.
-RSpec/ScatteredSetup:
-  Exclude:
-    - 'spec/services/appropriate_bodies/claim_an_ect/register_ect_spec.rb'
-    - 'spec/views/schools/ects/show.html.erb_spec.rb'
 
 # Offense count: 8
 # Configuration parameters: Include, CustomTransform, IgnoreMethods, IgnoreMetadata.

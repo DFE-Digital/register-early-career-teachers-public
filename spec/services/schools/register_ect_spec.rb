@@ -1,17 +1,4 @@
 RSpec.describe Schools::RegisterECT do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:appropriate_body_type) { 'teaching_school_hub' }
-  let(:corrected_name) { "Randy Marsh" }
-  let(:email) { "randy@tegridyfarms.com" }
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:programme_type) { 'provider_led' }
-  let(:school) { FactoryBot.create(:school) }
-  let(:started_on) { Date.yesterday }
-  let(:trn) { "3002586" }
-  let(:trs_first_name) { "Dusty" }
-  let(:trs_last_name) { "Rhodes" }
-  let(:working_pattern) { "full_time" }
-
   subject(:service) do
     described_class.new(appropriate_body:,
                         appropriate_body_type:,
@@ -26,6 +13,19 @@ RSpec.describe Schools::RegisterECT do
                         trs_last_name:,
                         working_pattern:)
   end
+
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_type) { 'teaching_school_hub' }
+  let(:corrected_name) { "Randy Marsh" }
+  let(:email) { "randy@tegridyfarms.com" }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:programme_type) { 'provider_led' }
+  let(:school) { FactoryBot.create(:school) }
+  let(:started_on) { Date.yesterday }
+  let(:trn) { "3002586" }
+  let(:trs_first_name) { "Dusty" }
+  let(:trs_last_name) { "Rhodes" }
+  let(:working_pattern) { "full_time" }
 
   describe '#register!' do
     let(:ect_at_school_period) { ECTAtSchoolPeriod.first }

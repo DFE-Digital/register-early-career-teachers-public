@@ -1,12 +1,12 @@
 RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model do
+  subject { described_class.new(wizard:, programme_type: new_programme_type) }
+
   let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
   let(:programme_type) { 'school_led' }
   let(:new_programme_type) { 'provider_led' }
   let(:school) { FactoryBot.create(:school, :independent) }
   let(:store) { FactoryBot.build(:session_repository, programme_type:, lead_provider_id:) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :change_programme_type, store:, school:) }
-
-  subject { described_class.new(wizard:, programme_type: new_programme_type) }
 
   describe "inheritance" do
     it "inherits from ProgrammeTypeStep" do
