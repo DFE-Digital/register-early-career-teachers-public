@@ -4,8 +4,9 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body, store:, school:) }
 
   describe '#initialize' do
-    let(:appropriate_body_id) { 'provided_ab_name' }
     subject { described_class.new(wizard:, **params) }
+
+    let(:appropriate_body_id) { 'provided_ab_name' }
 
     context 'when the appropriate_body_id is provided' do
       let(:params) { { appropriate_body_id: } }
@@ -72,6 +73,8 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
   end
 
   describe '#save!' do
+    subject { wizard.current_step }
+
     let(:step_params) do
       ActionController::Parameters.new(
         "state_school_appropriate_body" => {
@@ -83,8 +86,6 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
     let(:wizard) do
       FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body, step_params:)
     end
-
-    subject { wizard.current_step }
 
     context 'when the step is not valid' do
       before do

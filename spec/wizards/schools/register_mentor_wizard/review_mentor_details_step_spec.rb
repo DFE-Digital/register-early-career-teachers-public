@@ -6,6 +6,8 @@ describe Schools::RegisterMentorWizard::ReviewMentorDetailsStep, type: :model do
                   next_step: :email_address
 
   describe '#previous_step' do
+    subject { wizard.current_step }
+
     let(:store) do
       FactoryBot.build(:session_repository,
                        trn: '1234567',
@@ -16,7 +18,6 @@ describe Schools::RegisterMentorWizard::ReviewMentorDetailsStep, type: :model do
                        email: 'initial@email.com')
     end
     let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :review_mentor_details, store:) }
-    subject { wizard.current_step }
 
     context "when the date of birth matches TRS" do
       before { allow(wizard.mentor).to receive(:matches_trs_dob?).and_return(true) }

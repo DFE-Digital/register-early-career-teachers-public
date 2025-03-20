@@ -1,4 +1,6 @@
 RSpec.describe ProgrammeTypeValidator, type: :model do
+  subject { test_class.new(programme_type:) }
+
   let(:test_class) do
     Class.new do
       include ActiveModel::Model
@@ -7,8 +9,6 @@ RSpec.describe ProgrammeTypeValidator, type: :model do
       validates :programme_type, programme_type: true
     end
   end
-
-  subject { test_class.new(programme_type:) }
 
   context 'when programme_type is valid' do
     %w[provider_led school_led].each do |valid_value|

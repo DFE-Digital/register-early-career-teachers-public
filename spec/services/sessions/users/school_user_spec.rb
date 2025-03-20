@@ -1,16 +1,16 @@
 require_relative 'session_user_context'
 
 RSpec.describe Sessions::Users::SchoolUser do
+  subject(:school_user) do
+    described_class.new(email:, name:, school_urn: school.urn, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, last_active_at:)
+  end
+
   let(:email) { 'school_user@email.com' }
   let(:last_active_at) { 4.minutes.ago }
   let(:name) { 'Christopher Lee' }
   let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
   let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
   let(:school) { FactoryBot.create(:school) }
-
-  subject(:school_user) do
-    described_class.new(email:, name:, school_urn: school.urn, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, last_active_at:)
-  end
 
   it_behaves_like 'a session user' do
     let(:user_props) { { email:, name:, school_urn: school.urn, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }
@@ -30,7 +30,6 @@ RSpec.describe Sessions::Users::SchoolUser do
 
   context 'initialisation' do
     describe "when there is no school with the given urn" do
-      let(:unknown_urn) { 'A123456' }
       subject do
         described_class.new(email:,
                             name:,
@@ -39,6 +38,8 @@ RSpec.describe Sessions::Users::SchoolUser do
                             dfe_sign_in_user_id:,
                             last_active_at:)
       end
+
+      let(:unknown_urn) { 'A123456' }
 
       it 'fails with an UnknownOrganisationURN error' do
         expect { subject }.to raise_error(described_class::UnknownOrganisationURN, unknown_urn)

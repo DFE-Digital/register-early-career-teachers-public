@@ -199,12 +199,12 @@ RSpec.describe InductionPeriod do
   end
 
   describe "#siblings" do
+    subject { induction_period_1.siblings }
+
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:induction_period_1) { FactoryBot.create(:induction_period, teacher:, started_on: '2022-01-01', finished_on: '2022-06-01') }
     let!(:induction_period_2) { FactoryBot.create(:induction_period, teacher:, started_on: '2022-06-01', finished_on: '2023-01-01') }
     let!(:unrelated_induction_period) { FactoryBot.create(:induction_period, started_on: '2022-06-01', finished_on: '2023-01-01') }
-
-    subject { induction_period_1.siblings }
 
     it "only returns records that belong to the same mentee" do
       expect(subject).to include(induction_period_2)

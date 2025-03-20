@@ -43,12 +43,12 @@ end
 
 RSpec.describe Navigation::SubNavigationComponent, type: :component do
   describe "a nested navigation structure with two levels" do
-    let(:current_path) { "/some-path" }
-    let(:structure) { TestSubNavigationStructureTwoLevels.new }
-
     subject do
       Navigation::SubNavigationComponent.new(current_path, structure: structure.get)
     end
+
+    let(:current_path) { "/some-path" }
+    let(:structure) { TestSubNavigationStructureTwoLevels.new }
 
     it "renders a visually hidden h2 heading" do
       render_inline(subject)
@@ -81,12 +81,12 @@ RSpec.describe Navigation::SubNavigationComponent, type: :component do
   end
 
   describe "a navigation structure with only one level" do
-    let(:structure) { TestSubNavigationStructureOneLevel.new }
-    let(:current_path) { "/some-path" }
-
     subject do
       Navigation::SubNavigationComponent.new(current_path, structure: structure.get)
     end
+
+    let(:structure) { TestSubNavigationStructureOneLevel.new }
+    let(:current_path) { "/some-path" }
 
     it "renders top level navigation items" do
       render_inline(subject)
@@ -99,12 +99,12 @@ RSpec.describe Navigation::SubNavigationComponent, type: :component do
 
   describe "highlighting the current top level nav item" do
     context "when the prefix matches the start of the current path" do
-      let(:current_path) { "/sub-nav-1" }
-      let(:structure) { TestSubNavigationStructureTwoLevels.new }
-
       subject do
         Navigation::SubNavigationComponent.new(current_path, structure: structure.get)
       end
+
+      let(:current_path) { "/sub-nav-1" }
+      let(:structure) { TestSubNavigationStructureTwoLevels.new }
 
       it "marks only the nav item with the matching prefix as 'current'" do
         render_inline(subject)
@@ -119,12 +119,12 @@ RSpec.describe Navigation::SubNavigationComponent, type: :component do
 
   describe "highlighting the current second level nav item" do
     context "when the prefix matches the start of the current path" do
-      let(:current_path) { "/sub-nav-1.1" }
-      let(:structure) { TestSubNavigationStructureTwoLevels.new }
-
       subject do
         Navigation::SubNavigationComponent.new(current_path, structure: structure.get)
       end
+
+      let(:current_path) { "/sub-nav-1.1" }
+      let(:structure) { TestSubNavigationStructureTwoLevels.new }
 
       it "marks only the section as current" do
         render_inline(subject)

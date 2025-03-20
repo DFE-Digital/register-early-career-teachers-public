@@ -1,8 +1,9 @@
 describe AppropriateBodies::ECTs do
+  subject { AppropriateBodies::ECTs.new(appropriate_body) }
+
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  subject { AppropriateBodies::ECTs.new(appropriate_body) }
 
   describe "#current_or_completed_while_at_appropriate_body" do
     context 'when the latest induction period is with this appropriate body' do

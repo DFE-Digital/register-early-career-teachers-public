@@ -1,6 +1,7 @@
 RSpec.shared_examples 'a session user' do
-  let(:last_active_at) { 4.minutes.ago }
   subject(:session_user) { described_class.new(last_active_at:, email:, **user_props) }
+
+  let(:last_active_at) { 4.minutes.ago }
 
   describe '#email' do
     it 'returns the email of the user' do

@@ -2,12 +2,12 @@ describe 'InductionPeriods::CreateInductionPeriod' do
   include ActiveJob::TestHelper
 
   describe '#initialize' do
+    subject { InductionPeriods::CreateInductionPeriod.new(teacher:, appropriate_body:, started_on:, induction_programme:) }
+
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
     let(:started_on) { 3.weeks.ago.to_date }
     let(:induction_programme) { 'cip' }
-
-    subject { InductionPeriods::CreateInductionPeriod.new(teacher:, appropriate_body:, started_on:, induction_programme:) }
 
     it 'accepts and assigns the started_on date, teacher and induction programme' do
       expect(subject.teacher).to eql(teacher)

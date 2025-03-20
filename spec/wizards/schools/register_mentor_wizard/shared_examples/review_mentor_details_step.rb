@@ -1,4 +1,6 @@
 RSpec.shared_examples "a review mentor details step" do |current_step:, next_step:|
+  subject { described_class.new(wizard:) }
+
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: '1234567',
@@ -9,11 +11,11 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
                      email: 'initial@email.com')
   end
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:) }
-  subject { described_class.new(wizard:) }
 
   describe '#initialisation' do
-    let(:corrected_name) { 'Right Name' }
     subject { described_class.new(wizard:, **params) }
+
+    let(:corrected_name) { 'Right Name' }
 
     context 'when the corrected name or change name are provided' do
       let(:params) { { corrected_name: } }
@@ -75,8 +77,9 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
 
   context '#save!' do
     context 'when the step is not valid' do
-      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:) }
       subject { wizard.current_step }
+
+      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:) }
 
       it 'does not update any data in the wizard mentor' do
         expect { subject.save! }.not_to change(subject.mentor, :corrected_name)
@@ -84,6 +87,8 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
     end
 
     context 'when the step is valid' do
+      subject { wizard.current_step }
+
       let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, step_params:) }
       let(:step_params) do
         ActionController::Parameters.new(
@@ -93,8 +98,6 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
           }
         )
       end
-
-      subject { wizard.current_step }
 
       it "'updates the wizard's mentor corrected name'" do
         expect { subject.save! }.to change(subject.mentor, :corrected_name).from(nil).to('Paul Saints')

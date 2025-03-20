@@ -1,12 +1,12 @@
 describe Builders::ECT::SchoolPeriods do
+  subject(:service) { described_class.new(teacher:, school_periods:) }
+
   let(:school_1) { FactoryBot.create(:school, urn: "123456") }
   let(:school_2) { FactoryBot.create(:school, urn: "987654") }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:period_1) { FactoryBot.build(:school_period, urn: school_1.urn, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
   let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:school_periods) { [period_1, period_2] }
-
-  subject(:service) { described_class.new(teacher:, school_periods:) }
 
   xdescribe "#build" do
     it "creates ECTAtSchoolPeriod records for the school periods" do
