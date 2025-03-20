@@ -1,6 +1,7 @@
 RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
-  let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let!(:teacher) { FactoryBot.create(:teacher) }
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:teacher) { FactoryBot.create(:teacher) }
+
   let!(:induction_period) do
     FactoryBot.create(
       :induction_period,
@@ -11,6 +12,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
       induction_programme: 'fip'
     )
   end
+
   let(:valid_params) do
     {
       pending_induction_submission: {

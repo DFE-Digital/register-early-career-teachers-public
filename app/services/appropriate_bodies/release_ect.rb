@@ -11,6 +11,8 @@ module AppropriateBodies
     end
 
     def release!
+      raise Errors::ECTHasNoOngoingInductionPeriods if ongoing_induction_period.blank?
+
       InductionPeriod.transaction do
         ongoing_induction_period.update!(
           finished_on: pending_induction_submission.finished_on,
@@ -34,17 +36,7 @@ module AppropriateBodies
     end
 
     def ongoing_induction_period
-      @ongoing_induction_period ||= find_ongoing_induction_period
-    end
-
-    def find_ongoing_induction_period
-      ongoing_induction_periods = InductionPeriod.ongoing.for_teacher(teacher)
-
-      if ongoing_induction_periods.count.zero?
-        fail(Errors::ECTHasNoOngoingInductionPeriods)
-      end
-
-      ongoing_induction_periods.first
+      @ongoing_induction_period ||= ::Teachers::InductionPeriod.new(teacher).ongoing_induction_period
     end
   end
 end
