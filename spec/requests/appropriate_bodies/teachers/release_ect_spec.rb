@@ -15,22 +15,19 @@ RSpec.describe 'Appropriate body releasing an ECT' do
     context 'when signed in as an appropriate body user' do
       let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
-      before do
-        InductionPeriod.create!(
-          appropriate_body:,
-          teacher:,
-          started_on: Date.parse("2022-09-01"),
-          induction_programme: :fip
-        )
-      end
+      context 'and a teacher actively training' do
+        before do
+          FactoryBot.create(:induction_period, :active, appropriate_body:, teacher:)
+        end
 
-      it 'instantiates a new PendingInductionSubmission and renders the page' do
-        allow(PendingInductionSubmission).to receive(:new).and_call_original
+        it 'instantiates a new PendingInductionSubmission and renders the page' do
+          allow(PendingInductionSubmission).to receive(:new).and_call_original
 
-        get("/appropriate-body/teachers/#{teacher.id}/release/new")
+          get("/appropriate-body/teachers/#{teacher.id}/release/new")
 
-        expect(response).to be_successful
-        expect(PendingInductionSubmission).to have_received(:new).once
+          expect(response).to be_successful
+          expect(PendingInductionSubmission).to have_received(:new).once
+        end
       end
     end
   end
@@ -58,15 +55,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
         end
 
         let!(:induction_period) do
-          FactoryBot.create(
-            :induction_period,
-            :active,
-            appropriate_body:,
-            teacher:,
-            started_on: Date.parse("2022-09-01"),
-            finished_on: nil,
-            number_of_terms: nil
-          )
+          FactoryBot.create(:induction_period, :active, appropriate_body:, teacher:, started_on: "2022-09-01")
         end
 
         let(:release_params) do
@@ -98,7 +87,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
           expect(induction_period.number_of_terms).to eq(6)
 
           expect(response).to be_redirection
-          expect(response.redirect_url).to match(%r{/appropriate-body/teachers/#{teacher.id}/release\z})
+          expect(response.redirect_url).to end_with("/appropriate-body/teachers/#{teacher.id}/release")
         end
 
         context 'with missing params' do

@@ -10,6 +10,8 @@ module AppropriateBodies
     end
 
     def pass!
+      raise Errors::ECTHasNoOngoingInductionPeriods if ongoing_induction_period.blank?
+
       ActiveRecord::Base.transaction do
         success = [
           close_induction_period(:pass),
@@ -22,6 +24,8 @@ module AppropriateBodies
     end
 
     def fail!
+      raise Errors::ECTHasNoOngoingInductionPeriods if ongoing_induction_period.blank?
+
       ActiveRecord::Base.transaction do
         success = [
           close_induction_period(:fail),
@@ -35,8 +39,8 @@ module AppropriateBodies
 
   private
 
-    def active_induction_period
-      @active_induction_period ||= ::Teachers::InductionPeriod.new(teacher).active_induction_period
+    def ongoing_induction_period
+      @ongoing_induction_period ||= ::Teachers::InductionPeriod.new(teacher).ongoing_induction_period
     end
 
     def record_pass_induction_event!
@@ -44,7 +48,7 @@ module AppropriateBodies
         author:,
         teacher:,
         appropriate_body:,
-        induction_period: active_induction_period
+        induction_period: ongoing_induction_period
       )
     end
 
@@ -53,18 +57,18 @@ module AppropriateBodies
         author:,
         teacher:,
         appropriate_body:,
-        induction_period: active_induction_period
+        induction_period: ongoing_induction_period
       )
     end
 
     def close_induction_period(outcome)
-      active_induction_period.update(
+      ongoing_induction_period.update(
         finished_on: pending_induction_submission.finished_on,
         outcome:,
         number_of_terms: pending_induction_submission.number_of_terms
       )
 
-      active_induction_period.valid?
+      ongoing_induction_period.valid?
     end
 
     def send_fail_induction_notification_to_trs
@@ -86,7 +90,7 @@ module AppropriateBodies
     end
 
     def induction_start_date
-      ::Teachers::Induction.new(teacher).induction_start_date
+      @induction_start_date ||= ::Teachers::Induction.new(teacher).induction_start_date
     end
   end
 end

@@ -22,7 +22,14 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:induction_period) { FactoryBot.create(:induction_period, teacher:) }
+
+  let(:induction_period) do
+    FactoryBot.create(:induction_period, :active,
+                      appropriate_body:,
+                      teacher:,
+                      started_on: '2024-1-1')
+  end
+
   let(:pending_induction_submission) do
     FactoryBot.create(:pending_induction_submission,
                       trn: teacher.trn,
@@ -30,19 +37,10 @@ RSpec.describe AppropriateBodies::RecordOutcome do
                       number_of_terms: 6)
   end
 
-  before do
-    allow(Teachers::InductionPeriod).to receive(:new)
-      .with(teacher)
-      .and_return(double(active_induction_period: induction_period))
-  end
-
   describe "#pass!" do
-    let(:induction_start_date) { Date.new(2024, 1, 1) }
-    let(:fake_teacher_induction) { double(Teachers::Induction, induction_start_date:) }
-
-    before { allow(Teachers::Induction).to receive(:new).with(anything).and_return(fake_teacher_induction) }
-
     context "when happy path" do
+      before { induction_period }
+
       it "updates the induction period with pass outcome" do
         service.pass!
 
@@ -58,7 +56,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
           service.pass!
         }.to have_enqueued_job(PassECTInductionJob).with(
           trn: pending_induction_submission.trn,
-          start_date: induction_start_date,
+          start_date: induction_period.started_on,
           completed_date: pending_induction_submission.finished_on,
           pending_induction_submission_id: pending_induction_submission.id
         )
@@ -84,23 +82,29 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
     context "when induction period update fails" do
       before do
-        allow(induction_period).to receive(:update)
-          .and_raise(ActiveRecord::RecordNotFound)
+        allow(Teachers::InductionPeriod).to receive(:new)
+          .with(teacher)
+          .and_return(double(ongoing_induction_period: induction_period))
+
+        allow(induction_period).to receive(:update).and_raise(ActiveRecord::RecordNotFound)
       end
 
-      it "bubbles up the error" do
+      it do
         expect { service.pass! }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context "when an ECT has no ongoing induction periods" do
+      it do
+        expect { subject.pass! }.to raise_error(AppropriateBodies::Errors::ECTHasNoOngoingInductionPeriods)
       end
     end
   end
 
   describe "#fail!" do
-    let(:induction_start_date) { Date.new(2024, 1, 1) }
-    let(:fake_teacher_induction) { double(Teachers::Induction, induction_start_date:) }
-
-    before { allow(Teachers::Induction).to receive(:new).with(anything).and_return(fake_teacher_induction) }
-
     context "when successful" do
+      before { induction_period }
+
       it "updates the induction period with fail outcome" do
         service.fail!
 
@@ -116,7 +120,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
           service.fail!
         }.to have_enqueued_job(FailECTInductionJob).with(
           trn: pending_induction_submission.trn,
-          start_date: induction_start_date,
+          start_date: induction_period.started_on,
           completed_date: pending_induction_submission.finished_on,
           pending_induction_submission_id: pending_induction_submission.id
         )
@@ -142,12 +146,21 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
     context "when induction period update fails" do
       before do
-        allow(induction_period).to receive(:update)
-          .and_raise(ActiveRecord::RecordNotFound)
+        allow(Teachers::InductionPeriod).to receive(:new)
+          .with(teacher)
+          .and_return(double(ongoing_induction_period: induction_period))
+
+        allow(induction_period).to receive(:update).and_raise(ActiveRecord::RecordNotFound)
       end
 
-      it "bubbles up the error" do
+      it do
         expect { service.fail! }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context "when an ECT has no ongoing induction periods" do
+      it do
+        expect { subject.fail! }.to raise_error(AppropriateBodies::Errors::ECTHasNoOngoingInductionPeriods)
       end
     end
   end
