@@ -4,8 +4,9 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :programme_type, school:, store:) }
 
   describe '#initialize' do
-    let(:programme_type) { 'provided_programme_type' }
     subject { described_class.new(wizard:, **params) }
+
+    let(:programme_type) { 'provided_programme_type' }
 
     context 'when the programme_type is provided' do
       let(:params) { { programme_type: } }
@@ -93,6 +94,8 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
   end
 
   context '#save!' do
+    subject { wizard.current_step }
+
     let(:step_params) do
       ActionController::Parameters.new(
         "programme_type" => {
@@ -101,8 +104,6 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
       )
     end
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :programme_type, step_params:) }
-
-    subject { wizard.current_step }
 
     context 'when the step is not valid' do
       before do

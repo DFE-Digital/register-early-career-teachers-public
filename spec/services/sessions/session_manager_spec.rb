@@ -1,4 +1,6 @@
 RSpec.describe Sessions::Manager do
+  subject(:service) { Sessions::Manager.new(session, cookies) }
+
   let(:session) { HashWithIndifferentAccess.new }
   let(:cookies) { HashWithIndifferentAccess.new }
   let(:email) { 'school_persona@email.com' }
@@ -13,8 +15,6 @@ RSpec.describe Sessions::Manager do
                                     dfe_sign_in_user_id: '1',
                                     last_active_at:)
   end
-
-  subject(:service) { Sessions::Manager.new(session, cookies) }
 
   before do
     allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_code: 'registerECTsAccess'))

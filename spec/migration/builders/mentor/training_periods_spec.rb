@@ -1,4 +1,6 @@
 describe Builders::Mentor::TrainingPeriods do
+  subject(:service) { described_class.new(teacher:, training_period_data:) }
+
   let(:academic_year) { FactoryBot.create(:academic_year) }
   let(:partnership_1) { FactoryBot.create(:provider_partnership, academic_year:) }
   let(:partnership_2) { FactoryBot.create(:provider_partnership, academic_year:) }
@@ -10,8 +12,6 @@ describe Builders::Mentor::TrainingPeriods do
   let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: academic_year.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
   let(:training_period_2) { FactoryBot.build(:training_period_data, cohort_year: academic_year.year, lead_provider: partnership_2.lead_provider.name, delivery_partner: partnership_2.delivery_partner.name, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:training_period_data) { [training_period_1, training_period_2] }
-
-  subject(:service) { described_class.new(teacher:, training_period_data:) }
 
   describe "#build" do
     it "creates TrainingPeriod records for the school periods" do

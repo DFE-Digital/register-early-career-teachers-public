@@ -1,12 +1,12 @@
 RSpec.describe Schools::RegisterECTWizard::ChangeUsePreviousECTChoicesStep, type: :model do
+  subject { described_class.new(wizard:, use_previous_ect_choices: new_use_previous_ect_choices) }
+
   let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
   let(:use_previous_ect_choices) { false }
   let(:new_use_previous_ect_choices) { false }
   let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_chosen, :school_led_chosen) }
   let(:store) { FactoryBot.build(:session_repository, use_previous_ect_choices:, lead_provider_id:) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :change_use_previous_ect_choices, store:, school:) }
-
-  subject { described_class.new(wizard:, use_previous_ect_choices: new_use_previous_ect_choices) }
 
   describe "inheritance" do
     it "inherits from ProgrammeTypeStep" do

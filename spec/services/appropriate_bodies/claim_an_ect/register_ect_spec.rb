@@ -1,8 +1,14 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   include ActiveJob::TestHelper
+  subject { described_class.new(appropriate_body:, pending_induction_submission:, author:) }
+
   include_context 'fake trs api client'
 
-  before { allow(Events::Record).to receive(:new).and_call_original }
+  before do
+    allow(Events::Record).to receive(:new).and_call_original
+    allow(author).to receive(:is_a?).with(Sessions::User).and_return(true)
+    allow(author).to receive(:is_a?).with(any_args).and_call_original
+  end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
@@ -14,13 +20,6 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id
     )
   end
-
-  before do
-    allow(author).to receive(:is_a?).with(Sessions::User).and_return(true)
-    allow(author).to receive(:is_a?).with(any_args).and_call_original
-  end
-
-  subject { described_class.new(appropriate_body:, pending_induction_submission:, author:) }
 
   describe "#initialize" do
     it "assigns the provided appropriate body and pending induction submission" do

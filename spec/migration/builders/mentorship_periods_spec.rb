@@ -1,4 +1,6 @@
 describe Builders::MentorshipPeriods do
+  subject(:service) { described_class.new(teacher:, mentorship_period_data:) }
+
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:started_on) { 2.years.ago.to_date }
   let(:finished_on) { 6.months.ago.to_date }
@@ -29,8 +31,6 @@ describe Builders::MentorshipPeriods do
                      end_date: started_on + 3.months)
   end
   let(:mentorship_period_data) { [mentorship_period_1, mentorship_period_2] }
-
-  subject(:service) { described_class.new(teacher:, mentorship_period_data:) }
 
   describe "#build" do
     it "creates MentorshipPeriod records for the mentorship periods" do

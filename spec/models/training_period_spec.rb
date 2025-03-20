@@ -49,6 +49,12 @@ describe TrainingPeriod do
                                 started_on: 5.years.ago,
                                 finished_on: nil)
             end
+            let(:period) do
+              FactoryBot.build(:training_period, ect_at_school_period:,
+                                                 started_on: test.new_period_range.first,
+                                                 finished_on: test.new_period_range.last)
+            end
+            let(:messages) { period.errors.messages }
 
             before do
               FactoryBot.create(:training_period, ect_at_school_period:,
@@ -56,14 +62,6 @@ describe TrainingPeriod do
                                                   finished_on: test.existing_period_range.last)
               period.valid?
             end
-
-            let(:period) do
-              FactoryBot.build(:training_period, ect_at_school_period:,
-                                                 started_on: test.new_period_range.first,
-                                                 finished_on: test.new_period_range.last)
-            end
-
-            let(:messages) { period.errors.messages }
 
             it "is #{test.expected_valid ? 'valid' : 'invalid'}" do
               if test.expected_valid
@@ -95,6 +93,12 @@ describe TrainingPeriod do
                                 started_on: 5.years.ago,
                                 finished_on: nil)
             end
+            let(:period) do
+              FactoryBot.build(:training_period, :for_mentor, mentor_at_school_period:,
+                                                              started_on: test.new_period_range.first,
+                                                              finished_on: test.new_period_range.last)
+            end
+            let(:messages) { period.errors.messages }
 
             before do
               FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:,
@@ -102,14 +106,6 @@ describe TrainingPeriod do
                                                                finished_on: test.existing_period_range.last)
               period.valid?
             end
-
-            let(:period) do
-              FactoryBot.build(:training_period, :for_mentor, mentor_at_school_period:,
-                                                              started_on: test.new_period_range.first,
-                                                              finished_on: test.new_period_range.last)
-            end
-
-            let(:messages) { period.errors.messages }
 
             it "is #{test.expected_valid ? 'valid' : 'invalid'}" do
               if test.expected_valid
@@ -150,6 +146,8 @@ describe TrainingPeriod do
   end
 
   describe "#siblings" do
+    subject { training_period_1.siblings }
+
     let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01') }
     let!(:training_period_1) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: '2022-01-01', finished_on: '2022-06-01') }
     let!(:training_period_2) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: '2022-06-01', finished_on: '2023-01-01') }
@@ -161,8 +159,6 @@ describe TrainingPeriod do
     let!(:unrelated_training_period) do
       FactoryBot.create(:training_period, ect_at_school_period: unrelated_ect_at_school_period, started_on: '2022-06-01', finished_on: '2023-01-01')
     end
-
-    subject { training_period_1.siblings }
 
     it "only returns records that belong to the same trainee" do
       expect(subject).to include(training_period_2)

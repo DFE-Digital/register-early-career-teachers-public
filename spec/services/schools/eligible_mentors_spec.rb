@@ -1,10 +1,10 @@
 RSpec.describe Schools::EligibleMentors do
-  let(:school) { FactoryBot.create(:school) }
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, started_on: 2.years.ago) }
-
   subject do
     described_class.new(school).for_ect(ect)
   end
+
+  let(:school) { FactoryBot.create(:school) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, started_on: 2.years.ago) }
 
   describe '#for_ect' do
     context "when the school has no active mentors" do

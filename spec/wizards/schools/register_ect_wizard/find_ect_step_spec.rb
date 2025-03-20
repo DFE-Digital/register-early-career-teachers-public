@@ -1,4 +1,6 @@
 describe Schools::RegisterECTWizard::FindECTStep, type: :model do
+  subject { described_class.new(wizard:) }
+
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: "1234567",
@@ -8,7 +10,6 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
                      date_of_birth: "01/01/1990")
   end
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect, store:) }
-  subject { described_class.new(wizard:) }
 
   describe 'validations' do
     ['12345', 'RP99/12345', 'RP / 1234567', '  R P 99 / 1234', 'ZZ-123445 '].each do |trn|
@@ -35,6 +36,8 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
   end
 
   describe '#next_step' do
+    subject { wizard.current_step }
+
     let(:school) { FactoryBot.create(:school, :state_funded) }
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect, step_params:, school:) }
     let(:step_params) do
@@ -47,8 +50,6 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
         }
       )
     end
-
-    subject { wizard.current_step }
 
     context 'when the teacher is prohibited from teaching' do
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
@@ -146,8 +147,9 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
 
   context '#save!' do
     context 'when the step is not valid' do
-      let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect) }
       subject { wizard.current_step }
+
+      let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect) }
 
       it 'does not update any data in the wizard ect' do
         expect { subject.save! }.not_to change(subject.ect, :trn)
@@ -159,6 +161,8 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
     end
 
     context 'when the step is valid' do
+      subject { wizard.current_step }
+
       let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect, step_params:) }
       let(:step_params) do
         ActionController::Parameters.new(
@@ -170,8 +174,6 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
           }
         )
       end
-
-      subject { wizard.current_step }
 
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)

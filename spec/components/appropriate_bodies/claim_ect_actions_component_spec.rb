@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
+  subject(:component) do
+    described_class.new(
+      teacher:,
+      pending_induction_submission:,
+      current_appropriate_body:
+    )
+  end
+
   let(:teacher) { nil }
   let(:current_appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:pending_induction_submission) do
@@ -8,14 +16,6 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
       :pending_induction_submission,
       trs_first_name: "John",
       trs_last_name: "Doe"
-    )
-  end
-
-  subject(:component) do
-    described_class.new(
-      teacher:,
-      pending_induction_submission:,
-      current_appropriate_body:
     )
   end
 

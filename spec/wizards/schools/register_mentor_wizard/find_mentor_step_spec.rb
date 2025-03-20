@@ -1,4 +1,6 @@
 describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
+  subject { described_class.new(wizard:) }
+
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: "1234567",
@@ -8,11 +10,11 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
                      date_of_birth: "01/01/1990")
   end
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, store:) }
-  subject { described_class.new(wizard:) }
 
   describe '#initialize' do
-    let(:trn) { '3333333' }
     subject(:instance) { described_class.new(wizard:, **params) }
+
+    let(:trn) { '3333333' }
 
     context 'when either trn or date_of_birth are provided' do
       let(:params) { { trn: } }
@@ -57,6 +59,8 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
   end
 
   describe '#next_step' do
+    subject { wizard.current_step }
+
     let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
     let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, step_params:, ect_id: ect.id) }
     let(:step_params) do
@@ -69,8 +73,6 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
         }
       )
     end
-
-    subject { wizard.current_step }
 
     context 'when the mentor is not found in TRS' do
       before do
@@ -182,8 +184,9 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
   context '#save!' do
     context 'when the step is not valid' do
-      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor) }
       subject { wizard.current_step }
+
+      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor) }
 
       it 'does not update any data in the wizard mentor' do
         expect { subject.save! }.not_to change(subject.mentor, :trn)
@@ -195,6 +198,8 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     end
 
     context 'when the step is valid' do
+      subject { wizard.current_step }
+
       let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, step_params:) }
       let(:step_params) do
         ActionController::Parameters.new(
@@ -206,8 +211,6 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
           }
         )
       end
-
-      subject { wizard.current_step }
 
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)

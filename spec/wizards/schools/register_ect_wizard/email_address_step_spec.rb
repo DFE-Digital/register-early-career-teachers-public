@@ -1,7 +1,8 @@
 RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
+  subject { described_class.new(wizard:) }
+
   let(:store) { FactoryBot.build(:session_repository, email: 'prepopulated@example.com') }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :email_address, store:) }
-  subject { described_class.new(wizard:) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }
@@ -67,6 +68,8 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
   end
 
   context '#save!' do
+    subject { wizard.current_step }
+
     let(:step_params) do
       ActionController::Parameters.new(
         "email_address" => {
@@ -75,8 +78,6 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
       )
     end
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :email_address, step_params:) }
-
-    subject { wizard.current_step }
 
     context 'when the step is not valid' do
       before do

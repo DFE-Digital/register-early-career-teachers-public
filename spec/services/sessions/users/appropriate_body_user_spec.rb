@@ -1,16 +1,16 @@
 require_relative 'session_user_context'
 
 RSpec.describe Sessions::Users::AppropriateBodyUser do
+  subject(:appropriate_body_user) do
+    described_class.new(email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, last_active_at:)
+  end
+
   let(:email) { 'appropriate_body_user@email.com' }
   let(:name) { 'Christopher Lee' }
   let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
   let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
   let(:last_active_at) { 4.minutes.ago }
   let!(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
-
-  subject(:appropriate_body_user) do
-    described_class.new(email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, last_active_at:)
-  end
 
   it_behaves_like 'a session user' do
     let(:user_props) { { email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }
@@ -30,7 +30,6 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
 
   context 'initialisation' do
     describe "when an appropriate body can't be found from the given dfe_sign_in_organisation_id" do
-      let(:unknown_organisation_id) { SecureRandom.uuid }
       subject do
         described_class.new(email:,
                             name:,
@@ -38,6 +37,8 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
                             dfe_sign_in_user_id:,
                             last_active_at:)
       end
+
+      let(:unknown_organisation_id) { SecureRandom.uuid }
 
       it 'fails with an UnknownOrganisationId error' do
         expect { subject }.to raise_error(described_class::UnknownOrganisationId, unknown_organisation_id)

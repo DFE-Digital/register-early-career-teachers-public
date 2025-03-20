@@ -1,7 +1,5 @@
 RSpec.describe AppropriateBodies::RecordOutcome do
   include ActiveJob::TestHelper
-  include_context 'fake trs api client'
-
   subject(:service) do
     described_class.new(
       appropriate_body:,
@@ -10,6 +8,8 @@ RSpec.describe AppropriateBodies::RecordOutcome do
       author:
     )
   end
+
+  include_context 'fake trs api client'
 
   let(:author) do
     Sessions::Users::AppropriateBodyUser.new(
