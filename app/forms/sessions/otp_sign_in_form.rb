@@ -26,7 +26,7 @@ module Sessions
     def code_is_verified
       errors.delete(:email) # prevent leaking info when the email does not match a known User
 
-      errors.add(:code, "Enter the 6-digit code from the email") and return unless code =~ /\A\d{6}\z/
+      errors.add(:code, "Enter the 6-digit code from the email") and return unless /\A\d{6}\z/.match?(code)
 
       errors.add(:code, "The code entered is invalid") unless user && otp.verify(code:)
     end

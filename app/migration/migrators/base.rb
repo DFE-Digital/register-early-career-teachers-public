@@ -78,7 +78,7 @@ module Migrators
       end
 
       def find_by_model(model)
-        migrators.select { |migrator| migrator.model == model.to_sym }.first
+        migrators.find { |migrator| migrator.model.eql?(model.to_sym) }
       end
 
       def load_descendants
