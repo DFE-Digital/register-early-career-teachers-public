@@ -52,7 +52,7 @@ private
 
   def inserting_induction_period?
     siblings.any? do |sibling|
-      started_on.before?(sibling.started_on) || (started_on.after?(sibling.finished_on) && !sibling.eql?(last_finished_sibling))
+      started_on.before?(sibling.started_on) || sibling.finished_on && (started_on.after?(sibling.finished_on) && !sibling.eql?(last_finished_sibling))
     end
   end
 
