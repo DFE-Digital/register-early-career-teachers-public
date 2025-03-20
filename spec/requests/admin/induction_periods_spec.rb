@@ -13,14 +13,14 @@ RSpec.describe Admin::InductionPeriodsController do
   end
 
   describe "POST /admin/induction_periods" do
-    let!(:induction_period) { FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 6.months.ago) }
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
     before do
-      post(admin_teacher_induction_periods_path(induction_period.teacher), params:)
+      FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 6.months.ago)
     end
 
     context 'with valid params' do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
       let(:params) do
         {
           induction_period: {
@@ -33,18 +33,44 @@ RSpec.describe Admin::InductionPeriodsController do
         }
       end
 
-      it "returns success" do
+      it "creates the induction period" do
+        post(admin_teacher_induction_periods_path(teacher), params:)
+
+        expect(response).to redirect_to(admin_teacher_path(teacher))
         expect(flash[:alert]).to eq("Induction period created successfully")
+      end
+
+      it "records an 'admin creates induction period' event" do
+        allow(Events::Record).to receive(:record_admin_creates_induction_period!).once.and_call_original
+
+        post(admin_teacher_induction_periods_path(teacher), params:)
+
+        expect(Events::Record).to have_received(:record_admin_creates_induction_period!).once.with(
+          hash_including(
+            {
+              appropriate_body:,
+              author: kind_of(Sessions::User),
+              induction_period: kind_of(InductionPeriod),
+              teacher:,
+            }
+          )
+        )
       end
     end
 
     context "with invalid params" do
       let(:params) do
-        { induction_period: { started_on: 2.years.ago } }
+        {
+          induction_period: {
+            started_on: 2.years.ago,
+            induction_programme: "cip"
+          }
+        }
       end
 
       it "returns errors" do
-        expect(response.body).to include("End date is required for inserted periods")
+        post(admin_teacher_induction_periods_path(teacher), params:)
+        expect(response).not_to redirect_to(admin_teacher_path(teacher))
         expect(response.body).to include("Select an appropriate body")
       end
     end
@@ -88,7 +114,7 @@ RSpec.describe Admin::InductionPeriodsController do
           expect(induction_period.induction_programme).to eq(valid_params[:induction_period][:induction_programme])
         end
 
-        it "triggers the creation of an admin updates induction period event" do
+        it "records an 'admin updates induction period' event" do
           allow(Events::Record).to receive(:record_admin_updates_induction_period!).once.and_call_original
 
           induction_period.assign_attributes(valid_params[:induction_period])
