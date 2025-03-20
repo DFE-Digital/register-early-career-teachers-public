@@ -1,4 +1,6 @@
 describe Schools::TeacherEmail do
+  subject { described_class.new(email:, trn:) }
+
   let(:finished_ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
   let(:ongoing_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active) }
 
@@ -6,7 +8,6 @@ describe Schools::TeacherEmail do
   let(:ongoing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active) }
 
   let(:trn) { '123456' }
-  subject { described_class.new(email:, trn:) }
 
   describe "#is_currently_used?" do
     context "when the email is in use by an ongoing ECT" do

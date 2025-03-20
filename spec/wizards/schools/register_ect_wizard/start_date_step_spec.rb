@@ -1,11 +1,12 @@
 RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
+  subject { wizard.current_step }
+
   let(:prepopulated_start_date) { { "1" => "2025", "2" => "01" } }
   let(:provided_start_date) { { "1" => "2024", "2" => "12" } }
   let(:school) { FactoryBot.build(:school) }
   let(:step_params) { {} }
   let(:store) { FactoryBot.build(:session_repository, start_date: prepopulated_start_date) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, school:, store:, step_params:) }
-  subject { wizard.current_step }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }

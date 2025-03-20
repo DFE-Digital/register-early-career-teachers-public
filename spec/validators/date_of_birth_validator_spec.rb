@@ -1,4 +1,6 @@
 RSpec.describe DateOfBirthValidator, type: :model do
+  subject { test_class.new(date_of_birth:) }
+
   let(:test_class) do
     Class.new do
       include ActiveModel::Model
@@ -7,8 +9,6 @@ RSpec.describe DateOfBirthValidator, type: :model do
       validates :date_of_birth, date_of_birth: true
     end
   end
-
-  subject { test_class.new(date_of_birth:) }
 
   context "when date_of_birth is invalid" do
     context "when date of birth is missing" do

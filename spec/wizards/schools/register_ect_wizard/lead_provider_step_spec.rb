@@ -49,6 +49,8 @@ RSpec.describe Schools::RegisterECTWizard::LeadProviderStep, type: :model do
   end
 
   describe '#save!' do
+    subject { wizard.current_step }
+
     let(:step_params) do
       ActionController::Parameters.new(
         'lead_provider' => {
@@ -60,8 +62,6 @@ RSpec.describe Schools::RegisterECTWizard::LeadProviderStep, type: :model do
     let(:wizard) do
       FactoryBot.build(:register_ect_wizard, current_step: :lead_provider, step_params:)
     end
-
-    subject { wizard.current_step }
 
     context 'when the step is not valid' do
       before do

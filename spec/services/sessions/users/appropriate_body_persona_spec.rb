@@ -1,15 +1,15 @@
 require_relative 'session_user_context'
 
 RSpec.describe Sessions::Users::AppropriateBodyPersona do
+  subject(:appropriate_body_persona) do
+    described_class.new(email:, name:, appropriate_body_id:, last_active_at:)
+  end
+
   let(:email) { 'appropriate_body_persona@email.com' }
   let(:name) { 'Christopher Lee' }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:appropriate_body_id) { appropriate_body.id }
   let(:last_active_at) { 4.minutes.ago }
-
-  subject(:appropriate_body_persona) do
-    described_class.new(email:, name:, appropriate_body_id:, last_active_at:)
-  end
 
   it_behaves_like 'a session user' do
     let(:user_props) { { email:, name:, appropriate_body_id: } }

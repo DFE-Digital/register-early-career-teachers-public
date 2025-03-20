@@ -90,8 +90,9 @@ describe Events::Record do
       mentorship_period: FactoryBot.build(:mentorship_period),
     }.each do |attribute, object|
       describe "when #{attribute} is missing" do
-        let(:attributes_with_unsaved_school) { { attribute => object } }
         subject { Events::Record.new(author:, event_type:, heading:, happened_at:, **attributes_with_unsaved_school) }
+
+        let(:attributes_with_unsaved_school) { { attribute => object } }
 
         it 'fails with a NotPersistedRecordError' do
           expect { subject.record_event! }.to raise_error(Events::NotPersistedRecord, attribute.to_s)

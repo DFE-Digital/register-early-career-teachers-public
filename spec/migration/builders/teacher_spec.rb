@@ -1,8 +1,8 @@
 describe Builders::Teacher do
+  subject(:processor) { described_class.new(trn:, full_name:) }
+
   let(:trn) { "1234567" }
   let(:full_name) { "Chester Thompson" }
-
-  subject(:processor) { described_class.new(trn:, full_name:) }
 
   describe '#build' do
     it "creates a new Teacher record" do

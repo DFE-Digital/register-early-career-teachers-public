@@ -1,7 +1,8 @@
 describe AppropriateBodies::Search do
   describe 'dealing with search terms' do
-    let(:query_string) { nil }
     subject { described_class.new(query_string) }
+
+    let(:query_string) { nil }
 
     describe "#search" do
       context 'when the search string is blank' do

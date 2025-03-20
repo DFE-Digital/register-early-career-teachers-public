@@ -1,12 +1,12 @@
 require_relative 'session_user_context'
 
 RSpec.describe Sessions::Users::DfEPersona do
+  subject(:dfe_persona) { described_class.new(email:, last_active_at:) }
+
   let(:email) { 'dfe_user@email.com' }
   let(:name) { 'Christopher Lee' }
   let(:last_active_at) { 4.minutes.ago }
   let!(:user) { FactoryBot.create(:user, :admin, email:, name:) }
-
-  subject(:dfe_persona) { described_class.new(email:, last_active_at:) }
 
   it_behaves_like 'a session user' do
     let(:user_props) { { email: } }
@@ -34,8 +34,9 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
 
     describe "when there is no user with the given email" do
-      let(:unknown_email) { Faker::Internet.email }
       subject(:dfe_persona) { described_class.new(email: unknown_email, last_active_at:) }
+
+      let(:unknown_email) { Faker::Internet.email }
 
       it 'fails with an UnknownUserEmail error' do
         expect { subject }.to raise_error(described_class::UnknownUserEmail, unknown_email)
@@ -43,8 +44,9 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
 
     describe "when there is a user with the given email lowercased" do
-      let(:similar_email) { 'DfE_User@email.com' }
       subject(:dfe_persona) { described_class.new(email: similar_email, last_active_at:) }
+
+      let(:similar_email) { 'DfE_User@email.com' }
 
       it "instantiates Sessions::Users::DfEPersona from the database user" do
         expect(subject).to be_a(described_class)

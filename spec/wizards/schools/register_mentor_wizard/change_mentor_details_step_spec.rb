@@ -6,6 +6,8 @@ describe Schools::RegisterMentorWizard::ChangeMentorDetailsStep, type: :model do
                   next_step: :check_answers
 
   describe '#previous_step' do
+    subject { wizard.current_step }
+
     let(:store) do
       FactoryBot.build(:session_repository,
                        trn: '1234567',
@@ -16,7 +18,6 @@ describe Schools::RegisterMentorWizard::ChangeMentorDetailsStep, type: :model do
                        email: 'initial@email.com')
     end
     let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :change_mentor_details, store:) }
-    subject { wizard.current_step }
 
     it { expect(subject.previous_step).to eq(:check_answers) }
   end

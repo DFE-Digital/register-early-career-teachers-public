@@ -1,7 +1,7 @@
 RSpec.describe Sessions::User do
-  let(:last_active_at) { 4.minutes.ago }
-
   subject(:session_user) { described_class.new(email: 'a@email.com', last_active_at:) }
+
+  let(:last_active_at) { 4.minutes.ago }
 
   describe '.from_session' do
     subject(:session_user) { described_class.from_session(fake_user_session) }

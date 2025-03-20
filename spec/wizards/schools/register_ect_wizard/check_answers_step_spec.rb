@@ -1,11 +1,11 @@
 describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
+  subject { wizard.current_step }
+
   let(:programme_type) { 'provider_led' }
   let(:use_previous_ect_choices) { true }
   let(:school) { FactoryBot.build(:school, :independent) }
   let(:store) { FactoryBot.build(:session_repository, use_previous_ect_choices:, programme_type:) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :check_answers, store:, school:) }
-
-  subject { wizard.current_step }
 
   describe 'steps' do
     describe '#next_step' do

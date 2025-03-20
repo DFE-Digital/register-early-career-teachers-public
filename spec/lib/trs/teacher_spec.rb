@@ -1,4 +1,6 @@
 RSpec.describe TRS::Teacher do
+  subject { described_class.new(data) }
+
   let(:data) do
     {
       'trn' => '1234567',
@@ -77,8 +79,6 @@ RSpec.describe TRS::Teacher do
       'allowIdSignInWithProhibitions' => true
     }
   end
-
-  subject { described_class.new(data) }
 
   describe '#present' do
     it 'returns a hash with flattened attributes' do
