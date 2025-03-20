@@ -43,7 +43,6 @@ module RegisterEarlyCareerTeachers
     config.enable_persona_avatars = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_PERSONA_AVATARS', true))
     config.enable_migration_testing = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_MIGRATION_TESTING', false))
     config.enable_schools_interface = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_SCHOOLS_INTERFACE', false))
-    config.enable_local_tls = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_LOCAL_TLS', false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_SENTRY', false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BLAZER', false))
     config.sentry_dsn = ENV['SENTRY_DSN']
