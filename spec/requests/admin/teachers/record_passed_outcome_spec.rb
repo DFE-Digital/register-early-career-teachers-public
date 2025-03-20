@@ -1,8 +1,7 @@
-require "rails_helper"
+RSpec.describe 'Admin recording a passed outcome for a teacher' do
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:teacher) { FactoryBot.create(:teacher) }
 
-RSpec.describe "Admin::Teachers::RecordPassedOutcome", type: :request do
-  let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let!(:teacher) { FactoryBot.create(:teacher) }
   let!(:induction_period) do
     FactoryBot.create(
       :induction_period,
@@ -13,6 +12,7 @@ RSpec.describe "Admin::Teachers::RecordPassedOutcome", type: :request do
       induction_programme: 'fip'
     )
   end
+
   let(:valid_params) do
     {
       pending_induction_submission: {
@@ -23,51 +23,47 @@ RSpec.describe "Admin::Teachers::RecordPassedOutcome", type: :request do
     }
   end
 
-  describe "GET /admin/teachers/:teacher_id/record-passed-outcome/new" do
-    it "redirects to sign in path" do
-      get "/admin/teachers"
-      expect(response).to redirect_to(sign_in_path)
-    end
+  describe 'GET /admin/teachers/:teacher_id/record-passed-outcome/new' do
+    context 'when not signed in' do
+      it 'redirects to the sign in page' do
+        get("/admin/teachers/#{teacher.id}/record-passed-outcome/new")
 
-    context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
-
-      it "requires authorisation" do
-        get "/admin/teachers"
-        expect(response.status).to eq(401)
+        expect(response).to be_redirection
+        expect(response).to redirect_to(sign_in_path)
       end
     end
 
-    context "when signed in as an admin user" do
+    context 'when signed in as an admin' do
       include_context 'sign in as DfE user'
 
-      it "renders the new form for a valid teacher" do
-        get new_admin_teacher_record_passed_outcome_path(teacher)
+      it 'renders the new form for a valid teacher' do
+        get("/admin/teachers/#{teacher.id}/record-passed-outcome/new")
+
         expect(response).to be_successful
         expect(response.body).to include('Record passed outcome')
+      end
+
+      it 'returns not found for an invalid teacher' do
+        get("/admin/teachers/invalid-trn/record-passed-outcome/new")
+
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
 
-  describe "POST /admin/teachers/:teacher_id/record-passed-outcome" do
-    it "redirects to sign in path" do
-      get "/admin/teachers"
-      expect(response).to redirect_to(sign_in_path)
-    end
+  describe 'POST /admin/teachers/:teacher_id/record-passed-outcome' do
+    context 'when not signed in' do
+      it 'redirects to the root page' do
+        post("/admin/teachers/#{teacher.id}/record-passed-outcome")
 
-    context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
-
-      it "requires authorisation" do
-        get "/admin/teachers"
-        expect(response.status).to eq(401)
+        expect(response).to redirect_to(sign_in_path)
       end
     end
 
-    context "when signed in as an admin user" do
+    context 'when signed in as an admin' do
       include_context 'sign in as DfE user'
 
-      context "with valid params" do
+      context 'with valid params' do
         let(:fake_record_outcome) { double(AppropriateBodies::RecordOutcome, pass!: true) }
 
         before do
@@ -75,18 +71,27 @@ RSpec.describe "Admin::Teachers::RecordPassedOutcome", type: :request do
           allow(PendingInductionSubmissions::Build).to receive(:closing_induction_period).and_call_original
         end
 
-        it "creates a new pending induction submission" do
+        it 'creates a new pending induction submission' do
           expect {
             post(
-              admin_teacher_record_passed_outcome_path(teacher),
+              "/admin/teachers/#{teacher.id}/record-passed-outcome",
               params: valid_params
             )
           }.to change(PendingInductionSubmission, :count).by(1)
         end
 
-        it "calls the record outcome service and redirects" do
+        it 'uses PendingInductionSubmissions::Build to instantiate the PendingInductionSubmission' do
           post(
-            admin_teacher_record_passed_outcome_path(teacher),
+            "/admin/teachers/#{teacher.id}/record-passed-outcome",
+            params: valid_params
+          )
+
+          expect(PendingInductionSubmissions::Build).to have_received(:closing_induction_period).once
+        end
+
+        it 'calls the record outcome service and redirects' do
+          post(
+            "/admin/teachers/#{teacher.id}/record-passed-outcome",
             params: valid_params
           )
 
@@ -98,13 +103,55 @@ RSpec.describe "Admin::Teachers::RecordPassedOutcome", type: :request do
           )
 
           expect(response).to be_redirection
-          expect(response.redirect_url).to end_with(admin_teacher_record_passed_outcome_path(teacher))
+          expect(response.redirect_url).to end_with("/admin/teachers/#{teacher.id}/record-passed-outcome")
+        end
+      end
+
+      context 'with missing params' do
+        let(:invalid_params) do
+          {
+            pending_induction_submission: {
+              finished_on: nil,
+              number_of_terms: nil,
+              outcome: 'pass'
+            }
+          }
+        end
+
+        it 'renders the new form with errors' do
+          post(
+            "/admin/teachers/#{teacher.id}/record-passed-outcome",
+            params: invalid_params
+          )
+
+          expect(response.body).to include('There is a problem')
+        end
+      end
+
+      context 'when finished_on is before started_on' do
+        let(:invalid_params) do
+          {
+            pending_induction_submission: {
+              finished_on: induction_period.started_on - 1.month,
+              number_of_terms: 5,
+              outcome: 'pass'
+            }
+          }
+        end
+
+        it 'includes finish date must be later than start date' do
+          post(
+            "/admin/teachers/#{teacher.id}/record-passed-outcome",
+            params: invalid_params
+          )
+
+          expect(response.body).to include('The finish date must be later than the start date')
         end
       end
     end
   end
 
-  describe "GET /admin/teachers/:teacher_id/record-passed-outcome" do
+  describe 'GET /admin/teachers/:teacher_id/record-passed-outcome' do
     let!(:induction_period) do
       FactoryBot.create(
         :induction_period,
@@ -115,25 +162,20 @@ RSpec.describe "Admin::Teachers::RecordPassedOutcome", type: :request do
       )
     end
 
-    it "redirects to sign in path" do
-      get "/admin/teachers"
-      expect(response).to redirect_to(sign_in_path)
-    end
+    context 'when not signed in' do
+      it 'redirects to the sign in page' do
+        get("/admin/teachers/#{teacher.id}/record-passed-outcome")
 
-    context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
-
-      it "requires authorisation" do
-        get "/admin/teachers"
-        expect(response.status).to eq(401)
+        expect(response).to redirect_to(sign_in_path)
       end
     end
 
-    context "when signed in as an admin user" do
+    context 'when signed in as an admin' do
       include_context 'sign in as DfE user'
 
-      it "renders the show page for a valid teacher" do
-        get admin_teacher_record_passed_outcome_path(teacher)
+      it 'renders the show page for a valid teacher' do
+        get("/admin/teachers/#{teacher.id}/record-passed-outcome")
+
         expect(response).to be_successful
       end
     end
