@@ -3,13 +3,14 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
   it { is_expected.to validate_presence_of(:code).on(:verify).with_message("Enter the 6-digit code from the email") }
 
   describe "#code_is_verified" do
+    subject(:form) { Sessions::OTPSignInForm.new(email:, code:) }
+
     let(:email) { "bob@example.com" }
     let(:code) { "123456" }
     let(:result) { 987_654 }
     let!(:user) { FactoryBot.create(:user, email:) }
 
     let(:mock_otp_service) { instance_double(Sessions::OneTimePassword, user: User.new(email:)) }
-    subject(:form) { Sessions::OTPSignInForm.new(email:, code:) }
 
     before do
       allow(mock_otp_service).to receive(:verify).with(code:).and_return(result)

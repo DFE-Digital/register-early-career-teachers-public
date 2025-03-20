@@ -1,4 +1,6 @@
 RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :model do
+  subject { wizard.current_step }
+
   let(:use_previous_ect_choices) { true }
   let(:step_params) { {} }
   let(:school) { FactoryBot.create(:school) }
@@ -6,8 +8,6 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
   let(:wizard) do
     FactoryBot.build(:register_ect_wizard, current_step: :use_previous_ect_choices, school:, store:, step_params:)
   end
-
-  subject { wizard.current_step }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }

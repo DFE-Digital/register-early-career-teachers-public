@@ -1,5 +1,7 @@
 RSpec.describe ECTStartDateValidator, type: :model do
   context "when date is in an invalid format" do
+    subject { test_class.new(start_date:) }
+
     let(:start_date) { { 1 => "invalid year", 2 => "invalid month" } }
     let(:test_class) do
       Class.new do
@@ -10,8 +12,6 @@ RSpec.describe ECTStartDateValidator, type: :model do
       end
     end
 
-    subject { test_class.new(start_date:) }
-
     it "adds an error" do
       subject.valid?
       expect(subject.errors[:start_date]).to include("Enter the start date using the correct format, for example 09 1999")
@@ -19,6 +19,8 @@ RSpec.describe ECTStartDateValidator, type: :model do
   end
 
   context "when the current date is July 31st 2024" do
+    subject { test_class.new(start_date:) }
+
     let(:error_message) { "The start date must be from within either the current academic year or one of the last 2 academic years" }
     let(:test_class) do
       Class.new do
@@ -29,8 +31,6 @@ RSpec.describe ECTStartDateValidator, type: :model do
         validates :start_date, ect_start_date: { current_date: Time.zone.local(2024, 7, 31) }
       end
     end
-
-    subject { test_class.new(start_date:) }
 
     context "and the start date is before the earlier possible start date" do
       # July 2021, ie more than 2 academic years ago
@@ -63,6 +63,8 @@ RSpec.describe ECTStartDateValidator, type: :model do
   end
 
   context "when the current date is August 1st 2024" do
+    subject { test_class.new(start_date:) }
+
     let(:error_message) { "The start date must be from within either the current academic year or one of the last 2 academic years" }
     let(:test_class) do
       Class.new do
@@ -73,8 +75,6 @@ RSpec.describe ECTStartDateValidator, type: :model do
         validates :start_date, ect_start_date: { current_date: Time.zone.local(2024, 8, 1) }
       end
     end
-
-    subject { test_class.new(start_date:) }
 
     context "and the start date is before the earlier possible start date" do
       # July 2022, ie more than 2 academic years ago
@@ -107,6 +107,8 @@ RSpec.describe ECTStartDateValidator, type: :model do
   end
 
   context "when the start date is at the boundary of the accepted academic year range" do
+    subject { test_class.new(start_date:) }
+
     let(:error_message) { "The start date must be from within either the current academic year or one of the last 2 academic years" }
     let(:test_class) do
       Class.new do
@@ -116,8 +118,6 @@ RSpec.describe ECTStartDateValidator, type: :model do
         validates :start_date, ect_start_date: { current_date: Time.zone.local(2024, 8, 1) }
       end
     end
-
-    subject { test_class.new(start_date:) }
 
     context "when the start date is the first month of the earliest academic year" do
       let(:start_date) { { 1 => "2022", 2 => "08" } }
@@ -139,6 +139,8 @@ RSpec.describe ECTStartDateValidator, type: :model do
   end
 
   context "when the start date has invalid month or year values" do
+    subject { test_class.new(start_date:) }
+
     let(:error_message) { "Enter the start date using the correct format, for example 09 1999" }
     let(:test_class) do
       Class.new do
@@ -148,8 +150,6 @@ RSpec.describe ECTStartDateValidator, type: :model do
         validates :start_date, ect_start_date: true
       end
     end
-
-    subject { test_class.new(start_date:) }
 
     context "when the month is outside the range 1-12" do
       let(:start_date) { { 1 => "2024", 2 => "13" } }

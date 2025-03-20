@@ -1,9 +1,10 @@
 describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
+  subject { described_class.new(wizard:) }
+
   let(:change_name) { "yes" }
   let(:corrected_name) { "Jane Smith" }
   let(:store) { FactoryBot.build(:session_repository, change_name:, corrected_name:) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :review_ect_details, store:) }
-  subject { described_class.new(wizard:) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }
@@ -71,6 +72,8 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
   end
 
   context '#save!' do
+    subject { wizard.current_step }
+
     let(:step_params) do
       ActionController::Parameters.new(
         "review_ect_details" => {
@@ -80,8 +83,6 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
       )
     end
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :review_ect_details, step_params:) }
-
-    subject { wizard.current_step }
 
     context 'when the step is not valid' do
       before do

@@ -1,5 +1,7 @@
 RSpec.describe Sessions::Users::Builder do
   describe '#session_user' do
+    subject { described_class.new(omniauth_payload:).session_user }
+
     let(:email) { Faker::Internet.email }
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
     let(:school) { FactoryBot.create(:school) }
@@ -27,8 +29,6 @@ RSpec.describe Sessions::Users::Builder do
         }
       )
     end
-
-    subject { described_class.new(omniauth_payload:).session_user }
 
     context 'when the provider is :dfe_sign_in' do
       let(:provider) { 'dfe_sign_in' }
