@@ -1,5 +1,5 @@
 RSpec.describe Admin::UpdateInductionPeriod do
-  subject(:service) { described_class.new(induction_period:, params:, author:) }
+  subject(:service) { described_class.new(author:, induction_period:, params:) }
 
   let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
@@ -15,7 +15,7 @@ RSpec.describe Admin::UpdateInductionPeriod do
   end
   let(:params) { {} }
 
-  describe "#update_induction_period" do
+  describe "#update_induction_period!" do
     context "with valid params" do
       let(:params) do
         {

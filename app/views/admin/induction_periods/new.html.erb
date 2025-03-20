@@ -1,14 +1,15 @@
 <%
   page_data(
-    title: "Add induction period for #{teacher_full_name(@induction_period.teacher)}",
+    title: "Add induction period for #{teacher_full_name(@teacher)}",
     error: @induction_period.errors.present?,
-    backlink_href: admin_teacher_path(@induction_period.teacher)
+    backlink_href: admin_teacher_path(@teacher)
   )
 %>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <%= form_with model: [:admin, @induction_period.teacher, @induction_period], local: true do |f| %>
+    <%= form_with model: [:admin, @teacher, @induction_period], local: true do |f| %>
       <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
       <%= f.govuk_collection_select(:appropriate_body_id,
@@ -35,7 +36,7 @@
 
       <%= f.govuk_collection_radio_buttons :induction_programme, induction_programme_choices, :identifier, :name, legend: { text: 'Induction programme' }  %>
 
-      <%= f.submit "Update", class: "govuk-button" %>
+      <%= f.submit "Save", class: "govuk-button" %>
     <% end %>
   </div>
 </div>
