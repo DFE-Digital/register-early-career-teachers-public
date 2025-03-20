@@ -24,39 +24,6 @@ FactoryBot/FactoryClassName:
     - 'spec/factories/gias/school_factory.rb'
     - 'spec/factories/gias/school_link_factory.rb'
 
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/Detect:
-  Exclude:
-    - 'app/migration/migrators/base.rb'
-
-# Offense count: 2
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/InefficientHashSearch:
-  Exclude:
-    - 'app/validators/programme_type_validator.rb'
-    - 'app/validators/working_pattern_validator.rb'
-
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/RangeInclude:
-  Exclude:
-    - 'app/validators/terms_range_validator.rb'
-
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-Performance/RedundantMatch:
-  Exclude:
-    - 'app/validators/notify_email_validator.rb'
-
-# Offense count: 3
-# This cop supports safe autocorrection (--autocorrect).
-Performance/RegexpMatch:
-  Exclude:
-    - 'app/forms/sessions/otp_sign_in_form.rb'
-    - 'app/validators/notify_email_validator.rb'
-    - 'lib/schools/validation/national_insurance_number.rb'
-
 # Offense count: 3
 RSpec/AnyInstance:
   Exclude:

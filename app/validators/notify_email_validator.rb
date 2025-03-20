@@ -17,7 +17,7 @@ class NotifyEmailValidator < ActiveModel::EachValidator
     return false if email.include?("..")
 
     hostname = email_match[1]
-    return false unless hostname.last.match(/[a-z0-9]/i)
+    return false unless /[a-z0-9]/i.match?(hostname.last)
 
     parts = hostname.split(".")
     return false if hostname.length > 253 || parts.length < 2

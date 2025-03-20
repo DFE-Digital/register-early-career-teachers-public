@@ -19,7 +19,7 @@ module Schools
       def parse_nino
         parsed = nino.to_s.upcase.gsub(/\s*/, "")
         return [nil, "Enter a National Insurance Number"] if parsed.blank?
-        return [nil, "Enter a National Insurance Number in the correct format"] if parsed !~ REGEXP
+        return [nil, "Enter a National Insurance Number in the correct format"] unless REGEXP.match?(parsed)
 
         [parsed, nil]
       end
