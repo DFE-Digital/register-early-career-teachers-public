@@ -105,7 +105,7 @@ jobs:
       matrix:
         environment:
           - staging
-          # - sandbox
+          - sandbox
     environment:
       name: ${{ matrix.environment }}
       url: ${{ steps.deploy.outputs.environment_url }}
