@@ -53,7 +53,6 @@ We will not limit the number of users per school. This means multiple people can
 
 You can read more about [why we made this decision in our design history](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/allowing-multiple-school-accounts/).
 
-<a id="giving_details_for_an_ect"></a>
 
 ## Giving details for an ECT
 
@@ -69,17 +68,19 @@ We should always ask for two fields of personal information before registering a
 
 If we can’t find a matching TRN that exists, we tell the user the ECT’s teacher record cannot be found.
 
-If we can’t find the ECT’s record in the Teaching Record System API, but the TRN does exist, we ask for that ECT’s national insurance number instead. We do this because potentially the date of birth stored on the teacher’s record in the TRS is incorrect, or the one the school holds might be. It makes it more likely for the user to find the ECT’s teacher record and confirm they know them.
+If we can find a record in the teaching record system (TRS) matching the ECT's TRN but not the provided date of birth, we ask for the ECT's national insurance number instead.
+
+We do this because potentially the date of birth stored on the teacher’s record in the TRS is incorrect, or the one the school holds might be. It makes it more likely for the user to find the ECT’s teacher record and confirm they know them.
 
 If we still cannot confirm the user knows both the TRN and either national insurance number or date of birth, we tell them the record cannot be found.
 
-Neither date of birth or national insurance number should be stored longer-term. It is just used for the initial finding and checking of an ECT’s record in the TRS. You can read more [about our reasoning for this here](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/no-longer-storing-date-of-birth/).
+Neither date of birth or national insurance number should be stored longer-term in the Register ECTs service. It is just used for the initial finding and checking of an ECT’s record in the TRS. You can read more [about our reasoning for this here](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/no-longer-storing-date-of-birth/).
 
 ### Checking the ECT is eligible to be registered for training
 
-When an ECT is registered for training, we should check if their record already exists in CPD.
+When an ECT is being registered for training, we should check if their record already exists in the Register ECTs service.
 
-If the ECT being registered already exists as a mentor, we should not let them progress with registration. This is because a mentor undergoing ECT training is highly unlikely and it’s probably a mistake.
+If the ECT already exists as a registered mentor, we should not let them progress with registration. This is because a mentor undergoing ECT training is highly unlikely and it’s probably a mistake.
 
 If the ECT being registered already exists as an ‘in progress’ or ‘completed’ ECT at their school, we should not let them progress with registration. This is because the ECT record already exists and we do not want duplicates. If the ECT has ‘left’ their school, we should still let them progress with registration, as the ECT may have returned.
 
@@ -158,7 +159,7 @@ You can read more about why we chose to add this question [in the design history
 
 ### Generating an expected training start year
 
-The expected training start year is generated from when the ECT is registered and when the school reports the ECT is starting. This is because if an ECT had started at a school in January 2024, which would be in the 2023 to 2024 academic year, but they’re not registered by school till September 2024, they wouldn’t be starting with a lead provider for training until the 2024 to 2025 academic year. Essentially, training can’t be expected to start until they’re registered with DfE and have their details passed to a lead provider. 
+The expected training start year is generated from when the ECT is registered and when the school reports the ECT is starting. This is because if an ECT had started at a school in January 2024, which would be in the 2023 to 2024 academic year, but they’re only registered by the school in September 2024, they wouldn’t be starting with a lead provider for training until the 2024 to 2025 academic year. Essentially, training can’t be expected to start until they’re registered with DfE and have their details passed to a lead provider. 
 
 Similarly, if an ECT is starting in October 2025, the 2025 to 2026 academic year, but is registered in April 2025, the 2024 to 2025 academic year, we would want to show them lead providers for the 2025 to 2026 academic year. Both pieces of information are needed to work out when realistically the ECT will be starting training, and therefore who will be a legitimate lead provider (or delivery partner) to work with them.
 
