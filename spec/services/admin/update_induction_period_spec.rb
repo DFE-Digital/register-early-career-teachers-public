@@ -1,5 +1,5 @@
 RSpec.describe Admin::UpdateInductionPeriod do
-  subject(:service) { described_class.new(induction_period:, params:, author:) }
+  subject(:service) { described_class.new(author:, induction_period:, params:) }
 
   let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
@@ -15,7 +15,7 @@ RSpec.describe Admin::UpdateInductionPeriod do
   end
   let(:params) { {} }
 
-  describe "#update_induction_period" do
+  describe "#update_induction_period!" do
     context "with valid params" do
       let(:params) do
         {
@@ -57,7 +57,7 @@ RSpec.describe Admin::UpdateInductionPeriod do
         it "raises an error" do
           expect { service.update_induction_period! }.to raise_error(
             ActiveRecord::RecordInvalid,
-            "Validation failed: Finished on The finish date must be later than the start date (31 December 2023)"
+            "Validation failed: Finished on The end date must be later than the start date (31 December 2023)"
           )
         end
       end

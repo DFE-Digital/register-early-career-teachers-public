@@ -2,14 +2,19 @@ module Admin
   class UpdateInductionPeriod
     class RecordedOutcomeError < StandardError; end
 
-    attr_reader :induction_period, :params, :author
+    attr_reader :author, :induction_period, :params
 
-    def initialize(induction_period:, params:, author:)
+    # @param author [Sessions::User]
+    # @param induction_period [InductionPeriod]
+    # @param params [ActionController::Parameters]
+    def initialize(author:, induction_period:, params:)
+      @author = author
       @induction_period = induction_period
       @params = params
-      @author = author
     end
 
+    # @return [true]
+    # @raise [ActiveRecord::RecordInvalid, ActiveRecord::Rollback]
     def update_induction_period!
       validate_can_update!
 
@@ -18,22 +23,31 @@ module Admin
       modifications = induction_period.changes
 
       ActiveRecord::Base.transaction do
-        induction_period.save!
-        record_admin_update_event(modifications)
-        notify_trs_of_start_date_change(previous_start_date)
-      end
+        success = [
+          induction_period.save!,
+          record_event(modifications),
+          notify_trs_of_start_date_change(previous_start_date)
+        ].all?
 
-      true
+        success or raise ActiveRecord::Rollback
+      end
     end
 
   private
 
-    def teacher
-      @teacher ||= induction_period.teacher
-    end
+    delegate :teacher, :appropriate_body, to: :induction_period
 
-    def record_admin_update_event(modifications)
-      Events::Record.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher: induction_period.teacher, appropriate_body: induction_period.appropriate_body)
+    # @param modifications [Hash{String => Array}]
+    def record_event(modifications)
+      return unless induction_period.persisted?
+
+      Events::Record.record_admin_updates_induction_period!(
+        author:,
+        modifications:,
+        induction_period:,
+        teacher:,
+        appropriate_body:
+      )
     end
 
     def validate_can_update!
@@ -41,8 +55,8 @@ module Admin
     end
 
     def notify_trs_of_start_date_change(previous_start_date)
-      return if induction_period.has_predecessors?
-      return if previous_start_date == induction_period.started_on
+      return true if induction_period.has_predecessors?
+      return true if previous_start_date == induction_period.started_on
 
       BeginECTInductionJob.perform_later(
         trn: teacher.trn,

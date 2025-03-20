@@ -1,0 +1,42 @@
+<%
+  page_data(
+    title: "Add induction period for #{teacher_full_name(@teacher)}",
+    error: @induction_period.errors.present?,
+    backlink_href: admin_teacher_path(@teacher)
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <%= form_with model: [:admin, @teacher, @induction_period], local: true do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+      <%= f.govuk_collection_select(:appropriate_body_id,
+                                    AppropriateBody.select(:id, :name).all,
+                                    :id,
+                                    :name,
+                                    label: { text: "Which appropriate body was this induction period completed with" },
+                                    options: { include_blank: true },
+                                    class: "autocomplete"
+          ) %>
+
+      <%= f.govuk_date_field :started_on,
+          legend: { text: "Start date", size: "m" } %>
+
+      <%= f.govuk_date_field :finished_on,
+          legend: { text: "End date", size: "m" } %>
+
+      <%= f.govuk_text_field :number_of_terms,
+          label: { text: "Number of terms", size: "m" },
+          hint: { text: "Enter 0 if less than one full term, or a number with up to one decimal place (for example, 1.5)" },
+          width: 4,
+          inputmode: "numeric" %>
+
+
+      <%= f.govuk_collection_radio_buttons :induction_programme, induction_programme_choices, :identifier, :name, legend: { text: 'Induction programme' }  %>
+
+      <%= f.submit "Save", class: "govuk-button" %>
+    <% end %>
+  </div>
+</div>

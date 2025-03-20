@@ -1,60 +1,55 @@
 module Admin
   class CreateInductionPeriod
-    attr_reader :induction_period, :author, :induction_period_params, :appropriate_body_id, :teacher_id
+    attr_reader :author, :teacher, :induction_period
 
-    def initialize(author:, appropriate_body_id:, teacher_id:, started_on:, induction_programme:, finished_on: nil, number_of_terms: nil)
+    # @param author [Sessions::User]
+    # @param teacher [Teacher]
+    # @param params [ActionController::Parameters]
+    def initialize(author:, teacher:, params:)
       @author = author
-
-      @appropriate_body_id = appropriate_body_id
-      @teacher_id = teacher_id
-      @induction_period_params = {
-        started_on:,
-        finished_on:,
-        induction_programme:,
-        number_of_terms:,
-      }
+      @teacher = teacher
+      @induction_period = InductionPeriod.new(teacher:, **params)
     end
 
+    # @return [true]
+    # @raise [ActiveRecord::RecordInvalid, ActiveRecord::Rollback]
     def create_induction_period!
-      build_induction_period.tap do |induction_period|
-        ActiveRecord::Base.transaction do
-          modifications = induction_period.changes
-          success = [
-            induction_period.save,
-            record_event(modifications),
-            notify_trs_of_new_induction_start
-          ].all?
+      modifications = induction_period.changes
 
-          success or raise ActiveRecord::Rollback
-        end
+      ActiveRecord::Base.transaction do
+        success = [
+          induction_period.save!,
+          record_event(modifications),
+          notify_trs_of_new_induction_start
+        ].all?
+
+        success or raise ActiveRecord::Rollback
       end
     end
 
   private
 
-    def build_induction_period
-      @induction_period = InductionPeriod.new(appropriate_body:, teacher:, **induction_period_params)
-    end
+    delegate :appropriate_body, to: :induction_period
 
-    def teacher
-      @teacher ||= Teacher.find(teacher_id)
-    end
-
-    def appropriate_body
-      @appropriate_body ||= AppropriateBody.find(appropriate_body_id)
-    end
-
+    # @param modifications [Hash{String => Array}]
     def record_event(modifications)
       return unless induction_period.persisted?
 
-      Events::Record.record_admin_creates_induction_period!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
+      Events::Record.record_admin_creates_induction_period!(
+        author:,
+        modifications:,
+        induction_period:,
+        teacher:,
+        appropriate_body:,
+        happened_at: Time.zone.now
+      )
     end
 
     # FIXME: there's no separate way to inform TRS of a new induction start date
     #        so we're reusing the BeginECTInductionJob here. We need to make sure
     #        we don't create induction periods for ECTs who have already passed/failed
     def notify_trs_of_new_induction_start
-      return if teacher_has_earlier_induction_periods?
+      return true if teacher_has_earlier_induction_periods?
 
       BeginECTInductionJob.perform_later(
         trn: teacher.trn,
