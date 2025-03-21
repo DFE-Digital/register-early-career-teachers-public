@@ -82,21 +82,21 @@ For cohort 2025 and onwards, evidence types will be an optional field that provi
 | `course_identifier` | Yes            | String | The type of course the participant is enrolled on <br> Possible values: `ecf-induction`, `ecf-mentor` |
 | `evidence_held`  | No             | String | The type of evidence the lead provider holds <br> Possible values: `training-event-attended`, `self-study-material-completed`, `other`, `materials-engaged-with-offline` |
 
-This is a non-breaking change because providers are still able to submit start declarations without supplying an evidence types. If the field was mandatory, providers would encounter an error message when submitting requests.
+This is a non-breaking change because providers are still able to submit start declarations without supplying an evidence type. If the field was mandatory, providers would encounter an error message when submitting requests.
 
 In this instance, providers can update their integrations to submit start declarations and evidence types whenever they are ready and continue to submit start declarations without an evidence type for the time being.
 
 ## Release management and provider engagement
 
-Release management is crucial to ensure that Lead Providers have a positive experience when adopting the changes for our API. It's the DfE's responsibility to ensure that providers are **well-informed**, **prepared** and **supported** throughout the release. This ensures that the delivery of the ECF training is not impacted. For any changes breaking or non-breaking LPDOB:
+Release management is crucial to ensure that Lead Providers have a positive experience when adopting the changes to our API. It's the DfE's responsibility to ensure that providers are **well-informed**, **prepared** and **supported** throughout the release. This ensures that the delivery of ECF based training is not impacted. Here are the steps the team takes to deliver any breaking or non-breaking changes:
 
 - Engage with providers as early as possible, ensuring they have visibility of the upcoming changes and are consulted.
-- Share detailed specifications, release note and updated guidance are shared as soon as they are available. This helps providers assess the impact on their systems and plan necessary updates.
-- Attend check-ins and engaging with technical teams for lead providers to walk through the changes, answer questions, and gather feedback on any implementation concerns.
-- Release the updated API into the sandbox environment, allowing providers to conduct testing and validate integrations before changes go live.
+- Share detailed specifications, a release note and updated guidance as soon as they are available. This helps providers assess the impact on their systems and plan necessary updates.
+- Attend regular meetings to speak with technical teams for lead providers and walk through the changes, answer questions, and gather feedback on any implementation concerns.
+- Release the updated API into the sandbox environment, allowing providers to test and validate integrations before changes go live.
 - For breaking changes, retrieve feedback from providers on their timelines to integrate and test.
 
-We appreciate that these changes can have huge ramifications on their integrations and thus their ability to deliver of the ECF policy.
+We appreciate that these changes can have a big impact on their integrations and their ability to deliver ECF based training to teachers and mentors. 
 
 ## Versioning and Managing Changes
 
