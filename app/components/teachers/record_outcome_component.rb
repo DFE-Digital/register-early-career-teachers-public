@@ -30,7 +30,7 @@ module Teachers
     end
 
     def show_appeal_notice?
-      !is_admin && outcome_type == :failed
+      !is_admin && warning?
     end
 
     def warning?

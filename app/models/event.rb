@@ -2,8 +2,8 @@ class Event < ApplicationRecord
   EVENT_TYPES = %w[
     admin_creates_induction_period
     admin_updates_induction_period
-    admin_fails_teacher
-    admin_passes_teacher
+    admin_fails_teacher_induction
+    admin_passes_teacher_induction
     appropriate_body_claims_teacher
     appropriate_body_releases_teacher
     appropriate_body_fails_teacher
