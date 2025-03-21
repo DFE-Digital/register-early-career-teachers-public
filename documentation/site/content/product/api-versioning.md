@@ -1,5 +1,5 @@
 ---
-title: API Change Management Guidelines
+title: How to manage changes to the lead provider API
 ---
 
 ## Breaking and Non-Breaking Changes Explained
