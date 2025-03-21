@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Teachers::OutcomeFormComponent, type: :component do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:appropriate_body) { FactoryBot.build(:appropriate_body) }

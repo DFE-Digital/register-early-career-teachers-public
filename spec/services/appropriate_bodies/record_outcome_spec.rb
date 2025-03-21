@@ -105,7 +105,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
           perform_enqueued_jobs
 
-          expect(Event.last.event_type).to eq("admin_passes_teacher")
+          expect(Event.last.event_type).to eq("admin_passes_teacher_induction")
         end
       end
     end
@@ -199,7 +199,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
           perform_enqueued_jobs
 
-          expect(Event.last.event_type).to eq("admin_fails_teacher")
+          expect(Event.last.event_type).to eq("admin_fails_teacher_induction")
         end
       end
     end

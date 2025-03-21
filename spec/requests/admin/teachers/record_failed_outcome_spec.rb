@@ -139,13 +139,13 @@ RSpec.describe 'Admin recording a failed outcome for a teacher' do
           }
         end
 
-        it 'includes finish date must be later than start date' do
+        it 'includes end date must be later than start date' do
           post(
             "/admin/teachers/#{teacher.id}/record-failed-outcome",
             params: invalid_params
           )
 
-          expect(response.body).to include('The finish date must be later than the start date')
+          expect(response.body).to include('The end date must be later than the start date')
         end
       end
     end
