@@ -8,14 +8,8 @@
   )
 %>
 
-<% if Teachers::InductionPeriod.new(@teacher).ongoing_induction_period %>
-  <div class="govuk-button-group">
-    <%= govuk_button_link_to("Pass induction", new_ab_teacher_record_passed_outcome_path(@teacher)) %>
-    <%= govuk_link_to("Fail induction", new_ab_teacher_record_failed_outcome_path(@teacher)) %>
-  </div>
-<% end %>
-
 <%= render Teachers::DetailsComponent.new(mode: :appropriate_body, teacher: @teacher) do |component|
+  component.with_induction_outcome_actions
   component.with_induction_summary
   component.with_current_induction_period(enable_release: true)
   component.with_past_induction_periods

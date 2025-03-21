@@ -24,6 +24,10 @@ module Teachers
       Teachers::Details::PastInductionPeriodsComponent.new(teacher:, enable_edit:)
     }
 
+    renders_one :induction_outcome_actions, -> {
+      Teachers::Details::InductionOutcomeActionsComponent.new(teacher:, mode:)
+    }
+
     attr_reader :teacher, :mode
 
     def initialize(mode:, teacher:)
