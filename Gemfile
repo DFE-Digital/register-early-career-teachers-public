@@ -76,3 +76,6 @@ group :nanoc do
   gem "nanoc-live"
   gem "webrick"
 end
+
+gem "pry-byebug", "~> 3.8", groups: %i[development test]
+gem "pry-rails", "~> 0.3.11", groups: %i[development test]
