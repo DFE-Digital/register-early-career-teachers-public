@@ -116,7 +116,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
   it 'includes an inset with the names of the mentor and ECT associated' do
     render
-    expect(rendered).to have_selector(".govuk-inset-text", text: 'Jim Wayne will mentor Michael Dixon', visible: true)
+    expect(rendered).to have_selector(".govuk-inset-text", text: 'Jim Wayne will mentor Michael Dixon', visible: :visible)
   end
 
   it 'includes a Confirm details button that posts to the check answers page' do
