@@ -6,12 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 2
-# This cop supports safe autocorrection (--autocorrect).
-Capybara/CurrentPathExpectation:
-  Exclude:
-    - 'spec/features/visiting_the_service_spec.rb'
-
 # Offense count: 1
 Capybara/VisibilityMatcher:
   Exclude:
@@ -58,17 +52,27 @@ RSpec/ContextMethod:
 RSpec/ContextWording:
   Enabled: false
 
-# Offense count: 80
+# Offense count: 84
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: SkipBlocks, EnforcedStyle, OnlyStaticConstants.
 # SupportedStyles: described_class, explicit
 RSpec/DescribedClass:
   Enabled: false
 
-# Offense count: 52
+# Offense count: 11
 # This cop supports safe autocorrection (--autocorrect).
 RSpec/EmptyLineAfterFinalLet:
-  Enabled: false
+  Exclude:
+    - 'spec/components/appropriate_bodies/claim_ect_actions_component_spec.rb'
+    - 'spec/requests/appropriate_bodies/claim_an_ect/check_ect_spec.rb'
+    - 'spec/requests/appropriate_bodies/claim_an_ect/register_ect_spec.rb'
+    - 'spec/services/appropriate_bodies/claim_an_ect/register_ect_spec.rb'
+    - 'spec/services/teachers/extensions/create_extension_spec.rb'
+    - 'spec/services/teachers/extensions/update_extension_spec.rb'
+    - 'spec/views/schools/register_mentor_wizard/check_answers.html.erb_spec.rb'
+    - 'spec/wizards/schools/register_ect_wizard/find_ect_step_spec.rb'
+    - 'spec/wizards/schools/register_mentor_wizard/find_mentor_step_spec.rb'
+    - 'spec/wizards/schools/register_mentor_wizard/national_insurance_number_step_spec.rb'
 
 # Offense count: 6
 # This cop supports safe autocorrection (--autocorrect).
@@ -119,12 +123,12 @@ RSpec/ImplicitSubject:
     - 'spec/models/school_spec.rb'
     - 'spec/wizards/schools/register_mentor_wizard/shared_examples/review_mentor_details_step.rb'
 
-# Offense count: 78
+# Offense count: 83
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
 RSpec/IndexedLet:
   Enabled: false
 
-# Offense count: 91
+# Offense count: 95
 RSpec/LetSetup:
   Enabled: false
 
@@ -234,7 +238,7 @@ RSpec/VariableDefinition:
   Exclude:
     - 'spec/validators/ect_start_date_validator_spec.rb'
 
-# Offense count: 26
+# Offense count: 25
 # Configuration parameters: IgnoreNameless, IgnoreSymbolicNames.
 RSpec/VerifiedDoubles:
   Enabled: false
@@ -287,7 +291,7 @@ Rails/SaveBang:
   Exclude:
     - 'spec/support/rspec_playwright.rb'
 
-# Offense count: 3125
+# Offense count: 3157
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
 # SupportedStyles: single_quotes, double_quotes
