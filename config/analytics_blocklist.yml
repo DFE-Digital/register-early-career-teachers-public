@@ -128,6 +128,27 @@
   - concurrency_key
   - expires_at
   - created_at
+  :active_storage_variant_records:
+  - id
+  - blob_id
+  - variation_digest
+  :active_storage_attachments:
+  - id
+  - name
+  - record_type
+  - record_id
+  - blob_id
+  - created_at
+  :active_storage_blobs:
+  - id
+  - key
+  - filename
+  - content_type
+  - metadata
+  - service_name
+  - byte_size
+  - checksum
+  - created_at
   :gias_school_links:
   - id
   - urn
@@ -241,6 +262,15 @@
   - trs_qts_awarded_on
   - delete_at
   - confirmed
+  - pending_induction_submission_batch_id
+  - error_message
+  :pending_induction_submission_batches:
+  - id
+  - appropriate_body_id
+  - status
+  - error_message
+  - created_at
+  - updated_at
   :migration_failures:
   - id
   - data_migration_id
