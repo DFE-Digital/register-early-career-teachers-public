@@ -26,6 +26,7 @@ class InductionPeriod < ApplicationRecord
 
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
+  validate :end_date_admin_only, if: -> { started_on.present? }
 
   # Scopes
   scope :for_teacher, ->(teacher) { where(teacher:) }
@@ -41,6 +42,19 @@ class InductionPeriod < ApplicationRecord
   end
 
 private
+
+  # Ensure admin users inserting new induction periods include end dates.
+  def end_date_admin_only
+    return unless inserting_induction_period? && finished_on.blank?
+
+    errors.add(:finished_on, "End date is required for inserted periods")
+  end
+
+  def inserting_induction_period?
+    siblings.any? do |sibling|
+      started_on.before?(sibling.started_on) || sibling.finished_on && (started_on.after?(sibling.finished_on) && !sibling.eql?(last_finished_sibling))
+    end
+  end
 
   def start_date_after_qts_date
     return if teacher.blank?

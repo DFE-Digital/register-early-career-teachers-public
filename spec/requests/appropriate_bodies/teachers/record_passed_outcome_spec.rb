@@ -146,7 +146,7 @@ RSpec.describe 'Appropriate body recording a passed outcome for a teacher' do
             params: invalid_params
           )
 
-          expect(response.body).to include('The finish date must be later than the start date')
+          expect(response.body).to include('The end date must be later than the start date')
         end
       end
     end
