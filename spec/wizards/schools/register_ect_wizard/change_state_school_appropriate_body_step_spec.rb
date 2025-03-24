@@ -14,7 +14,7 @@ RSpec.describe Schools::RegisterECTWizard::ChangeStateSchoolAppropriateBodyStep,
 
   describe "#next_step" do
     context 'when the school has programme choices' do
-      let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_chosen, :provider_led_chosen) }
+      let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_ab_chosen, :provider_led_chosen) }
 
       it { expect(subject.next_step).to eq(:change_programme_type) }
     end
@@ -26,7 +26,7 @@ RSpec.describe Schools::RegisterECTWizard::ChangeStateSchoolAppropriateBodyStep,
 
   describe "#previous_step" do
     context 'when the school has programme choices' do
-      let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_chosen, :school_led_chosen) }
+      let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
       it { expect(subject.previous_step).to eq(:change_use_previous_ect_choices) }
     end
