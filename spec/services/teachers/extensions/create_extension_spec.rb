@@ -5,6 +5,7 @@ RSpec.describe Teachers::Extensions::CreateExtension do
   describe "#create_extension" do
     context "with valid params" do
       let(:valid_params) { { number_of_terms: 1 } }
+
       it "creates a new induction extension" do
         expect { service.create_extension }.to change(InductionExtension, :count).by(1)
       end

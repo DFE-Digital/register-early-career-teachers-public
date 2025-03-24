@@ -61,6 +61,7 @@ RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT
 
     context 'when signed in' do
       let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+
       before { allow(AppropriateBodies::ClaimAnECT::CheckECT).to receive(:new).with(any_args).and_call_original }
 
       context "when the submission is valid" do

@@ -54,21 +54,6 @@ RSpec/ContextWording:
 RSpec/DescribedClass:
   Enabled: false
 
-# Offense count: 11
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/EmptyLineAfterFinalLet:
-  Exclude:
-    - 'spec/components/appropriate_bodies/claim_ect_actions_component_spec.rb'
-    - 'spec/requests/appropriate_bodies/claim_an_ect/check_ect_spec.rb'
-    - 'spec/requests/appropriate_bodies/claim_an_ect/register_ect_spec.rb'
-    - 'spec/services/appropriate_bodies/claim_an_ect/register_ect_spec.rb'
-    - 'spec/services/teachers/extensions/create_extension_spec.rb'
-    - 'spec/services/teachers/extensions/update_extension_spec.rb'
-    - 'spec/views/schools/register_mentor_wizard/check_answers.html.erb_spec.rb'
-    - 'spec/wizards/schools/register_ect_wizard/find_ect_step_spec.rb'
-    - 'spec/wizards/schools/register_mentor_wizard/find_mentor_step_spec.rb'
-    - 'spec/wizards/schools/register_mentor_wizard/national_insurance_number_step_spec.rb'
-
 # Offense count: 6
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: CustomTransform, IgnoredWords, DisallowedExamples.
