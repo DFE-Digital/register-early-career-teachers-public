@@ -59,6 +59,8 @@ Rails.application.routes.draw do
 
   resource :appropriate_bodies, only: %i[show], path: 'appropriate-body', as: 'ab_landing', controller: 'appropriate_bodies/landing'
   namespace :appropriate_bodies, path: 'appropriate-body', as: 'ab' do
+    resources :imports, only: %i[new create show index], controller: 'pending_induction_submission_batch', format: %i[html csv]
+
     resources :teachers, only: %i[show index], controller: 'teachers' do
       resource :release_ect, only: %i[new create show], path: 'release', controller: 'teachers/release_ect'
       resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
