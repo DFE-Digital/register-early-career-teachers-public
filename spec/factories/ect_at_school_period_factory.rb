@@ -2,11 +2,10 @@ FactoryBot.define do
   sequence(:base_ect_date) { |n| 3.years.ago.to_date + (2 * n).days }
 
   factory(:ect_at_school_period) do
-    association :school, :independent
     association :teacher
 
+    independent_school
     provider_led
-    teaching_induction_panel
 
     started_on { generate(:base_ect_date) }
     finished_on { started_on + 1.day }
@@ -28,14 +27,26 @@ FactoryBot.define do
       lead_provider { nil }
     end
 
-    trait :teaching_induction_panel do
-      appropriate_body_type { 'teaching_induction_panel' }
-      appropriate_body { nil }
+    trait :independent_school do
+      association :school, :independent
+      national_ab
     end
 
-    trait :teaching_school_hub do
-      appropriate_body_type { 'teaching_school_hub' }
-      appropriate_body { association :appropriate_body }
+    trait :state_funded_school do
+      association :school, :state_funded
+      teaching_school_hub_ab
+    end
+
+    trait :local_authority_ab do
+      association :appropriate_body, :local_authority, factory: :appropriate_body
+    end
+
+    trait :national_ab do
+      association :appropriate_body, :national, factory: :appropriate_body
+    end
+
+    trait :teaching_school_hub_ab do
+      association :appropriate_body, :teaching_school_hub, factory: :appropriate_body
     end
   end
 end

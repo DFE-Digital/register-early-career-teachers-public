@@ -7,10 +7,10 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
   let(:provider_partnership) { FactoryBot.create(:provider_partnership, lead_provider:, delivery_partner:) }
 
   let(:school_led_ect) do
-    FactoryBot.create(:ect_at_school_period, :active, :school_led, :teaching_school_hub, appropriate_body:)
+    FactoryBot.create(:ect_at_school_period, :active, :school_led, appropriate_body:)
   end
 
-  let(:provider_led_ect) { FactoryBot.create(:ect_at_school_period, :active, :provider_led, :teaching_school_hub, appropriate_body:, lead_provider:, started_on: '2021-01-01') }
+  let(:provider_led_ect) { FactoryBot.create(:ect_at_school_period, :active, :provider_led, appropriate_body:, lead_provider:, started_on: '2021-01-01') }
 
   let!(:training_period) { FactoryBot.create(:training_period, ect_at_school_period: provider_led_ect, provider_partnership:, started_on: '2022-01-01', finished_on: '2022-06-01') }
 
@@ -80,7 +80,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
 
   context 'when data is reported by the appropriate body' do
     let(:school_led_ect_with_induction) do
-      ect = FactoryBot.create(:ect_at_school_period, :active, :school_led, :teaching_school_hub, appropriate_body:)
+      ect = FactoryBot.create(:ect_at_school_period, :active, :school_led, appropriate_body:)
       FactoryBot.create(:induction_period, teacher: ect.teacher, started_on: '2023-01-01')
       ect
     end
@@ -128,7 +128,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
 
   context 'when no training periods exist for a provider-led ECT' do
     let(:provider_led_ect_without_training_periods) do
-      FactoryBot.create(:ect_at_school_period, :active, :provider_led, :teaching_school_hub, appropriate_body:, lead_provider:)
+      FactoryBot.create(:ect_at_school_period, :active, :provider_led, appropriate_body:, lead_provider:)
     end
 
     before { render_inline(described_class.new(title: 'Reported to us by your lead provider', ect: provider_led_ect_without_training_periods, data_source: :lead_provider)) }
