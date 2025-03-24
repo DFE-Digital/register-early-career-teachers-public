@@ -126,6 +126,10 @@ class PendingInductionSubmission < ApplicationRecord
     @teacher ||= Teacher.find_by(trn:)
   end
 
+  def error_message
+    super || "✅"
+  end
+
 private
 
   def start_date_after_qts_date
