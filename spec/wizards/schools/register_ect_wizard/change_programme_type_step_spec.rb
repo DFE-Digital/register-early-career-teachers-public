@@ -27,7 +27,7 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
       let(:new_programme_type) { 'provider_led' }
 
       context 'when the school has programme choices' do
-        let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_chosen, :school_led_chosen) }
+        let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
         it { expect(subject.next_step).to eq(:change_lead_provider) }
       end
@@ -81,13 +81,13 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
 
           context 'when the school has programme choices' do
             context 'independent school' do
-              let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_chosen, :school_led_chosen) }
+              let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
               it { expect(subject.previous_step).to eq(:change_independent_school_appropriate_body) }
             end
 
             context 'state funded school' do
-              let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_chosen, :school_led_chosen) }
+              let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
               it { expect(subject.previous_step).to eq(:change_state_school_appropriate_body) }
             end
@@ -107,13 +107,13 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
 
       context 'when the school has programme choices' do
         context 'independent school' do
-          let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_chosen, :school_led_chosen) }
+          let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
           it { expect(subject.previous_step).to eq(:change_independent_school_appropriate_body) }
         end
 
         context 'state funded school' do
-          let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_chosen, :school_led_chosen) }
+          let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
           it { expect(subject.previous_step).to eq(:change_state_school_appropriate_body) }
         end
