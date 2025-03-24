@@ -32,6 +32,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
   describe 'page title' do
     let(:title) { sanitize(view.content_for(:page_title)) }
+
     before { render }
 
     it { expect(title).to eql("Check your answers and confirm mentor details") }

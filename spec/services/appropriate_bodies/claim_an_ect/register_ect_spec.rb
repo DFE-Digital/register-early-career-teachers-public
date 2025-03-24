@@ -213,6 +213,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           trs_qts_awarded_on:
         }
       end
+
       it "fails because invalid" do
         expect(subject.register(pending_induction_submission_params)).to be_falsey
         expect(subject.pending_induction_submission.errors.key?(:started_on)).to be true
