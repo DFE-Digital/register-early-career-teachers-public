@@ -61,7 +61,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context "when the date of birth didn't match that on TRS" do
-        let(:mentor_date_of_birth) { "2000-01-01" }
+        let(:mentor_date_of_birth) { "2000-02-01" }
 
         it { is_expected.to eq(%i[no_trn find_mentor national_insurance_number]) }
       end
@@ -86,7 +86,7 @@ describe Schools::RegisterMentorWizard::Wizard do
     end
 
     context 'when only TRN, DoB and Nino have been set' do
-      let(:mentor_date_of_birth) { "2000-01-01" }
+      let(:mentor_date_of_birth) { "2000-01-11" }
       let(:store) do
         FactoryBot.build(:session_repository,
                          school_urn:,
@@ -148,7 +148,7 @@ describe Schools::RegisterMentorWizard::Wizard do
     end
 
     context 'when only TRN, DoB, Nino and already active at school have been set' do
-      let(:mentor_date_of_birth) { "2000-01-01" }
+      let(:mentor_date_of_birth) { "2000-01-03" }
       let(:mentor_teacher) { FactoryBot.create(:teacher, trn: mentor_trn) }
       let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor_teacher) }
       let(:school_urn) { active_mentor_period.school.urn }
@@ -186,7 +186,7 @@ describe Schools::RegisterMentorWizard::Wizard do
     end
 
     context 'when only TRN, DoB, Nino and change name (and maybe corrected name) have been set' do
-      let(:mentor_date_of_birth) { "2000-01-01" }
+      let(:mentor_date_of_birth) { "2000-01-04" }
       let(:store) do
         FactoryBot.build(:session_repository,
                          school_urn:,

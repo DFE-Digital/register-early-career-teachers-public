@@ -2,7 +2,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
   let(:academic_year) { FactoryBot.create(:academic_year) }
   let!(:current_ect_period) do
     FactoryBot.create(:ect_at_school_period,
-                      appropriate_body_type,
+                      :teaching_school_hub_ab,
                       teacher:,
                       started_on: '2025-01-11',
                       finished_on: nil,
@@ -13,7 +13,6 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       programme_type:,
                       email: 'love@whale.com')
   end
-  let(:appropriate_body_type) { :teaching_school_hub }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:provider_partnership) { FactoryBot.create(:provider_partnership, lead_provider:, delivery_partner:, academic_year:) }
@@ -26,11 +25,12 @@ RSpec.describe 'schools/ects/show.html.erb' do
   let(:programme_type) { 'provider_led' }
 
   before do
-    FactoryBot.create(:ect_at_school_period, teacher:,
-                                             started_on: '2024-01-11',
-                                             finished_on: '2025-01-11',
-                                             school: previous_school,
-                                             email: 'previous-address@whale.com')
+    FactoryBot.create(:ect_at_school_period, :state_funded_school,
+                      teacher:,
+                      started_on: '2024-01-11',
+                      finished_on: '2025-01-11',
+                      school: previous_school,
+                      email: 'previous-address@whale.com')
     assign(:ect, current_ect_period)
     render
   end
@@ -147,16 +147,6 @@ RSpec.describe 'schools/ects/show.html.erb' do
 
       it 'renders the lead provider summary card' do
         expect(rendered).to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
-      end
-    end
-
-    context 'when school is independent' do
-      let(:current_school) { FactoryBot.create(:school, :independent, urn: '987654') }
-      let(:requested_appropriate_body) { nil }
-      let(:appropriate_body_type) { :teaching_induction_panel }
-
-      it 'replaces AB name with ISTIP' do
-        expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Independent Schools Teacher Induction Panel (ISTIP)')
       end
     end
   end

@@ -1,5 +1,7 @@
 ---
 :shared:
+  :appropriate_bodies:
+  - type
   :blazer_queries:
   - id
   - creator_id

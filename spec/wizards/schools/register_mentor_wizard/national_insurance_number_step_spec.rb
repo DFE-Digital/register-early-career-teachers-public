@@ -199,6 +199,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
           .to change(subject.mentor, :national_insurance_number).from(nil).to('AB123456A')
           .and change(subject.mentor, :trs_first_name).from(nil).to('Kirk')
           .and change(subject.mentor, :trs_last_name).from(nil).to('Van Houten')
+          .and change(subject.mentor, :trs_date_of_birth).from(nil).to('1977-02-03')
       end
     end
   end
