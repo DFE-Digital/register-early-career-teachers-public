@@ -73,3 +73,8 @@ Naming/MethodParameterName:
 
 Lint/MissingSuper:
   Enabled: false
+
+RSpec/Capybara/CurrentPathExpectation:
+  Exclude:
+    - 'spec/features/**/*' # Excluded in feature specs because we use Playwright (not Capybara) for those. Leaving it enabled elsewhere in case Capybara matchers are used in other test types.
+
