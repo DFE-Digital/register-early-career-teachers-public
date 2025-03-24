@@ -1,7 +1,6 @@
 RSpec.describe Schools::RegisterECT do
   subject(:service) do
     described_class.new(appropriate_body:,
-                        appropriate_body_type:,
                         corrected_name:,
                         email:,
                         lead_provider:,
@@ -15,7 +14,6 @@ RSpec.describe Schools::RegisterECT do
   end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:appropriate_body_type) { 'teaching_school_hub' }
   let(:corrected_name) { "Randy Marsh" }
   let(:email) { "randy@tegridyfarms.com" }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -71,15 +69,13 @@ RSpec.describe Schools::RegisterECT do
       expect(ect_at_school_period.programme_type).to eq(programme_type)
     end
 
-    it 'sets ab and provider choices to the school' do
+    it 'sets ab and provider choices for the school' do
       expect { service.register! }
-        .to change(school, :chosen_appropriate_body_type)
-              .to(appropriate_body_type)
-              .and change(school, :chosen_appropriate_body_id)
-                     .to(appropriate_body.id)
-                     .and change(school, :chosen_programme_type)
-                            .to(programme_type)
-                            .and change(school, :chosen_lead_provider_id).to(lead_provider.id)
+        .to change(school, :chosen_appropriate_body_id)
+              .to(appropriate_body.id)
+              .and change(school, :chosen_programme_type)
+                     .to(programme_type)
+                     .and change(school, :chosen_lead_provider_id).to(lead_provider.id)
     end
   end
 end

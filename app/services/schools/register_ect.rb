@@ -1,7 +1,6 @@
 module Schools
   class RegisterECT
     attr_reader :appropriate_body,
-                :appropriate_body_type,
                 :corrected_name,
                 :email,
                 :lead_provider,
@@ -15,7 +14,6 @@ module Schools
                 :working_pattern
 
     def initialize(appropriate_body:,
-                   appropriate_body_type:,
                    corrected_name:,
                    email:,
                    lead_provider:,
@@ -27,7 +25,6 @@ module Schools
                    trs_last_name:,
                    working_pattern:)
       @appropriate_body = appropriate_body
-      @appropriate_body_type = appropriate_body_type
       @corrected_name = corrected_name
       @email = email
       @lead_provider = lead_provider
@@ -63,7 +60,6 @@ module Schools
 
     def start_at_school!
       teacher.ect_at_school_periods.create!(appropriate_body:,
-                                            appropriate_body_type:,
                                             email:,
                                             lead_provider:,
                                             programme_type:,
@@ -74,7 +70,6 @@ module Schools
 
     def update_school_choices!
       school.update!(chosen_appropriate_body: appropriate_body,
-                     chosen_appropriate_body_type: appropriate_body_type,
                      chosen_lead_provider: lead_provider,
                      chosen_programme_type: programme_type)
     end
