@@ -18,6 +18,7 @@ class PendingInductionSubmission < ApplicationRecord
 
   # Associations
   belongs_to :appropriate_body
+  belongs_to :pending_induction_submission_batch, optional: true
 
   # Validations
   validates :trn,
@@ -81,6 +82,10 @@ class PendingInductionSubmission < ApplicationRecord
   # Instance methods
   def exempt?
     trs_induction_status == "Exempt"
+  end
+
+  def error_message
+    super || "✅"
   end
 
 private
