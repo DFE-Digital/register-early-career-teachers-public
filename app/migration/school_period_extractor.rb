@@ -32,6 +32,8 @@ private
 
     induction_records.each_with_object([]) do |induction_record, periods|
       record_school = induction_record.induction_programme.school_cohort.school
+      extracted_training_programme = tinduction_record.induction_programme.training_programme
+      programme_type = Mappers::ProgrammeTypeMapper.new(extracted_training_programme).mapped_value
 
       if current_school != record_school
         current_school = record_school
@@ -40,7 +42,11 @@ private
                                                      start_date: induction_record.start_date,
                                                      end_date: induction_record.end_date,
                                                      start_source_id: induction_record.id,
-                                                     end_source_id: induction_record.id)
+                                                     end_source_id: induction_record.id,
+                                                     appropriate_body_type: induction_record.appropriate_body.body_type,
+                                                     programme_type:,
+                                                     appropriate_body_id: induction_record.appropriate_body_id,
+                                                     lead_provider_id: nil)
         periods << current_period
       else
         current_period.end_date = induction_record.end_date
