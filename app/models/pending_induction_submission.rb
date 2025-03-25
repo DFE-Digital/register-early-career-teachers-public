@@ -13,6 +13,9 @@ class PendingInductionSubmission < ApplicationRecord
 
   enum :outcome, { pass: "pass", fail: "fail" }
 
+  # Scopes
+  scope :ready_for_deletion, -> { where(delete_at: ..Time.current) }
+
   # Associations
   belongs_to :appropriate_body
 

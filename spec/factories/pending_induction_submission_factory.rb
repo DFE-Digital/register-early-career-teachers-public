@@ -8,10 +8,15 @@ FactoryBot.define do
     trs_induction_status { "None" }
     started_on { 1.year.ago }
     trs_qts_awarded_on { 2.years.ago }
+    delete_at { nil }
 
     trait :finishing do
       finished_on { 1.week.ago }
       number_of_terms { 3 }
+    end
+
+    trait :marked_for_deletion do
+      delete_at { 1.day.ago }
     end
   end
 end
