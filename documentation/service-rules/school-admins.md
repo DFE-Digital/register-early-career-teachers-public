@@ -267,7 +267,7 @@ Once a school confirms the details, it saves the details for that ECT. The ECT r
 
 Registration is only finished when an ECT is also given a mentor.
 
-All ECTs need mentors, it's part of the support they should receive at every school. ECTs can start training without having a mentor assigned on the Register ECTs service, and lead providers will get funded for the ECT's training. However, mentors still need to be assigned to ECTs so they can:
+All ECTs need mentors, it’s part of the support they should receive at every school. ECTs can start training without having a mentor assigned on the Register ECTs service, and lead providers will get funded for the ECT’s training. However, mentors still need to be assigned to ECTs so they can:
 * be eligible for funded provider-led mentor training
 * have their details passed on to lead providers for training correctly
 * have access to any learning materials for provider-led ECTs to assist them in their mentoring
