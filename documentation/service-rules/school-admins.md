@@ -84,12 +84,14 @@ If the ECT already exists as a registered mentor, we should not let them progres
 
 If the ECT being registered already exists as an ‘in progress’ or ‘completed’ ECT at their school, we should not let them progress with registration. This is because the ECT record already exists and we do not want duplicates. If the ECT has ‘left’ their school, we should still let them progress with registration, as the ECT may have returned.
 
-At this stage, when we check the TRS for the existence of the ECT’s record, we also need to make sure:
+At this stage, when we check the TRS for the existence of the ECT’s record, we also need to make sure the ECT:
 
-* the ECT has not completed induction already
-* the ECT is not exempt from induction
+* has not passed induction already
+* has not failed induction already
+* is not exempt from induction
+  
 
-Whilst an ECT needs qualified teaching status in order to be eligible for funding for training, we do allow them to be registered in advance without it.
+Whilst an ECT needs qualified teaching status in order to be eligible for funding for training, we do allow them to be registered in advance without it. Similarly, an ECT needs an open induction period reported by an appropriate body to be eligible for funding for training, but they can be registered in advance without this.
 
 This is because we know schools might want to register an ECT before they actually start working in a school. This might mean that ECT doesn’t always have QTS before they are registered for training.
 
