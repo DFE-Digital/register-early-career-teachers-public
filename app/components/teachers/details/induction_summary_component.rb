@@ -21,6 +21,10 @@ module Teachers::Details
       is_admin == false
     end
 
+    def render_add_induction_button?
+      is_admin == true
+    end
+
   private
 
     def induction_extensions

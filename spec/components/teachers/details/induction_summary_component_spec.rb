@@ -11,19 +11,29 @@ RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
     end
   end
 
+  # TODO: refactor role-based logic
   context "#render_extension_links?" do
     context "when the user is an admin" do
       let(:component) { described_class.new(teacher:, is_admin: true) }
 
-      it "returns false" do
-        expect(component.render_extension_links?).to be false
-      end
+      it { expect(component.render_extension_links?).to be false }
     end
 
     context "when the user is not an admin" do
-      it "returns true" do
-        expect(component.render_extension_links?).to be true
-      end
+      it { expect(component.render_extension_links?).to be true }
+    end
+  end
+
+  # TODO: refactor role-based logic
+  context "#render_add_induction_button?" do
+    context "when the user is an admin" do
+      let(:component) { described_class.new(teacher:, is_admin: true) }
+
+      it { expect(component.render_add_induction_button?).to be true }
+    end
+
+    context "when the user is not an admin" do
+      it { expect(component.render_add_induction_button?).to be false }
     end
   end
 
