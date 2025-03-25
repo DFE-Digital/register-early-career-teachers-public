@@ -1,14 +1,15 @@
 describe Builders::ECT::SchoolPeriods do
   subject(:service) { described_class.new(teacher:, school_periods:) }
 
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:school_1) { FactoryBot.create(:school, urn: "123456") }
   let(:school_2) { FactoryBot.create(:school, urn: "987654") }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:period_1) { FactoryBot.build(:school_period, urn: school_1.urn, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
-  let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 1.month.ago.to_date, end_date: nil) }
+  let(:period_1) { FactoryBot.build(:school_period, urn: school_1.urn, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date, appropriate_body_id: appropriate_body.id) }
+  let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 1.month.ago.to_date, end_date: nil, appropriate_body_id: appropriate_body.id) }
   let(:school_periods) { [period_1, period_2] }
 
-  xdescribe "#build" do
+  describe "#build" do
     it "creates ECTAtSchoolPeriod records for the school periods" do
       expect {
         service.build
