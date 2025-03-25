@@ -1,12 +1,12 @@
 <% page_data(
-    title: "Which appropriate body will be supporting #{@ect.full_name}'s induction?",
+    title: "Which appropriate body will be supporting #{@ect.full_name}’s induction?",
     error: @wizard.current_step.errors.present?,
     backlink_href: @wizard.previous_step_path,
 ) %>
 
 <p class="govuk-body">Appropriate bodies are responsible for assuring the quality of the statutory induction of ECTs.</p>
 
-<p class="govuk-body">We share the ECT's details with the appropriate body to check the ECT has been registered correctly.</p>
+<p class="govuk-body">We share the ECT’s details with the appropriate body to check the ECT has been registered correctly.</p>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
