@@ -8,17 +8,6 @@
 
 # Offense count: 2
 # This cop supports safe autocorrection (--autocorrect).
-Capybara/CurrentPathExpectation:
-  Exclude:
-    - 'spec/features/visiting_the_service_spec.rb'
-
-# Offense count: 1
-Capybara/VisibilityMatcher:
-  Exclude:
-    - 'spec/views/schools/register_mentor_wizard/check_answers.html.erb_spec.rb'
-
-# Offense count: 2
-# This cop supports safe autocorrection (--autocorrect).
 FactoryBot/FactoryClassName:
   Exclude:
     - 'spec/factories/gias/school_factory.rb'
@@ -58,16 +47,11 @@ RSpec/ContextMethod:
 RSpec/ContextWording:
   Enabled: false
 
-# Offense count: 80
+# Offense count: 84
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: SkipBlocks, EnforcedStyle, OnlyStaticConstants.
 # SupportedStyles: described_class, explicit
 RSpec/DescribedClass:
-  Enabled: false
-
-# Offense count: 52
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/EmptyLineAfterFinalLet:
   Enabled: false
 
 # Offense count: 6
@@ -119,12 +103,12 @@ RSpec/ImplicitSubject:
     - 'spec/models/school_spec.rb'
     - 'spec/wizards/schools/register_mentor_wizard/shared_examples/review_mentor_details_step.rb'
 
-# Offense count: 78
+# Offense count: 83
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
 RSpec/IndexedLet:
   Enabled: false
 
-# Offense count: 91
+# Offense count: 95
 RSpec/LetSetup:
   Enabled: false
 
@@ -234,7 +218,7 @@ RSpec/VariableDefinition:
   Exclude:
     - 'spec/validators/ect_start_date_validator_spec.rb'
 
-# Offense count: 26
+# Offense count: 25
 # Configuration parameters: IgnoreNameless, IgnoreSymbolicNames.
 RSpec/VerifiedDoubles:
   Enabled: false
@@ -287,7 +271,7 @@ Rails/SaveBang:
   Exclude:
     - 'spec/support/rspec_playwright.rb'
 
-# Offense count: 3125
+# Offense count: 3157
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
 # SupportedStyles: single_quotes, double_quotes

@@ -6,6 +6,7 @@ RSpec.describe Teachers::Extensions::UpdateExtension do
   describe "#update_extension" do
     context "with valid params" do
       let(:valid_params) { { number_of_terms: 2 } }
+
       it "updates the extension attributes" do
         service.update_extension
         extension.reload
