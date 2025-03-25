@@ -121,7 +121,7 @@ The school user is asked for that ECT’s email address.
 
 We tell them they can update the email at a later point. This is because we know sometimes school users register ECTs in advance, when their school email address might not be ready yet.
 
-We check the email address given and make sure it doesn’t exist for an ongoing ECT or mentor record with a different TRN. This would mean any emails that are attached to an open `ect_at_school_period` or open '`mentor_at_school_period`. This is because we shouldn’t have email addresses that are the same for entirely different people, when both are are still undergoing training.
+We check the email address given and make sure it doesn’t exist for an ongoing ECT or mentor record with a different TRN. This would mean any emails that are attached to an open `ect_at_school_period` or open `mentor_at_school_period`. This is because we shouldn’t have email addresses that are the same for entirely different people, when both are are still undergoing training.
 
 This avoids a scenario where two different people are given the same email address. If their lead provider was the same, the lead provider would be unable to set them up with unique accounts for their learning platform.
 
