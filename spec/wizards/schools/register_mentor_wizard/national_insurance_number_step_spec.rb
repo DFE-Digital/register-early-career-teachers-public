@@ -111,6 +111,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
 
     context 'when the mentor is prohibited from teaching' do
       let(:teacher) { create(:teacher, trn: '1234568') }
+
       before do
         fake_client = TRS::FakeAPIClient.new
 

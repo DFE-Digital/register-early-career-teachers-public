@@ -53,6 +53,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
 
     context 'when the teacher is prohibited from teaching' do
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+
       before do
         fake_client = TRS::FakeAPIClient.new
 
