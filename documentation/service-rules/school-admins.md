@@ -298,7 +298,7 @@ If the school selects a previously registered mentor, they will successfully end
 
 If the school registers a new mentor, they’re taken to the questions outlined below.
 
-We would not allow here or later when they find a mentor's record for an ECT to be assigned as their own mentor.
+We would not allow here or later when they find a mentor’s record for an ECT to be assigned as their own mentor.
 
 ### Finding a mentor’s record in the Teaching Record System
 
@@ -347,7 +347,7 @@ We still need to define what happens here.
 
 The school user is asked for that mentor’s email address.
 
-We check the email address given and make sure it doesn’t exist for an ongoing ECT or mentor record with a different TRN. This would mean any emails that are attached to an open `ect_at_school_period` or open '`mentor_at_school_period`. This is because we shouldn’t have email addresses that are the same for entirely different people, when both are are still undergoing training.
+We check the email address given and make sure it doesn’t exist for an ongoing ECT or mentor record with a different TRN. This would mean any emails that are attached to an open `ect_at_school_period` or open `mentor_at_school_period`. This is because we shouldn’t have email addresses that are the same for entirely different people, when both are are still undergoing training.
 
 This avoids a scenario where two different people are given the same email address. If their lead provider was the same, the lead provider would be unable to set them up with unique accounts for their learning platform.
 
