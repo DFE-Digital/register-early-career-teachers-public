@@ -36,5 +36,19 @@ end %>
     <%= f.govuk_radio_button :use_previous_ect_choices, :false, label: { text: "No" } %>
   <% end %>
 
+  <div class="govuk-!-margin-top-5">
+    <%= govuk_details(summary_text: 'What are the roles of an appropriate body, lead provider and delivery partner?') do %>
+      <p class="govuk-body">
+        An appropriate body is responsible for assuring the quality of the statutory induction of ECTs. A lead provider provides the online learning platform used for training ECTs and mentors, while the delivery partner delivers training events.
+      </p>
+
+      <p class="govuk-body">
+        These roles are sometimes undertaken by the same organisation, for example an appropriate body might be the same organisation as the delivery partner.
+      </p>
+    <% end %>
+  </div>
+
+
   <%= f.govuk_submit "Continue" %>
 <% end %>
+
