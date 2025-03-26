@@ -177,7 +177,9 @@ RSpec.describe 'Registering an ECT' do
 
   def and_i_should_see_the_previous_programme_choices
     expect(page.get_by_text(school.chosen_appropriate_body.name)).to be_visible
-    expect(page.get_by_text('Provider-Led')).to be_visible
+    row = page.locator('.govuk-summary-list__row', has: page.locator('text=Programme type'))
+    expect(row.text_content).to include('Programme type')
+    expect(row.text_content).to include('Provider-led')
     expect(page.get_by_text(school.chosen_lead_provider_name).first).to be_visible
   end
 
