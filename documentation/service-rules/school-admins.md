@@ -22,7 +22,7 @@ School users are also known as:
 
 [Accessing the service](#accessing_the_service)
 
-[Giving details for an early career teacher](#giving_details_for_an_ect)
+[Registering an early career teacher](#registering-an-early-career-teacher)
 
 [Assigning a mentor to an early career teacher](#assigning_a_mentor)
  
@@ -53,8 +53,7 @@ We will not limit the number of users per school. This means multiple people can
 
 You can read more about [why we made this decision in our design history](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/allowing-multiple-school-accounts/).
 
-
-## Giving details for an ECT
+## Registering an early career teacher
 
 ### Finding an ECT’s record in the Teaching Record System
 
@@ -79,8 +78,6 @@ Neither date of birth or national insurance number should be stored longer-term 
 ### Checking the ECT is eligible to be registered for training
 
 When an ECT is being registered for training, we should check if their record already exists in the Register ECTs service.
-
-If the ECT already exists as a registered mentor, we should not let them progress with registration. This is because a mentor undergoing ECT training is highly unlikely and it’s probably a mistake.
 
 If the ECT being registered already exists as an ‘in progress’ or ‘completed’ ECT at their school, we should not let them progress with registration. This is because the ECT record already exists and we do not want duplicates. If the ECT has ‘left’ their school, we should still let them progress with registration, as the ECT may have returned.
 
@@ -124,7 +121,7 @@ The school user is asked for that ECT’s email address.
 
 We tell them they can update the email at a later point. This is because we know sometimes school users register ECTs in advance, when their school email address might not be ready yet.
 
-We check the email address given and make sure it doesn’t exist for an ongoing ECT or mentor record with a different TRN. This would mean any emails that are attached to an open `ect_at_school_period`. This is because we shouldn’t have email addresses that are the same for entirely different people, when both are are still undergoing training.
+We check the email address given and make sure it doesn’t exist for an ongoing ECT or mentor record with a different TRN. This would mean any emails that are attached to an open `ect_at_school_period` or open `mentor_at_school_period`. This is because we shouldn’t have email addresses that are the same for entirely different people, when both are are still undergoing training.
 
 This avoids a scenario where two different people are given the same email address. If their lead provider was the same, the lead provider would be unable to set them up with unique accounts for their learning platform.
 
@@ -270,7 +267,10 @@ Once a school confirms the details, it saves the details for that ECT. The ECT r
 
 Registration is only finished when an ECT is also given a mentor.
 
-All ECTs need mentors. Whilst they can be eligible for training before this, usually missing mentors means mentors don’t undergo mentor training as they should, and it also means any mentors not assigned to an ECT won’t receive funding.
+All ECTs need mentors, it’s part of the support they should receive at every school. ECTs can start training without having a mentor assigned on the Register ECTs service, and lead providers will get funded for the ECT’s training. However, mentors still need to be assigned to ECTs so they can:
+* be eligible for funded provider-led mentor training
+* have their details passed on to lead providers for training correctly
+* have access to any learning materials for provider-led ECTs to assist them in their mentoring
 
 Schools can choose to assign a mentor for that ECT immediately after saving the details for the ECT, or they can come back later and do this through the homepage. You can read more about why we chose to do this [in this design history here](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/assigning-mentors/).
 
@@ -292,11 +292,13 @@ If the school user selects to assign the ECT a mentor, they’re taken into the 
 
 Regardless of where the journey to assign a mentor starts, schools are taken to a question where they are asked if they’re assigning a mentor they’ve already registered, or registering a new mentor.
 
-This will show all existing mentors that are still actively at the school - they have a open `mentor_at_school_period`.
+This will show all existing mentors that are still actively at the school - they have an open `mentor_at_school_period`.
 
 If the school selects a previously registered mentor, they will successfully end the journey to assign a mentor, and also finish registering their ECT. This will change the ECT’s status from ‘mentor required’ to ‘registered’. 
 
 If the school registers a new mentor, they’re taken to the questions outlined below.
+
+We would not allow here or later when they find a mentor’s record for an ECT to be assigned as their own mentor.
 
 ### Finding a mentor’s record in the Teaching Record System
 
@@ -345,7 +347,7 @@ We still need to define what happens here.
 
 The school user is asked for that mentor’s email address.
 
-We check the email address given and make sure it doesn’t exist for an ongoing ECT or mentor record with a different TRN. This would mean any emails that are attached to an open `ect_at_school_period`. This is because we shouldn’t have email addresses that are the same for entirely different people, when both are are still undergoing training.
+We check the email address given and make sure it doesn’t exist for an ongoing ECT or mentor record with a different TRN. This would mean any emails that are attached to an open `ect_at_school_period` or open `mentor_at_school_period`. This is because we shouldn’t have email addresses that are the same for entirely different people, when both are are still undergoing training.
 
 This avoids a scenario where two different people are given the same email address. If their lead provider was the same, the lead provider would be unable to set them up with unique accounts for their learning platform.
 
@@ -355,9 +357,9 @@ We also make sure the email follows a correct format.
 
 ### Checking if a mentor can receive mentor training
 
-If a mentor is being assigned to a provider-led ECT for the first-time, we’ll check if that mentor can receive provider-led mentor training.
+If a mentor is being assigned to a provider-led ECT for the first-time, we’ll check if that mentor can receive funded provider-led mentor training.
 
-In order to receive provider-led mentor training, the mentor must:
+In order to receive funded provider-led mentor training, the mentor must:
 
 * not have taken part in early-rollout mentor training, which was done in the beginning when the ECF was launched
 * not have completed provider-led mentor training historically
