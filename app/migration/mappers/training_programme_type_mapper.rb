@@ -1,5 +1,5 @@
 module Mappers
-  class ProgrammeTypeMapper
+  class TrainingProgrammeTypeMapper
     # Maps the ECF1 values to the ECF2 values
     MAPPING = {
       "core_induction_programme" => "school_led",

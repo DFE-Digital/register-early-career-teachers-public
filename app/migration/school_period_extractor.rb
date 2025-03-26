@@ -33,7 +33,7 @@ private
     induction_records.each_with_object([]) do |induction_record, periods|
       record_school = induction_record.induction_programme.school_cohort.school
       extracted_training_programme = induction_record.induction_programme.training_programme
-      programme_type = Mappers::ProgrammeTypeMapper.new(extracted_training_programme).mapped_value
+      programme_type = Mappers::TrainingProgrammeTypeMapper.new(extracted_training_programme).mapped_value
 
       if current_school != record_school
         current_school = record_school
