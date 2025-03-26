@@ -8,7 +8,7 @@ RSpec.describe ContentHelper, type: :helper do
     end
 
     it 'renders the link' do
-      expect(label).to include('admin@example.com')
+      expect(label).to include('headteacher@school.com')
       expect(label).to include("govuk-link--no-visited-state")
     end
   end
