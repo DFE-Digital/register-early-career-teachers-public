@@ -1,13 +1,12 @@
 <% page_data(
   title: "Record passed outcome for #{teacher_full_name(@teacher)}",
   error: @pending_induction_submission.errors.any?,
-  backlink_href: ab_teacher_path(@teacher)
+  backlink_href: admin_teacher_path(@teacher)
 ) %>
 
 <%= render Teachers::RecordOutcomeComponent.new(
   teacher: @teacher,
   pending_induction_submission: @pending_induction_submission,
-  mode: :appropriate_body,
-  outcome_type: :passed,
-  appropriate_body: @appropriate_body
+  mode: :admin,
+  outcome_type: :passed
 ) %>

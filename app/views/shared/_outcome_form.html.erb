@@ -1,0 +1,27 @@
+<%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+<%=
+  f.govuk_date_field :finished_on,
+    legend: {
+      text: "When did they complete their induction?"
+    },
+    hint: { text: teacher_induction_date_hint_text }
+%>
+
+<%=
+  f.govuk_number_field(:number_of_terms,
+    width: 4,
+    label: {
+      size: 'm',
+      text: "How many terms of induction did they complete?"
+    },
+    suffix_text: 'FTE terms',
+    hint: { text: "Enter induction terms between 0 and 16. You can use up to one decimal place if the term is not a whole number. For example, for 2 and a half terms enter 2.5" }) do
+%>
+  <p class="govuk-body">You'll need to consider:</p>
+  <%= govuk_list [
+    "the amount of induction time they've completed so far",
+    "their full-time equivalent (FTE) working patterns and any long periods of absence",
+    "if they have sufficient time in their current post which can count towards their induction",
+  ], type: :bullet %>
+<% end %>
