@@ -13,15 +13,15 @@ These are the steps
 5. Service fees and banding are determined and applied.
 6. Final payments are calculated and displayed for contract managers.
 
-###  What are declarations?
+## Declarations in a nutshell
 
 Declarations are submitted where there is evidence of a participant's engagement in training for a given milestone period. This is submitted by lead providers via the API and triggers payments to lead providers.
 
 Declarations serve as the critical "bridge" between proving training engagement and triggering the financial outputs (payments) from the DfE.
 
-Declarations are treated in 'good faith' meaning that providing the declaration is valid and the participant is eligible for funding then they will be paid.
+Declarations are treated in "good faith" meaning that providing the declaration is valid and the participant is eligible for funding then they will be paid.
 
-### How do lead providers submit a declaration?
+## Lead providers submitting a declaration
 
 A lead provider can submit a declaration using the POST `api/v[1,2,3]/participant-declarations` endpoint, providers are required to supply the request body, which includes the:
 
@@ -33,8 +33,7 @@ A lead provider can submit a declaration using the POST `api/v[1,2,3]/participan
 
 Example:
 
-```
-{
+<pre><code>{
   "data": {
     "type": "participant-declaration",
     "attributes": {
@@ -45,17 +44,15 @@ Example:
       "evidence_held": "training-event-attended"
     }
   }
-}
-```
+}</code></pre>
 
-### How do lead providers review the declarations submitted?
+## Lead providers reviewing submitted declarations
 
 A lead provider can view all declarations using the GET `api/v[1,2,3]/participant-declarations` endpoint.
 
 Example:
 
-```
-{
+<pre><code>{
   "data": [
     {
       "id": "db3a7848-7308-4879-942a-c4a70ced400a",
@@ -80,46 +77,45 @@ Example:
       }
     }
   ]
-}
-```
+}</code></pre>
 
 Also lead providers have real-time status updates of a specific declaration via the endpoint GET `api/v[1,2,3]/participant-declarations/{id}`.
 
-### How do lead providers check which statement a declaration has been linked to?
+## Lead providers checking which statement a declaration has been linked to
 
 Lead providers can check for updates on the statement a declaration has been linked to and its status, via the endpoint GET `/api/v[1,2,3]/statements/{id}`, using the `statement_id` from the declaration response above as `{id}`.
 
-### How do lead providers know if a declaration has been successfully submitted and processed?
+## Lead providers checking whether a declaration has been successfully submitted and processed
 
 A valid declaration will return a 200 response whereas an invalid declaration request will return an error message.
 
 Many validations are in place to guarantee a declaration is correctly created:
 
-#### 1. Automatic Checks Before Validation
+### 1. Automatic Checks Before Validation
 - The system verifies whether the selected course is still supported.
 - It tracks declaration attempts to prevent unnecessary or duplicate submissions.
 
-#### 2. Required Information
+### 2. Required Information
 - **Participant Id** – Must be provided; otherwise, an error message is shown.
 - **Declaration Type** – Must be provided; otherwise, an error message is shown.
 - **Declaration Date** – Must be provided; otherwise, an error message is shown.
 - **Course Identifier** – Must be provided; otherwise, an error message is shown.
 - **Evidence Held** – Must be provided for some declaration types; otherwise, an error message is shown.
 
-#### 3. Participant Requirements
+### 3. Participant Requirements
 - The participant must have a valid identity in the system.
 - The participant must not have withdrawn from the program.
 
-#### 4. Date Validations
+### 4. Date Validations
 - The **declaration date** must be a valid date.
 - The **declaration date** cannot be in the future.
 - The **declaration date** must be within each declaration type milestone start dates.
 
-#### 5. Course & Provider Validations
+### 5. Course & Provider Validations
 - The **course identifier** must be valid for the given participant.
 - The **lead provider** must be correctly linked to the participant.
 
-#### 6. Additional Compliance Checks
+### 6. Additional Compliance Checks
 - The system checks if the required **statement** is available.
 - A **valid milestone** must exist for the declaration.
 - The system checks for duplicated declarations.
@@ -128,7 +124,7 @@ Many validations are in place to guarantee a declaration is correctly created:
 
 These validations help ensure accurate and compliant record declarations while preventing errors in the process.
 
-#### Possible validation error messages:
+### Possible validation error messages:
 
 - `Your update cannot be made as the '#/participant_id' is not recognised. Check participant details and try again.`
 - `This participant withdrew from this course on %{withdrawal_date}. Enter a '#/declaration_date' that's on or before the withdrawal date.`
@@ -146,7 +142,7 @@ These validations help ensure accurate and compliant record declarations while p
 - `The '#/declaration_date' value cannot be a future date. Check the date and try again.`
 - `You cannot send retained or extended declarations for participants who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.`
 
-### How does participant band distribution work?
+## Working with participant bands
 
 Given the data:
 
@@ -158,13 +154,13 @@ Given the data:
 - **Current participants**: 2000
 - **Goal**: Distribute these 2000 participants into the bands.
 
-#### Breakdown
+### Breakdown
 
-##### **Previous Distribution:**
+#### **Previous Distribution:**
 - The **first 2000** participants recruited in a cohort were in **Band A**.
 - The **next 100** participants (out of 2100) moved into **Band B**.
 
-##### **Current Distribution (2000 participants):**
+#### **Current Distribution (2000 participants):**
 - Since all 2000 participants fit within **Band A’s range (0–2000)**,
   **Band A now has 0 participants**.
 - The remaining participants (from 2000 onwards) move into **Band B and Band C**:
@@ -172,7 +168,7 @@ Given the data:
     - 1900 fit into **Band B** (since the previous 100 were already in Band B, we adjust).
     - The remaining 100 go into **Band C**.
 
-#### **Final Result:**
+### **Final Result:**
 | Band   | Participants |
 |--------|-------------|
 | Band A | 0           |
@@ -181,40 +177,40 @@ Given the data:
 
 This ensures the correct redistribution of participants across the defined bands.
 
-### Output Fee vs. Service Fee
+## Output Fee vs. Service Fee
 
 Example: How a price per participant of £1,000 is distributed between **Service Fees** and **Output Fees**:
 
-#### What are Output fees?
+### Output fees
 
 Declarations are paid each time a declaration is submitted. Output fee’s make up 60% of the price per participant. This would equate to £600 in possible payments a lead provider could claim for subject to a participant training and a provide submitting an evidence of engagement via the API.
 
-#### What are Service fees?
+### Service fees
 
 Are paid on a monthly basis over 2 years. The figures are based on the recruitment targets supplied by the lead provider. This would equate to around £400 in payments over the course of 24 months (£16.66) paid to lead provider for each participant trained.
 
 ### Breakdown of fees for ECTs:
 
-#### **Total Cost per ECT participant**: **£1,000**
+### **Total Cost per ECT participant**: **£1,000**
 - This cost is split into **Service Fees (40%)** and **Output Fees (60%)**.
 
-#### **1. Service Fee (£400, 40%)**
+### **1. Service Fee (£400, 40%)**
 - This is paid to the provider **regardless** of participant performance.
 - Distributed over time:
   - **90% paid over 29 months** for standard-length inductions.
   - **10% paid over 40 months** for non-standard-length inductions.
 
-#### **2. Output Fee (£600, 60%)**
+### **2. Output Fee (£600, 60%)**
 - This is **performance-based** and only paid when participants reach specific training milestones.
 - **Breakdown:**
   - **Start Payment**: **£120** (20% of Output Fee)
   - **Retention Payments**: **£90 each × 4 payments** (15% of Output Fee each)
   - **Completion Payment**: **£120** (20% of Output Fee)
 
-#### **3. Extension Payment (£90, 15% of Output Fee)**
+### **3. Extension Payment (£90, 15% of Output Fee)**
 - Additional payment if a participant requires **extra support** to complete training.
 
-#### **4. Conditions for Output Payments**
+### **4. Conditions for Output Payments**
 - **Suppliers must declare** that a participant has met a milestone before payments are made.
 - If a mentor or participant does **not engage**, **some payments (like completion) may not be triggered**.
 
@@ -224,10 +220,10 @@ This pricing model ensures that providers receive a **fixed portion** (Service F
 
 Unlike Early Career Teachers (ECTs), mentors are **only paid via Output Fees**, and pricing bands do not apply.
 
-#### **Total Cost per Mentor participant**: **£1,000**
+### **Total Cost per Mentor participant**: **£1,000**
 - The full amount is allocated to **Output Fees**.
 
-#### **Output Fee Breakdown**
+### **Output Fee Breakdown**
 | Payment Type       | Percentage | Amount | Condition |
 |--------------------|------------|---------|----------------------------------|
 | **Start Payment**  | 50%        | £500    | Paid when a **mentor starts training** |
@@ -238,9 +234,9 @@ Unlike Early Career Teachers (ECTs), mentors are **only paid via Output Fees**, 
 - No fixed service fee is included.
 - Payments are only made when training milestones (**starting & completing**) are met.
 
-### How can a contract manager log in and view the bandings?
+## Contract manager logging in and viewing the bandings
 
-A contract manager can log in to the service as a finance user and access participant declarations via the ‘search participant data' tab.
+A contract manager can log in to the service as a finance user and access participant declarations via the **search participant data** tab.
 
 They can view details such as the:
 
