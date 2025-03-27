@@ -3,3 +3,8 @@ production:
     class: DfE::Analytics::EntityTableCheckJob
     queue: dfe_analytics
     schedule: Every day at 00:30
+
+  purge_pending_induction_submissions:
+    class: PurgePendingInductionSubmissionsJob
+    queue: default
+    schedule: Every hour
