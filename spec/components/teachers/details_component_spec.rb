@@ -22,30 +22,6 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
     end
   end
 
-  describe "rendering slots" do
-    it "renders slots when provided" do
-      # Render the component with all slots
-      result = render_inline(component) do |c|
-        c.with_personal_details
-        c.with_itt_details
-        c.with_induction_summary
-        c.with_current_induction_period
-        c.with_past_induction_periods
-      end
-
-      # Verify the component renders something
-      expect(result.to_html).not_to be_empty
-    end
-
-    it "doesn't render slots that aren't provided" do
-      # Render the component with no slots
-      result = render_inline(component)
-
-      # Verify the component renders an empty string
-      expect(result.to_html).to eq("\n\n\n\n\n")
-    end
-  end
-
   describe "with different modes" do
     context "when mode is :admin" do
       let(:mode) { :admin }

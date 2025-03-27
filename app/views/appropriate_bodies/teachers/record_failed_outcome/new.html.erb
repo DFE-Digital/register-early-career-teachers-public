@@ -5,10 +5,10 @@
   )
 %>
 
-<p class="govuk-body">
-  <%= teacher_full_name(@teacher) %> can appeal this outcome. You must tell them about their right to appeal and the appeal process.
-</p>
-<%= form_with(model: @pending_induction_submission, url: ab_teacher_record_failed_outcome_path(@teacher), method: 'post') do |f| %>
-  <%= render partial: 'appropriate_bodies/teachers/outcome_form', locals: { f: f } %>
-  <%= f.govuk_submit "Record failing outcome for #{teacher_full_name(@teacher)}", warning: true %>
-<% end %>
+<%= render Teachers::RecordOutcomeComponent.new(
+  teacher: @teacher,
+  pending_induction_submission: @pending_induction_submission,
+  mode: :appropriate_body,
+  outcome_type: :failed,
+  appropriate_body: @appropriate_body
+) %>

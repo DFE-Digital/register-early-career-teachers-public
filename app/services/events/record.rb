@@ -166,6 +166,26 @@ module Events
       new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
     end
 
+    def self.record_admin_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
+      fail(NoInductionPeriod) unless induction_period
+
+      event_type = :admin_passes_teacher_induction
+      heading = "#{Teachers::Name.new(teacher).full_name} passed induction (admin)"
+      happened_at = induction_period.finished_on
+
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+    end
+
+    def self.record_admin_fails_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
+      fail(NoInductionPeriod) unless induction_period
+
+      event_type = :admin_fails_teacher_induction
+      heading = "#{Teachers::Name.new(teacher).full_name} failed induction (admin)"
+      happened_at = induction_period.finished_on
+
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+    end
+
   private
 
     def attributes

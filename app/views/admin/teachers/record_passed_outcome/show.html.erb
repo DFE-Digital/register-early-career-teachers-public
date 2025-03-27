@@ -1,0 +1,17 @@
+<% page_data(
+  title: "Outcome recorded",
+  backlink_href: admin_teacher_path(@teacher)
+) %>
+
+<div class="govuk-panel govuk-panel--confirmation">
+  <h1 class="govuk-panel__title">
+    Outcome recorded
+  </h1>
+  <div class="govuk-panel__body">
+    <%= teacher_full_name(@teacher) %> has passed their induction
+  </div>
+</div>
+
+<p class="govuk-body">
+  <%= govuk_link_to "Return to #{teacher_full_name(@teacher)}", admin_teacher_path(@teacher) %>
+</p>
