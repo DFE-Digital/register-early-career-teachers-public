@@ -36,7 +36,6 @@ end %>
     <%= f.govuk_radio_button :use_previous_ect_choices, :false, label: { text: "No" } %>
   <% end %>
 
-<div class="govuk-!-margin-top-5">
   <%= govuk_details(summary_text: 'What are the roles of an appropriate body, lead provider and delivery partner?') do %>
     <p class="govuk-body">
       An appropriate body is responsible for assuring the quality of the statutory induction of ECTs.
@@ -54,8 +53,6 @@ end %>
       For school-led training your school will still work with an appropriate body to quality assure the induction process. You might choose to design your own training programme or use materials created by different lead providers.
     </p>
   <% end %>
-</div>
-
 
   <%= f.govuk_submit "Continue" %>
 <% end %>
