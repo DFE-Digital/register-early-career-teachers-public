@@ -10,10 +10,10 @@ RSpec.shared_examples "a state school appropriate body view" do |current_step:, 
     assign(:ect, ect)
   end
 
-  it "sets the page title to 'Which appropriate body will be supporting John Smith's induction?'" do
+  it "sets the page title to 'Which appropriate body will be supporting John Smith’s induction?'" do
     render
 
-    expect(sanitize(view.content_for(:page_title))).to eql("Which appropriate body will be supporting John Smith's induction?")
+    expect(sanitize(view.content_for(:page_title))).to eql("Which appropriate body will be supporting John Smith’s induction?")
   end
 
   context "when the appropriate body name is invalid" do

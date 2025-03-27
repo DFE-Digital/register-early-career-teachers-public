@@ -1,24 +1,27 @@
-<% page_data(title: "What you’ll need to register a new ECT", error: false) %>
+<% page_data(title: "What you’ll need to register a new ECT", error: false, backlink_href: schools_ects_home_path) %>
 
-<h2 class="govuk-heading-m">Personal information</h2>
-<p class="govuk-body">You must provide your ECT’s:</p>
+<p class="govuk-body">You’ll need the ECT’s:</p>
 <ul class="govuk-list govuk-list--bullet">
   <li>name</li>
+  <li>teacher reference number (TRN)</li>
   <li>date of birth</li>
   <li>email address</li>
-  <li>teacher reference number (TRN)</li>
-</ul>
-
-<h2 class="govuk-heading-m">Training details</h2>
-<p class="govuk-body">You will also need to tell us about your choice of:</p>
-<ul class="govuk-list govuk-list--bullet">
+  <li>start date at your school as an ECT</li>
+  <li>working pattern (full or part time)</li>
   <li>appropriate body</li>
-  <li>lead provider and delivery partner</li>
-  <li>programme type</li>
-  <li>mentor</li>
+  <li>training programme (provider-led or school-led)</li>
+  <li>lead provider (if it’s a provider-led programme)</li>
+  <li>mentor (you can provide these details later if you need to)</li>
 </ul>
 
-<p class="govuk-body">If you have not assigned a mentor for your ECT, you can still register them by providing the
-  mentor’s details later.</p>
+<%= govuk_details(summary_text: "What are the roles of an appropriate body, lead provider and delivery partner?") do %>
+  <p>An appropriate body is responsible for assuring the quality of the statutory induction of ECTs.</p>
+
+  <p>For provider-led training, the lead provider provides the online learning platform used for training ECTs and mentors, while the delivery partner delivers training events.</p>
+
+  <p>These roles are sometimes undertaken by the same organisation, for example an appropriate body might be the same organisation as the delivery partner.</p>
+
+  <p>For school-led training your school will still work with an appropriate body to quality assure the induction process. You might choose to design your own training programme or use materials created by different lead providers.</p>
+<% end %>
 
 <%= govuk_button_link_to("Continue", schools_register_ect_wizard_find_ect_path) %>
