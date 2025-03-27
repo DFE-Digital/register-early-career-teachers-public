@@ -2,7 +2,7 @@
 title: Finance users
 ---
 
-Financial statements are monthly record of payments made to lead providers. It is generated based on the declarations submitted by lead providers, which are attached to a specific statement depending on the timing of submission and applicable funding criteria. Each statement provides a complete picture of the payments for that period, including a summary, detailed breakdowns, and total amounts. These totals may include output payments, clawbacks, VAT, service fees, and any additional one-off adjustments.
+Financial statements are monthly record of payments made to lead providers. They are generated based on the declarations submitted by lead providers, which are attached to a specific statement depending on the timing of submission and applicable funding criteria. Each statement provides a complete picture of the payments for that period, including a summary, detailed breakdowns, and total amounts. These totals may include output payments, clawbacks, VAT, service fees, and any additional one-off adjustments.
 
 ## Contents
 
@@ -119,6 +119,8 @@ A statement can be marked as paid if:
 - `deadline_date` is in the past
 - It contains declarations
 
+Statements are automatically marked as payable by a daily cron job once the `deadline_date` has passed.
+
 If all the above conditions are met, an **Authorise for payment** button is shown on the financial statement page.
 
 Once a statement is marked as paid:
@@ -206,3 +208,5 @@ When contract values are updated:
 - New values are applied
 - The version is incremented (patch version)
 - The statement’s `contract_version` is updated to match the new contract version
+
+Contracts that are no longer in use or identified as duplicates have their `version` prefixed with `unused_` (e.g. `unused_0.0.1`) to indicate they should not be used for statement calculations.
