@@ -315,4 +315,61 @@ describe Events::Record do
       end
     end
   end
+
+  describe 'support_revert_teacher_claim event' do
+    let(:event_type) { :support_revert_teacher_claim }
+    let(:happened_at) { Time.zone.now }
+    let(:body_with_reset) { "Induction status was also reset on TRS." }
+
+    context 'when induction status was reset on TRS' do
+      it 'records an event with the correct values including body' do
+        freeze_time do
+          event = Events::Record.new(
+            author:,
+            teacher:,
+            appropriate_body:,
+            event_type:,
+            heading: "#{Teachers::Name.new(teacher).full_name} was unclaimed by support",
+            happened_at:,
+            body: body_with_reset
+          )
+
+          allow(event).to receive(:record_event!).and_return(true)
+          expect(event).to receive(:record_event!)
+
+          event.record_event!
+
+          expect(event.event_type).to eq(event_type)
+          expect(event.teacher).to eq(teacher)
+          expect(event.appropriate_body).to eq(appropriate_body)
+          expect(event.body).to eq(body_with_reset)
+        end
+      end
+    end
+
+    context 'when induction status was not reset on TRS' do
+      it 'records an event with the correct values without body' do
+        freeze_time do
+          event = Events::Record.new(
+            author:,
+            teacher:,
+            appropriate_body:,
+            event_type:,
+            heading: "#{Teachers::Name.new(teacher).full_name} was unclaimed by support",
+            happened_at:
+          )
+
+          allow(event).to receive(:record_event!).and_return(true)
+          expect(event).to receive(:record_event!)
+
+          event.record_event!
+
+          expect(event.event_type).to eq(event_type)
+          expect(event.teacher).to eq(teacher)
+          expect(event.appropriate_body).to eq(appropriate_body)
+          expect(event.body).to be_nil
+        end
+      end
+    end
+  end
 end
