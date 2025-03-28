@@ -12,7 +12,12 @@ module Schools
     private
 
       def persist
-        AssignMentor.new(ect:, mentor: mentor.register!).assign!
+        ActiveRecord::Base.transaction do
+          AssignMentor.new(ect:, mentor: mentor.register!).assign!
+        end
+      rescue StandardError => e
+        mentor.registered = false
+        raise e
       end
     end
   end

@@ -6,6 +6,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
                      trn: "1234567",
                      trs_first_name: "John",
                      trs_last_name: "Wayne",
+                     change_name: "yes",
                      corrected_name: "Jim Wayne",
                      date_of_birth: "01/01/1990")
   end
@@ -118,7 +119,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
 
     context 'when the ect is already active at the school' do
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:active_ect_period) { FactoryBot.create(:ect_at_school_period, :active, teacher:, school:) }
+      let(:active_ect_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, :active, teacher:, school:) }
 
       before do
         wizard.store.update!(school_urn: active_ect_period.school.urn)

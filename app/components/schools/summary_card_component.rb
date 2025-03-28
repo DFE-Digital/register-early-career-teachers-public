@@ -51,7 +51,7 @@ module Schools
 
     def school_rows
       [
-        { key: { text: 'Appropriate body' }, value: { text: appropriate_body_name(appropriate_body_type: @ect.appropriate_body_type, appropriate_body: @ect.appropriate_body) } },
+        { key: { text: 'Appropriate body' }, value: { text: @ect.appropriate_body_name } },
         { key: { text: 'Programme type' }, value: { text: programme_type_name(@ect.programme_type) } }
       ].tap do |rows|
         rows << { key: { text: 'Lead provider' }, value: { text: @ect.lead_provider_name } } if @ect.provider_led?

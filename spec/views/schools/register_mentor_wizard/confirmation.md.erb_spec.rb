@@ -12,6 +12,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
       trn: '0000007',
       trs_first_name: "John",
       trs_last_name: "Wayne",
+      change_name: 'no',
       corrected_name: nil,
       already_active_at_school:,
       eligible_for_mentor_funding?: true

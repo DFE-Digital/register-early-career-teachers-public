@@ -177,6 +177,7 @@ describe Schools::RegisterMentorWizard::Mentor do
       expect(mentor_at_school_period.school_id).to eq(school.id)
       expect(mentor_at_school_period.started_on).to eq(Date.current)
       expect(mentor_at_school_period.email).to eq('dusty@rhodes.com')
+      expect(mentor.registered).to be_truthy
     end
   end
 

@@ -1,15 +1,6 @@
 describe ECTAtSchoolPeriod do
   describe "enums" do
     it do
-      is_expected.to define_enum_for(:appropriate_body_type)
-                       .with_values({ teaching_induction_panel: 'teaching_induction_panel',
-                                      teaching_school_hub: 'teaching_school_hub' })
-                       .validating
-                       .with_suffix(:ab_type)
-                       .backed_by_column_of_type(:enum)
-    end
-
-    it do
       is_expected.to define_enum_for(:programme_type)
                        .with_values({ provider_led: "provider_led",
                                       school_led: "school_led" })
@@ -36,42 +27,61 @@ describe ECTAtSchoolPeriod do
     it { is_expected.to validate_presence_of(:teacher_id) }
 
     context "appropriate_body_id" do
-      context "when appropriate_body_type is 'teaching_school_hub'" do
-        subject { FactoryBot.build(:ect_at_school_period, :teaching_school_hub) }
+      context "when the school is independent" do
+        context "when national ab chosen" do
+          subject { FactoryBot.create(:ect_at_school_period, :independent_school, :national_ab) }
 
-        it do
-          is_expected.to validate_presence_of(:appropriate_body_id)
-                           .with_message('Must contain the ID of an appropriate body')
+          it { is_expected.to be_valid }
         end
 
-        it do
-          is_expected.not_to validate_absence_of(:appropriate_body_id)
+        context "when teaching school hub ab chosen" do
+          subject { FactoryBot.create(:ect_at_school_period, :independent_school, :teaching_school_hub_ab) }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "when local authority ab chosen" do
+          subject { FactoryBot.build(:ect_at_school_period, :independent_school, :local_authority_ab) }
+
+          before { subject.valid? }
+
+          it do
+            expect(subject.errors.messages[:appropriate_body_id])
+              .to contain_exactly('Must be national or teaching school hub')
+          end
         end
       end
 
-      context "when appropriate_body_type is not 'teaching_school_hub'" do
-        subject { FactoryBot.build(:ect_at_school_period, :teaching_induction_panel) }
+      context "when the school is state_funded" do
+        subject { FactoryBot.build(:ect_at_school_period, :state_funded_school) }
 
-        it { is_expected.not_to validate_presence_of(:appropriate_body_id) }
-        it { is_expected.to validate_absence_of(:appropriate_body_id).with_message('Must be nil') }
-      end
-    end
+        context "when national ab chosen" do
+          subject { FactoryBot.build(:ect_at_school_period, :state_funded_school, :national_ab) }
 
-    context "appropriate_body_type" do
-      subject { FactoryBot.build(:ect_at_school_period) }
+          before { subject.valid? }
 
-      it do
-        is_expected.to validate_inclusion_of(:appropriate_body_type)
-                         .in_array(%w[teaching_induction_panel teaching_school_hub])
-                         .with_message("Must be teaching induction panel or teaching school hub")
-      end
+          it do
+            expect(subject.errors.messages[:appropriate_body_id])
+              .to contain_exactly('Must be teaching school hub')
+          end
+        end
 
-      context "for a state school" do
-        subject { FactoryBot.build(:ect_at_school_period, school:) }
+        context "when teaching school hub ab chosen" do
+          subject { FactoryBot.create(:ect_at_school_period, :state_funded_school, :teaching_school_hub_ab) }
 
-        let(:school) { FactoryBot.build(:school, :state_funded) }
+          it { is_expected.to be_valid }
+        end
 
-        it { is_expected.to validate_presence_of(:appropriate_body_type).with_message("Must be teaching school hub") }
+        context "when local authority ab chosen" do
+          subject { FactoryBot.build(:ect_at_school_period, :state_funded_school, :local_authority_ab) }
+
+          before { subject.valid? }
+
+          it do
+            expect(subject.errors.messages[:appropriate_body_id])
+              .to contain_exactly('Must be teaching school hub')
+          end
+        end
       end
     end
 
@@ -156,11 +166,11 @@ describe ECTAtSchoolPeriod do
 
   describe "scopes" do
     let!(:teacher) { FactoryBot.create(:teacher) }
-    let!(:school) { FactoryBot.create(:school) }
-    let!(:period_1) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: '2023-01-01', finished_on: '2023-06-01') }
-    let!(:period_2) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: "2023-06-01", finished_on: "2024-01-01") }
-    let!(:period_3) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: '2024-01-01', finished_on: nil) }
-    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
+    let!(:school) { period_1.school }
+    let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: '2023-01-01', finished_on: '2023-06-01') }
+    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2023-12-11") }
+    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
+    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
 
     describe ".for_teacher" do
       it "returns ect periods only for the specified teacher" do
@@ -225,12 +235,12 @@ describe ECTAtSchoolPeriod do
 
   describe "#siblings" do
     let!(:teacher) { FactoryBot.create(:teacher) }
-    let!(:school) { FactoryBot.create(:school) }
-    let!(:period_1) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: '2023-01-01', finished_on: '2023-06-01') }
-    let!(:period_2) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: "2023-06-01", finished_on: "2024-01-01") }
-    let!(:period_3) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: '2024-01-01', finished_on: nil) }
-    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
-    let(:ect_at_school_period) { FactoryBot.build(:ect_at_school_period, teacher:, school:, started_on: "2022-01-01", finished_on: "2023-01-01") }
+    let!(:school) { period_1.school }
+    let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: '2022-12-01', finished_on: '2023-06-01') }
+    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: '2024-01-01') }
+    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
+    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: '2022-01-01', finished_on: period_1.started_on) }
 
     it "returns ect periods only for the specified instance's teacher excluding the instance" do
       expect(ect_at_school_period.siblings).to match_array([period_1, period_2, period_3])
