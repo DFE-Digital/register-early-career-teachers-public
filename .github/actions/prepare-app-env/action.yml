@@ -12,7 +12,7 @@ inputs:
   node-version:
     description: The version of Node.js to install
     required: false
-    default: "18.18"
+    default: "22.14.0"
   prepare-test-database:
     description: When 'true', sets up a test database
     required: false
@@ -27,15 +27,16 @@ runs:
   steps:
     - name: Set up Ruby
       if: inputs.skip-ruby == 'false'
-      uses: ruby/setup-ruby@v1
+      uses: ruby/setup-ruby@v1.229.0
       with:
         bundler-cache: true
 
     - name: Set up Node
       if: ${{ inputs.skip-node == 'false' }}
-      uses: actions/setup-node@v4.0.0
+      uses: actions/setup-node@v4.3.0
       with:
         node-version: ${{ inputs.node-version }}
+        cache: 'npm'
 
     - name: Install node.js dependencies
       if: ${{ inputs.skip-node == 'false' }}
