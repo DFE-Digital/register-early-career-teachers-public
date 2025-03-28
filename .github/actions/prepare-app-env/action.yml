@@ -36,6 +36,7 @@ runs:
       uses: actions/setup-node@v4.0.0
       with:
         node-version: ${{ inputs.node-version }}
+        cache: 'npm'
 
     - name: Install node.js dependencies
       if: ${{ inputs.skip-node == 'false' }}
