@@ -30,6 +30,7 @@ jobs:
         uses: ruby/setup-ruby@v1.229.0
         with:
           ruby-version: ${{ inputs.ruby-version }}
+          bundler-cache: true
 
       - name: Install dependencies
         run: bundle install
@@ -101,6 +102,7 @@ jobs:
         uses: ruby/setup-ruby@v1.229.0
         with:
           ruby-version: ${{ inputs.ruby-version }}
+          bundler-cache: true
 
       - name: Install dependencies
         run: bundle install
