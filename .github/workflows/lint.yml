@@ -11,7 +11,7 @@ on:
         description: Node version
         type: string
         required: false
-        default: "20.15.1"
+        default: "22.14.0"
 
 jobs:
   ruby_linting:
