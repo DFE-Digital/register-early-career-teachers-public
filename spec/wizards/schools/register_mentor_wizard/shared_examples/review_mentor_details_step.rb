@@ -6,6 +6,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
                      trn: '1234567',
                      trs_first_name: 'John',
                      trs_last_name: 'Wayne',
+                     change_name: 'yes',
                      corrected_name: 'Jim Wayne',
                      date_of_birth: '01/01/1990',
                      email: 'initial@email.com')
@@ -18,11 +19,11 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
     let(:corrected_name) { 'Right Name' }
 
     context 'when the corrected name or change name are provided' do
-      let(:params) { { corrected_name: } }
+      let(:params) { { corrected_name:, change_name: 'yes' } }
 
       it 'populate the instance from it' do
         expect(subject.corrected_name).to eq(corrected_name)
-        expect(subject.change_name).to be_nil
+        expect(subject.change_name).to eq('yes')
       end
     end
 
@@ -100,7 +101,11 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
       end
 
       it "'updates the wizard's mentor corrected name'" do
-        expect { subject.save! }.to change(subject.mentor, :corrected_name).from(nil).to('Paul Saints')
+        expect { subject.save! }
+          .to change(subject.mentor, :corrected_name)
+                .from(nil).to('Paul Saints')
+                .and change(subject.mentor, :change_name)
+                       .from(nil).to('yes')
       end
     end
   end

@@ -2,6 +2,7 @@ module Schools
   class RegisterMentorWizardController < SchoolsController
     before_action :initialize_wizard, only: %i[new create]
     before_action :reset_wizard, only: :new
+    before_action :check_allowed_step, except: %i[start]
 
     FORM_KEY = :register_mentor_wizard
     WIZARD_CLASS = Schools::RegisterMentorWizard::Wizard.freeze
@@ -35,6 +36,10 @@ module Schools
       )
       @ect_name = Teachers::Name.new(@wizard.ect.teacher).full_name
       @mentor = @wizard.mentor
+    end
+
+    def check_allowed_step
+      redirect_to @wizard.allowed_step_path unless @wizard.allowed_step?
     end
 
     def current_step

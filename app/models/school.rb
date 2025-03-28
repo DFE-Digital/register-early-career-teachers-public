@@ -1,12 +1,5 @@
 class School < ApplicationRecord
   # Enums
-  enum :chosen_appropriate_body_type,
-       { teaching_induction_panel: "teaching_induction_panel",
-         teaching_school_hub: "teaching_school_hub" },
-       validate: { message: "Must be nil or teaching induction panel or teaching school hub",
-                   allow_nil: true },
-       suffix: :ab_type_chosen
-
   enum :chosen_programme_type,
        { provider_led: "provider_led",
          school_led: "school_led" },
@@ -26,23 +19,6 @@ class School < ApplicationRecord
   has_many :mentor_teachers, -> { distinct }, through: :mentor_at_school_periods, source: :teacher
 
   # Validations
-  validates :chosen_appropriate_body_id,
-            presence: {
-              message: 'Must contain the ID of an appropriate body',
-              if: -> { teaching_school_hub_ab_type_chosen? }
-            },
-            absence: {
-              message: 'Must be nil',
-              unless: -> { teaching_school_hub_ab_type_chosen? }
-            }
-
-  validates :chosen_appropriate_body_type,
-            presence: {
-              message: 'Must be teaching school hub',
-              if: -> { state_funded? },
-              allow_nil: true
-            }
-
   validates :chosen_lead_provider_id,
             presence: {
               message: 'Must contain the id of a lead provider',
@@ -56,8 +32,14 @@ class School < ApplicationRecord
   validates :chosen_programme_type,
             presence: {
               message: 'Must be provider-led',
-              if: -> { chosen_appropriate_body_id }
+              if: -> { chosen_lead_provider_id }
             }
+
+  validate :chosen_appropriate_body_for_independent_school,
+           if: -> { independent? }
+
+  validate :chosen_appropriate_body_for_state_funded_school,
+           if: -> { state_funded? }
 
   validates :urn,
             presence: true,
@@ -93,7 +75,8 @@ class School < ApplicationRecord
            allow_nil: true
 
   # chosen_appropriate_body_name
-  delegate :name, to: :chosen_appropriate_body, prefix: true, allow_nil: true
+  # chosen_appropriate_body_type
+  delegate :name, :type, to: :chosen_appropriate_body, prefix: true, allow_nil: true
 
   # chosen_lead_provider_name
   delegate :name, to: :chosen_lead_provider, prefix: true, allow_nil: true
@@ -103,15 +86,27 @@ class School < ApplicationRecord
   def programme_choices
     {
       appropriate_body_id: chosen_appropriate_body_id,
-      appropriate_body_type: chosen_appropriate_body_type,
       programme_type: chosen_programme_type,
       lead_provider_id: chosen_lead_provider_id
     }.compact
   end
 
-  def programme_choices? = chosen_appropriate_body_type && chosen_programme_type
+  def programme_choices? = chosen_appropriate_body_id && chosen_programme_type
 
   def state_funded? = GIAS::Types::STATE_SCHOOL_TYPES.include?(type_name)
+
+  def chosen_appropriate_body_for_independent_school
+    return unless chosen_appropriate_body&.local_authority?
+
+    errors.add(:chosen_appropriate_body_id, 'Must be national or teaching school hub')
+  end
+
+  def chosen_appropriate_body_for_state_funded_school
+    return if chosen_appropriate_body.blank?
+    return if chosen_appropriate_body.teaching_school_hub?
+
+    errors.add(:chosen_appropriate_body_id, 'Must be teaching school hub')
+  end
 
   def to_param = urn
 end

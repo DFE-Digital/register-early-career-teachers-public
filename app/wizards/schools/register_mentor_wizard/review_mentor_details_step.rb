@@ -32,12 +32,7 @@ module Schools
       end
 
       def persist
-        mentor.update(corrected_name: formatted_name)
-      end
-
-      def pre_populate_attributes
-        self.corrected_name = mentor.corrected_name
-        self.change_name = corrected_name.present? ? 'yes' : 'no'
+        mentor.update(change_name:, corrected_name: formatted_name)
       end
     end
   end

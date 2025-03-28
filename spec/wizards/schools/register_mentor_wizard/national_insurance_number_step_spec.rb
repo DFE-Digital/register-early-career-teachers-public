@@ -6,6 +6,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
                      trn: '1234567',
                      trs_first_name: 'John',
                      trs_last_name: 'Wayne',
+                     change_name: 'yes',
                      corrected_name: 'Jim Wayne',
                      date_of_birth: '01/01/1990',
                      email: 'initial@email.com',
@@ -198,6 +199,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
           .to change(subject.mentor, :national_insurance_number).from(nil).to('AB123456A')
           .and change(subject.mentor, :trs_first_name).from(nil).to('Kirk')
           .and change(subject.mentor, :trs_last_name).from(nil).to('Van Houten')
+          .and change(subject.mentor, :trs_date_of_birth).from(nil).to('1977-02-03')
       end
     end
   end
