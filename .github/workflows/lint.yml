@@ -54,9 +54,10 @@ jobs:
         uses: actions/setup-node@v4.3.0
         with:
           node-version: ${{ inputs.node-version }}
+          cache: npm
 
       - name: Lint install
-        run: npm i -g standard
+        run: npm ci
 
       - name: Lint JS
         run: |-
@@ -80,7 +81,7 @@ jobs:
           node-version: ${{ inputs.node-version }}
 
       - name: Style lint install
-        run: npm i -g stylelint stylelint-config-gds
+        run: npm ci
 
       - name: Lint SCSS
         run: |-
