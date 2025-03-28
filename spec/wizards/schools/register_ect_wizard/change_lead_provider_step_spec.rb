@@ -19,7 +19,7 @@ RSpec.describe Schools::RegisterECTWizard::ChangeLeadProviderStep, type: :model 
 
   describe "#previous_step" do
     context 'when the school has programme choices' do
-      let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_chosen, :provider_led_chosen) }
+      let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_chosen, :provider_led_chosen) }
 
       it { expect(subject.previous_step).to eq(:change_programme_type) }
     end

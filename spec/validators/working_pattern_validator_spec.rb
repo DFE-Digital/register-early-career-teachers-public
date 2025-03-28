@@ -24,7 +24,7 @@ RSpec.describe WorkingPatternValidator, type: :model do
     context 'is invalid when working_pattern is nil' do
       let(:working_pattern) { nil }
 
-      it 'it adds an error' do
+      it 'adds an error' do
         expect(subject).not_to be_valid
         expect(subject.errors[:working_pattern]).to include("Select if the ECT's working pattern is full or part time")
       end
