@@ -11,7 +11,7 @@ on:
         description: Node version
         type: string
         required: false
-        default: "20.15.1"
+        default: "22.14.0"
 
 jobs:
   ruby_linting:
@@ -30,9 +30,7 @@ jobs:
         uses: ruby/setup-ruby@v1.229.0
         with:
           ruby-version: ${{ inputs.ruby-version }}
-
-      - name: Install dependencies
-        run: bundle install
+          bundler-cache: true
 
       - name: Lint Ruby
         run: bundle exec rubocop
@@ -53,9 +51,10 @@ jobs:
         uses: actions/setup-node@v4.3.0
         with:
           node-version: ${{ inputs.node-version }}
+          cache: npm
 
       - name: Lint install
-        run: npm i -g standard
+        run: npm ci
 
       - name: Lint JS
         run: |-
@@ -79,7 +78,7 @@ jobs:
           node-version: ${{ inputs.node-version }}
 
       - name: Style lint install
-        run: npm i -g stylelint stylelint-config-gds
+        run: npm ci
 
       - name: Lint SCSS
         run: |-
@@ -101,9 +100,7 @@ jobs:
         uses: ruby/setup-ruby@v1.229.0
         with:
           ruby-version: ${{ inputs.ruby-version }}
-
-      - name: Install dependencies
-        run: bundle install
+          bundler-cache: true
 
       - name: Lint ERB Templates
         if: false
