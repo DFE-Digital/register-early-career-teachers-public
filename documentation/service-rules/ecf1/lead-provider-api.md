@@ -177,10 +177,16 @@ Example: How a price per participant of £1,000 is distributed between **Service
 - This cost is split into **Service Fees (40%)** and **Output Fees (60%)**.
 
 ### **1. Service Fee (£400, 40%)**
-- This is paid to the provider **regardless** of participant performance.
-- Distributed over time:
-  - **90% paid over 29 months** for standard-length inductions.
-  - **10% paid over 40 months** for non-standard-length inductions.
+- This is a fixed payment based on a provider’s recruitment target. If a provider recruits less than 75% of their target, the service fee will be reduced.
+- The fee is distributed over time:
+  - **90% is paid over 29 months** for standard-length inductions.
+  - **10% is paid over 40 months** for non-standard-length inductions.
+
+For the first 29 months of a contract, the provider receives:
+
+- **3.103% of the total service fee each month** (1/29th of 90%).
+  - By the end of these 29 months, they will have received **97.25% of the total service fee**.
+- **0.25% of the total service fee each month** (1/40th of 10%) for the remaining 11 months.
 
 ### **2. Output Fee (£600, 60%)**
 - This is **performance-based** and only paid when participants reach specific training milestones.
