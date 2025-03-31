@@ -60,8 +60,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
 
   # Instance methods
-  # appropriate_body_name
-  delegate :name, to: :appropriate_body, prefix: true, allow_nil: true
+  def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
+
+  def school_reported_appropriate_body_type = school_reported_appropriate_body&.body_type
 
   # lead_provider_name
   delegate :name, to: :lead_provider, prefix: true, allow_nil: true
