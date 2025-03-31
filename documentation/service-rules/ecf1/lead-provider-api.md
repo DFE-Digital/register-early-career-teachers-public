@@ -2,7 +2,7 @@
 title: Lead provider API
 ---
 
-Learn about how our payment engine works once it receives declarations from lead providers using the Early Career Framework API.
+Learn about how the payment engine works once it receives declarations from lead providers using the Early Career Framework API.
 
 These are the steps
 
@@ -119,28 +119,10 @@ Many validations are in place to guarantee a declaration is correctly created:
 - The system checks if the required **statement** is available.
 - A **valid milestone** must exist for the declaration.
 - The system checks for duplicated declarations.
-- If the participant is a **mentor**, they can only declare a `started` or `completed` status.
+- From academic year 2025-26, if the participant is a **mentor**, they can only declare a `started` or `completed` status.
 - The provided **evidence** must meet the necessary requirements.
 
 These validations help ensure accurate and compliant record declarations while preventing errors in the process.
-
-### Possible validation error messages:
-
-- `Your update cannot be made as the '#/participant_id' is not recognised. Check participant details and try again.`
-- `This participant withdrew from this course on %{withdrawal_date}. Enter a '#/declaration_date' that's on or before the withdrawal date.`
-- `You cannot submit or void declarations for the %{cohort} cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us`
-- `The entered '#/course_identifier' is not recognised for the given participant. Check details and try again.`
-- `NPQ Courses are no longer supported`
-- `Enter a '#/declaration_date'.`
-- `Enter a valid RCF3339 '#/declaration_date'.`
-- `Enter a '#/evidence_held' value for this participant.`
-- `Enter an available '#/evidence_held' type for this participant's event and course.`
-- `A declaration has already been submitted that will be, or has been, paid for this event`
-- `The property '#/declaration_type' does not exist for this schedule.`
-- `Enter a '#/declaration_date' that's on or after the milestone start.`
-- `Enter a '#/declaration_date' that's before the milestone end date.`
-- `The '#/declaration_date' value cannot be a future date. Check the date and try again.`
-- `You cannot send retained or extended declarations for participants who began their mentor training after June 2025. Resubmit this declaration with either a started or completed declaration.`
 
 ## Working with participant bands
 
@@ -179,17 +161,17 @@ This ensures the correct redistribution of participants across the defined bands
 
 ## Output Fee vs. Service Fee
 
-Example: How a price per participant of £1,000 is distributed between **Service Fees** and **Output Fees**:
-
 ### Output fees
 
-Declarations are paid each time a declaration is submitted. Output fee’s make up 60% of the price per participant. This would equate to £600 in possible payments a lead provider could claim for subject to a participant training and a provide submitting an evidence of engagement via the API.
+Declarations are paid upon submission. Output fees make up 60% of the price per participant, which lead providers can claim for participant training and submission of evidence of engagement via the API.
 
 ### Service fees
 
-Are paid on a monthly basis over 2 years. The figures are based on the recruitment targets supplied by the lead provider. This would equate to around £400 in payments over the course of 24 months (£16.66) paid to lead provider for each participant trained.
+Service fees make up 40% of the price per participant and are paid to lead providers monthly over the period the participant is being trained, based on lead provider recruitment targets.
 
 ### Breakdown of fees for ECTs:
+
+Example: How a price per participant of £1,000 is distributed between **Service Fees** and **Output Fees**:
 
 ### **Total Cost per ECT participant**: **£1,000**
 - This cost is split into **Service Fees (40%)** and **Output Fees (60%)**.
@@ -216,7 +198,7 @@ Are paid on a monthly basis over 2 years. The figures are based on the recruitme
 
 This pricing model ensures that providers receive a **fixed portion** (Service Fee) while incentivizing them to support participants through key training milestones (Output Fee). Additional payments are available for extended training support.
 
-### Breakdown of fees for Mentors:
+### Breakdown of fees for Mentors (*from academic year 2025-26*):
 
 Unlike Early Career Teachers (ECTs), mentors are **only paid via Output Fees**, and pricing bands do not apply.
 
