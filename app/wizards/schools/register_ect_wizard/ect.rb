@@ -62,11 +62,6 @@ module Schools
         trs_date_of_birth.to_date == date_of_birth.to_date
       end
 
-      # Extract into their own SO if this logic becomes dependant of the ECT being assigned
-      def possible_appropriate_bodies
-        @possible_appropriate_bodies ||= AppropriateBody.select(:id, :name).all
-      end
-
       # Extract into their own SO when this logic becomes dependant of the ECT being assigned
       def possible_lead_providers
         @possible_lead_providers ||= LeadProvider.select(:id, :name).all
