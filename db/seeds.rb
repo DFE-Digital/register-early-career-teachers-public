@@ -172,14 +172,15 @@ brookfield_school = schools_indexed_by_urn.fetch(2_976_163)
 
 print_seed_info("Adding appropriate bodies")
 
-AppropriateBody.create!(name: 'Canvas Teaching School Hub', local_authority_code: 109, establishment_number: 2367)
-south_yorkshire_studio_hub = AppropriateBody.create!(name: 'South Yorkshire Studio Hub', local_authority_code: 678, establishment_number: 9728)
-AppropriateBody.create!(name: 'Ochre Education Partnership', local_authority_code: 238, establishment_number: 6582)
-umber_teaching_school_hub = AppropriateBody.create!(name: 'Umber Teaching School Hub', local_authority_code: 957, establishment_number: 7361, dfe_sign_in_organisation_id: 'd245ec79-534e-4547-a7e4-ccd98803b627')
-golden_leaf_teaching_school_hub = AppropriateBody.create!(name: 'Golden Leaf Teaching School Hub', local_authority_code: 648, establishment_number: 3986)
-AppropriateBody.create!(name: 'Frame University London', local_authority_code: 832, establishment_number: 6864)
-AppropriateBody.create!(name: 'Easelcroft Teaching School Hub', local_authority_code: 573, establishment_number: 9273)
-AppropriateBody.create!(name: 'Vista College', local_authority_code: 418, establishment_number: 3735)
+AppropriateBody.create!(body_type: 'national', name: AppropriateBody::ISTIP, local_authority_code: 50, dfe_sign_in_organisation_id: "203606a4-4199-46a9-84e4-56fbc5da2a36", dqt_id: "6ae042bb-c7ae-e311-b8ed-005056822391")
+AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Canvas Teaching School Hub', local_authority_code: 109, establishment_number: 2367)
+south_yorkshire_studio_hub = AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'South Yorkshire Studio Hub', local_authority_code: 678, establishment_number: 9728)
+AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Ochre Education Partnership', local_authority_code: 238, establishment_number: 6582)
+umber_teaching_school_hub = AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Umber Teaching School Hub', local_authority_code: 957, establishment_number: 7361, dfe_sign_in_organisation_id: 'd245ec79-534e-4547-a7e4-ccd98803b627')
+golden_leaf_teaching_school_hub = AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Golden Leaf Teaching School Hub', local_authority_code: 648, establishment_number: 3986)
+AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Frame University London', local_authority_code: 832, establishment_number: 6864)
+AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Easelcroft Teaching School Hub', local_authority_code: 573, establishment_number: 9273)
+AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Vista College', local_authority_code: 418, establishment_number: 3735)
 
 active_appropriate_bodies = [umber_teaching_school_hub, golden_leaf_teaching_school_hub]
 
@@ -297,7 +298,6 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   lead_provider: nil,
   appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
-  appropriate_body_type: 'teaching_school_hub',
   programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -353,13 +353,11 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   lead_provider: wildflower_trust,
   appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
-  appropriate_body_type: 'teaching_school_hub',
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 ackley_bridge.update!(chosen_lead_provider: wildflower_trust,
                       chosen_appropriate_body: golden_leaf_teaching_school_hub,
-                      chosen_appropriate_body_type: 'teaching_school_hub',
                       chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
@@ -401,7 +399,6 @@ hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   lead_provider: nil,
   appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
-  appropriate_body_type: 'teaching_school_hub',
   programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -441,13 +438,11 @@ colin_firth_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   lead_provider: nil,
   appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
-  appropriate_body_type: 'teaching_school_hub',
   programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 abbey_grove_school.update!(chosen_lead_provider: nil,
                            chosen_appropriate_body: golden_leaf_teaching_school_hub,
-                           chosen_appropriate_body_type: 'teaching_school_hub',
                            chosen_programme_type: 'school_led')
 
 TrainingPeriod.create!(
@@ -531,7 +526,6 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
   lead_provider: nil,
   appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
-  appropriate_body_type: 'teaching_school_hub',
   programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -564,13 +558,11 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   lead_provider: wildflower_trust,
   appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
-  appropriate_body_type: 'teaching_school_hub',
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 mallory_towers.update!(chosen_lead_provider: wildflower_trust,
                        chosen_appropriate_body: golden_leaf_teaching_school_hub,
-                       chosen_appropriate_body_type: 'teaching_school_hub',
                        chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
@@ -607,7 +599,6 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   email: 'anthony.hopkins@favabeans.com',
   lead_provider: national_meadows_institute,
   appropriate_body: umber_teaching_school_hub,
-  appropriate_body_type: 'teaching_school_hub',
   programme_type: 'provider_led',
   started_on: 2.years.ago,
   working_pattern: 'part_time'
@@ -629,13 +620,11 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   lead_provider: national_meadows_institute,
   appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led',
-  working_pattern: 'part_time',
-  appropriate_body_type: 'teaching_school_hub'
+  working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 brookfield_school.update!(chosen_lead_provider: national_meadows_institute,
                           chosen_appropriate_body: south_yorkshire_studio_hub,
-                          chosen_appropriate_body_type: 'teaching_school_hub',
                           chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
@@ -652,7 +641,6 @@ ECTAtSchoolPeriod.create!(
   email: 'harriet-walter@history.com',
   started_on: 2.years.ago,
   lead_provider: national_meadows_institute,
-  appropriate_body_type: 'teaching_school_hub',
   appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
