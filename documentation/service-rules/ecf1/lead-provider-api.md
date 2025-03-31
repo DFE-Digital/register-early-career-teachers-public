@@ -138,17 +138,17 @@ Given the data:
 
 ### Breakdown
 
-#### **Previous Distribution:**
-- The **first 2000** participants recruited in a cohort were in **Band A**.
-- The **next 100** participants (out of 2100) moved into **Band B**.
+- **Previous Distribution:**
+  - The **first 2000** participants recruited in a cohort were in **Band A**.
+  - The **next 100** participants (out of 2100) moved into **Band B**.
 
-#### **Current Distribution (2000 participants):**
-- Since all 2000 participants fit within **Band A’s range (0–2000)**,
-  **Band A now has 0 participants**.
-- The remaining participants (from 2000 onwards) move into **Band B and Band C**:
-  - **Band B** starts at 2000. Since we need to place 2000 participants:
-    - 1900 fit into **Band B** (since the previous 100 were already in Band B, we adjust).
-    - The remaining 100 go into **Band C**.
+- **Current Distribution (2000 participants):**
+  - Since all 2000 participants fit within **Band A’s range (0–2000)**,
+    **Band A now has 0 participants**.
+  - The remaining participants (from 2000 onwards) move into **Band B and Band C**:
+    - **Band B** starts at 2000. Since we need to place 2000 participants:
+      - 1900 fit into **Band B** (since the previous 100 were already in Band B, we adjust).
+      - The remaining 100 go into **Band C**.
 
 ### **Final Result:**
 | Band   | Participants |
