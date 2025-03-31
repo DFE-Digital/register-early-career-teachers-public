@@ -1,15 +1,6 @@
 describe ECTAtSchoolPeriod do
   describe "enums" do
     it do
-      is_expected.to define_enum_for(:appropriate_body_type)
-                       .with_values({ teaching_induction_panel: 'teaching_induction_panel',
-                                      teaching_school_hub: 'teaching_school_hub' })
-                       .validating
-                       .with_suffix(:ab_type)
-                       .backed_by_column_of_type(:enum)
-    end
-
-    it do
       is_expected.to define_enum_for(:programme_type)
                        .with_values({ provider_led: "provider_led",
                                       school_led: "school_led" })
