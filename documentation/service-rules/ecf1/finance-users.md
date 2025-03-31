@@ -170,6 +170,9 @@ Adjustments cannot be edited after the statement has been marked as paid.
 
 Contract managers can view contract values used for statement calculation by clicking the **Contract information** link at the bottom of the financial statement page.
 
+A contract is identified by the lead provider, cohort and version. Contracts are not shared by lead providers or cohort.
+Statements from the same lead provider and cohort can share the same contract (identified by `contract_version`).
+
 The information displayed depends on the cohort:
 
 ### Cohorts up to 2024
@@ -204,9 +207,9 @@ Statements include a `contract_version` field, which determines which version of
 
 When contract values are updated:
 
-- The existing contract is duplicated
-- New values are applied
-- The version is incremented (patch version)
+- The existing contract and its bands are duplicated
+- New contract values and band values are applied
+- The contract `version` is incremented (patch version)
 - The statement’s `contract_version` is updated to match the new contract version
 
-Contracts that are no longer in use or identified as duplicates have their `version` prefixed with `unused_` (e.g. `unused_0.0.1`) to indicate they should not be used for statement calculations.
+Contracts that are no longer linked to statements (due to it being superseded by new contract version) or identified as duplicates have their `version` prefixed with `unused_` (e.g. `unused_0.0.1`) to indicate they should not be used for statement calculations.
