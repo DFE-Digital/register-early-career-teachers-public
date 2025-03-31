@@ -3,7 +3,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
 
   let(:ect) { FactoryBot.create(:ect_at_school_period, :active, school:) }
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, school:) }
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, :independent) }
 
   describe 'GET /school/ects/:id/mentorship/new' do
     context 'when not signed in' do

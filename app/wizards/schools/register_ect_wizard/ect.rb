@@ -96,14 +96,6 @@ module Schools
         programme_type == 'school_led'
       end
 
-      def teaching_induction_panel?
-        appropriate_body_type == 'teaching_induction_panel'
-      end
-
-      def teaching_school_hub?
-        appropriate_body_type == 'teaching_school_hub'
-      end
-
       def trs_full_name
         Teachers::Name.new(self).full_name_in_trs
       end
