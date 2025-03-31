@@ -7,7 +7,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       started_on: '2025-01-11',
                       finished_on: nil,
                       lead_provider: requested_lead_provider,
-                      appropriate_body: requested_appropriate_body,
+                      school_reported_appropriate_body: requested_appropriate_body,
                       school: current_school,
                       working_pattern: 'full_time',
                       programme_type:,

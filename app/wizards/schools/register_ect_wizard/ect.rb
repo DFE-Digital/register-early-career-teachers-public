@@ -77,8 +77,7 @@ module Schools
       end
 
       def register!(school)
-        Schools::RegisterECT.new(appropriate_body: (appropriate_body if teaching_school_hub?),
-                                 appropriate_body_type:,
+        Schools::RegisterECT.new(school_reported_appropriate_body: appropriate_body,
                                  corrected_name:,
                                  email:,
                                  lead_provider: (lead_provider if provider_led?),

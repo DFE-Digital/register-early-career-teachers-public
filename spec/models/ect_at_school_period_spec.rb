@@ -22,7 +22,7 @@ describe ECTAtSchoolPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:school).inverse_of(:ect_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:ect_at_school_periods) }
-    it { is_expected.to belong_to(:appropriate_body) }
+    it { is_expected.to belong_to(:school_reported_appropriate_body).class_name('AppropriateBody').optional }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to have_many(:mentorship_periods).inverse_of(:mentee) }
     it { is_expected.to have_many(:training_periods) }
@@ -70,10 +70,11 @@ describe ECTAtSchoolPeriod do
 
             before { subject.valid?(:register_ect) }
 
-        it do
-          is_expected.not_to validate_absence_of(:appropriate_body_id)
-        end
-      end
+            it do
+              expect(subject.errors.messages[:school_reported_appropriate_body_id])
+                .to contain_exactly('Must be teaching school hub')
+            end
+          end
 
           context "when teaching school hub ab chosen" do
             subject { FactoryBot.create(:ect_at_school_period, :state_funded_school, :teaching_school_hub_ab) }
