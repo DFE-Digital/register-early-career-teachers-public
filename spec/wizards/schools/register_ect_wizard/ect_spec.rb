@@ -1,14 +1,15 @@
 RSpec.describe Schools::RegisterECTWizard::ECT do
   subject(:ect) { described_class.new(store) }
 
-  let(:school) { FactoryBot.create(:school) }
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body, :national) }
+  let(:school) { FactoryBot.create(:school, :independent) }
   let(:store) do
     FactoryBot.build(:session_repository,
                      change_name: 'no',
                      corrected_name: nil,
                      date_of_birth: "11-10-1945",
                      email: "dusty@rhodes.com",
-                     appropriate_body_type: 'teaching_induction_panel',
+                     appropriate_body_id: appropriate_body.id,
                      programme_type: "school_led",
                      start_date: 'January 2025',
                      trn: "3002586",
@@ -233,7 +234,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       expect(ect_at_school_period.school_id).to eq(school.id)
       expect(ect_at_school_period.started_on).to eq(Date.parse('January 2025'))
       expect(ect_at_school_period.email).to eq('dusty@rhodes.com')
-      expect(ect_at_school_period.appropriate_body_type).to eq('teaching_induction_panel')
+      expect(ect_at_school_period.school_reported_appropriate_body_type).to eq('national')
     end
   end
 
@@ -255,28 +256,6 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
       it 'returns false' do
         expect(ect.school_led?).to be_falsey
-      end
-    end
-  end
-
-  describe '#teaching_induction_panel?' do
-    before do
-      store.appropriate_body_type = 'teaching_induction_panel'
-    end
-
-    context "when appropriate_body_type is 'teaching_induction_panel'" do
-      it 'returns true' do
-        expect(ect.teaching_induction_panel?).to be_truthy
-      end
-    end
-
-    context "when appropriate_body_type is not 'teaching_induction_panel'" do
-      before do
-        store.appropriate_body_type = nil
-      end
-
-      it 'returns false' do
-        expect(ect.teaching_induction_panel?).to be_falsey
       end
     end
   end

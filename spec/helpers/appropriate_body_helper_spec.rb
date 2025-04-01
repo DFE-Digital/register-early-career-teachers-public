@@ -3,24 +3,6 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
   include GovukLinkHelper
   include GovukVisuallyHiddenHelper
 
-  describe '#appropriate_body_name' do
-    context "when appropriate_body_type is 'teaching_induction_panel'" do
-      specify do
-        expect(appropriate_body_name(appropriate_body_type: 'teaching_induction_panel'))
-          .to eq('Independent Schools Teacher Induction Panel (ISTIP)')
-      end
-    end
-
-    context "when appropriate_body_type is not 'teaching_induction_panel'" do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body, id: 1, name: 'Another body') }
-
-      it 'returns the name' do
-        expect(appropriate_body_name(appropriate_body_type: 'teaching_school_hub', appropriate_body:))
-          .to eq('Another body')
-      end
-    end
-  end
-
   describe "#induction_programme_choices" do
     it "returns an array of FormChoice" do
       expect(induction_programme_choices).to be_an(Array)

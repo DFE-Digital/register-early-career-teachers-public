@@ -62,11 +62,6 @@ module Schools
         trs_date_of_birth.to_date == date_of_birth.to_date
       end
 
-      # Extract into their own SO if this logic becomes dependant of the ECT being assigned
-      def possible_appropriate_bodies
-        @possible_appropriate_bodies ||= AppropriateBody.select(:id, :name).all
-      end
-
       # Extract into their own SO when this logic becomes dependant of the ECT being assigned
       def possible_lead_providers
         @possible_lead_providers ||= LeadProvider.select(:id, :name).all
@@ -77,8 +72,7 @@ module Schools
       end
 
       def register!(school)
-        Schools::RegisterECT.new(appropriate_body: (appropriate_body if teaching_school_hub?),
-                                 appropriate_body_type:,
+        Schools::RegisterECT.new(school_reported_appropriate_body: appropriate_body,
                                  corrected_name:,
                                  email:,
                                  lead_provider: (lead_provider if provider_led?),
@@ -94,14 +88,6 @@ module Schools
 
       def school_led?
         programme_type == 'school_led'
-      end
-
-      def teaching_induction_panel?
-        appropriate_body_type == 'teaching_induction_panel'
-      end
-
-      def teaching_school_hub?
-        appropriate_body_type == 'teaching_school_hub'
       end
 
       def trs_full_name

@@ -19,11 +19,11 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
     let(:corrected_name) { 'Right Name' }
 
     context 'when the corrected name or change name are provided' do
-      let(:params) { { corrected_name: } }
+      let(:params) { { corrected_name:, change_name: 'yes' } }
 
       it 'populate the instance from it' do
         expect(subject.corrected_name).to eq(corrected_name)
-        expect(subject.change_name).to be_nil
+        expect(subject.change_name).to eq('yes')
       end
     end
 

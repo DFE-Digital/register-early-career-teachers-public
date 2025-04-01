@@ -4,8 +4,8 @@ describe Builders::ECT::TrainingPeriods do
   let(:academic_year) { FactoryBot.create(:academic_year) }
   let(:partnership_1) { FactoryBot.create(:provider_partnership, academic_year:) }
   let(:partnership_2) { FactoryBot.create(:provider_partnership, academic_year:) }
-  let(:school_1) { FactoryBot.create(:school, urn: "123456") }
-  let(:school_2) { FactoryBot.create(:school, urn: "987654") }
+  let(:school_1) { FactoryBot.create(:school, :independent, urn: "123456") }
+  let(:school_2) { FactoryBot.create(:school, :independent, urn: "987654") }
   let(:teacher) { FactoryBot.create(:teacher) }
   let!(:school_period_1) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago.to_date, finished_on: 1.month.ago.to_date, teacher:, school: school_1) }
   let!(:school_period_2) { FactoryBot.create(:ect_at_school_period, started_on: 1.month.ago.to_date, finished_on: nil, teacher:, school: school_2) }

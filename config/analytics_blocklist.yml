@@ -1,15 +1,17 @@
 ---
 :shared:
+  :appropriate_bodies:
+    - body_type
   :blazer_queries:
-  - id
-  - creator_id
-  - name
-  - description
-  - statement
-  - data_source
-  - status
-  - created_at
-  - updated_at
+    - id
+    - creator_id
+    - name
+    - description
+    - statement
+    - data_source
+    - status
+    - created_at
+    - updated_at
   :blazer_dashboard_queries:
   - id
   - dashboard_id
@@ -189,7 +191,6 @@
   - created_at
   - updated_at
   :schools:
-  - chosen_appropriate_body_type
   - chosen_appropriate_body_id
   - chosen_lead_provider_id
   - chosen_programme_type
@@ -305,7 +306,6 @@
   - metadata
   - modifications
   :ect_at_school_periods:
-  - appropriate_body_type
   - id
   - school_id
   - teacher_id

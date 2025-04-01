@@ -10,7 +10,7 @@ shared:
     - dfe_sign_in_organisation_id
     - dqt_id
   :ect_at_school_periods:
-    - appropriate_body_id
+    - school_reported_appropriate_body_id
     - lead_provider_id
     - programme_type
   :induction_extensions:

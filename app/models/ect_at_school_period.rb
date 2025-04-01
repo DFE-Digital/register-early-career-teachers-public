@@ -2,12 +2,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
   include Interval
 
   # Enums
-  enum :appropriate_body_type,
-       { teaching_induction_panel: "teaching_induction_panel",
-         teaching_school_hub: "teaching_school_hub" },
-       validate: { message: "Must be teaching induction panel or teaching school hub" },
-       suffix: :ab_type
-
   enum :programme_type,
        { provider_led: "provider_led",
          school_led: "school_led" },
@@ -17,7 +11,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   # Associations
   belongs_to :school, inverse_of: :ect_at_school_periods
   belongs_to :teacher, inverse_of: :ect_at_school_periods
-  belongs_to :appropriate_body
+  belongs_to :school_reported_appropriate_body, class_name: 'AppropriateBody'
   belongs_to :lead_provider
 
   has_many :mentorship_periods, inverse_of: :mentee
@@ -27,21 +21,13 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :events
 
   # Validations
-  validates :appropriate_body_id,
-            presence: {
-              message: "Must contain the ID of an appropriate body",
-              if: -> { teaching_school_hub_ab_type? }
-            },
-            absence: {
-              message: "Must be nil",
-              unless: -> { teaching_school_hub_ab_type? }
-            }
+  validate :appropriate_body_for_independent_school,
+           if: -> { school&.independent? },
+           on: :register_ect
 
-  validates :appropriate_body_type,
-            presence: {
-              message: "Must be teaching school hub",
-              if: -> { school&.state_funded? }
-            }
+  validate :appropriate_body_for_state_funded_school,
+           if: -> { school&.state_funded? },
+           on: :register_ect
 
   validates :email,
             notify_email: true,
@@ -56,7 +42,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   validates :programme_type,
             presence: {
               message: "Must be provider-led",
-              if: -> { appropriate_body_id }
+              if: -> { lead_provider_id }
             }
 
   validates :school_id,
@@ -74,8 +60,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
 
   # Instance methods
-  # appropriate_body_name
-  delegate :name, to: :appropriate_body, prefix: true, allow_nil: true
+  def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
+
+  def school_reported_appropriate_body_type = school_reported_appropriate_body&.body_type
 
   # lead_provider_name
   delegate :name, to: :lead_provider, prefix: true, allow_nil: true
@@ -83,12 +70,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
   def current_mentorship = mentorship_periods.ongoing.last
 
   def current_mentor = current_mentorship&.mentor
-
-  def siblings
-    return ECTAtSchoolPeriod.none unless teacher
-
-    teacher.ect_at_school_periods.excluding(self)
-  end
 
   delegate :trn, to: :teacher
 
@@ -100,7 +81,25 @@ class ECTAtSchoolPeriod < ApplicationRecord
     programme_type == 'school_led'
   end
 
+  def siblings
+    return ECTAtSchoolPeriod.none unless teacher
+
+    teacher.ect_at_school_periods.excluding(self)
+  end
+
 private
+
+  def appropriate_body_for_independent_school
+    return if school_reported_appropriate_body&.national? || school_reported_appropriate_body&.teaching_school_hub?
+
+    errors.add(:school_reported_appropriate_body_id, 'Must be national or teaching school hub')
+  end
+
+  def appropriate_body_for_state_funded_school
+    return if school_reported_appropriate_body&.teaching_school_hub?
+
+    errors.add(:school_reported_appropriate_body_id, 'Must be teaching school hub')
+  end
 
   def teacher_distinct_period
     overlap_validation(name: 'Teacher ECT')
