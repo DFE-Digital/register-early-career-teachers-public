@@ -10,7 +10,7 @@ on:
 jobs:
   backend-tests:
     name: Run rspec
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
     env:
