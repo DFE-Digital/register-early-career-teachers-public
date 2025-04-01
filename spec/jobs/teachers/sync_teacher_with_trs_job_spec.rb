@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Teachers::SyncTeacherWithTRSJob, type: :job do
   describe "#perform" do
     let(:teacher) { FactoryBot.create(:teacher) }
