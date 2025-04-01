@@ -206,6 +206,60 @@ describe Events::Record do
     end
   end
 
+  describe '.record_admin_deletes_induction_period!' do
+    let(:raw_modifications) { { 'id' => 1, 'teacher_id' => teacher.id, 'appropriate_body_id' => appropriate_body.id } }
+
+    context 'when induction status was reset on TRS' do
+      it 'queues a RecordEventJob with the correct values including body' do
+        freeze_time do
+          Events::Record.record_admin_deletes_induction_period!(
+            author:,
+            teacher:,
+            appropriate_body:,
+            modifications: raw_modifications,
+            body: "Induction status was reset to 'Required to Complete' in TRS."
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            appropriate_body:,
+            heading: 'Induction period deleted by admin',
+            event_type: :admin_deletes_induction_period,
+            happened_at: Time.zone.now,
+            body: "Induction status was reset to 'Required to Complete' in TRS.",
+            modifications: anything,
+            metadata: raw_modifications,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when induction status was not reset on TRS' do
+      it 'queues a RecordEventJob with the correct values without body' do
+        freeze_time do
+          Events::Record.record_admin_deletes_induction_period!(
+            author:,
+            teacher:,
+            appropriate_body:,
+            modifications: raw_modifications
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            appropriate_body:,
+            heading: 'Induction period deleted by admin',
+            event_type: :admin_deletes_induction_period,
+            happened_at: Time.zone.now,
+            modifications: anything,
+            metadata: raw_modifications,
+            **author_params
+          )
+        end
+      end
+    end
+  end
+
   describe '.record_admin_updates_induction_period!' do
     let(:three_weeks_ago) { 3.weeks.ago.to_date }
     let(:two_weeks_ago) { 2.weeks.ago.to_date }
@@ -316,8 +370,8 @@ describe Events::Record do
     end
   end
 
-  describe 'support_revert_teacher_claim event' do
-    let(:event_type) { :support_revert_teacher_claim }
+  describe 'admin_reverts_teacher_claim event' do
+    let(:event_type) { :admin_reverts_teacher_claim }
     let(:happened_at) { Time.zone.now }
     let(:body_with_reset) { "Induction status was also reset on TRS." }
 
