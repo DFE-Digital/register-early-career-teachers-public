@@ -1,6 +1,4 @@
-require 'rails_helper'
-
-RSpec.describe AppropriateBodies::ClaimAnECT::RevertClaim do
+RSpec.describe Admin::RevertClaim do
   subject(:service) do
     described_class.new(
       appropriate_body:,
@@ -14,7 +12,10 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RevertClaim do
   include ActiveJob::TestHelper
 
   before do
-    allow(Events::Record).to receive(:record_support_revert_teacher_claim_event!).and_return(true)
+    allow(Events::Record).to receive_messages(
+      record_admin_reverts_teacher_claim_event!: true,
+      record_admin_deletes_induction_period!: true
+    )
   end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -34,12 +35,11 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RevertClaim do
         }.to have_enqueued_job(ResetInductionJob).with(trn: teacher.trn)
       end
 
-      it "records an event with a body indicating the induction status was reset" do
-        expect(Events::Record).to receive(:record_support_revert_teacher_claim_event!).with(
+      it "records an event with the correct parameters" do
+        expect(Events::Record).to receive(:record_admin_reverts_teacher_claim_event!).with(
           author:,
           appropriate_body:,
-          teacher:,
-          body: "Induction status was also reset on TRS."
+          teacher:
         )
         service.revert_claim
       end
@@ -54,13 +54,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RevertClaim do
         }.not_to have_enqueued_job(ResetInductionJob)
       end
 
-      it "records an event with no body" do
-        expect(Events::Record).to receive(:record_support_revert_teacher_claim_event!).with(
-          author:,
-          appropriate_body:,
-          teacher:,
-          body: nil
-        )
+      it "does not record a revert event" do
+        expect(Events::Record).not_to receive(:record_admin_reverts_teacher_claim_event!)
         service.revert_claim
       end
     end
