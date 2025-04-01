@@ -8,6 +8,8 @@ class Event < ApplicationRecord
     appropriate_body_releases_teacher
     appropriate_body_fails_teacher
     appropriate_body_passes_teacher
+    appropriate_body_adds_induction_extension
+    appropriate_body_updates_induction_extension
     teacher_name_updated_by_trs
     teacher_induction_status_updated_by_trs
     teacher_attributes_updated_from_trs
