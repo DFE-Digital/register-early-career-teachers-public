@@ -1,48 +1,34 @@
 class ImportJob < ApplicationJob
   retry_on StandardError, attempts: 3
 
-  def perform(pending_induction_submission_batch)
-    # change state to PROCESSING
+  # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
+  # @param author_email [String]
+  # @param author_name [String]
+  def perform(pending_induction_submission_batch, author_email, author_name)
     pending_induction_submission_batch.processing!
 
-    pending_induction_submission_batch.data.each do |row|
-      pending_induction_submission =
-        PendingInductionSubmission.new(
-          pending_induction_submission_batch:,
-          appropriate_body: pending_induction_submission_batch.appropriate_body,
-          trn: row['trn'],
-          trs_first_name: row['first_name'],
-          trs_last_name: row['last_name'],
-          date_of_birth: row['dob']
-          # finished_on: nil,       # end_date
-          # number_of_terms: nil,   # number_of_terms
-          # outcome: nil            # objective
-        )
+    AppropriateBodies::ProcessBatch.new(
+      pending_induction_submission_batch:,
+      author: author_session(pending_induction_submission_batch, author_email, author_name)
+    ).process!
 
-      pending_induction_submission.save!
-
-      find_ect =
-        AppropriateBodies::ClaimAnECT::FindECT.new(
-          appropriate_body: pending_induction_submission_batch.appropriate_body,
-          pending_induction_submission:
-        )
-
-      find_ect.import_from_trs!
-    rescue StandardError => e
-      pending_induction_submission.update!(error_message: e.message)
-      next
-    end
-
-    # change state to COMPLETED
     pending_induction_submission_batch.completed!
   rescue StandardError => e
-    # capture batch error
-    pending_induction_submission_batch.update!(error_message: e.message)
+    Rails.logger.debug("Attempt #{executions}: #{e.message}")
 
-    # change state to FAILED
+    pending_induction_submission_batch.update!(error_message: e.message)
     pending_induction_submission_batch.failed!
 
-    # retry
     raise
+  end
+
+private
+
+  def author_session(pending_induction_submission_batch, author_email, author_name)
+    Sessions::Users::AppropriateBodyPersona.new(
+      email: author_email,
+      name: author_name,
+      appropriate_body_id: pending_induction_submission_batch.appropriate_body.id
+    )
   end
 end

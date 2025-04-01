@@ -1,6 +1,6 @@
 <%
   page_data(
-    title: "Claiming a group of ECTs",
+    title: "Processing a group of ECTs",
     error: @pending_induction_submission_batch.errors.present?,
     backlink_href: new_ab_import_path,
   )
@@ -33,7 +33,7 @@
 
 <%=
   govuk_table(
-    caption: 'CSV raw data',
+    caption: "CSV raw data (#{@pending_induction_submission_batch.rows.count} rows)",
     head: PendingInductionSubmissionBatch::CSV_HEADINGS.values,
     rows: @pending_induction_submission_batch.rows,
   )
@@ -41,15 +41,15 @@
 
 <%=
   govuk_table(
-    caption: 'Processed data',
-    head: PendingInductionSubmissionBatch::CSV_HEADINGS.values,
+    caption: "Processed data (#{@pending_induction_submission_batch.processed_rows.count} rows)",
+    head: @pending_induction_submission_batch.processed_headers,
     rows: @pending_induction_submission_batch.processed_rows,
   )
 %>
 
 <%=
   govuk_table(
-    caption: 'Download data',
+    caption: "Download data (#{@pending_induction_submission_batch.csv_download.count} rows)",
     head: PendingInductionSubmissionBatch::CSV_HEADINGS.values,
     rows: @pending_induction_submission_batch.csv_download,
   )

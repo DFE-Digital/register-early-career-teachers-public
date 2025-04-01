@@ -1,4 +1,4 @@
-describe AppropriateBodies::ECTs do
+RSpec.describe AppropriateBodies::ECTs do
   subject { AppropriateBodies::ECTs.new(appropriate_body) }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
