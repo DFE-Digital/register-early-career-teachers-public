@@ -24,7 +24,7 @@ Financial statements are monthly record of payments made to lead providers. They
 
 When a lead provider submits a declaration via the `POST /api/v[1,2,3]/participant-declarations` endpoint, the declaration is attached to the next _output fee_ financial statement, provided the participant is fundable and the declaration is not a duplicate.
 
-The _next output fee statement_ is determined as the first statement where:
+The _next output fee statement_ is determined to be the first statement where:
 
 - `output_fee` is `true`
 - `deadline_date` is in the future
@@ -74,7 +74,7 @@ There are two versions of statements:
 - **Cohorts from 2025 onwards** – values for ECTs and Mentors are separated
 
 Declarations are submitted by lead providers.
-Call off contract and mentor call off contract information is provided by contract managers.
+Call-off contract and mentor call-off contract information are provided by contract managers.
 Adjustments are also added by contract managers.
 
 ## Download statement declarations
@@ -212,4 +212,4 @@ When contract values are updated:
 - The contract `version` is incremented (patch version)
 - The statement’s `contract_version` is updated to match the new contract version
 
-Contracts that are no longer linked to statements (due to it being superseded by new contract version) or identified as duplicates have their `version` prefixed with `unused_` (e.g. `unused_0.0.1`) to indicate they should not be used for statement calculations.
+Contracts that are no longer linked to statements (due to them being superseded by new contract version) or identified as duplicates have their `version` prefixed with `unused_` (e.g. `unused_0.0.1`) to indicate they should not be used for statement calculations.
