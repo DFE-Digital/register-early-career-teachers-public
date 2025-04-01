@@ -62,13 +62,15 @@ module Schools
     end
 
     def start_at_school!
-      teacher.ect_at_school_periods.create!(school_reported_appropriate_body:,
-                                            email:,
-                                            lead_provider:,
-                                            programme_type:,
-                                            school:,
-                                            started_on:,
-                                            working_pattern:)
+      teacher.ect_at_school_periods.build(school_reported_appropriate_body:,
+                                          email:,
+                                          lead_provider:,
+                                          programme_type:,
+                                          school:,
+                                          started_on:,
+                                          working_pattern:) do |ect|
+        ect.save!(context: :register_ect)
+      end
     end
 
     def update_school_choices!
