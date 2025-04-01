@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Teachers::ScheduleTRSSyncJob, type: :job do
   describe "#perform" do
     let!(:teacher1) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 5.days.ago) }
@@ -9,15 +7,16 @@ RSpec.describe Teachers::ScheduleTRSSyncJob, type: :job do
     let!(:teacher5) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 1.day.ago) }
 
     it "schedules sync jobs for teachers ordered by trs_data_last_refreshed_at" do
-      ordered_teachers = Teacher.order(trs_data_last_refreshed_at: :asc).limit(described_class::BATCH_SIZE)
+      [
+        [teacher1, 0],
+        [teacher2, 3],
+        [teacher3, 6],
+        [teacher4, 9],
+        [teacher5, 12],
+      ].each do |teacher, wait_time|
+        allow(Teachers::SyncTeacherWithTRSJob).to receive(:set).with(wait: wait_time.seconds).and_return(Teachers::SyncTeacherWithTRSJob)
 
-      ordered_teachers.each_with_index do |teacher, i|
-        allow(Teachers::SyncTeacherWithTRSJob).to receive(:set)
-          .with(wait: (i * 3).seconds)
-          .and_return(Teachers::SyncTeacherWithTRSJob)
-
-        expect(Teachers::SyncTeacherWithTRSJob).to receive(:perform_later)
-          .with(teacher:)
+        expect(Teachers::SyncTeacherWithTRSJob).to receive(:perform_later).with(teacher:)
       end
 
       described_class.perform_now
