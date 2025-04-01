@@ -4,6 +4,24 @@ describe AppropriateBodies::Search do
 
     let(:query_string) { nil }
 
+    describe ".istip" do
+      subject { described_class.istip }
+
+      context 'when ISTIP has been registered' do
+        let!(:istip) { FactoryBot.create(:appropriate_body, :istip) }
+
+        it 'returns it' do
+          expect(subject).to eq(istip)
+        end
+      end
+
+      context 'when ISTIP has not been registered' do
+        it 'raises an exception' do
+          expect { subject }.to raise_error(ActiveRecord::RecordNotFound, 'ISTIP appropriate body not found!')
+        end
+      end
+    end
+
     describe "#search" do
       context 'when the search string is blank' do
         let(:query_string) { ' ' }

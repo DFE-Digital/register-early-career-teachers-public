@@ -37,14 +37,4 @@ describe AppropriateBody do
       end
     end
   end
-
-  describe ".istip" do
-    subject { described_class.istip }
-
-    let!(:istip) { FactoryBot.create(:appropriate_body, name: described_class::ISTIP) }
-
-    before { FactoryBot.create(:appropriate_body) }
-
-    it { is_expected.to eq(istip) }
-  end
 end

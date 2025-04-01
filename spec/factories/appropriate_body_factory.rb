@@ -8,7 +8,7 @@ FactoryBot.define do
 
     trait :istip do
       body_type { 'national' }
-      name { AppropriateBody::ISTIP }
+      name { AppropriateBodies::Search::ISTIP }
       local_authority_code { 50 }
       dfe_sign_in_organisation_id { "203606a4-4199-46a9-84e4-56fbc5da2a36" }
     end

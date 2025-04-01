@@ -172,7 +172,7 @@ brookfield_school = schools_indexed_by_urn.fetch(2_976_163)
 
 print_seed_info("Adding appropriate bodies")
 
-AppropriateBody.create!(body_type: 'national', name: AppropriateBody::ISTIP, local_authority_code: 50, dfe_sign_in_organisation_id: "203606a4-4199-46a9-84e4-56fbc5da2a36", dqt_id: "6ae042bb-c7ae-e311-b8ed-005056822391")
+AppropriateBody.create!(body_type: 'national', name: AppropriateBodies::Search::ISTIP, local_authority_code: 50, dfe_sign_in_organisation_id: "203606a4-4199-46a9-84e4-56fbc5da2a36", dqt_id: "6ae042bb-c7ae-e311-b8ed-005056822391")
 AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Canvas Teaching School Hub', local_authority_code: 109, establishment_number: 2367)
 south_yorkshire_studio_hub = AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'South Yorkshire Studio Hub', local_authority_code: 678, establishment_number: 9728)
 AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Ochre Education Partnership', local_authority_code: 238, establishment_number: 6582)
