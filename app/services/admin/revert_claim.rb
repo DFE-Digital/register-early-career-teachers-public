@@ -11,34 +11,26 @@ module Admin
 
     def revert_claim
       ActiveRecord::Base.transaction do
-        induction_period.destroy!
-
-        record_admin_deletes_induction_period!(author:, appropriate_body:, teacher:)
+        Admin::DestroyInductionPeriod.new(
+          author:,
+          induction_period:
+        ).destroy_induction_period!
 
         # Only reset the induction status if this was the teacher's only induction period
         if teacher.induction_periods.count.zero?
           ResetInductionJob.perform_later(trn: teacher.trn)
-          record_admin_reverts_teacher_claim_event!(author:, appropriate_body:, teacher:)
+          record_admin_reverts_teacher_claim_event!
         end
       end
     end
 
   private
 
-    def record_admin_reverts_teacher_claim_event!(author:, appropriate_body:, teacher:)
+    def record_admin_reverts_teacher_claim_event!
       Events::Record.record_admin_reverts_teacher_claim_event!(
         author:,
         appropriate_body:,
         teacher:
-      )
-    end
-
-    def record_admin_deletes_induction_period!(author:, appropriate_body:, teacher:)
-      Events::Record.record_admin_deletes_induction_period!(
-        author:,
-        teacher:,
-        appropriate_body:,
-        modifications: induction_period.attributes
       )
     end
   end
