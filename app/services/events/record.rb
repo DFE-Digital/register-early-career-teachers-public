@@ -82,9 +82,8 @@ module Events
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :appropriate_body_claims_teacher
+      heading = "#{Teachers::Name.new(teacher).full_name} was claimed by #{appropriate_body.name}"
       happened_at = induction_period.started_on
-      teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} was claimed by #{appropriate_body.name}"
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
@@ -93,9 +92,8 @@ module Events
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :appropriate_body_releases_teacher
+      heading = "#{Teachers::Name.new(teacher).full_name} was released by #{appropriate_body.name}"
       happened_at = induction_period.finished_on
-      teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} was released by #{appropriate_body.name}"
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
@@ -104,9 +102,8 @@ module Events
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :appropriate_body_passes_teacher
+      heading = "#{Teachers::Name.new(teacher).full_name} passed induction"
       happened_at = induction_period.finished_on
-      teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} passed induction"
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
@@ -115,27 +112,10 @@ module Events
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :appropriate_body_fails_teacher
+      heading = "#{Teachers::Name.new(teacher).full_name} failed induction"
       happened_at = induction_period.finished_on
-      teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} failed induction"
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
-    end
-
-    def self.record_appropriate_body_adds_induction_extension_event(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
-      event_type = :appropriate_body_adds_induction_extension
-      teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
-
-      new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
-    end
-
-    def self.record_appropriate_body_updates_induction_extension_event(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
-      event_type = :appropriate_body_updates_induction_extension
-      teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
-
-      new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
     # Teacher events
