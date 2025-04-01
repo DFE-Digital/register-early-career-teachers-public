@@ -1,6 +1,4 @@
 class AppropriateBody < ApplicationRecord
-  ISTIP = 'Independent Schools Teacher Induction Panel (ISTIP)'.freeze
-
   # Enums
   enum :body_type,
        { local_authority: 'local_authority',
@@ -38,8 +36,4 @@ class AppropriateBody < ApplicationRecord
               message: 'Must be a number between 1000 and 9999',
               allow_blank: true
             }
-
-  def self.istip
-    find_by_name(ISTIP)
-  end
 end

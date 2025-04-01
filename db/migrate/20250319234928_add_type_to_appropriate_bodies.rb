@@ -26,6 +26,6 @@ class AddTypeToAppropriateBodies < ActiveRecord::Migration[8.0]
 private
 
   def type_from_name(name)
-    name == AppropriateBody::ISTIP ? 'national' : 'teaching_school_hub'
+    name == AppropriateBodies::Search::ISTIP ? 'national' : 'teaching_school_hub'
   end
 end
