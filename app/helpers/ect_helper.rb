@@ -34,6 +34,10 @@ module ECTHelper
     end
   end
 
+  def assign_mentor_or_home_ects_path(ect)
+    eligible_mentors_for_ect?(ect) ? new_schools_ect_mentorship_path(ect) : schools_ects_home_path
+  end
+
 private
 
   def assign_or_create_mentor_link(ect)
