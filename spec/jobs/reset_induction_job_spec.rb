@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe ResetInductionJob, type: :job do
   describe "#perform" do
     let(:trn) { "1234567" }
