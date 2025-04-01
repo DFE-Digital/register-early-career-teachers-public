@@ -1,0 +1,16 @@
+<%
+  page_data(
+    title: "Bulk ECT uploads",
+    backlink_href: ab_teachers_path
+  )
+%>
+
+<%= govuk_button_link_to("Record outcomes and releases in bulk", new_ab_batch_action_path, secondary: true) %>
+
+<%=
+  govuk_table(
+    caption: 'Bulk actions',
+    head: ['id', 'type', 'status', 'error'],
+    rows: @pending_induction_submission_batches,
+  )
+%>

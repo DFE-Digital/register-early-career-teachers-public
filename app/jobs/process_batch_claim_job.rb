@@ -1,4 +1,4 @@
-class ImportJob < ApplicationJob
+class ProcessBatchClaimJob < ApplicationJob
   retry_on StandardError, attempts: 3
 
   # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
@@ -7,7 +7,7 @@ class ImportJob < ApplicationJob
   def perform(pending_induction_submission_batch, author_email, author_name)
     pending_induction_submission_batch.processing!
 
-    AppropriateBodies::ProcessBatch.new(
+    AppropriateBodies::ProcessBatch::Claim.new(
       pending_induction_submission_batch:,
       author: author_session(pending_induction_submission_batch, author_email, author_name)
     ).process!
