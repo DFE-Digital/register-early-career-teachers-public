@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_19_234928) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -19,7 +19,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum "appropriate_body_type", ["teaching_induction_panel", "teaching_school_hub"]
+  create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
@@ -44,6 +44,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
     t.integer "establishment_number"
     t.uuid "dfe_sign_in_organisation_id"
     t.uuid "dqt_id"
+    t.enum "body_type", default: "teaching_school_hub", enum_type: "appropriate_body_type"
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_bodies_on_dfe_sign_in_organisation_id", unique: true
   end
 
@@ -157,15 +158,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
     t.uuid "ecf_end_induction_record_id"
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
-    t.bigint "appropriate_body_id"
+    t.bigint "school_reported_appropriate_body_id"
     t.bigint "lead_provider_id"
     t.enum "programme_type", enum_type: "programme_type"
-    t.enum "appropriate_body_type", enum_type: "appropriate_body_type"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
-    t.index ["appropriate_body_id"], name: "index_ect_at_school_periods_on_appropriate_body_id"
     t.index ["lead_provider_id"], name: "index_ect_at_school_periods_on_lead_provider_id"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
+    t.index ["school_reported_appropriate_body_id"], name: "idx_on_school_reported_appropriate_body_id_01f5ffc90a"
     t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
     t.index ["teacher_id"], name: "index_ect_at_school_periods_on_teacher_id"
   end
@@ -374,7 +374,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
     t.integer "urn", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.enum "chosen_appropriate_body_type", enum_type: "appropriate_body_type"
     t.bigint "chosen_appropriate_body_id"
     t.bigint "chosen_lead_provider_id"
     t.enum "chosen_programme_type", enum_type: "programme_type"
@@ -569,7 +568,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_102720) do
   end
 
   add_foreign_key "dfe_roles", "users"
-  add_foreign_key "ect_at_school_periods", "appropriate_bodies"
+  add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "lead_providers"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"

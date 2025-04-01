@@ -7,8 +7,7 @@
 <%= govuk_summary_list do |summary_list|
   summary_list.with_row do |row|
     row.with_key(text: 'Appropriate body')
-    row.with_value(text: appropriate_body_name(appropriate_body_type: @school.chosen_appropriate_body_type,
-                                               appropriate_body: @school.chosen_appropriate_body))
+    row.with_value(text: @school.chosen_appropriate_body_name)
   end
 
   summary_list.with_row do |row|

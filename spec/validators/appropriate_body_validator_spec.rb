@@ -1,44 +1,86 @@
 RSpec.describe AppropriateBodyValidator, type: :model do
-  subject { test_class.new(appropriate_body_type:, appropriate_body_id:) }
+  subject { test_class.new(appropriate_body_id:, school:) }
+
+  let(:school) { double(state_funded?: false) }
 
   let(:test_class) do
     Class.new do
       include ActiveModel::Model
-      attr_accessor :appropriate_body_type, :appropriate_body_id
+      attr_accessor :appropriate_body_id, :school
 
-      validates_with AppropriateBodyValidator
+      validates :appropriate_body, appropriate_body: true
+
+      def appropriate_body
+        @appropriate_body ||= AppropriateBody.find_by_id(appropriate_body_id) if appropriate_body_id
+      end
     end
   end
-  let(:appropriate_body_type) { '' }
-  let(:appropriate_body_id) { '' }
 
-  context 'when the appropriate_body_type is blank' do
-    it 'is not valid' do
+  context 'when the appropriate_body_id is blank' do
+    let(:appropriate_body_id) { nil }
+
+    it 'adds an error' do
       expect(subject).not_to be_valid
-      expect(subject.errors[:appropriate_body_type]).to include("Select the appropriate body which will be supporting the ECT's induction")
+      expect(subject.errors[:appropriate_body]).to include("Select the appropriate body which will be supporting the ECT's induction")
     end
   end
 
-  context 'when appropriate_body_type is teaching_school_hub' do
-    let(:appropriate_body_type) { 'teaching_school_hub' }
+  context 'when the appropriate_body is not registered' do
+    let(:appropriate_body_id) { '999999999' }
 
-    context 'and appropriate_body_id is blank' do
-      it 'is not valid' do
+    it 'add an error' do
+      expect(subject).not_to be_valid
+      expect(subject.errors[:appropriate_body]).to include("Select the appropriate body which will be supporting the ECT's induction")
+    end
+  end
+
+  context 'when the appropriate_body is a local authority' do
+    let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :local_authority) }
+
+    it 'adds an error' do
+      expect(subject).not_to be_valid
+      expect(subject.errors[:appropriate_body]).to include("Select a valid appropriate body which will be supporting the ECT's induction")
+    end
+  end
+
+  context 'when the school is state funded' do
+    let(:school) { double(state_funded?: true) }
+
+    context 'when the appropriate_body is a national' do
+      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :national) }
+
+      it 'add an error' do
         expect(subject).not_to be_valid
-        expect(subject.errors[:appropriate_body_id]).to include("Enter the name of the appropriate body which will be supporting the ECT's induction")
+        expect(subject.errors[:appropriate_body]).to include("Select a teaching school hub appropriate body which will be supporting the ECT's induction")
       end
     end
 
-    context 'and appropriate_body_id is present' do
-      let(:appropriate_body_id) { '1' }
+    context 'when the appropriate_body is a teaching school hub' do
+      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
 
-      it { expect(subject).to be_valid }
+      it 'adds no error' do
+        expect(subject).to be_valid
+      end
     end
   end
 
-  context 'when appropriate_body_type is not teaching_school_hub' do
-    let(:appropriate_body_type) { 'other_type' }
+  context 'when the school is independent' do
+    let(:school) { double(state_funded?: false) }
 
-    it { expect(subject).to be_valid }
+    context 'when the appropriate_body is a national' do
+      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :national) }
+
+      it 'adds no error' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'when the appropriate_body is a teaching school hub' do
+      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+
+      it 'adds no error' do
+        expect(subject).to be_valid
+      end
+    end
   end
 end

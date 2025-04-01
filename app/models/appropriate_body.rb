@@ -1,5 +1,10 @@
 class AppropriateBody < ApplicationRecord
-  NAME_FOR_TEACHING_INDUCTION_PANEL_TYPE = 'Independent Schools Teacher Induction Panel (ISTIP)'.freeze
+  # Enums
+  enum :body_type,
+       { local_authority: 'local_authority',
+         national: 'national',
+         teaching_school_hub: 'teaching_school_hub' },
+       validate: { message: "Must be local authority, national or teaching school hub" }
 
   # Associations
   has_many :pending_induction_submissions
@@ -14,8 +19,8 @@ class AppropriateBody < ApplicationRecord
   validates :local_authority_code,
             presence: { message: 'Enter a local authority code', allow_blank: true },
             inclusion: {
-              in: 100..999,
-              message: 'Must be a number between 100 and 999',
+              in: 50..999,
+              message: 'Must be a number between 50 and 999',
               allow_blank: true
             },
             uniqueness: {
