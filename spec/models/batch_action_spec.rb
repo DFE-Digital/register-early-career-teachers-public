@@ -1,4 +1,4 @@
-RSpec.describe PendingInductionSubmissionBatch do
+RSpec.describe BatchAction do
   subject(:batch) { described_class.new(appropriate_body:) }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -24,9 +24,9 @@ RSpec.describe PendingInductionSubmissionBatch do
     describe '#data' do
       it {
         expect(batch.data.to_a).to eq([
-          %w[trn first_name last_name dob end_date number_of_terms objective error],
-          ["1234567", "Peter", "Hamilton", "30-06-1981", nil, nil, nil, nil],
-          ["7654321", "Alan", "Partridge", "30-06-1981", nil, nil, nil, nil]
+          %w[trn dob end_date number_of_terms objective error],
+          ["1234567", "30-06-1981", nil, nil, nil, nil],
+          ["7654321", "30-06-1981", nil, nil, nil, nil]
         ])
       }
     end

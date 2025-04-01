@@ -1,12 +1,12 @@
 <%
   page_data(
-    title: "Process a group of ECTs",
+    title: "Claim a group of ECTs",
     error: @pending_induction_submission_batch.errors.any?,
-    backlink_href: ab_teachers_path
+    backlink_href: ab_batch_claims_path
   )
 %>
 
-<%= form_with(model: @pending_induction_submission_batch, url: ab_imports_path, method: 'post') do |f| %>
+<%= form_with(model: @pending_induction_submission_batch, url: ab_batch_claims_path, method: 'post') do |f| %>
 
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
@@ -16,5 +16,5 @@
     hint: { text: 'File type must be a CSV' } 
   %>  
   
-  <%= f.govuk_submit 'Upload CSV' %>
+  <%= f.govuk_submit 'Upload claim CSV' %>
 <% end %>
