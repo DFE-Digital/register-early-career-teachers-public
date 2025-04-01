@@ -1,4 +1,4 @@
-RSpec.describe AppropriateBodies::ProcessBatch do
+RSpec.describe AppropriateBodies::ProcessBatch::Action do
   subject(:service) do
     described_class.new(pending_induction_submission_batch:, author:)
   end

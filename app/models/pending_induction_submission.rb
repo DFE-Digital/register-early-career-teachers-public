@@ -120,7 +120,7 @@ class PendingInductionSubmission < ApplicationRecord
       error_message: errors.full_messages.to_sentence
     )
     errors.clear
-    save
+    save!
   end
 
 private

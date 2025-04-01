@@ -267,7 +267,8 @@
   :pending_induction_submission_batches:
   - id
   - appropriate_body_id
-  - status
+  - batch_type
+  - batch_status
   - error_message
   - created_at
   - updated_at

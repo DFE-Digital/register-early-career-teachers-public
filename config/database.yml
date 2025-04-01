@@ -13,6 +13,7 @@ default: &default
 development:
   <<: *default
   database: ecf2_development
+  # url: "" # Konduit
 
 test:
   <<: *default
