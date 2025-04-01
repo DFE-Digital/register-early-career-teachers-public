@@ -4,6 +4,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
   let(:school) { FactoryBot.create(:school) }
   let(:store) do
     FactoryBot.build(:session_repository,
+                     change_name: 'no',
                      corrected_name: nil,
                      date_of_birth: "11-10-1945",
                      email: "dusty@rhodes.com",
@@ -97,6 +98,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     context 'when corrected_name is set' do
       before do
+        store.change_name = 'yes'
         store.corrected_name = 'Randy Marsh'
       end
 

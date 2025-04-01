@@ -41,6 +41,8 @@ module Schools
     end
 
     def register!
+      not_registered_as_an_ect!
+
       ActiveRecord::Base.transaction do
         update_school_choices!
         create_teacher!
@@ -54,11 +56,12 @@ module Schools
       ::Teacher.find_by_trn(trn)&.ect_at_school_periods&.exists?
     end
 
-    def create_teacher!
+    def not_registered_as_an_ect!
       raise ActiveRecord::RecordInvalid if already_registered_as_an_ect?
+    end
 
-      @teacher = ::Teacher.create_with(trs_first_name:, trs_last_name:, corrected_name:)
-                          .find_or_create_by!(trn:)
+    def create_teacher!
+      @teacher = ::Teacher.create_with(trs_first_name:, trs_last_name:, corrected_name:).find_or_create_by!(trn:)
     end
 
     def start_at_school!
