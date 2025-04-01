@@ -23,16 +23,24 @@ class PendingInductionSubmission < ApplicationRecord
   # Validations
   validates :trn,
             presence: { message: "Enter a TRN" },
-            format: { with: Teacher::TRN_FORMAT, message: "TRN must be 7 numeric digits" },
+            format: {
+              with: Teacher::TRN_FORMAT,
+              message: "TRN must be 7 numeric digits"
+            },
             on: :find_ect
 
   validates :establishment_id,
-            format: { with: /\A\d{4}\/\d{3}\z/, message: "Enter an establishment ID in the format 1234/567" },
+            format: {
+              with: /\A\d{4}\/\d{3}\z/,
+              message: "Enter an establishment ID in the format 1234/567"
+            },
             allow_nil: true
 
   validates :induction_programme,
-            inclusion: { in: %w[fip cip diy],
-                         message: "Choose an induction programme" },
+            inclusion: {
+              in: %w[fip cip diy],
+              message: "Choose an induction programme"
+            },
             on: :register_ect
 
   validates :started_on,
@@ -79,16 +87,62 @@ class PendingInductionSubmission < ApplicationRecord
            if: -> { started_on.present? },
            on: :register_ect
 
+  # TODO: spec
+  # validate :not_already_claimed,
+  #          on: %i[release_ect record_outcome]
+
   # Instance methods
   def exempt?
     trs_induction_status == "Exempt"
   end
 
+  # TODO: spec
+  def pass?
+    outcome.eql?('pass')
+  end
+
+  # TODO: spec
+  def fail?
+    outcome.eql?('fail')
+  end
+
+  # TODO: spec
   def error_message
     super || "✅"
   end
 
+  # TODO: spec
+  # save error messages and nullify offending values
+  def playback_errors
+    assign_attributes(
+      finished_on: nil,
+      number_of_terms: nil,
+      error_message: errors.full_messages.to_sentence
+    )
+    errors.clear
+    save
+  end
+
 private
+
+  # def not_already_claimed
+  #   if pending_induction_submission_batch &&
+  #       teacher &&
+  #       teacher_active_appropriate_body &&
+  #       (pending_induction_submission_batch.appropriate_body != teacher_active_appropriate_body)
+  #     errors.add(:appropriate_body, "This teacher ain't yours!!")
+  #   end
+  # end
+
+  # # @return [nil, AppropriateBody]
+  # def teacher_active_appropriate_body
+  #   ::Teachers::InductionPeriod.new(teacher).ongoing_induction_period&.appropriate_body
+  # end
+
+  # @return [nil, Teacher]
+  def teacher
+    @teacher ||= Teacher.find_by(trn:)
+  end
 
   def start_date_after_qts_date
     return if trs_qts_awarded_on.blank?
@@ -97,8 +151,6 @@ private
   end
 
   def no_future_induction_periods
-    teacher = Teacher.find_by(trn:)
-
     return if teacher.blank?
 
     latest_date_of_induction = teacher.induction_periods.maximum(:finished_on)

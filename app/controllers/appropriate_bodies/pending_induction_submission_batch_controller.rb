@@ -28,38 +28,19 @@ module AppropriateBodies
       @pending_induction_submission_batch = PendingInductionSubmissionBatch.new
     end
 
-    class InvalidHeaders < StandardError; end
-    class DuplicateTRNs < StandardError; end
-    class MissingTRNs < StandardError; end
-
-    # OPTIMIZE: CreatePendingInductionSubmissionBatch service
-    #
-    # TRNs are essential, tabular data with duplicate or missing TRNs will not be processed
-    # HEADERs must conform, tabular data that does not use the template will be rejected
-    # 'error' is an optional/additional column only seen when partially processed data is reuploaded
-    #
     def create
       @pending_induction_submission_batch = PendingInductionSubmissionBatch.new(appropriate_body: @appropriate_body, **import_params)
 
-      if @pending_induction_submission_batch.save!
-        raise InvalidHeaders unless @pending_induction_submission_batch.has_valid_csv_headings?
-        raise MissingTRNs unless @pending_induction_submission_batch.has_essential_csv_cells?
-        raise DuplicateTRNs unless @pending_induction_submission_batch.has_unique_trns?
-
-        ImportJob.perform_later(@pending_induction_submission_batch)
+      if @pending_induction_submission_batch.save! && @pending_induction_submission_batch.save(context: :uploaded)
+        ImportJob.perform_later(@pending_induction_submission_batch, current_user.email, current_user.name)
 
         redirect_to ab_import_path(@pending_induction_submission_batch), alert: 'File uploaded'
       else
         render :new
       end
-    rescue InvalidHeaders
-      @pending_induction_submission_batch.errors.add(:csv_file, "CSV file uses wrong headers")
-      render :new
-    rescue DuplicateTRNs
-      @pending_induction_submission_batch.errors.add(:csv_file, "CSV file contains duplicate TRNs")
-      render :new
-    rescue MissingTRNs
-      @pending_induction_submission_batch.errors.add(:csv_file, "CSV file contains missing TRNs")
+    rescue ActionController::ParameterMissing, ActiveStorage::FileNotFoundError
+      @pending_induction_submission_batch = PendingInductionSubmissionBatch.new
+      @pending_induction_submission_batch.errors.add(:csv_file, "Attach a CSV file")
       render :new
     rescue StandardError => e
       @pending_induction_submission_batch.errors.add(:base, e.message)
