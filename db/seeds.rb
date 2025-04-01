@@ -282,11 +282,6 @@ TrainingPeriod.create!(
   provider_partnership: grove_artisan_partnership_2021
 ).tap { |tp| describe_training_period(tp) }
 
-InductionExtension.create!(
-  teacher: emma_thompson,
-  number_of_terms: 2
-).tap { |ext| describe_extension(ext) }
-
 print_seed_info("Kate Winslet (ECT)", indent: 2, colour: ECT_COLOUR)
 
 kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
@@ -337,11 +332,6 @@ TrainingPeriod.create!(
   started_on: 2.years.ago,
   provider_partnership: meadow_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
-
-InductionExtension.create!(
-  teacher: hugh_laurie,
-  number_of_terms: 2
-).tap { |ext| describe_extension(ext) }
 
 print_seed_info("Alan Rickman (ECT)", indent: 2, colour: ECT_COLOUR)
 
@@ -686,11 +676,6 @@ TrainingPeriod.create!(
   started_on: 2.years.ago,
   provider_partnership: meadow_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
-
-InductionExtension.create!(
-  teacher: john_withers,
-  number_of_terms: 2
-).tap { |ext| describe_extension(ext) }
 
 print_seed_info("Adding mentorships:")
 
