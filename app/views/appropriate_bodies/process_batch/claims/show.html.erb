@@ -2,7 +2,7 @@
   page_data(
     title: "Processing a group of ECTs",
     error: @pending_induction_submission_batch.errors.present?,
-    backlink_href: new_ab_import_path,
+    backlink_href: new_ab_batch_claim_path,
   )
 %>
 
@@ -14,8 +14,12 @@
     },
     {
       key: { text: 'Batch status' },
-      value: { text: govuk_tag(text: @pending_induction_submission_batch.status) }
+      value: { text: govuk_tag(text: @pending_induction_submission_batch.batch_status) }
     },
+    {
+      key: { text: 'Batch type' },
+      value: { text: govuk_tag(text: @pending_induction_submission_batch.batch_type) }
+    },    
     {
       key: { text: 'Batch error' },
       value: { text: @pending_induction_submission_batch.error_message }
@@ -34,7 +38,7 @@
 <%=
   govuk_table(
     caption: "CSV raw data (#{@pending_induction_submission_batch.rows.count} rows)",
-    head: PendingInductionSubmissionBatch::CSV_HEADINGS.values,
+    head: @pending_induction_submission_batch.csv_headings.values,
     rows: @pending_induction_submission_batch.rows,
   )
 %>
@@ -50,9 +54,9 @@
 <%=
   govuk_table(
     caption: "Download data (#{@pending_induction_submission_batch.csv_download.count} rows)",
-    head: PendingInductionSubmissionBatch::CSV_HEADINGS.values,
+    head: @pending_induction_submission_batch.csv_headings.values,
     rows: @pending_induction_submission_batch.csv_download,
   )
 %>
 
-<%= govuk_button_link_to 'Download CSV', ab_import_path(@pending_induction_submission_batch, format: :csv) %>
+<%= govuk_button_link_to 'Download CSV', ab_batch_claim_path(@pending_induction_submission_batch, format: :csv) %>

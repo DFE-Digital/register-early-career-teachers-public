@@ -1,18 +1,32 @@
 class PendingInductionSubmissionBatch < ApplicationRecord
-  CSV_HEADINGS = {
+  EMPTY_CELL = '-'.freeze
+
+  def self.new_claim_for(appropriate_body:, **)
+    new(appropriate_body:, batch_type: 'claim', **)
+  end
+
+  def self.new_action_for(appropriate_body:, **)
+    new(appropriate_body:, batch_type: 'action', **)
+  end
+
+  CLAIM_CSV_HEADINGS = {
     trn: 'TRN',
     dob: 'Date of birth',
-    # induction_programme: 'Induction programme',
-    # start_date: 'Start date',
+    induction_programme: 'Induction programme',
+    start_date: 'Start date',
+    error: 'Error message',
+  }.freeze
+
+  ACTION_CSV_HEADINGS = {
+    trn: 'TRN',
+    dob: 'Date of birth',
     end_date: 'End date',
     number_of_terms: 'Number of terms',
     objective: 'Objective',
-    error: 'Error message', # FIXME: easier if this is mandatory and empty to start with
+    error: 'Error message',
   }.freeze
 
-  EMPTY_CELL = '-'.freeze
-
-  class Row < Data.define(*CSV_HEADINGS.keys)
+  class ActionRow < Data.define(*ACTION_CSV_HEADINGS.keys)
     include Enumerable
 
     def each(&block)
@@ -21,7 +35,22 @@ class PendingInductionSubmissionBatch < ApplicationRecord
 
     # Guard against "André" Encoding::CompatibilityError
     def to_a
-      CSV_HEADINGS.keys.map do |key|
+      members.map do |key|
+        public_send(key).dup&.force_encoding("UTF-8") || EMPTY_CELL
+      end
+    end
+  end
+
+  class ClaimRow < Data.define(*CLAIM_CSV_HEADINGS.keys)
+    include Enumerable
+
+    def each(&block)
+      to_a.each(&block)
+    end
+
+    # Guard against "André" Encoding::CompatibilityError
+    def to_a
+      members.map do |key|
         public_send(key).dup&.force_encoding("UTF-8") || EMPTY_CELL
       end
     end
@@ -32,17 +61,31 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   has_many :pending_induction_submissions
   has_one_attached :csv_file
 
-  enum :status, {
+  enum :batch_status, {
     pending: 'pending',
     processing: 'processing',
     completed: 'completed',
     failed: 'failed'
   }
 
+  enum :batch_type, {
+    action: 'action',
+    claim: 'claim'
+  }
+
+  # Scopes
+  scope :for_appropriate_body, ->(appropriate_body_id) { where(appropriate_body_id:) }
+
   # Validations
+  validates :batch_status, presence: true
+  validates :batch_type, presence: true
+
+  # CSV validations
   validate :wrong_headers, on: :uploaded
   validate :unique_trns, on: :uploaded
   validate :missing_trns, on: :uploaded
+  validate :missing_dobs, on: :uploaded
+  validate :iso8601_date, on: :uploaded
 
   def wrong_headers
     errors.add(:csv_file, "CSV file contains unsupported columns") unless has_valid_csv_headings?
@@ -53,36 +96,45 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   end
 
   def missing_trns
-    errors.add(:csv_file, "CSV file contains missing TRNs") unless has_essential_csv_cells?
+    errors.add(:csv_file, "CSV file contains missing TRNs") unless has_trns?
+  end
+
+  def missing_dobs
+    errors.add(:csv_file, "CSV file contains missing dates of birth") unless has_dates_of_birth?
+  end
+
+  def iso8601_date
+    errors.add(:csv_file, "CSV file contains unsupported date format") unless has_valid_csv_dates?
   end
 
   # Download CSV Methods
   # ============================================================================
 
+  def csv_headings
+    if action?
+      ACTION_CSV_HEADINGS
+    elsif claim?
+      CLAIM_CSV_HEADINGS
+    end
+  end
+
   # @return [Array<Array>] uploaded data with error reports
   def csv_download
     @csv_download ||= rows.map { |row|
-      row_values = row.to_a
-
       next unless failed_trns.include?(row.trn)
 
-      # if rows last column header is errors?
-      row_values.delete_at(-1) # FIXME: last column might not be an error column
+      error_message = pending_induction_submissions.find_by(trn: row.trn)&.error_message || EMPTY_CELL
 
-      [
-        *row_values,
-        pending_induction_submissions.find_by(trn: row.trn)&.error_message || EMPTY_CELL
-      ]
-      # else
-      #   row_values
-      # end
+      row_values = row.to_a
+      row_values.delete_at(-1)
+      row_values.push(error_message)
     }.compact
   end
 
   # @return [String]
   def to_csv
     CSV.generate do |csv|
-      csv << CSV_HEADINGS.keys
+      csv << csv_headings.keys
       csv_download.each { |row| csv << row }
     end
   end
@@ -102,12 +154,20 @@ class PendingInductionSubmissionBatch < ApplicationRecord
 
   # @return [Enumerator::Lazy<PendingInductionSubmissionBatch::Row>] Struct-like without headers
   def rows
-    @rows ||= data.each.lazy.map { |row| Row.new(**row.to_h.symbolize_keys) }
+    @rows ||= data.each.lazy.map { |row| row_class.new(**row.to_h.symbolize_keys) }
+  end
+
+  def row_class
+    if action?
+      ActionRow
+    elsif claim?
+      ClaimRow
+    end
   end
 
   # @return [Boolean]
   def has_valid_csv_headings?
-    data.headers.eql?(CSV_HEADINGS.keys.map(&:to_s))
+    data.headers.eql?(csv_headings.keys.map(&:to_s))
   end
 
   # @return [Boolean]
@@ -116,9 +176,32 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   end
 
   # @return [Boolean]
-  def has_essential_csv_cells?
-    # all TRNs present
+  def has_trns?
     rows.map(&:trn).compact.count.eql?(rows.count)
+  end
+
+  # @return [Boolean]
+  def has_dates_of_birth?
+    rows.map(&:dob).compact.count.eql?(rows.count)
+  end
+
+  # TODO: spec
+  # @return [Boolean]
+  def has_valid_csv_dates?
+    # rows.all? do |r|
+    rows.map do |r|
+      dates = [r.dob]
+      dates.push(r.start_date) if claim?
+      dates.push(r.end_date) if action?
+
+      # dates.all? do |raw_value|
+      dates.map do |raw_value|
+        Rails.logger.debug raw_value
+        Date.iso8601(raw_value)
+      end
+    end
+  rescue Date::Error
+    false
   end
 
   # DB Only Methods
@@ -129,23 +212,40 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     super || EMPTY_CELL
   end
 
+  # @return [Array<String>]
   def processed_headers
-    ['TRN', 'First name', 'Last name', 'Date of birth', 'End date', 'Number of terms', 'Objective', 'Error message']
+    common_headers = ['TRN', 'First name', 'Last name', 'Date of birth']
+    if action?
+      common_headers.push('End date', 'Number of terms', 'Objective', 'Error message')
+    elsif claim?
+      common_headers.push('Induction programme', 'Start date', 'Error message')
+    end
   end
 
   # @return [Array<Array>]
   def processed_rows
     pending_induction_submissions.map do |row|
-      [
+      common_rows = [
         row.trn,
         row.trs_first_name || EMPTY_CELL,
         row.trs_last_name || EMPTY_CELL,
         row.date_of_birth&.to_fs(:govuk) || EMPTY_CELL,
-        row.finished_on&.to_fs(:govuk) || EMPTY_CELL,
-        row.number_of_terms&.to_s || EMPTY_CELL,
-        row.outcome || EMPTY_CELL,
-        row.error_message
       ]
+
+      if action?
+        common_rows.push(
+          row.finished_on&.to_fs(:govuk) || EMPTY_CELL,
+          row.number_of_terms&.to_s || EMPTY_CELL,
+          row.outcome || EMPTY_CELL,
+          row.error_message
+        )
+      elsif claim?
+        common_rows.push(
+          ::INDUCTION_PROGRAMMES[row.induction_programme.to_sym] || EMPTY_CELL,
+          row.started_on&.to_fs(:govuk) || EMPTY_CELL,
+          row.error_message
+        )
+      end
     end
   end
 end

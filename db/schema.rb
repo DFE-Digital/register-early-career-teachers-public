@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
   create_enum "batch_status", ["pending", "processing", "completed", "failed"]
+  create_enum "batch_type", ["action", "claim"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
@@ -349,8 +350,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|
     t.bigint "appropriate_body_id", null: false
+    t.enum "batch_type", null: false, enum_type: "batch_type"
+    t.enum "batch_status", default: "pending", null: false, enum_type: "batch_status"
     t.string "error_message"
-    t.enum "status", default: "pending", null: false, enum_type: "batch_status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["appropriate_body_id"], name: "idx_on_appropriate_body_id_58d86a161e"
