@@ -9,34 +9,45 @@ RSpec.describe PendingInductionSubmissionBatch do
   end
 
   describe 'file attachment' do
-    let(:file_name) { 'valid' }
-    let(:file_path) { Rails.root.join("spec/fixtures/#{file_name}.csv") }
+    let(:file_name) { 'valid_complete' }
+    let(:file_path) { Rails.root.join("spec/fixtures/factoried/#{file_name}.csv") }
 
     before do
       batch.csv_file.attach(io: File.open(file_path), filename: 'upload.csv', content_type: 'text/csv')
+      batch.save!
     end
 
     it { is_expected.to have_one_attached(:csv_file) }
     it { expect(batch.csv_file).to be_attached }
     it { expect(batch.csv_file).to be_an_instance_of(ActiveStorage::Attached::One) }
 
-    describe '#has_valid_csv_headings?' do
-      before { batch.save }
+    describe '#data' do
+      it {
+        expect(batch.data.to_a).to eq([
+          %w[trn first_name last_name dob end_date number_of_terms objective error],
+          ["1234567", "Peter", "Hamilton", "30-06-1981", nil, nil, nil, nil],
+          ["7654321", "Alan", "Partridge", "30-06-1981", nil, nil, nil, nil]
+        ])
+      }
+    end
 
+    describe '#rows' do
+      skip 'wip'
+    end
+
+    describe '#has_valid_csv_headings?' do
       context 'with valid headers' do
         it { is_expected.to have_valid_csv_headings }
       end
 
       context 'with invalid headers' do
-        let(:file_name) { 'invalid_headers' }
+        let(:file_name) { 'invalid_missing_columns' }
 
         it { is_expected.not_to have_valid_csv_headings }
       end
     end
 
     describe '#has_unique_trns?' do
-      before { batch.save }
-
       context 'with unique TRNs' do
         it { is_expected.to have_unique_trns }
       end
@@ -49,14 +60,12 @@ RSpec.describe PendingInductionSubmissionBatch do
     end
 
     describe '#has_essential_csv_cells?' do
-      before { batch.save }
-
       context 'with all TRNs present' do
         it { is_expected.to have_essential_csv_cells }
       end
 
       context 'with missing TRNs' do
-        let(:file_name) { 'missing_trn' }
+        let(:file_name) { 'invalid_missing_trn' }
 
         it { is_expected.not_to have_essential_csv_cells }
       end

@@ -6,6 +6,15 @@ RSpec.describe PendingInductionSubmission do
 
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
+    it { is_expected.to belong_to(:pending_induction_submission_batch).optional }
+  end
+
+  describe '#fail?' do
+    skip 'wip' # outcome predicate
+  end
+
+  describe '#pass?' do
+    skip 'wip' # outcome predicate
   end
 
   describe "validation" do
@@ -229,6 +238,10 @@ RSpec.describe PendingInductionSubmission do
           expect(pending_induction_submission.errors[:started_on]).to include("Start date cannot be before QTS award date (1 May 2023)")
         end
       end
+    end
+
+    describe '#not_already_claimed' do
+      skip 'wip' # batch validation
     end
 
     describe "#no_future_induction_periods" do
