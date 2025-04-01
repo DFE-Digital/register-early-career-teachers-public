@@ -15,7 +15,7 @@ module Schools
         return :cannot_mentor_themself if mentor.trn == ect.trn
         return :national_insurance_number unless mentor.matches_trs_dob?
         return :already_active_at_school if mentor.active_at_school?
-        return :cannot_register_mentor if trs_teacher.prohibited_from_teaching?
+        return :cannot_register_mentor if mentor.prohibited_from_teaching
 
         :review_mentor_details
       end
@@ -29,6 +29,7 @@ module Schools
       def persist
         mentor.update(trn: formatted_trn,
                       date_of_birth: date_of_birth.values.join("-"),
+                      prohibited_from_teaching: trs_teacher.prohibited_from_teaching?,
                       trs_date_of_birth: trs_teacher.date_of_birth,
                       trs_first_name: trs_teacher.first_name,
                       trs_last_name: trs_teacher.last_name)

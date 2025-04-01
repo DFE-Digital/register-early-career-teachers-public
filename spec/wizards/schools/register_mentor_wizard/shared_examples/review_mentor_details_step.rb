@@ -6,6 +6,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
                      trn: '1234567',
                      trs_first_name: 'John',
                      trs_last_name: 'Wayne',
+                     change_name: 'yes',
                      corrected_name: 'Jim Wayne',
                      date_of_birth: '01/01/1990',
                      email: 'initial@email.com')
@@ -100,7 +101,11 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
       end
 
       it "'updates the wizard's mentor corrected name'" do
-        expect { subject.save! }.to change(subject.mentor, :corrected_name).from(nil).to('Paul Saints')
+        expect { subject.save! }
+          .to change(subject.mentor, :corrected_name)
+                .from(nil).to('Paul Saints')
+                .and change(subject.mentor, :change_name)
+                       .from(nil).to('yes')
       end
     end
   end
