@@ -4,6 +4,8 @@ class Event < ApplicationRecord
     admin_updates_induction_period
     admin_fails_teacher_induction
     admin_passes_teacher_induction
+    admin_reverts_teacher_claim
+    admin_deletes_induction_period
     appropriate_body_claims_teacher
     appropriate_body_releases_teacher
     appropriate_body_fails_teacher

@@ -206,6 +206,60 @@ describe Events::Record do
     end
   end
 
+  describe '.record_admin_deletes_induction_period!' do
+    let(:raw_modifications) { { 'id' => 1, 'teacher_id' => teacher.id, 'appropriate_body_id' => appropriate_body.id } }
+
+    context 'when induction status was reset on TRS' do
+      it 'queues a RecordEventJob with the correct values including body' do
+        freeze_time do
+          Events::Record.record_admin_deletes_induction_period!(
+            author:,
+            teacher:,
+            appropriate_body:,
+            modifications: raw_modifications,
+            body: "Induction status was reset to 'Required to Complete' in TRS."
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            appropriate_body:,
+            heading: 'Induction period deleted by admin',
+            event_type: :admin_deletes_induction_period,
+            happened_at: Time.zone.now,
+            body: "Induction status was reset to 'Required to Complete' in TRS.",
+            modifications: anything,
+            metadata: raw_modifications,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when induction status was not reset on TRS' do
+      it 'queues a RecordEventJob with the correct values without body' do
+        freeze_time do
+          Events::Record.record_admin_deletes_induction_period!(
+            author:,
+            teacher:,
+            appropriate_body:,
+            modifications: raw_modifications
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            appropriate_body:,
+            heading: 'Induction period deleted by admin',
+            event_type: :admin_deletes_induction_period,
+            happened_at: Time.zone.now,
+            modifications: anything,
+            metadata: raw_modifications,
+            **author_params
+          )
+        end
+      end
+    end
+  end
+
   describe '.record_admin_updates_induction_period!' do
     let(:three_weeks_ago) { 3.weeks.ago.to_date }
     let(:two_weeks_ago) { 2.weeks.ago.to_date }
@@ -312,6 +366,63 @@ describe Events::Record do
           ],
           **author_params
         )
+      end
+    end
+  end
+
+  describe 'admin_reverts_teacher_claim event' do
+    let(:event_type) { :admin_reverts_teacher_claim }
+    let(:happened_at) { Time.zone.now }
+    let(:body_with_reset) { "Induction status was also reset on TRS." }
+
+    context 'when induction status was reset on TRS' do
+      it 'records an event with the correct values including body' do
+        freeze_time do
+          event = Events::Record.new(
+            author:,
+            teacher:,
+            appropriate_body:,
+            event_type:,
+            heading: "#{Teachers::Name.new(teacher).full_name} was unclaimed by support",
+            happened_at:,
+            body: body_with_reset
+          )
+
+          allow(event).to receive(:record_event!).and_return(true)
+          expect(event).to receive(:record_event!)
+
+          event.record_event!
+
+          expect(event.event_type).to eq(event_type)
+          expect(event.teacher).to eq(teacher)
+          expect(event.appropriate_body).to eq(appropriate_body)
+          expect(event.body).to eq(body_with_reset)
+        end
+      end
+    end
+
+    context 'when induction status was not reset on TRS' do
+      it 'records an event with the correct values without body' do
+        freeze_time do
+          event = Events::Record.new(
+            author:,
+            teacher:,
+            appropriate_body:,
+            event_type:,
+            heading: "#{Teachers::Name.new(teacher).full_name} was unclaimed by support",
+            happened_at:
+          )
+
+          allow(event).to receive(:record_event!).and_return(true)
+          expect(event).to receive(:record_event!)
+
+          event.record_event!
+
+          expect(event.event_type).to eq(event_type)
+          expect(event.teacher).to eq(teacher)
+          expect(event.appropriate_body).to eq(appropriate_body)
+          expect(event.body).to be_nil
+        end
       end
     end
   end
