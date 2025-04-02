@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Schools::SummaryCardComponent, type: :component do
   let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body, name: 'an org that assures the quality of statutory teacher induction') }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'An org that designs the training') }
