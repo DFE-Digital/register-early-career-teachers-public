@@ -10,6 +10,7 @@ gem "cssbundling-rails"
 gem "csv"
 gem "dfe-analytics", github: "DFE-Digital/dfe-analytics", tag: "v1.15.4"
 gem "dfe-wizard", github: "DFE-Digital/dfe-wizard"
+gem "faker"
 gem "jsbundling-rails"
 gem "pg", "~> 1.5"
 gem "propshaft"
@@ -63,7 +64,6 @@ group :development, :test do
   gem "brakeman"
   gem "debug", platforms: %i[mri windows]
   gem "factory_bot_rails"
-  gem "faker"
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-govuk', require: false
   gem 'rubocop-performance', require: false
