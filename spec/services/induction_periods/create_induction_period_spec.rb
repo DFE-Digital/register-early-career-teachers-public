@@ -33,12 +33,12 @@ describe 'InductionPeriods::CreateInductionPeriod' do
           expect(induction_period).to be_persisted
         end
 
-        it 'records a appropriate_body_claims_teacher_event' do
+        it 'records an induction_period_opened event' do
           subject.create_induction_period(author:)
 
           perform_enqueued_jobs
 
-          expect(Event.last.event_type).to eql('appropriate_body_claims_teacher')
+          expect(Event.last.event_type).to eql('induction_period_opened')
         end
 
         it 'creates the event with the expected values' do
@@ -63,8 +63,8 @@ describe 'InductionPeriods::CreateInductionPeriod' do
         end
       end
 
-      context 'when the indcution period is invalid' do
-        before { allow(Events::Record).to receive(:record_appropriate_body_claims_teacher_event!).and_call_original }
+      context 'when the induction period is invalid' do
+        before { allow(Events::Record).to receive(:record_induction_period_opened_event!).and_call_original }
 
         let(:started_on) { 3.weeks.from_now.to_date }
 

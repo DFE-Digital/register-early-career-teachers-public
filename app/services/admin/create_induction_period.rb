@@ -1,6 +1,6 @@
 module Admin
   class CreateInductionPeriod
-    attr_reader :author, :teacher, :induction_period
+    attr_reader :author, :teacher, :induction_period, :params
 
     # @param author [Sessions::User]
     # @param teacher [Teacher]
@@ -8,57 +8,51 @@ module Admin
     def initialize(author:, teacher:, params:)
       @author = author
       @teacher = teacher
-      @induction_period = InductionPeriod.new(teacher:, **params)
+      @params = params
     end
 
     # @return [true]
     # @raise [ActiveRecord::RecordInvalid, ActiveRecord::Rollback]
     def create_induction_period!
-      modifications = induction_period.changes
+      service = InductionPeriods::CreateInductionPeriod.new(
+        teacher:,
+        appropriate_body: AppropriateBody.find(params[:appropriate_body_id]),
+        started_on: params[:started_on],
+        induction_programme: params[:induction_programme],
+        finished_on: params[:finished_on],
+        number_of_terms: params[:number_of_terms]
+      )
 
-      ActiveRecord::Base.transaction do
-        success = [
-          induction_period.save!,
-          record_event(modifications),
-          notify_trs_of_new_induction_start
-        ].all?
+      service.create_induction_period!(author:)
+      @induction_period = service.induction_period
 
-        success or raise ActiveRecord::Rollback
-      end
+      notify_trs_of_new_induction_start if notify_trs?
+
+      true
     end
 
   private
 
-    delegate :appropriate_body, to: :induction_period
-
-    # @param modifications [Hash{String => Array}]
-    def record_event(modifications)
-      return unless induction_period.persisted?
-
-      Events::Record.record_admin_creates_induction_period!(
-        author:,
-        modifications:,
-        induction_period:,
-        teacher:,
-        appropriate_body:,
-        happened_at: Time.zone.now
-      )
-    end
-
-    # FIXME: there's no separate way to inform TRS of a new induction start date
-    #        so we're reusing the BeginECTInductionJob here. We need to make sure
-    #        we don't create induction periods for ECTs who have already passed/failed
-    def notify_trs_of_new_induction_start
-      return true if teacher_has_earlier_induction_periods?
-
-      BeginECTInductionJob.perform_later(
-        trn: teacher.trn,
-        start_date: induction_period.started_on
-      )
+    def notify_trs?
+      # Only notify TRS if this is the earliest induction period for the teacher
+      # and the teacher hasn't already passed or failed induction
+      !teacher_has_earlier_induction_periods? && !teacher_has_passed_or_failed_induction?
     end
 
     def teacher_has_earlier_induction_periods?
-      InductionPeriod.where(teacher:).started_before(induction_period.started_on).exists?
+      InductionPeriod.where(teacher:).started_before(params[:started_on]).exists?
+    end
+
+    def teacher_has_passed_or_failed_induction?
+      # Check if the teacher has any induction periods with a pass or fail outcome
+      InductionPeriod.where(teacher:, outcome: InductionPeriod::OUTCOMES).exists?
+    end
+
+    def notify_trs_of_new_induction_start
+      BeginECTInductionJob.perform_later(
+        trn: teacher.trn,
+        start_date: params[:started_on]
+      )
     end
   end
 end
