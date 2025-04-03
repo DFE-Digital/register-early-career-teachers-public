@@ -15,7 +15,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
       expect(subject.induction_programme).to eql(induction_programme)
     end
 
-    describe '#create_induction_period' do
+    describe '#create_induction_period!' do
       let(:author) do
         Sessions::Users::AppropriateBodyUser.new(
           name: 'A user',
@@ -27,14 +27,14 @@ describe 'InductionPeriods::CreateInductionPeriod' do
 
       context 'when the induction period is valid' do
         it 'saves the record' do
-          induction_period = subject.create_induction_period(author:)
+          induction_period = subject.create_induction_period!(author:)
 
           expect(induction_period).to be_a(InductionPeriod)
           expect(induction_period).to be_persisted
         end
 
         it 'records an induction_period_opened event' do
-          subject.create_induction_period(author:)
+          subject.create_induction_period!(author:)
 
           perform_enqueued_jobs
 
@@ -43,7 +43,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
 
         it 'creates the event with the expected values' do
           freeze_time do
-            subject.create_induction_period(author:)
+            subject.create_induction_period!(author:)
 
             perform_enqueued_jobs
 
@@ -56,7 +56,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
         end
 
         it 'returns the induction period and exposes it as a attr' do
-          returned_value = subject.create_induction_period(author:)
+          returned_value = subject.create_induction_period!(author:)
 
           expect(returned_value).to be_an(InductionPeriod)
           expect(subject.induction_period).to be(returned_value)
@@ -68,15 +68,8 @@ describe 'InductionPeriods::CreateInductionPeriod' do
 
         let(:started_on) { 3.weeks.from_now.to_date }
 
-        it 'does not saves the record' do
-          induction_period = subject.create_induction_period(author:)
-
-          expect(induction_period).to be_a(InductionPeriod)
-          expect(induction_period).not_to be_persisted
-        end
-
-        it 'creates no event record' do
-          subject.create_induction_period(author:)
+        it 'raises error and does not record event' do
+          expect { subject.create_induction_period!(author:) }.to raise_error(ActiveRecord::RecordInvalid)
 
           perform_enqueued_jobs
 

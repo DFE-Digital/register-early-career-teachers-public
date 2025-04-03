@@ -56,27 +56,6 @@ module InductionPeriods
       @induction_period
     end
 
-    # @param author [Sessions::User]
-    # @return [InductionPeriod]
-    def create_induction_period(author:)
-      begin
-        create_induction_period!(author:)
-      rescue ActiveRecord::RecordInvalid
-        # Create a new induction period object with the same attributes
-        # This ensures we have an object with errors to return
-        @induction_period ||= InductionPeriod.new(
-          teacher:,
-          appropriate_body:,
-          started_on:,
-          induction_programme:,
-          finished_on:,
-          number_of_terms:
-        )
-      end
-
-      @induction_period
-    end
-
   private
 
     # @param author [Sessions::User]
@@ -88,7 +67,8 @@ module InductionPeriods
         author:,
         teacher:,
         appropriate_body:,
-        induction_period:
+        induction_period:,
+        modifications:
       )
     end
   end
