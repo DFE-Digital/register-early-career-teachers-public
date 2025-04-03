@@ -41,11 +41,11 @@ RSpec.describe Admin::InductionPeriodsController do
       end
 
       it "records an 'admin creates induction period' event" do
-        allow(Events::Record).to receive(:record_admin_creates_induction_period!).once.and_call_original
+        allow(Events::Record).to receive(:record_induction_period_opened_event!).once.and_call_original
 
         post(admin_teacher_induction_periods_path(teacher), params:)
 
-        expect(Events::Record).to have_received(:record_admin_creates_induction_period!).once.with(
+        expect(Events::Record).to have_received(:record_induction_period_opened_event!).once.with(
           hash_including(
             {
               appropriate_body:,

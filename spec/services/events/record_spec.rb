@@ -7,7 +7,7 @@ describe Events::Record do
   let(:author_params) { { author_id: author.id, author_name: author.name, author_email: author.email, author_type: :dfe_staff_user } }
 
   let(:heading) { 'Something happened' }
-  let(:event_type) { :appropriate_body_claims_teacher }
+  let(:event_type) { :induction_period_opened }
   let(:body) { 'A very important event' }
   let(:happened_at) { 2.minutes.ago }
 
@@ -101,17 +101,17 @@ describe Events::Record do
     end
   end
 
-  describe '.record_appropriate_body_claims_teacher_event!' do
+  describe '.record_induction_period_opened_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_appropriate_body_claims_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
+        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
           heading: 'Rhys Ifans was claimed by Burns Slant Drilling Co.',
-          event_type: :appropriate_body_claims_teacher,
+          event_type: :induction_period_opened,
           happened_at: induction_period.started_on,
           **author_params
         )
@@ -120,7 +120,7 @@ describe Events::Record do
 
     it 'fails when induction period is missing' do
       expect {
-        Events::Record.record_appropriate_body_fails_teacher_event(author:, teacher:, appropriate_body:, induction_period: nil)
+        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
