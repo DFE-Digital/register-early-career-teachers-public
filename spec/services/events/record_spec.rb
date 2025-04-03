@@ -103,8 +103,10 @@ describe Events::Record do
 
   describe '.record_induction_period_opened_event!' do
     it 'queues a RecordEventJob with the correct values' do
+      raw_modifications = induction_period.changes
+
       freeze_time do
-        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period:)
+        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
@@ -113,6 +115,8 @@ describe Events::Record do
           heading: 'Rhys Ifans was claimed by Burns Slant Drilling Co.',
           event_type: :induction_period_opened,
           happened_at: induction_period.started_on,
+          modifications: anything,
+          metadata: raw_modifications,
           **author_params
         )
       end
@@ -120,7 +124,7 @@ describe Events::Record do
 
     it 'fails when induction period is missing' do
       expect {
-        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period: nil)
+        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period: nil, modifications: {})
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
