@@ -3,13 +3,13 @@ class Event < ApplicationRecord
     admin_updates_induction_period
     admin_fails_teacher_induction
     admin_passes_teacher_induction
-    admin_reverts_teacher_claim
     admin_deletes_induction_period
     appropriate_body_releases_teacher
     appropriate_body_fails_teacher
     appropriate_body_passes_teacher
     induction_period_opened
     teacher_name_updated_by_trs
+    teacher_induction_status_reset_on_trs
     teacher_induction_status_updated_by_trs
     teacher_attributes_updated_from_trs
     teacher_imported_from_trs
