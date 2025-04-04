@@ -14,17 +14,7 @@ module Admin
     # @return [true]
     # @raise [ActiveRecord::RecordInvalid, ActiveRecord::Rollback]
     def create_induction_period!
-      service = InductionPeriods::CreateInductionPeriod.new(
-        teacher:,
-        appropriate_body: AppropriateBody.find(params[:appropriate_body_id]),
-        started_on: params[:started_on],
-        induction_programme: params[:induction_programme],
-        finished_on: params[:finished_on],
-        number_of_terms: params[:number_of_terms]
-      )
-
-      service.create_induction_period!(author:)
-      @induction_period = service.induction_period
+      @induction_period = create_induction_period_service.create_induction_period!(author:)
 
       notify_trs_of_new_induction_start if notify_trs?
 
@@ -32,6 +22,17 @@ module Admin
     end
 
   private
+
+    def create_induction_period_service
+      InductionPeriods::CreateInductionPeriod.new(
+        teacher:,
+        appropriate_body: AppropriateBody.find(params[:appropriate_body_id]),
+        started_on: params[:started_on],
+        induction_programme: params[:induction_programme],
+        finished_on: params[:finished_on],
+        number_of_terms: params[:number_of_terms]
+      )
+    end
 
     def notify_trs?
       # Only notify TRS if this is the earliest induction period for the teacher
