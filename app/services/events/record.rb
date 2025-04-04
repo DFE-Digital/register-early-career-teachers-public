@@ -159,14 +159,6 @@ module Events
       new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_admin_creates_induction_period!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
-      event_type = :admin_creates_induction_period
-
-      heading = 'Induction period created by admin'
-
-      new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
-    end
-
     def self.record_admin_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
