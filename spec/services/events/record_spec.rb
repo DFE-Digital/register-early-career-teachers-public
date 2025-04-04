@@ -177,13 +177,46 @@ describe Events::Record do
     end
   end
 
-  describe '.record_admin_deletes_induction_period!' do
+  describe '.record_admin_creates_induction_period!' do
+    let(:three_weeks_ago) { 3.weeks.ago.to_date }
+    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:induction_period) do
+      FactoryBot.build(:induction_period, :active, started_on: three_weeks_ago, appropriate_body:, induction_programme: 'cip')
+    end
+
+    it 'queues a RecordEventJob with the correct values' do
+      raw_modifications = induction_period.changes
+      induction_period.save!
+
+      freeze_time do
+        Events::Record.record_admin_creates_induction_period!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          induction_period:,
+          teacher:,
+          appropriate_body:,
+          heading: 'Induction period created by admin',
+          event_type: :admin_creates_induction_period,
+          happened_at: Time.zone.now,
+          modifications: [
+            "Appropriate body set to '#{appropriate_body.id}'",
+            "Started on set to '#{3.weeks.ago.to_date.to_formatted_s(:govuk_short)}'",
+            "Induction programme set to 'cip'"
+          ],
+          metadata: raw_modifications,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_induction_period_deleted!' do
     let(:raw_modifications) { { 'id' => 1, 'teacher_id' => teacher.id, 'appropriate_body_id' => appropriate_body.id } }
 
     context 'when induction status was reset on TRS' do
       it 'queues a RecordEventJob with the correct values including body' do
         freeze_time do
-          Events::Record.record_admin_deletes_induction_period!(
+          Events::Record.record_induction_period_deleted!(
             author:,
             teacher:,
             appropriate_body:,
@@ -195,7 +228,7 @@ describe Events::Record do
             teacher:,
             appropriate_body:,
             heading: 'Induction period deleted by admin',
-            event_type: :admin_deletes_induction_period,
+            event_type: :induction_period_deleted,
             happened_at: Time.zone.now,
             body: "Induction status was reset to 'Required to Complete' in TRS.",
             modifications: anything,
@@ -209,7 +242,7 @@ describe Events::Record do
     context 'when induction status was not reset on TRS' do
       it 'queues a RecordEventJob with the correct values without body' do
         freeze_time do
-          Events::Record.record_admin_deletes_induction_period!(
+          Events::Record.record_induction_period_deleted!(
             author:,
             teacher:,
             appropriate_body:,
@@ -220,7 +253,7 @@ describe Events::Record do
             teacher:,
             appropriate_body:,
             heading: 'Induction period deleted by admin',
-            event_type: :admin_deletes_induction_period,
+            event_type: :induction_period_deleted,
             happened_at: Time.zone.now,
             modifications: anything,
             metadata: raw_modifications,

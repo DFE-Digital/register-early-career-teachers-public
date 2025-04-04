@@ -187,8 +187,8 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
     end
 
-    def self.record_admin_deletes_induction_period!(author:, modifications:, teacher:, appropriate_body:, body: nil)
-      event_type = :admin_deletes_induction_period
+    def self.record_induction_period_deleted!(author:, modifications:, teacher:, appropriate_body:, body: nil)
+      event_type = :induction_period_deleted
       happened_at = Time.zone.now
 
       heading = 'Induction period deleted by admin'

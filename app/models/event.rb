@@ -3,7 +3,8 @@ class Event < ApplicationRecord
     admin_updates_induction_period
     admin_fails_teacher_induction
     admin_passes_teacher_induction
-    admin_deletes_induction_period
+    induction_period_deleted
+    appropriate_body_claims_teacher
     appropriate_body_releases_teacher
     appropriate_body_fails_teacher
     appropriate_body_passes_teacher
