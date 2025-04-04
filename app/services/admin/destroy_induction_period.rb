@@ -14,7 +14,7 @@ module Admin
         modifications = induction_period.attributes
         induction_period.destroy!
 
-        record_admin_deletes_induction_period!(
+        record_induction_period_deleted!(
           author:,
           teacher:,
           appropriate_body:,
@@ -25,8 +25,8 @@ module Admin
 
   private
 
-    def record_admin_deletes_induction_period!(author:, teacher:, appropriate_body:, modifications:)
-      Events::Record.record_admin_deletes_induction_period!(
+    def record_induction_period_deleted!(author:, teacher:, appropriate_body:, modifications:)
+      Events::Record.record_induction_period_deleted!(
         author:,
         teacher:,
         appropriate_body:,

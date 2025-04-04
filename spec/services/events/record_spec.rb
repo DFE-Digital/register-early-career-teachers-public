@@ -206,13 +206,13 @@ describe Events::Record do
     end
   end
 
-  describe '.record_admin_deletes_induction_period!' do
+  describe '.record_induction_period_deleted!' do
     let(:raw_modifications) { { 'id' => 1, 'teacher_id' => teacher.id, 'appropriate_body_id' => appropriate_body.id } }
 
     context 'when induction status was reset on TRS' do
       it 'queues a RecordEventJob with the correct values including body' do
         freeze_time do
-          Events::Record.record_admin_deletes_induction_period!(
+          Events::Record.record_induction_period_deleted!(
             author:,
             teacher:,
             appropriate_body:,
@@ -224,7 +224,7 @@ describe Events::Record do
             teacher:,
             appropriate_body:,
             heading: 'Induction period deleted by admin',
-            event_type: :admin_deletes_induction_period,
+            event_type: :induction_period_deleted,
             happened_at: Time.zone.now,
             body: "Induction status was reset to 'Required to Complete' in TRS.",
             modifications: anything,
@@ -238,7 +238,7 @@ describe Events::Record do
     context 'when induction status was not reset on TRS' do
       it 'queues a RecordEventJob with the correct values without body' do
         freeze_time do
-          Events::Record.record_admin_deletes_induction_period!(
+          Events::Record.record_induction_period_deleted!(
             author:,
             teacher:,
             appropriate_body:,
@@ -249,7 +249,7 @@ describe Events::Record do
             teacher:,
             appropriate_body:,
             heading: 'Induction period deleted by admin',
-            event_type: :admin_deletes_induction_period,
+            event_type: :induction_period_deleted,
             happened_at: Time.zone.now,
             modifications: anything,
             metadata: raw_modifications,
