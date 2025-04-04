@@ -341,10 +341,9 @@ describe Events::Record do
     end
   end
 
-  describe 'admin_reverts_teacher_claim event' do
-    let(:event_type) { :admin_reverts_teacher_claim }
+  describe 'teacher_induction_status_reset_on_trs event' do
+    let(:event_type) { :teacher_induction_status_reset_on_trs }
     let(:happened_at) { Time.zone.now }
-    let(:body_with_reset) { "Induction status was also reset on TRS." }
 
     context 'when induction status was reset on TRS' do
       it 'records an event with the correct values including body' do
@@ -355,8 +354,7 @@ describe Events::Record do
             appropriate_body:,
             event_type:,
             heading: "#{Teachers::Name.new(teacher).full_name} was unclaimed by support",
-            happened_at:,
-            body: body_with_reset
+            happened_at:
           )
 
           allow(event).to receive(:record_event!).and_return(true)
@@ -367,7 +365,6 @@ describe Events::Record do
           expect(event.event_type).to eq(event_type)
           expect(event.teacher).to eq(teacher)
           expect(event.appropriate_body).to eq(appropriate_body)
-          expect(event.body).to eq(body_with_reset)
         end
       end
     end
