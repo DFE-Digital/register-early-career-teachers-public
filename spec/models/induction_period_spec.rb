@@ -15,6 +15,7 @@ RSpec.describe InductionPeriod do
 
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
+    it { is_expected.to validate_presence_of(:started_on).with_message("Enter a start date") }
     it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
 
     describe 'overlapping periods' do
