@@ -374,8 +374,8 @@ describe Events::Record do
     end
   end
 
-  describe 'teacher_induction_status_reset_on_trs event' do
-    let(:event_type) { :teacher_induction_status_reset_on_trs }
+  describe 'teacher_induction_status_reset event' do
+    let(:event_type) { :teacher_induction_status_reset }
     let(:happened_at) { Time.zone.now }
 
     context 'when induction status was reset on TRS' do
