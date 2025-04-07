@@ -7,7 +7,7 @@ class Event < ApplicationRecord
     admin_reverts_teacher_claim
     admin_deletes_induction_period
     appropriate_body_claims_teacher
-    appropriate_body_releases_teacher
+    induction_period_closed
     appropriate_body_fails_teacher
     appropriate_body_passes_teacher
     teacher_name_updated_by_trs

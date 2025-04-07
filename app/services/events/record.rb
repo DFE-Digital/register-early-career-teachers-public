@@ -88,10 +88,10 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_releases_teacher_event!(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_induction_period_closed_event!(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
-      event_type = :appropriate_body_releases_teacher
+      event_type = :induction_period_closed
       heading = "#{Teachers::Name.new(teacher).full_name} was released by #{appropriate_body.name}"
       happened_at = induction_period.finished_on
 
