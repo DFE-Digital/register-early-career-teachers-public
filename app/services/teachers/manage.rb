@@ -145,6 +145,6 @@ private
   end
 
   def record_teacher_trs_attribute_update(modifications:)
-    Events::Record.teacher_attributes_updated_from_trs!(author:, teacher:, modifications:)
+    Events::Record.teacher_trs_attributes_updated!(author:, teacher:, modifications:)
   end
 end

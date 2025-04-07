@@ -27,7 +27,7 @@ module AppropriateBodies
   private
 
     def record_event!
-      Events::Record.record_appropriate_body_releases_teacher_event!(
+      Events::Record.record_induction_period_closed_event!(
         author:,
         teacher:,
         appropriate_body:,

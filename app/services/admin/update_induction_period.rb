@@ -41,7 +41,7 @@ module Admin
     def record_event(modifications)
       return unless induction_period.persisted?
 
-      Events::Record.record_admin_updates_induction_period!(
+      Events::Record.record_induction_period_updated!(
         author:,
         modifications:,
         induction_period:,
