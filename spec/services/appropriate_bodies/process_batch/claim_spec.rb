@@ -14,26 +14,15 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     )
   end
   let(:trn) { '1000890' }
-  let(:first_name) { 'Terry' }
-  let(:last_name) { 'Wogan' }
-  let(:dob) { '15/01/1997' }
-  let(:end_date) { (Time.zone.today - 1.week).to_s }
-  let(:number_of_terms) { '3.2' }
-  let(:objective) { 'pass' }
+  let(:dob) { '1997-01-15' }
+  let(:start_date) { (Time.zone.today - 1.week).to_s }
+  let(:induction_programme) { 'FIP' }
   let(:error) { '' }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
-  let(:teacher) do
-    FactoryBot.create(:teacher, :with_corrected_name,
-                      trn:,
-                      trs_first_name: first_name,
-                      trs_last_name: last_name)
-  end
-
   let(:pending_induction_submission_batch) do
-    FactoryBot.create(:pending_induction_submission_batch,
-                      appropriate_body:)
+    FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:)
   end
 
   let(:submission) do
@@ -42,8 +31,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
   let(:csv_file) do
     <<~CSV_DATA
-      trn,first_name,last_name,dob,end_date,number_of_terms,objective,error
-      #{trn},#{first_name},#{last_name},#{dob},#{end_date},#{number_of_terms},#{objective},#{error}
+      trn,dob,start_date,induction_programme,error
+      #{trn},#{dob},#{start_date},#{induction_programme},#{error}
     CSV_DATA
   end
 
@@ -52,42 +41,39 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   describe '#process!' do
-    describe 'passing' do
-      let!(:induction_period) do
-        FactoryBot.create(:induction_period, :active,
-                          appropriate_body:,
-                          teacher:,
-                          started_on: '2024-1-1')
-      end
+    before do
+      service.process!
+    end
 
-      before do
-        service.process!
-        induction_period.reload
-      end
+    it 'has no error message' do
+      expect(pending_induction_submission_batch.reload.error_message).to eq '-'
+    end
 
-      it 'creates a pending induction submission' do
-        expect(service.pending_induction_submission_batch.pending_induction_submissions.count).to eq 1
-      end
+    it 'creates a pending induction submission' do
+      expect(service.pending_induction_submission_batch.pending_induction_submissions.count).to eq 1
+    end
 
-      it 'populates submission from CSV' do
-        expect(submission.outcome).to eq 'pass'
-        expect(submission.number_of_terms).to eq 3.2
-        expect(submission.error_message).to eq '✅'
-        expect(submission.date_of_birth).to eq(Date.parse(dob))
-        expect(submission.finished_on).to eq(Date.parse(end_date))
-      end
+    it 'populates submission from CSV' do
+      expect(submission.error_message).to eq '✅'
+      expect(submission.date_of_birth).to eq(Date.parse(dob))
+      expect(submission.started_on).to eq(Date.parse(start_date))
+    end
 
-      it 'populates submission from TRS' do
-        expect(submission.trn).to eq trn
-        expect(submission.trs_first_name).to eq 'Kirk'
-        expect(submission.trs_last_name).to eq 'Van Houten'
-      end
+    it 'populates submission from TRS' do
+      expect(submission.trn).to eq trn
+      expect(submission.trs_first_name).to eq 'Kirk'
+      expect(submission.trs_last_name).to eq 'Van Houten'
+    end
 
-      it 'closes induction period with a pass' do
-        expect(induction_period.finished_on).to eq(Date.parse(end_date))
-        expect(induction_period.number_of_terms).to eq(3.2)
-        expect(induction_period.outcome).to eq('pass')
-      end
+    it 'records the teacher' do
+      teacher = Teacher.first
+      expect(teacher.trn).to eq trn
+    end
+
+    it 'opens induction period' do
+      induction_period = InductionPeriod.first
+      expect(induction_period.started_on).to eq(Date.parse(start_date))
+      expect(induction_period.induction_programme).to eq('fip')
     end
   end
 end

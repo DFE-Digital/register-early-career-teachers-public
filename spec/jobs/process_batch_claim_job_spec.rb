@@ -15,7 +15,7 @@ RSpec.describe ProcessBatchClaimJob, type: :job do
     end
 
     context 'with valid complete data' do
-      include_context 'csv file', 'valid_complete'
+      include_context 'csv file', 'valid_complete', 'claim'
 
       it 'creates records for all rows' do
         expect(submissions.count).to eq(2)
