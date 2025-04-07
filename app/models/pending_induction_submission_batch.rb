@@ -79,33 +79,14 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   # Validations
   validates :batch_status, presence: true
   validates :batch_type, presence: true
+  validate :csv_mime_type
 
-  # CSV validations
+  # CSV content validations
   validate :wrong_headers, on: :uploaded
   validate :unique_trns, on: :uploaded
   validate :missing_trns, on: :uploaded
   validate :missing_dobs, on: :uploaded
   validate :iso8601_date, on: :uploaded
-
-  def wrong_headers
-    errors.add(:csv_file, "CSV file contains unsupported columns") unless has_valid_csv_headings?
-  end
-
-  def unique_trns
-    errors.add(:csv_file, "CSV file contains duplicate TRNs") unless has_unique_trns?
-  end
-
-  def missing_trns
-    errors.add(:csv_file, "CSV file contains missing TRNs") unless has_trns?
-  end
-
-  def missing_dobs
-    errors.add(:csv_file, "CSV file contains missing dates of birth") unless has_dates_of_birth?
-  end
-
-  def iso8601_date
-    errors.add(:csv_file, "CSV file contains unsupported date format") unless has_valid_csv_dates?
-  end
 
   # Download CSV Methods
   # ============================================================================
@@ -146,6 +127,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   # Uploaded CSV Methods
   # ============================================================================
 
+  # FIXME: Octothorpes are used to prefix comments in the CSV file for easier testing (remove when no longer helpful)
   # @return [CSV::Table<CSV::Row>] Hash-like with headers
   def data
     # @data ||= CSV.parse(csv_file.download, headers: true, converters: %i[numeric date])
@@ -185,20 +167,13 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     rows.map(&:dob).compact.count.eql?(rows.count)
   end
 
-  # TODO: spec
   # @return [Boolean]
   def has_valid_csv_dates?
-    # rows.all? do |r|
-    rows.map do |r|
+    rows.all? do |r|
       dates = [r.dob]
       dates.push(r.start_date) if claim?
       dates.push(r.end_date) if action?
-
-      # dates.all? do |raw_value|
-      dates.map do |raw_value|
-        Rails.logger.debug raw_value
-        Date.iso8601(raw_value)
-      end
+      dates.all? { |raw_value| Date.iso8601(raw_value) }
     end
   rescue Date::Error
     false
@@ -247,5 +222,31 @@ class PendingInductionSubmissionBatch < ApplicationRecord
         )
       end
     end
+  end
+
+private
+
+  def wrong_headers
+    errors.add(:csv_file, "CSV file contains unsupported columns") unless has_valid_csv_headings?
+  end
+
+  def unique_trns
+    errors.add(:csv_file, "CSV file contains duplicate TRNs") unless has_unique_trns?
+  end
+
+  def missing_trns
+    errors.add(:csv_file, "CSV file contains missing TRNs") unless has_trns?
+  end
+
+  def missing_dobs
+    errors.add(:csv_file, "CSV file contains missing dates of birth") unless has_dates_of_birth?
+  end
+
+  def iso8601_date
+    errors.add(:csv_file, "CSV file contains unsupported date format") unless has_valid_csv_dates?
+  end
+
+  def csv_mime_type
+    errors.add(:csv_file, 'File type must be a CSV') if csv_file.attached? && !csv_file.content_type.in?(%w[text/csv])
   end
 end
