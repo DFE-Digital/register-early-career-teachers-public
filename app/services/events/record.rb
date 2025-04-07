@@ -140,8 +140,8 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.teacher_attributes_updated_from_trs!(author:, teacher:, modifications:, happened_at: Time.zone.now)
-      event_type = :teacher_attributes_updated_from_trs
+    def self.teacher_trs_attributes_updated!(author:, teacher:, modifications:, happened_at: Time.zone.now)
+      event_type = :teacher_trs_attributes_updated
       heading = "TRS attributes updated"
 
       new(event_type:, author:, modifications:, teacher:, heading:, happened_at:).record_event!

@@ -46,7 +46,7 @@ RSpec.describe Teachers::Manage do
           author_id: author.id,
           author_name: 'Christopher Biggins',
           author_type: :dfe_staff_user,
-          event_type: :teacher_attributes_updated_from_trs,
+          event_type: :teacher_trs_attributes_updated,
           happened_at: Time.zone.now,
           heading: "TRS attributes updated",
           teacher:,

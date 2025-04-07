@@ -12,7 +12,7 @@ class Event < ApplicationRecord
     appropriate_body_passes_teacher
     teacher_name_updated_by_trs
     teacher_induction_status_updated_by_trs
-    teacher_attributes_updated_from_trs
+    teacher_trs_attributes_updated
     teacher_imported_from_trs
     import_from_dqt
   ].freeze
