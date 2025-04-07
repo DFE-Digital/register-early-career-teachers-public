@@ -260,7 +260,7 @@ describe Events::Record do
     end
   end
 
-  describe '.record_admin_updates_induction_period!' do
+  describe '.record_induction_period_updated!' do
     let(:three_weeks_ago) { 3.weeks.ago.to_date }
     let(:two_weeks_ago) { 2.weeks.ago.to_date }
     let(:induction_period) { FactoryBot.create(:induction_period, :active, started_on: three_weeks_ago) }
@@ -270,7 +270,7 @@ describe Events::Record do
       raw_modifications = induction_period.changes
 
       freeze_time do
-        Events::Record.record_admin_updates_induction_period!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
+        Events::Record.record_induction_period_updated!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
