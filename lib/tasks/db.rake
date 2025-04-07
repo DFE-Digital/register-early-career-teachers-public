@@ -47,7 +47,5 @@ namespace :db do
   end
 end
 
-Rake::Task['db:create'].enhance do
-  Rake::Task['db:setup_search_configuration'].invoke
-end
+Rake::Task['db:schema:load'].enhance(['db:setup_search_configuration'])
 Rake::Task['db:prepare'].enhance(['db:setup_search_configuration'])
