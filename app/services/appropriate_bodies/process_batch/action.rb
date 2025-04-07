@@ -14,8 +14,8 @@ module AppropriateBodies
               pending_induction_submission.update(error_message: trs_error)
               next
             end
-            
-            unless teacher.present?
+
+            if teacher.blank?
               pending_induction_submission.update(error_message: "Teacher #{name} has not yet been claimed")
               next
             end
@@ -24,6 +24,8 @@ module AppropriateBodies
               pending_induction_submission.update(error_message: "Teacher #{name} was claimed by a another appropriate body")
               next
             end
+
+            assign_attributes
 
             case row['objective']
             when 'fail', 'pass' then outcome!
@@ -42,13 +44,17 @@ module AppropriateBodies
 
     private
 
-      def outcome!
+      def assign_attributes
+        outcome = %w[pass fail].include?(row['objective']) ? row['objective'] : nil
+
         pending_induction_submission.assign_attributes(
           finished_on: row['end_date'],
           number_of_terms: row['number_of_terms'],
-          outcome: row['objective']
+          outcome:
         )
+      end
 
+      def outcome!
         if pending_induction_submission.save(context: :record_outcome)
           record_outcome.pass! if pending_induction_submission.pass?
           record_outcome.fail! if pending_induction_submission.fail?
@@ -58,11 +64,6 @@ module AppropriateBodies
       end
 
       def release!
-        pending_induction_submission.assign_attributes(
-          finished_on: row['end_date'],
-          number_of_terms: row['number_of_terms']
-        )
-
         if pending_induction_submission.save(context: :release_ect)
           release_ect.release!
         else
@@ -74,7 +75,7 @@ module AppropriateBodies
       def teacher
         ::Teacher.find_by(trn: pending_induction_submission.trn)
       end
-      
+
       # @return [nil, String]
       def name
         PendingInductionSubmissions::Name.new(pending_induction_submission).full_name
@@ -113,6 +114,7 @@ module AppropriateBodies
         ::Teachers::InductionPeriod.new(teacher).ongoing_induction_period&.appropriate_body
       end
 
+      # @return [AppropriateBodies::ReleaseECT]
       def release_ect
         ReleaseECT.new(
           appropriate_body:,
@@ -121,6 +123,7 @@ module AppropriateBodies
         )
       end
 
+      # @return [AppropriateBodies::RecordOutcome]
       def record_outcome
         RecordOutcome.new(
           appropriate_body:,

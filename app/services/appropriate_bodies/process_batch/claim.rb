@@ -17,6 +17,7 @@ module AppropriateBodies
 
             find_ect.import_from_trs!
             check_ect.begin_claim!
+            # OPTIMIZE: params effectively passed in twice
             register_ect.register(
               started_on: row['start_date'],
               induction_programme: row['induction_programme'].downcase
@@ -47,14 +48,17 @@ module AppropriateBodies
 
     private
 
+      # @return [AppropriateBodies::ClaimAnECT::FindECT]
       def find_ect
         ClaimAnECT::FindECT.new(appropriate_body:, pending_induction_submission:)
       end
 
+      # @return [AppropriateBodies::ClaimAnECT::CheckECT]
       def check_ect
         ClaimAnECT::CheckECT.new(appropriate_body:, pending_induction_submission:)
       end
 
+      # @return [AppropriateBodies::ClaimAnECT::RegisterECT]
       def register_ect
         ClaimAnECT::RegisterECT.new(appropriate_body:, pending_induction_submission:, author:)
       end
