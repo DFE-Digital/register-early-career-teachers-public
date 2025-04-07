@@ -1,17 +1,6 @@
 namespace :db do
   desc 'Add search config'
   task setup_search_configuration: :environment do
-    database_exists = ::ActiveRecord::Base.connection_pool.with_connection do |connection|
-      connection.active?
-    rescue ActiveRecord::ConnectionNotEstablished
-      false
-    end
-
-    unless database_exists
-      Rails.logger.info("Database does not exist, creating it...")
-      Rake::Task['db:create'].invoke
-    end
-
     Rails.logger.info("Checking if full text search unaccented configuration exists")
     result = ActiveRecord::Base.connection.execute("select count(*) FROM pg_ts_config where cfgname = 'unaccented';")
 
