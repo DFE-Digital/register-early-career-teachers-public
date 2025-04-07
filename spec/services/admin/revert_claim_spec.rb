@@ -13,7 +13,7 @@ RSpec.describe Admin::RevertClaim do
 
   before do
     allow(Events::Record).to receive_messages(
-      record_teacher_induction_status_reset_on_trs_event!: true,
+      record_teacher_induction_status_reset_event!: true,
       record_induction_period_deleted!: true
     )
   end
@@ -36,7 +36,7 @@ RSpec.describe Admin::RevertClaim do
       end
 
       it "records an event with the correct parameters" do
-        expect(Events::Record).to receive(:record_teacher_induction_status_reset_on_trs_event!).with(
+        expect(Events::Record).to receive(:record_teacher_induction_status_reset_event!).with(
           author:,
           appropriate_body:,
           teacher:
@@ -55,7 +55,7 @@ RSpec.describe Admin::RevertClaim do
       end
 
       it "does not record a revert event" do
-        expect(Events::Record).not_to receive(:record_teacher_induction_status_reset_on_trs_event!)
+        expect(Events::Record).not_to receive(:record_teacher_induction_status_reset_event!)
         service.revert_claim
       end
     end

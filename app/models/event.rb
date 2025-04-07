@@ -10,7 +10,7 @@ class Event < ApplicationRecord
     appropriate_body_passes_teacher
     induction_period_opened
     teacher_name_updated_by_trs
-    teacher_induction_status_reset_on_trs
+    teacher_induction_status_reset
     teacher_induction_status_updated_by_trs
     teacher_attributes_updated_from_trs
     teacher_imported_from_trs
