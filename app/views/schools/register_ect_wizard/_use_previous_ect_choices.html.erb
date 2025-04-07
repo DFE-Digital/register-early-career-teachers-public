@@ -23,7 +23,9 @@
   end
 end %>
 
-<p class="govuk-body"><%= @school.chosen_lead_provider_name %> will confirm if they'll be working with your school and which delivery partner will deliver training events.</p>
+<% if @school.provider_led_programme_type_chosen? %>
+  <p class="govuk-body"><%= @school.chosen_lead_provider_name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.</p>
+<% end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
