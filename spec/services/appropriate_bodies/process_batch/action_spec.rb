@@ -16,7 +16,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   let(:trn) { '1000890' }
   let(:first_name) { 'Terry' }
   let(:last_name) { 'Wogan' }
-  let(:dob) { '15/01/1997' }
+  let(:dob) { '1997-01-15' }
   let(:end_date) { (Time.zone.today - 1.week).to_s }
   let(:number_of_terms) { '3.2' }
   let(:objective) { 'pass' }
@@ -32,8 +32,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   end
 
   let(:pending_induction_submission_batch) do
-    FactoryBot.create(:pending_induction_submission_batch,
-                      appropriate_body:)
+    FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
   end
 
   let(:submission) do
@@ -42,8 +41,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
   let(:csv_file) do
     <<~CSV_DATA
-      trn,first_name,last_name,dob,end_date,number_of_terms,objective,error
-      #{trn},#{first_name},#{last_name},#{dob},#{end_date},#{number_of_terms},#{objective},#{error}
+      trn,dob,end_date,number_of_terms,objective,error
+      #{trn},#{dob},#{end_date},#{number_of_terms},#{objective},#{error}
     CSV_DATA
   end
 
@@ -63,6 +62,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       before do
         service.process!
         induction_period.reload
+      end
+
+      it 'has no error message' do
+        expect(pending_induction_submission_batch.reload.error_message).to eq '-'
       end
 
       it 'creates a pending induction submission' do
