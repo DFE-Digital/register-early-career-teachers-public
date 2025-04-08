@@ -20,7 +20,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
-  create_enum "batch_status", ["pending", "processing", "completed", "failed"]
+  create_enum "batch_status", ["pending", "processing", "processed", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system"]
