@@ -19,15 +19,15 @@ module Admin
         # Only reset the induction status if this was the teacher's only induction period
         if teacher.induction_periods.count.zero?
           ResetInductionJob.perform_later(trn: teacher.trn)
-          record_admin_reverts_teacher_claim_event!
+          record_teacher_induction_status_reset_event!
         end
       end
     end
 
   private
 
-    def record_admin_reverts_teacher_claim_event!
-      Events::Record.record_admin_reverts_teacher_claim_event!(
+    def record_teacher_induction_status_reset_event!
+      Events::Record.record_teacher_induction_status_reset_event!(
         author:,
         appropriate_body:,
         teacher:

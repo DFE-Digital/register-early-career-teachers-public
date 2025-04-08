@@ -179,17 +179,16 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_admin_reverts_teacher_claim_event!(author:, appropriate_body:, teacher:)
-      event_type = :admin_reverts_teacher_claim
+    def self.record_teacher_induction_status_reset_event!(author:, appropriate_body:, teacher:)
+      event_type = :teacher_induction_status_reset
       heading = "#{Teachers::Name.new(teacher).full_name} was unclaimed by #{author.full_name}"
       happened_at = Time.zone.now
-      body = "Induction status was reset on TRS"
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
     end
 
-    def self.record_admin_deletes_induction_period!(author:, modifications:, teacher:, appropriate_body:, body: nil)
-      event_type = :admin_deletes_induction_period
+    def self.record_induction_period_deleted!(author:, modifications:, teacher:, appropriate_body:, body: nil)
+      event_type = :induction_period_deleted
       happened_at = Time.zone.now
 
       heading = 'Induction period deleted by admin'
