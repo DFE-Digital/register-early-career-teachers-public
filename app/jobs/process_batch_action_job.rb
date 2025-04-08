@@ -5,14 +5,20 @@ class ProcessBatchActionJob < ApplicationJob
   # @param author_email [String]
   # @param author_name [String]
   def perform(pending_induction_submission_batch, author_email, author_name)
-    pending_induction_submission_batch.processing!
+    if pending_induction_submission_batch.processing?
+      # still processing
+    elsif pending_induction_submission_batch.processed?
 
-    AppropriateBodies::ProcessBatch::Action.new(
-      pending_induction_submission_batch:,
-      author: author_session(pending_induction_submission_batch, author_email, author_name)
-    ).process!
+      # pending_induction_submission_batch.processing!
+      batch_action(pending_induction_submission_batch, author_email, author_name).do!
+      pending_induction_submission_batch.completed!
 
-    pending_induction_submission_batch.completed!
+    elsif pending_induction_submission_batch.pending?
+
+      pending_induction_submission_batch.processing!
+      batch_action(pending_induction_submission_batch, author_email, author_name).process!
+      pending_induction_submission_batch.processed!
+    end
   rescue StandardError => e
     Rails.logger.debug("Attempt #{executions}: #{e.message}")
 
@@ -23,6 +29,13 @@ class ProcessBatchActionJob < ApplicationJob
   end
 
 private
+
+  def batch_action(pending_induction_submission_batch, author_email, author_name)
+    AppropriateBodies::ProcessBatch::Action.new(
+      pending_induction_submission_batch:,
+      author: author_session(pending_induction_submission_batch, author_email, author_name)
+    )
+  end
 
   def author_session(pending_induction_submission_batch, author_email, author_name)
     Sessions::Users::AppropriateBodyPersona.new(
