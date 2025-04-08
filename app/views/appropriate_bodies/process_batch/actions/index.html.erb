@@ -1,6 +1,6 @@
 <%
   page_data(
-    title: "Bulk ECT uploads",
+    title: "Bulk actions",
     backlink_href: ab_teachers_path
   )
 %>
@@ -14,3 +14,5 @@
     rows: @pending_induction_submission_batches,
   )
 %>
+
+<p><%= govuk_link_to("Go to claims", ab_batch_claims_path) %></p>
