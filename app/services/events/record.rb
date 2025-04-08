@@ -181,7 +181,7 @@ module Events
 
     def self.record_teacher_induction_status_reset_event!(author:, appropriate_body:, teacher:)
       event_type = :teacher_induction_status_reset
-      heading = "#{Teachers::Name.new(teacher).full_name} was unclaimed by #{author.full_name}"
+      heading = "#{Teachers::Name.new(teacher).full_name} was unclaimed"
       happened_at = Time.zone.now
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
