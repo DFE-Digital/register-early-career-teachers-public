@@ -120,8 +120,6 @@ RSpec.describe Admin::CreateInductionPeriod do
     end
 
     it 'writes an event' do
-      expect(Events::Record).to receive(:record_admin_creates_induction_period!).once.and_call_original
-
       service.create_induction_period!
 
       perform_enqueued_jobs
@@ -129,7 +127,7 @@ RSpec.describe Admin::CreateInductionPeriod do
       event = Event.last
 
       aggregate_failures do
-        expect(event.event_type).to eql('admin_creates_induction_period')
+        expect(event.event_type).to eql('induction_period_opened')
         expect(event.appropriate_body).to eql(appropriate_body)
         expect(event.teacher).to eql(teacher)
         expect(event.induction_period).to eql(service.induction_period)

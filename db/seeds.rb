@@ -52,7 +52,7 @@ def describe_induction_period(ip)
   }
 
   Event.create!(
-    event_type: 'appropriate_body_claims_teacher',
+    event_type: 'induction_period_opened',
     induction_period: ip,
     teacher: ip.teacher,
     appropriate_body: ip.appropriate_body,
@@ -63,7 +63,7 @@ def describe_induction_period(ip)
 
   if ip.finished_on
     Event.create!(
-      event_type: 'appropriate_body_claims_teacher',
+      event_type: 'induction_period_opened',
       induction_period: ip,
       teacher: ip.teacher,
       appropriate_body: ip.appropriate_body,
