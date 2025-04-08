@@ -43,9 +43,7 @@ private
                                                      end_date: induction_record.end_date,
                                                      start_source_id: induction_record.id,
                                                      end_source_id: induction_record.id,
-                                                     appropriate_body_type: induction_record.appropriate_body.body_type,
                                                      programme_type: programme_type,
-                                                     appropriate_body_id: induction_record.appropriate_body_id,
                                                      lead_provider_id: lead_provider_id)
         periods << current_period
       else
