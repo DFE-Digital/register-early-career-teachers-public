@@ -8,3 +8,8 @@ production:
     class: PurgePendingInductionSubmissionsJob
     queue: default
     schedule: Every hour
+
+  schedule_trs_sync:
+    class: Teachers::ScheduleTRSSyncJob
+    queue: default
+    schedule: Every hour

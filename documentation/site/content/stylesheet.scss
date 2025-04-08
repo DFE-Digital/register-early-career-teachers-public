@@ -36,7 +36,8 @@ $govuk-assets-path: "/";
       @include govuk-font($size: 19, $weight: bold);
     }
 
-    th, td {
+    th,
+    td {
       padding: govuk-spacing(2) govuk-spacing(4) govuk-spacing(2) 0;
       border-bottom: 1px solid $govuk-border-colour;
       text-align: left;
@@ -49,7 +50,8 @@ $govuk-assets-path: "/";
   }
 }
 
-.service-rules {
+.service-rules,
+.ecf1-service-rules {
   h2.govuk-heading-m {
     margin-top: 2em;
     padding-top: .5em;
@@ -58,7 +60,7 @@ $govuk-assets-path: "/";
 }
 
 .ecf1-service-rules {
-  > p:first-of-type {
+  >p:first-of-type {
     @include govuk-font($size: 24);
   }
 }
@@ -68,14 +70,16 @@ code {
   color: govuk-shade(govuk-colour('pink'), 25%);
   font-size: .9em;
   padding: .05em .2em;
+  margin-top: 0px;
 }
 
 pre {
   padding: 1em;
   border: 1px solid govuk-tint(govuk-colour('light-pink'), 80%);
   background: govuk-tint(govuk-colour('light-pink'), 95%);
+  white-space: pre-wrap;
 
-  & > code {
+  &>code {
     font-size: 1rem;
     background: govuk-tint(govuk-colour('light-pink'), 95%);
   }

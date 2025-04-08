@@ -31,6 +31,9 @@ module TRS
     def begin_induction!(...)
     end
 
+    def reset_teacher_induction(...)
+    end
+
   private
 
     def teacher_params(trn:, date_of_birth:, national_insurance_number:)

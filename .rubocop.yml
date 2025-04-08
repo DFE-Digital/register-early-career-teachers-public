@@ -1,7 +1,7 @@
 ---
 inherit_from: .rubocop_todo.yml
 
-plugins: 
+plugins:
   - rubocop-performance
   - rubocop-factory_bot
 
@@ -9,7 +9,7 @@ inherit_gem:
   rubocop-govuk:
     - config/default.yml
     - config/rails.yml
-    - config/rspec.yml    
+    - config/rspec.yml
 
 inherit_mode:
   merge:
@@ -17,6 +17,16 @@ inherit_mode:
 
 AllCops:
   TargetRubyVersion: 3.3.4
+
+require:
+  - ./.rubocop/cop/rspec_cops
+
+RSpec/RequireRailsHelper:
+  Enabled: true
+  AutoCorrect: false
+  Exclude:
+    - "spec/spec_helper.rb"
+    - "spec/rails_helper.rb"
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
@@ -76,5 +86,4 @@ Lint/MissingSuper:
 
 RSpec/Capybara/CurrentPathExpectation:
   Exclude:
-    - 'spec/features/**/*' # Excluded in feature specs because we use Playwright (not Capybara) for those. Leaving it enabled elsewhere in case Capybara matchers are used in other test types.
-
+    - "spec/features/**/*" # Excluded in feature specs because we use Playwright (not Capybara) for those. Leaving it enabled elsewhere in case Capybara matchers are used in other test types.

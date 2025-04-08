@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe PurgePendingInductionSubmissionsJob, type: :job do
   describe "#perform" do
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }

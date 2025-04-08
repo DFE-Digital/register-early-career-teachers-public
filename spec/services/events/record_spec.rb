@@ -7,7 +7,7 @@ describe Events::Record do
   let(:author_params) { { author_id: author.id, author_name: author.name, author_email: author.email, author_type: :dfe_staff_user } }
 
   let(:heading) { 'Something happened' }
-  let(:event_type) { :appropriate_body_claims_teacher }
+  let(:event_type) { :induction_period_opened }
   let(:body) { 'A very important event' }
   let(:happened_at) { 2.minutes.ago }
 
@@ -101,18 +101,22 @@ describe Events::Record do
     end
   end
 
-  describe '.record_appropriate_body_claims_teacher_event!' do
+  describe '.record_induction_period_opened_event!' do
     it 'queues a RecordEventJob with the correct values' do
+      raw_modifications = induction_period.changes
+
       freeze_time do
-        Events::Record.record_appropriate_body_claims_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
+        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
           heading: 'Rhys Ifans was claimed by Burns Slant Drilling Co.',
-          event_type: :appropriate_body_claims_teacher,
+          event_type: :induction_period_opened,
           happened_at: induction_period.started_on,
+          modifications: anything,
+          metadata: raw_modifications,
           **author_params
         )
       end
@@ -120,7 +124,7 @@ describe Events::Record do
 
     it 'fails when induction period is missing' do
       expect {
-        Events::Record.record_appropriate_body_fails_teacher_event(author:, teacher:, appropriate_body:, induction_period: nil)
+        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period: nil, modifications: {})
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -173,35 +177,56 @@ describe Events::Record do
     end
   end
 
-  describe '.record_admin_creates_induction_period!' do
-    let(:three_weeks_ago) { 3.weeks.ago.to_date }
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-    let(:induction_period) do
-      FactoryBot.build(:induction_period, :active, started_on: three_weeks_ago, appropriate_body:, induction_programme: 'cip')
+  describe '.record_admin_deletes_induction_period!' do
+    let(:raw_modifications) { { 'id' => 1, 'teacher_id' => teacher.id, 'appropriate_body_id' => appropriate_body.id } }
+
+    context 'when induction status was reset on TRS' do
+      it 'queues a RecordEventJob with the correct values including body' do
+        freeze_time do
+          Events::Record.record_admin_deletes_induction_period!(
+            author:,
+            teacher:,
+            appropriate_body:,
+            modifications: raw_modifications,
+            body: "Induction status was reset to 'Required to Complete' in TRS."
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            appropriate_body:,
+            heading: 'Induction period deleted by admin',
+            event_type: :admin_deletes_induction_period,
+            happened_at: Time.zone.now,
+            body: "Induction status was reset to 'Required to Complete' in TRS.",
+            modifications: anything,
+            metadata: raw_modifications,
+            **author_params
+          )
+        end
+      end
     end
 
-    it 'queues a RecordEventJob with the correct values' do
-      raw_modifications = induction_period.changes
-      induction_period.save!
+    context 'when induction status was not reset on TRS' do
+      it 'queues a RecordEventJob with the correct values without body' do
+        freeze_time do
+          Events::Record.record_admin_deletes_induction_period!(
+            author:,
+            teacher:,
+            appropriate_body:,
+            modifications: raw_modifications
+          )
 
-      freeze_time do
-        Events::Record.record_admin_creates_induction_period!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
-
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          induction_period:,
-          teacher:,
-          appropriate_body:,
-          heading: 'Induction period created by admin',
-          event_type: :admin_creates_induction_period,
-          happened_at: Time.zone.now,
-          modifications: [
-            "Appropriate body set to '#{appropriate_body.id}'",
-            "Started on set to '#{3.weeks.ago.to_date.to_formatted_s(:govuk_short)}'",
-            "Induction programme set to 'cip'"
-          ],
-          metadata: raw_modifications,
-          **author_params
-        )
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            appropriate_body:,
+            heading: 'Induction period deleted by admin',
+            event_type: :admin_deletes_induction_period,
+            happened_at: Time.zone.now,
+            modifications: anything,
+            metadata: raw_modifications,
+            **author_params
+          )
+        end
       end
     end
   end
@@ -312,6 +337,63 @@ describe Events::Record do
           ],
           **author_params
         )
+      end
+    end
+  end
+
+  describe 'admin_reverts_teacher_claim event' do
+    let(:event_type) { :admin_reverts_teacher_claim }
+    let(:happened_at) { Time.zone.now }
+    let(:body_with_reset) { "Induction status was also reset on TRS." }
+
+    context 'when induction status was reset on TRS' do
+      it 'records an event with the correct values including body' do
+        freeze_time do
+          event = Events::Record.new(
+            author:,
+            teacher:,
+            appropriate_body:,
+            event_type:,
+            heading: "#{Teachers::Name.new(teacher).full_name} was unclaimed by support",
+            happened_at:,
+            body: body_with_reset
+          )
+
+          allow(event).to receive(:record_event!).and_return(true)
+          expect(event).to receive(:record_event!)
+
+          event.record_event!
+
+          expect(event.event_type).to eq(event_type)
+          expect(event.teacher).to eq(teacher)
+          expect(event.appropriate_body).to eq(appropriate_body)
+          expect(event.body).to eq(body_with_reset)
+        end
+      end
+    end
+
+    context 'when induction status was not reset on TRS' do
+      it 'records an event with the correct values without body' do
+        freeze_time do
+          event = Events::Record.new(
+            author:,
+            teacher:,
+            appropriate_body:,
+            event_type:,
+            heading: "#{Teachers::Name.new(teacher).full_name} was unclaimed by support",
+            happened_at:
+          )
+
+          allow(event).to receive(:record_event!).and_return(true)
+          expect(event).to receive(:record_event!)
+
+          event.record_event!
+
+          expect(event.event_type).to eq(event_type)
+          expect(event.teacher).to eq(teacher)
+          expect(event.appropriate_body).to eq(appropriate_body)
+          expect(event.body).to be_nil
+        end
       end
     end
   end
