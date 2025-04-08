@@ -82,8 +82,8 @@ Rails.application.routes.draw do
     end
 
     namespace :process_batch, path: 'bulk', as: 'batch' do
-      resources :claims, only: %i[new create show index], format: %i[html csv]
-      resources :actions, only: %i[new create show index], format: %i[html csv]
+      resources :claims, format: %i[html csv]
+      resources :actions, format: %i[html csv]
     end
   end
 
