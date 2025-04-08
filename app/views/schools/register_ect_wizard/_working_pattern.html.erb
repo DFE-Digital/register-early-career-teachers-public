@@ -1,5 +1,5 @@
 <% page_data(
-    title: "Is #{@ect.full_name}'s working pattern full or part time?",
+    title: "Is #{@ect.full_name}’s working pattern as an ECT full or part time?",
     error: @wizard.current_step.errors.present?,
     backlink_href: @wizard.previous_step_path,
 ) %>
@@ -7,7 +7,7 @@
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= f.govuk_radio_buttons_fieldset :working_pattern, legend: { text: "Is #{@ect.full_name}'s working pattern full or part time?", hidden: true } do %>
+  <%= f.govuk_radio_buttons_fieldset :working_pattern, legend: { text: "Is #{@ect.full_name}’s working pattern as an ECT full or part time?", hidden: true } do %>
     <%= f.govuk_radio_button :working_pattern, :full_time, label: { text: "Full time" }, link_errors: true %>
     <%= f.govuk_radio_button :working_pattern, :part_time, label: { text: "Part time" } %>
   <% end %>
