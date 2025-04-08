@@ -51,8 +51,15 @@ private
   end
 
   def inserting_induction_period?
+    # If there are no siblings with a later start date, and the current period starts after the last finished sibling,
+    # then we're appending to the end, not inserting
+    return false if siblings.started_on_or_after(started_on).empty? &&
+      (last_finished_sibling.nil? || started_on >= last_finished_sibling.finished_on)
+
+    # Otherwise, check if we're inserting between periods
     siblings.any? do |sibling|
-      started_on.before?(sibling.started_on) || sibling.finished_on && (started_on.after?(sibling.finished_on) && !sibling.eql?(last_finished_sibling))
+      started_on.before?(sibling.started_on) ||
+        (sibling.finished_on && started_on.after?(sibling.finished_on) && !sibling.eql?(last_finished_sibling))
     end
   end
 
