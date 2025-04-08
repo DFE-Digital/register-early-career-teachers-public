@@ -394,4 +394,21 @@ describe Events::Record do
       end
     end
   end
+
+  describe '.record_teacher_induction_status_reset_event!' do
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_teacher_induction_status_reset_event!(author:, teacher:, appropriate_body:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          appropriate_body:,
+          heading: 'Rhys Ifans was unclaimed',
+          event_type: :teacher_induction_status_reset,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
 end
