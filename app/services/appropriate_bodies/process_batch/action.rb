@@ -2,7 +2,25 @@ module AppropriateBodies
   module ProcessBatch
     # Pass / Fail / Release
     class Action < Base
-      # @return [CSV::Table]
+      # @return [Array<?>] convert the valid submissions into permanent records
+      def do!
+        pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
+          @pending_induction_submission = pending_induction_submission
+
+          if pending_induction_submission.save(context: :record_outcome)
+            record_outcome.pass! if pending_induction_submission.pass?
+            record_outcome.fail! if pending_induction_submission.fail?
+
+          elsif pending_induction_submission.save(context: :release_ect)
+
+            release_ect.release! if pending_induction_submission.outcome.nil? # needs work - why not add "release" to the enum?
+          else
+            false
+          end
+        end
+      end
+
+      # @return [CSV::Table] validate each row and create a submission capturing the errors
       def process!
         pending_induction_submission_batch.data.each do |row|
           @row = row
@@ -25,14 +43,7 @@ module AppropriateBodies
               next
             end
 
-            assign_attributes
-
-            case row['objective']
-            when 'fail', 'pass' then outcome!
-            when 'release'      then release!
-            else
-              next
-            end
+            process_row!
           end
         rescue StandardError => e
           pending_induction_submission.update(error_message: e.message)
@@ -44,7 +55,7 @@ module AppropriateBodies
 
     private
 
-      def assign_attributes
+      def process_row!
         outcome = %w[pass fail].include?(row['objective']) ? row['objective'] : nil
 
         pending_induction_submission.assign_attributes(
@@ -52,22 +63,12 @@ module AppropriateBodies
           number_of_terms: row['number_of_terms'],
           outcome:
         )
-      end
 
-      def outcome!
-        if pending_induction_submission.save(context: :record_outcome)
-          record_outcome.pass! if pending_induction_submission.pass?
-          record_outcome.fail! if pending_induction_submission.fail?
-        else
-          pending_induction_submission.playback_errors
-        end
-      end
-
-      def release!
-        if pending_induction_submission.save(context: :release_ect)
-          release_ect.release!
-        else
-          pending_induction_submission.playback_errors
+        case row['objective']
+        when 'fail', 'pass'
+          pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
+        when 'release'
+          pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :release_ect)
         end
       end
 

@@ -86,10 +86,23 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         expect(submission.trs_last_name).to eq 'Van Houten'
       end
 
-      it 'closes induction period with a pass' do
-        expect(induction_period.finished_on).to eq(Date.parse(end_date))
-        expect(induction_period.number_of_terms).to eq(3.2)
-        expect(induction_period.outcome).to eq('pass')
+      it 'does not closes edit induction period' do
+        expect(induction_period.finished_on).not_to eq(Date.parse(end_date))
+        expect(induction_period.number_of_terms).not_to eq(3.2)
+        expect(induction_period.outcome).not_to eq('pass')
+      end
+
+      describe '#do!' do
+        before do
+          service.do!
+          induction_period.reload
+        end
+
+        it 'closes induction period with a pass' do
+          expect(induction_period.finished_on).to eq(Date.parse(end_date))
+          expect(induction_period.number_of_terms).to eq(3.2)
+          expect(induction_period.outcome).to eq('pass')
+        end
       end
     end
   end
