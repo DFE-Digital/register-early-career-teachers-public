@@ -14,9 +14,7 @@ module Builders
           school = School.find_by!(urn: period.urn)
           ::ECTAtSchoolPeriod.create!(teacher:,
                                       school:,
-                                      appropriate_body_type: period.appropriate_body_type,
                                       programme_type: period.programme_type,
-                                      appropriate_body_id: period.appropriate_body_id,
                                       lead_provider_id: period.lead_provider_id,
                                       started_on: period.start_date,
                                       finished_on: period.end_date,
