@@ -5,9 +5,14 @@ class AddTypeToAppropriateBodies < ActiveRecord::Migration[8.0]
 
     add_column :appropriate_bodies, :body_type, :appropriate_body_type, default: 'teaching_school_hub'
 
-    AppropriateBody.find_each do |appropriate_body|
-      appropriate_body.update_column(:body_type, type_from_name(appropriate_body.name))
-    end
+    execute <<-SQL.squish
+      UPDATE appropriate_bodies
+      SET body_type =
+        CASE
+          WHEN name = 'Independent Schools Teacher Induction Panel (ISTIP)' THEN 'national'::appropriate_body_type
+          ELSE 'teaching_school_hub'::appropriate_body_type
+        END
+    SQL
 
     remove_column :ect_at_school_periods, :appropriate_body_type, :appropriate_body_type
     rename_column :ect_at_school_periods, :appropriate_body_id, :school_reported_appropriate_body_id
@@ -21,11 +26,5 @@ class AddTypeToAppropriateBodies < ActiveRecord::Migration[8.0]
     remove_column :appropriate_bodies, :body_type, :appropriate_body_type
 
     rename_enum_value :appropriate_body_type, from: 'national', to: 'teaching_induction_panel'
-  end
-
-private
-
-  def type_from_name(name)
-    name == AppropriateBodies::Search::ISTIP ? 'national' : 'teaching_school_hub'
   end
 end
