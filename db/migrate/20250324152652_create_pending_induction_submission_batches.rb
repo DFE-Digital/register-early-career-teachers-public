@@ -1,6 +1,6 @@
 class CreatePendingInductionSubmissionBatches < ActiveRecord::Migration[8.0]
   def change
-    create_enum :batch_status, %w[pending processing completed failed]
+    create_enum :batch_status, %w[pending processing processed completed failed]
     create_enum :batch_type, %w[action claim]
 
     create_table :pending_induction_submission_batches do |t|

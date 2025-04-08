@@ -1,4 +1,4 @@
-RSpec.describe 'Uploading ECTs in bulk' do
+RSpec.describe 'Process bulk claims' do
   include_context 'fake trs api client'
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -13,6 +13,18 @@ RSpec.describe 'Uploading ECTs in bulk' do
     page.goto(new_ab_batch_claim_path)
   end
 
+  context 'when batch is owned by another appropriate body' do
+    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body: other_appropriate_body) }
+
+    before { page.goto(ab_batch_claim_path(batch.id)) }
+
+    scenario 'renders error message' do
+      expect(page.title).to start_with('You are not authorised to access this page')
+      expect(page.get_by_text('You are not authorised to access this page')).to be_visible
+    end
+  end
+
   context 'with valid CSV file' do
     scenario 'creates a pending submission for each row' do
       given_i_am_on_the_upload_page
@@ -22,9 +34,9 @@ RSpec.describe 'Uploading ECTs in bulk' do
       expect(page.get_by_text('pending')).to be_visible
 
       perform_enqueued_jobs
-
+      # This job does validation and persistence of the claims all at once
       page.reload
-      expect(page.get_by_text('completed')).to be_visible
+      expect(page.get_by_text('completed', exact: true)).to be_visible
     end
   end
 

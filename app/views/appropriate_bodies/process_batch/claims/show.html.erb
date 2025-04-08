@@ -1,62 +1,21 @@
 <%
   page_data(
-    title: "Processing a group of ECTs",
+    title: "Checking bulk claims",
     error: @pending_induction_submission_batch.errors.present?,
     backlink_href: new_ab_batch_claim_path,
   )
 %>
 
-<%=
-  govuk_summary_list(card: { title: 'Progress' }, rows: [
-    {
-      key: { text: 'Batch ID' },
-      value: { text: @pending_induction_submission_batch.id }
-    },
-    {
-      key: { text: 'Batch status' },
-      value: { text: govuk_tag(text: @pending_induction_submission_batch.batch_status) }
-    },
-    {
-      key: { text: 'Batch type' },
-      value: { text: govuk_tag(text: @pending_induction_submission_batch.batch_type) }
-    },    
-    {
-      key: { text: 'Batch error' },
-      value: { text: @pending_induction_submission_batch.error_message }
-    },
-    {
-      key: { text: 'Number of CSV rows' },
-      value: { text: @pending_induction_submission_batch.rows.count }
-    },
-    {
-      key: { text: 'Number of processed submission records' },
-      value: { text: @pending_induction_submission_batch.processed_rows.count }
-    },
-  ])
-%>
+<%= batch_progress_card(@pending_induction_submission_batch) %>
+<%= batch_raw_data_table(@pending_induction_submission_batch) %>
+<%= batch_processed_data_table(@pending_induction_submission_batch) %>
+<%= batch_download_data_table(@pending_induction_submission_batch) %>
 
-<%=
-  govuk_table(
-    caption: "CSV raw data (#{@pending_induction_submission_batch.rows.count} rows)",
-    head: @pending_induction_submission_batch.csv_headings.values,
-    rows: @pending_induction_submission_batch.rows,
-  )
-%>
+<%= govuk_button_link_to 'Download CSV', ab_batch_claim_path(@pending_induction_submission_batch, format: :csv), secondary: true %>
 
-<%=
-  govuk_table(
-    caption: "Processed data (#{@pending_induction_submission_batch.processed_rows.count} rows)",
-    head: @pending_induction_submission_batch.processed_headers,
-    rows: @pending_induction_submission_batch.processed_rows,
-  )
-%>
+<% if @pending_induction_submission_batch.processed? %>
+<%# govuk_button_link_to 'Confirm changes', edit_ab_batch_claim_path(@pending_induction_submission_batch) %>
+<% end %>
 
-<%=
-  govuk_table(
-    caption: "Download data (#{@pending_induction_submission_batch.csv_download.count} rows)",
-    head: @pending_induction_submission_batch.csv_headings.values,
-    rows: @pending_induction_submission_batch.csv_download,
-  )
-%>
-
-<%= govuk_button_link_to 'Download CSV', ab_batch_claim_path(@pending_induction_submission_batch, format: :csv) %>
+<%= govuk_button_link_to 'Confirm changes', '#', disabled: true %>
+<%= govuk_button_link_to 'Upload bulk actions', new_ab_batch_action_path(@pending_induction_submission_batch), secondary: true %>

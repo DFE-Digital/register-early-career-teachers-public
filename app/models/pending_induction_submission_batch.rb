@@ -64,6 +64,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   enum :batch_status, {
     pending: 'pending',
     processing: 'processing',
+    processed: 'processed',
     completed: 'completed',
     failed: 'failed'
   }
@@ -74,7 +75,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   }
 
   # Scopes
-  scope :for_appropriate_body, ->(appropriate_body_id) { where(appropriate_body_id:) }
+  scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
 
   # Validations
   validates :batch_status, presence: true
@@ -221,6 +222,13 @@ class PendingInductionSubmissionBatch < ApplicationRecord
           row.error_message
         )
       end
+    end
+  end
+
+  # @return [Array<Array>]
+  def submissions_with_induction_periods
+    pending_induction_submissions.without_errors.map do |pending_induction_submission|
+      [pending_induction_submission, Teacher.find_by(trn: pending_induction_submission.trn).induction_periods.last]
     end
   end
 
