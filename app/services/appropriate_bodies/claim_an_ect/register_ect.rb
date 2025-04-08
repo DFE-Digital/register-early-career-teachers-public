@@ -71,9 +71,9 @@ module AppropriateBodies
 
         @induction_period = InductionPeriods::CreateInductionPeriod
           .new(teacher:, started_on:, induction_programme:, appropriate_body:)
-          .create_induction_period(author:)
-
-        @induction_period.persisted?
+          .create_induction_period!(author:)
+      rescue ActiveRecord::RecordInvalid
+        false
       end
 
       def send_begin_induction_notification_to_trs
