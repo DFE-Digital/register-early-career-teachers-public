@@ -217,5 +217,74 @@ RSpec.describe InductionPeriod do
     it "doesn't include periods that belong to other mentees" do
       expect(subject).not_to include(unrelated_induction_period)
     end
+
+    context "with completed siblings and nil finished_on and inserting after them" do
+      let(:teacher) { FactoryBot.create(:teacher) }
+      let!(:previous_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: "2017-09-11",
+                          finished_on: "2018-03-23",
+                          induction_programme: "pre_september_2021")
+      end
+
+      let!(:next_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: "2019-01-07",
+                          finished_on: "2019-07-16",
+                          induction_programme: "pre_september_2021")
+      end
+
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: "2025-01-01",
+                          finished_on: nil,
+                          number_of_terms: nil,
+                          induction_programme: "fip")
+      end
+
+      let(:params) { { started_on: "2025-02-24" } }
+
+      it "allows the edit" do
+        expect { induction_period.update!(params) }.not_to raise_error
+        expect(induction_period.reload.started_on).to eq(Date.parse("2025-02-24"))
+      end
+    end
+
+    context "with completed siblings and nil finished_on and inserting between them" do
+      let(:teacher) { FactoryBot.create(:teacher) }
+      let!(:previous_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: "2017-09-01",
+                          finished_on: "2018-03-01",
+                          induction_programme: "pre_september_2021")
+      end
+
+      let!(:next_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: "2019-01-01",
+                          finished_on: "2019-07-01",
+                          induction_programme: "pre_september_2021")
+      end
+
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: "2025-01-01",
+                          finished_on: nil,
+                          number_of_terms: nil,
+                          induction_programme: "fip")
+      end
+
+      let(:params) { { started_on: "2019-04-24" } }
+
+      it "does not allow the edit" do
+        expect { induction_period.update!(params) }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
   end
 end
