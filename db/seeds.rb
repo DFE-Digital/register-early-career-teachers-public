@@ -52,7 +52,7 @@ def describe_induction_period(ip)
   }
 
   Event.create!(
-    event_type: 'appropriate_body_claims_teacher',
+    event_type: 'induction_period_opened',
     induction_period: ip,
     teacher: ip.teacher,
     appropriate_body: ip.appropriate_body,
@@ -63,7 +63,7 @@ def describe_induction_period(ip)
 
   if ip.finished_on
     Event.create!(
-      event_type: 'appropriate_body_claims_teacher',
+      event_type: 'induction_period_opened',
       induction_period: ip,
       teacher: ip.teacher,
       appropriate_body: ip.appropriate_body,
@@ -296,7 +296,7 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   email: 'kate.winslet@titanic.com',
   started_on: 1.year.ago,
   lead_provider: nil,
-  appropriate_body: golden_leaf_teaching_school_hub,
+  school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
   programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -351,7 +351,7 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   email: 'alan.rickman@diehard.com',
   started_on: 2.years.ago,
   lead_provider: wildflower_trust,
-  appropriate_body: golden_leaf_teaching_school_hub,
+  school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -397,7 +397,7 @@ hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   email: 'hugh.grant@wonka.com',
   started_on: 2.years.ago,
   lead_provider: nil,
-  appropriate_body: golden_leaf_teaching_school_hub,
+  school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -436,7 +436,7 @@ colin_firth_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   email: 'colin.firth@aol.com',
   started_on: 2.years.ago,
   lead_provider: nil,
-  appropriate_body: golden_leaf_teaching_school_hub,
+  school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
   programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -524,7 +524,7 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
   email: 'imogen.stubbs@eriktheviking.com',
   started_on: 2.years.ago,
   lead_provider: nil,
-  appropriate_body: golden_leaf_teaching_school_hub,
+  school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
   programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -556,7 +556,7 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   email: 'gemma.jones@rocketman.com',
   started_on: 21.months.ago,
   lead_provider: wildflower_trust,
-  appropriate_body: golden_leaf_teaching_school_hub,
+  school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -598,7 +598,7 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'anthony.hopkins@favabeans.com',
   lead_provider: national_meadows_institute,
-  appropriate_body: umber_teaching_school_hub,
+  school_reported_appropriate_body: umber_teaching_school_hub,
   programme_type: 'provider_led',
   started_on: 2.years.ago,
   working_pattern: 'part_time'
@@ -618,7 +618,7 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   email: 'stephen.fry@sausage.com',
   started_on: 2.years.ago,
   lead_provider: national_meadows_institute,
-  appropriate_body: south_yorkshire_studio_hub,
+  school_reported_appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led',
   working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -641,7 +641,7 @@ ECTAtSchoolPeriod.create!(
   email: 'harriet-walter@history.com',
   started_on: 2.years.ago,
   lead_provider: national_meadows_institute,
-  appropriate_body: south_yorkshire_studio_hub,
+  school_reported_appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 

@@ -75,27 +75,27 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         expect(induction_period.induction_programme).to eq("fip")
       end
 
-      it "enqueues BeginECTInductionJob" do
-        expect {
-          subject.register(pending_induction_submission_params)
-        }.to have_enqueued_job(BeginECTInductionJob)
+      it "enqueues BeginECTInductionJob with correct parameters" do
+        subject.register(pending_induction_submission_params)
+
+        expect(BeginECTInductionJob).to have_been_enqueued
           .with(hash_including(trn: "1234567", start_date: Date.new(2023, 5, 2)))
       end
 
-      it "records an appropriate_body_claims_teacher event" do
+      it "records an induction_period_opened event" do
         subject.register(pending_induction_submission_params)
 
         expect(Events::Record).to have_received(:new).with(
           hash_including(
             author:,
-            event_type: :appropriate_body_claims_teacher,
+            event_type: :induction_period_opened,
             appropriate_body:,
             heading: "John Doe was claimed by #{appropriate_body.name}"
           )
         )
         perform_enqueued_jobs
 
-        expect(Event.last.event_type).to eq("appropriate_body_claims_teacher")
+        expect(Event.last.event_type).to eq("induction_period_opened")
       end
     end
 
@@ -149,7 +149,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
       context 'when the teacher has no existing induction periods' do
         it "does enqueues BeginECTInductionJob" do
-          expect { subject.register(pending_induction_submission_params) }.to have_enqueued_job(BeginECTInductionJob)
+          subject.register(pending_induction_submission_params)
+          expect(BeginECTInductionJob).to have_been_enqueued
         end
       end
 
@@ -185,7 +186,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
           perform_enqueued_jobs
 
-          expect(Event.all.map(&:event_type)).to match_array(%w[teacher_name_updated_by_trs appropriate_body_claims_teacher])
+          expect(Event.all.map(&:event_type)).to match_array(%w[teacher_name_updated_by_trs induction_period_opened])
         end
 
         it 'saves the pending_induction_submission' do

@@ -1,4 +1,6 @@
 class AppropriateBody < ApplicationRecord
+  attribute :body_type, :string
+
   # Enums
   enum :body_type,
        { local_authority: 'local_authority',
