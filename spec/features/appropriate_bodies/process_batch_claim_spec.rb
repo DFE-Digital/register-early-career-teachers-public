@@ -26,7 +26,14 @@ RSpec.describe 'Process bulk claims' do
   end
 
   context 'with valid CSV file' do
-    scenario 'creates a pending submission for each row' do
+    # runs immediately until our worker shares the storage volume with webapp, the delayed version of this spec is below
+    scenario 'creates a pending submission for each row (perform_now)' do
+      given_i_am_on_the_upload_page
+      when_i_upload_a_file
+      expect(page.get_by_text('completed', exact: true)).to be_visible
+    end
+
+    scenario 'creates a pending submission for each row', pending: 'perform_later requires shared storage' do
       given_i_am_on_the_upload_page
       when_i_upload_a_file
 
