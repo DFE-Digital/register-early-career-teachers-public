@@ -13,7 +13,7 @@ class InductionPeriod < ApplicationRecord
 
   # Validations
   validates :started_on,
-            presence: true
+            presence: { message: "Enter a start date" }
 
   validates :induction_programme,
             inclusion: { in: %w[fip cip diy unknown pre_september_2021],
