@@ -37,6 +37,11 @@
           <% end %>
         <% end %>
       <% end %>
+    <% else %>
+      <p class="govuk-body">
+        <%= Teachers::Name.new(@teacher).full_name %> cannot do ECTE mentor training according to our records.
+        This could be because they’ve undertaken it before.
+      </p>
     <% end %>
   </div>
 </div>
