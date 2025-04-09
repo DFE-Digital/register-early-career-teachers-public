@@ -1,4 +1,4 @@
-describe Events::Record do
+RSpec.describe Events::Record do
   let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Rhys', trs_last_name: 'Ifans') }
   let(:induction_period) { FactoryBot.create(:induction_period) }
@@ -227,6 +227,56 @@ describe Events::Record do
             **author_params
           )
         end
+      end
+    end
+  end
+
+  describe '.record_appropriate_body_adds_induction_extension_event' do
+    let(:induction_extension) { FactoryBot.build(:induction_extension) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      raw_modifications = induction_extension.changes
+      induction_extension.save!
+
+      freeze_time do
+        Events::Record.record_appropriate_body_adds_induction_extension_event(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          induction_extension:,
+          teacher:,
+          appropriate_body:,
+          heading: "Rhys Ifans's induction extended by 1.2 terms",
+          event_type: :appropriate_body_adds_induction_extension,
+          happened_at: Time.zone.now,
+          modifications: ["Number of terms set to '1.2'"],
+          metadata: raw_modifications,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_appropriate_body_updates_induction_extension_event' do
+    let(:induction_extension) { FactoryBot.create(:induction_extension) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      induction_extension.assign_attributes(number_of_terms: 3.2)
+      raw_modifications = induction_extension.changes
+
+      freeze_time do
+        Events::Record.record_appropriate_body_updates_induction_extension_event(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          induction_extension:,
+          teacher:,
+          appropriate_body:,
+          heading: "Rhys Ifans's induction extended by 3.2 terms",
+          event_type: :appropriate_body_updates_induction_extension,
+          happened_at: Time.zone.now,
+          modifications: ["Number of terms changed from '1.2' to '3.2'"],
+          metadata: raw_modifications,
+          **author_params
+        )
       end
     end
   end
