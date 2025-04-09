@@ -39,8 +39,8 @@ module Schools
           begin
             return [:confirmation] if mentor.registered
 
-            steps = %i[no_trn find_mentor]
-            return steps unless [mentor.trn, mentor.date_of_birth].all?
+            steps = %i[find_mentor]
+            return %i[no_trn] + steps unless [mentor.trn, mentor.date_of_birth].all?
             return steps + %i[trn_not_found] unless mentor.national_insurance_number || mentor.in_trs?
             return steps + %i[cannot_mentor_themself] if mentor.trn == ect.trn
 
