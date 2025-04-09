@@ -6,6 +6,8 @@ module Schools
       end
 
       def next_step
+        return :cant_use_changed_email if mentor.cant_use_email?
+
         :check_answers
       end
     end
