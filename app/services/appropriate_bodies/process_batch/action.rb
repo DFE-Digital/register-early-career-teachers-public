@@ -34,7 +34,7 @@ module AppropriateBodies
           end
 
           if claimed_by_another_ab?
-            pending_induction_submission.update(error_message: "Teacher #{name} was claimed by a another appropriate body")
+            pending_induction_submission.update(error_message: "Teacher #{name} was claimed by another appropriate body")
             next
           end
 
