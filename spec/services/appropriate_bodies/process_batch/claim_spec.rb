@@ -47,6 +47,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
     it 'has no error message' do
       expect(pending_induction_submission_batch.reload.error_message).to eq '-'
+      expect(submission.error_message).to eq '✅'
     end
 
     it 'creates a pending induction submission' do
@@ -54,13 +55,12 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     end
 
     it 'populates submission from CSV' do
-      expect(submission.error_message).to eq '✅'
-      expect(submission.date_of_birth).to eq(Date.parse(dob))
       expect(submission.started_on).to eq(Date.parse(start_date))
     end
 
     it 'populates submission from TRS' do
       expect(submission.trn).to eq trn
+      expect(submission.date_of_birth).to eq(Date.parse(dob))
       expect(submission.trs_first_name).to eq 'Kirk'
       expect(submission.trs_last_name).to eq 'Van Houten'
     end

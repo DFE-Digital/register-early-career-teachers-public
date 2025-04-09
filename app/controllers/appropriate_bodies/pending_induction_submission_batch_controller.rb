@@ -2,7 +2,6 @@ module AppropriateBodies
   class PendingInductionSubmissionBatchController < AppropriateBodiesController
     layout 'full'
 
-    # TODO: spec guard to prevent wrong appropriate body from accessing a batch
     def show
       @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
 
