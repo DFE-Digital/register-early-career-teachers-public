@@ -51,7 +51,28 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   end
 
   describe '#process!' do
-    describe 'passing' do
+    context 'without an ongoing induction' do
+      before do
+        teacher
+        service.process!
+      end
+
+      it 'creates a pending induction submission' do
+        expect(service.pending_induction_submission_batch.pending_induction_submissions.count).to eq 1
+      end
+
+      it 'captures error message' do
+        expect(submission.error_message).to eq 'Teacher Kirk Van Houten does not have an ongoing induction'
+      end
+
+      it 'clears attributes that may cause errors' do
+        expect(submission.outcome).not_to eq 'pass'
+        expect(submission.number_of_terms).not_to eq 3.2
+        expect(submission.finished_on).not_to eq(Date.parse(end_date))
+      end
+    end
+
+    context 'with an ongoing induction' do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :active,
                           appropriate_body:,
@@ -64,24 +85,24 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         induction_period.reload
       end
 
-      it 'has no error message' do
-        expect(pending_induction_submission_batch.reload.error_message).to eq '-'
-      end
-
       it 'creates a pending induction submission' do
         expect(service.pending_induction_submission_batch.pending_induction_submissions.count).to eq 1
+      end
+
+      it 'captures no error message' do
+        expect(pending_induction_submission_batch.reload.error_message).to eq '-'
+        expect(submission.error_message).to eq '✅'
       end
 
       it 'populates submission from CSV' do
         expect(submission.outcome).to eq 'pass'
         expect(submission.number_of_terms).to eq 3.2
-        expect(submission.error_message).to eq '✅'
-        expect(submission.date_of_birth).to eq(Date.parse(dob))
         expect(submission.finished_on).to eq(Date.parse(end_date))
       end
 
       it 'populates submission from TRS' do
         expect(submission.trn).to eq trn
+        expect(submission.date_of_birth).to eq(Date.parse(dob))
         expect(submission.trs_first_name).to eq 'Kirk'
         expect(submission.trs_last_name).to eq 'Van Houten'
       end
