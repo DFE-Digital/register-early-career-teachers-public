@@ -56,4 +56,32 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     expect(rendered).to have_button('Continue')
     expect(rendered).to have_selector("form[action='#{send(continue_path)}']")
   end
+
+  context "when school-led" do
+    let(:school) { FactoryBot.create(:school, :school_led_chosen) }
+
+    before do
+      assign(:school, school)
+    end
+
+    it "does not render the content" do
+      render
+
+      expect(rendered).not_to have_content("will confirm if they’ll be working with your school and which delivery partner will deliver training events.")
+    end
+  end
+
+  context "when provider-led" do
+    let(:school) { FactoryBot.create(:school, :provider_led_chosen) }
+
+    before do
+      assign(:school, school)
+    end
+
+    it "renders the content" do
+      render
+
+      expect(rendered).to have_content("will confirm if they’ll be working with your school and which delivery partner will deliver training events.")
+    end
+  end
 end
