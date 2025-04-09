@@ -9,12 +9,10 @@ class ProcessBatchActionJob < ApplicationJob
       # still processing
     elsif pending_induction_submission_batch.processed?
 
-      # pending_induction_submission_batch.processing!
       batch_action(pending_induction_submission_batch, author_email, author_name).do!
       pending_induction_submission_batch.completed!
 
     elsif pending_induction_submission_batch.pending?
-
       pending_induction_submission_batch.processing!
       batch_action(pending_induction_submission_batch, author_email, author_name).process!
       pending_induction_submission_batch.processed!

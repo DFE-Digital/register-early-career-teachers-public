@@ -6,23 +6,9 @@ module AppropriateBodies
       def process!
         pending_induction_submission_batch.data.each do |row|
           @row = row
+          @pending_induction_submission = sparse_pending_induction_submission
 
-          PendingInductionSubmissionBatch.transaction do
-            @pending_induction_submission = sparse_pending_induction_submission
-
-            pending_induction_submission.assign_attributes(
-              started_on: row['start_date'],
-              induction_programme: row['induction_programme'].downcase
-            )
-
-            find_ect.import_from_trs!
-            check_ect.begin_claim!
-            # OPTIMIZE: params effectively passed in twice
-            register_ect.register(
-              started_on: row['start_date'],
-              induction_programme: row['induction_programme'].downcase
-            )
-          end
+          claim!
         rescue ::AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB => e
           pending_induction_submission.update(error_message: e.message)
           next
@@ -47,6 +33,24 @@ module AppropriateBodies
       end
 
     private
+
+      # @return [?]
+      def claim!
+        PendingInductionSubmissionBatch.transaction do
+          pending_induction_submission.assign_attributes(
+            started_on: row['start_date'],
+            induction_programme: row['induction_programme'].downcase
+          )
+
+          find_ect.import_from_trs!
+          check_ect.begin_claim!
+          # OPTIMIZE: params effectively passed in twice
+          register_ect.register(
+            started_on: row['start_date'],
+            induction_programme: row['induction_programme'].downcase
+          )
+        end
+      end
 
       # @return [AppropriateBodies::ClaimAnECT::FindECT]
       def find_ect

@@ -217,7 +217,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
         )
       elsif claim?
         common_rows.push(
-          ::INDUCTION_PROGRAMMES[row.induction_programme.to_sym] || EMPTY_CELL,
+          ::INDUCTION_PROGRAMMES[row.induction_programme&.to_sym] || EMPTY_CELL,
           row.started_on&.to_fs(:govuk) || EMPTY_CELL,
           row.error_message
         )
