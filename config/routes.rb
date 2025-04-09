@@ -211,6 +211,8 @@ Rails.application.routes.draw do
       get "change-email-address", action: :new
       post "change-email-address", action: :create
 
+      get "cant-use-changed_email", action: :new
+      post "cant-use-changed_email", action: :create
       get "cant-use-email", action: :new
       post "cant-use-email", action: :create
 

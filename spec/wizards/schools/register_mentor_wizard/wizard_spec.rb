@@ -221,21 +221,29 @@ describe Schools::RegisterMentorWizard::Wizard do
       context 'when the email is in use by another participant' do
         before { allow(wizard.mentor).to receive(:cant_use_email?).and_return(true) }
 
-        it { is_expected.to eq(%i[no_trn find_mentor review_mentor_details email_address cant_use_email]) }
+        it do
+          is_expected.to eq(%i[no_trn
+                                  find_mentor
+                                  review_mentor_details
+                                  email_address
+                                  change_email_address
+                                  cant_use_changed_email
+                                  cant_use_email])
+        end
       end
 
       context 'when the mentor is eligible for funding' do
         before { allow(wizard.mentor).to receive(:funding_available?).and_return(true) }
 
         it do
-          expect(subject).to eq(%i[no_trn
-                                   find_mentor
-                                   review_mentor_details
-                                   email_address
-                                   review_mentor_eligibility
-                                   change_mentor_details
-                                   change_email_address
-                                   check_answers])
+          is_expected.to eq(%i[no_trn
+                               find_mentor
+                               review_mentor_details
+                               email_address
+                               review_mentor_eligibility
+                               change_mentor_details
+                               change_email_address
+                               check_answers])
         end
       end
     end
@@ -260,7 +268,16 @@ describe Schools::RegisterMentorWizard::Wizard do
       context 'when the email is in use by another participant' do
         before { allow(wizard.mentor).to receive(:cant_use_email?).and_return(true) }
 
-        it { is_expected.to eq(%i[no_trn find_mentor national_insurance_number review_mentor_details email_address cant_use_email]) }
+        it do
+          is_expected.to eq(%i[no_trn
+                               find_mentor
+                               national_insurance_number
+                               review_mentor_details
+                               email_address
+                               change_email_address
+                               cant_use_changed_email
+                               cant_use_email])
+        end
       end
 
       context 'when the mentor is eligible for funding' do

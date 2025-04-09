@@ -1,0 +1,10 @@
+---
+title: This email is already in use for a different ECT or mentor
+backlink_href: <%= @wizard.previous_step_path %>
+---
+
+Make sure you use an email that belongs to the person you're registering.
+
+Do not use a generic email like [admin@example.com]('mailto:admin@example.com').
+
+<%= govuk_button_link_to('Try another email', @wizard.previous_step_path) %>
