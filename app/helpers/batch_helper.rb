@@ -33,6 +33,10 @@ module BatchHelper
         key: { text: 'Number of failures to download' },
         value: { text: pending_induction_submission_batch.csv_download.count }
       },
+      {
+        key: { text: 'Number of ongoing induction periods with this AB' },
+        value: { text: InductionPeriod.where(appropriate_body: pending_induction_submission_batch.appropriate_body, finished_on: nil).count }
+      },
     ])
   end
 
