@@ -80,6 +80,7 @@ private
     return nil if programme_type == 'school_led'
 
     return nil if induction_record.induction_programme.partnership.nil?
+
     extracted_lead_provider_name = induction_record.induction_programme.partnership.lead_provider.name
     LeadProvider.find_by(name: extracted_lead_provider_name).id
   end
