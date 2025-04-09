@@ -9,11 +9,11 @@ module AppropriateBodies
           @pending_induction_submission = sparse_pending_induction_submission
 
           claim!
-        rescue ::AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB => e
-          pending_induction_submission.update(error_message: e.message)
+        rescue Errors::TeacherHasActiveInductionPeriodWithCurrentAB
+          pending_induction_submission.update(error_message: "Already claimed by your appropriate body")
           next
-        rescue ::AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithAnotherAB => e
-          pending_induction_submission.update(error_message: e.message)
+        rescue Errors::TeacherHasActiveInductionPeriodWithAnotherAB
+          pending_induction_submission.update(error_message: "Already claimed by another appropriate body")
           next
         rescue ::TRS::Errors::TeacherNotFound
           pending_induction_submission.update(error_message: "Not found in TRS")

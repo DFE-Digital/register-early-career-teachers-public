@@ -6,6 +6,8 @@
   )
 %>
 
+<%= govuk_button_link_to 'Your teachers', ab_teachers_path %>
+
 <%= batch_progress_card(@pending_induction_submission_batch) %>
 <%= batch_raw_data_table(@pending_induction_submission_batch) %>
 <%= batch_processed_data_table(@pending_induction_submission_batch) %>
