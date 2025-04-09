@@ -10,6 +10,11 @@ default: &default
   host: "<%= ENV['DB_HOSTNAME'] %>"
   port: "<%= ENV['DB_PORT'] %>"
 
+production_default: &production_default
+  database: ecf2_production
+  username: ecf2
+  password: "<%= ENV['ECF2_DATABASE_PASSWORD'] %>"
+
 development:
   <<: *default
   database: ecf2_development
@@ -22,8 +27,22 @@ legacy:
   <<: *shared_settings
   url: "<%= ENV['MIGRATION_DATABASE_URL'] || 'postgres://localhost:5432' %>"
 
+review:
+  <<: *default
+  <<: *production_default
+
+staging:
+  <<: *default
+  <<: *production_default
+
+sandbox:
+  <<: *default
+  <<: *production_default
+
+migration:
+  <<: *default
+  <<: *production_default
+
 production:
   <<: *default
-  database: ecf2_production
-  username: ecf2
-  password: "<%= ENV['ECF2_DATABASE_PASSWORD'] %>"
+  <<: *production_default
