@@ -31,7 +31,7 @@ describe Teacher do
   end
 
   describe 'scopes' do
-    describe '#search' do
+    describe '.search' do
       it "searches the 'search' column using a tsquery" do
         expect(Teacher.search('Joey').to_sql).to end_with(%{WHERE (teachers.search @@ to_tsquery('unaccented', 'Joey:*'))})
       end
@@ -85,6 +85,14 @@ describe Teacher do
 
           expect(results).not_to include(other)
         end
+      end
+    end
+
+    describe '.ordered_by_trs_data_last_refreshed_at_nulls_first' do
+      it 'constructs the query so results are ascending but nulls are placed before the rows with values' do
+        expected_clause = %(ORDER BY "teachers"."trs_data_last_refreshed_at" ASC NULLS FIRST)
+
+        expect(Teacher.ordered_by_trs_data_last_refreshed_at_nulls_first.to_sql).to end_with(expected_clause)
       end
     end
   end
