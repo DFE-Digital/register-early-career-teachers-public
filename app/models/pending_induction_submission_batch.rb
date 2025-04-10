@@ -9,6 +9,26 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     new(appropriate_body:, batch_type: 'action', **)
   end
 
+  # @return [Class] A class that represents a row in the CSV file
+  # @param columns [Array<Symbol>] Array of CSV column headings
+  def self.build_row_class(columns)
+    Data.define(*columns) do
+      include Enumerable
+
+      def each(&block)
+        to_a.each(&block)
+      end
+
+      # Guards against Encoding::CompatibilityError i.e. "André"
+      # @return [Array<String>] encoded values for the row or placeholder
+      def to_a
+        members.map do |key|
+          public_send(key).dup&.force_encoding("UTF-8") || EMPTY_CELL
+        end
+      end
+    end
+  end
+
   CLAIM_CSV_HEADINGS = {
     trn: 'TRN',
     dob: 'Date of birth',
@@ -26,41 +46,15 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     error: 'Error message',
   }.freeze
 
-  class ActionRow < Data.define(*ACTION_CSV_HEADINGS.keys)
-    include Enumerable
-
-    def each(&block)
-      to_a.each(&block)
-    end
-
-    # Guard against "André" Encoding::CompatibilityError
-    def to_a
-      members.map do |key|
-        public_send(key).dup&.force_encoding("UTF-8") || EMPTY_CELL
-      end
-    end
-  end
-
-  class ClaimRow < Data.define(*CLAIM_CSV_HEADINGS.keys)
-    include Enumerable
-
-    def each(&block)
-      to_a.each(&block)
-    end
-
-    # Guard against "André" Encoding::CompatibilityError
-    def to_a
-      members.map do |key|
-        public_send(key).dup&.force_encoding("UTF-8") || EMPTY_CELL
-      end
-    end
-  end
+  ActionRow = build_row_class(ACTION_CSV_HEADINGS.keys)
+  ClaimRow = build_row_class(CLAIM_CSV_HEADINGS.keys)
 
   # Associations
   belongs_to :appropriate_body
   has_many :pending_induction_submissions
   has_one_attached :csv_file
 
+  # Enums
   enum :batch_status, {
     pending: 'pending',
     processing: 'processing',
