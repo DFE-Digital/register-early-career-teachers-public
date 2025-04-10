@@ -56,7 +56,7 @@ RSpec.describe 'Add a mentor to an ECT' do
 
   def then_i_should_be_taken_to_the_mentorship_confirmation_page
     expect(page.url).to end_with("/school/ects/#{@ect.id}/mentorship/confirmation")
-    expect(page.get_by_text("You've assigned #{@mentor_name} as a mentor for #{@ect_name}")).to be_visible
+    expect(page.get_by_text("You’ve assigned #{@mentor_name} as a mentor for #{@ect_name}")).to be_visible
   end
 
   def when_i_click_on_back_to_your_ects
