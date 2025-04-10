@@ -49,7 +49,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   describe 'mentor funding' do
     context 'when eligible' do
-      it { expect(rendered).to have_content("We'll pass on their details to FraggleRock") }
+      it { expect(rendered).to have_content("We’ll pass on their details to FraggleRock") }
     end
 
     context 'when ineligible' do
@@ -76,7 +76,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
     it 'mentions an email sent to the mentor' do
       expect(rendered).to have_content('What happens next')
-      expect(rendered).to have_content("We'll email #{mentor.full_name} to confirm you have registered them.")
+      expect(rendered).to have_content("We’ll email #{mentor.full_name} to confirm you have registered them.")
     end
   end
 end
