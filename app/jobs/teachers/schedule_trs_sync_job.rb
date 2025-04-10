@@ -5,7 +5,7 @@ module Teachers
     BATCH_SIZE = 1200
 
     def perform
-      teachers = Teacher.order(trs_data_last_refreshed_at: :asc).limit(BATCH_SIZE)
+      teachers = Teacher.ordered_by_trs_data_last_refreshed_at_nulls_first.limit(BATCH_SIZE)
 
       teachers.each_with_index do |teacher, i|
         Teachers::SyncTeacherWithTRSJob.set(wait: (i * 3).seconds).perform_later(teacher:)

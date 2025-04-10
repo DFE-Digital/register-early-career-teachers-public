@@ -39,6 +39,10 @@ class Teacher < ApplicationRecord
     )
   }
 
+  scope :ordered_by_trs_data_last_refreshed_at_nulls_first, -> {
+    order(arel_table[:trs_data_last_refreshed_at].asc.nulls_first)
+  }
+
   # Instance methods
   def eligible_for_mentor_funding?
     mentor_completion_date.blank? && mentor_completion_reason.blank?
