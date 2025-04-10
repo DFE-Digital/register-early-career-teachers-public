@@ -19,3 +19,4 @@ SERVICE_URL: 'https://staging.register-early-career-teachers.education.gov.uk/'
 DFE_ANALYTICS_ENABLED: true
 TRS_API_BASE_URL: 'https://preprod.teacher-qualifications-api.education.gov.uk'
 TRS_API_VERSION: '20250203'
+RAILS_ENV: staging
