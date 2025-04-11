@@ -37,11 +37,34 @@ RSpec.describe Admin::UpdateInductionPeriod do
     context "when induction period has an outcome" do
       let(:induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: "2023-06-01", finished_on: "2023-12-31", outcome: "pass") }
 
-      it "raises an error" do
-        expect { service.update_induction_period! }.to raise_error(
-          Admin::UpdateInductionPeriod::RecordedOutcomeError,
-          "Cannot edit induction period with recorded outcome"
-        )
+      context "when updating number_of_terms only" do
+        let(:params) { { number_of_terms: 4 } }
+
+        it "allows the update" do
+          expect { service.update_induction_period! }.to change { induction_period.reload.number_of_terms }.to(4)
+        end
+      end
+
+      context "when updating other fields" do
+        let(:params) { { started_on: "2023-07-01" } }
+
+        it "raises an error" do
+          expect { service.update_induction_period! }.to raise_error(
+            Admin::UpdateInductionPeriod::RecordedOutcomeError,
+            "Only number of terms can be edited when outcome is recorded"
+          )
+        end
+      end
+
+      context "when updating multiple fields including number_of_terms" do
+        let(:params) { { number_of_terms: 4, started_on: "2023-07-01" } }
+
+        it "raises an error" do
+          expect { service.update_induction_period! }.to raise_error(
+            Admin::UpdateInductionPeriod::RecordedOutcomeError,
+            "Only number of terms can be edited when outcome is recorded"
+          )
+        end
       end
     end
 
