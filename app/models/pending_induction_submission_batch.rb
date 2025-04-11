@@ -1,6 +1,7 @@
 class PendingInductionSubmissionBatch < ApplicationRecord
   EMPTY_CELL = '-'.freeze
 
+  # Class methods
   def self.new_claim_for(appropriate_body:, **)
     new(appropriate_body:, batch_type: 'claim', **)
   end
@@ -83,9 +84,9 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   validate :missing_dobs, on: :uploaded
   validate :iso8601_date, on: :uploaded
 
-  # Download CSV Methods
-  # ============================================================================
+  # Methods
 
+  # @return [Hash] CSV headings
   def csv_headings
     if action?
       ACTION_CSV_HEADINGS
@@ -115,12 +116,10 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     end
   end
 
+  # @return [Array<String>]
   def failed_trns
     pending_induction_submissions.where.not(error_message: [nil, '']).map(&:trn)
   end
-
-  # Uploaded CSV Methods
-  # ============================================================================
 
   # FIXME: Octothorpes are used to prefix comments in the CSV file for easier testing (remove when no longer helpful)
   # @return [CSV::Table<CSV::Row>] Hash-like with headers
@@ -129,11 +128,12 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     @data ||= CSV.parse(csv_file.download, headers: true, skip_lines: /^#/)
   end
 
-  # @return [Enumerator::Lazy<PendingInductionSubmissionBatch::Row>] Struct-like without headers
+  # @return [Enumerator::Lazy<PendingInductionSubmissionBatch::ClaimRow, PendingInductionSubmissionBatch::ActionRow>] Struct-like without headers
   def rows
     @rows ||= data.each.lazy.map { |row| row_class.new(**row.to_h.symbolize_keys) }
   end
 
+  # @return [ActionRow, ClaimRow]
   def row_class
     if action?
       ActionRow
@@ -142,47 +142,13 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     end
   end
 
-  # @return [Boolean]
-  def has_valid_csv_headings?
-    data.headers.eql?(csv_headings.keys.map(&:to_s))
-  end
-
-  # @return [Boolean]
-  def has_unique_trns?
-    rows.map(&:trn).uniq.count.eql?(rows.count)
-  end
-
-  # @return [Boolean]
-  def has_trns?
-    rows.map(&:trn).compact.count.eql?(rows.count)
-  end
-
-  # @return [Boolean]
-  def has_dates_of_birth?
-    rows.map(&:dob).compact.count.eql?(rows.count)
-  end
-
-  # @return [Boolean]
-  def has_valid_csv_dates?
-    rows.all? do |r|
-      dates = [r.dob]
-      dates.push(r.start_date) if claim?
-      dates.push(r.end_date) if action?
-      dates.all? { |raw_value| Date.iso8601(raw_value) }
-    end
-  rescue Date::Error
-    false
-  end
-
-  # DB Only Methods
+  # Potentially temporary DB methods helpful for debugging during development
   # ============================================================================
 
-  # @return [String]
   def error_message
     super || EMPTY_CELL
   end
 
-  # @return [Array<String>]
   def processed_headers
     common_headers = ['TRN', 'First name', 'Last name', 'Date of birth']
     if action?
@@ -192,7 +158,6 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     end
   end
 
-  # @return [Array<Array>]
   def processed_rows
     pending_induction_submissions.map do |row|
       common_rows = [
@@ -219,10 +184,13 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     end
   end
 
-  # @return [Array<Array>]
+  def ongoing_induction_periods
+    InductionPeriod.where(appropriate_body:, finished_on: nil)
+  end
+
   def submissions_with_induction_periods
     pending_induction_submissions.without_errors.map do |pending_induction_submission|
-      [pending_induction_submission, Teacher.find_by(trn: pending_induction_submission.trn).induction_periods.last]
+      [pending_induction_submission, pending_induction_submission.teacher.induction_periods.last]
     end
   end
 
@@ -250,5 +218,37 @@ private
 
   def csv_mime_type
     errors.add(:csv_file, 'File type must be a CSV') if csv_file.attached? && !csv_file.content_type.in?(%w[text/csv])
+  end
+
+  # @return [Boolean]
+  def has_valid_csv_headings?
+    data.headers.sort.eql?(csv_headings.keys.sort.map(&:to_s))
+  end
+
+  # @return [Boolean]
+  def has_unique_trns?
+    rows.map(&:trn).uniq.count.eql?(rows.count)
+  end
+
+  # @return [Boolean]
+  def has_trns?
+    rows.map(&:trn).compact.count.eql?(rows.count)
+  end
+
+  # @return [Boolean]
+  def has_dates_of_birth?
+    rows.map(&:dob).compact.count.eql?(rows.count)
+  end
+
+  # @return [Boolean]
+  def has_valid_csv_dates?
+    rows.all? do |r|
+      dates = [r.dob]
+      dates.push(r.start_date) if claim?
+      dates.push(r.end_date) if action?
+      dates.all? { |raw_value| Date.iso8601(raw_value) }
+    end
+  rescue Date::Error
+    false
   end
 end

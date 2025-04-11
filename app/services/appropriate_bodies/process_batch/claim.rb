@@ -34,6 +34,7 @@ module AppropriateBodies
 
     private
 
+      # FIXME: programme and start date validation errors are not being played back
       # @return [?]
       def claim!
         PendingInductionSubmissionBatch.transaction do
@@ -44,11 +45,16 @@ module AppropriateBodies
 
           find_ect.import_from_trs!
           check_ect.begin_claim!
-          # OPTIMIZE: params effectively passed in twice
-          register_ect.register(
-            started_on: row['start_date'],
-            induction_programme: row['induction_programme'].downcase
-          )
+
+          if pending_induction_submission.save(context: :register_ect)
+            # OPTIMIZE: params effectively passed in twice
+            register_ect.register(
+              started_on: pending_induction_submission.started_on,
+              induction_programme: pending_induction_submission.induction_programme
+            )
+          else
+            pending_induction_submission.playback_errors
+          end
         end
       end
 

@@ -90,31 +90,23 @@ class PendingInductionSubmission < ApplicationRecord
            if: -> { started_on.present? },
            on: :register_ect
 
-  # TODO: spec
-  # validate :not_already_claimed,
-  #          on: %i[release_ect record_outcome]
-
   # Instance methods
   def exempt?
-    trs_induction_status == "Exempt"
+    trs_induction_status.eql?('Exempt')
   end
 
-  # TODO: spec
   def pass?
     outcome.eql?('pass')
   end
 
-  # TODO: spec
   def fail?
     outcome.eql?('fail')
   end
 
-  # TODO: spec
   def error_message
     super || "✅"
   end
 
-  # TODO: spec
   # save error messages and nullify offending values
   def playback_errors
     assign_attributes(
@@ -126,26 +118,12 @@ class PendingInductionSubmission < ApplicationRecord
     save!
   end
 
-private
-
-  # def not_already_claimed
-  #   if pending_induction_submission_batch &&
-  #       teacher &&
-  #       teacher_active_appropriate_body &&
-  #       (pending_induction_submission_batch.appropriate_body != teacher_active_appropriate_body)
-  #     errors.add(:appropriate_body, "This teacher ain't yours!!")
-  #   end
-  # end
-
-  # # @return [nil, AppropriateBody]
-  # def teacher_active_appropriate_body
-  #   ::Teachers::InductionPeriod.new(teacher).ongoing_induction_period&.appropriate_body
-  # end
-
   # @return [nil, Teacher]
   def teacher
     @teacher ||= Teacher.find_by(trn:)
   end
+
+private
 
   def start_date_after_qts_date
     return if trs_qts_awarded_on.blank?
