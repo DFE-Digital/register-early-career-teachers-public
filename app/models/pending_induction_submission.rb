@@ -107,9 +107,11 @@ class PendingInductionSubmission < ApplicationRecord
     super || "✅"
   end
 
-  # save error messages and nullify offending values
   def playback_errors
     assign_attributes(
+      induction_programme: nil,
+      outcome: nil,
+      started_on: nil,
       finished_on: nil,
       number_of_terms: nil,
       error_message: errors.full_messages.to_sentence
