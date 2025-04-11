@@ -9,6 +9,8 @@
   <li>email address</li>
 </ul>
 
-<p class="govuk-body">You may also need to tell us about the mentor’s training programme.</p>
+<% if @ect.provider_led_programme_type? %>
+  <p class="govuk-body">You may also need to tell us about the mentor’s training programme.</p>
+<% end %>
 
 <%= govuk_button_link_to("Continue", schools_register_mentor_wizard_find_mentor_path) %>

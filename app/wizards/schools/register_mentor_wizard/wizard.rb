@@ -9,6 +9,7 @@ module Schools
             already_active_at_school: AlreadyActiveAtSchoolStep,
             cannot_mentor_themself: CannotMentorThemselfStep,
             cannot_register_mentor: CannotRegisterMentorStep,
+            cant_use_changed_email: CantUseChangedEmailStep,
             cant_use_email: CantUseEmailStep,
             change_email_address: ChangeEmailAddressStep,
             change_mentor_details: ChangeMentorDetailsStep,
@@ -38,8 +39,8 @@ module Schools
           begin
             return [:confirmation] if mentor.registered
 
-            steps = %i[no_trn find_mentor]
-            return steps unless [mentor.trn, mentor.date_of_birth].all?
+            steps = %i[find_mentor]
+            return %i[no_trn] + steps unless [mentor.trn, mentor.date_of_birth].all?
             return steps + %i[trn_not_found] unless mentor.national_insurance_number || mentor.in_trs?
             return steps + %i[cannot_mentor_themself] if mentor.trn == ect.trn
 
@@ -63,7 +64,7 @@ module Schools
 
             steps << :email_address
             return steps unless mentor.email
-            return steps + %i[cant_use_email] if mentor.cant_use_email?
+            return steps + %i[change_email_address cant_use_changed_email cant_use_email] if mentor.cant_use_email?
 
             steps << :review_mentor_eligibility if mentor.funding_available?
             steps += %i[change_mentor_details change_email_address check_answers]

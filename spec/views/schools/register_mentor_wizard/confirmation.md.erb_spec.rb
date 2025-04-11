@@ -49,7 +49,15 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   describe 'mentor funding' do
     context 'when eligible' do
-      it { expect(rendered).to have_content("We’ll pass on their details to FraggleRock") }
+      context 'when the ect is provider_led' do
+        it { expect(rendered).to have_content("We’ll pass on their details to FraggleRock") }
+      end
+
+      context 'when the ect is not provider_led' do
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :school_led, teacher:) }
+
+        it { expect(rendered).not_to have_content("We’ll pass on their details to FraggleRock") }
+      end
     end
 
     context 'when ineligible' do
@@ -58,7 +66,15 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
         render
       end
 
-      it { expect(rendered).to have_content('They cannot do mentor training according to our records.') }
+      context 'when the ect is provider_led' do
+        it { expect(rendered).to have_content('They cannot do mentor training according to our records.') }
+      end
+
+      context 'when the ect is not provider_led' do
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :school_led, teacher:) }
+
+        it { expect(rendered).not_to have_content('They cannot do mentor training according to our records.') }
+      end
     end
   end
 

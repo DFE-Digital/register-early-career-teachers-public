@@ -27,7 +27,7 @@
                       visually_hidden_text: 'email address')
     end
 
-    if @mentor.funding_available?
+    if @wizard.ect.provider_led_programme_type? && @mentor.funding_available?
       summary_list.with_row do |row|
         row.with_key(text: 'Lead provider')
         row.with_value(text: @wizard.ect.lead_provider.name)
