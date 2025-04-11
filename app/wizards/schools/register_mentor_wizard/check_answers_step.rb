@@ -6,7 +6,9 @@ module Schools
       end
 
       def previous_step
-        mentor.funding_available? ? :review_mentor_eligibility : :email_address
+        return :review_mentor_eligibility if ect.provider_led_programme_type? && mentor.funding_available?
+
+        :email_address
       end
 
     private

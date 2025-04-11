@@ -72,6 +72,16 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   end
 
   describe 'summary' do
+    context 'with school led ect' do
+      let(:ect) do
+        FactoryBot.create(:ect_at_school_period, :active, :school_led, teacher:)
+      end
+
+      it 'hides lead provider' do
+        expect(rendered).not_to have_element(:dt, text: "Lead provider")
+      end
+    end
+
     context 'without exemption' do
       before { render }
 

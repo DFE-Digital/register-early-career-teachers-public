@@ -51,19 +51,19 @@ describe Schools::RegisterMentorWizard::Wizard do
         let(:trs_first_name) { nil }
         let(:trs_last_name) { nil }
 
-        it { is_expected.to eq(%i[no_trn find_mentor trn_not_found]) }
+        it { is_expected.to eq(%i[find_mentor trn_not_found]) }
       end
 
       context 'when the mentor trn has matched that of the ECT' do
         let(:mentor_trn) { ect.trn }
 
-        it { is_expected.to eq(%i[no_trn find_mentor cannot_mentor_themself]) }
+        it { is_expected.to eq(%i[find_mentor cannot_mentor_themself]) }
       end
 
       context "when the date of birth didn't match that on TRS" do
         let(:mentor_date_of_birth) { "2000-01-01" }
 
-        it { is_expected.to eq(%i[no_trn find_mentor national_insurance_number]) }
+        it { is_expected.to eq(%i[find_mentor national_insurance_number]) }
       end
 
       context 'when the mentor is already active at the school' do
@@ -71,17 +71,17 @@ describe Schools::RegisterMentorWizard::Wizard do
         let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor_teacher) }
         let(:school_urn) { active_mentor_period.school.urn }
 
-        it { is_expected.to eq(%i[no_trn find_mentor already_active_at_school]) }
+        it { is_expected.to eq(%i[find_mentor already_active_at_school]) }
       end
 
       context 'when the mentor is prohibited from teaching' do
         let(:prohibited_from_teaching) { true }
 
-        it { is_expected.to eq(%i[no_trn find_mentor cannot_register_mentor]) }
+        it { is_expected.to eq(%i[find_mentor cannot_register_mentor]) }
       end
 
       context 'when the mentor is not prohibited from teaching' do
-        it { is_expected.to eq(%i[no_trn find_mentor review_mentor_details]) }
+        it { is_expected.to eq(%i[find_mentor review_mentor_details]) }
       end
     end
 
@@ -105,7 +105,7 @@ describe Schools::RegisterMentorWizard::Wizard do
         let(:trs_first_name) { nil }
         let(:trs_last_name) { nil }
 
-        it { is_expected.to eq(%i[no_trn find_mentor national_insurance_number not_found]) }
+        it { is_expected.to eq(%i[find_mentor national_insurance_number not_found]) }
       end
 
       context 'when the mentor is already active at the school' do
@@ -113,17 +113,17 @@ describe Schools::RegisterMentorWizard::Wizard do
         let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor_teacher) }
         let(:school_urn) { active_mentor_period.school.urn }
 
-        it { is_expected.to eq(%i[no_trn find_mentor national_insurance_number already_active_at_school]) }
+        it { is_expected.to eq(%i[find_mentor national_insurance_number already_active_at_school]) }
       end
 
       context 'when the mentor is prohibited from teaching' do
         let(:prohibited_from_teaching) { true }
 
-        it { is_expected.to eq(%i[no_trn find_mentor national_insurance_number cannot_register_mentor]) }
+        it { is_expected.to eq(%i[find_mentor national_insurance_number cannot_register_mentor]) }
       end
 
       context 'when the mentor is not prohibited from teaching' do
-        it { is_expected.to eq(%i[no_trn find_mentor national_insurance_number review_mentor_details]) }
+        it { is_expected.to eq(%i[find_mentor national_insurance_number review_mentor_details]) }
       end
     end
 
@@ -182,7 +182,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                          change_name: 'no')
       end
 
-      it { is_expected.to eq(%i[no_trn find_mentor review_mentor_details email_address]) }
+      it { is_expected.to eq(%i[find_mentor review_mentor_details email_address]) }
     end
 
     context 'when only TRN, DoB, Nino and change name (and maybe corrected name) have been set' do
@@ -201,7 +201,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                          corrected_name: 'Mentor CorrectedName')
       end
 
-      it { is_expected.to eq(%i[no_trn find_mentor national_insurance_number review_mentor_details email_address]) }
+      it { is_expected.to eq(%i[find_mentor national_insurance_number review_mentor_details email_address]) }
     end
 
     context 'when only TRN, DoB, change name (and maybe corrected name) and email have been set' do
@@ -221,15 +221,21 @@ describe Schools::RegisterMentorWizard::Wizard do
       context 'when the email is in use by another participant' do
         before { allow(wizard.mentor).to receive(:cant_use_email?).and_return(true) }
 
-        it { is_expected.to eq(%i[no_trn find_mentor review_mentor_details email_address cant_use_email]) }
+        it do
+          expect(subject).to eq(%i[find_mentor
+                                   review_mentor_details
+                                   email_address
+                                   change_email_address
+                                   cant_use_changed_email
+                                   cant_use_email])
+        end
       end
 
       context 'when the mentor is eligible for funding' do
         before { allow(wizard.mentor).to receive(:funding_available?).and_return(true) }
 
         it do
-          expect(subject).to eq(%i[no_trn
-                                   find_mentor
+          expect(subject).to eq(%i[find_mentor
                                    review_mentor_details
                                    email_address
                                    review_mentor_eligibility
@@ -260,15 +266,22 @@ describe Schools::RegisterMentorWizard::Wizard do
       context 'when the email is in use by another participant' do
         before { allow(wizard.mentor).to receive(:cant_use_email?).and_return(true) }
 
-        it { is_expected.to eq(%i[no_trn find_mentor national_insurance_number review_mentor_details email_address cant_use_email]) }
+        it do
+          expect(subject).to eq(%i[find_mentor
+                                   national_insurance_number
+                                   review_mentor_details
+                                   email_address
+                                   change_email_address
+                                   cant_use_changed_email
+                                   cant_use_email])
+        end
       end
 
       context 'when the mentor is eligible for funding' do
         before { allow(wizard.mentor).to receive(:funding_available?).and_return(true) }
 
         it do
-          expect(subject).to eq(%i[no_trn
-                                   find_mentor
+          expect(subject).to eq(%i[find_mentor
                                    national_insurance_number
                                    review_mentor_details
                                    email_address
