@@ -13,9 +13,11 @@ describe Teacher do
 
     it { is_expected.to validate_presence_of(:trs_first_name) }
     it { is_expected.to validate_presence_of(:trs_last_name) }
-    it { is_expected.to validate_uniqueness_of(:trn).with_message('TRN already exists').case_insensitive }
+    it { is_expected.to validate_length_of(:trs_induction_status).with_message('TRS induction status must be shorter than 18 characters') }
 
     describe "trn" do
+      it { is_expected.to validate_uniqueness_of(:trn).with_message('TRN already exists').case_insensitive }
+
       context "when the string contains 7 numeric digits" do
         %w[0000001 9999999].each do |value|
           it { is_expected.to allow_value(value).for(:trn) }
