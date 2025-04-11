@@ -87,6 +87,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
     teacher.ect_at_school_periods.excluding(self)
   end
 
+  def has_overlap_with_siblings? = siblings.excluding_pending.overlapping_with(self).exists?
+
 private
 
   def appropriate_body_for_independent_school

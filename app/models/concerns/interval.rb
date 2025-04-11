@@ -4,18 +4,20 @@ module Interval
   included do
     # Validations
     validate :period_dates_validation
-
+    #
     # Scopes
     scope :overlapping_with, ->(period) { where("range && daterange(?, ?)", period.started_on, period.finished_on) }
-    scope :ongoing, -> { where(finished_on: nil) }
+    scope :ongoing, -> { not_pending.where(finished_on: nil) }
     scope :finished, -> { where.not(finished_on: nil) }
     scope :earliest_first, -> { order(started_on: 'asc') }
     scope :latest_first, -> { order(started_on: 'desc') }
-    scope :started_before, ->(date) { where(started_on: ...date) }
-    scope :started_on_or_after, ->(date) { where(started_on: date..) }
+    scope :started_before, ->(date) { not_pending.where(started_on: ...date) }
+    scope :started_on_or_after, ->(date) { not_pending.where(started_on: date..) }
     scope :finished_before, ->(date) { where(finished_on: ...date) }
     scope :finished_on_or_after, ->(date) { where(finished_on: date..) }
     scope :containing_period, ->(period) { where("range @> daterange(?, ?)", period.started_on, period.finished_on) }
+    scope :pending, -> { where(pending: true) }
+    scope :not_pending, -> { where(pending: false) }
   end
 
   # Validations
@@ -58,7 +60,7 @@ module Interval
     finished_on <= started_on
   end
 
-  def ongoing? = finished_on.nil?
+  def ongoing? = finished_on.nil? && !pending
 
   def incomplete? = [started_on, finished_on].any?(&:blank?)
 

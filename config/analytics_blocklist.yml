@@ -182,6 +182,7 @@
   - range
   - ecf_start_induction_record_id
   - ecf_end_induction_record_id
+  - pending
   :teacher_migration_failures:
   - id
   - teacher_id
@@ -261,6 +262,7 @@
   - range
   - ecf_start_induction_record_id
   - ecf_end_induction_record_id
+  - pending
   :mentor_at_school_periods:
   - id
   - school_id
@@ -273,6 +275,7 @@
   - ecf_start_induction_record_id
   - ecf_end_induction_record_id
   - email
+  - pending
   :lead_providers:
   - id
   - name
@@ -318,6 +321,7 @@
   - ecf_end_induction_record_id
   - working_pattern
   - email
+  - pending
   :dfe_roles:
   - id
   - role_type

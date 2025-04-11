@@ -55,6 +55,16 @@ describe Interval do
       it 'returns records where the finished_on date is null' do
         expect(DummyMentor.ongoing.to_sql).to end_with(%("finished_on" IS NULL))
       end
+
+      context "when the record is pending" do
+        let!(:teacher_2_period) do
+          DummyMentor.create(teacher_id: teacher_2_id, school_id:, started_on: 1.week.from_now, pending: true)
+        end
+
+        it "is not included" do
+          expect(DummyMentor.ongoing).not_to include(teacher_2_period)
+        end
+      end
     end
 
     describe ".containing_period" do
@@ -76,11 +86,31 @@ describe Interval do
       it 'returns records where the started_on date is earlier than the provided date' do
         expect(DummyMentor.started_before(Date.yesterday).to_sql).to end_with(%("started_on" < '#{Date.yesterday.iso8601}'))
       end
+
+      context "when the record is pending" do
+        let!(:teacher_2_period) do
+          DummyMentor.create(teacher_id: teacher_2_id, school_id:, started_on: 1.week.from_now, pending: true)
+        end
+
+        it "is not included" do
+          expect(DummyMentor.started_before(2.weeks.from_now)).not_to include(teacher_2_period)
+        end
+      end
     end
 
     describe '.started_on_or_after' do
       it 'returns records where the started_on date is equal to or later than the provided date' do
         expect(DummyMentor.started_on_or_after(Date.yesterday).to_sql).to end_with(%("started_on" >= '#{Date.yesterday.iso8601}'))
+      end
+
+      context "when the record is pending" do
+        let!(:teacher_2_period) do
+          DummyMentor.create(teacher_id: teacher_2_id, school_id:, started_on: 1.week.from_now, pending: true)
+        end
+
+        it "is not included" do
+          expect(DummyMentor.started_on_or_after(2.weeks.from_now)).not_to include(teacher_2_period)
+        end
       end
     end
 
@@ -122,6 +152,12 @@ describe Interval do
 
     context 'with finished_on' do
       subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.ago) }
+
+      it { is_expected.not_to be_ongoing }
+    end
+
+    context "when the record is pending" do
+      subject(:interval) { DummyInterval.new(started_on: 1.week.from_now, finished_on: nil, pending: true) }
 
       it { is_expected.not_to be_ongoing }
     end
