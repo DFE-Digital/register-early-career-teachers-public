@@ -67,19 +67,23 @@ module AppropriateBodies
 
       # @return [?]
       def validate_submission!
-        outcome = %w[pass fail].include?(row['objective']) ? row['objective'] : nil
-
         pending_induction_submission.assign_attributes(
           finished_on: row['end_date'],
-          number_of_terms: row['number_of_terms'],
-          outcome:
+          number_of_terms: row['number_of_terms']
         )
 
         case row['objective']
-        when 'fail', 'pass'
+        when /fail/i
+          pending_induction_submission.assign_attributes(outcome: 'fail')
           pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
-        when 'release'
+        when /pass/i
+          pending_induction_submission.assign_attributes(outcome: 'pass')
+          pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
+        when /release/i
           pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :release_ect)
+        else
+          pending_induction_submission.errors.add(:outcome, "Objective must be pass, fail or release")
+          pending_induction_submission.playback_errors
         end
       end
 
