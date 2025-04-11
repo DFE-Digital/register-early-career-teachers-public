@@ -52,8 +52,8 @@ describe Interval do
     end
 
     describe '.ongoing' do
-      it 'returns records where the finished_on date is null' do
-        expect(DummyMentor.ongoing.to_sql).to end_with(%("finished_on" IS NULL))
+      it 'returns records where their dates range contains today' do
+        expect(DummyMentor.ongoing.to_sql).to end_with("#{DummyMentor.table_name}.range is NULL OR '#{Date.current}'::date <@ #{DummyMentor.table_name}.range)")
       end
     end
 
@@ -115,13 +115,13 @@ describe Interval do
 
   describe '#ongoing?' do
     context 'without finished_on' do
-      subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: nil) }
+      subject(:interval) { DummyInterval.new(range: 1.week.ago...) }
 
       it { is_expected.to be_ongoing }
     end
 
     context 'with finished_on' do
-      subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.ago) }
+      subject(:interval) { DummyInterval.new(range: 1.week.ago..1.day.ago) }
 
       it { is_expected.not_to be_ongoing }
     end
