@@ -18,12 +18,8 @@ module Teachers::Details
       @past_periods ||= induction.past_induction_periods
     end
 
-    def can_edit?(period)
-      enable_edit && period.outcome.blank?
-    end
-
     def edit_link(period)
-      return unless can_edit?(period)
+      return unless enable_edit
 
       helpers.govuk_link_to('Edit', helpers.edit_admin_teacher_induction_period_path(teacher_id: teacher.id, id: period.id), no_visited_state: true)
     end

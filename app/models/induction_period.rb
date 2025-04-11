@@ -27,6 +27,7 @@ class InductionPeriod < ApplicationRecord
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
   validate :end_date_admin_only, if: -> { started_on.present? }
+  validate :forbid_finished_on_changes, if: -> { finished_on_changed? && finished_on_was.present? }
 
   # Scopes
   scope :for_teacher, ->(teacher) { where(teacher:) }
@@ -70,5 +71,9 @@ private
 
   def teacher_distinct_period
     overlap_validation(name: 'induction')
+  end
+
+  def forbid_finished_on_changes
+    errors.add(:finished_on, "Cannot change end date once it has been set")
   end
 end
