@@ -51,7 +51,11 @@ module Admin
     end
 
     def validate_can_update!
-      raise RecordedOutcomeError, "Cannot edit induction period with recorded outcome" if induction_period.outcome.present?
+      return if induction_period.outcome.blank?
+
+      # Only allow updates to number_of_terms if outcome is present
+      only_number_of_terms = params.keys.map(&:to_s) == %w[number_of_terms]
+      raise RecordedOutcomeError, "Only number of terms can be edited when outcome is recorded" unless only_number_of_terms
     end
 
     def notify_trs_of_start_date_change(previous_start_date)
