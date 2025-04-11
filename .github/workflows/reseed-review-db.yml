@@ -1,0 +1,40 @@
+name: Reseed a review app database
+
+on:
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: Pull request to reseed
+        required: true
+        type: string  
+
+permissions:
+  id-token: write
+
+jobs:
+  reseed-review-db:
+    name: Reseed a review app database
+    runs-on: ubuntu-latest
+    environment: review
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: Azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+    - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
+      with:
+        azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+    - name: Reseed review app
+      run: |
+        make ci review get-cluster-credentials
+        kubectl exec -n cpd-development deployment/cpd-ec2-review-${{ inputs.pull_request_number }}-web -- sh -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 rails db:seed:replant"

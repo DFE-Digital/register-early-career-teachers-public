@@ -17,7 +17,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   let(:first_name) { 'Terry' }
   let(:last_name) { 'Wogan' }
   let(:dob) { '1997-01-15' }
-  let(:end_date) { (Time.zone.today - 1.week).to_s }
+  let(:end_date) { 1.week.ago.to_date.to_s }
   let(:number_of_terms) { '3.2' }
   let(:objective) { 'pass' }
   let(:error) { '' }
@@ -39,15 +39,19 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
     service.pending_induction_submission_batch.pending_induction_submissions.first
   end
 
-  let(:csv_file) do
+  let(:csv_data) do
     <<~CSV_DATA
       trn,dob,end_date,number_of_terms,objective,error
       #{trn},#{dob},#{end_date},#{number_of_terms},#{objective},#{error}
     CSV_DATA
   end
 
+  let(:csv_file) do
+    double(:csv_file, download: csv_data, attached?: true, content_type: 'text/csv')
+  end
+
   before do
-    allow(pending_induction_submission_batch).to receive(:csv_file).and_return(double(:csv_file, download: csv_file))
+    allow(pending_induction_submission_batch).to receive(:csv_file).and_return(csv_file)
   end
 
   describe '#process!' do
@@ -111,6 +115,46 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         expect(induction_period.finished_on).not_to eq(Date.parse(end_date))
         expect(induction_period.number_of_terms).not_to eq(3.2)
         expect(induction_period.outcome).not_to eq('pass')
+      end
+
+      context 'when the number of terms has too many decimal places' do
+        let(:number_of_terms) { '3.0000002' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Number of terms Terms can only have up to 1 decimal place'
+        end
+      end
+
+      context 'when the number of terms is missing' do
+        let(:number_of_terms) { '' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Number of terms Enter a number of terms'
+        end
+      end
+
+      context 'when the end date is in the future' do
+        let(:end_date) { 1.year.from_now.to_date.to_s }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Finished on End date cannot be in the future'
+        end
+      end
+
+      context 'when the end date is missing' do
+        let(:end_date) { '' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Number of terms Delete the number of terms if the induction has no end date and Finished on Enter a finish date'
+        end
+      end
+
+      context 'when the objective is not "pass", "fail" or "release"' do
+        let(:objective) { 'foo' }
+
+        it 'offers custom error message for the CSV row' do
+          expect(submission.error_message).to eq "Outcome Objective must be pass, fail or release"
+        end
       end
 
       describe '#do!' do
