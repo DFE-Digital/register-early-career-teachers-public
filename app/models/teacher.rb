@@ -31,6 +31,10 @@ class Teacher < ApplicationRecord
             uniqueness: { message: 'TRN already exists', case_sensitive: false },
             teacher_reference_number: true
 
+  validates :trs_induction_status,
+            allow_nil: true,
+            length: { maximum: 18, message: 'TRS induction status must be shorter than 18 characters' }
+
   # Scopes
   scope :search, ->(query_string) {
     where(
