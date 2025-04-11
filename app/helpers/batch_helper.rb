@@ -35,7 +35,7 @@ module BatchHelper
       },
       {
         key: { text: 'Number of ongoing induction periods with this AB' },
-        value: { text: InductionPeriod.where(appropriate_body: pending_induction_submission_batch.appropriate_body, finished_on: nil).count }
+        value: { text: pending_induction_submission_batch.ongoing_induction_periods.count }
       },
     ])
   end

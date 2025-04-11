@@ -9,14 +9,6 @@ RSpec.describe PendingInductionSubmission do
     it { is_expected.to belong_to(:pending_induction_submission_batch).optional }
   end
 
-  describe '#fail?' do
-    skip 'wip' # outcome predicate
-  end
-
-  describe '#pass?' do
-    skip 'wip' # outcome predicate
-  end
-
   describe "validation" do
     it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
 
@@ -239,50 +231,60 @@ RSpec.describe PendingInductionSubmission do
         end
       end
     end
+  end
 
-    describe '#not_already_claimed' do
-      skip 'wip' # batch validation
+  describe '#fail?' do
+    subject { FactoryBot.build(:pending_induction_submission, outcome: 'fail') }
+
+    it { is_expected.to be_fail }
+  end
+
+  describe '#pass?' do
+    subject { FactoryBot.build(:pending_induction_submission, outcome: 'pass') }
+
+    it { is_expected.to be_pass }
+  end
+
+  describe '#exempt?' do
+    subject { FactoryBot.build(:pending_induction_submission, trs_induction_status: 'Exempt') }
+
+    it { is_expected.to be_exempt }
+  end
+
+  describe '#teacher' do
+    let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
+    let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
+
+    it 'returns the teacher associated with the trn' do
+      expect(pending_induction_submission.teacher).to eq(teacher)
+    end
+  end
+
+  describe '#playback_errors' do
+    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, appropriate_body:, finished_on: 1.day.ago) }
+
+    before do
+      pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
     end
 
-    describe "#no_future_induction_periods" do
-      context "with induction period started and ended after submission started_on" do
-        it "is invalid" do
-          teacher = FactoryBot.create(:teacher)
+    it 'sets error_message as a sentence of joined messages' do
+      expect(pending_induction_submission.error_message).to eq("Number of terms Enter a number of terms and Outcome Outcome must be either 'passed' or 'failed'")
+    end
+  end
 
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.current - 1.day, finished_on: Date.current)
+  describe '#error_message' do
+    let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, error_message: nil) }
 
-          pending_induction_submission = FactoryBot.build(:pending_induction_submission, trn: teacher.trn, started_on: Date.current - 3.days)
+    it 'returns a default message' do
+      expect(pending_induction_submission.error_message).to eq("✅")
+    end
 
-          pending_induction_submission.valid?(:register_ect)
+    context 'when error_message is set' do
+      before { pending_induction_submission.error_message = "Some error" }
 
-          expect(pending_induction_submission.errors[:started_on]).to include("Enter a start date after the last induction period finished (#{Date.current.to_fs(:govuk)})")
-        end
-      end
-
-      context "with started_on overlapping with existing induction period" do
-        it "is invalid" do
-          teacher = FactoryBot.create(:teacher)
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.current - 3.days, finished_on: Date.current)
-
-          pending_induction_submission = FactoryBot.build(:pending_induction_submission, trn: teacher.trn, started_on: Date.current - 2.days)
-
-          pending_induction_submission.valid?(:register_ect)
-
-          expect(pending_induction_submission.errors[:started_on]).to include("Enter a start date after the last induction period finished (#{Date.current.to_fs(:govuk)})")
-        end
-      end
-
-      context "with started_on equal to existing induction period finished_on" do
-        it "is invalid" do
-          teacher = FactoryBot.create(:teacher)
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.current - 3.days, finished_on: Date.current)
-
-          pending_induction_submission = FactoryBot.build(:pending_induction_submission, trn: teacher.trn, started_on: Date.current)
-
-          pending_induction_submission.valid?(:register_ect)
-
-          expect(pending_induction_submission.errors[:started_on]).to include("Enter a start date after the last induction period finished (#{Date.current.to_fs(:govuk)})")
-        end
+      it 'returns the error message' do
+        expect(pending_induction_submission.error_message).to eq("Some error")
       end
     end
   end

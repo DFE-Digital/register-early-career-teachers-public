@@ -76,14 +76,66 @@ RSpec.describe PendingInductionSubmissionBatch do
     it { is_expected.to allow_value('completed').for(:batch_status) }
     it { is_expected.to allow_value('failed').for(:batch_status) }
 
-    context "when upload is not a CSV file" do
+    context 'when the attached file is invalid' do
       subject(:batch) { FactoryBot.build(:pending_induction_submission_batch, :claim, csv_file:) }
 
-      let(:csv_file) { Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/foo.txt'), 'text/plain') }
+      describe "#csv_mime_type" do
+        let(:csv_file) { Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/foo.txt'), 'text/plain') }
 
-      it "is invalid" do
-        expect(subject).not_to be_valid
-        expect(batch.errors[:csv_file]).to include("File type must be a CSV")
+        specify do
+          expect(batch).not_to be_valid
+          expect(batch.errors[:csv_file]).to include("File type must be a CSV")
+        end
+      end
+
+      describe "#wrong_headers" do # softened rules so order doesn't matter - still TBC
+        let(:csv_file) { Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/claims/invalid_missing_columns.csv'), 'text/csv') }
+
+        specify do
+          batch.save!
+          expect(batch).not_to be_valid(:uploaded)
+          expect(batch.errors[:csv_file]).to include("CSV file contains unsupported columns")
+        end
+      end
+
+      describe "#unique_trns" do
+        let(:csv_file) { Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/claims/invalid_duplicate_trns.csv'), 'text/csv') }
+
+        specify do
+          batch.save!
+          expect(batch).not_to be_valid(:uploaded)
+          expect(batch.errors[:csv_file]).to include("CSV file contains duplicate TRNs")
+        end
+      end
+
+      describe "#missing_trns" do
+        let(:csv_file) { Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/claims/invalid_missing_trn.csv'), 'text/csv') }
+
+        specify do
+          batch.save!
+          expect(batch).not_to be_valid(:uploaded)
+          expect(batch.errors[:csv_file]).to include("CSV file contains missing TRNs")
+        end
+      end
+
+      describe "#missing_dobs" do
+        let(:csv_file) { Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/claims/invalid_missing_dob.csv'), 'text/csv') }
+
+        specify do
+          batch.save!
+          expect(batch).not_to be_valid(:uploaded)
+          expect(batch.errors[:csv_file]).to include("CSV file contains missing dates of birth")
+        end
+      end
+
+      describe "#iso8601_date" do
+        let(:csv_file) { Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/claims/invalid_date_format.csv'), 'text/csv') }
+
+        specify do
+          batch.save!
+          expect(batch).not_to be_valid(:uploaded)
+          expect(batch.errors[:csv_file]).to include("CSV file contains unsupported date format")
+        end
       end
     end
   end
