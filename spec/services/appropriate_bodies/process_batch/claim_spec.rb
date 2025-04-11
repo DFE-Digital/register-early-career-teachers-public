@@ -236,7 +236,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
     end
 
-    context 'when start date is in the future', pending: 'wip' do
+    context 'when start date is in the future' do
       include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
       let(:start_date) { 1.year.from_now.to_date.to_s }
@@ -246,7 +246,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error message' do
         subject { submissions.first.error_message }
 
-        it { is_expected.to eq 'future start date WIP' }
+        it { is_expected.to eq 'Started on Start date cannot be in the future, TRS qts awarded on QTS has not been awarded, and TRS induction status TRS Induction Status is not known' }
       end
     end
   end
