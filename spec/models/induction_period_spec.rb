@@ -183,6 +183,33 @@ RSpec.describe InductionPeriod do
         it { is_expected.to be_valid }
       end
     end
+
+    describe "forbid_finished_on_changes" do
+      context "when finished_on is already set" do
+        let(:induction_period) { FactoryBot.create(:induction_period, finished_on: 1.month.ago) }
+
+        it "prevents changes to finished_on" do
+          induction_period.finished_on = 2.months.ago
+          expect(induction_period).not_to be_valid
+          expect(induction_period.errors[:finished_on]).to include("Cannot change end date once it has been set")
+        end
+
+        it "allows changes to other attributes" do
+          induction_period.started_on = 2.years.ago
+          expect(induction_period).to be_valid
+        end
+      end
+
+      context "when finished_on is nil" do
+        let(:induction_period) { FactoryBot.create(:induction_period, :active) }
+
+        it "allows setting finished_on" do
+          induction_period.finished_on = 1.month.ago
+          induction_period.number_of_terms = 3
+          expect(induction_period).to be_valid
+        end
+      end
+    end
   end
 
   describe "scopes" do
