@@ -79,6 +79,11 @@ Rails.application.routes.draw do
         get 'prohibited-from-teaching/:id', to: '/appropriate_bodies/claim_an_ect/errors#prohibited_from_teaching', as: 'prohibited'
       end
     end
+
+    namespace :process_batch, path: 'bulk', as: 'batch' do
+      resources :claims, format: %i[html csv]
+      resources :actions, format: %i[html csv]
+    end
   end
 
   namespace :migration do

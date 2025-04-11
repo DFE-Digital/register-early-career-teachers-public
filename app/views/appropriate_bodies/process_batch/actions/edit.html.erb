@@ -1,0 +1,20 @@
+<%
+  page_data(
+    title: "Record outcomes or release a group of ECTs",
+    error: @pending_induction_submission_batch.errors.any?,
+    backlink_href: ab_batch_actions_path
+  )
+%>
+
+<p class='govuk-body'>
+  <%= @pending_induction_submission_batch.pending_induction_submissions.count %> total,
+  <%= @pending_induction_submission_batch.pending_induction_submissions.with_errors.count %> errors,
+  <%= @pending_induction_submission_batch.pending_induction_submissions.pass.count %> passes,
+  <%= @pending_induction_submission_batch.pending_induction_submissions.fail.count %> fails,
+  <%= @pending_induction_submission_batch.pending_induction_submissions.release.count %> releases.
+</p>
+
+<%= form_with(model: @pending_induction_submission_batch, url: ab_batch_action_path, method: 'put') do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+  <%= f.govuk_submit 'Confirm outcomes and releases' %>
+<% end %>
