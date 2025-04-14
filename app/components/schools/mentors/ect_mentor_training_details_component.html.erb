@@ -1,0 +1,26 @@
+<h2 class="govuk-heading-m">ECT mentor training details</h2>
+
+<% if eligible_for_training? %>
+  <%= govuk_summary_card(title: "Reported to us by your school", actions: [{ href: "#", text: "Lead provider" }]) do %>
+    <%= govuk_summary_list do |list| %>
+      <% list.with_row do |row| %>
+        <% row.with_key { "Lead provider" } %>
+        <% row.with_value { "Some value" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= govuk_summary_card(title: "Reported to us by your lead provider", actions: [{ href: "#", text: "Lead provider" }]) do %>
+    <%= govuk_summary_list do |list| %>
+      <% list.with_row do |row| %>
+        <% row.with_value { "Your lead provider has not reported any information to us yet" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% else %>
+  <p class="govuk-body">
+    <%= teacher_full_name(teacher) %> cannot do ECTE mentor training according to our records.
+    This could be because they’ve undertaken it before.
+  </p>
+<% end %>
+
