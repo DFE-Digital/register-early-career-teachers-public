@@ -51,7 +51,6 @@ RSpec.describe Teachers::Manage do
           heading: "TRS attributes updated",
           teacher:,
           metadata: {
-            trs_data_last_refreshed_at: [nil, Time.zone.now],
             trs_initial_teacher_training_end_date: [nil, 2.years.ago.to_date],
             trs_initial_teacher_training_provider_name: [nil, "ITT provider"],
             trs_qts_awarded_on: [nil, 3.years.ago.to_date],
@@ -62,10 +61,25 @@ RSpec.describe Teachers::Manage do
             "TRS qts status description set to 'QTS status description'",
             "TRS initial teacher training provider name set to 'ITT provider'",
             "TRS initial teacher training end date set to '#{2.years.ago.to_date.to_fs(:govuk_short)}'",
-            "TRS data last refreshed at set to '#{Time.zone.now}'"
           ]
         )
       end
+    end
+
+    it 'updates the trs_data_last_refreshed_at on the teacher' do
+      refresh_time = 2.hours.ago
+
+      service.update_trs_attributes!(
+        trs_qts_status_description:,
+        trs_qts_awarded_on:,
+        trs_initial_teacher_training_provider_name:,
+        trs_initial_teacher_training_end_date:,
+        trs_data_last_refreshed_at: refresh_time
+      )
+
+      teacher.reload
+
+      expect(teacher.trs_data_last_refreshed_at).to be_within(0.0001).of(refresh_time)
     end
   end
 

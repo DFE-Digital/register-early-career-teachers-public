@@ -80,10 +80,12 @@ class Teachers::Manage
         trs_qts_status_description:,
         trs_qts_awarded_on:,
         trs_initial_teacher_training_provider_name:,
-        trs_initial_teacher_training_end_date:,
-        trs_data_last_refreshed_at:
+        trs_initial_teacher_training_end_date:
       )
+
       record_teacher_trs_attribute_update(modifications: teacher.changes)
+
+      teacher.trs_data_last_refreshed_at = trs_data_last_refreshed_at
       teacher.save!
     end
   end
