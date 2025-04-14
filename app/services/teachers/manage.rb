@@ -44,6 +44,8 @@ class Teachers::Manage
     end
   end
 
+  # FIXME: remove this method, there's no custom event for changing the QTS
+  #        award date so it doesn't need special treatment
   def update_qts_awarded_on!(trs_qts_awarded_on:)
     Teacher.transaction do
       @old_award_date = teacher.trs_qts_awarded_on
@@ -54,20 +56,22 @@ class Teachers::Manage
     end
   end
 
+  # FIXME: remove this method, there's no custom event for changing the ITT
+  #        provider name
   def update_itt_provider_name!(trs_initial_teacher_training_provider_name:)
     Teacher.transaction do
-      @itt_provider_before = teacher.trs_initial_teacher_training_provider_name
+      @old_itt_provider = teacher.trs_initial_teacher_training_provider_name
       teacher.assign_attributes(trs_initial_teacher_training_provider_name:)
-      @itt_provider_after = teacher.trs_initial_teacher_training_provider_name
+      @new_itt_provider = teacher.trs_initial_teacher_training_provider_name
       teacher.save!
     end
   end
 
   def update_trs_induction_status!(trs_induction_status:)
     Teacher.transaction do
-      @induction_status_before = teacher.trs_induction_status
+      @old_induction_status = teacher.trs_induction_status
       teacher.assign_attributes(trs_induction_status:)
-      @induction_status_after = teacher.trs_induction_status
+      @new_induction_status = teacher.trs_induction_status
       record_induction_status_change_event
       teacher.save!
     end
@@ -109,7 +113,7 @@ private
   end
 
   def induction_status_changed?
-    induction_status_before != induction_status_after
+    old_induction_status != new_induction_status
   end
 
   # Deltas ---------------------------------------------------------------------
@@ -141,6 +145,8 @@ private
   end
 
   def record_induction_status_change_event
+    return true unless induction_status_changed?
+
     Events::Record.teacher_induction_status_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_status)
   end
 
