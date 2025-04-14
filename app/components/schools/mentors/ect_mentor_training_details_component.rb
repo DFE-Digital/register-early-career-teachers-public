@@ -18,6 +18,10 @@ module Schools
       def eligible_for_training?
         teacher.mentor_completion_date.nil?
       end
+
+      def first_ect_lead_provider_name
+        ects.find { |ect| ect.lead_provider.present? }&.lead_provider&.name
+      end
     end
   end
 end
