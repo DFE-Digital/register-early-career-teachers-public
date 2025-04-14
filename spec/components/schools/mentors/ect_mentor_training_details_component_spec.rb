@@ -3,8 +3,9 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   let(:mentor) { create(:mentor_at_school_period, teacher:, school:) }
   let(:teacher) { create(:teacher, mentor_completion_date: nil) }
 
-  context 'when teacher is eligible and there is a provider-led ECT' do
+  context 'when teacher is eligible and there is a provider-led ECT with a lead provider' do
     let(:provider_led_ect) { create(:ect_at_school_period, programme_type: 'provider_led', school:) }
+    let(:ect) { create(:ect_at_school_period, programme_type: "provider_led", lead_provider: create(:lead_provider, name: "Hidden leaf village")) }
 
     it 'renders the summary cards' do
       render_inline(described_class.new(teacher:, mentor:, ects: [provider_led_ect]))
@@ -12,6 +13,11 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
       expect(rendered_content).to have_css('h2', text: 'ECT mentor training details')
       expect(rendered_content).to have_text('Reported to us by your school')
       expect(rendered_content).to have_text('Reported to us by your lead provider')
+    end
+
+    it "shows the lead provider name from the first provider-led ECT" do
+      render_inline(described_class.new(teacher:, mentor:, ects: [ect]))
+      expect(rendered_content).to have_text("Hidden leaf village")
     end
   end
 

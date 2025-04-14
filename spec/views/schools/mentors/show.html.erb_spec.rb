@@ -12,7 +12,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
   let(:ect_teacher) { create(:teacher, trs_first_name: 'Konohamaru', trs_last_name: 'Sarutobi') }
 
   let(:ect_period) do
-    create(:ect_at_school_period, teacher: ect_teacher, school:, started_on: start_date, finished_on: end_date)
+    create(:ect_at_school_period, teacher: ect_teacher, school:, started_on: start_date, finished_on: end_date, lead_provider: create(:lead_provider, name: "Hidden leaf village"))
   end
 
   let!(:mentorship_period) do
@@ -41,7 +41,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
       end
 
       it 'renders the lead provider row with a value' do
-        expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Some value')
+        expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Hidden leaf village')
       end
 
       it 'renders the lead provider summary card' do
