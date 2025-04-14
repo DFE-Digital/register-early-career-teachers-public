@@ -36,10 +36,10 @@ class Teachers::Manage
 
   def update_name!(trs_first_name:, trs_last_name:)
     Teacher.transaction do
-      @old_name = full_name
+      old_name = full_name
       teacher.assign_attributes(trs_first_name:, trs_last_name:)
-      @new_name = full_name
-      record_name_change_event
+      new_name = full_name
+      record_name_change_event(old_name, new_name)
       teacher.save!
     end
   end
@@ -51,7 +51,6 @@ class Teachers::Manage
       @old_award_date = teacher.trs_qts_awarded_on
       teacher.assign_attributes(trs_qts_awarded_on:)
       @new_award_date = teacher.trs_qts_awarded_on
-      record_award_change_event
       teacher.save!
     end
   end
@@ -60,19 +59,17 @@ class Teachers::Manage
   #        provider name
   def update_itt_provider_name!(trs_initial_teacher_training_provider_name:)
     Teacher.transaction do
-      @old_itt_provider = teacher.trs_initial_teacher_training_provider_name
       teacher.assign_attributes(trs_initial_teacher_training_provider_name:)
-      @new_itt_provider = teacher.trs_initial_teacher_training_provider_name
       teacher.save!
     end
   end
 
   def update_trs_induction_status!(trs_induction_status:)
     Teacher.transaction do
-      @old_induction_status = teacher.trs_induction_status
+      old_induction_status = teacher.trs_induction_status
       teacher.assign_attributes(trs_induction_status:)
-      @new_induction_status = teacher.trs_induction_status
-      record_induction_status_change_event
+      new_induction_status = teacher.trs_induction_status
+      record_induction_status_change_event(old_induction_status, new_induction_status)
       teacher.save!
     end
   end
@@ -93,61 +90,21 @@ class Teachers::Manage
 
 private
 
-  attr_reader :new_name, :old_name, :new_award_date, :old_award_date, :old_induction_status, :new_induction_status
-
   def full_name
     ::Teachers::Name.new(teacher).full_name_in_trs
   end
 
-  # State ----------------------------------------------------------------------
-  def name_changed?
-    return false if old_name.nil?
-
-    new_name != old_name
-  end
-
-  def qts_awarded_on_changed?
-    return false if teacher.trs_qts_awarded_on.nil?
-
-    new_award_date != old_award_date
-  end
-
-  def induction_status_changed?
-    old_induction_status != new_induction_status
-  end
-
-  # Deltas ---------------------------------------------------------------------
-  def changed_names
-    { old_name:, new_name: }
-  end
-
-  def changed_qts_awarded_on
-    { old_award_date:, new_award_date: }
-  end
-
-  def changed_status
-    { old_induction_status:, new_induction_status: }
-  end
-
   # Events ---------------------------------------------------------------------
-  def record_name_change_event
-    return true unless name_changed?
+  def record_name_change_event(old_name, new_name)
+    return if old_name == new_name
 
-    Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_names)
+    Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, old_name:, new_name:)
   end
 
-  # TODO: implement tracking award changes?
-  def record_award_change_event
-    return true unless qts_awarded_on_changed?
+  def record_induction_status_change_event(old_induction_status, new_induction_status)
+    return if old_induction_status == new_induction_status
 
-    :no_op
-    # Events::Record.qts_awarded_on_changed_in_trs!(author:, teacher:, appropriate_body:, **manage_teacher.changed_qts_awarded_on)
-  end
-
-  def record_induction_status_change_event
-    return true unless induction_status_changed?
-
-    Events::Record.teacher_induction_status_changed_in_trs!(author:, teacher:, appropriate_body:, **changed_status)
+    Events::Record.teacher_induction_status_changed_in_trs!(author:, teacher:, appropriate_body:, old_induction_status:, new_induction_status:)
   end
 
   def record_teacher_trs_attribute_update(modifications:)
