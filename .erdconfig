@@ -1,0 +1,24 @@
+# This YAML file configures the domain model diagram.
+# Full options: https://voormedia.github.io/rails-erd/customise.html
+
+# You can regenerate the diagram using `bundle exec erd`
+filename: documentation/domain-model
+filetype: png
+title: Register Early Career Teachers - Entity Relationship Diagram
+exclude: 
+  - Blazer::Query
+  - Blazer::Check
+  - Blazer::Dashboard
+  - Blazer::Audit
+  - Blazer::DashboardQuery
+  - SolidQueue::Process
+  - SolidQueue::Job
+  - SolidQueue::BlockedExecution
+  - SolidQueue::FailedExecution
+  - SolidQueue::Pause
+  - SolidQueue::RecurringExecution
+  - SolidQueue::RecurringTask
+  - SolidQueue::ScheduledExecution
+  - SolidQueue::ClaimedExecution
+  - SolidQueue::ReadyExecution
+  - SolidQueue::Semaphore 
