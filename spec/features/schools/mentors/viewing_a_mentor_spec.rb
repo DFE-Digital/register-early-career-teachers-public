@@ -1,17 +1,21 @@
 RSpec.describe "Viewing a mentor" do
   scenario 'Happy path' do
-    given_that_i_have_an_active_mentor
+    given_that_i_have_an_active_mentor_with_an_ect
     and_i_sign_in_as_a_school
     when_i_visit_the_index_page
     and_i_click_on_a_mentor
     then_i_am_on_the_mentor_details_page
+
+    given_i_click_on_an_assigned_ect
+    and_i_am_on_the_ect_details_page
+    when_i_click_the_back_link
+    then_i_am_back_on_the_mentor_details_page
 
     given_i_click_the_back_link
     then_i_am_on_the_mentors_index_page
   end
 
 private
-
 
   def given_that_i_have_an_active_mentor_with_an_ect
     start_date = Date.new(2023, 9, 1)
@@ -58,7 +62,7 @@ private
   end
 
   def then_i_am_on_the_mentor_details_page
-    expect(page.url).to end_with('/schools/mentors/1')
+    expect(page.url).to end_with("/schools/mentors/#{@mentor.id}")
   end
 
   def then_i_am_on_the_mentors_index_page

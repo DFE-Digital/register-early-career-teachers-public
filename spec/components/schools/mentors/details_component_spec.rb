@@ -30,7 +30,14 @@ RSpec.describe Schools::Mentors::DetailsComponent, type: :component do
   end
 
   it 'renders links for assigned ECTs' do
-    expect(page).to have_link('Konohamaru Sarutobi', href: schools_ect_path(ect_period_1))
-    expect(page).to have_link('Boruto Uzumaki', href: schools_ect_path(ect_period_2))
+    expect(page).to have_link(
+      'Konohamaru Sarutobi',
+      href: schools_ect_path(ect_period_1, back_to_mentor: true, mentor_id: mentor.id)
+    )
+
+    expect(page).to have_link(
+      'Boruto Uzumaki',
+      href: schools_ect_path(ect_period_2, back_to_mentor: true, mentor_id: mentor.id)
+    )
   end
 end
