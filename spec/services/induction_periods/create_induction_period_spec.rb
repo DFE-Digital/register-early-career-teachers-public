@@ -2,39 +2,45 @@ describe 'InductionPeriods::CreateInductionPeriod' do
   include ActiveJob::TestHelper
 
   describe '#initialize' do
-    subject { InductionPeriods::CreateInductionPeriod.new(teacher:, appropriate_body:, started_on:, induction_programme:) }
+    subject { InductionPeriods::CreateInductionPeriod.new(author:, teacher:, params:) }
 
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
     let(:started_on) { 3.weeks.ago.to_date }
     let(:induction_programme) { 'cip' }
+    let(:params) do
+      {
+        started_on:,
+        appropriate_body_id: appropriate_body.id,
+        induction_programme:
+      }
+    end
+    let(:author) do
+      Sessions::Users::AppropriateBodyUser.new(
+        name: 'A user',
+        email: 'ab_user@something.org',
+        dfe_sign_in_user_id: SecureRandom.uuid,
+        dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id
+      )
+    end
 
-    it 'accepts and assigns the started_on date, teacher and induction programme' do
+    it 'accepts and assigns the author, teacher and params' do
+      expect(subject.author).to eql(author)
       expect(subject.teacher).to eql(teacher)
-      expect(subject.started_on).to eql(started_on)
-      expect(subject.induction_programme).to eql(induction_programme)
+      expect(subject.params).to eql(params)
     end
 
     describe '#create_induction_period!' do
-      let(:author) do
-        Sessions::Users::AppropriateBodyUser.new(
-          name: 'A user',
-          email: 'ab_user@something.org',
-          dfe_sign_in_user_id: SecureRandom.uuid,
-          dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id
-        )
-      end
-
       context 'when the induction period is valid' do
         it 'saves the record' do
-          induction_period = subject.create_induction_period!(author:)
+          induction_period = subject.create_induction_period!
 
           expect(induction_period).to be_a(InductionPeriod)
           expect(induction_period).to be_persisted
         end
 
         it 'records an induction_period_opened event' do
-          subject.create_induction_period!(author:)
+          subject.create_induction_period!
 
           perform_enqueued_jobs
 
@@ -43,7 +49,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
 
         it 'creates the event with the expected values' do
           freeze_time do
-            subject.create_induction_period!(author:)
+            subject.create_induction_period!
 
             perform_enqueued_jobs
 
@@ -56,7 +62,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
         end
 
         it 'returns the induction period and exposes it as a attr' do
-          returned_value = subject.create_induction_period!(author:)
+          returned_value = subject.create_induction_period!
 
           expect(returned_value).to be_an(InductionPeriod)
           expect(subject.induction_period).to be(returned_value)
@@ -69,7 +75,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
         let(:started_on) { 3.weeks.from_now.to_date }
 
         it 'raises error and does not record event' do
-          expect { subject.create_induction_period!(author:) }.to raise_error(ActiveRecord::RecordInvalid)
+          expect { subject.create_induction_period! }.to raise_error(ActiveRecord::RecordInvalid)
 
           perform_enqueued_jobs
 
