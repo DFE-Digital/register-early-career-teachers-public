@@ -17,6 +17,8 @@ class School < ApplicationRecord
   has_many :events
   has_many :mentor_at_school_periods, inverse_of: :school
   has_many :mentor_teachers, -> { distinct }, through: :mentor_at_school_periods, source: :teacher
+  has_many :pending_school_joiners, inverse_of: :school
+  has_many :pending_teachers, through: :pending_school_joiners, source: :teacher
 
   # Validations
   validates :chosen_lead_provider_id,

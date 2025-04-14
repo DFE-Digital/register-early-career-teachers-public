@@ -356,3 +356,15 @@
   - trn
   - created_at
   - updated_at
+  :pending_school_joiners:
+  - id
+  - teacher_id
+  - school_id
+  - role_type
+  - starting_on
+  - programme_type
+  - mentor_at_school_period_id
+  - lead_provider_id
+  - appropriate_body_id
+  - created_at
+  - updated_at
