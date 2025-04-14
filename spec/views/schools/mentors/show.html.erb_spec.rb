@@ -81,4 +81,22 @@ RSpec.describe 'schools/mentors/show.html.erb' do
       end
     end
   end
+
+  context 'when all ECTs are school-led' do
+    let(:ect_period) do
+      create(:ect_at_school_period, :school_led, teacher: ect_teacher, school:, started_on: start_date, finished_on: end_date)
+    end
+
+    it 'does not render the ECT mentor training details H2' do
+      expect(rendered).not_to have_css('h2.govuk-heading-m', text: 'ECT mentor training details')
+    end
+
+    it 'does not render the school summary card' do
+      expect(rendered).not_to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your school')
+    end
+
+    it 'does not render the lead provider row' do
+      expect(rendered).not_to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
+    end
+  end
 end
