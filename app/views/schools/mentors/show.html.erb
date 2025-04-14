@@ -2,30 +2,35 @@
   title: teacher_full_name(@teacher),
   caption: "TRN: #{@teacher.trn}",
   header: teacher_full_name(@teacher),
-  backlink_href: schools_mentors_home_path) %>
+  backlink_href: schools_mentors_home_path
+) %>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
     <h2 class="govuk-heading-m">Mentor details</h2>
 
-    <%= govuk_summary_list do |summary_list|
-      summary_list.with_row do |row|
-      row.with_key { 'Name' }
-      row.with_value { teacher_full_name(@teacher) }
-      end; summary_list.with_row do |row|
-      row.with_key(text: 'Email address')
-      row.with_value(text: @mentor.email)
+    <%= govuk_summary_list do |summary_list| %>
+      <% summary_list.with_row do |row| %>
+        <% row.with_key { 'Name' } %>
+        <% row.with_value { teacher_full_name(@teacher) } %>
+      <% end %>
 
-      end; summary_list.with_row do |row|
-      row.with_key(text: 'Assigned ECTs')
-      row.with_value { safe_join(@ects.map { |ect| govuk_link_to teacher_full_name(ect.teacher), schools_ect_path(ect)}, tag.br) }
-      end; end %>
+      <% summary_list.with_row do |row| %>
+        <% row.with_key(text: 'Email address') %>
+        <% row.with_value(text: @mentor.email) %>
+      <% end %>
+
+      <% summary_list.with_row do |row| %>
+        <% row.with_key(text: 'Assigned ECTs') %>
+        <% row.with_value { safe_join(@ects.map { |ect| govuk_link_to teacher_full_name(ect.teacher), schools_ect_path(ect) }, tag.br) } %>
+      <% end %>
+    <% end %>
 
     <h2 class="govuk-heading-m">ECT mentor training details</h2>
 
     <% if @teacher.mentor_completion_date.nil? %>
-      <%= govuk_summary_card(title: "Reported to us by your school", actions: [{ href: "#", text: "Lead provider" }]) do |card| %>
+      <%= govuk_summary_card(title: "Reported to us by your school", actions: [{ href: "#", text: "Lead provider" }]) do %>
         <%= govuk_summary_list do |list| %>
           <% list.with_row do |row| %>
             <% row.with_key { "Lead provider" } %>
@@ -34,20 +39,19 @@
         <% end %>
       <% end %>
 
-        <%= govuk_summary_card(title: "Reported to us by your lead provider", actions: [{ href: "#", text: "Lead provider" }]) do %>
-          <%= govuk_summary_list do |list| %>
-            <% list.with_row do |row| %>
-              <% row.with_value { "Your lead provider has not reported any information to us yet" } %>
-            <% end %>
+      <%= govuk_summary_card(title: "Reported to us by your lead provider", actions: [{ href: "#", text: "Lead provider" }]) do %>
+        <%= govuk_summary_list do |list| %>
+          <% list.with_row do |row| %>
+            <% row.with_value { "Your lead provider has not reported any information to us yet" } %>
           <% end %>
         <% end %>
+      <% end %>
 
     <% else %>
       <p class="govuk-body">
         <%= teacher_full_name(@teacher) %> cannot do ECTE mentor training according to our records.
         This could be because they’ve undertaken it before.
       </p>
-      
     <% end %>
   </div>
 </div>
