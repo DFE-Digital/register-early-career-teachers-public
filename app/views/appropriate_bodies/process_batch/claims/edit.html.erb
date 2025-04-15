@@ -16,3 +16,5 @@
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
   <%= f.govuk_submit 'Confirm claims' %>
 <% end %>
+
+<%= govuk_button_link_to 'Download failed submissions', ab_batch_claim_path(@pending_induction_submission_batch, format: :csv), secondary: true %>

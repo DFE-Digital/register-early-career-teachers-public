@@ -13,8 +13,6 @@
 <%= batch_processed_data_table(@pending_induction_submission_batch) %>
 <%= batch_download_data_table(@pending_induction_submission_batch) %>
 
-<%= govuk_button_link_to 'Download CSV', ab_batch_claim_path(@pending_induction_submission_batch, format: :csv), secondary: true %>
-
 <% if @pending_induction_submission_batch.processed? %>
 <%# govuk_button_link_to 'Confirm changes', edit_ab_batch_claim_path(@pending_induction_submission_batch) %>
 <% end %>
