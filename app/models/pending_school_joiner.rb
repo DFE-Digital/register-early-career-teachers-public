@@ -19,5 +19,7 @@ class PendingSchoolJoiner < ApplicationRecord
   belongs_to :appropriate_body, optional: true
 
   # TODO: check for future date too
+  # TODO: validate uniqueness for teacher_id/school_id perhaps (+ db constraint)
+  #
   validates :starting_on, presence: { message: "Must have a starting_on date" }
 end
