@@ -134,7 +134,7 @@ The induction history table shows the following:
 - Start date (when the ECT started induction with the previous appropriate body)
 - End date (when the ECT stopped doing induction with the previous appropriate body, but did not pass or fail -- this is when they are released)
 - Number of terms (this must be a whole number, and this is given when the ECT is released)
-- Induction programme type (FIP/CIP/DIY)
+- Induction programme type (School-led or Provider-led)
 
 Below the induction history are 2 more subheadings:
 
@@ -169,7 +169,7 @@ When they are claiming an ECT, the appropriate body user needs to state:
 
 1.  When the induction began for that ECT with that appropriate body
 
-2.  What type of induction programme they are doing (FIP, CIP, DIY)
+2.  What type of induction programme they are doing (School-led or Provider-led)
 
 On 1, there is validation that makes sure the date given isn't
 before the date QTS was recorded. This is because induction should only
@@ -393,7 +393,7 @@ expand to other academic years.
 - TRN
 - School URN
 - Status (defined below)
-- Induction type (FIP, CIP or DIY)
+- Induction type (shown as Provider-led or School-led with the underlying data reflecting the legacy values: FIP, CIP or DIY)
 - Induction tutor (their email)
 
 📊🙋 There was an exercise to consider what appropriate body would need

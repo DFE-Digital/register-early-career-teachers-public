@@ -102,7 +102,7 @@ The registration process takes place with the following steps:
     * [alerts](https://www.gov.uk/government/collections/teacher-misconduct)
 3. Asking for more details about the induction:
     * the date the ECT began their induction with the appropriate body
-    * what induction programme type (FIP/CIP/DIY) they're doing
+    * what induction programme type (Provider-led or School-led) they’re doing
 
 ### Validation
 
@@ -116,7 +116,7 @@ The registration process takes place with the following steps:
   - must be present
   - must be after the QTS award date
 * **Induction programme**
-  - must be either `fip`, `cip` or `diy` (enforced in the database)
+  - must be either `provider_led` or `school_led` (enforced in the database)
 
 ### Early exits
 
