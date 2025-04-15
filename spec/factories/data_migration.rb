@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory(:data_migration) do
-    model { :academic_year }
+    model { :registration_period }
     worker { 0 }
     processed_count { 0 }
     failure_count { 0 }

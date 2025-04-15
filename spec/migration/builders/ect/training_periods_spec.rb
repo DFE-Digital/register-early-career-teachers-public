@@ -1,16 +1,16 @@
 describe Builders::ECT::TrainingPeriods do
   subject(:service) { described_class.new(teacher:, training_period_data:) }
 
-  let(:academic_year) { FactoryBot.create(:academic_year) }
-  let(:partnership_1) { FactoryBot.create(:provider_partnership, academic_year:) }
-  let(:partnership_2) { FactoryBot.create(:provider_partnership, academic_year:) }
+  let(:registration_period) { FactoryBot.create(:registration_period) }
+  let(:partnership_1) { FactoryBot.create(:provider_partnership, registration_period:) }
+  let(:partnership_2) { FactoryBot.create(:provider_partnership, registration_period:) }
   let(:school_1) { FactoryBot.create(:school, :independent, urn: "123456") }
   let(:school_2) { FactoryBot.create(:school, :independent, urn: "987654") }
   let(:teacher) { FactoryBot.create(:teacher) }
   let!(:school_period_1) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago.to_date, finished_on: 1.month.ago.to_date, teacher:, school: school_1) }
   let!(:school_period_2) { FactoryBot.create(:ect_at_school_period, started_on: 1.month.ago.to_date, finished_on: nil, teacher:, school: school_2) }
-  let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: academic_year.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
-  let(:training_period_2) { FactoryBot.build(:training_period_data, cohort_year: academic_year.year, lead_provider: partnership_2.lead_provider.name, delivery_partner: partnership_2.delivery_partner.name, start_date: 1.month.ago.to_date, end_date: nil) }
+  let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: registration_period.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
+  let(:training_period_2) { FactoryBot.build(:training_period_data, cohort_year: registration_period.year, lead_provider: partnership_2.lead_provider.name, delivery_partner: partnership_2.delivery_partner.name, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:training_period_data) { [training_period_1, training_period_2] }
 
   describe "#build" do
@@ -38,7 +38,7 @@ describe Builders::ECT::TrainingPeriods do
     end
 
     context "when there is no ECTAtSchoolPeriod that contains the training dates" do
-      let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: academic_year.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 14.months.ago.to_date, end_date: 1.month.ago.to_date) }
+      let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: registration_period.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 14.months.ago.to_date, end_date: 1.month.ago.to_date) }
 
       it "creates a TeacherMigrationFailure record" do
         expect {
