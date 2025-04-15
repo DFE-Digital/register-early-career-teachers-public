@@ -3,16 +3,15 @@ module Schools
     class ECTMentorTrainingDetailsComponent < ViewComponent::Base
       include TeacherHelper
 
-      attr_reader :teacher, :mentor, :ects
+      attr_reader :teacher, :mentor
 
-      def initialize(teacher:, mentor:, ects:)
+      def initialize(teacher:, mentor:)
         @teacher = teacher
         @mentor = mentor
-        @ects = ects
       end
 
       def render?
-        ects.any?(&:provider_led?)
+        assigned_ects.any?(&:provider_led?)
       end
 
       def eligible_for_training?
@@ -20,11 +19,15 @@ module Schools
       end
 
       def first_lead_provider_name
-        ects
+        assigned_ects
           .select { |ect| ect.lead_provider.present? }
           .min_by(&:started_on)
           &.lead_provider
           &.name
+      end
+
+      def assigned_ects
+        @assigned_ects ||= @mentor.currently_assigned_ects
       end
     end
   end

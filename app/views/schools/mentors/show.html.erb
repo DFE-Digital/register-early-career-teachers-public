@@ -10,14 +10,12 @@
 
     <%= render Schools::Mentors::DetailsComponent.new(
       teacher: @teacher,
-      mentor: @mentor,
-      ects: @ects
+      mentor: @mentor
     ) %>
 
     <%= render Schools::Mentors::ECTMentorTrainingDetailsComponent.new(
           teacher: @teacher,
-          mentor: @mentor,
-          ects: @ects
+          mentor: @mentor
         ) %>
   </div>
 </div>
