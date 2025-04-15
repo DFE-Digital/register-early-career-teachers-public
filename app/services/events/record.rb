@@ -172,8 +172,8 @@ module Events
 
     # Admin events
 
-    def self.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
-      event_type = :admin_updates_induction_period
+    def self.record_induction_period_updated!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
+      event_type = :induction_period_updated
 
       heading = 'Induction period updated by admin'
 
