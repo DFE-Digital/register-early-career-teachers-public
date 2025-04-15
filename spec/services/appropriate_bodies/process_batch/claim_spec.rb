@@ -20,26 +20,15 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   let(:pending_induction_submission_batch) do
-    FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:)
+    FactoryBot.create(:pending_induction_submission_batch, :claim,
+                      appropriate_body:,
+                      data: [
+                        { trn:, dob:, start_date:, induction_programme:, error: }
+                      ])
   end
 
   let(:submissions) do
     service.pending_induction_submission_batch.pending_induction_submissions
-  end
-
-  let(:csv_data) do
-    <<~CSV_DATA
-      trn,dob,start_date,induction_programme,error
-      #{trn},#{dob},#{start_date},#{induction_programme},#{error}
-    CSV_DATA
-  end
-
-  let(:csv_file) do
-    double(:csv_file, download: csv_data, attached?: true, content_type: 'text/csv')
-  end
-
-  before do
-    allow(pending_induction_submission_batch).to receive(:csv_file).and_return(csv_file)
   end
 
   describe '#process!' do
@@ -51,10 +40,14 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       let(:induction_period) { teacher.induction_periods.first }
 
-      before { service.process! }
+      before do
+        allow(Events::Record).to receive(:record_induction_period_opened_event!).and_call_original
+
+        service.process!
+      end
 
       it 'has no error message' do
-        expect(pending_induction_submission_batch.reload.error_message).to eq '-'
+        expect(pending_induction_submission_batch.reload.error_message).to be_nil
         expect(submission.error_message).to eq '✅'
       end
 
@@ -85,6 +78,21 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         expect(induction_period.outcome).to be_nil
         expect(induction_period.induction_programme).to eq('fip')
       end
+
+      it 'creates events owned by the author' do
+        expect(Events::Record).to have_received(:record_induction_period_opened_event!).with(
+          appropriate_body:,
+          teacher:,
+          induction_period:,
+          author:,
+          modifications: {
+            "appropriate_body_id" => [nil, appropriate_body.id],
+            "induction_programme" => [nil, "fip"],
+            "started_on" => [nil, Date.parse(start_date)],
+            "teacher_id" => [nil, teacher.id],
+          }
+        )
+      end
     end
 
     context 'when TRS induction status is unknown' do
@@ -99,7 +107,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'batch error message' do
         subject { pending_induction_submission_batch.error_message }
 
-        it { is_expected.to eq '-' }
+        it { is_expected.to be_nil }
       end
 
       describe 'submission error message' do
@@ -121,7 +129,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'batch error message' do
         subject { pending_induction_submission_batch.error_message }
 
-        it { is_expected.to eq '-' }
+        it { is_expected.to be_nil }
       end
 
       describe 'submission error message' do
@@ -143,7 +151,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'batch error message' do
         subject { pending_induction_submission_batch.error_message }
 
-        it { is_expected.to eq '-' }
+        it { is_expected.to be_nil }
       end
 
       describe 'submission error message' do
@@ -165,7 +173,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'batch error message' do
         subject { pending_induction_submission_batch.error_message }
 
-        it { is_expected.to eq '-' }
+        it { is_expected.to be_nil }
       end
 
       describe 'submission error message' do
@@ -188,7 +196,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'batch error message' do
         subject { pending_induction_submission_batch.error_message }
 
-        it { is_expected.to eq '-' }
+        it { is_expected.to be_nil }
       end
 
       describe 'submission error message' do
@@ -212,7 +220,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'batch error message' do
         subject { pending_induction_submission_batch.error_message }
 
-        it { is_expected.to eq '-' }
+        it { is_expected.to be_nil }
       end
 
       describe 'submission error message' do

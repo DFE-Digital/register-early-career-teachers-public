@@ -355,6 +355,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
     t.string "error_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "data"
     t.index ["appropriate_body_id"], name: "idx_on_appropriate_body_id_58d86a161e"
   end
 

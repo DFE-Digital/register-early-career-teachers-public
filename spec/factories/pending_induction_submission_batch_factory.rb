@@ -3,6 +3,7 @@ FactoryBot.define do
     association :appropriate_body
     batch_status { 'pending' }
     error_message { nil }
+    data { nil }
 
     trait :action do
       batch_type { 'action' }
