@@ -1,9 +1,11 @@
 class PendingInductionSubmissionBatch < ApplicationRecord
   # Class methods
+  # @return [PendingInductionSubmissionBatch] type "claim"
   def self.new_claim_for(appropriate_body:, **)
     new(appropriate_body:, batch_type: 'claim', **)
   end
 
+  # @return [PendingInductionSubmissionBatch] type "action"
   def self.new_action_for(appropriate_body:, **)
     new(appropriate_body:, batch_type: 'action', **)
   end
