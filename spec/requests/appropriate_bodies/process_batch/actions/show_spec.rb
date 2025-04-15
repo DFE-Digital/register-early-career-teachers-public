@@ -2,7 +2,11 @@ RSpec.describe "Appropriate Body bulk actions show page", type: :request do
   include AuthHelper
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
-  let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
+  let(:batch) do
+    FactoryBot.create(:pending_induction_submission_batch, :action,
+                      appropriate_body:,
+                      data: [])
+  end
 
   context 'when not signed in' do
     it 'redirects to the root page' do

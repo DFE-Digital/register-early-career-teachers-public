@@ -3,7 +3,8 @@ module AppropriateBodies
     layout 'full'
 
     def show
-      @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+      pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+      @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
 
       if wrong_appropriate_body?
         block_other_ab
@@ -20,13 +21,15 @@ module AppropriateBodies
     end
 
     def edit
-      @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+      pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+      @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
 
       block_other_ab if wrong_appropriate_body?
     end
 
     def new
-      @pending_induction_submission_batch = PendingInductionSubmissionBatch.new
+      pending_induction_submission_batch = PendingInductionSubmissionBatch.new
+      @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
     end
 
   private
