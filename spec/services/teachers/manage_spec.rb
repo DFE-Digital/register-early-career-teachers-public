@@ -37,49 +37,93 @@ RSpec.describe Teachers::Manage do
     let(:trs_initial_teacher_training_end_date) { 2.years.ago.to_date }
     let(:trs_data_last_refreshed_at) { Time.zone.now }
 
-    it 'records a teacher attributes updated from TRS event' do
-      freeze_time do
+    context 'when something has changed' do
+      it 'updates the teacher record' do
+        expect(teacher.trs_qts_status_description).not_to eql(trs_qts_status_description)
+        expect(teacher.trs_qts_awarded_on).not_to eql(trs_qts_awarded_on)
+        expect(teacher.trs_initial_teacher_training_provider_name).not_to eql(trs_initial_teacher_training_provider_name)
+        expect(teacher.trs_initial_teacher_training_end_date).not_to eql(trs_initial_teacher_training_end_date)
+
         service.update_trs_attributes!(trs_qts_status_description:, trs_qts_awarded_on:, trs_initial_teacher_training_provider_name:, trs_initial_teacher_training_end_date:, trs_data_last_refreshed_at:)
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          author_email: 'christopher.biggins@education.gov.uk',
-          author_id: author.id,
-          author_name: 'Christopher Biggins',
-          author_type: :dfe_staff_user,
-          event_type: :teacher_attributes_updated_from_trs,
-          happened_at: Time.zone.now,
-          heading: "TRS attributes updated",
-          teacher:,
-          metadata: {
-            trs_initial_teacher_training_end_date: [nil, 2.years.ago.to_date],
-            trs_initial_teacher_training_provider_name: [nil, "ITT provider"],
-            trs_qts_awarded_on: [nil, 3.years.ago.to_date],
-            trs_qts_status_description: [nil, "QTS status description"]
-          }.with_indifferent_access,
-          modifications: [
-            "TRS qts awarded on set to '#{3.years.ago.to_date.to_fs(:govuk_short)}'",
-            "TRS qts status description set to 'QTS status description'",
-            "TRS initial teacher training provider name set to 'ITT provider'",
-            "TRS initial teacher training end date set to '#{2.years.ago.to_date.to_fs(:govuk_short)}'",
-          ]
+        expect(teacher.trs_qts_status_description).to eql(trs_qts_status_description)
+        expect(teacher.trs_qts_awarded_on).to eql(trs_qts_awarded_on)
+        expect(teacher.trs_initial_teacher_training_provider_name).to eql(trs_initial_teacher_training_provider_name)
+        expect(teacher.trs_initial_teacher_training_end_date).to eql(trs_initial_teacher_training_end_date)
+      end
+
+      it 'records a teacher attributes updated event from TRS event' do
+        freeze_time do
+          service.update_trs_attributes!(trs_qts_status_description:, trs_qts_awarded_on:, trs_initial_teacher_training_provider_name:, trs_initial_teacher_training_end_date:, trs_data_last_refreshed_at:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            author_email: 'christopher.biggins@education.gov.uk',
+            author_id: author.id,
+            author_name: 'Christopher Biggins',
+            author_type: :dfe_staff_user,
+            event_type: :teacher_attributes_updated_from_trs,
+            happened_at: Time.zone.now,
+            heading: "TRS attributes updated",
+            teacher:,
+            metadata: {
+              trs_initial_teacher_training_end_date: [nil, 2.years.ago.to_date],
+              trs_initial_teacher_training_provider_name: [nil, "ITT provider"],
+              trs_qts_awarded_on: [nil, 3.years.ago.to_date],
+              trs_qts_status_description: [nil, "QTS status description"]
+            }.with_indifferent_access,
+            modifications: [
+              "TRS qts awarded on set to '#{3.years.ago.to_date.to_fs(:govuk_short)}'",
+              "TRS qts status description set to 'QTS status description'",
+              "TRS initial teacher training provider name set to 'ITT provider'",
+              "TRS initial teacher training end date set to '#{2.years.ago.to_date.to_fs(:govuk_short)}'",
+            ]
+          )
+        end
+      end
+
+      it 'updates the trs_data_last_refreshed_at on the teacher' do
+        refresh_time = 2.hours.ago
+
+        service.update_trs_attributes!(
+          trs_qts_status_description:,
+          trs_qts_awarded_on:,
+          trs_initial_teacher_training_provider_name:,
+          trs_initial_teacher_training_end_date:,
+          trs_data_last_refreshed_at: refresh_time
         )
+
+        teacher.reload
+
+        expect(teacher.trs_data_last_refreshed_at).to be_within(1.second).of(refresh_time)
       end
     end
 
-    it 'updates the trs_data_last_refreshed_at on the teacher' do
-      refresh_time = 2.hours.ago
+    context 'when nothing has changed' do
+      let(:attrs) do
+        {
+          trs_qts_status_description: 'QTS status description',
+          trs_qts_awarded_on: 3.years.ago.to_date,
+          trs_initial_teacher_training_provider_name: 'ITT provider',
+          trs_initial_teacher_training_end_date: 2.years.ago.to_date,
+          trs_data_last_refreshed_at: 1.hour.ago
+        }
+      end
 
-      service.update_trs_attributes!(
-        trs_qts_status_description:,
-        trs_qts_awarded_on:,
-        trs_initial_teacher_training_provider_name:,
-        trs_initial_teacher_training_end_date:,
-        trs_data_last_refreshed_at: refresh_time
-      )
+      it 'does not record a teacher attributes updated event' do
+        teacher.update!(**attrs)
 
-      teacher.reload
+        service.update_trs_attributes!(**attrs)
 
-      expect(teacher.trs_data_last_refreshed_at).to be_within(0.0001).of(refresh_time)
+        expect(RecordEventJob).not_to have_received(:perform_later)
+      end
+
+      it 'does update the trs_data_last_refreshed_at on the teacher' do
+        teacher.update!(**attrs.merge(trs_data_last_refreshed_at: 2.hours.ago))
+
+        service.update_trs_attributes!(**attrs)
+
+        expect(teacher.trs_data_last_refreshed_at).to be_within(1.second).of(1.hour.ago)
+      end
     end
   end
 
