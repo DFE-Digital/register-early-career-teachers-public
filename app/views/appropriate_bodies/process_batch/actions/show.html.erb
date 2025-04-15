@@ -11,8 +11,6 @@
 <%= batch_processed_data_table(@pending_induction_submission_batch) %>
 <%= batch_download_data_table(@pending_induction_submission_batch) %>
 
-<%= govuk_button_link_to 'Download CSV', ab_batch_action_path(@pending_induction_submission_batch, format: :csv), secondary: true %>
-
 <% if @pending_induction_submission_batch.processed? %>
   <%= govuk_button_link_to 'Confirm actions', edit_ab_batch_action_path(@pending_induction_submission_batch) %>
 <% end %>
@@ -27,8 +25,8 @@
         pending_induction_submission.trs_first_name, 
         pending_induction_submission.trs_last_name, 
         induction_period.finished_on&.to_fs(:iso8601) || '-', 
-        induction_period.number_of_terms.to_s, 
-        (induction_period.outcome || 'release')
+        induction_period.number_of_terms&.to_s || '-', 
+        (induction_period.outcome || '-')
       ]
     end,
   )
