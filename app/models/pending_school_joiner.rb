@@ -7,15 +7,15 @@ class PendingSchoolJoiner < ApplicationRecord
        suffix: :programme_type
 
   enum :role_type,
-       { ect: "ect", mentor: "mentor" },
-       validate: { message: "Must be ECT or mentor" },
-       suffix: :role_type
+    { ect: "ect", mentor: "mentor" },
+    validate: { message: "Must be ECT or mentor" },
+    suffix: :role_type
 
   belongs_to :teacher, inverse_of: :pending_school_starts
   belongs_to :school, inverse_of: :pending_school_joiners
 
   belongs_to :mentor_at_school_period, optional: true
-  belongs_to :lead_provider, optional: true
+  belongs_to :lead_provider, inverse_of: :pending_school_joiners, optional: true
   belongs_to :appropriate_body, optional: true
 
   # TODO: check for future date too
