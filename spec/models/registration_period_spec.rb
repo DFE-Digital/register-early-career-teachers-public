@@ -1,10 +1,10 @@
-describe AcademicYear do
+describe RegistrationPeriod do
   describe "associations" do
     it { is_expected.to have_many(:provider_partnerships) }
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:academic_year) }
+    subject { FactoryBot.build(:registration_period) }
 
     it { is_expected.to validate_presence_of(:year) }
     it { is_expected.to validate_uniqueness_of(:year) }
