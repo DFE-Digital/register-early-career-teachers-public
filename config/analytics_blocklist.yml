@@ -269,6 +269,7 @@
   - appropriate_body_id
   - batch_type
   - batch_status
+  - data
   - error_message
   - created_at
   - updated_at

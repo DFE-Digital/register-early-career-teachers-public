@@ -32,26 +32,15 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   end
 
   let(:pending_induction_submission_batch) do
-    FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
+    FactoryBot.create(:pending_induction_submission_batch, :action,
+                      appropriate_body:,
+                      data: [
+                        { trn:, dob:, end_date:, number_of_terms:, objective:, error: }
+                      ])
   end
 
   let(:submission) do
     service.pending_induction_submission_batch.pending_induction_submissions.first
-  end
-
-  let(:csv_data) do
-    <<~CSV_DATA
-      trn,dob,end_date,number_of_terms,objective,error
-      #{trn},#{dob},#{end_date},#{number_of_terms},#{objective},#{error}
-    CSV_DATA
-  end
-
-  let(:csv_file) do
-    double(:csv_file, download: csv_data, attached?: true, content_type: 'text/csv')
-  end
-
-  before do
-    allow(pending_induction_submission_batch).to receive(:csv_file).and_return(csv_file)
   end
 
   describe '#process!' do
@@ -94,7 +83,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       it 'captures no error message' do
-        expect(pending_induction_submission_batch.reload.error_message).to eq '-'
+        expect(pending_induction_submission_batch.reload.error_message).to be_nil
         expect(submission.error_message).to eq '✅'
       end
 
@@ -159,7 +148,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
       describe '#do!' do
         before do
+          allow(Events::Record).to receive(:record_appropriate_body_passes_teacher_event).and_call_original
+
           service.do!
+
           induction_period.reload
         end
 
@@ -167,6 +159,15 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
           expect(induction_period.finished_on).to eq(Date.parse(end_date))
           expect(induction_period.number_of_terms).to eq(3.2)
           expect(induction_period.outcome).to eq('pass')
+        end
+
+        it 'creates events owned by the author' do
+          expect(Events::Record).to have_received(:record_appropriate_body_passes_teacher_event).with(
+            appropriate_body:,
+            teacher:,
+            induction_period:,
+            author:
+          )
         end
       end
     end

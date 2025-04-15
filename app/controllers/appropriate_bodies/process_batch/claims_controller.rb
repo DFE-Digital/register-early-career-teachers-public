@@ -13,14 +13,10 @@ module AppropriateBodies
       def create
         @pending_induction_submission_batch = new_batch_claim
 
-        if @pending_induction_submission_batch.save! && @pending_induction_submission_batch.save(context: :uploaded)
+        if @pending_induction_submission_batch.save! &&
+            @pending_induction_submission_batch.save(context: :uploaded)
 
-          # Immediately process the file - shared storage with worker is not available to delay the job
-          ProcessBatchClaimJob.perform_now(
-            @pending_induction_submission_batch,
-            current_user.email,
-            current_user.name
-          )
+          process_batch_claim
 
           redirect_to ab_batch_claim_path(@pending_induction_submission_batch), alert: 'File processing'
         else
@@ -38,6 +34,16 @@ module AppropriateBodies
 
       def new_batch_claim
         PendingInductionSubmissionBatch.new_claim_for(appropriate_body: @appropriate_body, **import_params)
+      end
+
+      # Delay ensures the parsed CSV is saved before the job runs
+      # Larger CSV files may take longer to process
+      def process_batch_claim
+        ProcessBatchClaimJob.set(wait: 2.seconds).perform_later(
+          @pending_induction_submission_batch,
+          current_user.email,
+          current_user.name
+        )
       end
     end
   end

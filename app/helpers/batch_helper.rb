@@ -31,7 +31,7 @@ module BatchHelper
       },
       {
         key: { text: 'Number of failures to download' },
-        value: { text: pending_induction_submission_batch.csv_download.count }
+        value: { text: pending_induction_submission_batch.failed_submissions.count }
       },
       {
         key: { text: 'Number of ongoing induction periods with this AB' },
@@ -58,9 +58,9 @@ module BatchHelper
 
   def batch_download_data_table(pending_induction_submission_batch)
     govuk_table(
-      caption: "Downloadable bad CSV data (#{pending_induction_submission_batch.csv_download.count} rows)",
+      caption: "Downloadable bad CSV data (#{pending_induction_submission_batch.failed_submissions.count} rows)",
       head: pending_induction_submission_batch.csv_headings.values,
-      rows: pending_induction_submission_batch.csv_download
+      rows: pending_induction_submission_batch.failed_submissions
     )
   end
 end

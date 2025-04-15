@@ -14,6 +14,20 @@ RSpec.describe PendingInductionSubmissionBatch do
     end
   end
 
+  describe "callbacks" do
+    describe '#data_from_csv' do
+      it 'persists data from disk to database and deletes attachment' do
+        expect(batch.csv_file).to be_attached
+        expect(batch.data).to be_nil
+
+        batch.save!
+
+        expect(batch.csv_file).not_to be_attached
+        expect(batch.data).not_to be_nil
+      end
+    end
+  end
+
   describe "class methods" do
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
