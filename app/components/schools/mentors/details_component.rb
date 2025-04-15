@@ -3,10 +3,9 @@ module Schools
     class DetailsComponent < ViewComponent::Base
       include TeacherHelper
 
-      def initialize(teacher:, mentor:, ects:)
+      def initialize(teacher:, mentor:)
         @teacher = teacher
         @mentor = mentor
-        @ects = ects
       end
 
       def call
@@ -44,7 +43,7 @@ module Schools
         {
           key: { text: 'Assigned ECTs' },
           value: {
-            text: safe_join(@ects.map do |ect|
+            text: safe_join(assigned_ects.map do |ect|
               govuk_link_to(
                 teacher_full_name(ect.teacher),
                 schools_ect_path(ect, back_to_mentor: true, mentor_id: @mentor.id)
@@ -52,6 +51,10 @@ module Schools
             end, tag.br)
           }
         }
+      end
+
+      def assigned_ects
+        @assigned_ects ||= @mentor.currently_assigned_ects
       end
     end
   end
