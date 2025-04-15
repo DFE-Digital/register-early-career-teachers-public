@@ -365,17 +365,17 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.teacher_attributes_updated_from_trs!' do
+  describe '.teacher_trs_attributes_updated' do
     it 'queues a RecordEventJob with the correct values' do
       teacher.assign_attributes(trs_first_name: 'Otto', trs_last_name: 'Hightower')
       modifications = teacher.changes
       freeze_time do
-        Events::Record.teacher_attributes_updated_from_trs!(author:, teacher:, modifications:)
+        Events::Record.teacher_trs_attributes_updated!(author:, teacher:, modifications:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
           heading: "TRS attributes updated",
-          event_type: :teacher_attributes_updated_from_trs,
+          event_type: :teacher_trs_attributes_updated,
           happened_at: Time.zone.now,
           metadata: {
             "trs_first_name" => %w[Rhys Otto],
