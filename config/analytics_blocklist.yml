@@ -354,6 +354,7 @@
   - started_on
   - finished_on
   - enabled
+  - range
   :early_roll_out_mentors:
   - id
   - trn
