@@ -110,6 +110,8 @@ private
   end
 
   def record_teacher_trs_attribute_update(modifications:)
+    return if modifications.empty?
+
     Events::Record.teacher_attributes_updated_from_trs!(author:, teacher:, modifications:)
   end
 end
