@@ -63,7 +63,7 @@ describe AppropriateBodies::ReleaseECT do
       expect(Events::Record).to have_received(:new).with(
         hash_including(
           author:,
-          event_type: :appropriate_body_releases_teacher,
+          event_type: :induction_period_closed,
           appropriate_body:,
           induction_period:,
           teacher: induction_period.teacher,
@@ -73,7 +73,7 @@ describe AppropriateBodies::ReleaseECT do
 
       perform_enqueued_jobs
 
-      expect(Event.last.event_type).to eq("appropriate_body_releases_teacher")
+      expect(Event.last.event_type).to eq("induction_period_closed")
     end
 
     it 'sets the pending_induction_submission delete_at timestamp to 24h in the future' do

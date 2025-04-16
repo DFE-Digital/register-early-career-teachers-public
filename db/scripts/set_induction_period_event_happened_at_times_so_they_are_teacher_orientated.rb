@@ -12,8 +12,8 @@
 
 since_go_live_date = (Date.new(2025, 2, 19)..)
 closure_events = %w[
-  appropriate_body_releases_teacher
-  appropriate_body_releases_teacher
+  induction_period_closed
+  induction_period_closed
   appropriate_body_fails_teacher
 ]
 

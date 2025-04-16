@@ -1,9 +1,9 @@
 class Event < ApplicationRecord
   EVENT_TYPES = %w[
-    admin_updates_induction_period
+    induction_period_updated
     admin_fails_teacher_induction
     admin_passes_teacher_induction
-    appropriate_body_releases_teacher
+    induction_period_closed
     appropriate_body_fails_teacher
     appropriate_body_passes_teacher
     appropriate_body_adds_induction_extension
@@ -13,7 +13,7 @@ class Event < ApplicationRecord
     teacher_name_updated_by_trs
     teacher_induction_status_reset
     teacher_induction_status_updated_by_trs
-    teacher_attributes_updated_from_trs
+    teacher_trs_attributes_updated
     teacher_imported_from_trs
     import_from_dqt
   ].freeze

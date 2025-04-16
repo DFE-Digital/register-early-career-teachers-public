@@ -281,7 +281,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_admin_updates_induction_period!' do
+  describe '.record_induction_period_updated!' do
     let(:three_weeks_ago) { 3.weeks.ago.to_date }
     let(:two_weeks_ago) { 2.weeks.ago.to_date }
     let(:induction_period) { FactoryBot.create(:induction_period, :active, started_on: three_weeks_ago) }
@@ -291,14 +291,14 @@ RSpec.describe Events::Record do
       raw_modifications = induction_period.changes
 
       freeze_time do
-        Events::Record.record_admin_updates_induction_period!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
+        Events::Record.record_induction_period_updated!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
           heading: 'Induction period updated by admin',
-          event_type: :admin_updates_induction_period,
+          event_type: :induction_period_updated,
           happened_at: Time.zone.now,
           modifications: ["Started on changed from '#{3.weeks.ago.to_date.to_formatted_s(:govuk_short)}' to '#{2.weeks.ago.to_date.to_formatted_s(:govuk_short)}'"],
           metadata: raw_modifications,
@@ -365,17 +365,17 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.teacher_attributes_updated_from_trs!' do
+  describe '.teacher_trs_attributes_updated' do
     it 'queues a RecordEventJob with the correct values' do
       teacher.assign_attributes(trs_first_name: 'Otto', trs_last_name: 'Hightower')
       modifications = teacher.changes
       freeze_time do
-        Events::Record.teacher_attributes_updated_from_trs!(author:, teacher:, modifications:)
+        Events::Record.teacher_trs_attributes_updated!(author:, teacher:, modifications:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
           heading: "TRS attributes updated",
-          event_type: :teacher_attributes_updated_from_trs,
+          event_type: :teacher_trs_attributes_updated,
           happened_at: Time.zone.now,
           metadata: {
             "trs_first_name" => %w[Rhys Otto],
