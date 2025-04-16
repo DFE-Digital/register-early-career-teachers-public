@@ -14,7 +14,7 @@ module AppropriateBodies
 
       # @return [CSV::Table] validate each row and create a submission capturing the errors
       def process!
-        pending_induction_submission_batch.data.each do |row|
+        pending_induction_submission_batch.rows.each do |row|
           @row = row
           @pending_induction_submission = sparse_pending_induction_submission
 
@@ -68,11 +68,11 @@ module AppropriateBodies
       # @return [?]
       def validate_submission!
         pending_induction_submission.assign_attributes(
-          finished_on: row['end_date'],
-          number_of_terms: row['number_of_terms']
+          finished_on: row.end_date,
+          number_of_terms: row.number_of_terms
         )
 
-        case row['objective']
+        case row.objective
         when /fail/i
           pending_induction_submission.assign_attributes(outcome: 'fail')
           pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)

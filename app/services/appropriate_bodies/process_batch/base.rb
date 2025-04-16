@@ -19,8 +19,8 @@ module AppropriateBodies
         ::PendingInductionSubmission.create(
           pending_induction_submission_batch:,
           appropriate_body:,
-          trn: row['trn'],
-          date_of_birth: Date.iso8601(row['dob'])
+          trn: row.trn,
+          date_of_birth: Date.iso8601(row.dob)
         )
       end
     end
