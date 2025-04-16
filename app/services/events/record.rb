@@ -91,10 +91,10 @@ module Events
 
     # Appropriate body events
 
-    def self.record_appropriate_body_releases_teacher_event!(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_induction_period_closed_event!(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
-      event_type = :appropriate_body_releases_teacher
+      event_type = :induction_period_closed
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was released by #{appropriate_body.name}"
@@ -163,8 +163,8 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.teacher_attributes_updated_from_trs!(author:, teacher:, modifications:, happened_at: Time.zone.now)
-      event_type = :teacher_attributes_updated_from_trs
+    def self.teacher_trs_attributes_updated!(author:, teacher:, modifications:, happened_at: Time.zone.now)
+      event_type = :teacher_trs_attributes_updated
       heading = "TRS attributes updated"
 
       new(event_type:, author:, modifications:, teacher:, heading:, happened_at:).record_event!
@@ -172,8 +172,8 @@ module Events
 
     # Admin events
 
-    def self.record_admin_updates_induction_period!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
-      event_type = :admin_updates_induction_period
+    def self.record_induction_period_updated!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
+      event_type = :induction_period_updated
 
       heading = 'Induction period updated by admin'
 
