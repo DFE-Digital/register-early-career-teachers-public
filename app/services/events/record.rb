@@ -102,10 +102,10 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_teacher_passes_induction_event(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
-      event_type = :appropriate_body_passes_teacher
+      event_type = :teacher_passes_induction
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} passed induction"
@@ -183,7 +183,7 @@ module Events
     def self.record_admin_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
-      event_type = :admin_passes_teacher_induction
+      event_type = :teacher_passes_induction
       heading = "#{Teachers::Name.new(teacher).full_name} passed induction (admin)"
       happened_at = induction_period.finished_on
 
