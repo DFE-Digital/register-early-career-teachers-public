@@ -104,11 +104,10 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     CLAIM_CSV_HEADINGS if claim?
   end
 
-  # FIXME: Octothorpes are used to prepend commented lines for testing purposes (remove when no longer helpful)
-  #
   # @raise [ActiveStorage::FileNotFoundError]
   # @return [CSV::Table<CSV::Row>] Hash-like with headers
   def from_csv
+    # Octothorpes are used to prepend commented lines for testing purposes (remove when no longer helpful)
     @from_csv ||= CSV.parse(csv_file.download, headers: true, skip_lines: /^#/)
   end
 
@@ -126,29 +125,36 @@ private
     csv_file.purge if update!(data: from_csv.map(&:to_h))
   end
 
-  # @return [ActionRow, ClaimRow]
+  # @return [PendingInductionSubmissionBatch::ActionRow, PendingInductionSubmissionBatch::ClaimRow]
   def row_class
     return ActionRow if action?
 
     ClaimRow if claim?
   end
 
+  # add file size validation
+  # add row limit validation
+
   def wrong_headers
     errors.add(:csv_file, "CSV file contains unsupported columns") unless has_valid_csv_headings?
   end
 
+  # move to row-level validation
   def unique_trns
     errors.add(:csv_file, "CSV file contains duplicate TRNs") unless has_unique_trns?
   end
 
+  # move to row-level validation
   def missing_trns
     errors.add(:csv_file, "CSV file contains missing TRNs") unless has_trns?
   end
 
+  # move to row-level validation
   def missing_dobs
     errors.add(:csv_file, "CSV file contains missing dates of birth") unless has_dates_of_birth?
   end
 
+  # move to row-level validation
   def iso8601_date
     errors.add(:csv_file, "CSV file contains unsupported date format") unless has_valid_csv_dates?
   end
