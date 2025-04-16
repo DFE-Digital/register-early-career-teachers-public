@@ -9,7 +9,7 @@ module Schools
       end
 
       def call
-        govuk_summary_card(title: link_to_mentor(@mentor)) do |card|
+        govuk_summary_card(title: link_to_mentor) do |card|
           card.with_summary_list(
             classes: %w[govuk-summary-list--no-border],
             rows: [trn_row, assigned_ects_row]
@@ -19,8 +19,8 @@ module Schools
 
     private
 
-      def link_to_mentor(mentor)
-        govuk_link_to(teacher_full_name(mentor.teacher), schools_mentor_path(mentor))
+      def link_to_mentor
+        govuk_link_to(teacher_full_name(@mentor.teacher), schools_mentor_path(@mentor))
       end
 
       def trn_row
