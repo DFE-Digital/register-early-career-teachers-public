@@ -2,9 +2,10 @@ module Teachers
   class Search
     attr_reader :scope
 
-    def initialize(query_string: :ignore, appropriate_bodies: :ignore)
+    def initialize(query_string: :ignore, appropriate_bodies: :ignore, ect_at_school: :ignore)
       @scope = Teacher.all
 
+      where_ect_at(ect_at_school)
       where_appropriate_bodies_in(appropriate_bodies)
       matching(query_string)
     end
@@ -38,6 +39,16 @@ module Teachers
       return if query_string.blank?
 
       @scope.merge!(@scope.search(query_string))
+    end
+
+    def where_ect_at(school)
+      return if school == :ignore
+
+      @scope.merge!(
+        @scope.eager_load(ect_at_school_periods: [:school, { mentorship_periods: { mentor: :teacher } }])
+              .where(ect_at_school_periods: { school: })
+              .merge(ECTAtSchoolPeriod.ongoing)
+      )
     end
   end
 end
