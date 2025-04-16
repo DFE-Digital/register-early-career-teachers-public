@@ -9,26 +9,29 @@ module Admin
 
       if service.create_induction_period!
         redirect_to admin_teacher_path(teacher), alert: 'Induction period created successfully'
+      else
+        @induction_period = service.induction_period
+        render :new, status: :unprocessable_entity
       end
-    rescue ActiveRecord::RecordInvalid
+    rescue ActiveRecord::RecordInvalid, ActiveRecord::Rollback
       @induction_period = service.induction_period
       render :new, status: :unprocessable_entity
     end
 
     def edit
-      induction_period
+      @induction_period = induction_period
     end
 
     def update
       service = update_induction_period_service
 
-      if service.update_induction_period!
-        redirect_to admin_teacher_path(@induction_period.teacher), alert: 'Induction period updated successfully'
-      end
+      service.update_induction_period!
+      redirect_to admin_teacher_path(@induction_period.teacher), alert: 'Induction period updated successfully'
     rescue UpdateInductionPeriod::RecordedOutcomeError => e
       @induction_period.errors.add(:base, e.message)
       render :edit, status: :unprocessable_entity
     rescue ActiveRecord::RecordInvalid
+      @induction_period = service.induction_period
       render :edit, status: :unprocessable_entity
     end
 
@@ -53,7 +56,11 @@ module Admin
     end
 
     def create_induction_period_service
-      CreateInductionPeriod.new(author: current_user, teacher:, params: induction_period_params)
+      InductionPeriods::CreateInductionPeriod.new(
+        author: current_user,
+        teacher:,
+        params: induction_period_params
+      )
     end
 
     def update_induction_period_service
