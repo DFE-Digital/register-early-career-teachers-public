@@ -46,6 +46,38 @@ describe Teachers::Search do
         expect { described_class.new(query_string: nil) }.not_to raise_error
       end
     end
+
+    describe 'ect_at_school parameter' do
+      context 'when one school is present' do
+        it 'only selects ECTs who are currently at the given school' do
+          query = Teachers::Search.new(ect_at_school: 123).search
+
+          expect(query.to_sql).to include(%("ect_at_school_periods"."school_id" = 123))
+        end
+
+        it 'only selects ongoing ECT at school periods' do
+          query = Teachers::Search.new(ect_at_school: 123).search
+
+          expect(query.to_sql).to include(%("ect_at_school_periods"."finished_on" IS NULL))
+        end
+      end
+
+      context 'when multiple schools are present' do
+        it 'only selects ECTs who are currently at the given school' do
+          query = Teachers::Search.new(ect_at_school: [123, 456]).search
+
+          expect(query.to_sql).to include(%{"ect_at_school_periods"."school_id" IN (123, 456)})
+        end
+      end
+
+      context 'when absent' do
+        it 'does not join ect_at_school_periods' do
+          query = Teachers::Search.new(ect_at_school: 123).search
+
+          expect(query).not_to include('ect_at_school_periods')
+        end
+      end
+    end
   end
 
   describe '#search' do
