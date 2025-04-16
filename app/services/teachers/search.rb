@@ -11,10 +11,14 @@ module Teachers
     end
 
     def search
-      scope.order(:trs_last_name, :trs_first_name, :id)
+      scope.order(order)
     end
 
   private
+
+    def order
+      %i[trs_last_name trs_first_name id]
+    end
 
     def matching(query_string)
       return if query_string == :ignore
