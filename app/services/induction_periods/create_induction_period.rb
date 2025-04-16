@@ -2,55 +2,28 @@ module InductionPeriods
   class CreateInductionPeriod
     attr_reader :induction_period,
                 :event,
-                :started_on,
+                :params,
                 :teacher,
-                :appropriate_body,
-                :induction_programme,
-                :author,
-                :finished_on,
-                :number_of_terms
-
-    # @param teacher [Teacher]
-    # @param appropriate_body [AppropriateBody]
-    # @param started_on [Date]
-    # @param induction_programme [String]
-    # @param finished_on [Date, nil]
-    # @param number_of_terms [Integer, nil]
-    def initialize(teacher:, appropriate_body:, started_on:, induction_programme:, finished_on: nil, number_of_terms: nil)
-      @teacher = teacher
-      @appropriate_body = appropriate_body
-      @started_on = started_on
-      @induction_programme = induction_programme
-      @finished_on = finished_on
-      @number_of_terms = number_of_terms
-    end
+                :author
 
     # @param author [Sessions::User]
+    # @param teacher [Teacher]
+    # @param params [ActionController::Parameters]
+    def initialize(author:, teacher:, params:)
+      @author = author
+      @teacher = teacher
+      @params = params
+      @induction_period = InductionPeriod.new(params.merge(teacher:))
+    end
+
     # @return [InductionPeriod]
     # @raise [ActiveRecord::RecordInvalid, ActiveRecord::Rollback]
-    def create_induction_period!(author:)
-      modifications = InductionPeriod.new(
-        teacher:,
-        appropriate_body:,
-        started_on:,
-        induction_programme:,
-        finished_on:,
-        number_of_terms:
-      ).changes
+    def create_induction_period!
+      raise ActiveRecord::RecordInvalid, @induction_period unless @induction_period.valid?
 
       ActiveRecord::Base.transaction do
-        @induction_period = InductionPeriod.create!(
-          teacher:,
-          appropriate_body:,
-          started_on:,
-          induction_programme:,
-          finished_on:,
-          number_of_terms:
-        )
-
-        success = record_event(author, modifications)
-
-        success or raise ActiveRecord::Rollback
+        @induction_period.save!
+        record_event or raise ActiveRecord::Rollback
       end
 
       @induction_period
@@ -58,18 +31,19 @@ module InductionPeriods
 
   private
 
-    # @param author [Sessions::User]
-    # @param modifications [Hash{String => Array}]
-    def record_event(author, modifications)
-      return unless @induction_period.persisted?
+    # @return [Boolean]
+    def record_event
+      return false unless @induction_period.persisted?
 
       Events::Record.record_induction_period_opened_event!(
-        author:,
-        teacher:,
-        appropriate_body:,
-        induction_period:,
-        modifications:
+        author: @author,
+        teacher: @teacher,
+        appropriate_body: @induction_period.appropriate_body,
+        induction_period: @induction_period,
+        modifications: @induction_period.changes
       )
+
+      true
     end
   end
 end

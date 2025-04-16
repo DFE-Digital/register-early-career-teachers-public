@@ -66,12 +66,16 @@ module AppropriateBodies
       end
 
       def create_induction_period
-        started_on = pending_induction_submission.started_on
-        induction_programme = pending_induction_submission.induction_programme
-
-        @induction_period = InductionPeriods::CreateInductionPeriod
-          .new(teacher:, started_on:, induction_programme:, appropriate_body:)
-          .create_induction_period!(author:)
+        @induction_period = InductionPeriods::CreateInductionPeriod.new(
+          author:,
+          teacher:,
+          params: {
+            appropriate_body:,
+            started_on: pending_induction_submission.started_on,
+            induction_programme: pending_induction_submission.induction_programme
+          }
+        ).create_induction_period!
+        true
       rescue ActiveRecord::RecordInvalid
         false
       end
