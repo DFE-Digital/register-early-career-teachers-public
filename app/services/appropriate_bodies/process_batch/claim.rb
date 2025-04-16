@@ -4,7 +4,7 @@ module AppropriateBodies
     class Claim < Base
       # @return [CSV::Table]
       def process!
-        pending_induction_submission_batch.data.each do |row|
+        pending_induction_submission_batch.rows.each do |row|
           @row = row
           @pending_induction_submission = sparse_pending_induction_submission
 
@@ -34,13 +34,12 @@ module AppropriateBodies
 
     private
 
-      # FIXME: programme and start date validation errors are not being played back
       # @return [?]
       def claim!
         PendingInductionSubmissionBatch.transaction do
           pending_induction_submission.assign_attributes(
-            started_on: row['start_date'],
-            induction_programme: row['induction_programme'].downcase
+            started_on: row.start_date,
+            induction_programme: row.induction_programme.downcase
           )
 
           find_ect.import_from_trs!
