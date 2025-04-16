@@ -53,8 +53,7 @@ module AppropriateBodies
     end
 
     def record_fail_induction_event!
-      Events::Record.public_send(
-        "record_#{user_type}_fails_teacher_event",
+      Events::Record.record_teacher_fails_induction_event(
         author:,
         teacher:,
         appropriate_body:,

@@ -1,20 +1,19 @@
 class Event < ApplicationRecord
   EVENT_TYPES = %w[
-    induction_period_updated
-    admin_fails_teacher_induction
-    teacher_passes_induction
-    induction_period_closed
-    appropriate_body_fails_teacher
     appropriate_body_adds_induction_extension
     appropriate_body_updates_induction_extension
-    induction_period_opened
+    import_from_dqt
+    induction_period_closed
     induction_period_deleted
-    teacher_name_updated_by_trs
+    induction_period_opened
+    induction_period_updated
+    teacher_fails_induction
+    teacher_imported_from_trs
     teacher_induction_status_reset
     teacher_induction_status_updated_by_trs
+    teacher_name_updated_by_trs
+    teacher_passes_induction
     teacher_trs_attributes_updated
-    teacher_imported_from_trs
-    import_from_dqt
   ].freeze
 
   belongs_to :teacher
