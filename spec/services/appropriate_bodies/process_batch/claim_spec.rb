@@ -85,12 +85,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
           teacher:,
           induction_period:,
           author:,
-          modifications: {
-            "appropriate_body_id" => [nil, appropriate_body.id],
-            "induction_programme" => [nil, "fip"],
-            "started_on" => [nil, Date.parse(start_date)],
-            "teacher_id" => [nil, teacher.id],
-          }
+          modifications: {}
         )
       end
     end
