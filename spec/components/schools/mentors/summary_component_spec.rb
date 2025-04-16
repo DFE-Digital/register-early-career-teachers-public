@@ -33,7 +33,7 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
 
   context 'with more than 5 ECTs' do
     before do
-      (1..6).each do |i|
+      6.times do |i|
         teacher = create(:teacher, trs_first_name: "First#{i}", trs_last_name: "Last#{i}")
         ect = create(:ect_at_school_period, teacher:, school:, started_on:, finished_on: nil)
         create(:mentorship_period, mentor:, mentee: ect, started_on:, finished_on: nil)
@@ -48,7 +48,7 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
 
   context 'when there are multiple mentors' do
     let(:mentor2_teacher) { create(:teacher, trs_first_name: 'Sasuke', trs_last_name: 'Uchiha') }
-    let(:mentor2) { create(:mentor_at_school_period, teacher: mentor2_teacher, school:, started_on:, finished_on: nil) }
+    let(:mentor2) { create(:mentor_at_school_period, :active, teacher: mentor2_teacher, school:, started_on:) }
 
     let(:ect1_teacher) { create(:teacher, trs_first_name: 'Konohamaru', trs_last_name: 'Sarutobi') }
     let(:ect2_teacher) { create(:teacher, trs_first_name: 'Boruto', trs_last_name: 'Uzumaki') }
