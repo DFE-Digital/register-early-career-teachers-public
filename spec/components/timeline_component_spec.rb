@@ -31,4 +31,28 @@ RSpec.describe TimelineComponent, type: :component do
       expect(rendered_content).to have_css(".app-timeline__item > .app-timeline__description", text: event.body)
     end
   end
+
+  describe 'modifications' do
+    context 'when modifications are present' do
+      let(:one_day_ago) { FactoryBot.build(:event, :with_body, :with_modifications, created_at: 3.days.ago) }
+
+      it "renders a 'Changes' heading" do
+        expect(rendered_content).to have_css('h3', text: 'Changes')
+      end
+
+      it "lists modifications when they're present" do
+        expect(rendered_content).to have_css('.govuk-list', text: 'Something has changed')
+      end
+    end
+
+    context 'when no modifications are present' do
+      it "renders no heading" do
+        expect(rendered_content).not_to have_css('h3', text: 'Changes')
+      end
+
+      it "renders no list" do
+        expect(rendered_content).not_to have_css('.govuk-list')
+      end
+    end
+  end
 end

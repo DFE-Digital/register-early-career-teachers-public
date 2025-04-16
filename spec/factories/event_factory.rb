@@ -20,5 +20,9 @@ FactoryBot.define do
     trait(:with_body) do
       body { Faker::Lorem.paragraph }
     end
+
+    trait(:with_modifications) do
+      modifications { ["Something has changed"] }
+    end
   end
 end
