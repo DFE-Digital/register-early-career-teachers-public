@@ -45,7 +45,18 @@ class TimelineComponent < ViewComponent::Base
     end
 
     def description
-      tag.div(class: "app-timeline__description") { event.body }
+      tag.div(class: "app-timeline__description") { safe_join([event.body, modifications_list]) }
+    end
+
+    def modifications_list
+      return if event.modifications.blank?
+
+      safe_join(
+        [
+          tag.h3('Changes', class: 'govuk-heading-s'),
+          govuk_list(event.modifications)
+        ]
+      )
     end
 
     def byline
