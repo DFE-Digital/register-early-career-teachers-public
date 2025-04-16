@@ -31,6 +31,8 @@ module Admin
 
         success or raise ActiveRecord::Rollback
       end
+
+      true
     end
 
   private
@@ -39,7 +41,7 @@ module Admin
 
     # @param modifications [Hash{String => Array}]
     def record_event(modifications)
-      return unless induction_period.persisted?
+      return true unless induction_period.persisted?
 
       Events::Record.record_induction_period_updated!(
         author:,
@@ -48,10 +50,16 @@ module Admin
         teacher:,
         appropriate_body:
       )
+
+      true
     end
 
     def validate_can_update!
-      raise RecordedOutcomeError, "Cannot edit induction period with recorded outcome" if induction_period.outcome.present?
+      return if induction_period.outcome.blank?
+
+      # Only allow updates to number_of_terms if outcome is present
+      changes_only_number_of_terms = params.keys.map(&:to_s).all? { |key| key == "number_of_terms" }
+      raise RecordedOutcomeError, "Only number of terms can be edited when outcome is recorded" unless changes_only_number_of_terms
     end
 
     def notify_trs_of_start_date_change(previous_start_date)
