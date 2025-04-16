@@ -9,20 +9,20 @@ describe Teachers::Search do
     end
 
     context 'with appropriate_bodies parameter' do
-      subject { described_class.new(appropriate_bodies: ab) }
+      context 'when there is one appropriate body' do
+        subject { described_class.new(appropriate_bodies: 123) }
 
-      let(:ab) { FactoryBot.create(:appropriate_body) }
-      let(:ects_service) { instance_double(AppropriateBodies::ECTs) }
-      let(:ects_scope) { instance_double(ActiveRecord::Relation) }
-
-      before do
-        allow(AppropriateBodies::ECTs).to receive(:new).with(ab).and_return(ects_service)
-        allow(ects_service).to receive(:current_or_completed_while_at_appropriate_body).and_return(ects_scope)
+        it 'applies appropriate_bodies filter for the given appropriate body' do
+          expect(subject.search.to_sql).to include(%(INNER JOIN "induction_periods" ON "induction_periods"."teacher_id" = "teachers"."id" WHERE "induction_periods"."appropriate_body_id" = 123))
+        end
       end
 
-      it 'applies appropriate_bodies filter' do
-        subject
-        expect(AppropriateBodies::ECTs).to have_received(:new).with(ab)
+      context 'when there are multiple appropriate bodies' do
+        subject { described_class.new(appropriate_bodies: [123, 456]) }
+
+        it 'applies appropriate_bodies filter for all specified appropriate bodies' do
+          expect(subject.search.to_sql).to include(%(INNER JOIN "induction_periods" ON "induction_periods"."teacher_id" = "teachers"."id" WHERE "induction_periods"."appropriate_body_id" IN (123, 456)))
+        end
       end
     end
 
