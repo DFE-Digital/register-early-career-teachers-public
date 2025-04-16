@@ -14,8 +14,7 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
 
   context 'with less than or equal to 5 ECTs' do
     let!(:ects) do
-      (1..5).map do |i|
-        teacher = create(:teacher, trs_first_name: "First name #{i}", trs_last_name: "Last name #{i}")
+      create_list(:teacher, 5).map do |teacher|
         ect = create(:ect_at_school_period, teacher:, school:, started_on:, finished_on: nil)
         create(:mentorship_period, mentor:, mentee: ect, started_on:, finished_on: nil)
         teacher
@@ -26,15 +25,14 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
       render_inline(described_class.new(mentor:, school:))
 
       ects.each do |teacher|
-        expect(rendered_content).to include("#{teacher.trs_first_name} #{teacher.trs_last_name}")
+        expect(rendered_content).to have_css('.govuk-summary-list__value', text: "#{teacher.trs_first_name} #{teacher.trs_last_name}")
       end
     end
   end
 
   context 'with more than 5 ECTs' do
     before do
-      6.times do |i|
-        teacher = create(:teacher, trs_first_name: "First#{i}", trs_last_name: "Last#{i}")
+      create_list(:teacher, 6).each do |teacher|
         ect = create(:ect_at_school_period, teacher:, school:, started_on:, finished_on: nil)
         create(:mentorship_period, mentor:, mentee: ect, started_on:, finished_on: nil)
       end
