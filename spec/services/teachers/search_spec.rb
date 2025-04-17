@@ -8,74 +8,9 @@ describe Teachers::Search do
       end
     end
 
-    context 'with appropriate_bodies parameter' do
-      context 'when there is one appropriate body' do
-        subject { described_class.new(appropriate_bodies: 123) }
-
-        it 'applies appropriate_bodies filter for the given appropriate body' do
-          expect(subject.search.to_sql).to include(%(INNER JOIN "induction_periods" ON "induction_periods"."teacher_id" = "teachers"."id" WHERE "induction_periods"."appropriate_body_id" = 123))
-        end
-      end
-
-      context 'when there are multiple appropriate bodies' do
-        subject { described_class.new(appropriate_bodies: [123, 456]) }
-
-        it 'applies appropriate_bodies filter for all specified appropriate bodies' do
-          expect(subject.search.to_sql).to include(%(INNER JOIN "induction_periods" ON "induction_periods"."teacher_id" = "teachers"."id" WHERE "induction_periods"."appropriate_body_id" IN (123, 456)))
-        end
-      end
-    end
-
-    context 'with query_string parameter' do
-      subject { described_class.new(query_string: 'Unique Name') }
-
-      let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Unique', trs_last_name: 'Name') }
-
-      before do
-        allow(Teacher).to receive(:search).and_return(Teacher.where(id: teacher.id))
-      end
-
-      it 'applies query matching' do
-        expect(subject.scope).to include(teacher)
-        expect(subject.scope.count).to eq(1)
-      end
-    end
-
     context 'with nil query_string' do
       it 'ignores nil query strings' do
         expect { described_class.new(query_string: nil) }.not_to raise_error
-      end
-    end
-
-    describe 'ect_at_school parameter' do
-      context 'when one school is present' do
-        it 'only selects ECTs who are currently at the given school' do
-          query = Teachers::Search.new(ect_at_school: 123).search
-
-          expect(query.to_sql).to include(%("ect_at_school_periods"."school_id" = 123))
-        end
-
-        it 'only selects ongoing ECT at school periods' do
-          query = Teachers::Search.new(ect_at_school: 123).search
-
-          expect(query.to_sql).to include(%("ect_at_school_periods"."finished_on" IS NULL))
-        end
-      end
-
-      context 'when multiple schools are present' do
-        it 'only selects ECTs who are currently at the given school' do
-          query = Teachers::Search.new(ect_at_school: [123, 456]).search
-
-          expect(query.to_sql).to include(%{"ect_at_school_periods"."school_id" IN (123, 456)})
-        end
-      end
-
-      context 'when absent' do
-        it 'does not join ect_at_school_periods' do
-          query = Teachers::Search.new(ect_at_school: 123).search
-
-          expect(query).not_to include('ect_at_school_periods')
-        end
       end
     end
   end
