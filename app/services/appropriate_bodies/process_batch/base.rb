@@ -15,6 +15,7 @@ module AppropriateBodies
 
     private
 
+      # @return [PendingInductionSubmission]
       def sparse_pending_induction_submission
         ::PendingInductionSubmission.create(
           pending_induction_submission_batch:,
@@ -22,6 +23,12 @@ module AppropriateBodies
           trn: row.trn,
           date_of_birth: Date.iso8601(row.dob)
         )
+      end
+
+      # @param message [String]
+      # @return [Boolean]
+      def capture_error(message)
+        pending_induction_submission.update(error_message: message)
       end
     end
   end

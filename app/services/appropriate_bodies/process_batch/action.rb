@@ -18,33 +18,37 @@ module AppropriateBodies
           @row = row
           @pending_induction_submission = sparse_pending_induction_submission
 
+          if incorrectly_formatted?
+            next
+          end
+
           if (trs_error = fetch_trs_details!)
-            pending_induction_submission.update(error_message: trs_error)
+            capture_error(trs_error)
             next
           end
 
           if teacher.blank?
-            pending_induction_submission.update(error_message: "Teacher #{name} has not yet been claimed")
+            capture_error("Teacher #{name} has not yet been claimed")
             next
           end
 
           if ongoing_induction_period.blank?
-            pending_induction_submission.update(error_message: "Teacher #{name} does not have an ongoing induction")
+            capture_error("Teacher #{name} does not have an ongoing induction")
             next
           end
 
           if claimed_by_another_ab?
-            pending_induction_submission.update(error_message: "Teacher #{name} was claimed by another appropriate body")
+            capture_error("Teacher #{name} was claimed by another appropriate body")
             next
           end
 
           validate_submission!
         rescue StandardError => e
-          pending_induction_submission.update(error_message: e.message)
+          capture_error(e.message)
           next
         end
       rescue StandardError => e
-        pending_induction_submission_batch.update(error_message: e.message)
+        capture_error(e.message)
       end
 
     private
@@ -85,6 +89,15 @@ module AppropriateBodies
           pending_induction_submission.errors.add(:outcome, "Objective must be pass, fail or release")
           pending_induction_submission.playback_errors
         end
+      end
+
+      # @return [Boolean]
+      def incorrectly_formatted?
+        pending_induction_submission.errors.add(:base, 'Fill in the blanks') if row.blank_cell?
+        pending_induction_submission.errors.add(:base, 'Dates must be in the format YYYY-MM-DD') if row.invalid_date?
+        pending_induction_submission.errors.add(:base, 'Teacher reference number must include at least 5 digits') if row.invalid_trn?
+
+        pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end
 
       # @return [nil, Teacher]

@@ -65,6 +65,28 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
     end
 
+    describe 'formatting checks' do
+      before do
+        service.process!
+      end
+
+      context 'when the TRN is incorrectly formatted' do
+        let(:trn) { '0004' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Teacher reference number must include at least 5 digits'
+        end
+      end
+
+      context 'when the end date is not ISO8601' do
+        let(:end_date) { '30/06/1981' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Dates must be in the format YYYY-MM-DD'
+        end
+      end
+    end
+
     context 'with an ongoing induction' do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :active,
@@ -118,7 +140,15 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:number_of_terms) { '' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Number of terms Enter a number of terms'
+          expect(submission.error_message).to eq 'Fill in the blanks'
+        end
+      end
+
+      context 'when the end date is missing' do
+        let(:end_date) { '' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Fill in the blanks and Dates must be in the format YYYY-MM-DD'
         end
       end
 
@@ -127,14 +157,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Finished on End date cannot be in the future'
-        end
-      end
-
-      context 'when the end date is missing' do
-        let(:end_date) { '' }
-
-        it 'captures an error message' do
-          expect(submission.error_message).to eq 'Number of terms Delete the number of terms if the induction has no end date and Finished on Enter a finish date'
         end
       end
 

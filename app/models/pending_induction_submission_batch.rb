@@ -16,6 +16,27 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     Data.define(*columns) do
       include Enumerable
 
+      # @return [Boolean]
+      def invalid_trn?
+        trn !~ /\A\d{7}\z/
+      end
+
+      # all cells except "error" have content
+      # @return [Boolean]
+      def blank_cell?
+        members[0..-2].any? { |key| public_send(key).blank? }
+      end
+
+      # date cells are formatted as YYYY-MM-DD
+      # @return [Boolean]
+      def invalid_date?
+        members.grep(/dob|_date/).any? do |key|
+          !Date.iso8601(public_send(key))
+        rescue Date::Error
+          true
+        end
+      end
+
       # @return [Array<String>]
       def with_errors(error_message)
         row_values = to_a
@@ -29,7 +50,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
       end
 
       # Guards against Encoding::CompatibilityError i.e. "André"
-      # @return [Array<String>] encoded values for the row or placeholder
+      # @return [Array<String>] encoded values for the row
       def to_a
         members.map do |key|
           public_send(key).dup&.force_encoding("UTF-8")
@@ -86,14 +107,13 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   # Validations
   validates :batch_status, presence: true
   validates :batch_type, presence: true
-  validate :csv_mime_type
 
-  # CSV content validations
+  # CSV-level validations
+  validate :csv_mime_type
+  validate :csv_file_size
   validate :wrong_headers, on: :uploaded
+  validate :row_count, on: :uploaded
   validate :unique_trns, on: :uploaded
-  validate :missing_trns, on: :uploaded
-  validate :missing_dobs, on: :uploaded
-  validate :iso8601_date, on: :uploaded
 
   # Methods
 
@@ -132,35 +152,24 @@ private
     ClaimRow if claim?
   end
 
-  # add file size validation
-  # add row limit validation
-
-  def wrong_headers
-    errors.add(:csv_file, "CSV file contains unsupported columns") unless has_valid_csv_headings?
-  end
-
-  # move to row-level validation
-  def unique_trns
-    errors.add(:csv_file, "CSV file contains duplicate TRNs") unless has_unique_trns?
-  end
-
-  # move to row-level validation
-  def missing_trns
-    errors.add(:csv_file, "CSV file contains missing TRNs") unless has_trns?
-  end
-
-  # move to row-level validation
-  def missing_dobs
-    errors.add(:csv_file, "CSV file contains missing dates of birth") unless has_dates_of_birth?
-  end
-
-  # move to row-level validation
-  def iso8601_date
-    errors.add(:csv_file, "CSV file contains unsupported date format") unless has_valid_csv_dates?
-  end
-
   def csv_mime_type
     errors.add(:csv_file, 'File type must be a CSV') if csv_file.attached? && !csv_file.content_type.in?(%w[text/csv])
+  end
+
+  def csv_file_size
+    errors.add(:csv_file, 'File size must be less than 1MB') if csv_file.attached? && csv_file.byte_size > 1.megabyte
+  end
+
+  def wrong_headers
+    errors.add(:csv_file, 'CSV file contains unsupported columns') unless has_valid_csv_headings?
+  end
+
+  def row_count
+    errors.add(:csv_file, 'CSV file contains too many rows') if from_csv.count > 1000
+  end
+
+  def unique_trns
+    errors.add(:csv_file, 'CSV file contains duplicate TRNs') unless has_unique_trns?
   end
 
   # @return [Boolean] against file on disk
@@ -171,28 +180,5 @@ private
   # @return [Boolean] against file on disk
   def has_unique_trns?
     rows.map(&:trn).uniq.count.eql?(rows.count)
-  end
-
-  # @return [Boolean] against file on disk
-  def has_trns?
-    rows.map(&:trn).compact.count.eql?(rows.count)
-  end
-
-  # @return [Boolean] against file on disk
-  def has_dates_of_birth?
-    rows.map(&:dob).compact.count.eql?(rows.count)
-  end
-
-  # OPTIMIZE: refactor date validation into Data classes
-  # @return [Boolean] against file on disk
-  def has_valid_csv_dates?
-    rows.all? do |r|
-      dates = [r.dob]
-      dates.push(r.start_date) if claim?
-      dates.push(r.end_date) if action?
-      dates.all? { |raw_value| Date.iso8601(raw_value) }
-    end
-  rescue Date::Error
-    false
   end
 end
