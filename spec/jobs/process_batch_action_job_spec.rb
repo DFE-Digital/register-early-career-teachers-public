@@ -8,14 +8,13 @@ RSpec.describe ProcessBatchActionJob, type: :job do
   end
 
   # TODO: add more coverage to ProcessBatchActionJob
-  # TODO: replace CSV fixture
   describe '#perform' do
     let(:submissions) do
       pending_induction_submission_batch.pending_induction_submissions
     end
 
     context 'with valid complete data' do
-      include_context 'csv file', 'valid_complete', 'action'
+      include_context 'csv file', 'action'
 
       it 'creates records for all rows' do
         expect(submissions.count).to eq(2)
