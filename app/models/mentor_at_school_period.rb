@@ -7,6 +7,10 @@ class MentorAtSchoolPeriod < ApplicationRecord
   has_many :mentorship_periods, inverse_of: :mentor
   has_many :training_periods, inverse_of: :mentor_at_school_period
   has_many :events
+  has_many :currently_assigned_ects,
+           -> { ongoing.includes(:teacher) },
+           through: :mentorship_periods,
+           source: :mentee
 
   # Validations
   validates :email,
