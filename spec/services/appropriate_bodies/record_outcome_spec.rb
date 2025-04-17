@@ -63,11 +63,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
       end
 
       it "records a pass event" do
-        allow(Events::Record).to receive(:record_appropriate_body_passes_teacher_event).and_call_original
+        allow(Events::Record).to receive(:record_teacher_passes_induction_event).and_call_original
 
         service.pass!
 
-        expect(Events::Record).to have_received(:record_appropriate_body_passes_teacher_event).with(
+        expect(Events::Record).to have_received(:record_teacher_passes_induction_event).with(
           appropriate_body:,
           teacher:,
           induction_period:,
@@ -76,7 +76,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
         perform_enqueued_jobs
 
-        expect(Event.last.event_type).to eq("appropriate_body_passes_teacher")
+        expect(Event.last.event_type).to eq("teacher_passes_induction")
       end
 
       context "when the author is a DfE user" do
@@ -92,11 +92,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
         end
 
         it "records an admin pass event" do
-          allow(Events::Record).to receive(:record_admin_passes_teacher_event).and_call_original
+          allow(Events::Record).to receive(:record_teacher_passes_induction_event).and_call_original
 
           service.pass!
 
-          expect(Events::Record).to have_received(:record_admin_passes_teacher_event).with(
+          expect(Events::Record).to have_received(:record_teacher_passes_induction_event).with(
             appropriate_body:,
             teacher:,
             induction_period:,
@@ -105,7 +105,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
           perform_enqueued_jobs
 
-          expect(Event.last.event_type).to eq("admin_passes_teacher_induction")
+          expect(Event.last.event_type).to eq("teacher_passes_induction")
         end
       end
     end
@@ -157,11 +157,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
       end
 
       it "records a fail event" do
-        allow(Events::Record).to receive(:record_appropriate_body_fails_teacher_event).and_call_original
+        allow(Events::Record).to receive(:record_teacher_fails_induction_event).and_call_original
 
         service.fail!
 
-        expect(Events::Record).to have_received(:record_appropriate_body_fails_teacher_event).with(
+        expect(Events::Record).to have_received(:record_teacher_fails_induction_event).with(
           appropriate_body:,
           teacher:,
           induction_period:,
@@ -170,7 +170,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
         perform_enqueued_jobs
 
-        expect(Event.last.event_type).to eq("appropriate_body_fails_teacher")
+        expect(Event.last.event_type).to eq("teacher_fails_induction")
       end
 
       context "when the author is a DfE user" do
@@ -186,11 +186,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
         end
 
         it "records an admin fail event" do
-          allow(Events::Record).to receive(:record_admin_fails_teacher_event).and_call_original
+          allow(Events::Record).to receive(:record_teacher_fails_induction_event).and_call_original
 
           service.fail!
 
-          expect(Events::Record).to have_received(:record_admin_fails_teacher_event).with(
+          expect(Events::Record).to have_received(:record_teacher_fails_induction_event).with(
             appropriate_body:,
             teacher:,
             induction_period:,
@@ -199,7 +199,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
           perform_enqueued_jobs
 
-          expect(Event.last.event_type).to eq("admin_fails_teacher_induction")
+          expect(Event.last.event_type).to eq("teacher_fails_induction")
         end
       end
     end
