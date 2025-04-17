@@ -340,7 +340,7 @@ RSpec.describe Events::Record do
           teacher:,
           appropriate_body:,
           heading: "Induction status changed from 'InProgress' to 'Exempt'",
-          event_type: :teacher_induction_status_updated_by_trs,
+          event_type: :teacher_trs_induction_status_updated,
           happened_at: Time.zone.now,
           **author_params
         )

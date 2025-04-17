@@ -146,7 +146,7 @@ RSpec.describe Teachers::Manage do
             author_id: author.id,
             author_name: 'Christopher Biggins',
             author_type: :dfe_staff_user,
-            event_type: :teacher_induction_status_updated_by_trs,
+            event_type: :teacher_trs_induction_status_updated,
             appropriate_body:,
             teacher:,
             happened_at: Time.zone.now,
