@@ -9,8 +9,7 @@ RSpec.describe Admin::UpdateInductionPeriod do
       :induction_period,
       teacher:,
       started_on: "2023-06-01",
-      finished_on: "2023-12-31",
-      number_of_terms: 2
+      finished_on: "2023-12-31"
     )
   end
   let(:params) { {} }
