@@ -179,6 +179,64 @@ describe Teachers::Search do
       end
     end
 
+    describe "searching for ECTs at a school" do
+      context 'when one school is present' do
+        it 'only selects ECTs who are currently at the given school' do
+          query = Teachers::Search.new(ect_at_school: 123).search
+
+          expect(query.to_sql).to include(%("ect_at_school_periods"."school_id" = 123))
+        end
+
+        it 'only selects ongoing ECT at school periods' do
+          query = Teachers::Search.new(ect_at_school: 123).search
+
+          expect(query.to_sql).to include(%("ect_at_school_periods"."finished_on" IS NULL))
+        end
+      end
+
+      context 'when multiple schools are present' do
+        it 'only selects ECTs who are currently at the given school' do
+          query = Teachers::Search.new(ect_at_school: [123, 456]).search
+
+          expect(query.to_sql).to include(%{"ect_at_school_periods"."school_id" IN (123, 456)})
+        end
+      end
+
+      context 'when absent' do
+        it 'does not join ect_at_school_periods' do
+          query = Teachers::Search.new(ect_at_school: 123).search
+
+          expect(query).not_to include('ect_at_school_periods')
+        end
+      end
+
+      describe 'ordering the results' do
+        let(:started_on) { 2.years.ago }
+
+        let(:school1) { FactoryBot.create(:school) }
+        let(:mentored_teacher1) { FactoryBot.create(:teacher) }
+        let(:mentored_teacher2) { FactoryBot.create(:teacher) }
+
+        # unmentored
+        let!(:ect_at_school_period1) { FactoryBot.create(:ect_at_school_period, :active, teacher: teacher1, school: school1, started_on:, created_at: 2.days.ago) }
+        let!(:ect_at_school_period2) { FactoryBot.create(:ect_at_school_period, :active, teacher: teacher2, school: school1, started_on:, created_at: 1.day.ago) }
+
+        # mentored
+        let!(:mentor_at_school_period1) { FactoryBot.create(:mentor_at_school_period, :active, teacher: teacher3, school: school1, started_on:) }
+        let!(:ect_at_school_period3) { FactoryBot.create(:ect_at_school_period, :active, teacher: mentored_teacher1, school: school1, started_on:, created_at: 2.days.ago) }
+        let!(:ect_at_school_period4) { FactoryBot.create(:ect_at_school_period, :active, teacher: mentored_teacher2, school: school1, started_on:, created_at: 1.day.ago) }
+
+        let!(:mentorship_period1) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on:) }
+        let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on:) }
+
+        it 'orders with unmentored teachers first, then by registration date' do
+          results = Teachers::Search.new(ect_at_school: school1).search
+
+          expect(results).to eq([teacher2, teacher1, mentored_teacher2, mentored_teacher1])
+        end
+      end
+    end
+
     it 'orders results by last name, first name, and id' do
       query = described_class.new.search.to_sql
       order_clause = %(ORDER BY "teachers"."trs_last_name" ASC, "teachers"."trs_first_name" ASC, "teachers"."id" ASC)

@@ -17,7 +17,20 @@ module Teachers
   private
 
     def order
-      %i[trs_last_name trs_first_name id]
+      case @sort_order
+      when :mentorless_first_then_by_registration_date
+        # mentorless teachers first, sorted by the registration date
+        # at the school, latest first
+        [
+          Arel::Nodes::Case.new
+                          .when(MentorshipPeriod.arel_table[:id].eq(nil)).then(0)
+                          .else(1)
+                          .asc,
+          { ect_at_school_periods: { created_at: 'desc' } }
+        ]
+      else
+        %i[trs_last_name trs_first_name id]
+      end
     end
 
     def matching(query_string)
@@ -53,6 +66,8 @@ module Teachers
               .where(ect_at_school_periods: { school: })
               .merge(ECTAtSchoolPeriod.ongoing)
       )
+
+      @sort_order = :mentorless_first_then_by_registration_date
     end
   end
 end
