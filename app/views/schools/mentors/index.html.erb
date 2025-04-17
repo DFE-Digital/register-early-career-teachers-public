@@ -19,14 +19,7 @@
 
   <div class='govuk-grid-column-two-thirds'>
     <% @mentors.map do |mentor| %>
-      <%= 
-        govuk_summary_card(title: link_to_mentor(mentor)) do |card|
-          card.with_summary_list(
-            classes: %w[govuk-summary-list--no-border govuk-!-margin-bottom-0],
-            rows: []
-          )
-        end 
-      %>
+      <%= render Schools::Mentors::SummaryComponent.new(mentor: mentor, school: @school) %>
     <% end %>
 
     <%= govuk_pagination pagy: @pagy %>
