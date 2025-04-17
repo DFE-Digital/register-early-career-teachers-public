@@ -20,7 +20,7 @@ module Schools
     private
 
       def link_to_mentor
-        govuk_link_to(teacher_full_name(@mentor.teacher), schools_mentor_path(@mentor))
+        govuk_link_to(teacher_full_name(@mentor.teacher), '#')
       end
 
       def trn_row
