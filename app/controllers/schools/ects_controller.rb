@@ -3,7 +3,7 @@ module Schools
     layout "full"
 
     def index
-      @ects = Schools::Home.new(school:).ects_with_mentors
+      @pagy, @teachers = pagy_array(Teachers::Search.new(ect_at_school: school).search)
     end
 
     def show
