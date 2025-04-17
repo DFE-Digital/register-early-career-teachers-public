@@ -42,8 +42,9 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
       end
 
       context "when there are more than 10 claimed ECTs" do
+        # FIXME: move this to a view spec
         let!(:additional_teachers) do
-          FactoryBot.create_list(:teacher, 11, trs_first_name: "John", trs_last_name: "Smith").tap do |teachers|
+          FactoryBot.create_list(:teacher, 21, trs_first_name: "John", trs_last_name: "Smith").tap do |teachers|
             teachers.each do |teacher|
               FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
             end
