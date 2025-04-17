@@ -70,10 +70,6 @@ module AppropriateBodies
       def register_ect
         ClaimAnECT::RegisterECT.new(appropriate_body:, pending_induction_submission:, author:)
       end
-
-      def capture_error(message)
-        pending_induction_submission.update(error_message: message)
-      end
     end
   end
 end
