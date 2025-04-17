@@ -43,14 +43,20 @@ module Schools
         {
           key: { text: 'Assigned ECTs' },
           value: {
-            text: safe_join(assigned_ects.map do |ect|
-              govuk_link_to(
-                teacher_full_name(ect.teacher),
-                schools_ect_path(ect, back_to_mentor: true, mentor_id: @mentor.id)
-              )
-            end, tag.br)
+            text: assigned_ects_value
           }
         }
+      end
+
+      def assigned_ects_value
+        return 'No ECTs assigned' if assigned_ects.empty?
+
+        safe_join(assigned_ects.map do |ect|
+          govuk_link_to(
+            teacher_full_name(ect.teacher),
+            schools_ect_path(ect, back_to_mentor: true, mentor_id: @mentor.id)
+          )
+        end, tag.br)
       end
 
       def assigned_ects
