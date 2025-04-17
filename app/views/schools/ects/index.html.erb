@@ -18,7 +18,7 @@
   </div>
 
   <div class='govuk-grid-column-two-thirds'>
-    <% @ects.map do |ect| %>
+    <% @teachers.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
       <%=
         govuk_summary_card(title: link_to_ect(ect)) do |card|
           card.with_summary_list(
@@ -31,5 +31,7 @@
         end
       %>
     <% end %>
+
+    <%= govuk_pagination(pagy: @pagy) %>
   </div>
 </div>
