@@ -43,7 +43,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
 
   context 'when mentor is eligible (no completion date)' do
     it 'renders the ECT mentor training details H2' do
-      expect(rendered).to have_css('h2.govuk-heading-m', text: 'ECT mentor training details')
+      expect(rendered).to have_css('h2.govuk-heading-m', text: 'ECTE mentor training details')
     end
 
     it 'renders the school summary card' do
