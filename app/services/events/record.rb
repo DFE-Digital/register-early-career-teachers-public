@@ -76,7 +76,7 @@ module Events
       RecordEventJob.perform_later(**attributes)
     end
 
-    # Induction period events
+    # Induction Period Events
 
     def self.record_induction_period_opened_event!(author:, appropriate_body:, induction_period:, teacher:, modifications:)
       fail(NoInductionPeriod) unless induction_period
@@ -89,8 +89,6 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:, modifications:).record_event!
     end
 
-    # Appropriate body events
-
     def self.record_induction_period_closed_event!(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
@@ -101,6 +99,22 @@ module Events
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
+
+    def self.record_induction_period_updated!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
+      event_type = :induction_period_updated
+      heading = 'Induction period updated by admin'
+
+      new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
+    end
+
+    def self.record_induction_period_deleted!(author:, modifications:, teacher:, appropriate_body:, body: nil, happened_at: Time.zone.now)
+      event_type = :induction_period_deleted
+      heading = 'Induction period deleted by admin'
+
+      new(event_type:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
+    end
+
+    # Teacher Status Events
 
     def self.record_teacher_passes_induction_event(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
@@ -124,23 +138,34 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_adds_induction_extension_event(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
-      event_type = :appropriate_body_adds_induction_extension
-      teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
+    def self.record_admin_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
+      fail(NoInductionPeriod) unless induction_period
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
+      event_type = :teacher_passes_induction
+      heading = "#{Teachers::Name.new(teacher).full_name} passed induction (admin)"
+      happened_at = induction_period.finished_on
+
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_updates_induction_extension_event(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
-      event_type = :appropriate_body_updates_induction_extension
-      teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
+    def self.record_admin_fails_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
+      fail(NoInductionPeriod) unless induction_period
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
+      event_type = :teacher_fails_induction
+      heading = "#{Teachers::Name.new(teacher).full_name} failed induction (admin)"
+      happened_at = induction_period.finished_on
+
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    # Teacher events
+    def self.record_teacher_induction_status_reset_event!(author:, appropriate_body:, teacher:, happened_at: Time.zone.now)
+      event_type = :teacher_induction_status_reset
+      heading = "#{Teachers::Name.new(teacher).full_name} was unclaimed"
+
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
+    # Teacher TRS Events
 
     def self.teacher_name_changed_in_trs!(old_name:, new_name:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
       event_type = :teacher_name_updated_by_trs
@@ -170,51 +195,22 @@ module Events
       new(event_type:, author:, modifications:, teacher:, heading:, happened_at:).record_event!
     end
 
-    # Admin events
+    # Induction Extension Events
 
-    def self.record_induction_period_updated!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
-      event_type = :induction_period_updated
+    def self.record_appropriate_body_adds_induction_extension_event(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
+      event_type = :appropriate_body_adds_induction_extension
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
 
-      heading = 'Induction period updated by admin'
-
-      new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
-    def self.record_admin_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
-      fail(NoInductionPeriod) unless induction_period
+    def self.record_appropriate_body_updates_induction_extension_event(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
+      event_type = :appropriate_body_updates_induction_extension
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
 
-      event_type = :teacher_passes_induction
-      heading = "#{Teachers::Name.new(teacher).full_name} passed induction (admin)"
-      happened_at = induction_period.finished_on
-
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
-    end
-
-    def self.record_admin_fails_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
-      fail(NoInductionPeriod) unless induction_period
-
-      event_type = :teacher_fails_induction
-      heading = "#{Teachers::Name.new(teacher).full_name} failed induction (admin)"
-      happened_at = induction_period.finished_on
-
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
-    end
-
-    def self.record_teacher_induction_status_reset_event!(author:, appropriate_body:, teacher:)
-      event_type = :teacher_induction_status_reset
-      heading = "#{Teachers::Name.new(teacher).full_name} was unclaimed"
-      happened_at = Time.zone.now
-
-      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
-    end
-
-    def self.record_induction_period_deleted!(author:, modifications:, teacher:, appropriate_body:, body: nil)
-      event_type = :induction_period_deleted
-      happened_at = Time.zone.now
-
-      heading = 'Induction period deleted by admin'
-
-      new(event_type:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
   private
@@ -257,7 +253,7 @@ module Events
         provider_partnership:,
         lead_provider:,
         delivery_partner:,
-        user:
+        user:,
       }.compact
     end
 
