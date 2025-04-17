@@ -5,7 +5,7 @@ FactoryBot.define do
 
     started_on { 1.year.ago }
     finished_on { 1.month.ago }
-    number_of_terms { Faker::Number.within(range: 1..6) }
+    number_of_terms { 1 }
     induction_programme { "fip" }
 
     trait :active do
