@@ -7,6 +7,7 @@ module Schools
     end
 
     def show
+      # FIXME: restrict this to ECTAtSchoolPeriods belonging to the current school
       @ect = ::ECTAtSchoolPeriod.find(params[:id])
     end
   end
