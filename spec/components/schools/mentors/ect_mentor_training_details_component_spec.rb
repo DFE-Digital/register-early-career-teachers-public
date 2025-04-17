@@ -24,7 +24,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
 
     it 'renders the summary cards' do
       render_inline(described_class.new(teacher:, mentor:))
-      expect(rendered_content).to have_css('h2', text: 'ECT mentor training details')
+      expect(rendered_content).to have_css('h2', text: 'ECTE mentor training details')
       expect(rendered_content).to have_text('Reported to us by your school')
       expect(rendered_content).to have_text('Reported to us by your lead provider')
     end
