@@ -53,7 +53,7 @@ describe Teachers::RefreshTRSAttributes do
 
       perform_enqueued_jobs
 
-      expected_events = %w[teacher_name_updated_by_trs teacher_induction_status_updated_by_trs teacher_trs_attributes_updated]
+      expected_events = %w[teacher_name_updated_by_trs teacher_trs_induction_status_updated teacher_trs_attributes_updated]
 
       expect(teacher.events.last(expected_events.count).map(&:event_type)).to eql(expected_events)
     end
