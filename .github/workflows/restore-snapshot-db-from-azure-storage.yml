@@ -109,7 +109,7 @@ jobs:
             echo "::add-mask::$SLACK_WEBHOOK"
             echo "SLACK_WEBHOOK=$SLACK_WEBHOOK" >> $GITHUB_OUTPUT
 
-      - name: Backup ${{ env.DEPLOY_ENV }} postgres
+      - name: Restore ${{ env.DEPLOY_ENV }} postgres
         uses: ./.github/actions/restore-snapshot-database-from-azure-storage
         with:
           storage-account: ${{ env.STORAGE_ACCOUNT_NAME }}
