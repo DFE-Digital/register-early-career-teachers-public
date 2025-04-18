@@ -1,5 +1,5 @@
 RSpec.describe 'schools/ects/show.html.erb' do
-  let(:academic_year) { FactoryBot.create(:academic_year) }
+  let(:registration_period) { FactoryBot.create(:registration_period) }
   let!(:current_ect_period) do
     FactoryBot.create(:ect_at_school_period,
                       :teaching_school_hub_ab,
@@ -15,7 +15,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:provider_partnership) { FactoryBot.create(:provider_partnership, lead_provider:, delivery_partner:, academic_year:) }
+  let(:provider_partnership) { FactoryBot.create(:provider_partnership, lead_provider:, delivery_partner:, registration_period:) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Alpha Teaching School Hub') }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Barry', trs_last_name: 'White', corrected_name: 'Baz White') }
   let(:previous_school) { FactoryBot.create(:school, urn: '123456') }

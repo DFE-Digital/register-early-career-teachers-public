@@ -200,7 +200,7 @@
   - urn
   :provider_partnerships:
   - id
-  - academic_year_id
+  - registration_period_id
   - lead_provider_id
   - delivery_partner_id
   - created_at
@@ -347,10 +347,14 @@
   - worker
   - created_at
   - updated_at
-  :academic_years:
+  :registration_periods:
   - year
   - created_at
   - updated_at
+  - started_on
+  - finished_on
+  - enabled
+  - range
   :early_roll_out_mentors:
   - id
   - trn
