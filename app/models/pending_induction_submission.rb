@@ -15,23 +15,35 @@ class PendingInductionSubmission < ApplicationRecord
 
   # Scopes
   scope :ready_for_deletion, -> { where(delete_at: ..Time.current) }
+  scope :release, -> { where(outcome: nil).where.not(finished_on: nil) }
+  scope :with_errors, -> { where.not(error_message: [nil, '']) }
+  scope :without_errors, -> { where(error_message: nil) }
 
   # Associations
   belongs_to :appropriate_body
+  belongs_to :pending_induction_submission_batch, optional: true
 
   # Validations
   validates :trn,
             presence: { message: "Enter a TRN" },
-            format: { with: Teacher::TRN_FORMAT, message: "TRN must be 7 numeric digits" },
+            format: {
+              with: Teacher::TRN_FORMAT,
+              message: "TRN must be 7 numeric digits"
+            },
             on: :find_ect
 
   validates :establishment_id,
-            format: { with: /\A\d{4}\/\d{3}\z/, message: "Enter an establishment ID in the format 1234/567" },
+            format: {
+              with: /\A\d{4}\/\d{3}\z/,
+              message: "Enter an establishment ID in the format 1234/567"
+            },
             allow_nil: true
 
   validates :induction_programme,
-            inclusion: { in: %w[fip cip diy],
-                         message: "Choose an induction programme" },
+            inclusion: {
+              in: %w[fip cip diy],
+              message: "Choose an induction programme"
+            },
             on: :register_ect
 
   validates :started_on,
@@ -80,7 +92,37 @@ class PendingInductionSubmission < ApplicationRecord
 
   # Instance methods
   def exempt?
-    trs_induction_status == "Exempt"
+    trs_induction_status.eql?('Exempt')
+  end
+
+  def pass?
+    outcome.eql?('pass')
+  end
+
+  def fail?
+    outcome.eql?('fail')
+  end
+
+  def error_message
+    super || "✅"
+  end
+
+  def playback_errors
+    assign_attributes(
+      induction_programme: nil,
+      outcome: nil,
+      started_on: nil,
+      finished_on: nil,
+      number_of_terms: nil,
+      error_message: errors.full_messages.to_sentence
+    )
+    errors.clear
+    save!
+  end
+
+  # @return [nil, Teacher]
+  def teacher
+    @teacher ||= Teacher.find_by(trn:)
   end
 
 private
@@ -92,8 +134,6 @@ private
   end
 
   def no_future_induction_periods
-    teacher = Teacher.find_by(trn:)
-
     return if teacher.blank?
 
     latest_date_of_induction = teacher.induction_periods.maximum(:finished_on)
