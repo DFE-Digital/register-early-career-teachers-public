@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_11_105110) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_14_131145) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -358,6 +358,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_11_105110) do
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
   end
 
+  create_table "pending_school_joiners", force: :cascade do |t|
+    t.bigint "teacher_id"
+    t.bigint "school_id"
+    t.string "role_type", default: "ect", null: false
+    t.date "starting_on", null: false
+    t.enum "programme_type", enum_type: "programme_type"
+    t.bigint "mentor_at_school_period_id"
+    t.bigint "lead_provider_id"
+    t.bigint "appropriate_body_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appropriate_body_id"], name: "index_pending_school_joiners_on_appropriate_body_id"
+    t.index ["lead_provider_id"], name: "index_pending_school_joiners_on_lead_provider_id"
+    t.index ["mentor_at_school_period_id"], name: "index_pending_school_joiners_on_mentor_at_school_period_id"
+    t.index ["school_id"], name: "index_pending_school_joiners_on_school_id"
+    t.index ["teacher_id"], name: "index_pending_school_joiners_on_teacher_id"
+  end
+
   create_table "provider_partnerships", force: :cascade do |t|
     t.bigint "academic_year_id", null: false
     t.bigint "lead_provider_id", null: false
@@ -595,6 +613,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_11_105110) do
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
+  add_foreign_key "pending_school_joiners", "appropriate_bodies"
+  add_foreign_key "pending_school_joiners", "lead_providers"
+  add_foreign_key "pending_school_joiners", "mentor_at_school_periods"
+  add_foreign_key "pending_school_joiners", "schools"
+  add_foreign_key "pending_school_joiners", "teachers"
   add_foreign_key "provider_partnerships", "academic_years", primary_key: "year"
   add_foreign_key "provider_partnerships", "delivery_partners"
   add_foreign_key "provider_partnerships", "lead_providers"

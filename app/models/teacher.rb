@@ -16,6 +16,9 @@ class Teacher < ApplicationRecord
   has_many :induction_periods
   has_many :appropriate_bodies, through: :induction_periods
   has_many :events
+  has_many :pending_school_starts, class_name: "PendingSchoolJoiner", inverse_of: :teacher
+  has_many :pending_schools, through: :pending_school_starts, source: :school
+  has_many :pending_providers, through: :pending_school_starts, source: :lead_provider
 
   # TODO: remove after migration complete
   has_many :teacher_migration_failures
