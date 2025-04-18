@@ -139,9 +139,9 @@ describe Teachers::Search do
 
       context 'when absent' do
         it 'does not join ect_at_school_periods' do
-          query = Teachers::Search.new(ect_at_school: 123).search
+          query = Teachers::Search.new.search
 
-          expect(query).not_to include('ect_at_school_periods')
+          expect(query.to_sql).not_to include('ect_at_school_periods')
         end
       end
 
