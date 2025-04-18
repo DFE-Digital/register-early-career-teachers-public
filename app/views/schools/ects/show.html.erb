@@ -1,7 +1,7 @@
 <%
   page_data(
     title: teacher_full_name(@ect.teacher),
-    backlink_href: schools_ects_home_path,
+    backlink_href: params[:back_to_mentor] == "true" ? schools_mentor_path(params[:mentor_id]) : schools_ects_home_path,
     caption: teacher_trn(@ect.teacher),
     caption_size: 'l',
   )

@@ -94,6 +94,7 @@ Rails.application.routes.draw do
   end
 
   namespace :schools do
+    resources :mentors, only: %i[show]
     get "/home/ects", to: "ects#index", as: :ects_home
     get "/home/mentors", to: "mentors#index", as: :mentors_home
 
