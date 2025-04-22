@@ -8,6 +8,20 @@ A declaration represents a formal statement submitted by a Lead Provider, using 
 
 Understanding this journey is crucial for comprehending data flow, participant tracking, and the methodology behind calculating associated fees and payments. This section covers how Lead Providers interact with declarations and how internal users access this information.
 
+## Contents
+
+[Declarations in a nutshell](#declarations-in-a-nutshell)
+
+[Lead providers submitting a declaration](#lead-providers-submitting-a-declaration)
+
+[Lead providers reviewing submitted declarations](#lead-providers-reviewing-submitted-declarations)
+
+[Declaration States](#declaration-states)
+
+[Lead providers checking whether a declaration has been successfully submitted and processed](#lead-providers-checking-whether-a-declaration-has-been-successfully-submitted-and-processed)
+
+[Internal User Access](#internal-user-access)
+
 ## Declarations in a nutshell
 
 Declarations are submitted where there is evidence of a participant's engagement in training for a given milestone period. This is submitted by lead providers via the API and triggers payments to lead providers.
@@ -80,14 +94,14 @@ Also lead providers have real-time status updates of a specific declaration via 
 
 Declarations progress through various states, reflecting their journey from submission through validation, payment processing, and potential reconciliation. The state determines eligibility for payment and informs required actions. Possible states include:
 
-* **`SUBMITTED`**: The declaration has been received by the system but has not yet undergone validation.
-* **`ELIGIBLE`**: The declaration has passed initial validation checks and is potentially eligible for payment.
-* **`PAYABLE`**: The declaration is validated, eligible, and queued for inclusion in the next payment run.
-* **`PAID`**: Payment associated with this declaration has been processed.
-* **`VOIDED`**: The declaration has been cancelled or invalidated, often due to an error or subsequent correction. It is excluded from payment calculations.
-* **`INELIGIBLE`**: The declaration failed validation checks (e.g., duplicate declaration, participant not found, invalid dates). Payment will not be processed.
-* **`AWAITING_CLAWBACK`**: A determination has been made that a previously paid declaration needs to be clawed back, and the clawback process is pending or in progress.
-* **`CLAWED_BACK`**: Payment was initially made for this declaration, but has subsequently been recouped (e.g., due to evidence issues, participant withdrawal after payment).
+* **`submitted`**: The declaration has been received by the system but has not yet undergone validation.
+* **`eligible`**: The declaration has passed initial validation checks and is potentially eligible for payment.
+* **`payable`**: The declaration is validated, eligible, and queued for inclusion in the next payment run.
+* **`paid`**: Payment associated with this declaration has been processed.
+* **`voided`**: The declaration has been cancelled or invalidated, often due to an error or subsequent correction. It is excluded from payment calculations.
+* **`ineligible`**: The declaration failed validation checks (e.g., duplicate declaration, participant not found, invalid dates). Payment will not be processed.
+* **`awaiting_clawback`**: A determination has been made that a previously paid declaration needs to be clawed back, and the clawback process is pending or in progress.
+* **`clawed_back`**: Payment was initially made for this declaration, but has subsequently been recouped (e.g., due to evidence issues, participant withdrawal after payment).
 
 The `state` field returned when retrieving declarations, via the API, indicates its position in this lifecycle.
 
