@@ -360,3 +360,21 @@
   - trn
   - created_at
   - updated_at
+  :school_partnerships:
+  - id
+  - lead_provider_delivery_partnership_id
+  - school_id
+  - created_at
+  - updated_at
+  :lead_provider_delivery_partnerships:
+  - id
+  - lead_provider_active_period_id
+  - delivery_partner_id
+  - created_at
+  - updated_at
+  :lead_provider_active_periods:
+  - id
+  - lead_provider_id
+  - registration_period_id
+  - created_at
+  - updated_at
