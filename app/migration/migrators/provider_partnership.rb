@@ -13,7 +13,7 @@ module Migrators
     end
 
     def self.dependencies
-      %i[academic_year lead_provider delivery_partner]
+      %i[registration_period lead_provider delivery_partner]
     end
 
     def self.reset!
@@ -26,7 +26,7 @@ module Migrators
       migrate(self.class.provider_relationships.includes(:lead_provider, :delivery_partner, :cohort)) do |provider_relationship|
         ::ProviderPartnership.create!(lead_provider: ::LeadProvider.find_by!(name: provider_relationship.lead_provider.name),
                                       delivery_partner: ::DeliveryPartner.find_by!(name: provider_relationship.delivery_partner.name),
-                                      academic_year: ::AcademicYear.find(provider_relationship.cohort.start_year))
+                                      registration_period: ::RegistrationPeriod.find(provider_relationship.cohort.start_year))
       end
     end
   end
