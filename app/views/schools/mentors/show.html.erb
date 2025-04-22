@@ -1,0 +1,21 @@
+<% page_data(
+  title: teacher_full_name(@teacher),
+  caption: "TRN: #{@teacher.trn}",
+  header: teacher_full_name(@teacher),
+  backlink_href: schools_mentors_home_path
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <%= render Schools::Mentors::DetailsComponent.new(
+      teacher: @teacher,
+      mentor: @mentor
+    ) %>
+
+    <%= render Schools::Mentors::ECTMentorTrainingDetailsComponent.new(
+          teacher: @teacher,
+          mentor: @mentor
+        ) %>
+  </div>
+</div>
