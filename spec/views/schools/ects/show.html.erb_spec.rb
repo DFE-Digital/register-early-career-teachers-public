@@ -15,7 +15,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:provider_partnership) { FactoryBot.create(:provider_partnership, lead_provider:, delivery_partner:, registration_period:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider:, delivery_partner:, registration_period:) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Alpha Teaching School Hub') }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Barry', trs_last_name: 'White', corrected_name: 'Baz White') }
   let(:previous_school) { FactoryBot.create(:school, urn: '123456') }
@@ -99,7 +99,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
 
   describe 'ECTE training details' do
     before do
-      FactoryBot.create(:training_period, :active, :for_ect, provider_partnership:,
+      FactoryBot.create(:training_period, :active, :for_ect, school_partnership:,
                                                              ect_at_school_period: current_ect_period,
                                                              started_on: current_ect_period.started_on)
 

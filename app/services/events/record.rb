@@ -18,7 +18,7 @@ module Events
                 :mentor_at_school_period,
                 :training_period,
                 :mentorship_period,
-                :provider_partnership,
+                :school_partnership,
                 :lead_provider,
                 :delivery_partner,
                 :user,
@@ -40,7 +40,7 @@ module Events
       mentor_at_school_period: nil,
       training_period: nil,
       mentorship_period: nil,
-      provider_partnership: nil,
+      school_partnership: nil,
       lead_provider: nil,
       delivery_partner: nil,
       user: nil,
@@ -61,7 +61,7 @@ module Events
       @mentor_at_school_period = mentor_at_school_period
       @training_period = training_period
       @mentorship_period = mentorship_period
-      @provider_partnership = provider_partnership
+      @school_partnership = school_partnership
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
       @user = user
@@ -248,7 +248,7 @@ module Events
         mentor_at_school_period:,
         training_period:,
         mentorship_period:,
-        provider_partnership:,
+        school_partnership:,
         lead_provider:,
         delivery_partner:,
         user:,

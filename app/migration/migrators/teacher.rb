@@ -13,7 +13,7 @@ module Migrators
     end
 
     def self.dependencies
-      %i[provider_partnership]
+      %i[school_partnership]
     end
 
     def self.records_per_worker

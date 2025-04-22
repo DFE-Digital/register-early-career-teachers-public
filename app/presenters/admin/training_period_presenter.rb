@@ -5,11 +5,11 @@ module Admin
     end
 
     def lead_provider
-      @lead_provider ||= training_period.provider_partnership.lead_provider
+      @lead_provider ||= training_period.school_partnership.lead_provider
     end
 
     def delivery_partner
-      @delivery_partner ||= training_period.provider_partnership.delivery_partner
+      @delivery_partner ||= training_period.school_partnership.delivery_partner
     end
 
     def formatted_started_on
