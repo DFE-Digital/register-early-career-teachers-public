@@ -10,18 +10,18 @@ Once a participant has been registered to the service by their school, data asso
 
 [API versions and updates](#api-versions-and-updates)
 
-[How the payment engine works](/service-rules/ecf1/payment-engine)
+[Financial statements](/service-rules/ecf1/statements)
 
 [How participant declarations works](/service-rules/ecf1/participant-declarations)
 
-## API versions and updates
+## API versioning and updates management
 
-We regularly make improvements and add new functionality to the API. View our <a href="https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/release-notes.html" target="_blank">release notes</a> to find out about the latest updates.
+We continuously implement improvements and feature enhancements to the API codebase. Internal teams can reference the <a href="https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/release-notes.html" target="_blank">release notes</a> for detailed changelogs and implementation notes.
 
-If we change the API so it’s no longer able to work with older data or functionality, we’ll publish a new version. This is specified in the `URL /api/v{n}/`. For example, `/api/v1/` or `/api/v2/` and so on. We recommend lead providers use the latest version of the API.
+Version control is managed through the URL path parameter `/api/v{n}/`. When breaking changes are introduced that affect data structures or endpoint functionality, we increment the version number (e.g., `/api/v1/` to `/api/v2/`). Development teams should prioritize supporting the latest version in all internal systems and tools.
 
-When we publish a new API version, only one previous version will remain supported. For example, when a `v4` is released, `v2` will be discontinued.
+Our versioning policy maintains support for only one previous version when a new version is released. For example, upon `v4` release, `v2` will be deprecated and scheduled for decommissioning according to our standard deprecation timeline.
 
-Note, there's an exception to this rule for `v3`. We're supporting `v1` for an extended period while we work with providers on transition plans.
+Exception note: `v1` has an extended support window beyond our standard policy due to ongoing provider transition plans. The Engineering and Provider Relations teams are coordinating this extended support.
 
-When we make non-breaking updates (sometimes referred to as backwards compatible updates), we will not re-version the API. An example of a non-breaking change would be when we introduce a new attribute without removing an existing one.
+Non-breaking changes (backward compatible) are deployed without version increments. These include adding new attributes, extending existing functionality, or performance optimizations that maintain the current contract. These changes are documented in our internal sprint reviews and release notes.
