@@ -6,8 +6,6 @@ module AppropriateBodies
             .for_appropriate_body(@appropriate_body)
             .claim
             .order(id: :desc)
-            .select(:id, :batch_type, :batch_status, :error_message)
-            .map { |b| b.attributes.values.map(&:to_s) }
       end
 
       def create
@@ -15,6 +13,7 @@ module AppropriateBodies
 
         if csv_data.valid?
           @pending_induction_submission_batch.data = csv_data.to_a
+          @pending_induction_submission_batch.filename = csv_data.file_name
           @pending_induction_submission_batch.save!
 
           process_batch_claim
@@ -30,6 +29,9 @@ module AppropriateBodies
       rescue StandardError => e
         @pending_induction_submission_batch.errors.add(:base, e.message)
         render :new, status: :unprocessable_entity
+      end
+
+      def edit
       end
 
     private

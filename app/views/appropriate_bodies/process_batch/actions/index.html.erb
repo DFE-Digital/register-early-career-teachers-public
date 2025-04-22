@@ -7,12 +7,6 @@
 
 <%= govuk_button_link_to("Record outcomes and releases in bulk", new_ab_batch_action_path, secondary: true) %>
 
-<%=
-  govuk_table(
-    caption: 'Bulk actions',
-    head: ['id', 'type', 'status', 'error'],
-    rows: @pending_induction_submission_batches,
-  )
-%>
+<%= batch_list_table(@pending_induction_submission_batches) %>
 
 <p><%= govuk_link_to("Go to claims", ab_batch_claims_path) %></p>

@@ -1,0 +1,12 @@
+<p class='govuk-body'>
+  Your CSV named '<%= batch.filename %>' has <%= batch.pending_induction_submissions.count %> ECTs with errors.
+</p>
+
+<p class='govuk-body'>
+  <%= govuk_link_to 'Download CSV with error messages included', ab_batch_action_path(batch, format: :csv) %>. 
+  You'll need to fix these errors before you upload your CSV again.
+</p>
+
+<p class='govuk-body'>
+  <%= govuk_link_to 'Go back to homepage', root_path %>
+</p> 

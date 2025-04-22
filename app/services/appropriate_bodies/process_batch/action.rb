@@ -9,7 +9,14 @@ module AppropriateBodies
           @pending_induction_submission = pending_induction_submission
 
           do_action!
+        rescue StandardError => e
+          capture_error(e.message)
+          next
         end
+
+        # Batch error reporting
+      rescue StandardError => e
+        pending_induction_submission_batch.update(error_message: e.message)
       end
 
       # @return [CSV::Table] validate each row and create a submission capturing the errors

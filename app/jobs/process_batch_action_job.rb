@@ -6,8 +6,9 @@ class ProcessBatchActionJob < ApplicationJob
     return if pending_induction_submission_batch.processing?
 
     if pending_induction_submission_batch.processed?
-      batch_action(pending_induction_submission_batch, author_email, author_name).do!
+      # change status first for quick response
       pending_induction_submission_batch.completed!
+      batch_action(pending_induction_submission_batch, author_email, author_name).do!
 
     elsif pending_induction_submission_batch.pending?
       pending_induction_submission_batch.processing!

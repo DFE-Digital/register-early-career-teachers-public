@@ -2,29 +2,21 @@ module AppropriateBodies
   class PendingInductionSubmissionBatchController < AppropriateBodiesController
     layout 'full'
 
-    def show
-      pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
-      @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
+    before_action :find_batch, only: %i[show edit]
 
-      if wrong_appropriate_body?
-        render_unauthorised
-      else
-        respond_to do |format|
-          format.html
-          format.csv do
-            send_data @pending_induction_submission_batch.to_csv,
-                      filename: "#{@appropriate_body.name}.csv",
-                      type: 'text/csv'
-          end
+    def show
+      respond_to do |format|
+        format.html
+
+        format.csv do
+          send_data @pending_induction_submission_batch.to_csv,
+                    filename: "Errors for #{@pending_induction_submission_batch.filename}",
+                    type: 'text/csv'
         end
       end
     end
 
     def edit
-      pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
-      @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
-
-      render_unauthorised if wrong_appropriate_body?
     end
 
     def new
@@ -49,8 +41,11 @@ module AppropriateBodies
       current_user.appropriate_body_id != @pending_induction_submission_batch.appropriate_body.id
     end
 
-    def render_unauthorised
-      render "errors/unauthorised", status: :unauthorized
+    def find_batch
+      pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+      @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
+
+      render "errors/unauthorised", status: :unauthorized if wrong_appropriate_body?
     end
   end
 end

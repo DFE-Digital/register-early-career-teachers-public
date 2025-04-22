@@ -1,0 +1,19 @@
+<%
+  page_data(
+    title: "Outcomes successfully recorded",
+    header: false,
+    backlink_href: root_path
+  )
+%>
+
+<%= govuk_panel(title_text: "Outcomes successfully recorded") %>
+
+<p class='govuk-body'>
+  You uploaded <%= batch.pending_induction_submissions.count %> ECT records including:
+</p>
+
+<%= render partial: 'appropriate_bodies/process_batch/actions/summary', locals: { batch: } %>
+
+<p class='govuk-body'>
+  <%= govuk_link_to 'Go back to homepage', root_path %>
+</p>  

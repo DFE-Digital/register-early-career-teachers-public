@@ -21,7 +21,7 @@ class PendingInductionSubmission < ApplicationRecord
 
   # Associations
   belongs_to :appropriate_body
-  belongs_to :pending_induction_submission_batch, optional: true
+  belongs_to :pending_induction_submission_batch, optional: true, touch: true
 
   # Validations
   validates :trn,

@@ -1,0 +1,21 @@
+<h1 class="govuk-heading-l">Upload summary</h1>
+
+<% if batch.no_valid_data? %>
+  <%= render partial: 'appropriate_bodies/process_batch/actions/no_valid_data', locals: { batch: } %>
+
+<% else %>
+  <p class='govuk-body'>
+    Your CSV named '<%= batch.filename %>' has <%= batch.pending_induction_submissions.count %> ECT records including:
+  </p>
+
+  <%= render partial: 'appropriate_bodies/process_batch/actions/summary', locals: { batch: } %>
+
+  <%= form_with(model: batch, url: ab_batch_action_path(batch), method: 'put') do |f| %>
+    <%= content_for(:error_summary) { f.govuk_error_summary } %>
+    <%= f.govuk_submit 'Continue' %>
+  <% end %>
+
+  <p class='govuk-body'>
+    <%= govuk_link_to 'Cancel and go back to homepage', root_path %>
+  </p>  
+<% end %>  

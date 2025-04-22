@@ -270,6 +270,7 @@
   - batch_type
   - batch_status
   - data
+  - filename
   - error_message
   - created_at
   - updated_at

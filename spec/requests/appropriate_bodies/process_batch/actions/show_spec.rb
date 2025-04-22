@@ -4,7 +4,8 @@ RSpec.describe "Appropriate Body bulk actions show page", type: :request do
   let(:batch) do
     FactoryBot.create(:pending_induction_submission_batch, :action,
                       appropriate_body:,
-                      data:)
+                      data:,
+                      filename:)
   end
 
   include_context '3 valid actions'
@@ -28,10 +29,21 @@ RSpec.describe "Appropriate Body bulk actions show page", type: :request do
     end
 
     context 'when signed in as an appropriate body user' do
-      it 'renders the page successfully' do
+      before do
         sign_in_as(:appropriate_body_user, appropriate_body:)
+      end
+
+      it 'renders the page successfully' do
         get("/appropriate-body/bulk/actions/#{batch.id}")
         expect(response).to be_successful
+      end
+
+      it 'can be rendered as a CSV download' do
+        get("/appropriate-body/bulk/actions/#{batch.id}.csv")
+        expect(response).to be_successful
+        expect(response.headers['Content-Disposition']).to include('filename="Errors for 3 valid actions.csv"')
+
+        expect(response.body).to eq "TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message\n"
       end
     end
   end
