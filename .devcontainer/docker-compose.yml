@@ -10,6 +10,7 @@ services:
     command: sleep infinity
     environment:
       ENABLE_PERSONAS: true
+      ENABLE_BULK_UPLOAD: true
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
