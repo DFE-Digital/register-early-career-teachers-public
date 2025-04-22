@@ -38,6 +38,13 @@ module AppropriateBodies
       params.require(:pending_induction_submission_batch).permit(:csv_file)
     end
 
+    def csv_data
+      @csv_data ||= ProcessBatchForm.from_uploaded_file(
+        headers: @pending_induction_submission_batch.column_headers,
+        csv_file: import_params[:csv_file]
+      )
+    end
+
     def wrong_appropriate_body?
       current_user.appropriate_body_id != @pending_induction_submission_batch.appropriate_body.id
     end

@@ -15,7 +15,7 @@ class PendingInductionSubmissionBatchPresenter < SimpleDelegator
   # @return [String] downloadable CSV of failed submissions and their errors
   def to_csv
     CSV.generate do |csv|
-      csv << csv_headings.keys
+      csv << column_headers
       failed_submissions.each { |row| csv << row }
     end
   end

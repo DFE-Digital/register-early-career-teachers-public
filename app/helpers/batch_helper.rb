@@ -43,7 +43,7 @@ module BatchHelper
   def batch_raw_data_table(pending_induction_submission_batch)
     govuk_table(
       caption: "Uploaded CSV data (#{pending_induction_submission_batch.rows.count} rows)",
-      head: pending_induction_submission_batch.csv_headings.values,
+      head: pending_induction_submission_batch.row_headings.values,
       rows: pending_induction_submission_batch.rows
     )
   end
@@ -59,7 +59,7 @@ module BatchHelper
   def batch_download_data_table(pending_induction_submission_batch)
     govuk_table(
       caption: "Downloadable bad CSV data (#{pending_induction_submission_batch.failed_submissions.count} rows)",
-      head: pending_induction_submission_batch.csv_headings.values,
+      head: pending_induction_submission_batch.row_headings.values,
       rows: pending_induction_submission_batch.failed_submissions
     )
   end

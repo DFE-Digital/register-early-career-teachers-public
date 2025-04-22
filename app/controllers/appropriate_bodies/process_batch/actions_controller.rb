@@ -13,17 +13,18 @@ module AppropriateBodies
       def create
         @pending_induction_submission_batch = new_batch_action
 
-        if @pending_induction_submission_batch.save! &&
-            @pending_induction_submission_batch.save(context: :uploaded)
+        if csv_data.valid?
+          @pending_induction_submission_batch.data = csv_data.to_a
+          @pending_induction_submission_batch.save!
 
           process_batch_action
 
           redirect_to ab_batch_action_path(@pending_induction_submission_batch), alert: 'File processing'
-
         else
+          @pending_induction_submission_batch = csv_data
           render :new
         end
-      rescue ActionController::ParameterMissing, ActiveStorage::FileNotFoundError
+      rescue ActionController::ParameterMissing
         @pending_induction_submission_batch.errors.add(:csv_file, "Attach a CSV file")
         render :new
       rescue StandardError => e
@@ -42,7 +43,7 @@ module AppropriateBodies
     private
 
       def new_batch_action
-        PendingInductionSubmissionBatch.new_action_for(appropriate_body: @appropriate_body, **import_params)
+        PendingInductionSubmissionBatch.new_action_for(appropriate_body: @appropriate_body)
       end
 
       # Delay ensures the parsed CSV is saved before the job runs
