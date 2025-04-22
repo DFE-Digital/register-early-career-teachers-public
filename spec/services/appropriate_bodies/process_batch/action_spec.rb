@@ -148,7 +148,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
       describe '#do!' do
         before do
-          allow(Events::Record).to receive(:record_appropriate_body_passes_teacher_event).and_call_original
+          allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
 
           service.do!
 
@@ -162,7 +162,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
 
         it 'creates events owned by the author' do
-          expect(Events::Record).to have_received(:record_appropriate_body_passes_teacher_event).with(
+          expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
             appropriate_body:,
             teacher:,
             induction_period:,
