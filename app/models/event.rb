@@ -10,10 +10,10 @@ class Event < ApplicationRecord
     teacher_fails_induction
     teacher_imported_from_trs
     teacher_induction_status_reset
-    teacher_induction_status_updated_by_trs
     teacher_name_updated_by_trs
     teacher_passes_induction
     teacher_trs_attributes_updated
+    teacher_trs_induction_status_updated
   ].freeze
 
   belongs_to :teacher

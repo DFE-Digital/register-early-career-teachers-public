@@ -44,7 +44,7 @@ module AppropriateBodies
     end
 
     def record_pass_induction_event!
-      Events::Record.record_teacher_passes_induction_event(
+      Events::Record.record_teacher_passes_induction_event!(
         author:,
         teacher:,
         appropriate_body:,
@@ -53,7 +53,7 @@ module AppropriateBodies
     end
 
     def record_fail_induction_event!
-      Events::Record.record_teacher_fails_induction_event(
+      Events::Record.record_teacher_fails_induction_event!(
         author:,
         teacher:,
         appropriate_body:,

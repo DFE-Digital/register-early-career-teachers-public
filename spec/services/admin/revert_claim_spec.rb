@@ -14,7 +14,7 @@ RSpec.describe Admin::RevertClaim do
   before do
     allow(Events::Record).to receive_messages(
       record_teacher_induction_status_reset_event!: true,
-      record_induction_period_deleted!: true
+      record_induction_period_deleted_event!: true
     )
   end
 
