@@ -29,14 +29,13 @@ RSpec.describe 'Process bulk actions' do
     scenario 'creates a pending submission for each row' do
       given_i_am_on_the_upload_page
       when_i_upload_a_file
+      then_i_should_see_the_status('pending')
 
-      expect(page.get_by_text('Batch status')).to be_visible
-      expect(page.get_by_text('pending')).to be_visible
-
-      perform_enqueued_jobs
       # This job does validation first, leaving the user to confirm with a CTA
+      perform_enqueued_jobs
       page.reload
-      expect(page.get_by_text('processed', exact: true)).to be_visible
+
+      then_i_should_see_the_status('processed')
     end
   end
 
@@ -117,5 +116,10 @@ private
     expect(page.url).to end_with('/appropriate-body/bulk/actions')
     expect(page.title).to start_with('Error:')
     expect(page.get_by_text("Error: #{error}")).to be_visible
+  end
+
+  def then_i_should_see_the_status(status)
+    expect(page.get_by_text('Batch status')).to be_visible
+    expect(page.get_by_text(status, exact: true)).to be_visible
   end
 end

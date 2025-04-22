@@ -10,31 +10,30 @@ module AppropriateBodies
 
           claim!
         rescue Errors::TeacherHasActiveInductionPeriodWithCurrentAB
-          pending_induction_submission.update(error_message: "Already claimed by your appropriate body")
+          capture_error('Already claimed by your appropriate body')
           next
         rescue Errors::TeacherHasActiveInductionPeriodWithAnotherAB
-          pending_induction_submission.update(error_message: "Already claimed by another appropriate body")
+          capture_error('Already claimed by another appropriate body')
           next
         rescue ::TRS::Errors::TeacherNotFound
-          pending_induction_submission.update(error_message: "Not found in TRS")
+          capture_error('Not found in TRS')
           next
         rescue ::TRS::Errors::ProhibitedFromTeaching
-          pending_induction_submission.update(error_message: "Prohibited from teaching")
+          capture_error('Prohibited from teaching')
           next
         rescue ::TRS::Errors::QTSNotAwarded
-          pending_induction_submission.update(error_message: "QTS not awarded")
+          capture_error('QTS not awarded')
           next
         rescue StandardError => e
-          pending_induction_submission.update(error_message: e.message)
+          capture_error(e.message)
           next
         end
       rescue StandardError => e
-        pending_induction_submission_batch.update(error_message: e.message)
+        capture_error(e.message)
       end
 
     private
 
-      # @return [?]
       def claim!
         PendingInductionSubmissionBatch.transaction do
           pending_induction_submission.assign_attributes(
@@ -70,6 +69,10 @@ module AppropriateBodies
       # @return [AppropriateBodies::ClaimAnECT::RegisterECT]
       def register_ect
         ClaimAnECT::RegisterECT.new(appropriate_body:, pending_induction_submission:, author:)
+      end
+
+      def capture_error(message)
+        pending_induction_submission.update(error_message: message)
       end
     end
   end
