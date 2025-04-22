@@ -13,6 +13,22 @@ These are the steps
 5. Service fees and banding are determined and applied.
 6. Final payments are calculated and displayed for contract managers.
 
+## Contents
+
+[Lead providers submitting a declaration](#lead-providers-submitting-a-declaration)
+
+[Lead providers reviewing submitted declarations](#lead-providers-reviewing-submitted-declarations)
+
+[Lead providers checking which statement a declaration has been linked to](#lead-providers-checking-which-statement-a-declaration-has-been-linked-to)
+
+[Lead providers checking whether a declaration has been successfully submitted and processed](#lead-providers-checking-whether-a-declaration-has-been-successfully-submitted-and-processed)
+
+[Working with participant bands](#working-with-participant-bands)
+
+[Output Fee vs. Service Fee](#output-fee-vs-service-fee)
+
+[Contract manager logging in and viewing the bandings](#contract-manager-logging-in-and-viewing-the-bandings)
+
 ## Lead providers submitting a declaration
 
 A lead provider can submit a declaration using the POST `api/v[1,2,3]/participant-declarations` endpoint, providers are required to supply the request body, which includes the:
