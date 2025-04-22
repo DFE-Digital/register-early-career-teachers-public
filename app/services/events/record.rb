@@ -71,8 +71,6 @@ module Events
 
     def record_event!
       check_relationship_attributes_are_persisted
-      # FIXME: This job is causing serialization errors when launched within a failing transaction block.
-      # We have not yet identified the root cause of this issue therefore we're going to run the job inline for now.
       RecordEventJob.perform_later(**attributes)
     end
 
@@ -100,14 +98,14 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_updated!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
+    def self.record_induction_period_updated_event!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
       event_type = :induction_period_updated
       heading = 'Induction period updated by admin'
 
       new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_deleted!(author:, modifications:, teacher:, appropriate_body:, body: nil, happened_at: Time.zone.now)
+    def self.record_induction_period_deleted_event!(author:, modifications:, teacher:, appropriate_body:, body: nil, happened_at: Time.zone.now)
       event_type = :induction_period_deleted
       heading = 'Induction period deleted by admin'
 
@@ -116,7 +114,7 @@ module Events
 
     # Teacher Status Events
 
-    def self.record_teacher_passes_induction_event(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_teacher_passes_induction_event!(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_passes_induction
@@ -127,7 +125,7 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_teacher_fails_induction_event(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_teacher_fails_induction_event!(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_fails_induction
@@ -138,7 +136,7 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_admin_passes_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_admin_passes_teacher_event!(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_passes_induction
@@ -148,7 +146,7 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_admin_fails_teacher_event(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_admin_fails_teacher_event!(author:, appropriate_body:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_fails_induction
@@ -167,28 +165,28 @@ module Events
 
     # Teacher TRS Events
 
-    def self.teacher_name_changed_in_trs!(old_name:, new_name:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+    def self.teacher_name_changed_in_trs_event!(old_name:, new_name:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
       event_type = :teacher_name_updated_by_trs
       heading = "Name changed from '#{old_name}' to '#{new_name}'"
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.teacher_induction_status_changed_in_trs!(old_induction_status:, new_induction_status:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+    def self.teacher_induction_status_changed_in_trs_event!(old_induction_status:, new_induction_status:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_status_updated
       heading = "Induction status changed from '#{old_induction_status}' to '#{new_induction_status}'"
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.teacher_imported_from_trs!(author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+    def self.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
       event_type = :teacher_imported_from_trs
       heading = "Imported from TRS"
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.teacher_trs_attributes_updated!(author:, teacher:, modifications:, happened_at: Time.zone.now)
+    def self.teacher_trs_attributes_updated_event!(author:, teacher:, modifications:, happened_at: Time.zone.now)
       event_type = :teacher_trs_attributes_updated
       heading = "TRS attributes updated"
 
@@ -197,7 +195,7 @@ module Events
 
     # Induction Extension Events
 
-    def self.record_appropriate_body_adds_induction_extension_event(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
+    def self.record_appropriate_body_adds_induction_extension_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :appropriate_body_adds_induction_extension
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
@@ -205,7 +203,7 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_updates_induction_extension_event(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
+    def self.record_appropriate_body_updates_induction_extension_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :appropriate_body_updates_induction_extension
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"

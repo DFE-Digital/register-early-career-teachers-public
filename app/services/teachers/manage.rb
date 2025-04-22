@@ -20,7 +20,7 @@ class Teachers::Manage
     end
 
     if teacher.new_record? && teacher.save
-      Events::Record.teacher_imported_from_trs!(
+      Events::Record.teacher_imported_from_trs_event!(
         author: event_metadata[:author],
         teacher:,
         appropriate_body: event_metadata[:appropriate_body]
@@ -100,18 +100,18 @@ private
   def record_name_change_event(old_name, new_name)
     return if old_name == new_name
 
-    Events::Record.teacher_name_changed_in_trs!(author:, teacher:, appropriate_body:, old_name:, new_name:)
+    Events::Record.teacher_name_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_name:, new_name:)
   end
 
   def record_induction_status_change_event(old_induction_status, new_induction_status)
     return if old_induction_status == new_induction_status
 
-    Events::Record.teacher_induction_status_changed_in_trs!(author:, teacher:, appropriate_body:, old_induction_status:, new_induction_status:)
+    Events::Record.teacher_induction_status_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_induction_status:, new_induction_status:)
   end
 
   def record_teacher_trs_attribute_update(modifications:)
     return if modifications.empty?
 
-    Events::Record.teacher_trs_attributes_updated!(author:, teacher:, modifications:)
+    Events::Record.teacher_trs_attributes_updated_event!(author:, teacher:, modifications:)
   end
 end

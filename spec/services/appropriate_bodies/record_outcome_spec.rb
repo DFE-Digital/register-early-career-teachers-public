@@ -63,11 +63,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
       end
 
       it "records a pass event" do
-        allow(Events::Record).to receive(:record_teacher_passes_induction_event).and_call_original
+        allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
 
         service.pass!
 
-        expect(Events::Record).to have_received(:record_teacher_passes_induction_event).with(
+        expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
           appropriate_body:,
           teacher:,
           induction_period:,
@@ -92,11 +92,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
         end
 
         it "records an admin pass event" do
-          allow(Events::Record).to receive(:record_teacher_passes_induction_event).and_call_original
+          allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
 
           service.pass!
 
-          expect(Events::Record).to have_received(:record_teacher_passes_induction_event).with(
+          expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
             appropriate_body:,
             teacher:,
             induction_period:,
@@ -157,11 +157,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
       end
 
       it "records a fail event" do
-        allow(Events::Record).to receive(:record_teacher_fails_induction_event).and_call_original
+        allow(Events::Record).to receive(:record_teacher_fails_induction_event!).and_call_original
 
         service.fail!
 
-        expect(Events::Record).to have_received(:record_teacher_fails_induction_event).with(
+        expect(Events::Record).to have_received(:record_teacher_fails_induction_event!).with(
           appropriate_body:,
           teacher:,
           induction_period:,
@@ -186,11 +186,11 @@ RSpec.describe AppropriateBodies::RecordOutcome do
         end
 
         it "records an admin fail event" do
-          allow(Events::Record).to receive(:record_teacher_fails_induction_event).and_call_original
+          allow(Events::Record).to receive(:record_teacher_fails_induction_event!).and_call_original
 
           service.fail!
 
-          expect(Events::Record).to have_received(:record_teacher_fails_induction_event).with(
+          expect(Events::Record).to have_received(:record_teacher_fails_induction_event!).with(
             appropriate_body:,
             teacher:,
             induction_period:,
