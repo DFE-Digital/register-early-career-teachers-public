@@ -2,7 +2,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
   context "when date is in an invalid format" do
     subject { test_class.new(start_date:) }
 
-    let(:start_date) { { 1 => "invalid year", 2 => "invalid month" } }
+    let(:start_date) { { 1 => "invalid year", 2 => "invalid month", 3 => 'invalid day' } }
     let(:test_class) do
       Class.new do
         include ActiveModel::Model
@@ -14,7 +14,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
 
     it "adds an error" do
       subject.valid?
-      expect(subject.errors[:start_date]).to include("Enter the start date using the correct format, for example 09 1999")
+      expect(subject.errors[:start_date]).to include("Enter the start date using the correct format, for example, 17 09 1999")
     end
   end
 
@@ -32,9 +32,9 @@ RSpec.describe ECTStartDateValidator, type: :model do
       end
     end
 
-    context "and the start date is before the earlier possible start date" do
+    context "and the start date is before the earliest possible start date" do
       # July 2021, ie more than 2 academic years ago
-      let(:start_date) { { 1 => "2021", 2 => "07" } }
+      let(:start_date) { { 1 => "2021", 2 => "07", 3 => "31" } }
 
       it "adds an error" do
         subject.valid?
@@ -44,7 +44,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
 
     context "and the start date is after the latest possible start date" do
       # August 2025, ie the next academic year
-      let(:start_date) { { 1 => "2025", 2 => "08" } }
+      let(:start_date) { { 1 => "2024", 2 => "08", 3 => "1" } }
 
       it "adds an error" do
         subject.valid?
@@ -53,7 +53,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
     end
 
     context "and the start_date is within the accepted range" do
-      let(:start_date) { { 1 => "2024", 2 => "07" } }
+      let(:start_date) { { 1 => "2024", 2 => "07", 3 => "31" } }
 
       it "does not add any errors" do
         subject.valid?
@@ -76,9 +76,9 @@ RSpec.describe ECTStartDateValidator, type: :model do
       end
     end
 
-    context "and the start date is before the earlier possible start date" do
+    context "and the start date is one day before the earliest possible start date" do
       # July 2022, ie more than 2 academic years ago
-      let(:start_date) { { 1 => "2022", 2 => "07" } }
+      let(:start_date) { { 1 => "2022", 2 => "07", 3 => "31" } }
 
       it "adds an error" do
         subject.valid?
@@ -86,9 +86,9 @@ RSpec.describe ECTStartDateValidator, type: :model do
       end
     end
 
-    context "and the start date is after the latest possible start date" do
-      # August 2026, ie the next academic year
-      let(:start_date) { { 1 => "2026", 2 => "08" } }
+    context "and the start date is one day after the latest possible start date" do
+      # August 2025, ie the next academic year
+      let(:start_date) { { 1 => "2025", 2 => "08", 3 => "1" } }
 
       it "adds an error" do
         subject.valid?
@@ -97,7 +97,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
     end
 
     context "and the start_date is within the accepted range" do
-      let(:start_date) { { 1 => "2025", 2 => "07" } }
+      let(:start_date) { { 1 => "2025", 2 => "07", 3 => "31" } }
 
       it "does not add any errors" do
         subject.valid?
@@ -119,8 +119,8 @@ RSpec.describe ECTStartDateValidator, type: :model do
       end
     end
 
-    context "when the start date is the first month of the earliest academic year" do
-      let(:start_date) { { 1 => "2022", 2 => "08" } }
+    context "when the start date is the day of the earliest academic year" do
+      let(:start_date) { { 1 => "2022", 2 => "08", 3 => "1" } }
 
       it "does not add any errors" do
         subject.valid?
@@ -128,8 +128,8 @@ RSpec.describe ECTStartDateValidator, type: :model do
       end
     end
 
-    context "when the start date is the last month of the latest academic year" do
-      let(:start_date) { { 1 => "2025", 2 => "07" } }
+    context "when the start date is the last day of the latest academic year" do
+      let(:start_date) { { 1 => "2025", 2 => "07", 3 => "31" } }
 
       it "does not add any errors" do
         subject.valid?
@@ -138,10 +138,10 @@ RSpec.describe ECTStartDateValidator, type: :model do
     end
   end
 
-  context "when the start date has invalid month or year values" do
+  context "when the start date has invalid values" do
     subject { test_class.new(start_date:) }
 
-    let(:error_message) { "Enter the start date using the correct format, for example 09 1999" }
+    let(:error_message) { "Enter the start date using the correct format, for example, 17 09 1999" }
     let(:test_class) do
       Class.new do
         include ActiveModel::Model
@@ -152,7 +152,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
     end
 
     context "when the month is outside the range 1-12" do
-      let(:start_date) { { 1 => "2024", 2 => "13" } }
+      let(:start_date) { { 1 => "2024", 2 => "13", 3 => "1" } }
 
       it "adds an error" do
         subject.valid?
@@ -162,7 +162,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
 
     context "when the year is non-integer" do
       # "abcd".to_i == 0 and and therefore a valid date year but it is out of range
-      let(:start_date) { { 1 => "abcd", 2 => "07" } }
+      let(:start_date) { { 1 => "abcd", 2 => "07", 3 => "1" } }
       let("error_message") { "The start date must be from within either the current academic year or one of the last 2 academic years" }
 
       it "adds an error" do
@@ -172,7 +172,16 @@ RSpec.describe ECTStartDateValidator, type: :model do
     end
 
     context "when the month is non-integer" do
-      let(:start_date) { { 1 => "2024", 2 => "abcd" } }
+      let(:start_date) { { 1 => "2024", 2 => "abcd", 3 => "1" } }
+
+      it "adds an error" do
+        subject.valid?
+        expect(subject.errors[:start_date]).to include(error_message)
+      end
+    end
+
+    context "when the day is not an integer" do
+      let(:start_date) { { 1 => "2024", 2 => "07", 3 => "abcd" } }
 
       it "adds an error" do
         subject.valid?

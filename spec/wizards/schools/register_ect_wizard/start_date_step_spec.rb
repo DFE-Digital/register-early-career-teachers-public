@@ -41,7 +41,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
 
     context 'when the start_date is present and valid' do
-      let(:start_date) { { 1 => "2024", 2 => "07" } }
+      let(:start_date) { { 1 => "2024", 2 => "07", 3 => "01" } }
 
       it 'is valid' do
         expect(subject).to be_valid
