@@ -41,26 +41,6 @@ RSpec.describe 'Process bulk claims' do
   end
 
   describe 'bad data' do
-    context 'when CSV has too many rows', pending: 'alternative to fixtures' do
-      let(:file_name) { 'invalid_too_many_rows.csv' }
-
-      scenario 'fails immediately' do
-        given_i_am_on_the_upload_page
-        when_i_upload_a_file
-        then_i_should_see_the_error('CSV file contains too many rows')
-      end
-    end
-
-    context 'when CSV file is too large', pending: 'alternative to fixtures' do
-      let(:file_name) { 'invalid_too_large.csv' }
-
-      scenario 'fails immediately' do
-        given_i_am_on_the_upload_page
-        when_i_upload_a_file
-        then_i_should_see_the_error('File size must be less than 1MB')
-      end
-    end
-
     context 'when CSV columns are missing' do
       let(:file_name) { 'invalid_missing_columns.csv' }
 
