@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_11_105110) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -29,12 +29,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_11_105110) do
   create_enum "mentor_completion_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "programme_type", ["provider_led", "school_led"]
   create_enum "working_pattern", ["part_time", "full_time"]
-
-  create_table "academic_years", primary_key: "year", id: :serial, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["year"], name: "index_academic_years_on_year", unique: true
-  end
 
   create_table "appropriate_bodies", force: :cascade do |t|
     t.string "name", null: false
@@ -359,15 +353,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_11_105110) do
   end
 
   create_table "provider_partnerships", force: :cascade do |t|
-    t.bigint "academic_year_id", null: false
+    t.bigint "registration_period_id", null: false
     t.bigint "lead_provider_id", null: false
     t.bigint "delivery_partner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["academic_year_id", "lead_provider_id", "delivery_partner_id"], name: "yearly_unique_provider_partnerships", unique: true
-    t.index ["academic_year_id"], name: "index_provider_partnerships_on_academic_year_id"
     t.index ["delivery_partner_id"], name: "index_provider_partnerships_on_delivery_partner_id"
     t.index ["lead_provider_id"], name: "index_provider_partnerships_on_lead_provider_id"
+    t.index ["registration_period_id", "lead_provider_id", "delivery_partner_id"], name: "yearly_unique_provider_partnerships", unique: true
+    t.index ["registration_period_id"], name: "index_provider_partnerships_on_registration_period_id"
+  end
+
+  create_table "registration_periods", primary_key: "year", id: :serial, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "started_on"
+    t.date "finished_on"
+    t.boolean "enabled", default: false
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.index ["year"], name: "index_registration_periods_on_year", unique: true
   end
 
   create_table "schools", force: :cascade do |t|
@@ -595,9 +599,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_11_105110) do
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
-  add_foreign_key "provider_partnerships", "academic_years", primary_key: "year"
   add_foreign_key "provider_partnerships", "delivery_partners"
   add_foreign_key "provider_partnerships", "lead_providers"
+  add_foreign_key "provider_partnerships", "registration_periods", primary_key: "year"
   add_foreign_key "schools", "appropriate_bodies", column: "chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "chosen_lead_provider_id"

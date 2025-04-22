@@ -17,7 +17,7 @@ module Builders
 
           provider_partnership = ::ProviderPartnership.where(lead_provider: ::LeadProvider.find_by!(name: period.lead_provider),
                                                              delivery_partner: ::DeliveryPartner.find_by!(name: period.delivery_partner),
-                                                             academic_year_id: period.cohort_year).first
+                                                             registration_period_id: period.cohort_year).first
 
           period_dates = period_date.new(started_on: period.start_date, finished_on: period.end_date)
           ect_at_school_period = teacher.ect_at_school_periods.containing_period(period_dates).first

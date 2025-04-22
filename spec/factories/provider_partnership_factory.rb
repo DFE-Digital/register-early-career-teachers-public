@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory(:provider_partnership) do
-    association :academic_year
+    association :registration_period
     association :lead_provider
     association :delivery_partner
   end
