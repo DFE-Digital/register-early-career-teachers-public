@@ -2,7 +2,7 @@
 title: Lead provider API
 ---
 
-Learn about how the payment engine works once it receives declarations from lead providers using the Early Career Framework API.
+This document outlines the process through which the system processes financial statements upon receipt of declarations from lead providers via the Early Career Framework API.
 
 These are the steps
 
@@ -11,17 +11,13 @@ These are the steps
 3. If invalid, errors are flagged up with corrective action suggestions.
 4. If valid, the declaration is created and linked to an output fee calculation.
 5. Service fees and banding are determined and applied.
-6. Final payments are calculated and displayed for contract managers.
+6. Final payments are calculated and displayed in a form of a financial statement for contract managers.
 
 ## Contents
 
-[Lead providers submitting a declaration](#lead-providers-submitting-a-declaration)
-
-[Lead providers reviewing submitted declarations](#lead-providers-reviewing-submitted-declarations)
+[Lead providers reviewing financial statements](#lead-providers-reviewing-financial-statements)
 
 [Lead providers checking which statement a declaration has been linked to](#lead-providers-checking-which-statement-a-declaration-has-been-linked-to)
-
-[Lead providers checking whether a declaration has been successfully submitted and processed](#lead-providers-checking-whether-a-declaration-has-been-successfully-submitted-and-processed)
 
 [Working with participant bands](#working-with-participant-bands)
 
@@ -29,108 +25,51 @@ These are the steps
 
 [Contract manager logging in and viewing the bandings](#contract-manager-logging-in-and-viewing-the-bandings)
 
-## Lead providers submitting a declaration
+## Lead providers reviewing financial statements
 
-A lead provider can submit a declaration using the POST `api/v[1,2,3]/participant-declarations` endpoint, providers are required to supply the request body, which includes the:
-
-- participant id
-- declaration type
-- declaration date
-- course identifier
-- evidence held
-
-Example:
-
-<pre><code>{
-  "data": {
-    "type": "participant-declaration",
-    "attributes": {
-      "participant_id": "eb61b470-e1d3-4c38-a5bf-b94c998f47cb",
-      "declaration_type": "started",
-      "declaration_date": "2023-12-01T02:21:32.000Z",
-      "course_identifier": "ecf-induction",
-      "evidence_held": "training-event-attended"
-    }
-  }
-}</code></pre>
-
-## Lead providers reviewing submitted declarations
-
-A lead provider can view all declarations using the GET `api/v[1,2,3]/participant-declarations` endpoint.
+A lead provider can view all statements using the GET `api/v3/statements` endpoint.
 
 Example:
 
 <pre><code>{
   "data": [
     {
-      "id": "db3a7848-7308-4879-942a-c4a70ced400a",
-      "type": "participant-declaration",
+      "id": "cd3a12347-7308-4879-942a-c4a70ced400a",
+      "type": "statement",
       "attributes": {
-        "participant_id": "08d78829-f864-417f-8a30-cb7655714e28",
-        "declaration_type": "started",
-        "declaration_date": "2020-11-13T11:21:55Z",
-        "course_identifier": "ecf-induction",
-        "state": "eligible",
-        "updated_at": "2020-11-13T11:21:55Z",
-        "created_at": "2020-11-13T11:21:55Z",
-        "delivery_partner_id": "99ca2223-8c1f-4ac8-985d-a0672e97694e",
-        "statement_id": "99ca2223-8c1f-4ac8-985d-a0672e97694e",
-        "clawback_statement_id": null,
-        "ineligible_for_funding_reason": null,
-        "mentor_id": "907f61ed-5770-4d38-b22c-1a4265939378",
-        "uplift_paid": true,
-        "evidence_held": "other",
-        "has_passed": null,
-        "lead_provider_name": "Example Institute"
+        "month": "May",
+        "year": "2022",
+        "type": "ecf",
+        "cohort": "2021",
+        "cut_off_date": "2022-04-30",
+        "payment_date": "2022-05-25",
+        "paid": true,
+        "created_at": "2021-05-31T02:22:32.000Z",
+        "updated_at": "2021-05-31T02:22:32.000Z"
       }
     }
   ]
 }</code></pre>
 
-Also lead providers have real-time status updates of a specific declaration via the endpoint GET `api/v[1,2,3]/participant-declarations/{id}`.
+### Statement Attributes
+
+Each statement in the response includes the following attributes:
+
+| Name           | Type    | Required | Description                                                                         |
+|----------------|---------|----------|-------------------------------------------------------------------------------------|
+| `month`        | string  | false    | The month which appears on the statement in the DfE portal                          |
+| `year`         | string  | false    | The calendar year which appears on the statement in the DfE portal                  |
+| `type`         | string  | false    | Type of statement. Possible values: `ecf`                                           |
+| `cohort`       | string  | false    | The cohort (2021 or 2022) which the statement funds                                 |
+| `cut_off_date` | string  | false    | The milestone cut off or review point for the statement                             |
+| `payment_date` | string  | false    | The date we expect to pay you for any declarations attached to the statement, which are eligible for payment |
+| `paid`         | boolean | false    | Indicates whether the DfE has paid providers for any declarations attached to the statement |
+| `created_at`   | string  | false    | The date the statement was created                                                  |
+| `updated_at`   | string  | false    | The date the statement was last updated                                             |
 
 ## Lead providers checking which statement a declaration has been linked to
 
-Lead providers can check for updates on the statement a declaration has been linked to and its status, via the endpoint GET `/api/v[1,2,3]/statements/{id}`, using the `statement_id` from the declaration response above as `{id}`.
-
-## Lead providers checking whether a declaration has been successfully submitted and processed
-
-A valid declaration will return a 200 response whereas an invalid declaration request will return an error message.
-
-Many validations are in place to guarantee a declaration is correctly created:
-
-### 1. Automatic Checks Before Validation
-- The system verifies whether the selected course is still supported.
-- It tracks declaration attempts to prevent unnecessary or duplicate submissions.
-
-### 2. Required Information
-- **Participant Id** – Must be provided; otherwise, an error message is shown.
-- **Declaration Type** – Must be provided; otherwise, an error message is shown.
-- **Declaration Date** – Must be provided; otherwise, an error message is shown.
-- **Course Identifier** – Must be provided; otherwise, an error message is shown.
-- **Evidence Held** – Must be provided for some declaration types; otherwise, an error message is shown.
-
-### 3. Participant Requirements
-- The participant must have a valid identity in the system.
-- The participant must not have withdrawn from the program.
-
-### 4. Date Validations
-- The **declaration date** must be a valid date.
-- The **declaration date** cannot be in the future.
-- The **declaration date** must be within each declaration type milestone start dates.
-
-### 5. Course & Provider Validations
-- The **course identifier** must be valid for the given participant.
-- The **lead provider** must be correctly linked to the participant.
-
-### 6. Additional Compliance Checks
-- The system checks if the required **statement** is available.
-- A **valid milestone** must exist for the declaration.
-- The system checks for duplicated declarations.
-- From academic year 2025-26, if the participant is a **mentor**, they can only declare a `started` or `completed` status.
-- The provided **evidence** must meet the necessary requirements.
-
-These validations help ensure accurate and compliant record declarations while preventing errors in the process.
+Lead providers can check for updates on the statement a declaration has been linked to and its status, via the endpoint GET `/api/v3/statements/{id}`, using the `statement_id` from the declaration response as `{id}`.
 
 ## Working with participant bands
 

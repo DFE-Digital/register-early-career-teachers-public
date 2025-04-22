@@ -99,7 +99,7 @@ Declarations progress through various states, reflecting their journey from subm
 * **`payable`**: The declaration is validated, eligible, and queued for inclusion in the next payment run.
 * **`paid`**: Payment associated with this declaration has been processed.
 * **`voided`**: The declaration has been cancelled or invalidated, often due to an error or subsequent correction. It is excluded from payment calculations.
-* **`ineligible`**: The declaration failed validation checks (e.g., duplicate declaration, participant not found, invalid dates). Payment will not be processed.
+* **`ineligible`**: The declaration is duplicate declaration. Payment will not be processed.
 * **`awaiting_clawback`**: A determination has been made that a previously paid declaration needs to be clawed back, and the clawback process is pending or in progress.
 * **`clawed_back`**: Payment was initially made for this declaration, but has subsequently been recouped (e.g., due to evidence issues, participant withdrawal after payment).
 
