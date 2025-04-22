@@ -12,7 +12,7 @@ module Schools
 
       # String containing the full month name and year with century. Ex: 'January 2025'
       def formatted_date
-        value_as_date.strftime("%B %Y")
+        value_as_date.strftime(Date::DATE_FORMATS[:govuk])
       end
 
     private
@@ -38,7 +38,7 @@ module Schools
       end
 
       def date_missing?
-        super || date_as_hash.values_at(1, 2).all?(&:nil?)
+        super || date_as_hash.values_at(1, 2, 3).all?(&:nil?)
       end
 
       def value_as_date
