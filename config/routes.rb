@@ -80,7 +80,7 @@ Rails.application.routes.draw do
       end
     end
 
-    constraints -> { Rails.application.config.enable_personas } do
+    constraints -> { Rails.application.config.enable_bulk_upload } do
       namespace :process_batch, path: 'bulk', as: 'batch' do
         resources :claims, format: %i[html csv]
         resources :actions, format: %i[html csv]

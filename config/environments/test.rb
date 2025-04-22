@@ -63,5 +63,6 @@ Rails.application.configure do
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
   config.enable_personas = true
+  config.enable_bulk_upload = true
   config.dfe_sign_in_enabled = true
 end
