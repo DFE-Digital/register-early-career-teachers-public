@@ -64,4 +64,6 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
   config.enable_personas = true
   config.dfe_sign_in_enabled = true
+
+  config.active_job.queue_adapter = :test
 end

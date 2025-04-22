@@ -110,13 +110,45 @@ RSpec.describe AppropriateBodies::RecordOutcome do
       end
     end
 
+    context "when validation fails on induction period update" do
+      let(:pending_induction_submission) do
+        FactoryBot.create(:pending_induction_submission,
+                          trn: teacher.trn,
+                          finished_on: 1.day.ago.to_date,
+                          number_of_terms: 6)
+      end
+
+      before do
+        induction_period
+
+        allow(pending_induction_submission).to receive(:finished_on).and_return('2020-1-1')
+      end
+
+      it "does not update the induction period" do
+        expect { service.pass! }.to raise_error(ActiveRecord::RecordInvalid)
+        expect(induction_period.outcome).to be_nil
+      end
+
+      it "does not enqueue a PassECTInductionJob" do
+        expect {
+          expect { service.pass! }.to raise_error(ActiveRecord::RecordInvalid)
+        }.not_to have_enqueued_job(PassECTInductionJob)
+      end
+
+      it "does not enqueue a RecordEventJob" do
+        expect {
+          expect { service.pass! }.to raise_error(ActiveRecord::RecordInvalid)
+        }.not_to have_enqueued_job(RecordEventJob)
+      end
+    end
+
     context "when induction period update fails" do
       before do
         allow(Teachers::InductionPeriod).to receive(:new)
           .with(teacher)
           .and_return(double(ongoing_induction_period: induction_period))
 
-        allow(induction_period).to receive(:update).and_raise(ActiveRecord::RecordNotFound)
+        allow(induction_period).to receive(:update!).and_raise(ActiveRecord::RecordNotFound)
       end
 
       it do
@@ -210,7 +242,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
           .with(teacher)
           .and_return(double(ongoing_induction_period: induction_period))
 
-        allow(induction_period).to receive(:update).and_raise(ActiveRecord::RecordNotFound)
+        allow(induction_period).to receive(:update!).and_raise(ActiveRecord::RecordNotFound)
       end
 
       it do
