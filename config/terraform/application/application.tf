@@ -55,6 +55,8 @@ module "web_application" {
   max_memory = var.webapp_memory_max
 
   enable_logit = var.enable_logit
+
+  send_traffic_to_maintenance_page = true
 }
 
 module "worker_application" {
