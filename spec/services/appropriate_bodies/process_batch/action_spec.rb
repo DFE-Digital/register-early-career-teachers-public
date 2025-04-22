@@ -396,6 +396,14 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
             author:
           )
         end
+
+        context 'when the end date is before the start date' do # OPTIMIZE: validate during processing
+          let(:finished_on) { '2023-12-30' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq ['Validation failed: Finished on The end date must be later than the start date (1 January 2024)']
+          end
+        end
       end
     end
   end
