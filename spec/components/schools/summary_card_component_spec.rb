@@ -2,7 +2,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
   let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body, name: 'an org that assures the quality of statutory teacher induction') }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'An org that designs the training') }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: 'An org that delivers the training') }
-  let(:provider_partnership) { FactoryBot.create(:provider_partnership, lead_provider:, delivery_partner:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider:, delivery_partner:) }
 
   let(:school_led_ect) do
     FactoryBot.create(:ect_at_school_period, :active, :school_led, school_reported_appropriate_body:)
@@ -17,7 +17,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
                       started_on: '2021-01-01')
   end
 
-  let!(:training_period) { FactoryBot.create(:training_period, ect_at_school_period: provider_led_ect, provider_partnership:, started_on: '2022-01-01', finished_on: '2022-06-01') }
+  let!(:training_period) { FactoryBot.create(:training_period, ect_at_school_period: provider_led_ect, school_partnership:, started_on: '2022-01-01', finished_on: '2022-06-01') }
 
   context 'when data is reported by the school' do
     before { render_inline(described_class.new(title: 'Reported to us by your school', ect: school_led_ect, data_source: :school)) }
