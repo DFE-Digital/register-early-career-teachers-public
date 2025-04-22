@@ -13,14 +13,6 @@ These are the steps
 5. Service fees and banding are determined and applied.
 6. Final payments are calculated and displayed for contract managers.
 
-## Declarations in a nutshell
-
-Declarations are submitted where there is evidence of a participant's engagement in training for a given milestone period. This is submitted by lead providers via the API and triggers payments to lead providers.
-
-Declarations serve as the critical "bridge" between proving training engagement and triggering the financial outputs (payments) from the DfE.
-
-Declarations are treated in "good faith" meaning that providing the declaration is valid and the participant is eligible for funding then they will be paid.
-
 ## Lead providers submitting a declaration
 
 A lead provider can submit a declaration using the POST `api/v[1,2,3]/participant-declarations` endpoint, providers are required to supply the request body, which includes the:
