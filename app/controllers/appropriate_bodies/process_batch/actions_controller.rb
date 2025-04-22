@@ -3,11 +3,9 @@ module AppropriateBodies
     class ActionsController < PendingInductionSubmissionBatchController
       def index
         @pending_induction_submission_batches = PendingInductionSubmissionBatch
-            .for_appropriate_body(@appropriate_body)
-            .action
-            .order(id: :desc)
-            .select(:id, :batch_type, :batch_status, :error_message)
-            .map { |b| b.attributes.values.map(&:to_s) }
+        .for_appropriate_body(@appropriate_body)
+        .action
+        .order(id: :desc)
       end
 
       def create
@@ -15,11 +13,12 @@ module AppropriateBodies
 
         if csv_data.valid?
           @pending_induction_submission_batch.data = csv_data.to_a
+          @pending_induction_submission_batch.filename = csv_data.file_name
           @pending_induction_submission_batch.save!
 
           process_batch_action
 
-          redirect_to ab_batch_action_path(@pending_induction_submission_batch), alert: 'File processing'
+          redirect_to ab_batch_action_path(@pending_induction_submission_batch)
         else
           @pending_induction_submission_batch = csv_data
           render :new, status: :unprocessable_entity
@@ -32,12 +31,16 @@ module AppropriateBodies
         render :new, status: :unprocessable_entity
       end
 
+      def edit
+        redirect_to ab_batch_action_path(@pending_induction_submission_batch) unless @pending_induction_submission_batch.processed?
+      end
+
       def update
         @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
 
         process_batch_action
 
-        redirect_to ab_batch_action_path(@pending_induction_submission_batch), alert: 'Induction changes actioned'
+        redirect_to ab_batch_action_path(@pending_induction_submission_batch)
       end
 
     private

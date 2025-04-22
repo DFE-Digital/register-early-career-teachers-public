@@ -3,14 +3,18 @@ module AppropriateBodies
   # Export an array of hashes which can be saved to PendingInductionSubmissionBatch#data
   class ProcessBatchForm
     MAX_FILE_SIZE = 1.megabyte
-    MAX_ROW_SIZE = 5
+    MAX_ROW_SIZE = 1_000
     MIME_TYPES = %w[text/csv text/comma-separated-values application/csv].freeze
 
     include ActiveModel::Model
     include ActiveModel::Validations
 
     # @see [BatchRows::CLAIM_CSV_HEADINGS, BatchRows::ACTION_CSV_HEADINGS]
-    attr_accessor :file_content, :content_type, :headers, :file_size
+    attr_accessor :headers,
+                  :file_name,
+                  :file_size,
+                  :file_type,
+                  :file_content
 
     validates :file_content, presence: true
     validates :headers, presence: true
@@ -28,8 +32,9 @@ module AppropriateBodies
     def self.from_uploaded_file(headers:, csv_file:)
       new(
         headers:,
+        file_name: csv_file.original_filename,
         file_size: csv_file.size,
-        content_type: csv_file.content_type,
+        file_type: csv_file.content_type,
         file_content: csv_file.read
       )
     end
@@ -73,7 +78,7 @@ module AppropriateBodies
     # Validation checks
 
     def is_a_csv?
-      MIME_TYPES.include?(content_type)
+      MIME_TYPES.include?(file_type)
     end
 
     def is_too_large?

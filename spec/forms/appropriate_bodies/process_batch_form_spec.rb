@@ -18,7 +18,8 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
     instance_double(ActionDispatch::Http::UploadedFile,
                     content_type:,
                     size: csv_file_size,
-                    read: csv_content)
+                    read: csv_content,
+                    original_filename: 'test.csv')
   end
 
   context 'when the attached file is valid' do
@@ -108,18 +109,19 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
         let(:csv_content) do
           <<~CSV
             TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
-            1234567,2001-02-02,2024-12-31,1,pass
-            2345678,2001-02-02,2024-12-31,2,pass
-            3456789,2001-02-02,2024-12-31,2,pass
-            4567890,2001-02-02,2024-12-31,2,pass
-            0987654,2001-02-02,2024-12-31,2,pass
-            9876543,2001-02-02,2024-12-31,2,pass
-            8765432,2001-02-02,2024-12-31,2,pass
-            7654321,2001-02-02,2024-12-31,2,pass
+              1234567,2001-02-02,2024-12-31,1,pass
+              2345678,2001-02-02,2024-12-31,2,pass
+              3456789,2001-02-02,2024-12-31,2,pass
+              4567890,2001-02-02,2024-12-31,2,pass
+              0987654,2001-02-02,2024-12-31,2,pass
+              9876543,2001-02-02,2024-12-31,2,pass
+              8765432,2001-02-02,2024-12-31,2,pass
+              7654321,2001-02-02,2024-12-31,2,pass
           CSV
         end
 
         specify do
+          stub_const("AppropriateBodies::ProcessBatchForm::MAX_ROW_SIZE", 5)
           expect(form).not_to be_valid
           expect(form.errors[:csv_file]).to include('The selected file must have fewer than 5 rows')
         end
