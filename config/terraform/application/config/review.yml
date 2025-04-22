@@ -14,3 +14,4 @@ TRS_API_VERSION: 'Next'
 ENCRYPTION_PRIMARY_KEY: review_primary_key
 ENCRYPTION_DETERMINISTIC_KEY: review_deterministic_key
 ENCRYPTION_DERIVATION_SALT: review_derivation_salt
+RAILS_ENV: review
