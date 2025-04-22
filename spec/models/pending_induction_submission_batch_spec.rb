@@ -8,8 +8,14 @@ RSpec.describe PendingInductionSubmissionBatch do
 
   describe "scopes" do
     describe ".for_appropriate_body" do
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+
+      let!(:batch1) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:) }
+      let!(:batch2) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
+      let!(:batch3) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:) }
+
       it "returns batched submissions for the specified appropriate body" do
-        expect(described_class.for_appropriate_body(456).to_sql).to end_with(%( WHERE "pending_induction_submission_batches"."appropriate_body_id" = 456))
+        expect(described_class.for_appropriate_body(appropriate_body)).to contain_exactly(batch1, batch2, batch3)
       end
     end
   end

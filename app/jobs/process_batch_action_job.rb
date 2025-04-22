@@ -1,14 +1,11 @@
 class ProcessBatchActionJob < ApplicationJob
-  retry_on StandardError, attempts: 3
-
   # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
   # @param author_email [String]
   # @param author_name [String]
   def perform(pending_induction_submission_batch, author_email, author_name)
-    if pending_induction_submission_batch.processing?
-      # still processing
-    elsif pending_induction_submission_batch.processed?
+    return if pending_induction_submission_batch.processing?
 
+    if pending_induction_submission_batch.processed?
       batch_action(pending_induction_submission_batch, author_email, author_name).do!
       pending_induction_submission_batch.completed!
 

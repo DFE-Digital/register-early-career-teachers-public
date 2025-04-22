@@ -7,7 +7,7 @@ module AppropriateBodies
       @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
 
       if wrong_appropriate_body?
-        block_other_ab
+        render_unauthorised
       else
         respond_to do |format|
           format.html
@@ -24,7 +24,7 @@ module AppropriateBodies
       pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
       @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
 
-      block_other_ab if wrong_appropriate_body?
+      render_unauthorised if wrong_appropriate_body?
     end
 
     def new
@@ -42,7 +42,7 @@ module AppropriateBodies
       current_user.appropriate_body_id != @pending_induction_submission_batch.appropriate_body.id
     end
 
-    def block_other_ab
+    def render_unauthorised
       render "errors/unauthorised", status: :unauthorized
     end
   end

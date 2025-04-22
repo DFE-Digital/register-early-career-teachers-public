@@ -1,6 +1,4 @@
 class ProcessBatchClaimJob < ApplicationJob
-  retry_on StandardError, attempts: 3
-
   # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
   # @param author_email [String]
   # @param author_name [String]
