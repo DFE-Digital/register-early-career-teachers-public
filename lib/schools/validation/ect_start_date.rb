@@ -2,10 +2,9 @@ module Schools
   module Validation
     class ECTStartDate < HashDate
       DATE_MISSING_MESSAGE = "Enter the date the ECT started or will start teaching at your school".freeze
-      INVALID_FORMAT_MESSAGE = "Enter the start date using the correct format, for example 09 1999".freeze
+      INVALID_FORMAT_MESSAGE = "Enter the start date using the correct format, for example, 17 09 1999".freeze
       OUT_OF_RANGE_MESSAGE = "The start date must be from within either the current academic year or one of the last 2 academic years".freeze
 
-      # date_as_hash: { 1 => year, 2 => month, 3 => day }
       def initialize(date_as_hash:, current_date: nil)
         super(date_as_hash)
         @current_date = current_date || Time.zone.today
@@ -42,9 +41,8 @@ module Schools
         super || date_as_hash.values_at(1, 2).all?(&:nil?)
       end
 
-      # Beginning of month in year, month in date_as_hash
       def value_as_date
-        @value_as_date ||= Time.zone.local(*date_as_hash.values_at(1, 2).map(&:to_i))
+        @value_as_date ||= Time.zone.local(*date_as_hash.values_at(1, 2, 3).map(&:to_i))
       end
     end
   end
