@@ -41,13 +41,13 @@ RSpec/ClassCheck:
 RSpec/ContextMethod:
   Enabled: false
 
-# Offense count: 98
+# Offense count: 99
 # Configuration parameters: Prefixes, AllowedPatterns.
 # Prefixes: when, with, without
 RSpec/ContextWording:
   Enabled: false
 
-# Offense count: 93
+# Offense count: 99
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: SkipBlocks, EnforcedStyle, OnlyStaticConstants.
 # SupportedStyles: described_class, explicit
@@ -102,12 +102,12 @@ RSpec/ImplicitSubject:
     - 'spec/models/school_spec.rb'
     - 'spec/wizards/schools/register_mentor_wizard/shared_examples/review_mentor_details_step.rb'
 
-# Offense count: 89
+# Offense count: 98
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
 RSpec/IndexedLet:
   Enabled: false
 
-# Offense count: 102
+# Offense count: 103
 RSpec/LetSetup:
   Enabled: false
 
@@ -188,11 +188,10 @@ RSpec/SubjectDeclaration:
   Exclude:
     - 'spec/mailers/example_mailer_spec.rb'
 
-# Offense count: 19
+# Offense count: 16
 RSpec/SubjectStub:
   Exclude:
     - 'spec/forms/sessions/otp_sign_in_form_spec.rb'
-    - 'spec/models/pending_induction_submission_batch_spec.rb'
     - 'spec/services/sessions/one_time_password_spec.rb'
     - 'spec/wizards/schools/register_ect_wizard/check_answers_step_spec.rb'
     - 'spec/wizards/schools/register_ect_wizard/email_address_step_spec.rb'
@@ -210,7 +209,7 @@ RSpec/VariableDefinition:
   Exclude:
     - 'spec/validators/ect_start_date_validator_spec.rb'
 
-# Offense count: 34
+# Offense count: 31
 # Configuration parameters: IgnoreNameless, IgnoreSymbolicNames.
 RSpec/VerifiedDoubles:
   Enabled: false
@@ -262,7 +261,7 @@ Rails/SaveBang:
   Exclude:
     - 'spec/support/rspec_playwright.rb'
 
-# Offense count: 3403
+# Offense count: 3423
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
 # SupportedStyles: single_quotes, double_quotes
