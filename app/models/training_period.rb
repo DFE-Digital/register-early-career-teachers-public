@@ -5,6 +5,8 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
   belongs_to :provider_partnership
+  belongs_to :expression_of_interest, optional: true, class_name: "LeadProviderActivePeriod", inverse_of: :expressions_of_interest
+  belongs_to :confirmed_school_partnership, optional: true, class_name: "SchoolPartnership"
 
   has_many :declarations, inverse_of: :training_period
   has_many :events
@@ -20,6 +22,7 @@ class TrainingPeriod < ApplicationRecord
             presence: true
 
   validate :one_id_of_trainee_present
+  validate :one_partnership_present
   validate :trainee_distinct_period
   validate :enveloped_by_trainee_at_school_period
 
@@ -53,6 +56,12 @@ private
     ids = [ect_at_school_period_id, mentor_at_school_period_id]
     errors.add(:base, "Id of trainee missing") if ids.none?
     errors.add(:base, "Only one id of trainee required. Two given") if ids.all?
+  end
+
+  def one_partnership_present
+    partnerships = [expression_of_interest, confirmed_school_partnership]
+    errors.add(:base, "Confirmed partnership or expression of interest is required") if partnerships.none?
+    errors.add(:base, "Only confirmed partnership or expression of interest is permitted, not both") if partnerships.all?
   end
 
   def trainee_distinct_period

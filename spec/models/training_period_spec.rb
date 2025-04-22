@@ -3,6 +3,8 @@ describe TrainingPeriod do
     it { is_expected.to belong_to(:ect_at_school_period).class_name("ECTAtSchoolPeriod").inverse_of(:training_periods) }
     it { is_expected.to belong_to(:mentor_at_school_period).inverse_of(:training_periods) }
     it { is_expected.to belong_to(:provider_partnership) }
+    it { is_expected.to belong_to(:expression_of_interest).class_name("LeadProviderActivePeriod").inverse_of(:expressions_of_interest).optional }
+    it { is_expected.to belong_to(:confirmed_school_partnership).class_name("SchoolPartnership").optional }
     it { is_expected.to have_many(:declarations).inverse_of(:training_period) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_one(:lead_provider).through(:provider_partnership) }
@@ -12,6 +14,31 @@ describe TrainingPeriod do
   describe "validations" do
     it { is_expected.to validate_presence_of(:started_on) }
     it { is_expected.to validate_presence_of(:provider_partnership_id) }
+
+    describe "one_partnership_present" do
+      subject(:training_period) { build(:training_period, expression_of_interest:, confirmed_school_partnership:) }
+
+      
+      context "when both expression_of_interest and confirmed_school_partnership are nil" do
+        let(:expression_of_interest) { nil }
+        let(:confirmed_school_partnership) { nil }
+
+        it "is invalid" do
+          is_expected.to be_invalid
+          expect(training_period.errors[:base]).to include("Confirmed partnership or expression of interest is required")
+        end
+      end
+
+      context "when both expression_of_interest and confirmed_school_partnership are present" do
+        let(:expression_of_interest) { build(:lead_provider_active_period) }
+        let(:confirmed_school_partnership) { build(:school_partnership) }
+
+        it "is invalid" do
+          is_expected.to be_invalid
+          expect(training_period.errors[:base]).to include("Only confirmed partnership or expression of interest is permitted, not both")
+        end
+      end
+    end
 
     context "exactly one id of trainee present" do
       context "when ect_at_school_period_id and mentor_at_school_period_id are all nil" do

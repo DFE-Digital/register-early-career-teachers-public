@@ -8,6 +8,13 @@ FactoryBot.define do
     started_on { generate(:base_training_date) }
     finished_on { started_on + 1.day }
 
+    association :expression_of_interest, factory: :lead_provider_active_period
+
+    trait :with_confirmed_school_partnership do
+      expression_of_interest { nil }
+      association :confirmed_school_partnership, factory: :school_partnership
+    end
+
     trait :active do
       finished_on { nil }
     end
