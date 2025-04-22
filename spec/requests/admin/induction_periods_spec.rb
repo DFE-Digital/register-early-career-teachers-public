@@ -288,14 +288,14 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
         end
 
         it "records an 'admin updates induction period' event" do
-          allow(Events::Record).to receive(:record_induction_period_updated!).once.and_call_original
+          allow(Events::Record).to receive(:record_induction_period_updated_event!).once.and_call_original
 
           induction_period.assign_attributes(valid_params[:induction_period])
           expected_modifications = induction_period.changes
 
           patch admin_teacher_induction_period_path(induction_period.teacher, induction_period), params: valid_params
 
-          expect(Events::Record).to have_received(:record_induction_period_updated!).once.with(
+          expect(Events::Record).to have_received(:record_induction_period_updated_event!).once.with(
             hash_including(
               {
                 induction_period:,

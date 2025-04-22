@@ -10,7 +10,7 @@ RSpec.describe Admin::DestroyInductionPeriod do
   include ActiveJob::TestHelper
 
   before do
-    allow(Events::Record).to receive(:record_induction_period_deleted!).and_return(true)
+    allow(Events::Record).to receive(:record_induction_period_deleted_event!).and_return(true)
   end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -24,7 +24,7 @@ RSpec.describe Admin::DestroyInductionPeriod do
     end
 
     it "records an event with the correct parameters" do
-      expect(Events::Record).to receive(:record_induction_period_deleted!).with(
+      expect(Events::Record).to receive(:record_induction_period_deleted_event!).with(
         author:,
         teacher:,
         appropriate_body:,

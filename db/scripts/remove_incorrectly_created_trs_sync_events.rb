@@ -1,6 +1,6 @@
 # Remove incorrectly created TRS sync events. These happened because of a bug
 # in the sync script that meant:
-# - teacher_induction_status_updated_by_trs were created with blank statuses
+# - teacher_trs_induction_status_updated were created with blank statuses
 #   every time the job was run
 # - teacher_trs_attributes_updated was created with just the update of
 #   the trs_data_last_refreshed_at even if nothing else was changed
@@ -11,7 +11,7 @@
 # See https://github.com/DFE-Digital/register-early-career-teachers-public/pull/462/ for more
 # details
 Event.transaction do
-  Event.where(event_type: 'teacher_induction_status_updated_by_trs').delete_all
+  Event.where(event_type: 'teacher_trs_induction_status_updated').delete_all
 
   # get rid of teacher_trs_attributes_updated events where the modifications length
   # is 98 i.e., this:
