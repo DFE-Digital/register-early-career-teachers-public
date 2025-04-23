@@ -48,19 +48,19 @@ describe SchoolPartnership do
 
     describe ".for_registration_period" do
       it "returns provider partnerships only for the specified academic year" do
-        expect(described_class.for_registration_period(ay_1.id)).to match_array([partnership_1, partnership_2, partnership_3])
+        expect(described_class.for_registration_period(ay_1.id)).to contain_exactly(partnership_1, partnership_2, partnership_3)
       end
     end
 
     describe ".for_lead_provider" do
       it "returns provider partnerships only for the specified lead provider" do
-        expect(described_class.for_lead_provider(lp_2.id)).to match_array([partnership_3])
+        expect(described_class.for_lead_provider(lp_2.id)).to contain_exactly(partnership_3)
       end
     end
 
     describe ".for_delivery_partner" do
       it "returns provider partnerships only for the specified delivery partner" do
-        expect(described_class.for_delivery_partner(dp_1.id)).to match_array([partnership_1, partnership_3])
+        expect(described_class.for_delivery_partner(dp_1.id)).to contain_exactly(partnership_1, partnership_3)
       end
     end
   end
