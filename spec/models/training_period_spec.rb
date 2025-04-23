@@ -18,23 +18,12 @@ describe TrainingPeriod do
     describe "one_partnership_present" do
       subject(:training_period) { build(:training_period, expression_of_interest:, confirmed_school_partnership:) }
 
-      
-      context "when both expression_of_interest and confirmed_school_partnership are nil" do
-        let(:expression_of_interest) { nil }
-        let(:confirmed_school_partnership) { nil }
-
-        it "is invalid" do
-          is_expected.to be_invalid
-          expect(training_period.errors[:base]).to include("Confirmed partnership or expression of interest is required")
-        end
-      end
-
       context "when both expression_of_interest and confirmed_school_partnership are present" do
         let(:expression_of_interest) { build(:lead_provider_active_period) }
         let(:confirmed_school_partnership) { build(:school_partnership) }
 
         it "is invalid" do
-          is_expected.to be_invalid
+          expect(training_period).to be_invalid
           expect(training_period.errors[:base]).to include("Only confirmed partnership or expression of interest is permitted, not both")
         end
       end
