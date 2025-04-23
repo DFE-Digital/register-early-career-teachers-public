@@ -22,6 +22,6 @@ class Teachers::InductionExtensions
 private
 
   def number_of_terms
-    teacher.induction_extensions.sum(&:number_of_terms)
+    teacher.induction_extensions.sum(:number_of_terms)
   end
 end
