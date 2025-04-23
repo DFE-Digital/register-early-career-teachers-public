@@ -55,6 +55,11 @@ module "web_application" {
   max_memory = var.webapp_memory_max
 
   enable_logit = var.enable_logit
+
+  # Uncomment this when we want traffic to be redirected to the maintenance
+  # page during disaster recovery (i.e., while waiting for a database to be
+  # recreated)
+  # send_traffic_to_maintenance_page = true
 }
 
 module "worker_application" {
