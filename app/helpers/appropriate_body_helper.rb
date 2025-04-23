@@ -56,6 +56,16 @@ module AppropriateBodyHelper
     end
   end
 
+  def induction_extensions(teacher)
+    return if teacher.blank?
+
+    @induction_extensions ||= Teachers::InductionExtensions.new(teacher)
+  end
+
+  def show_extensions_row?(teacher)
+    induction_extensions(teacher)&.extended?
+  end
+
 private
 
   def pending_induction_submission_full_name(pending_induction_submission)

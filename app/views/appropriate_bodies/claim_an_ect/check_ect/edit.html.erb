@@ -84,13 +84,14 @@
       )
     end if @pending_induction_submission.trs_induction_status.present?
 
-    extensions = @teacher && Teachers::InductionExtensions.new(@teacher)
-    sl.with_row do |r|
+  if show_extensions_row?(@teacher)
+      sl.with_row do |r| 
       r.with_key(text: "Extensions")
-      r.with_value(text: extensions.formatted_number_of_terms)
-    end if extensions&.extended?
-  end
-%>
+      r.with_value(text: induction_extensions(@teacher).formatted_number_of_terms)
+    end
+ end
+
+  end %>
 
 <% if @teacher.present? %>
   <%= render Teachers::DetailsComponent.new(mode: :appropriate_body, teacher: @teacher) do |component|
