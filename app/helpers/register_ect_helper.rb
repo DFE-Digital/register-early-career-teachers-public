@@ -20,4 +20,11 @@ module RegisterECTHelper
 
     schools_register_ect_wizard_change_lead_provider_path
   end
+
+  # @param school [School]
+  def change_use_previous_ect_choices_path(school)
+    return schools_register_ect_wizard_change_use_previous_ect_choices_path if school.programme_choices?
+
+    schools_register_ect_wizard_use_previous_ect_choices
+  end
 end
