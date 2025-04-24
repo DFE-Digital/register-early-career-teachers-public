@@ -1,5 +1,5 @@
 module AppropriateBodies
-  # validates a csv file, using column headers, file size, row count, and content type
+  # Validate a CSV file using column headers, file size, row count, content type and unique TRNs
   class ProcessBatchForm
     MAX_FILE_SIZE = 1.megabyte
     MAX_ROW_SIZE = 5
@@ -43,7 +43,7 @@ module AppropriateBodies
       @parse ||= CSV.parse(file_content, headers: true, skip_lines: /^#/)
     end
 
-    # validation messages
+    # Validation messages
 
     def csv_mime_type
       errors.add(:csv_file, 'File type must be a CSV') unless is_a_csv?
@@ -65,7 +65,7 @@ module AppropriateBodies
       errors.add(:csv_file, 'CSV file contains unsupported columns') unless has_valid_headers?
     end
 
-    # validation checks
+    # Validation checks
 
     def is_a_csv?
       MIME_TYPES.include?(content_type)

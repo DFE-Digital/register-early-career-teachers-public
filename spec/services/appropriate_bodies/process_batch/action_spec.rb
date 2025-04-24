@@ -78,6 +78,14 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
+      context 'when the date of birth is not ISO8601' do
+        let(:dob) { '30/06/1981' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Dates must be in the format YYYY-MM-DD'
+        end
+      end
+
       context 'when the end date is not ISO8601' do
         let(:end_date) { '30/06/1981' }
 
