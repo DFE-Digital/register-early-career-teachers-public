@@ -4,12 +4,12 @@
     "accessible-autocomplete": "^3.0.1",
     "esbuild": "^0.25.2",
     "govuk-frontend": "5.9.0",
-    "sass": "^1.86.3"
+    "sass": "^1.87.0"
   },
   "devDependencies": {
     "playwright": "^1.51.0",
     "standard": "^17.1.2",
-    "stylelint": "^16.18.0",
+    "stylelint": "^16.19.0",
     "stylelint-config-gds": "^2.0.0"
   },
   "optionalDependencies": {
