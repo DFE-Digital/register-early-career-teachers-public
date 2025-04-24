@@ -95,7 +95,9 @@ module AppropriateBodies
       def incorrectly_formatted?
         pending_induction_submission.errors.add(:base, 'Fill in the blanks') if row.blank_cell?
         pending_induction_submission.errors.add(:base, 'Dates must be in the format YYYY-MM-DD') if row.invalid_date?
-        pending_induction_submission.errors.add(:base, 'Teacher reference number must include at least 5 digits') if row.invalid_trn?
+        pending_induction_submission.errors.add(:base, 'Teacher reference number must be 7 digits') if row.invalid_trn?
+        pending_induction_submission.errors.add(:base, 'Outcome must be either pass, fail or release') if row.invalid_outcome?
+        pending_induction_submission.errors.add(:base, 'Number of terms must be between 0 and 16. You can use up to one decimal place') if row.invalid_terms?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end

@@ -24,19 +24,27 @@ module BatchRows
     Data.define(*columns) do
       include Enumerable
 
-      # @return [Boolean]
+      # @return [Boolean] 7 digits
       def invalid_trn?
         trn !~ /\A\d{7}\z/
       end
 
-      # all cells except "error" require content
-      # @return [Boolean]
+      # @return [Boolean] only "error" cell can be blank
       def blank_cell?
         members[0..-2].any? { |key| public_send(key).blank? }
       end
 
-      # date cells are formatted as YYYY-MM-DD
-      # @return [Boolean]
+      # @return [Boolean] pass, fail, release
+      def invalid_outcome?
+        objective !~ /\Apass|fail|release\z/i
+      end
+
+      # @return [Boolean] upto one decimal place
+      def invalid_terms?
+        number_of_terms !~ /\A\d+(\.\d{1})?\z/
+      end
+
+      # @return [Boolean] formatted as YYYY-MM-DD
       def invalid_date?
         members.grep(/dob|_date/).any? do |key|
           !Date.iso8601(public_send(key))
