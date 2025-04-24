@@ -34,7 +34,7 @@ private
   end
 
   def record_update_event!
-    Events::Record.record_appropriate_body_updates_induction_extension_event!(**event_params)
+    Events::Record.record_induction_extension_updated_event!(**event_params)
   end
 
   def event_params
