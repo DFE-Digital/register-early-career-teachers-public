@@ -46,10 +46,8 @@ module AppropriateBodies
         PendingInductionSubmissionBatch.new_action_for(appropriate_body: @appropriate_body)
       end
 
-      # Delay ensures the parsed CSV is saved before the job runs
-      # Larger CSV files may take longer to process
       def process_batch_action
-        ProcessBatchActionJob.set(wait: 2.seconds).perform_later(
+        ProcessBatchActionJob.perform_later(
           @pending_induction_submission_batch,
           current_user.email,
           current_user.name

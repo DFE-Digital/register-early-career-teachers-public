@@ -15,13 +15,13 @@ module AppropriateBodies
 
     private
 
-      # @return [PendingInductionSubmission]
+      # @return [PendingInductionSubmission] formatting validation of TRN and DOB happens after creation so that any errors have somewhere to go
       def sparse_pending_induction_submission
         ::PendingInductionSubmission.create(
           pending_induction_submission_batch:,
           appropriate_body:,
           trn: row.trn,
-          date_of_birth: Date.iso8601(row.dob)
+          date_of_birth: row.dob
         )
       end
 
