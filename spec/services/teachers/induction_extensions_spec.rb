@@ -22,22 +22,28 @@ describe Teachers::InductionExtensions do
       allow(teacher.induction_extensions).to receive(:sum).and_return(total)
     end
 
-    context "when gt 1" do
+    context "when greater than 1" do
       let(:total) { 5.1 }
 
       it { expect(formatted_number_of_terms).to eql("#{total} terms") }
     end
 
-    context "when lt 1" do
+    context "when less than 1" do
       let(:total) { 0.777777 }
+
+      it { expect(formatted_number_of_terms).to eql("#{total} terms") }
+    end
+
+    context "when 1" do
+      let(:total) { 1.0 }
 
       it { expect(formatted_number_of_terms).to eql("#{total} term") }
     end
 
-    context "when eq 1" do
-      let(:total) { 1.0 }
+    context "when 1.2" do
+      let(:total) { 1.2 }
 
-      it { expect(formatted_number_of_terms).to eql("#{total} term") }
+      it { expect(formatted_number_of_terms).to eql("#{total} terms") }
     end
   end
 end

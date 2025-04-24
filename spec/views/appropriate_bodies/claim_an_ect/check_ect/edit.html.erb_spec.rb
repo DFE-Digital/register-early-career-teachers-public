@@ -84,4 +84,34 @@ RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
       end
     end
   end
+
+  describe 'extensions' do
+    context 'with no extensions but with a teacher' do
+      it 'does not display the row' do
+        render
+        expect(rendered).not_to have_css('.govuk-summary-list__key', text: 'Extensions')
+        expect(rendered).not_to have_css('.govuk-summary-list__value', text: '0.0')
+      end
+    end
+
+    context 'with no extensions and no teacher' do
+      let(:teacher) { nil }
+
+      it 'does not display the row' do
+        render
+        expect(rendered).not_to have_css('.govuk-summary-list__key', text: 'Extensions')
+        expect(rendered).not_to have_css('.govuk-summary-list__value', text: '0.0')
+      end
+    end
+
+    context 'with extensions and teacher' do
+      let!(:extension) { create(:induction_extension, teacher:) }
+
+      it 'displays the row' do
+        render
+        expect(rendered).to have_css('.govuk-summary-list__key', text: 'Extensions')
+        expect(rendered).to have_css('.govuk-summary-list__value', text: '1.2 terms')
+      end
+    end
+  end
 end

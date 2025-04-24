@@ -83,6 +83,13 @@
         )
       )
     end if @pending_induction_submission.trs_induction_status.present?
+
+    if show_extensions_row?(@teacher)
+      sl.with_row do |r|
+        r.with_key(text: "Extensions")
+        r.with_value(text: induction_extensions(@teacher).formatted_number_of_terms)
+      end
+    end
   end
 %>
 
