@@ -51,6 +51,10 @@ Event.transaction do
     .where(event_type: 'appropriate_body_passes_teacher')
     .update_all(event_type: 'teacher_passes_induction')
 
+  Event
+    .where(event_type: 'appropriate_body_updates_induction_extension')
+    .update_all(event_type: 'induction_extension_updated')
+
   # TRS events
   Event
     .where(event_type: 'teacher_induction_status_updated_by_trs')

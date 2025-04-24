@@ -203,8 +203,8 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_updates_induction_extension_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
-      event_type = :appropriate_body_updates_induction_extension
+    def self.record_induction_extension_updated_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
+      event_type = :induction_extension_updated
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
 
