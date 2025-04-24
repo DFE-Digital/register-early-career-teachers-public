@@ -31,7 +31,7 @@ RSpec.describe InductionExtensions::Manage do
             author_email: 'christopher.biggins@education.gov.uk',
             author_name: 'Christopher Biggins',
             author_type: :appropriate_body_user,
-            event_type: :appropriate_body_adds_induction_extension,
+            event_type: :induction_extension_created,
             happened_at: Time.zone.now,
             heading: "Andy Zaltzman's induction extended by 1.0 terms",
             teacher:,

@@ -303,7 +303,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_appropriate_body_adds_induction_extension_event!' do
+  describe '.record_induction_extension_created_event!' do
     let(:induction_extension) { FactoryBot.build(:induction_extension) }
 
     it 'queues a RecordEventJob with the correct values' do
@@ -311,14 +311,14 @@ RSpec.describe Events::Record do
       induction_extension.save!
 
       freeze_time do
-        Events::Record.record_appropriate_body_adds_induction_extension_event!(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
+        Events::Record.record_induction_extension_created_event!(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_extension:,
           teacher:,
           appropriate_body:,
           heading: "Rhys Ifans's induction extended by 1.2 terms",
-          event_type: :appropriate_body_adds_induction_extension,
+          event_type: :induction_extension_created,
           happened_at: Time.zone.now,
           modifications: ["Number of terms set to '1.2'"],
           metadata: raw_modifications,
