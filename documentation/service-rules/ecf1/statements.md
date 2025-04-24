@@ -11,7 +11,7 @@ These are the steps
 3. If invalid, errors are flagged up with corrective action suggestions.
 4. If valid, the declaration is created and linked to an output fee calculation.
 5. Service fees and banding are determined and applied.
-6. Final payments are calculated and displayed in a form of a financial statement for contract managers.
+6. Final payments are calculated and displayed in the form of a financial statement for contract managers.
 
 ## Contents
 
