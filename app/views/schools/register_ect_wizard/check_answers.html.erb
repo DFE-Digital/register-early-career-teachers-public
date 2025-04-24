@@ -39,6 +39,20 @@
                     href: schools_register_ect_wizard_change_working_pattern_path,
                     visually_hidden_text: 'working pattern')
   end
+end %>
+
+<h2 class="govuk-heading-m">Programme details</h2>
+
+<%= govuk_summary_list do |summary_list|
+  if @school.programme_choices?
+    summary_list.with_row do |row|
+      row.with_key(text: 'Choices used by your school previously')
+      row.with_value(text: programme_choices(@ect.use_previous_ect_choices))
+      row.with_action(text: 'Change',
+                      href: change_use_previous_ect_choices_path(@school),
+                      visually_hidden_text: 'choices used by your school previously')
+    end
+  end
 
   summary_list.with_row do |row|
     row.with_key(text: 'Appropriate body')
