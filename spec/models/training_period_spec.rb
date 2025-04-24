@@ -2,16 +2,16 @@ describe TrainingPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:ect_at_school_period).class_name("ECTAtSchoolPeriod").inverse_of(:training_periods) }
     it { is_expected.to belong_to(:mentor_at_school_period).inverse_of(:training_periods) }
-    it { is_expected.to belong_to(:provider_partnership) }
+    it { is_expected.to belong_to(:school_partnership) }
     it { is_expected.to have_many(:declarations).inverse_of(:training_period) }
     it { is_expected.to have_many(:events) }
-    it { is_expected.to have_one(:lead_provider).through(:provider_partnership) }
-    it { is_expected.to have_one(:delivery_partner).through(:provider_partnership) }
+    it { is_expected.to have_one(:lead_provider).through(:school_partnership) }
+    it { is_expected.to have_one(:delivery_partner).through(:school_partnership) }
   end
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:started_on) }
-    it { is_expected.to validate_presence_of(:provider_partnership_id) }
+    it { is_expected.to validate_presence_of(:school_partnership_id) }
 
     context "exactly one id of trainee present" do
       context "when ect_at_school_period_id and mentor_at_school_period_id are all nil" do

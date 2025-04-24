@@ -4,19 +4,19 @@ class TrainingPeriod < ApplicationRecord
   # Associations
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
-  belongs_to :provider_partnership
+  belongs_to :school_partnership
 
   has_many :declarations, inverse_of: :training_period
   has_many :events
 
-  has_one :lead_provider, through: :provider_partnership
-  has_one :delivery_partner, through: :provider_partnership
+  has_one :lead_provider, through: :school_partnership
+  has_one :delivery_partner, through: :school_partnership
 
   # Validations
   validates :started_on,
             presence: true
 
-  validates :provider_partnership_id,
+  validates :school_partnership_id,
             presence: true
 
   validate :one_id_of_trainee_present
@@ -26,7 +26,7 @@ class TrainingPeriod < ApplicationRecord
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
   scope :for_mentor, ->(mentor_at_school_period_id) { where(mentor_at_school_period_id:) }
-  scope :for_provider_partnership, ->(provider_partnership_id) { where(provider_partnership_id:) }
+  scope :for_school_partnership, ->(school_partnership_id) { where(school_partnership_id:) }
 
   # Instance methods
   def for_ect?

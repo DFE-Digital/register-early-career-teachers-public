@@ -2,8 +2,8 @@ describe Builders::Mentor::TrainingPeriods do
   subject(:service) { described_class.new(teacher:, training_period_data:) }
 
   let(:registration_period) { FactoryBot.create(:registration_period) }
-  let(:partnership_1) { FactoryBot.create(:provider_partnership, registration_period:) }
-  let(:partnership_2) { FactoryBot.create(:provider_partnership, registration_period:) }
+  let(:partnership_1) { FactoryBot.create(:school_partnership, registration_period:) }
+  let(:partnership_2) { FactoryBot.create(:school_partnership, registration_period:) }
   let(:school_1) { FactoryBot.create(:school, urn: "123456") }
   let(:school_2) { FactoryBot.create(:school, urn: "987654") }
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -24,13 +24,13 @@ describe Builders::Mentor::TrainingPeriods do
       service.build
       periods = TrainingPeriod.where(mentor_at_school_period_id: teacher.mentor_at_school_periods.select(:id)).order(:started_on)
 
-      expect(periods.first.provider_partnership).to eq partnership_1
+      expect(periods.first.school_partnership).to eq partnership_1
       expect(periods.first.started_on).to eq training_period_1.start_date
       expect(periods.first.finished_on).to eq training_period_1.end_date
       expect(periods.first.ecf_start_induction_record_id).to eq training_period_1.start_source_id
       expect(periods.first.ecf_end_induction_record_id).to eq training_period_1.end_source_id
 
-      expect(periods.last.provider_partnership).to eq partnership_2
+      expect(periods.last.school_partnership).to eq partnership_2
       expect(periods.last.started_on).to eq training_period_2.start_date
       expect(periods.last.finished_on).to be_blank
       expect(periods.last.ecf_start_induction_record_id).to eq training_period_2.start_source_id
