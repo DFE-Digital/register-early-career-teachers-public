@@ -3,7 +3,7 @@ FactoryBot.define do
 
   factory(:training_period) do
     for_ect
-    association :provider_partnership
+    association :school_partnership
 
     started_on { generate(:base_training_date) }
     finished_on { started_on + 1.day }

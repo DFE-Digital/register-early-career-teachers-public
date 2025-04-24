@@ -1,6 +1,6 @@
 class DeliveryPartner < ApplicationRecord
   # Associations
-  has_many :provider_partnerships, inverse_of: :delivery_partner
+  has_many :school_partnerships, inverse_of: :delivery_partner
   has_many :events
 
   # Validations
