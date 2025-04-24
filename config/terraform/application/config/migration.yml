@@ -14,3 +14,4 @@ TRS_API_VERSION: '20250203'
 ENCRYPTION_PRIMARY_KEY: migration_primary_key
 ENCRYPTION_DETERMINISTIC_KEY: migration_deterministic_key
 ENCRYPTION_DERIVATION_SALT: migration_derivation_salt
+RAILS_ENV: migration

@@ -1,8 +1,8 @@
-CONFIG=staging
-ENVIRONMENT=staging
-CONFIG_SHORT=st
-AZURE_SUBSCRIPTION=s189-teacher-services-cloud-test
 AZURE_RESOURCE_PREFIX=s189t01
+AZURE_SUBSCRIPTION=s189-teacher-services-cloud-test
+CONFIG=staging
+CONFIG_SHORT=st
+ENVIRONMENT=staging
 KV_PURGE_PROTECTION=false
 NAMESPACE=cpd-development
 TERRAFORM_MODULES_TAG=testing
