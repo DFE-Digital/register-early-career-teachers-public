@@ -8,39 +8,6 @@ describe Teachers::Search do
       end
     end
 
-    context 'with appropriate_bodies parameter' do
-      subject { described_class.new(appropriate_bodies: ab) }
-
-      let(:ab) { FactoryBot.create(:appropriate_body) }
-      let(:ects_service) { instance_double(AppropriateBodies::ECTs) }
-      let(:ects_scope) { instance_double(ActiveRecord::Relation) }
-
-      before do
-        allow(AppropriateBodies::ECTs).to receive(:new).with(ab).and_return(ects_service)
-        allow(ects_service).to receive(:current_or_completed_while_at_appropriate_body).and_return(ects_scope)
-      end
-
-      it 'applies appropriate_bodies filter' do
-        subject
-        expect(AppropriateBodies::ECTs).to have_received(:new).with(ab)
-      end
-    end
-
-    context 'with query_string parameter' do
-      subject { described_class.new(query_string: 'Unique Name') }
-
-      let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Unique', trs_last_name: 'Name') }
-
-      before do
-        allow(Teacher).to receive(:search).and_return(Teacher.where(id: teacher.id))
-      end
-
-      it 'applies query matching' do
-        expect(subject.scope).to include(teacher)
-        expect(subject.scope.count).to eq(1)
-      end
-    end
-
     context 'with nil query_string' do
       it 'ignores nil query strings' do
         expect { described_class.new(query_string: nil) }.not_to raise_error
@@ -144,6 +111,64 @@ describe Teachers::Search do
         result = described_class.new.search
 
         expect(result).to include(teacher1, teacher2)
+      end
+    end
+
+    describe "searching for ECTs at a school" do
+      context 'when one school is present' do
+        it 'only selects ECTs who are currently at the given school' do
+          query = Teachers::Search.new(ect_at_school: 123).search
+
+          expect(query.to_sql).to include(%("ect_at_school_periods"."school_id" = 123))
+        end
+
+        it 'only selects ongoing ECT at school periods' do
+          query = Teachers::Search.new(ect_at_school: 123).search
+
+          expect(query.to_sql).to include(%("ect_at_school_periods"."finished_on" IS NULL))
+        end
+      end
+
+      context 'when multiple schools are present' do
+        it 'only selects ECTs who are currently at the given school' do
+          query = Teachers::Search.new(ect_at_school: [123, 456]).search
+
+          expect(query.to_sql).to include(%{"ect_at_school_periods"."school_id" IN (123, 456)})
+        end
+      end
+
+      context 'when absent' do
+        it 'does not join ect_at_school_periods' do
+          query = Teachers::Search.new.search
+
+          expect(query.to_sql).not_to include('ect_at_school_periods')
+        end
+      end
+
+      describe 'ordering the results' do
+        let(:started_on) { 2.years.ago }
+
+        let(:school1) { FactoryBot.create(:school) }
+        let(:mentored_teacher1) { FactoryBot.create(:teacher) }
+        let(:mentored_teacher2) { FactoryBot.create(:teacher) }
+
+        # unmentored
+        let!(:ect_at_school_period1) { FactoryBot.create(:ect_at_school_period, :active, teacher: teacher1, school: school1, started_on:, created_at: 2.days.ago) }
+        let!(:ect_at_school_period2) { FactoryBot.create(:ect_at_school_period, :active, teacher: teacher2, school: school1, started_on:, created_at: 1.day.ago) }
+
+        # mentored
+        let!(:mentor_at_school_period1) { FactoryBot.create(:mentor_at_school_period, :active, teacher: teacher3, school: school1, started_on:) }
+        let!(:ect_at_school_period3) { FactoryBot.create(:ect_at_school_period, :active, teacher: mentored_teacher1, school: school1, started_on:, created_at: 2.days.ago) }
+        let!(:ect_at_school_period4) { FactoryBot.create(:ect_at_school_period, :active, teacher: mentored_teacher2, school: school1, started_on:, created_at: 1.day.ago) }
+
+        let!(:mentorship_period1) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on:) }
+        let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on:) }
+
+        it 'orders with unmentored teachers first, then by registration date' do
+          results = Teachers::Search.new(ect_at_school: school1).search
+
+          expect(results).to eq([teacher2, teacher1, mentored_teacher2, mentored_teacher1])
+        end
       end
     end
 
