@@ -12,7 +12,7 @@ Once a participant has been registered to the service by their school, data asso
 
 [Financial statements](/service-rules/ecf1/statements)
 
-[How participant declarations works](/service-rules/ecf1/participant-declarations)
+[Participant declarations](/service-rules/ecf1/participant-declarations)
 
 ## API versioning and updates management
 
