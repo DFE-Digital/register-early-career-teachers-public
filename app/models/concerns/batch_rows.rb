@@ -36,12 +36,12 @@ module BatchRows
 
       # @return [Boolean] pass, fail, release
       def invalid_outcome?
-        objective !~ /\Apass|fail|release\z/i
+        objective !~ /\A(pass|fail|release)\z/i
       end
 
-      # @return [Boolean] upto one decimal place
+      # @return [Boolean] 0-16 upto one decimal place
       def invalid_terms?
-        number_of_terms !~ /\A\d+(\.\d{1})?\z/
+        number_of_terms !~ /\A\d+(\.\d{1})?\z/ || !number_of_terms.to_f.between?(0, 16)
       end
 
       # @return [Boolean] formatted as YYYY-MM-DD
