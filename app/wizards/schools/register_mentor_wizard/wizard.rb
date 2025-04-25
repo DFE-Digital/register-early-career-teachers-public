@@ -1,7 +1,7 @@
 module Schools
   module RegisterMentorWizard
     class Wizard < ApplicationWizard
-      attr_accessor :store, :ect_id
+      attr_accessor :store, :ect_id, :author
 
       steps do
         [
