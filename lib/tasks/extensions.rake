@@ -28,7 +28,7 @@ namespace :extensions do
       full_name = Teachers::Name.new(teacher).full_name
       logger.info "#{appropriate_body.name} extended #{full_name}'s induction by #{induction_extension.number_of_terms}"
 
-      Events::Record.record_appropriate_body_adds_induction_extension_event!(
+      Events::Record.record_induction_extension_created_event!(
         author:,
         appropriate_body:,
         teacher:,

@@ -1,8 +1,8 @@
 class Event < ApplicationRecord
   EVENT_TYPES = %w[
-    appropriate_body_adds_induction_extension
-    appropriate_body_updates_induction_extension
     import_from_dqt
+    induction_extension_created
+    induction_extension_updated
     induction_period_closed
     induction_period_deleted
     induction_period_opened
@@ -26,7 +26,7 @@ class Event < ApplicationRecord
   belongs_to :mentor_at_school_period
   belongs_to :training_period
   belongs_to :mentorship_period
-  belongs_to :provider_partnership
+  belongs_to :school_partnership
   belongs_to :lead_provider
   belongs_to :delivery_partner
   belongs_to :user

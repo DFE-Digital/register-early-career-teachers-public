@@ -172,7 +172,7 @@
   - updated_at
   :training_periods:
   - id
-  - provider_partnership_id
+  - school_partnership_id
   - started_on
   - finished_on
   - created_at
@@ -198,7 +198,7 @@
   - created_at
   - updated_at
   - urn
-  :provider_partnerships:
+  :school_partnerships:
   - id
   - registration_period_id
   - lead_provider_id
@@ -293,7 +293,7 @@
   - mentor_at_school_period_id
   - training_period_id
   - mentorship_period_id
-  - provider_partnership_id
+  - school_partnership_id
   - lead_provider_id
   - delivery_partner_id
   - user_id

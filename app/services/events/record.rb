@@ -18,7 +18,7 @@ module Events
                 :mentor_at_school_period,
                 :training_period,
                 :mentorship_period,
-                :provider_partnership,
+                :school_partnership,
                 :lead_provider,
                 :delivery_partner,
                 :user,
@@ -40,7 +40,7 @@ module Events
       mentor_at_school_period: nil,
       training_period: nil,
       mentorship_period: nil,
-      provider_partnership: nil,
+      school_partnership: nil,
       lead_provider: nil,
       delivery_partner: nil,
       user: nil,
@@ -61,7 +61,7 @@ module Events
       @mentor_at_school_period = mentor_at_school_period
       @training_period = training_period
       @mentorship_period = mentorship_period
-      @provider_partnership = provider_partnership
+      @school_partnership = school_partnership
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
       @user = user
@@ -195,16 +195,16 @@ module Events
 
     # Induction Extension Events
 
-    def self.record_appropriate_body_adds_induction_extension_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
-      event_type = :appropriate_body_adds_induction_extension
+    def self.record_induction_extension_created_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
+      event_type = :induction_extension_created
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
-    def self.record_appropriate_body_updates_induction_extension_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
-      event_type = :appropriate_body_updates_induction_extension
+    def self.record_induction_extension_updated_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
+      event_type = :induction_extension_updated
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
 
@@ -248,7 +248,7 @@ module Events
         mentor_at_school_period:,
         training_period:,
         mentorship_period:,
-        provider_partnership:,
+        school_partnership:,
         lead_provider:,
         delivery_partner:,
         user:,

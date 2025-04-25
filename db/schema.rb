@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_22_134532) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -178,7 +178,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
     t.integer "mentor_at_school_period_id"
     t.integer "training_period_id"
     t.integer "mentorship_period_id"
-    t.integer "provider_partnership_id"
+    t.integer "school_partnership_id"
     t.integer "lead_provider_id"
     t.integer "delivery_partner_id"
     t.integer "user_id"
@@ -200,8 +200,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
     t.index ["lead_provider_id"], name: "index_events_on_lead_provider_id"
     t.index ["mentor_at_school_period_id"], name: "index_events_on_mentor_at_school_period_id"
     t.index ["mentorship_period_id"], name: "index_events_on_mentorship_period_id"
-    t.index ["provider_partnership_id"], name: "index_events_on_provider_partnership_id"
     t.index ["school_id"], name: "index_events_on_school_id"
+    t.index ["school_partnership_id"], name: "index_events_on_school_partnership_id"
     t.index ["teacher_id"], name: "index_events_on_teacher_id"
     t.index ["training_period_id"], name: "index_events_on_training_period_id"
     t.index ["user_id"], name: "index_events_on_user_id"
@@ -352,18 +352,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
   end
 
-  create_table "provider_partnerships", force: :cascade do |t|
-    t.bigint "registration_period_id", null: false
-    t.bigint "lead_provider_id", null: false
-    t.bigint "delivery_partner_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["delivery_partner_id"], name: "index_provider_partnerships_on_delivery_partner_id"
-    t.index ["lead_provider_id"], name: "index_provider_partnerships_on_lead_provider_id"
-    t.index ["registration_period_id", "lead_provider_id", "delivery_partner_id"], name: "yearly_unique_provider_partnerships", unique: true
-    t.index ["registration_period_id"], name: "index_provider_partnerships_on_registration_period_id"
-  end
-
   create_table "registration_periods", primary_key: "year", id: :serial, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -372,6 +360,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
     t.boolean "enabled", default: false
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.index ["year"], name: "index_registration_periods_on_year", unique: true
+  end
+
+  create_table "school_partnerships", force: :cascade do |t|
+    t.bigint "registration_period_id", null: false
+    t.bigint "lead_provider_id", null: false
+    t.bigint "delivery_partner_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["delivery_partner_id"], name: "index_school_partnerships_on_delivery_partner_id"
+    t.index ["lead_provider_id"], name: "index_school_partnerships_on_lead_provider_id"
+    t.index ["registration_period_id", "lead_provider_id", "delivery_partner_id"], name: "yearly_unique_provider_partnerships", unique: true
+    t.index ["registration_period_id"], name: "index_school_partnerships_on_registration_period_id"
   end
 
   create_table "schools", force: :cascade do |t|
@@ -543,7 +543,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
   end
 
   create_table "training_periods", force: :cascade do |t|
-    t.bigint "provider_partnership_id", null: false
+    t.bigint "school_partnership_id", null: false
     t.date "started_on", null: false
     t.date "finished_on"
     t.datetime "created_at", null: false
@@ -557,8 +557,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"
     t.index ["mentor_at_school_period_id"], name: "index_training_periods_on_mentor_at_school_period_id"
-    t.index ["provider_partnership_id", "ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "provider_partnership_trainings", unique: true
-    t.index ["provider_partnership_id"], name: "index_training_periods_on_provider_partnership_id"
+    t.index ["school_partnership_id", "ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "provider_partnership_trainings", unique: true
+    t.index ["school_partnership_id"], name: "index_training_periods_on_school_partnership_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -584,7 +584,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
   add_foreign_key "events", "lead_providers", on_delete: :nullify
   add_foreign_key "events", "mentor_at_school_periods", on_delete: :nullify
   add_foreign_key "events", "mentorship_periods", on_delete: :nullify
-  add_foreign_key "events", "provider_partnerships", on_delete: :nullify
+  add_foreign_key "events", "school_partnerships", on_delete: :nullify
   add_foreign_key "events", "schools", on_delete: :nullify
   add_foreign_key "events", "teachers", on_delete: :nullify
   add_foreign_key "events", "training_periods", on_delete: :nullify
@@ -599,9 +599,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
-  add_foreign_key "provider_partnerships", "delivery_partners"
-  add_foreign_key "provider_partnerships", "lead_providers"
-  add_foreign_key "provider_partnerships", "registration_periods", primary_key: "year"
+  add_foreign_key "school_partnerships", "delivery_partners"
+  add_foreign_key "school_partnerships", "lead_providers"
+  add_foreign_key "school_partnerships", "registration_periods", primary_key: "year"
   add_foreign_key "schools", "appropriate_bodies", column: "chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "chosen_lead_provider_id"
@@ -614,5 +614,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_164717) do
   add_foreign_key "teacher_migration_failures", "teachers"
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "mentor_at_school_periods"
-  add_foreign_key "training_periods", "provider_partnerships"
+  add_foreign_key "training_periods", "school_partnerships"
 end
