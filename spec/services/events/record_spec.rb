@@ -560,4 +560,25 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe '.record_teacher_registered_as_mentor_event!' do
+    let(:school) { FactoryBot.create(:school) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_teacher_registered_as_mentor_event!(author:, teacher:, mentor_at_school_period:, school:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          school:,
+          mentor_at_school_period:,
+          heading: "Rhys Ifans was registered as a mentor at #{school.name}",
+          event_type: :teacher_registered_as_mentor,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
 end
