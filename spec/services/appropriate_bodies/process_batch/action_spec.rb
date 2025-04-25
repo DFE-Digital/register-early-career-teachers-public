@@ -111,8 +111,16 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
-      context 'when the TRN is incorrectly formatted' do
+      context 'when the TRN is missing digits' do
         let(:trn) { '0004' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Teacher reference number must be 7 digits'
+        end
+      end
+
+      context 'when the TRN contains other characters' do
+        let(:trn) { '123456L' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Teacher reference number must be 7 digits'
@@ -143,8 +151,32 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
+      context 'when the outcome is capitalised' do
+        let(:objective) { 'PASS' }
+
+        it 'passes validation' do
+          expect(submission.error_message).not_to eq 'Outcome must be either pass, fail or release'
+        end
+      end
+
+      context 'when the outcome is reworded' do
+        let(:objective) { 'Failure' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Outcome must be either pass, fail or release'
+        end
+      end
+
       context 'when the number of terms exceeds 1 decimal place' do
         let(:number_of_terms) { '12.06' }
+
+        it 'captures an error message' do
+          expect(submission.error_message).to eq 'Number of terms must be between 0 and 16. You can use up to one decimal place'
+        end
+      end
+
+      context 'when the number of terms exceeds 16' do
+        let(:number_of_terms) { '17' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Number of terms must be between 0 and 16. You can use up to one decimal place'
