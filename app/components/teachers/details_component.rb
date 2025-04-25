@@ -1,9 +1,5 @@
 module Teachers
   class DetailsComponent < ViewComponent::Base
-    renders_one :reopen_period_button, -> {
-      "Banana"
-    }
-
     renders_one :personal_details, -> {
       Teachers::Details::PersonalDetailsComponent.new(teacher:)
     }
