@@ -10,4 +10,8 @@ module AdminHelper
   def admin_teachers_list_links(teachers)
     govuk_list(teachers.map { |teacher| admin_teacher_name_link(teacher) })
   end
+
+  def admin_latest_induction_period_complete?(teacher)
+    !!Teachers::InductionPeriod.new(teacher).last_induction_period&.complete?
+  end
 end

@@ -75,13 +75,23 @@ module TRS
       )
     end
 
+    def reopen_teacher_induction!(trn:, start_date:, modified_at: Time.zone.now)
+      update_induction_status(
+        trn:,
+        status: 'InProgress',
+        start_date: start_date.iso8601,
+        completed_date: nil,
+        modified_at: modified_at.iso8601(3)
+      )
+    end
+
   private
 
     def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
       payload = { 'status' => status,
                   'startDate' => start_date,
                   'completedDate' => completed_date,
-                  'modifiedOn' => modified_at }.compact.to_json
+                  'modifiedOn' => modified_at }.to_json
 
       response = @connection.put(persons_path(trn, suffix: 'cpd-induction'), payload)
 

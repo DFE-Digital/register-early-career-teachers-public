@@ -33,14 +33,14 @@ class Teachers::InductionPeriod
     teacher.induction_periods.ongoing.first
   end
 
+  def last_induction_period
+    induction_periods.last
+  end
+
 private
 
   def first_induction_period
     induction_periods.first
-  end
-
-  def last_induction_period
-    induction_periods.last
   end
 
   def induction_periods
