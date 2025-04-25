@@ -1,9 +1,15 @@
 module Schools
   class RegisterMentor
-    attr_reader :trs_first_name, :trs_last_name, :corrected_name,
-                :school_urn, :teacher, :trn,
-                :email, :started_on,
-                :mentor_completion_date, :mentor_completion_reason
+    attr_reader :trs_first_name,
+                :trs_last_name,
+                :corrected_name,
+                :school_urn,
+                :teacher,
+                :trn,
+                :email,
+                :started_on,
+                :mentor_completion_date,
+                :mentor_completion_reason
 
     def initialize(trs_first_name:,
                    trs_last_name:,
