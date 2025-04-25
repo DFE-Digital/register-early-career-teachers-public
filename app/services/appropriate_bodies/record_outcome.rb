@@ -10,34 +10,30 @@ module AppropriateBodies
     end
 
     def pass!
-      raise Errors::ECTHasNoOngoingInductionPeriods if ongoing_induction_period.blank?
-
-      ActiveRecord::Base.transaction do
-        success = [
-          close_induction_period(:pass),
-          send_pass_induction_notification_to_trs,
-          record_pass_induction_event!
-        ].all?
-
-        success or raise ActiveRecord::Rollback
-      end
+      record_outcome!(:pass)
     end
 
     def fail!
-      raise Errors::ECTHasNoOngoingInductionPeriods if ongoing_induction_period.blank?
-
-      ActiveRecord::Base.transaction do
-        success = [
-          close_induction_period(:fail),
-          send_fail_induction_notification_to_trs,
-          record_fail_induction_event!
-        ].all?
-
-        success or raise ActiveRecord::Rollback
-      end
+      record_outcome!(:fail)
     end
 
   private
+
+    def record_outcome!(outcome)
+      raise Errors::ECTHasNoOngoingInductionPeriods if ongoing_induction_period.blank?
+
+      ActiveRecord::Base.transaction do
+        close_induction_period(outcome)
+        case outcome
+        when :pass
+          send_pass_induction_notification_to_trs
+          record_pass_induction_event!
+        when :fail
+          send_fail_induction_notification_to_trs
+          record_fail_induction_event!
+        end
+      end
+    end
 
     def ongoing_induction_period
       @ongoing_induction_period ||= ::Teachers::InductionPeriod.new(teacher).ongoing_induction_period
@@ -61,22 +57,12 @@ module AppropriateBodies
       )
     end
 
-    def user_type
-      if author.dfe_user?
-        :admin
-      else
-        :appropriate_body
-      end
-    end
-
     def close_induction_period(outcome)
-      ongoing_induction_period.update(
+      ongoing_induction_period.update!(
         finished_on: pending_induction_submission.finished_on,
         outcome:,
         number_of_terms: pending_induction_submission.number_of_terms
       )
-
-      ongoing_induction_period.valid?
     end
 
     def send_fail_induction_notification_to_trs
