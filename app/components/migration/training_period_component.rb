@@ -11,11 +11,11 @@ module Migration
     end
 
     def lead_provider_name
-      training_period.provider_partnership.lead_provider.name
+      training_period.school_partnership.lead_provider.name
     end
 
     def delivery_partner_name
-      training_period.provider_partnership.delivery_partner.name
+      training_period.school_partnership.delivery_partner.name
     end
 
     def period_dates
