@@ -1,7 +1,7 @@
 module Schools
   module RegisterMentorWizard
     class Step < ApplicationWizardStep
-      delegate :ect, :mentor, :valid_step?, to: :wizard
+      delegate :ect, :mentor, :valid_step?, :author, to: :wizard
 
       def self.permitted_params = []
 

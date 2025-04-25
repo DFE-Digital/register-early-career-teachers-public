@@ -53,13 +53,14 @@ module Schools
         @check_ero_mentor ||= CheckEarlyRollOutMentor.new(trn)
       end
 
-      def register!
+      def register!(author:)
         Schools::RegisterMentor.new(trs_first_name:,
                                     trs_last_name:,
                                     corrected_name:,
                                     trn:,
                                     school_urn:,
                                     email:,
+                                    author:,
                                     **check_ero_mentor.to_h)
                                .register!.tap do
           self.registered = true

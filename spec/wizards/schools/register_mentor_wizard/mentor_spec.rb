@@ -2,6 +2,7 @@ describe Schools::RegisterMentorWizard::Mentor do
   subject(:mentor) { described_class.new(store) }
 
   let(:school) { FactoryBot.create(:school) }
+  let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: '3002586',
@@ -171,7 +172,7 @@ describe Schools::RegisterMentorWizard::Mentor do
     it "creates a new teacher registered at the given school" do
       expect(Teacher.find_by_trn(mentor.trn)).to be_nil
 
-      mentor.register!
+      mentor.register!(author:)
 
       expect(teacher.trn).to eq(mentor.trn)
       expect(mentor_at_school_period.school_id).to eq(school.id)
