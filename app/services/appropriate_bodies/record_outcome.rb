@@ -24,8 +24,14 @@ module AppropriateBodies
 
       ActiveRecord::Base.transaction do
         close_induction_period(outcome)
-        send("send_#{outcome}_induction_notification_to_trs")
-        send("record_#{outcome}_induction_event!")
+        case outcome
+        when :pass
+          send_pass_induction_notification_to_trs
+          record_pass_induction_event!
+        when :fail
+          send_fail_induction_notification_to_trs
+          record_fail_induction_event!
+        end
       end
     end
 
