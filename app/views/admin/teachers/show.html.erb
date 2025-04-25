@@ -8,6 +8,10 @@
   )
 %>
 
+<% if admin_latest_induction_period_complete?(@teacher) %>
+  <%= govuk_button_to "Reopen induction", admin_teacher_reopen_induction_path(@teacher), method: :put, warning: true %>
+<% end %>
+
 <%= render Teachers::DetailsComponent.new(mode: :admin, teacher: @teacher) do |component|
   component.with_induction_outcome_actions
   component.with_induction_summary(is_admin: true)

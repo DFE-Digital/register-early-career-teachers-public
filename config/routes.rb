@@ -53,6 +53,7 @@ Rails.application.routes.draw do
       resources :induction_periods, only: %i[new create edit update], path: 'induction-periods'
       resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
       resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: 'teachers/record_failed_outcome'
+      resource :reopen_induction, only: %i[update], path: 'reopen-induction', controller: 'teachers/reopen_induction'
     end
   end
 

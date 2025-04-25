@@ -60,6 +60,8 @@ module Interval
 
   def ongoing? = finished_on.nil?
 
+  def complete? = finished_on.present?
+
   def incomplete? = [started_on, finished_on].any?(&:blank?)
 
   def has_overlap_with_siblings? = siblings.overlapping_with(self).exists?
