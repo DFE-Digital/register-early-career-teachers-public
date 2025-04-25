@@ -7,7 +7,10 @@ describe LeadProviderActivePeriod do
   end
 
   describe "validations" do
+    subject { build(:lead_provider_active_period) }
+
     it { is_expected.to validate_presence_of(:lead_provider) }
     it { is_expected.to validate_presence_of(:registration_period) }
+    it { is_expected.to validate_uniqueness_of(:registration_period_id).scoped_to(:lead_provider_id) }
   end
 end

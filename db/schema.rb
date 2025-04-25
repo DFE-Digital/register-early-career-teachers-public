@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_22_113917) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_25_100703) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -277,6 +277,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_22_113917) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["lead_provider_id"], name: "index_lead_provider_active_periods_on_lead_provider_id"
+    t.index ["registration_period_id", "lead_provider_id"], name: "idx_on_registration_period_id_lead_provider_id_4b486019d3", unique: true
     t.index ["registration_period_id"], name: "index_lead_provider_active_periods_on_registration_period_id"
   end
 
@@ -286,6 +287,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_22_113917) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
+    t.index ["lead_provider_active_period_id", "delivery_partner_id"], name: "idx_on_lead_provider_active_period_id_delivery_part_82d12bafba", unique: true
     t.index ["lead_provider_active_period_id"], name: "idx_on_lead_provider_active_period_id_90f3e9110a"
   end
 
@@ -398,6 +400,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_22_113917) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["lead_provider_delivery_partnership_id"], name: "idx_on_lead_provider_delivery_partnership_id_628487f752"
+    t.index ["school_id", "lead_provider_delivery_partnership_id"], name: "idx_on_school_id_lead_provider_delivery_partnership_7b2d6a6684", unique: true
     t.index ["school_id"], name: "index_school_partnerships_on_school_id"
   end
 

@@ -5,4 +5,5 @@ class LeadProviderDeliveryPartnership < ApplicationRecord
 
   validates :lead_provider_active_period, presence: true
   validates :delivery_partner, presence: true
+  validates :lead_provider_active_period_id, uniqueness: { scope: :delivery_partner_id }
 end
