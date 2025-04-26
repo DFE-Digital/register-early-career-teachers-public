@@ -85,11 +85,6 @@ module BatchRows
     CLAIM_CSV_HEADINGS if claim?
   end
 
-  # @return [Array<String>]
-  def column_headers
-    row_headings.keys.map(&:to_s)
-  end
-
   # @return [Enumerator::Lazy<ClaimRow, ActionRow>] Struct-like without headers
   def rows
     data.each.lazy.map { |row| row_class.new(**row.symbolize_keys) }
