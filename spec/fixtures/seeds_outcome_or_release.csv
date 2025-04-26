@@ -1,4 +1,4 @@
-trn,dob,end_date,number_of_terms,objective,error
+trn,date_of_birth,finished_on,number_of_terms,outcome,error
 1000890,1997-01-15,2025-04-01,1,foo,
 3002564,1991-07-05,2025-04-01,2,fail,
 3002586,1977-02-03,2025-04-01,3,release,

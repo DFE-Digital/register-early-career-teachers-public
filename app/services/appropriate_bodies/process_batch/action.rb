@@ -62,7 +62,7 @@ module AppropriateBodies
 
           elsif pending_induction_submission.save(context: :release_ect)
 
-            release_ect.release! if pending_induction_submission.outcome.nil? # needs work - why not add "release" to the enum?
+            release_ect.release! if pending_induction_submission.outcome.nil?
           else
             false
           end
@@ -72,11 +72,11 @@ module AppropriateBodies
       # @return [?]
       def validate_submission!
         pending_induction_submission.assign_attributes(
-          finished_on: row.end_date,
+          finished_on: row.finished_on,
           number_of_terms: row.number_of_terms
         )
 
-        case row.objective
+        case row.outcome
         when /fail/i
           pending_induction_submission.assign_attributes(outcome: 'fail')
           pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
@@ -86,7 +86,6 @@ module AppropriateBodies
         when /release/i
           pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :release_ect)
         else
-          pending_induction_submission.errors.add(:outcome, "Objective must be pass, fail or release")
           pending_induction_submission.playback_errors
         end
       end
