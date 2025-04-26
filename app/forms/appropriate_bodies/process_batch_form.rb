@@ -20,7 +20,7 @@ module AppropriateBodies
     validate :unique_trns
     validate :wrong_headers
 
-    # @param headers [Array<String>]
+    # @param headers [Hash{Symbol => String}]
     # @param csv_file [ActionDispatch::Http::UploadedFile]
     # @return [ProcessBatchForm]
     def self.from_uploaded_file(headers:, csv_file:)
@@ -32,9 +32,11 @@ module AppropriateBodies
       )
     end
 
-    # @return [Array<Hash>]
+    # @return [Array<Hash{Symbol => String}>] replace CSV headers with symbols
     def to_a
-      parse.map(&:to_h)
+      parse.map do |row|
+        row.to_h.transform_keys { |k| headers.invert[k] }
+      end
     end
 
   private
@@ -80,11 +82,11 @@ module AppropriateBodies
     end
 
     def has_valid_headers?
-      parse.headers.sort.eql?(headers.sort)
+      parse.headers.sort.eql?(headers.values.sort)
     end
 
     def has_unique_trns?
-      parse.map { |row| row['trn'] }.uniq.count.eql?(parse.count)
+      parse.map { |row| row['TRN'] }.uniq.count.eql?(parse.count)
     end
   end
 end
