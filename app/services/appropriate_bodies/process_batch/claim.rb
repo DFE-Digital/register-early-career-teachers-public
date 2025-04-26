@@ -37,7 +37,7 @@ module AppropriateBodies
       def claim!
         PendingInductionSubmissionBatch.transaction do
           pending_induction_submission.assign_attributes(
-            started_on: row.start_date,
+            started_on: row.started_on,
             induction_programme: row.induction_programme.downcase
           )
 

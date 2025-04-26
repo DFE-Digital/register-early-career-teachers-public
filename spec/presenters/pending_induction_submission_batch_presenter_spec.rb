@@ -35,18 +35,18 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
         [
           {
             trn: '1234567',
-            dob: '1990-01-01',
-            end_date: '2023-12-31',
+            date_of_birth: '1990-01-01',
+            finished_on: '2023-12-31',
             number_of_terms: '2.0',
-            objective: 'pass',
+            outcome: 'pass',
             error: ''
           },
           {
             trn: '7654321',
-            dob: '1980-01-01',
-            end_date: '2023-12-31',
+            date_of_birth: '1980-01-01',
+            finished_on: '2023-12-31',
             number_of_terms: '2.0',
-            objective: 'pass',
+            outcome: 'pass',
             error: ''
           }
         ]
@@ -57,7 +57,7 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
       end
 
       it 'returns a CSV string with the correct headers' do
-        expect(presenter.to_csv).to eq("trn,dob,end_date,number_of_terms,objective,error\n")
+        expect(presenter.to_csv).to eq("trn,date_of_birth,finished_on,number_of_terms,outcome,error\n")
       end
 
       context 'and there are failed_submissions' do
@@ -77,7 +77,7 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
         it 'returns failed submissions with their errors' do
           expect(presenter.to_csv).to eq(
             <<~CSV_DATA
-              trn,dob,end_date,number_of_terms,objective,error
+              trn,date_of_birth,finished_on,number_of_terms,outcome,error
               1234567,1990-01-01,2023-12-31,2.0,pass,Some error message
             CSV_DATA
           )

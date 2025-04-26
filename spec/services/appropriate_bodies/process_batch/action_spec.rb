@@ -16,10 +16,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   let(:trn) { '1000890' }
   let(:first_name) { 'Terry' }
   let(:last_name) { 'Wogan' }
-  let(:dob) { '1997-01-15' }
-  let(:end_date) { 1.week.ago.to_date.to_s }
+  let(:date_of_birth) { '1997-01-15' }
+  let(:finished_on) { 1.week.ago.to_date.to_s }
   let(:number_of_terms) { '3.2' }
-  let(:objective) { 'pass' }
+  let(:outcome) { 'pass' }
   let(:error) { '' }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -35,7 +35,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
     FactoryBot.create(:pending_induction_submission_batch, :action,
                       appropriate_body:,
                       data: [
-                        { trn:, dob:, end_date:, number_of_terms:, objective:, error: }
+                        { trn:, date_of_birth:, finished_on:, number_of_terms:, outcome:, error: }
                       ])
   end
 
@@ -61,7 +61,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       it 'clears attributes that may cause errors' do
         expect(submission.outcome).not_to eq 'pass'
         expect(submission.number_of_terms).not_to eq 3.2
-        expect(submission.finished_on).not_to eq(Date.parse(end_date))
+        expect(submission.finished_on).not_to eq(Date.parse(finished_on))
       end
     end
 
@@ -80,7 +80,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the date of birth is missing' do
-        let(:dob) { '' }
+        let(:date_of_birth) { '' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Fill in the blanks and Dates must be in the format YYYY-MM-DD'
@@ -96,7 +96,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the end date is missing' do
-        let(:end_date) { '' }
+        let(:finished_on) { '' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Fill in the blanks and Dates must be in the format YYYY-MM-DD'
@@ -104,7 +104,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the outcome is missing' do
-        let(:objective) { '' }
+        let(:outcome) { '' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Fill in the blanks and Outcome must be either pass, fail or release'
@@ -128,7 +128,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the date of birth is not ISO8601' do
-        let(:dob) { '30/06/1981' }
+        let(:date_of_birth) { '30/06/1981' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Dates must be in the format YYYY-MM-DD'
@@ -136,7 +136,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the end date is not ISO8601' do
-        let(:end_date) { '30/06/1981' }
+        let(:finished_on) { '30/06/1981' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Dates must be in the format YYYY-MM-DD'
@@ -144,7 +144,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the outcome is not recognised' do
-        let(:objective) { 'foo' }
+        let(:outcome) { 'foo' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Outcome must be either pass, fail or release'
@@ -152,7 +152,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the outcome is capitalised' do
-        let(:objective) { 'PASS' }
+        let(:outcome) { 'PASS' }
 
         it 'passes validation' do
           expect(submission.error_message).not_to eq 'Outcome must be either pass, fail or release'
@@ -160,7 +160,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the outcome is reworded' do
-        let(:objective) { 'Failure' }
+        let(:outcome) { 'Failure' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Outcome must be either pass, fail or release'
@@ -186,10 +186,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       context 'when multiple cells are invalid' do
         let(:teacher) {}
         let(:trn) { '0004' }
-        let(:dob) { '30/06/1981' }
-        let(:objective) { 'foo' }
+        let(:date_of_birth) { '30/06/1981' }
+        let(:outcome) { 'foo' }
         let(:number_of_terms) { '12.06' }
-        let(:end_date) { '' }
+        let(:finished_on) { '' }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Fill in the blanks, Dates must be in the format YYYY-MM-DD, Teacher reference number must be 7 digits, Outcome must be either pass, fail or release, and Number of terms must be between 0 and 16. You can use up to one decimal place'
@@ -222,24 +222,24 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       it 'populates submission from CSV' do
         expect(submission.outcome).to eq 'pass'
         expect(submission.number_of_terms).to eq 3.2
-        expect(submission.finished_on).to eq(Date.parse(end_date))
+        expect(submission.finished_on).to eq(Date.parse(finished_on))
       end
 
       it 'populates submission from TRS' do
         expect(submission.trn).to eq trn
-        expect(submission.date_of_birth).to eq(Date.parse(dob))
+        expect(submission.date_of_birth).to eq(Date.parse(date_of_birth))
         expect(submission.trs_first_name).to eq 'Kirk'
         expect(submission.trs_last_name).to eq 'Van Houten'
       end
 
       it 'does not closes edit induction period' do
-        expect(induction_period.finished_on).not_to eq(Date.parse(end_date))
+        expect(induction_period.finished_on).not_to eq(Date.parse(finished_on))
         expect(induction_period.number_of_terms).not_to eq(3.2)
         expect(induction_period.outcome).not_to eq('pass')
       end
 
       context 'when the end date is in the future' do
-        let(:end_date) { 1.year.from_now.to_date.to_s }
+        let(:finished_on) { 1.year.from_now.to_date.to_s }
 
         it 'captures an error message' do
           expect(submission.error_message).to eq 'Finished on End date cannot be in the future'
@@ -256,7 +256,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
 
         it 'closes induction period with a pass' do
-          expect(induction_period.finished_on).to eq(Date.parse(end_date))
+          expect(induction_period.finished_on).to eq(Date.parse(finished_on))
           expect(induction_period.number_of_terms).to eq(3.2)
           expect(induction_period.outcome).to eq('pass')
         end
