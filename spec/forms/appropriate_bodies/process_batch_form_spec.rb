@@ -1,13 +1,13 @@
 RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
   subject(:form) { described_class.from_uploaded_file(headers:, csv_file:) }
 
-  let(:headers) { %w[trn date_of_birth finished_on number_of_terms outcome] }
+  let(:headers) { BatchRows::ACTION_CSV_HEADINGS }
 
   let(:csv_content) do
     <<~CSV
-      trn,date_of_birth,finished_on,number_of_terms,outcome
-      1234567,2000-01-01,2023-12-31,1,Test Objective
-      2345678,2001-02-02,2024-12-31,2,Another Objective
+      TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
+      1234567,2000-01-01,2023-12-31,1,Pass,No error
+      2345678,2001-02-02,2024-12-31,2,Fail,No error
     CSV
   end
 
@@ -42,7 +42,12 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
     end
 
     describe '#wrong_headers' do
-      let(:headers) { %w[trn dob] }
+      let(:headers) do
+        {
+          trn: 'TRN',
+          date_of_birth: 'Date of birth',
+        }
+      end
 
       specify do
         expect(form).not_to be_valid
@@ -53,7 +58,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
     describe '#unique_trns' do
       let(:csv_content) do
         <<~CSV
-          trn,date_of_birth,finished_on,number_of_terms,outcome
+          TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
           1234567,2000-01-01,2023-12-31,1,pass
           1234567,2001-02-02,2024-12-31,2,pass
         CSV
@@ -68,15 +73,15 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
     describe '#row_count' do
       let(:csv_content) do
         <<~CSV
-          trn,date_of_birth,finished_on,number_of_terms,outcome
-          1234567,2000-01-01,2023-12-31,1,pass
+          TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
+          1234567,2001-02-02,2024-12-31,1,pass
           2345678,2001-02-02,2024-12-31,2,pass
-          2345678,2001-02-02,2024-12-31,2,pass
-          2345678,2001-02-02,2024-12-31,2,pass
-          2345678,2001-02-02,2024-12-31,2,pass
-          2345678,2001-02-02,2024-12-31,2,pass
-          2345678,2001-02-02,2024-12-31,2,pass
-          2345678,2001-02-02,2024-12-31,2,pass
+          3456789,2001-02-02,2024-12-31,2,pass
+          4567890,2001-02-02,2024-12-31,2,pass
+          0987654,2001-02-02,2024-12-31,2,pass
+          9876543,2001-02-02,2024-12-31,2,pass
+          8765432,2001-02-02,2024-12-31,2,pass
+          7654321,2001-02-02,2024-12-31,2,pass
         CSV
       end
 

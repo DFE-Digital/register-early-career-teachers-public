@@ -40,7 +40,7 @@ module AppropriateBodies
 
     def csv_data
       @csv_data ||= ProcessBatchForm.from_uploaded_file(
-        headers: @pending_induction_submission_batch.column_headers,
+        headers: @pending_induction_submission_batch.row_headings,
         csv_file: import_params[:csv_file]
       )
     end
