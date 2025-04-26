@@ -29,14 +29,10 @@ RSpec.describe BatchRows do
     it { expect(dummy_claim.row_headings).to eql(BatchRows::CLAIM_CSV_HEADINGS) }
     it { expect(dummy_action.row_headings).to eql(BatchRows::ACTION_CSV_HEADINGS) }
 
+    it { expect(dummy_claim.row_headings.values).to eql(["TRN", "Date of birth", "Induction programme", "Induction start date", "Error message"]) }
+    it { expect(dummy_action.row_headings.values).to eql(["TRN", "Date of birth", "Induction end date", "Number of terms", "Outcome", "Error message"]) }
+
     it { expect(dummy_unknown.row_headings).to be_nil }
-  end
-
-  describe '#column_headers' do
-    it { expect(dummy_claim.column_headers).to eql(%w[trn date_of_birth induction_programme started_on error]) }
-    it { expect(dummy_action.column_headers).to eql(%w[trn date_of_birth finished_on number_of_terms outcome error]) }
-
-    it { expect { dummy_unknown.column_headers }.to raise_error(NoMethodError) }
   end
 
   describe '#rows' do
