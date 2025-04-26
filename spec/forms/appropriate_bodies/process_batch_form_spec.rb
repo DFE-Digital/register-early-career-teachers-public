@@ -1,11 +1,11 @@
 RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
   subject(:form) { described_class.from_uploaded_file(headers:, csv_file:) }
 
-  let(:headers) { %w[trn dob end_date number_of_terms objective] }
+  let(:headers) { %w[trn date_of_birth finished_on number_of_terms outcome] }
 
   let(:csv_content) do
     <<~CSV
-      trn,dob,end_date,number_of_terms,objective
+      trn,date_of_birth,finished_on,number_of_terms,outcome
       1234567,2000-01-01,2023-12-31,1,Test Objective
       2345678,2001-02-02,2024-12-31,2,Another Objective
     CSV
@@ -53,7 +53,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
     describe '#unique_trns' do
       let(:csv_content) do
         <<~CSV
-          trn,dob,end_date,number_of_terms,objective
+          trn,date_of_birth,finished_on,number_of_terms,outcome
           1234567,2000-01-01,2023-12-31,1,pass
           1234567,2001-02-02,2024-12-31,2,pass
         CSV
@@ -68,7 +68,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
     describe '#row_count' do
       let(:csv_content) do
         <<~CSV
-          trn,dob,end_date,number_of_terms,objective
+          trn,date_of_birth,finished_on,number_of_terms,outcome
           1234567,2000-01-01,2023-12-31,1,pass
           2345678,2001-02-02,2024-12-31,2,pass
           2345678,2001-02-02,2024-12-31,2,pass
