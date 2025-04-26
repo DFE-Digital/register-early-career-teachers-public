@@ -1,3 +1,3 @@
-trn,dob,induction_programme,start_date,error
+trn,date_of_birth,induction_programme,started_on,error
 1234567,1981-06-30,fip,2025-01-30,
 7654321,1981-06-30,CIP,2025-01-30,

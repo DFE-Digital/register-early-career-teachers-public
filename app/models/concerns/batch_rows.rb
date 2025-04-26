@@ -3,18 +3,18 @@ module BatchRows
 
   CLAIM_CSV_HEADINGS = {
     trn: 'TRN',
-    dob: 'Date of birth',
+    date_of_birth: 'Date of birth',
     induction_programme: 'Induction programme',
-    start_date: 'Start date',
+    started_on: 'Induction start date',
     error: 'Error message',
   }.freeze
 
   ACTION_CSV_HEADINGS = {
     trn: 'TRN',
-    dob: 'Date of birth',
-    end_date: 'End date',
+    date_of_birth: 'Date of birth',
+    finished_on: 'Induction end date',
     number_of_terms: 'Number of terms',
-    objective: 'Objective',
+    outcome: 'Outcome',
     error: 'Error message',
   }.freeze
 
@@ -34,9 +34,9 @@ module BatchRows
         members[0..-2].any? { |key| public_send(key).blank? }
       end
 
-      # @return [Boolean] pass, fail, release
+      # @return [Boolean] pass, FAIL, Release (case-insensitive)
       def invalid_outcome?
-        objective !~ /\A(pass|fail|release)\z/i
+        outcome !~ /\A(pass|fail|release)\z/i
       end
 
       # @return [Boolean] 0-16 upto one decimal place
@@ -46,7 +46,7 @@ module BatchRows
 
       # @return [Boolean] formatted as YYYY-MM-DD
       def invalid_date?
-        members.grep(/dob|_date/).any? do |key|
+        members.grep(/date_of_birth|started_on|finished_on/).any? do |key|
           !Date.iso8601(public_send(key))
         rescue Date::Error
           true

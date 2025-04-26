@@ -33,8 +33,8 @@ RSpec.describe BatchRows do
   end
 
   describe '#column_headers' do
-    it { expect(dummy_claim.column_headers).to eql(%w[trn dob induction_programme start_date error]) }
-    it { expect(dummy_action.column_headers).to eql(%w[trn dob end_date number_of_terms objective error]) }
+    it { expect(dummy_claim.column_headers).to eql(%w[trn date_of_birth induction_programme started_on error]) }
+    it { expect(dummy_action.column_headers).to eql(%w[trn date_of_birth finished_on number_of_terms outcome error]) }
 
     it { expect { dummy_unknown.column_headers }.to raise_error(NoMethodError) }
   end
@@ -56,7 +56,7 @@ class DummyBatchClaim < OpenStruct
 
   def claim? = true
   def action? = false
-  def data = [{ trn: '1234567', dob: '1981-06-30', induction_programme: 'fip', start_date: '2025-01-30', error: '' }]
+  def data = [{ trn: '1234567', date_of_birth: '1981-06-30', induction_programme: 'fip', started_on: '2025-01-30', error: '' }]
 end
 
 class DummyBatchAction < OpenStruct
@@ -64,7 +64,7 @@ class DummyBatchAction < OpenStruct
 
   def claim? = false
   def action? = true
-  def data = [{ trn: '1234567', dob: '1981-06-30', number_of_terms: '0.5', end_date: '2025-01-30', objective: 'pass', error: '' }]
+  def data = [{ trn: '1234567', date_of_birth: '1981-06-30', number_of_terms: '0.5', finished_on: '2025-01-30', outcome: 'pass', error: '' }]
 end
 
 class DummyBatchUnknown < OpenStruct

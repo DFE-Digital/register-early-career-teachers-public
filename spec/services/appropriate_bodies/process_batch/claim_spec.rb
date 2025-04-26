@@ -12,8 +12,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     )
   end
   let(:trn) { '1000890' }
-  let(:dob) { '1997-03-15' }
-  let(:start_date) { 1.week.ago.to_date.to_s }
+  let(:date_of_birth) { '1997-03-15' }
+  let(:started_on) { 1.week.ago.to_date.to_s }
   let(:induction_programme) { 'FIP' }
   let(:error) { '' }
 
@@ -23,7 +23,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     FactoryBot.create(:pending_induction_submission_batch, :claim,
                       appropriate_body:,
                       data: [
-                        { trn:, dob:, start_date:, induction_programme:, error: }
+                        { trn:, date_of_birth:, started_on:, induction_programme:, error: }
                       ])
   end
 
@@ -56,12 +56,12 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
 
       it 'populates submission from CSV' do
-        expect(submission.started_on).to eq(Date.parse(start_date))
+        expect(submission.started_on).to eq(Date.parse(started_on))
       end
 
       it 'populates submission from TRS' do
         expect(submission.trn).to eq trn
-        expect(submission.date_of_birth).to eq(Date.parse(dob))
+        expect(submission.date_of_birth).to eq(Date.parse(date_of_birth))
         expect(submission.trs_first_name).to eq 'Kirk'
         expect(submission.trs_last_name).to eq 'Van Houten'
       end
@@ -73,7 +73,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
 
       it 'opens induction period' do
-        expect(induction_period.started_on).to eq(Date.parse(start_date))
+        expect(induction_period.started_on).to eq(Date.parse(started_on))
         expect(induction_period.finished_on).to be_nil
         expect(induction_period.outcome).to be_nil
         expect(induction_period.induction_programme).to eq('fip')
@@ -242,7 +242,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     context 'when start date is in the future' do
       include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
-      let(:start_date) { 1.year.from_now.to_date.to_s }
+      let(:started_on) { 1.year.from_now.to_date.to_s }
 
       before { service.process! }
 

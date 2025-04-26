@@ -1,4 +1,4 @@
-trn,dob,induction_programme,start_date,error
+trn,date_of_birth,induction_programme,started_on,error
 1000890,1997-01-15,FIP,2025-01-04,
 3002564,1991-07-05,CIP,2025-02-20,
 3002586,1977-02-03,FIP,2025-01-15,

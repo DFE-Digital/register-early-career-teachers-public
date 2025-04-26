@@ -21,7 +21,7 @@ module AppropriateBodies
           pending_induction_submission_batch:,
           appropriate_body:,
           trn: row.trn,
-          date_of_birth: row.dob
+          date_of_birth: row.date_of_birth
         )
       end
 
