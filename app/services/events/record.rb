@@ -215,7 +215,7 @@ module Events
       event_type = :induction_period_reopened
       happened_at = Time.zone.now
 
-      heading = 'Induction period reopened by admin'
+      heading = 'Induction period reopened'
 
       new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
     end

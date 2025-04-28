@@ -12,7 +12,7 @@ module Admin
     def reopen_induction_period!
       check_can_reopen_period!
 
-      existing_outcome = induction_period.outcome
+      previous_outcome = induction_period.outcome
       induction_period.finished_on = nil
       induction_period.number_of_terms = nil
       induction_period.outcome = nil
@@ -21,7 +21,7 @@ module Admin
       ActiveRecord::Base.transaction do
         induction_period.save!
         record_reopen_event!(modifications)
-        notify_trs_of_outcome_change! if existing_outcome.present?
+        notify_trs_of_outcome_change! if previous_outcome.present?
       end
     end
 
