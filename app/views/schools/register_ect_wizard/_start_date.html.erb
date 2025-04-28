@@ -8,10 +8,9 @@
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
   <%= f.govuk_date_field :start_date,
-                         omit_day: true,
                          width: "two-thirds",
                          legend: { text: 'Start date', size: "m", tag: "h3", hidden: true },
-                         hint: { text: "For example, 9 #{Date.current.year}" }
+                         hint: { text: "For example, 17 9 #{Date.current.year}" }
   %>
 
   <%= f.govuk_submit "Continue" %>
