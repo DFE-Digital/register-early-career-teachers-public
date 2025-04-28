@@ -1,6 +1,7 @@
 describe DeliveryPartner do
   describe "associations" do
     it { is_expected.to have_many(:lead_provider_delivery_partnerships) }
+    it { is_expected.to have_many(:school_partnerships) }
     it { is_expected.to have_many(:events) }
   end
 
