@@ -24,7 +24,7 @@ module BatchRows
     Data.define(*columns) do
       include Enumerable
 
-      # @return [Boolean] 7 digits
+      # @return [Boolean] 7 digits only
       def invalid_trn?
         trn !~ /\A\d{7}\z/
       end
@@ -51,6 +51,13 @@ module BatchRows
         rescue Date::Error
           true
         end
+      end
+
+      # @return [Boolean] not between 18-99
+      def invalid_age?
+        !(Time.zone.today.year - Date.parse(date_of_birth).year).between?(18, 99)
+      rescue Date::Error
+        false
       end
 
       # @param errors [Array<String>]
