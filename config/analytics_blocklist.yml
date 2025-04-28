@@ -263,7 +263,7 @@
   - delete_at
   - confirmed
   - pending_induction_submission_batch_id
-  - error_message
+  - error_messages  
   :pending_induction_submission_batches:
   - id
   - appropriate_body_id
