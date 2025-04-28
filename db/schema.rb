@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_22_134532) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_28_121350) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -26,7 +26,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_22_134532) do
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
-  create_enum "mentor_completion_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
+  create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "programme_type", ["provider_led", "school_led"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
@@ -534,8 +534,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_22_134532) do
     t.string "trs_initial_teacher_training_provider_name"
     t.date "trs_initial_teacher_training_end_date"
     t.datetime "trs_data_last_refreshed_at", precision: nil
-    t.date "mentor_completion_date"
-    t.enum "mentor_completion_reason", enum_type: "mentor_completion_reason"
+    t.date "mentor_became_ineligible_for_funding_on"
+    t.enum "mentor_became_ineligible_for_funding_reason", enum_type: "mentor_became_ineligible_for_funding_reason"
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
