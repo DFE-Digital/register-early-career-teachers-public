@@ -5,15 +5,17 @@ RSpec.describe Admin::ReopenInductionPeriod do
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:outcome) { nil }
+  let(:number_of_terms) { 4.5 }
+  let(:finished_on) { "2023-12-31" }
 
   let(:induction_period) do
     FactoryBot.create(
       :induction_period,
       teacher:,
       outcome:,
-      number_of_terms: 4.5,
+      number_of_terms:,
       started_on: "2023-06-01",
-      finished_on: "2023-12-31"
+      finished_on:
     )
   end
 
@@ -48,6 +50,36 @@ RSpec.describe Admin::ReopenInductionPeriod do
         expect {
           service.reopen_induction_period!
         }.to have_enqueued_job(ReopenInductionJob).with(trn: teacher.trn, start_date: induction_period.started_on)
+      end
+    end
+
+    context "when the last induction period is ongoing" do
+      let(:number_of_terms) { nil }
+      let(:finished_on) { nil }
+
+      it "raises an error" do
+        expect {
+          service.reopen_induction_period!
+        }.to raise_error(Admin::ReopenInductionPeriod::ReopenInductionError)
+      end
+    end
+
+    context "when the induction period is not the last" do
+      let!(:newer_period) do
+        FactoryBot.create(
+          :induction_period,
+          teacher:,
+          outcome:,
+          number_of_terms: 2,
+          started_on: "2024-01-01",
+          finished_on: "2024-06-30"
+        )
+      end
+
+      it "raises an error" do
+        expect {
+          service.reopen_induction_period!
+        }.to raise_error(Admin::ReopenInductionPeriod::ReopenInductionError)
       end
     end
   end
