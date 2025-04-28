@@ -212,8 +212,8 @@
   - ecf_user_id
   - ecf_ect_profile_id
   - ecf_mentor_profile_id
-  - mentor_completion_date
-  - mentor_completion_reason
+  - mentor_became_ineligible_for_funding_on
+  - mentor_became_ineligible_for_funding_reason
   :pending_induction_submissions:
   - id
   - appropriate_body_id
