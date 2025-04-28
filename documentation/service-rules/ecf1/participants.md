@@ -151,13 +151,17 @@ This tracking ensures continuity when participant records are merged or updated.
 
 Two important timestamps are tracked for each participant:
 
-- **updated_at**: This timestamp is updated whenever any attribute or linked record of the participant is modified. Examples of actions that trigger an update:
+- **updated_at**: This timestamp reflects the most recent update across several related models. It is updated whenever any attribute or linked record of the participant is modified. Examples of actions that trigger an update:
   - Changing training status (defer, withdraw, resume)
-  - Updating personal information
-  - Changing the assigned mentor
-  - Modifying the training schedule
-  - Moving to another school
-  - Modifying the default partnership
+  - Modifying participant profile details (`participant_profiles`)
+  - Updating the main participant personal information (`user`)
+  - Altering participant identities (`participant_identities`)
+  - Making changes to induction records associated with participant profiles (`induction_records`)
+  - Modifying the training schedule (`schedules`)
+  - Moving to another school (`school_cohorts`)
+  - Modifying the default partnership (`partnerships`)
+
+The timestamp reflects the latest `updated_at` value from all these models to ensure a comprehensive representation of when the participant's data was last changed.
 
 - **created_at**: This timestamp is set when the participant is first registered in the system and remains unchanged.
 
