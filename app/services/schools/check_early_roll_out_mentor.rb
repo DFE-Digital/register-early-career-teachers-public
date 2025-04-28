@@ -12,16 +12,19 @@ module Schools
     end
 
     def to_h
-      { mentor_completion_reason:, mentor_completion_date: }
+      {
+        mentor_became_ineligible_for_funding_reason:,
+        mentor_became_ineligible_for_funding_on:
+      }
     end
 
   private
 
-    def mentor_completion_reason
+    def mentor_became_ineligible_for_funding_reason
       'completed_during_early_roll_out' if early_roll_out_mentor?
     end
 
-    def mentor_completion_date
+    def mentor_became_ineligible_for_funding_on
       CUT_OFF_DATE if early_roll_out_mentor?
     end
   end
