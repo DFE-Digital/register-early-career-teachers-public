@@ -8,6 +8,7 @@ class School < ApplicationRecord
        suffix: :programme_type_chosen
 
   # Associations
+  has_many :school_partnerships
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
   belongs_to :chosen_appropriate_body, class_name: 'AppropriateBody'
   belongs_to :chosen_lead_provider, class_name: 'LeadProvider'

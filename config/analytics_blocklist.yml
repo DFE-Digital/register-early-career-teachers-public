@@ -203,6 +203,8 @@
   - registration_period_id
   - lead_provider_id
   - delivery_partner_id
+  - lead_provider_delivery_partnership_id
+  - school_id
   - created_at
   - updated_at
   :teachers:
