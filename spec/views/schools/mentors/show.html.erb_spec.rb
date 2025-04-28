@@ -67,7 +67,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
     end
   end
 
-  context 'when mentor is not eligible (has mentor_completion_date)' do
+  context 'when mentor is not eligible (i.e has a `mentor_became_ineligible_for_funding_on` date)' do
     let(:mentor_became_ineligible_for_funding_on) { Date.new(2024, 1, 1) }
 
     it 'renders the ineligible message' do
