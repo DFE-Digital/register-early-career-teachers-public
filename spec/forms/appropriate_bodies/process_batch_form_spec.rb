@@ -71,23 +71,38 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
     end
 
     describe '#row_count' do
+      context 'with too many rows' do
+        let(:csv_content) do
+          <<~CSV
+            TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
+            1234567,2001-02-02,2024-12-31,1,pass
+            2345678,2001-02-02,2024-12-31,2,pass
+            3456789,2001-02-02,2024-12-31,2,pass
+            4567890,2001-02-02,2024-12-31,2,pass
+            0987654,2001-02-02,2024-12-31,2,pass
+            9876543,2001-02-02,2024-12-31,2,pass
+            8765432,2001-02-02,2024-12-31,2,pass
+            7654321,2001-02-02,2024-12-31,2,pass
+          CSV
+        end
+
+        specify do
+          expect(form).not_to be_valid
+          expect(form.errors[:csv_file]).to include('CSV file contains too many rows')
+        end
+      end
+    end
+
+    context 'with too few rows' do
       let(:csv_content) do
         <<~CSV
           TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
-          1234567,2001-02-02,2024-12-31,1,pass
-          2345678,2001-02-02,2024-12-31,2,pass
-          3456789,2001-02-02,2024-12-31,2,pass
-          4567890,2001-02-02,2024-12-31,2,pass
-          0987654,2001-02-02,2024-12-31,2,pass
-          9876543,2001-02-02,2024-12-31,2,pass
-          8765432,2001-02-02,2024-12-31,2,pass
-          7654321,2001-02-02,2024-12-31,2,pass
         CSV
       end
 
       specify do
         expect(form).not_to be_valid
-        expect(form.errors[:csv_file]).to include('CSV file contains too many rows')
+        expect(form.errors[:csv_file]).to include('CSV file contains too few rows')
       end
     end
   end
