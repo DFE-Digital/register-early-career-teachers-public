@@ -15,7 +15,7 @@ module Schools
       end
 
       def eligible_for_training?
-        teacher.mentor_completion_date.nil?
+        teacher.mentor_became_ineligible_for_funding_on.nil?
       end
 
       def first_lead_provider_name
