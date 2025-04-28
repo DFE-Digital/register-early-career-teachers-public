@@ -121,8 +121,8 @@ end
 
 print_seed_info("Adding teachers")
 
-emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456', mentor_completion_date: 1.year.from_now)
-kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', mentor_completion_reason: 'completed_declaration_received')
+emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456', mentor_became_ineligible_for_funding_on: 1.year.from_now)
+kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', mentor_became_ineligible_for_funding_reason: 'completed_declaration_received')
 alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589')
 hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894')
 colin_firth = Teacher.create!(trs_first_name: 'Colin', trs_last_name: 'Firth', trn: '1237894')
