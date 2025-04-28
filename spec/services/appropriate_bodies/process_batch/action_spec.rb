@@ -55,7 +55,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       it 'captures error message' do
-        expect(submission.error_message).to eq 'Teacher Kirk Van Houten does not have an ongoing induction'
+        expect(submission.error_messages).to eq ['Teacher Kirk Van Houten does not have an ongoing induction']
       end
 
       it 'clears attributes that may cause errors' do
@@ -75,7 +75,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:teacher) {}
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Fill in the blanks and Teacher reference number must be 7 digits'
+          expect(submission.error_messages).to eq [
+            'Fill in the blanks',
+            'Teacher reference number must be 7 digits'
+          ]
         end
       end
 
@@ -83,7 +86,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:date_of_birth) { '' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Fill in the blanks and Dates must be in the format YYYY-MM-DD'
+          expect(submission.error_messages).to eq [
+            'Fill in the blanks',
+            'Dates must be in the format YYYY-MM-DD'
+          ]
         end
       end
 
@@ -91,7 +97,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:number_of_terms) { '' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Fill in the blanks and Number of terms must be between 0 and 16. You can use up to one decimal place'
+          expect(submission.error_messages).to eq [
+            'Fill in the blanks',
+            'Number of terms must be between 0 and 16. You can use up to one decimal place'
+          ]
         end
       end
 
@@ -99,7 +108,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:finished_on) { '' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Fill in the blanks and Dates must be in the format YYYY-MM-DD'
+          expect(submission.error_messages).to eq [
+            'Fill in the blanks',
+            'Dates must be in the format YYYY-MM-DD'
+          ]
         end
       end
 
@@ -107,7 +119,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:outcome) { '' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Fill in the blanks and Outcome must be either pass, fail or release'
+          expect(submission.error_messages).to eq [
+            'Fill in the blanks',
+            'Outcome must be either pass, fail or release'
+          ]
         end
       end
 
@@ -115,7 +130,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:trn) { '0004' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Teacher reference number must be 7 digits'
+          expect(submission.error_messages).to eq ['Teacher reference number must be 7 digits']
         end
       end
 
@@ -123,7 +138,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:trn) { '123456L' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Teacher reference number must be 7 digits'
+          expect(submission.error_messages).to eq ['Teacher reference number must be 7 digits']
         end
       end
 
@@ -131,7 +146,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:date_of_birth) { '30/06/1981' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Dates must be in the format YYYY-MM-DD'
+          expect(submission.error_messages).to eq ['Dates must be in the format YYYY-MM-DD']
         end
       end
 
@@ -139,7 +154,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:finished_on) { '30/06/1981' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Dates must be in the format YYYY-MM-DD'
+          expect(submission.error_messages).to eq ['Dates must be in the format YYYY-MM-DD']
         end
       end
 
@@ -147,7 +162,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:outcome) { 'foo' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Outcome must be either pass, fail or release'
+          expect(submission.error_messages).to eq ['Outcome must be either pass, fail or release']
         end
       end
 
@@ -155,7 +170,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:outcome) { 'PASS' }
 
         it 'passes validation' do
-          expect(submission.error_message).not_to eq 'Outcome must be either pass, fail or release'
+          expect(submission.error_messages).not_to eq ['Outcome must be either pass, fail or release']
         end
       end
 
@@ -163,7 +178,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:outcome) { 'Failure' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Outcome must be either pass, fail or release'
+          expect(submission.error_messages).to eq ['Outcome must be either pass, fail or release']
         end
       end
 
@@ -171,7 +186,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:number_of_terms) { '12.06' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Number of terms must be between 0 and 16. You can use up to one decimal place'
+          expect(submission.error_messages).to eq ['Number of terms must be between 0 and 16. You can use up to one decimal place']
         end
       end
 
@@ -179,7 +194,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:number_of_terms) { '17' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Number of terms must be between 0 and 16. You can use up to one decimal place'
+          expect(submission.error_messages).to eq ['Number of terms must be between 0 and 16. You can use up to one decimal place']
         end
       end
 
@@ -192,7 +207,13 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:finished_on) { '' }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Fill in the blanks, Dates must be in the format YYYY-MM-DD, Teacher reference number must be 7 digits, Outcome must be either pass, fail or release, and Number of terms must be between 0 and 16. You can use up to one decimal place'
+          expect(submission.error_messages).to eq [
+            'Fill in the blanks',
+            'Dates must be in the format YYYY-MM-DD',
+            'Teacher reference number must be 7 digits',
+            'Outcome must be either pass, fail or release',
+            'Number of terms must be between 0 and 16. You can use up to one decimal place'
+          ]
         end
       end
     end
@@ -215,8 +236,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       it 'captures no error message' do
-        expect(pending_induction_submission_batch.reload.error_message).to be_nil
-        expect(submission.error_message).to eq '✅'
+        expect(pending_induction_submission_batch.reload.error_message).to be_nil # singular error
+        expect(submission.error_messages).to be_empty
       end
 
       it 'populates submission from CSV' do
@@ -238,11 +259,19 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         expect(induction_period.outcome).not_to eq('pass')
       end
 
+      context 'when the TRN is missing' do
+        let(:error) { '2nd attempt from downloaded CSV with errors' }
+
+        it 'replaces errors' do
+          expect(submission.error_messages).to be_empty
+        end
+      end
+
       context 'when the end date is in the future' do
         let(:finished_on) { 1.year.from_now.to_date.to_s }
 
         it 'captures an error message' do
-          expect(submission.error_message).to eq 'Finished on End date cannot be in the future'
+          expect(submission.error_messages).to eq ['Finished on End date cannot be in the future']
         end
       end
 

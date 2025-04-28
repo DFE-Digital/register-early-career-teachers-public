@@ -28,7 +28,7 @@ module AppropriateBodies
       # @param message [String]
       # @return [Boolean]
       def capture_error(message)
-        pending_induction_submission.update(error_message: message)
+        pending_induction_submission.update(error_messages: [message])
       end
     end
   end

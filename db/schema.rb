@@ -385,7 +385,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
     t.date "trs_qts_awarded_on"
     t.datetime "delete_at", precision: nil
     t.bigint "pending_induction_submission_batch_id"
-    t.string "error_message"
+    t.string "error_messages", default: [], array: true
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
     t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
   end
@@ -641,7 +641,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
-  add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"  
+  add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
   add_foreign_key "school_partnerships", "delivery_partners"
   add_foreign_key "school_partnerships", "lead_providers"
   add_foreign_key "school_partnerships", "registration_periods", primary_key: "year"

@@ -16,8 +16,8 @@ class PendingInductionSubmission < ApplicationRecord
   # Scopes
   scope :ready_for_deletion, -> { where(delete_at: ..Time.current) }
   scope :release, -> { where(outcome: nil).where.not(finished_on: nil) }
-  scope :with_errors, -> { where.not(error_message: [nil, '']) }
-  scope :without_errors, -> { where(error_message: nil) }
+  scope :with_errors, -> { where.not(error_messages: []) }
+  scope :without_errors, -> { where(error_messages: []) }
 
   # Associations
   belongs_to :appropriate_body
@@ -103,10 +103,7 @@ class PendingInductionSubmission < ApplicationRecord
     outcome.eql?('fail')
   end
 
-  def error_message
-    super || "✅"
-  end
-
+  # @return [Boolean] capture multiple error messages and reset before saving
   def playback_errors
     assign_attributes(
       induction_programme: nil,
@@ -114,7 +111,7 @@ class PendingInductionSubmission < ApplicationRecord
       started_on: nil,
       finished_on: nil,
       number_of_terms: nil,
-      error_message: errors.full_messages.to_sentence
+      error_messages: errors.full_messages
     )
     errors.clear
     save!

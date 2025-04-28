@@ -53,11 +53,12 @@ module BatchRows
         end
       end
 
+      # @param errors [Array<String>]
       # @return [Array<String>]
-      def with_errors(error_message)
+      def with_errors(errors)
         row_values = to_a
-        row_values.delete_at(-1)
-        row_values.push(error_message)
+        row_values.pop
+        row_values.push(errors.to_sentence)
       end
 
       # @return [Enumerable]

@@ -9,6 +9,24 @@ RSpec.describe PendingInductionSubmission do
     it { is_expected.to belong_to(:pending_induction_submission_batch).optional }
   end
 
+  describe "scopes" do
+    let!(:sub1) { FactoryBot.create(:pending_induction_submission) }
+    let!(:sub2) { FactoryBot.create(:pending_induction_submission) }
+    let!(:sub3) { FactoryBot.create(:pending_induction_submission, error_messages: ['something went wrong']) }
+
+    describe ".with_errors" do
+      it "returns submissions with errors" do
+        expect(described_class.with_errors).to contain_exactly(sub3)
+      end
+    end
+
+    describe ".without_errors" do
+      it "returns submissions without errors" do
+        expect(described_class.without_errors).to contain_exactly(sub1, sub2)
+      end
+    end
+  end
+
   describe "validation" do
     it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
 
@@ -268,24 +286,13 @@ RSpec.describe PendingInductionSubmission do
       pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
     end
 
-    it 'sets error_message as a sentence of joined messages' do
-      expect(pending_induction_submission.error_message).to eq("Number of terms Enter a number of terms and Outcome Outcome must be either 'passed' or 'failed'")
-    end
-  end
-
-  describe '#error_message' do
-    let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, error_message: nil) }
-
-    it 'returns a default message' do
-      expect(pending_induction_submission.error_message).to eq("✅")
-    end
-
-    context 'when error_message is set' do
-      before { pending_induction_submission.error_message = "Some error" }
-
-      it 'returns the error message' do
-        expect(pending_induction_submission.error_message).to eq("Some error")
-      end
+    it 'persists error messages' do
+      expect(pending_induction_submission.errors).to be_empty
+      expect(pending_induction_submission.error_messages).to eq([
+        'Number of terms Enter a number of terms',
+        "Outcome Outcome must be either 'passed' or 'failed'"
+      ])
+      expect(pending_induction_submission.save).to be(true)
     end
   end
 end

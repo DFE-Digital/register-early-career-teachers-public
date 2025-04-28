@@ -47,8 +47,10 @@ module AppropriateBodies
           capture_error(e.message)
           next
         end
+
+      # Batch error reporting
       rescue StandardError => e
-        capture_error(e.message)
+        pending_induction_submission_batch.update(error_message: e.message)
       end
 
     private
