@@ -93,6 +93,16 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
+      context 'when the date of birth is unrealistic' do
+        let(:date_of_birth) { 100.years.ago }
+
+        it 'captures an error message' do
+          expect(submission.error_messages).to eq [
+            'Date of birth must be realistic',
+          ]
+        end
+      end
+
       context 'when the number of terms is missing' do
         let(:number_of_terms) { '' }
 
