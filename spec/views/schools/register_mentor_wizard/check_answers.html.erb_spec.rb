@@ -61,8 +61,8 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       before do
         FactoryBot.create(:teacher,
                           trn: mentor.trn,
-                          mentor_completion_date: Time.zone.today,
-                          mentor_completion_reason: 'completed_declaration_received')
+                          mentor_became_ineligible_for_funding_on: Time.zone.today,
+                          mentor_became_ineligible_for_funding_reason: 'completed_declaration_received')
 
         render
       end
@@ -113,8 +113,8 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       before do
         FactoryBot.create(:teacher,
                           trn: mentor.trn,
-                          mentor_completion_date: Time.zone.today,
-                          mentor_completion_reason: 'completed_declaration_received')
+                          mentor_became_ineligible_for_funding_on: Time.zone.today,
+                          mentor_became_ineligible_for_funding_reason: 'completed_declaration_received')
 
         render
       end

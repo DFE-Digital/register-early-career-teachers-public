@@ -9,8 +9,8 @@ FactoryBot.define do
     end
 
     trait :ineligible_for_mentor_funding do
-      mentor_completion_date { Time.zone.today }
-      mentor_completion_reason do
+      mentor_became_ineligible_for_funding_on { Time.zone.today }
+      mentor_became_ineligible_for_funding_reason do
         %w[
           completed_declaration_received
           completed_during_early_roll_out
