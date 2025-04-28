@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_28_121350) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_28_131723) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -269,6 +269,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_28_121350) do
     t.enum "outcome", enum_type: "induction_outcomes"
     t.index ["appropriate_body_id"], name: "index_induction_periods_on_appropriate_body_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
+  end
+
+  create_table "lead_provider_active_periods", force: :cascade do |t|
+    t.bigint "lead_provider_id", null: false
+    t.bigint "registration_period_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lead_provider_id"], name: "index_lead_provider_active_periods_on_lead_provider_id"
+    t.index ["registration_period_id"], name: "index_lead_provider_active_periods_on_registration_period_id"
+  end
+
+  create_table "lead_provider_delivery_partnerships", force: :cascade do |t|
+    t.bigint "lead_provider_active_period_id", null: false
+    t.bigint "delivery_partner_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
+    t.index ["lead_provider_active_period_id"], name: "idx_on_lead_provider_active_period_id_90f3e9110a"
   end
 
   create_table "lead_providers", force: :cascade do |t|
@@ -594,6 +612,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_28_121350) do
   add_foreign_key "induction_extensions", "teachers"
   add_foreign_key "induction_periods", "appropriate_bodies"
   add_foreign_key "induction_periods", "teachers"
+  add_foreign_key "lead_provider_active_periods", "lead_providers"
+  add_foreign_key "lead_provider_active_periods", "registration_periods", primary_key: "year"
+  add_foreign_key "lead_provider_delivery_partnerships", "delivery_partners"
+  add_foreign_key "lead_provider_delivery_partnerships", "lead_provider_active_periods"
   add_foreign_key "mentor_at_school_periods", "schools"
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
