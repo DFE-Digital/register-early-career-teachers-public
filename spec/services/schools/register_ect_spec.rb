@@ -31,7 +31,7 @@ RSpec.describe Schools::RegisterECT do
   describe '#register!' do
     let(:ect_at_school_period) { ECTAtSchoolPeriod.first }
 
-    context "when a Teacher record with the same trn don't exist" do
+    context "when a Teacher record with the same TRN don't exist" do
       let(:teacher) { Teacher.first }
 
       it 'creates a new Teacher record' do
@@ -43,7 +43,7 @@ RSpec.describe Schools::RegisterECT do
       end
     end
 
-    context "when a Teacher record with the same trn exists but has no ect records" do
+    context "when a Teacher record with the same TRN exists but has no ect records" do
       let!(:another_teacher) { FactoryBot.create(:teacher, trn:) }
 
       it "doesn't create a new Teacher record" do
@@ -51,7 +51,7 @@ RSpec.describe Schools::RegisterECT do
       end
     end
 
-    context "when a Teacher record with the same trn exists and has ect records" do
+    context "when a Teacher record with the same TRN exists and has ect records" do
       let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
       before { FactoryBot.create(:ect_at_school_period, teacher:) }
@@ -61,7 +61,7 @@ RSpec.describe Schools::RegisterECT do
       end
     end
 
-    it 'creates an associated ECTATSchoolPeriod record' do
+    it 'creates an associated ECTAtSchoolPeriod record' do
       expect { service.register! }.to change(ECTAtSchoolPeriod, :count).from(0).to(1)
       expect(ect_at_school_period.teacher_id).to eq(Teacher.first.id)
       expect(ect_at_school_period.started_on).to eq(started_on)
