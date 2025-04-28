@@ -11,7 +11,9 @@ module Schools
                 :trn,
                 :trs_first_name,
                 :trs_last_name,
-                :working_pattern
+                :working_pattern,
+                :author,
+                :ect_at_school_period
 
     def initialize(school_reported_appropriate_body:,
                    corrected_name:,
@@ -23,7 +25,8 @@ module Schools
                    trn:,
                    trs_first_name:,
                    trs_last_name:,
-                   working_pattern:)
+                   working_pattern:,
+                   author:)
       @school_reported_appropriate_body = school_reported_appropriate_body
       @corrected_name = corrected_name
       @email = email
@@ -35,6 +38,7 @@ module Schools
       @trs_first_name = trs_first_name
       @trs_last_name = trs_last_name
       @working_pattern = working_pattern
+      @author = author
     end
 
     def register!
@@ -43,8 +47,11 @@ module Schools
       ActiveRecord::Base.transaction do
         update_school_choices!
         create_teacher!
-        start_at_school!
+        @ect_at_school_period = start_at_school!
+        record_event!
       end
+
+      @ect_at_school_period
     end
 
   private
@@ -77,6 +84,10 @@ module Schools
       school.update!(chosen_appropriate_body: school_reported_appropriate_body,
                      chosen_lead_provider: lead_provider,
                      chosen_programme_type: programme_type)
+    end
+
+    def record_event!
+      Events::Record.record_teacher_registered_as_ect_event!(author:, ect_at_school_period:, teacher:, school:)
     end
   end
 end

@@ -10,9 +10,11 @@ RSpec.describe Schools::RegisterECT do
                         trn:,
                         trs_first_name:,
                         trs_last_name:,
-                        working_pattern:)
+                        working_pattern:,
+                        author:)
   end
 
+  let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:corrected_name) { "Randy Marsh" }
   let(:email) { "randy@tegridyfarms.com" }
@@ -24,6 +26,7 @@ RSpec.describe Schools::RegisterECT do
   let(:trs_first_name) { "Dusty" }
   let(:trs_last_name) { "Rhodes" }
   let(:working_pattern) { "full_time" }
+  let(:teacher) { subject.teacher }
 
   describe '#register!' do
     let(:ect_at_school_period) { ECTAtSchoolPeriod.first }
@@ -41,7 +44,7 @@ RSpec.describe Schools::RegisterECT do
     end
 
     context "when a Teacher record with the same trn exists but has no ect records" do
-      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let!(:another_teacher) { FactoryBot.create(:teacher, trn:) }
 
       it "doesn't create a new Teacher record" do
         expect { service.register! }.not_to change(Teacher, :count)
@@ -67,6 +70,18 @@ RSpec.describe Schools::RegisterECT do
       expect(ect_at_school_period.school_reported_appropriate_body_id).to eq(school_reported_appropriate_body.id)
       expect(ect_at_school_period.lead_provider_id).to eq(lead_provider.id)
       expect(ect_at_school_period.programme_type).to eq(programme_type)
+    end
+
+    describe 'recording an event' do
+      before { allow(Events::Record).to receive(:record_teacher_registered_as_ect_event!).with(any_args).and_call_original }
+
+      it 'records a mentor_registered event with the expected attributes' do
+        service.register!
+
+        expect(Events::Record).to have_received(:record_teacher_registered_as_ect_event!).with(
+          hash_including(author:, ect_at_school_period:, teacher:, school:)
+        )
+      end
     end
 
     it 'sets ab and provider choices for the school' do

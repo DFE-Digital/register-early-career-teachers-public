@@ -1,6 +1,7 @@
 RSpec.describe Schools::RegisterECTWizard::ECT do
   subject(:ect) { described_class.new(store) }
 
+  let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, :national) }
   let(:school) { FactoryBot.create(:school, :independent) }
   let(:store) do
@@ -228,7 +229,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     it "creates a new ECT at the given school" do
       expect(Teacher.find_by_trn(ect.trn)).to be_nil
 
-      ect.register!(school)
+      ect.register!(school, author:)
 
       expect(teacher.trn).to eq(ect.trn)
       expect(ect_at_school_period.school_id).to eq(school.id)
