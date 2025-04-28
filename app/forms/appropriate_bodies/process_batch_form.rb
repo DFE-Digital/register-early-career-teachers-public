@@ -1,5 +1,6 @@
 module AppropriateBodies
-  # Validate a CSV file using column headers, file size, row count, content type and unique TRNs
+  # Validate an uploaded CSV file using file size, content type, column headers, row counts and unique TRNs
+  # Export an array of hashes which can be saved to PendingInductionSubmissionBatch#data
   class ProcessBatchForm
     MAX_FILE_SIZE = 1.megabyte
     MAX_ROW_SIZE = 5
@@ -8,6 +9,7 @@ module AppropriateBodies
     include ActiveModel::Model
     include ActiveModel::Validations
 
+    # @see [BatchRows::CLAIM_CSV_HEADINGS, BatchRows::ACTION_CSV_HEADINGS]
     attr_accessor :file_content, :content_type, :headers, :file_size
 
     validates :file_content, presence: true
@@ -16,9 +18,9 @@ module AppropriateBodies
     # validations
     validate :csv_mime_type
     validate :csv_file_size
+    validate :wrong_headers
     validate :row_count
     validate :unique_trns
-    validate :wrong_headers
 
     # @param headers [Hash{Symbol => String}]
     # @param csv_file [ActionDispatch::Http::UploadedFile]
@@ -57,6 +59,7 @@ module AppropriateBodies
 
     def row_count
       errors.add(:csv_file, 'CSV file contains too many rows') if has_too_many_rows?
+      errors.add(:csv_file, 'CSV file contains too few rows') if has_too_few_rows?
     end
 
     def unique_trns
@@ -79,6 +82,10 @@ module AppropriateBodies
 
     def has_too_many_rows?
       parse.count > MAX_ROW_SIZE
+    end
+
+    def has_too_few_rows?
+      parse.count.zero?
     end
 
     def has_valid_headers?
