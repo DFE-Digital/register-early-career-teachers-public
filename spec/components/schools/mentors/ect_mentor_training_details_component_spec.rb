@@ -2,7 +2,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   let(:school) { create(:school) }
   let(:mentor_start_date) { Date.new(2023, 1, 1) }
   let(:mentor) { create(:mentor_at_school_period, teacher:, school:, started_on: mentor_start_date, finished_on: nil) }
-  let(:teacher) { create(:teacher, mentor_completion_date: nil) }
+  let(:teacher) { create(:teacher, mentor_became_ineligible_for_funding_on: nil) }
 
   context 'when teacher is eligible and there is a provider-led ECT with a lead provider' do
     let(:lead_provider) { create(:lead_provider, name: 'Hidden leaf village') }
@@ -36,7 +36,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   end
 
   context 'when teacher is not eligible' do
-    let(:teacher) { create(:teacher, mentor_completion_date: Date.new(2024, 1, 1)) }
+    let(:teacher) { create(:teacher, mentor_became_ineligible_for_funding_on: Date.new(2024, 1, 1)) }
     let(:ect_teacher) { create(:teacher) }
     let(:ect_start_date) { mentor_start_date + 1.month }
     let(:ect) do
