@@ -1,11 +1,15 @@
 class SchoolPartnership < ApplicationRecord
   # Associations
+  belongs_to :lead_provider_delivery_partnership
+  belongs_to :school
   belongs_to :registration_period, inverse_of: :school_partnerships
   belongs_to :lead_provider, inverse_of: :school_partnerships
   belongs_to :delivery_partner, inverse_of: :school_partnerships
   has_many :events
 
   # Validations
+  validates :school, presence: true
+
   validates :registration_period_id,
             presence: true,
             uniqueness: { scope: %i[lead_provider_id delivery_partner_id],

@@ -4,11 +4,14 @@ describe SchoolPartnership do
     it { is_expected.to belong_to(:lead_provider).inverse_of(:school_partnerships) }
     it { is_expected.to belong_to(:delivery_partner).inverse_of(:school_partnerships) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to belong_to(:lead_provider_delivery_partnership).optional }
+    it { is_expected.to belong_to(:school) }
   end
 
   describe "validations" do
     subject { FactoryBot.create(:school_partnership) }
 
+    it { is_expected.to validate_presence_of(:school) }
     it { is_expected.to validate_presence_of(:registration_period_id) }
     it { is_expected.to validate_presence_of(:lead_provider_id) }
     it { is_expected.to validate_presence_of(:delivery_partner_id) }
