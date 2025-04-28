@@ -167,6 +167,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def when_i_enter_a_valid_start_date
+    page.get_by_label('day').fill(one_month_ago_today.day.to_s)
     page.get_by_label('month').fill(one_month_ago_today.month.to_s)
     page.get_by_label('year').fill(one_month_ago_today.year.to_s)
   end

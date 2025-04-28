@@ -41,7 +41,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
 
     context 'when the start_date is present and valid' do
-      let(:start_date) { { 1 => "2024", 2 => "07" } }
+      let(:start_date) { { 1 => "2024", 2 => "07", 3 => "01" } }
 
       it 'is valid' do
         expect(subject).to be_valid
@@ -64,7 +64,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
   context '#save!' do
     let(:step_params) do
       ActionController::Parameters.new(
-        "start_date" => { "start_date(1i)" => "2024", "start_date(2i)" => "07" }
+        "start_date" => { "start_date(1i)" => "2024", "start_date(2i)" => "07", "start_date(3i)" => "01" }
       )
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     context 'when the step is valid' do
       it 'updates the wizard ect start date' do
         expect { subject.save! }
-          .to change(subject.ect, :start_date).to('July 2024')
+          .to change(subject.ect, :start_date).to('1 July 2024')
       end
     end
   end

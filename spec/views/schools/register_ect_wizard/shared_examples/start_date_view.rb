@@ -46,6 +46,6 @@ RSpec.shared_examples "a start date view" do |current_step:, back_path:, back_st
   it 'includes a start date field hint with the current year' do
     render
 
-    expect(rendered).to have_content("For example, 9 #{Date.current.year}")
+    expect(rendered).to have_content("For example, 17 9 #{Date.current.year}")
   end
 end
