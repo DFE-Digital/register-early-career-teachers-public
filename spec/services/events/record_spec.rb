@@ -550,7 +550,7 @@ RSpec.describe Events::Record do
           teacher:,
           induction_period:,
           appropriate_body:,
-          heading: 'Induction period reopened by admin',
+          heading: 'Induction period reopened',
           event_type: :induction_period_reopened,
           happened_at: Time.zone.now,
           modifications: anything,
