@@ -13,6 +13,11 @@ describe Builders::ECT::TrainingPeriods do
   let(:training_period_2) { FactoryBot.build(:training_period_data, cohort_year: registration_period.year, lead_provider: partnership_2.lead_provider.name, delivery_partner: partnership_2.delivery_partner.name, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:training_period_data) { [training_period_1, training_period_2] }
 
+  before do
+    create(:lead_provider_active_period, lead_provider: partnership_1.lead_provider, registration_period:)
+    create(:lead_provider_active_period, lead_provider: partnership_2.lead_provider, registration_period:)
+  end
+
   describe "#build" do
     it "creates TrainingPeriod records for the school periods" do
       expect {

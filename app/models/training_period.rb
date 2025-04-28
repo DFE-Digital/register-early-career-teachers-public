@@ -60,6 +60,7 @@ private
 
   def one_partnership_present
     partnerships = [expression_of_interest, confirmed_school_partnership]
+    errors.add(:base, "Confirmed partnership or expression of interest is required") if partnerships.none?
     errors.add(:base, "Only confirmed partnership or expression of interest is permitted, not both") if partnerships.all?
   end
 
