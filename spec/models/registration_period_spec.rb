@@ -1,5 +1,6 @@
 describe RegistrationPeriod do
   describe "associations" do
+    it { is_expected.to have_many(:lead_provider_active_periods) }
     it { is_expected.to have_many(:school_partnerships) }
   end
 
