@@ -48,7 +48,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       it 'has no error message' do
         expect(pending_induction_submission_batch.reload.error_message).to be_nil
-        expect(submission.error_message).to eq '✅'
+        expect(submission.error_messages).to be_empty
       end
 
       it 'creates a pending induction submission' do
@@ -105,10 +105,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         it { is_expected.to be_nil }
       end
 
-      describe 'submission error message' do
-        subject { submissions.first.error_message }
+      describe 'submission error messages' do
+        subject { submissions.first.error_messages }
 
-        it { is_expected.to eq 'TRS induction status TRS Induction Status is not known' }
+        it { is_expected.to eq ['TRS induction status TRS Induction Status is not known'] }
       end
     end
 
@@ -127,10 +127,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         it { is_expected.to be_nil }
       end
 
-      describe 'submission error message' do
-        subject { submissions.first.error_message }
+      describe 'submission error messages' do
+        subject { submissions.first.error_messages }
 
-        it { is_expected.to eq 'Not found in TRS' }
+        it { is_expected.to eq ['Not found in TRS'] }
       end
     end
 
@@ -149,10 +149,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         it { is_expected.to be_nil }
       end
 
-      describe 'submission error message' do
-        subject { submissions.first.error_message }
+      describe 'submission error messages' do
+        subject { submissions.first.error_messages }
 
-        it { is_expected.to eq 'Prohibited from teaching' }
+        it { is_expected.to eq ['Prohibited from teaching'] }
       end
     end
 
@@ -171,10 +171,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         it { is_expected.to be_nil }
       end
 
-      describe 'submission error message' do
-        subject { submissions.first.error_message }
+      describe 'submission error messages' do
+        subject { submissions.first.error_messages }
 
-        it { is_expected.to eq 'QTS not awarded' }
+        it { is_expected.to eq ['QTS not awarded'] }
       end
     end
 
@@ -194,10 +194,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         it { is_expected.to be_nil }
       end
 
-      describe 'submission error message' do
-        subject { submissions.first.error_message }
+      describe 'submission error messages' do
+        subject { submissions.first.error_messages }
 
-        it { is_expected.to eq 'Already claimed by your appropriate body' }
+        it { is_expected.to eq ['Already claimed by your appropriate body'] }
       end
     end
 
@@ -218,10 +218,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         it { is_expected.to be_nil }
       end
 
-      describe 'submission error message' do
-        subject { submissions.first.error_message }
+      describe 'submission error messages' do
+        subject { submissions.first.error_messages }
 
-        it { is_expected.to eq 'Already claimed by another appropriate body' }
+        it { is_expected.to eq ['Already claimed by another appropriate body'] }
       end
     end
 
@@ -232,10 +232,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before { service.process! }
 
-      describe 'submission error message' do
-        subject { submissions.first.error_message }
+      describe 'submission error messages' do
+        subject { submissions.first.error_messages }
 
-        it { is_expected.to eq 'unknown induction programme WIP' }
+        it { is_expected.to eq ['unknown induction programme WIP'] }
       end
     end
 
@@ -246,10 +246,16 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before { service.process! }
 
-      describe 'submission error message' do
-        subject { submissions.first.error_message }
+      describe 'submission error messages' do
+        subject { submissions.first.error_messages }
 
-        it { is_expected.to eq 'Started on Start date cannot be in the future, TRS qts awarded on QTS has not been awarded, and TRS induction status TRS Induction Status is not known' }
+        it {
+          expect(subject).to eq [
+            'Started on Start date cannot be in the future',
+            'TRS qts awarded on QTS has not been awarded',
+            'TRS induction status TRS Induction Status is not known'
+          ]
+        }
       end
     end
   end
