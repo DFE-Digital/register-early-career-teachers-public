@@ -6,4 +6,5 @@ class LeadProviderActivePeriod < ApplicationRecord
 
   validates :lead_provider, presence: true
   validates :registration_period, presence: true
+  validates :registration_period_id, uniqueness: { scope: :lead_provider_id }
 end
