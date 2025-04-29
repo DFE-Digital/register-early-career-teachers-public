@@ -2,14 +2,48 @@ describe TrainingPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:ect_at_school_period).class_name("ECTAtSchoolPeriod").inverse_of(:training_periods) }
     it { is_expected.to belong_to(:mentor_at_school_period).inverse_of(:training_periods) }
-    it { is_expected.to belong_to(:school_partnership) }
+    it { is_expected.to belong_to(:school_partnership).optional }
+    it { is_expected.to belong_to(:expression_of_interest).class_name("LeadProviderActivePeriod").inverse_of(:expressions_of_interest).optional }
     it { is_expected.to have_many(:declarations).inverse_of(:training_period) }
     it { is_expected.to have_many(:events) }
   end
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:started_on) }
-    it { is_expected.to validate_presence_of(:school_partnership_id) }
+
+    describe "partnership validations" do
+      subject { build(:training_period, ect_at_school_period:, started_on: 1.week.ago, expression_of_interest:, school_partnership:) }
+
+      let(:ect_at_school_period) { create(:ect_at_school_period, :active, started_on: 3.weeks.ago) }
+      let(:expression_of_interest) { nil }
+      let(:school_partnership) { nil }
+
+      context "when no partnership is present" do
+        it "add an error" do
+          expect(subject).to be_invalid
+          expect(subject.errors.messages[:base]).to include("An expression of interest or school partnership is required")
+        end
+      end
+
+      context "when only expression_of_interest is present" do
+        let(:expression_of_interest) { create(:lead_provider_active_period) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when only school_partnership is present" do
+        let(:school_partnership) { create(:school_partnership) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when both expression_of_interest and school_partnership are present" do
+        let(:expression_of_interest) { create(:lead_provider_active_period) }
+        let(:school_partnership) { create(:school_partnership) }
+
+        it { is_expected.to be_valid }
+      end
+    end
 
     context "exactly one id of trainee present" do
       context "when ect_at_school_period_id and mentor_at_school_period_id are all nil" do
@@ -30,7 +64,7 @@ describe TrainingPeriod do
 
         it "add an error" do
           subject.valid?
-          expect(subject.errors.messages).to include(base: ["Only one id of trainee required. Two given"])
+          expect(subject.errors.messages[:base]).to include("Only one id of trainee required. Two given")
         end
       end
     end
