@@ -38,7 +38,7 @@ jobs:
     uses: ./.github/workflows/rspec.yml
 
   all-checks-passed:
-    name: All checks passed
+    name: All checks passed test
     needs: [brakeman, lint, rspec]
     runs-on: ubuntu-latest
     steps:
