@@ -15,9 +15,11 @@ module Builders
         training_period_data.each do |period|
           next unless period.training_programme == "full_induction_programme"
 
-          school_partnership = ::SchoolPartnership.where(lead_provider: ::LeadProvider.find_by!(name: period.lead_provider),
-                                                         delivery_partner: ::DeliveryPartner.find_by!(name: period.delivery_partner),
-                                                         registration_period_id: period.cohort_year).first
+          lead_provider = ::LeadProvider.find_by!(name: period.lead_provider)
+          delivery_partner = ::DeliveryPartner.find_by!(name: period.delivery_partner)
+          lead_provider_active_period = ::LeadProviderActivePeriod.where(lead_provider:, registration_period_id: period.cohort_year)
+          lead_provider_delivery_partnership = ::LeadProviderDeliveryPartnership.where(lead_provider_active_period:, delivery_partner:)
+          school_partnership = ::SchoolPartnership.find_by(lead_provider_delivery_partnership:)
 
           period_dates = period_date.new(started_on: period.start_date, finished_on: period.end_date)
           ect_at_school_period = teacher.ect_at_school_periods.containing_period(period_dates).first

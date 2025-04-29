@@ -1,5 +1,4 @@
 RSpec.describe 'schools/ects/show.html.erb' do
-  let(:registration_period) { FactoryBot.create(:registration_period) }
   let!(:current_ect_period) do
     FactoryBot.create(:ect_at_school_period,
                       :teaching_school_hub_ab,
@@ -13,9 +12,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       programme_type:,
                       email: 'love@whale.com')
   end
-  let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
-  let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider:, delivery_partner:, registration_period:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Alpha Teaching School Hub') }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Barry', trs_last_name: 'White', corrected_name: 'Baz White') }
   let(:previous_school) { FactoryBot.create(:school, urn: '123456') }
@@ -126,7 +123,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
     it 'values' do
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Alpha Teaching School Hub')
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Full induction programme')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Ambition institute')
+      expect(rendered).to have_css('dd.govuk-summary-list__value', text: school_partnership.lead_provider.name)
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Provider-led')
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 1.year.ago.to_date.to_fs(:govuk))
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Requested LP')

@@ -218,63 +218,42 @@ print_seed_info("Adding provider partnerships")
 grove_active_period_2021 = LeadProviderActivePeriod.create!(lead_provider: grove_institute, registration_period: registration_period_2021)
 grove_artisan_partnership_2021 = SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: grove_active_period_2021, delivery_partner: artisan_education_group),
-  registration_period: registration_period_2021,
-  lead_provider: grove_institute,
-  delivery_partner: artisan_education_group,
   school: ackley_bridge
 ).tap { |pp| describe_school_partnership(pp) }
 
 grove_active_period_2022 = LeadProviderActivePeriod.create!(lead_provider: grove_institute, registration_period: registration_period_2022)
 SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: grove_active_period_2022, delivery_partner: artisan_education_group),
-  registration_period: registration_period_2022,
-  lead_provider: grove_institute,
-  delivery_partner: artisan_education_group,
   school: abbey_grove_school
 ).tap { |pp| describe_school_partnership(pp) }
 
 grove_active_period_2023 = LeadProviderActivePeriod.create!(lead_provider: grove_institute, registration_period: registration_period_2023)
 grove_artisan_partnership_2023 = SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: grove_active_period_2023, delivery_partner: artisan_education_group),
-  registration_period: registration_period_2023,
-  lead_provider: grove_institute,
-  delivery_partner: artisan_education_group,
   school: mallory_towers
 ).tap { |pp| describe_school_partnership(pp) }
 
 national_meadows_active_period_2022 = LeadProviderActivePeriod.create!(lead_provider: national_meadows_institute, registration_period: registration_period_2022)
 meadow_grain_partnership_2022 = SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: national_meadows_active_period_2022, delivery_partner: grain_teaching_school_hub),
-  registration_period: registration_period_2022,
-  lead_provider: national_meadows_institute,
-  delivery_partner: grain_teaching_school_hub,
   school: brookfield_school
 ).tap { |pp| describe_school_partnership(pp) }
 
 national_meadows_active_period_2023 = LeadProviderActivePeriod.create!(lead_provider: national_meadows_institute, registration_period: registration_period_2023)
 _meadow_grain_partnership_2023 = SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: national_meadows_active_period_2023, delivery_partner: grain_teaching_school_hub),
-  registration_period: registration_period_2023,
-  lead_provider: national_meadows_institute,
-  delivery_partner: grain_teaching_school_hub,
   school: ackley_bridge
 ).tap { |pp| describe_school_partnership(pp) }
 
 wildflower_trust_active_period_2023 = LeadProviderActivePeriod.create!(lead_provider: national_meadows_institute, registration_period: registration_period_2023)
 _wildflower_rising_partnership_2023 = SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: wildflower_trust_active_period_2023, delivery_partner: rising_minds),
-  registration_period: registration_period_2023,
-  lead_provider: wildflower_trust,
-  delivery_partner: rising_minds,
   school: abbey_grove_school
 ).tap { |pp| describe_school_partnership(pp) }
 
 wildflower_trust_active_period_2024 = LeadProviderActivePeriod.create!(lead_provider: national_meadows_institute, registration_period: registration_period_2024)
 _wildflower_rising_partnership_2024 = SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: wildflower_trust_active_period_2024, delivery_partner: rising_minds),
-  registration_period: registration_period_2024,
-  lead_provider: wildflower_trust,
-  delivery_partner: rising_minds,
   school: mallory_towers
 ).tap { |pp| describe_school_partnership(pp) }
 

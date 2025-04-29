@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_28_132559) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_28_134603) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -381,18 +381,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_28_132559) do
   end
 
   create_table "school_partnerships", force: :cascade do |t|
-    t.bigint "registration_period_id", null: false
-    t.bigint "lead_provider_id", null: false
-    t.bigint "delivery_partner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "lead_provider_delivery_partnership_id"
     t.bigint "school_id", null: false
-    t.index ["delivery_partner_id"], name: "index_school_partnerships_on_delivery_partner_id"
     t.index ["lead_provider_delivery_partnership_id"], name: "idx_on_lead_provider_delivery_partnership_id_628487f752"
-    t.index ["lead_provider_id"], name: "index_school_partnerships_on_lead_provider_id"
-    t.index ["registration_period_id", "lead_provider_id", "delivery_partner_id"], name: "yearly_unique_provider_partnerships", unique: true
-    t.index ["registration_period_id"], name: "index_school_partnerships_on_registration_period_id"
     t.index ["school_id"], name: "index_school_partnerships_on_school_id"
   end
 
@@ -625,10 +618,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_28_132559) do
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
-  add_foreign_key "school_partnerships", "delivery_partners"
   add_foreign_key "school_partnerships", "lead_provider_delivery_partnerships"
-  add_foreign_key "school_partnerships", "lead_providers"
-  add_foreign_key "school_partnerships", "registration_periods", primary_key: "year"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_bodies", column: "chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"

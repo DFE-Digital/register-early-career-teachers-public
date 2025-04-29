@@ -1,9 +1,12 @@
 describe Builders::ECT::TrainingPeriods do
   subject(:service) { described_class.new(teacher:, training_period_data:) }
 
-  let(:registration_period) { FactoryBot.create(:registration_period) }
-  let(:partnership_1) { FactoryBot.create(:school_partnership, registration_period:) }
-  let(:partnership_2) { FactoryBot.create(:school_partnership, registration_period:) }
+  let(:lead_provider_active_period) { FactoryBot.create(:lead_provider_active_period) }
+  let(:registration_period) { lead_provider_active_period.registration_period }
+  let(:lead_provider_delivery_partnership_1) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider_active_period:) }
+  let(:lead_provider_delivery_partnership_2) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider_active_period:) }
+  let(:partnership_1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_1) }
+  let(:partnership_2) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_2) }
   let(:school_1) { FactoryBot.create(:school, :independent, urn: "123456") }
   let(:school_2) { FactoryBot.create(:school, :independent, urn: "987654") }
   let(:teacher) { FactoryBot.create(:teacher) }
