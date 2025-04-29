@@ -6,6 +6,7 @@ class Event < ApplicationRecord
     induction_period_closed
     induction_period_deleted
     induction_period_opened
+    induction_period_reopened
     induction_period_updated
     teacher_fails_induction
     teacher_imported_from_trs

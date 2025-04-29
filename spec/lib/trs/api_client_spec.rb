@@ -87,6 +87,7 @@ RSpec.describe TRS::APIClient do
       {
         'status' => 'InProgress',
         'startDate' => start_date.iso8601,
+        'completedDate' => nil,
         'modifiedOn' => modified_at.iso8601(3)
       }.to_json
     end
@@ -153,6 +154,56 @@ RSpec.describe TRS::APIClient do
       travel_to(modified_at) do
         client.fail_induction!(trn:, start_date:, completed_date:)
       end
+      expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
+    end
+  end
+
+  describe '#reset_teacher_induction!' do
+    let(:response) { instance_double(Faraday::Response, success?: true) }
+    let(:trn) { '0000234' }
+    let(:start_date) { Date.new(2024, 1, 1) }
+    let(:modified_at) { 1.week.ago }
+    let(:expected_payload) do
+      {
+        'status' => 'RequiredToComplete',
+        'startDate' => nil,
+        'completedDate' => nil,
+        'modifiedOn' => modified_at
+      }.to_json
+    end
+
+    before do
+      allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
+    end
+
+    it "puts to the induction endpoint with the 'reset' parameters" do
+      client.reset_teacher_induction(trn:, modified_at:)
+
+      expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
+    end
+  end
+
+  describe '#reopen_teacher_induction!' do
+    let(:response) { instance_double(Faraday::Response, success?: true) }
+    let(:trn) { '0000234' }
+    let(:start_date) { Date.new(2024, 1, 1) }
+    let(:modified_at) { 1.week.ago }
+    let(:expected_payload) do
+      {
+        'status' => 'InProgress',
+        'startDate' => start_date.iso8601,
+        'completedDate' => nil,
+        'modifiedOn' => modified_at
+      }.to_json
+    end
+
+    before do
+      allow(connection).to receive(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).and_return(response)
+    end
+
+    it "puts to the induction endpoint with the 'reopening' parameters" do
+      client.reopen_teacher_induction!(trn:, start_date:, modified_at:)
+
       expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
     end
   end

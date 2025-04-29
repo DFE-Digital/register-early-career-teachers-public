@@ -211,6 +211,15 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
+    def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body: nil)
+      event_type = :induction_period_reopened
+      happened_at = Time.zone.now
+
+      heading = 'Induction period reopened'
+
+      new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
+    end
+
   private
 
     def attributes

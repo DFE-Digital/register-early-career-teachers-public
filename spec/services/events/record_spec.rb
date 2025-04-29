@@ -533,4 +533,31 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe '.record_induction_period_reopened_event!' do
+    let(:induction_period) { FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        induction_period.outcome = nil
+        induction_period.finished_on = nil
+        induction_period.number_of_terms = nil
+        raw_modifications = induction_period.changes
+
+        Events::Record.record_induction_period_reopened_event!(author:, induction_period:, modifications: raw_modifications, teacher:, appropriate_body:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          induction_period:,
+          appropriate_body:,
+          heading: 'Induction period reopened',
+          event_type: :induction_period_reopened,
+          happened_at: Time.zone.now,
+          modifications: anything,
+          metadata: raw_modifications,
+          **author_params
+        )
+      end
+    end
+  end
 end
