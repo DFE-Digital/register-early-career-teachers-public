@@ -12,16 +12,25 @@
 <hr class="govuk-section-break--m" />
 
 <div class="govuk-grid-row">
+  <% if @mentors.present? %>
+  
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">Search by name or teacher reference number (TRN)</h2>
+    </div>
 
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Search by name or teacher reference number (TRN)</h2>
-  </div>
+    <div class='govuk-grid-column-two-thirds'>
+      <% @mentors.map do |mentor| %>
+        <%= render Schools::Mentors::SummaryComponent.new(mentor: mentor, school: @school) %>
+      <% end %>
 
-  <div class='govuk-grid-column-two-thirds'>
-    <% @mentors.map do |mentor| %>
-      <%= render Schools::Mentors::SummaryComponent.new(mentor: mentor, school: @school) %>
-    <% end %>
+      <%= govuk_pagination pagy: @pagy %>
+    </div>
 
-    <%= govuk_pagination pagy: @pagy %>
-  </div>
+  <% else %>
+
+    <div class='govuk-grid-column-two-thirds'>
+      <p class="govuk-body">Your school currently has no registered mentors.</p>
+    </div>
+
+  <% end %>
 </div>
