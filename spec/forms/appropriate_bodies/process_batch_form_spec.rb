@@ -14,7 +14,6 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
   let(:content_type) { 'text/csv' }
   let(:csv_file_size) { 1.megabyte }
 
-  # https://api.rubyonrails.org/classes/ActionDispatch/Http/UploadedFile.html
   let(:csv_file) do
     instance_double(ActionDispatch::Http::UploadedFile,
                     content_type:,
