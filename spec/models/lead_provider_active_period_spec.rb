@@ -3,6 +3,7 @@ describe LeadProviderActivePeriod do
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:registration_period) }
     it { is_expected.to have_many(:delivery_partnerships).class_name("LeadProviderDeliveryPartnership") }
+    it { is_expected.to have_many(:expressions_of_interest).class_name("TrainingPeriod").inverse_of(:expression_of_interest) }
   end
 
   describe "validations" do
