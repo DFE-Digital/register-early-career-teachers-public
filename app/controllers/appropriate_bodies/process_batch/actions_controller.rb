@@ -22,14 +22,14 @@ module AppropriateBodies
           redirect_to ab_batch_action_path(@pending_induction_submission_batch), alert: 'File processing'
         else
           @pending_induction_submission_batch = csv_data
-          render :new
+          render :new, status: :unprocessable_entity
         end
       rescue ActionController::ParameterMissing
         @pending_induction_submission_batch.errors.add(:csv_file, "Attach a CSV file")
-        render :new
+        render :new, status: :unprocessable_entity
       rescue StandardError => e
         @pending_induction_submission_batch.errors.add(:base, e.message)
-        render :new
+        render :new, status: :unprocessable_entity
       end
 
       def update
