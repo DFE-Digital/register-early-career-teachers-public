@@ -16,11 +16,6 @@ describe Builders::ECT::TrainingPeriods do
   let(:training_period_2) { FactoryBot.build(:training_period_data, cohort_year: registration_period.year, lead_provider: partnership_2.lead_provider.name, delivery_partner: partnership_2.delivery_partner.name, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:training_period_data) { [training_period_1, training_period_2] }
 
-  before do
-    create(:lead_provider_active_period, lead_provider: partnership_1.lead_provider, registration_period:)
-    create(:lead_provider_active_period, lead_provider: partnership_2.lead_provider, registration_period:)
-  end
-
   describe "#build" do
     it "creates TrainingPeriod records for the school periods" do
       expect {
@@ -37,12 +32,14 @@ describe Builders::ECT::TrainingPeriods do
       expect(periods.first.finished_on).to eq training_period_1.end_date
       expect(periods.first.ecf_start_induction_record_id).to eq training_period_1.start_source_id
       expect(periods.first.ecf_end_induction_record_id).to eq training_period_1.end_source_id
+      expect(periods.first.expression_of_interest).to eq lead_provider_active_period
 
       expect(periods.last.school_partnership).to eq partnership_2
       expect(periods.last.started_on).to eq training_period_2.start_date
       expect(periods.last.finished_on).to be_blank
       expect(periods.last.ecf_start_induction_record_id).to eq training_period_2.start_source_id
       expect(periods.last.ecf_end_induction_record_id).to eq training_period_2.end_source_id
+      expect(periods.last.expression_of_interest).to eq lead_provider_active_period
     end
 
     context "when there is no ECTAtSchoolPeriod that contains the training dates" do
