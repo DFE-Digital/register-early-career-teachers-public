@@ -1,0 +1,47 @@
+
+<% page_data(
+    title: "#{@ect.full_name} has been registered before",
+    error: @wizard.current_step.errors.present?,
+    backlink_href: @wizard.previous_step_path
+) %>
+
+<%= govuk_summary_list(card: { title: 'Previously registered details' } ) do |list| %>
+  <% list.with_row do |row| %>
+    <%= row.with_key { "School name" } %>
+    <%= row.with_value { @school.ect_at_school_periods.max_by(&:created_at).school.name } %>
+  <% end %>
+
+  <% list.with_row do |row| %>
+    <%= row.with_key { "Induction start date" } %>
+    <%= row.with_value { InductionPeriod.where(teacher: @school.ect_at_school_periods.max_by(&:created_at).teacher).min_by(&:created_at).started_on.to_fs(:govuk) } %>
+  <% end %>
+
+  <% list.with_row do |row| %>
+    <%= row.with_key { "Appropriate body" } %>
+    <%= row.with_value { InductionPeriod.where(teacher: @school.ect_at_school_periods.max_by(&:created_at).teacher).max_by(&:created_at)&.appropriate_body&.name } %>
+  <% end %>
+
+  <% list.with_row do |row| %>
+    <%= row.with_key { "Training programme" } %>
+    <%= row.with_value { programme_type_name(@school.ect_at_school_periods.max_by(&:created_at).programme_type) } %>
+  <% end %>
+
+  <% if @school.ect_at_school_periods.max_by(&:created_at).provider_led? %>
+    <% list.with_row do |row| %>
+      <%= row.with_key { "Lead provider" } %>
+      <%= row.with_value { @school.ect_at_school_periods.max_by(&:created_at).lead_provider_name } %>
+    <% end %>
+
+    <% list.with_row do |row| %>
+      <%= row.with_key { "Delivery partner" } %>
+    <%= row.with_value { @school.ect_at_school_periods.max_by(&:created_at).training_periods.first.delivery_partner.name} %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<p class="govuk-body">You’ll be able to tell us what kind of training they’ll continue with later.
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+  <%= f.govuk_submit('Continue') %>
+<% end %>
