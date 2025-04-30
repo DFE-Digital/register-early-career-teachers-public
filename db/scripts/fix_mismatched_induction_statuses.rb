@@ -22,56 +22,69 @@ sql = <<-SQL
       ON lips.teacher_id = ip.teacher_id
       AND lips.latest_started_on = ip.started_on
   )
-  SELECT
-    t.id as teacher_id,
-    t.trn,
-    lip.outcome,
-    t.trs_induction_status
+  SELECT t.id
   FROM teachers t
   INNER JOIN latest_induction_periods lip ON t.id = lip.teacher_id
   WHERE lip.outcome IN ('pass', 'fail')
   AND t.trs_induction_status = 'InProgress'
 SQL
 
-mismatched_teachers = Teacher.find_by_sql(sql)
+mismatched_teacher_ids = ActiveRecord::Base.connection.execute(sql).map { |r| r["id"] }
+mismatched_teachers = Teacher.where(id: mismatched_teacher_ids)
 
 Rails.logger.debug "Found #{mismatched_teachers.count} teachers with mismatched statuses"
 
-mismatched_teachers.each do |teacher_data|
-  teacher = Teacher.find(teacher_data.teacher_id)
-
-  Rails.logger.debug "Processing teacher #{teacher.trn}..."
+mismatched_teachers.each do |teacher|
+  trn = teacher.trn
+  Rails.logger.debug "[TRN: #{trn}] Processing teacher..."
 
   # Sync with TRS
-  Rails.logger.debug "  Syncing with TRS..."
-  Teachers::RefreshTRSAttributes.new(teacher).refresh!
+  Rails.logger.debug "[TRN: #{trn}] Syncing with TRS..."
+  begin
+    Teachers::RefreshTRSAttributes.new(teacher).refresh!
+  rescue TRS::Errors::TeacherNotFound
+    Rails.logger.debug "[TRN: #{trn}] Teacher not found in TRS, skipping..."
+    next
+  end
 
   # Check if TRS status now matches outcome
   teacher.reload
-  if teacher.trs_induction_status == teacher_data.outcome.capitalize
-    Rails.logger.debug "  Status now matches outcome, skipping..."
+  latest_period = teacher.induction_periods.order(started_on: :desc).first
+
+  expected_status = case latest_period.outcome
+                    when 'pass' then 'Passed'
+                    when 'fail' then 'Failed'
+                    end
+
+  if teacher.trs_induction_status == expected_status
+    Rails.logger.debug "[TRN: #{trn}] Status now matches outcome, skipping..."
     next
   end
 
   # If still mismatched, send update to TRS
-  Rails.logger.debug "  Status still mismatched, sending update to TRS..."
+  Rails.logger.debug "[TRN: #{trn}] Status still mismatched:"
+  Rails.logger.debug "[TRN: #{trn}]   - Our status: #{teacher.trs_induction_status}"
+  Rails.logger.debug "[TRN: #{trn}]   - Expected status: #{expected_status}"
+  Rails.logger.debug "[TRN: #{trn}]   - Induction outcome: #{latest_period.outcome}"
+  Rails.logger.debug "[TRN: #{trn}] Sending update to TRS..."
+
   begin
-    if teacher_data.outcome == 'pass'
+    if latest_period.outcome == 'pass'
       TRS::APIClient.new.pass_induction!(
-        trn: teacher.trn,
-        start_date: teacher.induction_periods.last.started_on,
-        completed_date: teacher.induction_periods.last.finished_on
+        trn:,
+        start_date: latest_period.started_on,
+        completed_date: latest_period.finished_on
       )
-    elsif teacher_data.outcome == 'fail'
+    elsif latest_period.outcome == 'fail'
       TRS::APIClient.new.fail_induction!(
-        trn: teacher.trn,
-        start_date: teacher.induction_periods.last.started_on,
-        completed_date: teacher.induction_periods.last.finished_on
+        trn:,
+        start_date: latest_period.started_on,
+        completed_date: latest_period.finished_on
       )
     end
-    Rails.logger.debug "  Successfully updated TRS"
+    Rails.logger.debug "[TRN: #{trn}] Successfully updated TRS"
   rescue StandardError => e
-    Rails.logger.debug "  Error updating TRS: #{e.message}"
+    Rails.logger.debug "[TRN: #{trn}] Error updating TRS: #{e.message}"
   end
 
   # Small delay to avoid rate limiting
