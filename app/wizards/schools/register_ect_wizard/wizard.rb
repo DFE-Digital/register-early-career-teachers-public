@@ -3,7 +3,7 @@
 module Schools
   module RegisterECTWizard
     class Wizard < DfE::Wizard::Base
-      attr_accessor :store, :school
+      attr_accessor :store, :school, :author
 
       steps do
         [

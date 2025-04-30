@@ -28,6 +28,7 @@ module Schools
     def initialize_wizard
       @wizard = WIZARD_CLASS.new(
         current_step:,
+        author: current_user,
         step_params: params,
         store:,
         school:
