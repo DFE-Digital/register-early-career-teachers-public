@@ -18,7 +18,7 @@ module Schools
       end
 
       def previous_step
-        :review_ect_details
+        :previous_ect_details
       end
     end
   end
