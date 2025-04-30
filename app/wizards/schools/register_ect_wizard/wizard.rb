@@ -32,6 +32,7 @@ module Schools
             not_found: NotFoundStep,
             programme_type: ProgrammeTypeStep,
             review_ect_details: ReviewECTDetailsStep,
+            previous_ect_details: PreviousECTDetailsStep,
             start_date: StartDateStep,
             state_school_appropriate_body: StateSchoolAppropriateBodyStep,
             trn_not_found: TRNNotFoundStep,
