@@ -63,7 +63,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
 
   describe '#previous_step' do
     it 'returns the previous step' do
-      expect(subject.previous_step).to eq(:review_ect_details)
+      expect(subject.previous_step).to eq(:previous_ect_details)
     end
   end
 

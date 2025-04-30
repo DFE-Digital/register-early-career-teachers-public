@@ -61,7 +61,7 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
 
   describe '#next_step' do
     it 'returns :check_answers' do
-      expect(subject.next_step).to eq(:email_address)
+      expect(subject.next_step).to eq(:previous_ect_details)
     end
   end
 
