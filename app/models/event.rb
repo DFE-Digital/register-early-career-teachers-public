@@ -16,6 +16,7 @@ class Event < ApplicationRecord
     teacher_trs_attributes_updated
     teacher_trs_induction_status_updated
     teacher_registered_as_mentor
+    teacher_registered_as_ect
   ].freeze
 
   belongs_to :teacher

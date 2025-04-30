@@ -71,7 +71,7 @@ module Schools
         programme_type == 'provider_led'
       end
 
-      def register!(school)
+      def register!(school, author:)
         Schools::RegisterECT.new(school_reported_appropriate_body: appropriate_body,
                                  corrected_name:,
                                  email:,
@@ -82,7 +82,8 @@ module Schools
                                  trn:,
                                  trs_first_name:,
                                  trs_last_name:,
-                                 working_pattern:)
+                                 working_pattern:,
+                                 author:)
                             .register!
       end
 
