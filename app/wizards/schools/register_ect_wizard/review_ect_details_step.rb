@@ -13,7 +13,7 @@ module Schools
       end
 
       def next_step
-        :email_address
+        :previous_ect_details
       end
 
       def previous_step
