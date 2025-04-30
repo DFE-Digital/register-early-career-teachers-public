@@ -30,6 +30,7 @@ module Schools
     def initialize_wizard
       @wizard = WIZARD_CLASS.new(
         current_step:,
+        author: current_user,
         step_params: params,
         ect_id: session[:register_mentor_for_ect_id],
         store:
