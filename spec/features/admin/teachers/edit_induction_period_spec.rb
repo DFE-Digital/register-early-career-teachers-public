@@ -13,7 +13,8 @@ RSpec.describe "Admin amending number of terms of an induction period" do
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
 
-    when_i_set_end_date("4", "2024")
+    new_finish_date = induction_period.started_on + 1.week
+    when_i_set_end_date(new_finish_date.month.to_s, new_finish_date.year.to_s)
     when_i_update_the_number_of_terms(5)
     and_i_click_submit
 
