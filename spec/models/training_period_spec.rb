@@ -32,14 +32,14 @@ describe TrainingPeriod do
       end
 
       context "when only school_partnership is present" do
-        let(:school_partnership) { create(:school_partnership) }
+        let(:school_partnership) { create(:school_partnership, school: ect_at_school_period.school) }
 
         it { is_expected.to be_valid }
       end
 
       context "when both expression_of_interest and school_partnership are present" do
         let(:expression_of_interest) { create(:lead_provider_active_period) }
-        let(:school_partnership) { create(:school_partnership) }
+        let(:school_partnership) { create(:school_partnership, school: ect_at_school_period.school) }
 
         it { is_expected.to be_valid }
       end

@@ -20,6 +20,7 @@ class TrainingPeriod < ApplicationRecord
   validate :one_id_of_trainee_present
   validate :trainee_distinct_period
   validate :enveloped_by_trainee_at_school_period
+  validate :school_partnership_school_is_consistent
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
@@ -46,6 +47,13 @@ class TrainingPeriod < ApplicationRecord
   end
 
 private
+
+  def school_partnership_school_is_consistent
+    school_ids = [school_partnership&.school_id, ect_at_school_period&.school_id, mentor_at_school_period&.school_id].compact
+    return if school_ids.uniq.one?
+
+    errors.add(:base, "School partnership is not consistent with the trainee's school")
+  end
 
   def at_least_one_partnership
     ids = [expression_of_interest_id, school_partnership_id]

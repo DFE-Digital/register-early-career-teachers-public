@@ -12,7 +12,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       programme_type:,
                       email: 'love@whale.com')
   end
-  let(:school_partnership) { FactoryBot.create(:school_partnership) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, school: current_ect_period.school) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Alpha Teaching School Hub') }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Barry', trs_last_name: 'White', corrected_name: 'Baz White') }
   let(:previous_school) { FactoryBot.create(:school, urn: '123456') }
