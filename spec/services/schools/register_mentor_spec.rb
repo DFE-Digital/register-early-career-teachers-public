@@ -8,9 +8,11 @@ RSpec.describe Schools::RegisterMentor do
                         email:,
                         started_on:,
                         mentor_completion_date:,
-                        mentor_completion_reason:)
+                        mentor_completion_reason:,
+                        author:)
   end
 
+  let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:trs_first_name) { "Dusty" }
   let(:trs_last_name) { "Rhodes" }
   let(:corrected_name) { "Randy Marsh" }
@@ -20,13 +22,12 @@ RSpec.describe Schools::RegisterMentor do
   let(:started_on) { Date.yesterday }
   let(:mentor_completion_date) { Date.new(2021, 4, 19) }
   let(:mentor_completion_reason) { 'completed_during_early_roll_out' }
+  let(:teacher) { subject.teacher }
 
-  describe '#call' do
+  describe '#register!' do
     let(:mentor_at_school_period) { MentorAtSchoolPeriod.first }
 
     context "when a Teacher record with the same trn doesn't exist" do
-      let(:teacher) { Teacher.first }
-
       it 'creates a new Teacher record' do
         expect { service.register! }.to change(Teacher, :count).from(0).to(1)
         expect(teacher.trs_first_name).to eq(trs_first_name)
@@ -59,6 +60,18 @@ RSpec.describe Schools::RegisterMentor do
       expect(mentor_at_school_period.email).to eq(email)
     end
 
+    describe 'recording an event' do
+      before { allow(Events::Record).to receive(:record_teacher_registered_as_mentor_event!).with(any_args).and_call_original }
+
+      it 'records a mentor_registered event with the expected attributes' do
+        service.register!
+
+        expect(Events::Record).to have_received(:record_teacher_registered_as_mentor_event!).with(
+          hash_including(author:, mentor_at_school_period:, teacher:, school:)
+        )
+      end
+    end
+
     context "when no start date is provided" do
       subject(:service) do
         described_class.new(trs_first_name:,
@@ -68,7 +81,8 @@ RSpec.describe Schools::RegisterMentor do
                             school_urn: school.urn,
                             email:,
                             mentor_completion_date:,
-                            mentor_completion_reason:)
+                            mentor_completion_reason:,
+                            author:)
       end
 
       it "current date is assigned" do

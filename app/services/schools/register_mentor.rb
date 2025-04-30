@@ -1,9 +1,17 @@
 module Schools
   class RegisterMentor
-    attr_reader :trs_first_name, :trs_last_name, :corrected_name,
-                :school_urn, :teacher, :trn,
-                :email, :started_on,
-                :mentor_completion_date, :mentor_completion_reason
+    attr_reader :author,
+                :trs_first_name,
+                :trs_last_name,
+                :corrected_name,
+                :school_urn,
+                :teacher,
+                :trn,
+                :email,
+                :started_on,
+                :mentor_completion_date,
+                :mentor_completion_reason,
+                :mentor_at_school_period
 
     def initialize(trs_first_name:,
                    trs_last_name:,
@@ -13,7 +21,9 @@ module Schools
                    email:,
                    mentor_completion_date:,
                    mentor_completion_reason:,
+                   author:,
                    started_on: Date.current)
+      @author = author
       @trs_first_name = trs_first_name
       @trs_last_name = trs_last_name
       @corrected_name = corrected_name
@@ -29,7 +39,10 @@ module Schools
       ActiveRecord::Base.transaction do
         create_teacher!
         start_at_school!
+        record_event!
       end
+
+      mentor_at_school_period
     end
 
   private
@@ -56,7 +69,11 @@ module Schools
     end
 
     def start_at_school!
-      teacher.mentor_at_school_periods.create!(school:, started_on:, email:)
+      @mentor_at_school_period = teacher.mentor_at_school_periods.create!(school:, started_on:, email:)
+    end
+
+    def record_event!
+      Events::Record.record_teacher_registered_as_mentor_event!(author:, mentor_at_school_period:, teacher:, school:)
     end
   end
 end
