@@ -216,27 +216,49 @@ _registration_period_2025 = RegistrationPeriod.create!(year: 2025, started_on: D
 print_seed_info("Adding provider partnerships")
 
 grove_active_period_2021 = LeadProviderActivePeriod.create!(lead_provider: grove_institute, registration_period: registration_period_2021)
-grove_artisan_partnership_2021 = SchoolPartnership.create!(
-  lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: grove_active_period_2021, delivery_partner: artisan_education_group),
+grove_2021_artisan_active_period = LeadProviderDeliveryPartnership.create!(lead_provider_active_period: grove_active_period_2021, delivery_partner: artisan_education_group)
+grove_artisan_abbey_partnership_2021 = SchoolPartnership.create!(
+  lead_provider_delivery_partnership: grove_2021_artisan_active_period,
+  school: abbey_grove_school
+).tap { |pp| describe_school_partnership(pp) }
+
+grove_artisan_ackley_partnership_2021 = SchoolPartnership.create!(
+  lead_provider_delivery_partnership: grove_2021_artisan_active_period,
   school: ackley_bridge
 ).tap { |pp| describe_school_partnership(pp) }
 
 grove_active_period_2022 = LeadProviderActivePeriod.create!(lead_provider: grove_institute, registration_period: registration_period_2022)
-SchoolPartnership.create!(
+_grove_artisan_abbey_school_partnership_2022 = SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: grove_active_period_2022, delivery_partner: artisan_education_group),
   school: abbey_grove_school
 ).tap { |pp| describe_school_partnership(pp) }
 
 grove_active_period_2023 = LeadProviderActivePeriod.create!(lead_provider: grove_institute, registration_period: registration_period_2023)
-grove_artisan_partnership_2023 = SchoolPartnership.create!(
+_grove_artisan_mallory_partnership_2023 = SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: grove_active_period_2023, delivery_partner: artisan_education_group),
   school: mallory_towers
 ).tap { |pp| describe_school_partnership(pp) }
 
 national_meadows_active_period_2022 = LeadProviderActivePeriod.create!(lead_provider: national_meadows_institute, registration_period: registration_period_2022)
-meadow_grain_partnership_2022 = SchoolPartnership.create!(
-  lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: national_meadows_active_period_2022, delivery_partner: grain_teaching_school_hub),
+meadows_2022_grain_active_period = LeadProviderDeliveryPartnership.create!(lead_provider_active_period: national_meadows_active_period_2022, delivery_partner: grain_teaching_school_hub)
+meadow_grain_brookfield_partnership_2022 = SchoolPartnership.create!(
+  lead_provider_delivery_partnership: meadows_2022_grain_active_period,
   school: brookfield_school
+).tap { |pp| describe_school_partnership(pp) }
+
+meadow_grain_mallory_partnership_2022 = SchoolPartnership.create!(
+  lead_provider_delivery_partnership: meadows_2022_grain_active_period,
+  school: mallory_towers
+).tap { |pp| describe_school_partnership(pp) }
+
+meadow_grain_ackley_partnership_2022 = SchoolPartnership.create!(
+  lead_provider_delivery_partnership: meadows_2022_grain_active_period,
+  school: ackley_bridge
+).tap { |pp| describe_school_partnership(pp) }
+
+meadow_grain_abbey_partnership_2022 = SchoolPartnership.create!(
+  lead_provider_delivery_partnership: meadows_2022_grain_active_period,
+  school: abbey_grove_school
 ).tap { |pp| describe_school_partnership(pp) }
 
 national_meadows_active_period_2023 = LeadProviderActivePeriod.create!(lead_provider: national_meadows_institute, registration_period: registration_period_2023)
@@ -252,7 +274,7 @@ _wildflower_rising_partnership_2023 = SchoolPartnership.create!(
 ).tap { |pp| describe_school_partnership(pp) }
 
 wildflower_trust_active_period_2024 = LeadProviderActivePeriod.create!(lead_provider: wildflower_trust, registration_period: registration_period_2024)
-_wildflower_rising_partnership_2024 = SchoolPartnership.create!(
+_wildflower_rising_mallory_partnership_2024 = SchoolPartnership.create!(
   lead_provider_delivery_partnership: LeadProviderDeliveryPartnership.create!(lead_provider_active_period: wildflower_trust_active_period_2024, delivery_partner: rising_minds),
   school: mallory_towers
 ).tap { |pp| describe_school_partnership(pp) }
@@ -272,7 +294,7 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 3.years.ago,
   finished_on: 140.weeks.ago,
-  school_partnership: grove_artisan_partnership_2021,
+  school_partnership: grove_artisan_abbey_partnership_2021,
   expression_of_interest: grove_active_period_2021
 ).tap { |tp| describe_training_period(tp) }
 
@@ -282,7 +304,7 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 130.weeks.ago,
   finished_on: nil,
-  school_partnership: grove_artisan_partnership_2021,
+  school_partnership: grove_artisan_abbey_partnership_2021,
   expression_of_interest: grove_active_period_2021
 ).tap { |tp| describe_training_period(tp) }
 
@@ -302,7 +324,7 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: kate_winslet_ect_at_ackley_bridge,
   started_on: 1.year.ago,
-  school_partnership: grove_artisan_partnership_2023,
+  school_partnership: grove_artisan_ackley_partnership_2021,
   expression_of_interest: grove_active_period_2023
 ).tap { |tp| describe_training_period(tp) }
 
@@ -334,7 +356,7 @@ hugh_laurie_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: hugh_laurie_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022,
+  school_partnership: meadow_grain_abbey_partnership_2022,
   expression_of_interest: national_meadows_active_period_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -358,7 +380,7 @@ ackley_bridge.update!(chosen_lead_provider: wildflower_trust,
 TrainingPeriod.create!(
   ect_at_school_period: alan_rickman_ect_at_ackley_bridge,
   started_on: 2.years.ago + 1.month,
-  school_partnership: meadow_grain_partnership_2022,
+  school_partnership: meadow_grain_ackley_partnership_2022,
   expression_of_interest: national_meadows_active_period_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -402,7 +424,7 @@ TrainingPeriod.create!(
   ect_at_school_period: hugh_grant_ect_at_abbey_grove,
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
-  school_partnership: grove_artisan_partnership_2021,
+  school_partnership: grove_artisan_abbey_partnership_2021,
   expression_of_interest: grove_active_period_2021
 ).tap { |tp| describe_training_period(tp) }
 
@@ -446,7 +468,7 @@ TrainingPeriod.create!(
   ect_at_school_period: colin_firth_ect_at_abbey_grove,
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
-  school_partnership: grove_artisan_partnership_2021,
+  school_partnership: grove_artisan_abbey_partnership_2021,
   expression_of_interest: grove_active_period_2021
 ).tap { |tp| describe_training_period(tp) }
 
@@ -530,7 +552,7 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: imogen_stubbs_at_malory_towers,
   started_on: 1.year.ago,
-  school_partnership: meadow_grain_partnership_2022,
+  school_partnership: meadow_grain_mallory_partnership_2022,
   expression_of_interest: national_meadows_active_period_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -567,7 +589,7 @@ mallory_towers.update!(chosen_lead_provider: wildflower_trust,
 TrainingPeriod.create!(
   ect_at_school_period: gemma_jones_at_malory_towers,
   started_on: 20.months.ago,
-  school_partnership: meadow_grain_partnership_2022,
+  school_partnership: meadow_grain_mallory_partnership_2022,
   expression_of_interest: national_meadows_active_period_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -588,7 +610,7 @@ andre_roussimoff_mentoring_at_ackley_bridge = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: andre_roussimoff_mentoring_at_ackley_bridge,
   started_on: 1.year.ago,
-  school_partnership: meadow_grain_partnership_2022,
+  school_partnership: meadow_grain_ackley_partnership_2022,
   expression_of_interest: national_meadows_active_period_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -608,7 +630,7 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: anthony_hopkins_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022,
+  school_partnership: meadow_grain_brookfield_partnership_2022,
   expression_of_interest: national_meadows_active_period_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -632,7 +654,7 @@ brookfield_school.update!(chosen_lead_provider: national_meadows_institute,
 TrainingPeriod.create!(
   ect_at_school_period: stephen_fry_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022,
+  school_partnership: meadow_grain_brookfield_partnership_2022,
   expression_of_interest: national_meadows_active_period_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -660,7 +682,7 @@ helen_mirren_mentoring_at_brookfield_school = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: helen_mirren_mentoring_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022,
+  school_partnership: meadow_grain_brookfield_partnership_2022,
   expression_of_interest: national_meadows_active_period_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -676,7 +698,7 @@ john_withers_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022,
+  school_partnership: meadow_grain_abbey_partnership_2022,
   expression_of_interest: national_meadows_active_period_2022
 ).tap { |tp| describe_training_period(tp) }
 

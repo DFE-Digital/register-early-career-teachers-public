@@ -4,7 +4,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: 'An org that delivers the training') }
   let(:lead_provider_active_period) { FactoryBot.create(:lead_provider_active_period, lead_provider:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider_active_period:, delivery_partner:) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: provider_led_ect.school) }
 
   let(:school_led_ect) do
     FactoryBot.create(:ect_at_school_period, :active, :school_led, school_reported_appropriate_body:)
