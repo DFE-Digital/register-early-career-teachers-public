@@ -184,6 +184,8 @@ Rails.application.routes.draw do
       post "use-previous-ect-choices", action: :create
       get "change-use-previous-ect-choices", action: :new
       post "change-use-previous-ect-choices", action: :create
+      get "previous-ect-details", action: :new
+      post "previous-ect-details", action: :create
 
       get "check-answers", action: :new
       post "check-answers", action: :create
