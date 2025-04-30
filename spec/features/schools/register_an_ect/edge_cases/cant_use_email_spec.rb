@@ -14,6 +14,7 @@ RSpec.describe 'Registering an ECT', :js do
     and_i_submit_the_find_ect_form(trn:, dob_day: '3', dob_month: '2', dob_year: '1977')
     and_i_select_the_ect_details_are_correct
     and_i_click_confirm_and_continue
+    and_i_click_continue
     and_i_enter_an_email_address_already_in_use_by_an_ongoing_teacher
     and_i_click_continue
     then_i_should_be_taken_to_the_cant_use_email_page
