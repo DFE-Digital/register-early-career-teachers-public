@@ -6,6 +6,8 @@ RSpec.describe 'Registering an ECT' do
 
   before do
     FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
+    FactoryBot.create(:appropriate_body, name: 'Umber Teaching Hub')
+    FactoryBot.create(:lead_provider, name: 'Orange Institute')
   end
 
   scenario 'happy path' do
@@ -66,13 +68,29 @@ RSpec.describe 'Registering an ECT' do
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_the_new_email
 
-    when_i_try_to_change_the_programme_type
-    then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
-
-    when_i_select_that_i_want_to_use_the_school_previous_choices
+    when_i_try_to_change_the_appropriate_body
+    then_i_should_be_taken_to_the_change_the_appropriate_body_page
+    when_i_select_a_different_appropriate_body
     and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
-    and_i_should_see_all_the_new_programme_choices
+
+    when_i_try_to_change_the_programme_type
+    then_i_should_be_taken_to_the_change_programme_type_page
+    when_i_select_provider_led
+    and_i_click_continue
+
+    then_i_should_be_taken_to_the_change_lead_provider_page
+    when_i_select_a_lead_provider
+    and_i_click_continue
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_should_see_the_new_lead_provider
+
+    when_i_try_to_change_the_programme_choices_used_by_your_school_previously
+    then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
+    when_i_select_that_i_want_to_use_the_previous_ect_choices
+    and_i_click_continue
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_should_see_the_previous_programme_choices
 
     when_i_click_confirm_details
     then_i_should_be_taken_to_the_confirmation_page
@@ -242,16 +260,55 @@ RSpec.describe 'Registering an ECT' do
     expect(page.get_by_text('new@example.com')).to be_visible
   end
 
-  def when_i_try_to_change_the_programme_type
-    page.get_by_role('link', name: 'change programme type').first.click
+  def when_i_try_to_change_the_programme_choices_used_by_your_school_previously
+    page.get_by_role('link', name: 'change choices used by your school previously').first.click
   end
 
   def then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
     expect(page.url).to end_with('/schools/register-ect/change-use-previous-ect-choices')
   end
 
-  def when_i_select_that_i_want_to_use_the_school_previous_choices
+  def when_i_select_that_i_want_to_use_the_previous_ect_choices
     page.get_by_label("Yes").check
+  end
+
+  def when_i_try_to_change_the_appropriate_body
+    page.get_by_role('link', name: 'change appropriate body').first.click
+  end
+
+  def then_i_should_be_taken_to_the_change_the_appropriate_body_page
+    expect(page.url).to end_with('/schools/register-ect/change-state-school-appropriate-body')
+  end
+
+  def when_i_select_a_different_appropriate_body
+    page.get_by_role('combobox', name: "Enter appropriate body name")
+        .first
+        .select_option(value: "Umber Teaching Hub")
+  end
+
+  def when_i_try_to_change_the_programme_type
+    page.get_by_role('link', name: 'change programme type').first.click
+  end
+
+  def then_i_should_be_taken_to_the_change_programme_type_page
+    expect(page.url).to end_with('/schools/register-ect/change-programme-type')
+  end
+
+  def when_i_select_provider_led
+    page.get_by_label("Provider-led").check
+  end
+
+  def then_i_should_be_taken_to_the_change_lead_provider_page
+    expect(page.url).to end_with('/schools/register-ect/change-lead-provider')
+  end
+
+  def when_i_select_a_lead_provider
+    page.get_by_label("Orange Institute").check
+  end
+
+  def and_i_should_see_the_new_lead_provider
+    expect(page.get_by_text('Provider-led')).to be_visible
+    expect(page.get_by_text('Orange Institute')).to be_visible
   end
 
   def and_i_should_see_all_the_new_programme_choices

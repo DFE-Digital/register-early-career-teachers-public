@@ -1,6 +1,11 @@
 module Schools
   module RegisterECTWizard
     class CheckAnswersStep < Step
+      def initialize(args = {})
+        super
+        ect.update!(previous_step: nil)
+      end
+
       def next_step
         :confirmation
       end

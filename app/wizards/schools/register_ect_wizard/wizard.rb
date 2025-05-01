@@ -9,6 +9,10 @@ module Schools
         [
           {
             already_active_at_school: AlreadyActiveAtSchoolStep,
+            branch_change_independent_school_appropriate_body: BranchChangeIndependentSchoolAppropriateBodyStep,
+            branch_change_lead_provider: BranchChangeLeadProviderStep,
+            branch_change_programme_type: BranchChangeProgrammeTypeStep,
+            branch_change_state_school_appropriate_body: BranchChangeStateSchoolAppropriateBodyStep,
             cannot_register_ect: CannotRegisterECTStep,
             cant_use_email: CantUseEmailStep,
             change_email_address: ChangeEmailAddressStep,
