@@ -623,6 +623,7 @@ RSpec.describe Events::Record do
           heading: "Rhys Ifans started mentoring Steffan Rhodri",
           event_type: :teacher_starts_mentoring,
           happened_at: Time.zone.now,
+          metadata: { mentor_id: teacher.id, mentee_id: mentee.id },
           **author_params
         )
       end
@@ -649,6 +650,7 @@ RSpec.describe Events::Record do
           heading: "Rhys Ifans is being mentored by Steffan Rhodri",
           event_type: :teacher_starts_being_mentored,
           happened_at: Time.zone.now,
+          metadata: { mentor_id: mentor.id, mentee_id: teacher.id },
           **author_params
         )
       end
