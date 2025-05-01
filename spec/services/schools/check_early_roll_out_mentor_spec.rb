@@ -21,8 +21,8 @@ RSpec.describe Schools::CheckEarlyRollOutMentor do
 
       it 'returns ERO date and reason params' do
         expect(service.to_h).to eq({
-          mentor_completion_reason: 'completed_during_early_roll_out',
-          mentor_completion_date: Date.new(2021, 4, 19)
+          mentor_became_ineligible_for_funding_reason: 'completed_during_early_roll_out',
+          mentor_became_ineligible_for_funding_on: Date.new(2021, 4, 19)
         })
       end
     end
@@ -30,8 +30,8 @@ RSpec.describe Schools::CheckEarlyRollOutMentor do
     context 'without ERO record' do
       it 'returns empty ERO date and reason params ' do
         expect(service.to_h).to eq({
-          mentor_completion_reason: nil,
-          mentor_completion_date: nil
+          mentor_became_ineligible_for_funding_reason: nil,
+          mentor_became_ineligible_for_funding_on: nil
         })
       end
     end
