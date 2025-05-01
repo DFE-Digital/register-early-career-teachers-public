@@ -55,7 +55,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       it 'captures error message' do
-        expect(submission.error_messages).to eq ['Teacher Kirk Van Houten does not have an ongoing induction']
+        expect(submission.error_messages).to eq ['Kirk Van Houten does not have an open induction']
       end
 
       it 'clears attributes that may cause errors' do
@@ -76,8 +76,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
-            'Fill in the blanks',
-            'Teacher reference number must be 7 digits'
+            'Fill in the blanks on this row',
+            'Enter a valid TRN using 7 digits'
           ]
         end
       end
@@ -87,7 +87,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
-            'Fill in the blanks',
+            'Fill in the blanks on this row',
             'Dates must be in the format YYYY-MM-DD'
           ]
         end
@@ -98,7 +98,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
-            'Date of birth must be realistic',
+            'Date of birth must be a real date and the teacher must be between 18 and 100 years old',
           ]
         end
       end
@@ -108,8 +108,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
-            'Fill in the blanks',
-            'Number of terms must be between 0 and 16. You can use up to one decimal place'
+            'Fill in the blanks on this row',
+            'Enter number of terms between 0 and 16 using up to one decimal place'
           ]
         end
       end
@@ -119,7 +119,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
-            'Fill in the blanks',
+            'Fill in the blanks on this row',
             'Dates must be in the format YYYY-MM-DD'
           ]
         end
@@ -130,7 +130,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
-            'Fill in the blanks',
+            'Fill in the blanks on this row',
             'Outcome must be either pass, fail or release'
           ]
         end
@@ -140,7 +140,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:trn) { '0004' }
 
         it 'captures an error message' do
-          expect(submission.error_messages).to eq ['Teacher reference number must be 7 digits']
+          expect(submission.error_messages).to eq ['Enter a valid TRN using 7 digits']
         end
       end
 
@@ -148,7 +148,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:trn) { '123456L' }
 
         it 'captures an error message' do
-          expect(submission.error_messages).to eq ['Teacher reference number must be 7 digits']
+          expect(submission.error_messages).to eq ['Enter a valid TRN using 7 digits']
         end
       end
 
@@ -196,7 +196,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:number_of_terms) { '12.06' }
 
         it 'captures an error message' do
-          expect(submission.error_messages).to eq ['Number of terms must be between 0 and 16. You can use up to one decimal place']
+          expect(submission.error_messages).to eq ['Enter number of terms between 0 and 16 using up to one decimal place']
         end
       end
 
@@ -204,7 +204,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:number_of_terms) { '17' }
 
         it 'captures an error message' do
-          expect(submission.error_messages).to eq ['Number of terms must be between 0 and 16. You can use up to one decimal place']
+          expect(submission.error_messages).to eq ['Enter number of terms between 0 and 16 using up to one decimal place']
         end
       end
 
@@ -218,11 +218,11 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
-            'Fill in the blanks',
+            'Fill in the blanks on this row',
             'Dates must be in the format YYYY-MM-DD',
-            'Teacher reference number must be 7 digits',
+            'Enter a valid TRN using 7 digits',
             'Outcome must be either pass, fail or release',
-            'Number of terms must be between 0 and 16. You can use up to one decimal place'
+            'Enter number of terms between 0 and 16 using up to one decimal place'
           ]
         end
       end
