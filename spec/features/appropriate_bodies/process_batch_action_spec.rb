@@ -46,7 +46,7 @@ RSpec.describe 'Process bulk actions' do
       scenario 'fails immediately' do
         given_i_am_on_the_upload_page
         when_i_upload_a_file
-        then_i_should_see_the_error('CSV file contains unsupported columns')
+        then_i_should_see_the_error('The selected file must follow the template')
       end
     end
 
@@ -56,7 +56,7 @@ RSpec.describe 'Process bulk actions' do
       scenario 'fails immediately' do
         given_i_am_on_the_upload_page
         when_i_upload_a_file
-        then_i_should_see_the_error('CSV file contains duplicate TRNs')
+        then_i_should_see_the_error('The selected file has duplicate ECTs')
       end
     end
 
@@ -66,7 +66,7 @@ RSpec.describe 'Process bulk actions' do
       scenario 'fails immediately' do
         given_i_am_on_the_upload_page
         when_i_upload_a_file
-        then_i_should_see_the_error('File type must be a CSV')
+        then_i_should_see_the_error('The selected file must be a CSV')
       end
     end
   end

@@ -27,7 +27,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
 
       specify do
         expect(form).not_to be_valid
-        expect(form.errors[:csv_file]).to include('File type must be a CSV')
+        expect(form.errors[:csv_file]).to include('The selected file must be a CSV')
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
 
       specify do
         expect(form).not_to be_valid
-        expect(form.errors[:csv_file]).to include('CSV file contains unsupported columns')
+        expect(form.errors[:csv_file]).to include('The selected file must follow the template')
       end
     end
 
@@ -65,7 +65,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
 
       specify do
         expect(form).not_to be_valid
-        expect(form.errors[:csv_file]).to include('CSV file contains duplicate TRNs')
+        expect(form.errors[:csv_file]).to include('The selected file has duplicate ECTs')
       end
     end
 
@@ -87,7 +87,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
 
         specify do
           expect(form).not_to be_valid
-          expect(form.errors[:csv_file]).to include('CSV file contains too many rows')
+          expect(form.errors[:csv_file]).to include('The selected file must have fewer than 1000 rows')
         end
       end
     end
@@ -101,7 +101,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
 
       specify do
         expect(form).not_to be_valid
-        expect(form.errors[:csv_file]).to include('CSV file contains too few rows')
+        expect(form.errors[:csv_file]).to include('The selected file is empty')
       end
     end
   end
