@@ -33,12 +33,12 @@ module AppropriateBodies
           end
 
           if ongoing_induction_period.blank?
-            capture_error("Teacher #{name} does not have an ongoing induction")
+            capture_error("#{name} does not have an open induction")
             next
           end
 
           if claimed_by_another_ab?
-            capture_error("Teacher #{name} was claimed by another appropriate body")
+            capture_error("#{name} is completing their induction with another appropriate body")
             next
           end
 
@@ -94,12 +94,12 @@ module AppropriateBodies
 
       # @return [Boolean]
       def incorrectly_formatted?
-        pending_induction_submission.errors.add(:base, 'Fill in the blanks') if row.blank_cell?
+        pending_induction_submission.errors.add(:base, 'Fill in the blanks on this row') if row.blank_cell?
         pending_induction_submission.errors.add(:base, 'Dates must be in the format YYYY-MM-DD') if row.invalid_date?
-        pending_induction_submission.errors.add(:base, 'Date of birth must be realistic') if row.invalid_age?
-        pending_induction_submission.errors.add(:base, 'Teacher reference number must be 7 digits') if row.invalid_trn?
+        pending_induction_submission.errors.add(:base, 'Date of birth must be a real date and the teacher must be between 18 and 100 years old') if row.invalid_age?
+        pending_induction_submission.errors.add(:base, 'Enter a valid TRN using 7 digits') if row.invalid_trn?
         pending_induction_submission.errors.add(:base, 'Outcome must be either pass, fail or release') if row.invalid_outcome?
-        pending_induction_submission.errors.add(:base, 'Number of terms must be between 0 and 16. You can use up to one decimal place') if row.invalid_terms?
+        pending_induction_submission.errors.add(:base, 'Enter number of terms between 0 and 16 using up to one decimal place') if row.invalid_terms?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end
@@ -122,13 +122,13 @@ module AppropriateBodies
 
         nil
       rescue TRS::Errors::TeacherNotFound
-        "Not found in TRS"
+        'TRN and date of birth do not match'
       rescue TRS::Errors::ProhibitedFromTeaching
-        "Prohibited from teaching"
+        'Prohibited from teaching'
       rescue TRS::Errors::QTSNotAwarded
-        "QTS not awarded"
+        'QTS not awarded'
       rescue StandardError
-        "TRS API could not be contacted"
+        'TRS API could not be contacted'
       end
 
       # @return [nil, InductionPeriod]
