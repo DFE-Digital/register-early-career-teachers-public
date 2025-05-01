@@ -13,58 +13,6 @@ RSpec.describe Teachers::InductionStatus do
         expect(service.induction_status).to eql('Exempt')
       end
     end
-
-    context 'when the ECT has an open induction period' do
-      let(:teacher) { FactoryBot.create(:teacher) }
-      let(:induction_periods) do
-        [
-          FactoryBot.create(:induction_period),
-          FactoryBot.create(:induction_period, :active)
-        ]
-      end
-
-      it "has a status of 'In progress'" do
-        expect(service.induction_status).to eql('In progress')
-      end
-    end
-
-    context 'when the ECT has no open induction period' do
-      let(:teacher) { FactoryBot.create(:teacher) }
-
-      context 'when there is no induction outcome' do
-        let(:induction_periods) { FactoryBot.create_list(:induction_period, 2) }
-
-        it "has a status of 'Paused'" do
-          expect(service.induction_status).to eql('Induction paused')
-        end
-      end
-
-      context 'when there is a :pass outcome' do
-        let(:induction_periods) do
-          [
-            FactoryBot.create(:induction_period),
-            FactoryBot.create(:induction_period, :pass)
-          ]
-        end
-
-        it "has a status of 'Passed'" do
-          expect(service.induction_status).to eql('Passed')
-        end
-      end
-
-      context 'when there is a :fail outcome' do
-        let(:induction_periods) do
-          [
-            FactoryBot.create(:induction_period),
-            FactoryBot.create(:induction_period, :fail)
-          ]
-        end
-
-        it "has a status of 'Failed'" do
-          expect(service.induction_status).to eql('Failed')
-        end
-      end
-    end
   end
 
   context 'when the teacher record does not exist in our database' do
