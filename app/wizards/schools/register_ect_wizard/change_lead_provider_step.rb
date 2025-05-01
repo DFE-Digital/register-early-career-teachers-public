@@ -6,7 +6,9 @@ module Schools
       end
 
       def previous_step
-        return :change_programme_type if school.programme_choices? || ect.lead_provider_id.nil?
+        if ect.previous_step
+          return ect.previous_step&.to_sym
+        end
 
         :check_answers
       end
