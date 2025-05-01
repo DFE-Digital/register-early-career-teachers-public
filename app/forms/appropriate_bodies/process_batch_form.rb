@@ -50,7 +50,7 @@ module AppropriateBodies
     # Validation messages
 
     def csv_mime_type
-      errors.add(:csv_file, 'File type must be a CSV') unless is_a_csv?
+      errors.add(:csv_file, 'The selected file must be a CSV') unless is_a_csv?
     end
 
     def csv_file_size
@@ -58,16 +58,16 @@ module AppropriateBodies
     end
 
     def row_count
-      errors.add(:csv_file, 'CSV file contains too many rows') if has_too_many_rows?
-      errors.add(:csv_file, 'CSV file contains too few rows') if has_too_few_rows?
+      errors.add(:csv_file, 'The selected file must have fewer than 1000 rows') if has_too_many_rows?
+      errors.add(:csv_file, 'The selected file is empty') if has_too_few_rows?
     end
 
     def unique_trns
-      errors.add(:csv_file, 'CSV file contains duplicate TRNs') unless has_unique_trns?
+      errors.add(:csv_file, 'The selected file has duplicate ECTs') unless has_unique_trns?
     end
 
     def wrong_headers
-      errors.add(:csv_file, 'CSV file contains unsupported columns') unless has_valid_headers?
+      errors.add(:csv_file, 'The selected file must follow the template') unless has_valid_headers?
     end
 
     # Validation checks
