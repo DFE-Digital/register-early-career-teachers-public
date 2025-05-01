@@ -13,7 +13,9 @@ class Teachers::InductionStatus
       required_to_complete
     in { teacher_with_induction_periods_present: false, trs_induction_status: 'Exempt' }
       exempt
-    in { teacher_with_induction_periods_present: false, trs_induction_status: 'InProgress' }
+    in { has_an_open_induction_period: false, teacher_with_induction_periods_present: false, trs_induction_status: 'InProgress' }
+      paused
+    in { has_an_open_induction_period: true, teacher_with_induction_periods_present: false, trs_induction_status: 'InProgress' }
       in_progress
     in { teacher_with_induction_periods_present: false, trs_induction_status: 'Failed' }
       failed
