@@ -17,8 +17,8 @@ module Schools
       @mentor ||= school.mentor_at_school_periods.find_by_id(mentor_id) if school && mentor_id
     end
 
-    def save
-      valid? && persisted?
+    def save(author:)
+      valid? && assign!(author:)
     end
 
   private
@@ -33,8 +33,8 @@ module Schools
       errors.add(:mentor_id, "It needs to be a different mentor for this ECT") if eligible_mentors.exclude?(mentor)
     end
 
-    def persisted?
-      AssignMentor.new(ect:, mentor:).assign!
+    def assign!(author:)
+      AssignMentor.new(ect:, mentor:, author:).assign!
       true
     rescue StandardError => e
       errors.add(:base, e.to_s)

@@ -5,7 +5,8 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
   let(:programme_type) { 'provider_led' }
   let(:use_previous_ect_choices) { true }
   let(:store) { FactoryBot.build(:session_repository) }
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :check_answers, store:, ect_id: ect.id) }
+  let(:author) { FactoryBot.create(:school_user, school_urn: ect.school.urn) }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :check_answers, store:, author:, ect_id: ect.id) }
 
   describe 'steps' do
     describe '#next_step' do
@@ -68,7 +69,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
       end
 
       it 'assigns the created mentor to the ECT' do
-        expect(Schools::AssignMentor).to have_received(:new).with(ect: wizard.ect, mentor: new_mentor)
+        expect(Schools::AssignMentor).to have_received(:new).with(ect: wizard.ect, mentor: new_mentor, author:)
       end
     end
   end
