@@ -45,6 +45,11 @@ gem "savon"
 # Render smart quotes
 gem 'rubypants'
 
+# For the API
+gem "blueprinter"
+gem "oj"
+gem "pagy"
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
