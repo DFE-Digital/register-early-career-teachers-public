@@ -99,12 +99,14 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
     end
 
     context 'when signed in as school user' do
+      let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
+
       before do
         sign_in_as(:school_user, school:)
       end
 
       it 'instantiates a new Schools::AssignMentorForm and renders the page' do
-        Schools::AssignMentor.new(ect:, mentor:).assign!
+        Schools::AssignMentor.new(ect:, mentor:, author:).assign!
         allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
         get("/school/ects/#{ect.id}/mentorship/confirmation")

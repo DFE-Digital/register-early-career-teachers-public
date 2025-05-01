@@ -602,4 +602,56 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe '.record_teacher_starts_mentoring_event!' do
+    let(:started_on_param) { { started_on: 2.years.ago.to_date } }
+    let(:school) { FactoryBot.create(:school) }
+    let(:mentee) { FactoryBot.create(:teacher, trs_first_name: 'Steffan', trs_last_name: 'Rhodri') }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, teacher: mentee, school:, **started_on_param) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:, school:, **started_on_param) }
+    let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 2.days.ago.to_date) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_teacher_starts_mentoring_event!(author:, mentee:, mentor: teacher, mentorship_period:, mentor_at_school_period:, school:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          school: mentor_at_school_period.school,
+          mentor_at_school_period:,
+          mentorship_period:,
+          heading: "Rhys Ifans started mentoring Steffan Rhodri",
+          event_type: :teacher_starts_mentoring,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_teacher_starts_being_mentored_event!' do
+    let(:started_on_param) { { started_on: 2.years.ago.to_date } }
+    let(:school) { FactoryBot.create(:school) }
+    let(:mentor) { FactoryBot.create(:teacher, trs_first_name: 'Steffan', trs_last_name: 'Rhodri') }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, teacher:, school:, **started_on_param) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor, school:, **started_on_param) }
+    let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 2.days.ago.to_date) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_teacher_starts_being_mentored_event!(author:, mentee: teacher, mentor:, mentorship_period:, ect_at_school_period:, school:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          school: ect_at_school_period.school,
+          ect_at_school_period:,
+          mentorship_period:,
+          heading: "Rhys Ifans is being mentored by Steffan Rhodri",
+          event_type: :teacher_starts_being_mentored,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
 end

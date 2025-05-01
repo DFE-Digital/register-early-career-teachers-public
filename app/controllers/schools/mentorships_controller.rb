@@ -10,7 +10,7 @@ module Schools
     def create
       @mentor_form = AssignMentorForm.new(ect:, mentor_id:)
 
-      if @mentor_form.save
+      if @mentor_form.save(author: current_user)
         redirect_to confirmation_schools_ect_mentorship_path(@ect)
       else
         render :new
