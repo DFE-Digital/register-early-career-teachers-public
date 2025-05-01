@@ -1,5 +1,12 @@
 ---
 :shared:
+  :api_tokens:
+  - id
+  - lead_provider_id
+  - hashed_token
+  - last_used_at
+  - created_at
+  - updated_at
   :appropriate_bodies:
     - body_type
   :blazer_queries:

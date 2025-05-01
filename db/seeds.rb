@@ -750,3 +750,9 @@ EarlyRollOutMentor.create!(trn: hugh_laurie.trn).tap { describe_ero_mentor(hugh_
 EarlyRollOutMentor.create!(trn: harriet_walter.trn).tap { describe_ero_mentor(harriet_walter) }
 EarlyRollOutMentor.create!(trn: '3002582').tap { describe_ero_mentor('Robson Scottie') }
 EarlyRollOutMentor.create!(trn: '3002580').tap { describe_ero_mentor('Muhammed Ali') }
+
+print_seed_info('Adding APITokens:')
+
+lead_provider = LeadProvider.find_by_name("National Meadows Institute")
+APIToken.create_with_known_token!("national-token", lead_provider:)
+print_seed_info("Added APIToken for #{lead_provider.name}: 'national-token'", indent: 2)
