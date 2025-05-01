@@ -3,10 +3,10 @@ RSpec.describe 'schools/mentors/show.html.erb' do
   let(:start_date) { Date.new(2023, 9, 1) }
 
   let(:mentor_teacher) do
-    create(:teacher, trs_first_name: 'Naruto', trs_last_name: 'Uzumaki', mentor_completion_date:)
+    create(:teacher, trs_first_name: 'Naruto', trs_last_name: 'Uzumaki', mentor_became_ineligible_for_funding_on:)
   end
 
-  let(:mentor_completion_date) { nil }
+  let(:mentor_became_ineligible_for_funding_on) { nil }
 
   let(:mentor_period) do
     create(:mentor_at_school_period, teacher: mentor_teacher, school:, started_on: start_date, finished_on: nil)
@@ -67,8 +67,8 @@ RSpec.describe 'schools/mentors/show.html.erb' do
     end
   end
 
-  context 'when mentor is not eligible (has mentor_completion_date)' do
-    let(:mentor_completion_date) { Date.new(2024, 1, 1) }
+  context 'when mentor is not eligible (i.e has a `mentor_became_ineligible_for_funding_on` date)' do
+    let(:mentor_became_ineligible_for_funding_on) { Date.new(2024, 1, 1) }
 
     it 'renders the ineligible message' do
       expect(rendered).to have_css('.govuk-body', text: /Naruto Uzumaki cannot do ECTE mentor training/)

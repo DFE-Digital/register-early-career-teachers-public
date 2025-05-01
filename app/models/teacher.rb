@@ -3,7 +3,7 @@ class Teacher < ApplicationRecord
 
   self.ignored_columns = %i[search]
 
-  enum :mentor_completion_reason, {
+  enum :mentor_became_ineligible_for_funding_reason, {
     completed_declaration_received: 'completed_declaration_received',
     completed_during_early_roll_out: 'completed_during_early_roll_out',
     started_not_completed: 'started_not_completed',
@@ -49,7 +49,7 @@ class Teacher < ApplicationRecord
 
   # Instance methods
   def eligible_for_mentor_funding?
-    mentor_completion_date.blank? && mentor_completion_reason.blank?
+    mentor_became_ineligible_for_funding_on.blank? && mentor_became_ineligible_for_funding_reason.blank?
   end
 
   def ineligible_for_mentor_funding?
