@@ -6,11 +6,9 @@
   )
 %>
 
-<h3 class="govuk-heading-m"><%= @appropriate_body.name %></h3>
-
 <p class="govuk-body">
-  If you use ECT Manager or Mozaic, you can download a CSV from there and upload it here. 
-  Or you can <%= govuk_link_to('download a CSV template', '#') %>.
+  If you have a CSV file which follows the formatting from the template you can upload it,  
+  or you can <%= govuk_link_to('download a CSV template', '#') %>.
 </p>
 
 <%= govuk_details(summary_text: 'Help with using the CSV template') do %>
@@ -31,11 +29,11 @@
   <%=   
     govuk_table(
       caption: "Your file needs to look like this example",
-      head: BatchRows::ACTION_CSV_HEADINGS.values,
+      head: BatchRows::ACTION_CSV_HEADINGS.values.reverse.drop(1).reverse,
       rows: [
-        %w[1234567 YYYY-MM-DD YYYY-MM-DD 16   pass nil],
-        %w[2345671 YYYY-MM-DD YYYY-MM-DD 3.5  fail nil],
-        %w[3456712 YYYY-MM-DD YYYY-MM-DD 0.7  release nil],
+        %w[1234567 YYYY-MM-DD YYYY-MM-DD 16   pass],
+        %w[2345671 YYYY-MM-DD YYYY-MM-DD 3.5  fail],
+        %w[3456712 YYYY-MM-DD YYYY-MM-DD 0.7  release],
       ]
     )
   %>    

@@ -1,8 +1,7 @@
 <%
   page_data(
     title: "Outcomes successfully recorded",
-    header: false,
-    backlink_href: root_path
+    header: false
   )
 %>
 
@@ -12,7 +11,18 @@
   You uploaded <%= batch.pending_induction_submissions.count %> ECT records including:
 </p>
 
-<%= render partial: 'appropriate_bodies/process_batch/actions/summary', locals: { batch: } %>
+<%= batch_summary(batch) %>
+
+<% if batch.pending_induction_submissions.with_errors.any? %>
+  <p class='govuk-body'>
+    You had <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors which did not upload.
+  </p>
+
+  <p class='govuk-body'>
+    <%= govuk_link_to 'Download CSV with error messages included', ab_batch_action_path(batch, format: :csv) %>. 
+    You'll need to fix these errors before you upload your CSV again.
+  </p>
+<% end %>
 
 <p class='govuk-body'>
   <%= govuk_link_to 'Go back to homepage', root_path %>
