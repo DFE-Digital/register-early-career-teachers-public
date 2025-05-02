@@ -55,10 +55,12 @@ RSpec.describe TRS::APIClient do
 
     describe 'API failures' do
       let(:not_found_trn) { '5555555' }
+      let(:gone_trn) { '6666666' }
       let(:stubbed_connection) do
         Faraday.new do |builder|
           builder.adapter(:test) do |stub|
             stub.get("/v3/persons/#{not_found_trn}") { [404, { 'Content-Type' => 'text/plain' }, 'Not found'] }
+            stub.get("/v3/persons/#{gone_trn}") { [410, { 'Content-Type' => 'text/plain' }, 'Gone'] }
           end
         end
       end
@@ -67,8 +69,13 @@ RSpec.describe TRS::APIClient do
 
       context 'when the API request fails with 404' do
         it 'raises TRS::Errors::TeacherNotFound' do
-          expect { client.find_teacher(trn: not_found_trn, date_of_birth:) }.to raise_error(TRS::Errors::TeacherNotFound)
           expect { client.find_teacher(trn: not_found_trn) }.to raise_error(TRS::Errors::TeacherNotFound)
+        end
+      end
+
+      context 'when the API request fails with 410' do
+        it 'raises TRS::Errors::TeacherDeactivated' do
+          expect { client.find_teacher(trn: gone_trn) }.to raise_error(TRS::Errors::TeacherDeactivated)
         end
       end
     end

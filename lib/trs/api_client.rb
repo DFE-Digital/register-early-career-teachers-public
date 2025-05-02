@@ -32,6 +32,8 @@ module TRS
       case response.status
       when 404
         raise(TRS::Errors::TeacherNotFound)
+      when 410
+        raise(TRS::Errors::TeacherDeactivated)
       else
         fail(TRS::Errors::APIRequestError, "#{response.status} #{response.body}")
       end

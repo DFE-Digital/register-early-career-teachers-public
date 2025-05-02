@@ -27,6 +27,11 @@ module Teachers
 
     def trs_teacher
       @trs_teacher ||= TRS::APIClient.new.find_teacher(trn: teacher.trn)
+    rescue TRS::Errors::TeacherDeactivated
+      Teacher.transaction do
+        # TODO: set a flag on the teacher record
+        # TODO: write an event
+      end
     end
 
     def manage_teacher
