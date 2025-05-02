@@ -8,7 +8,13 @@
     Your CSV named '<%= batch.filename %>' has <%= batch.pending_induction_submissions.count %> ECT records including:
   </p>
 
-  <%= render partial: 'appropriate_bodies/process_batch/actions/summary', locals: { batch: } %>
+  <%= batch_summary(batch) %>
+
+  <% if batch.pending_induction_submissions.with_errors.any? %>
+    <p class='govuk-body'>
+      You had <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors which did not upload.
+    </p>
+  <% end %>
 
   <%= form_with(model: batch, url: ab_batch_action_path(batch), method: 'put') do |f| %>
     <%= content_for(:error_summary) { f.govuk_error_summary } %>
@@ -16,6 +22,6 @@
   <% end %>
 
   <p class='govuk-body'>
-    <%= govuk_link_to 'Cancel and go back to homepage', root_path %>
+    <%= govuk_link_to 'Cancel and go back to homepage', ab_teachers_path %>
   </p>  
 <% end %>  

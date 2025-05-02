@@ -109,10 +109,10 @@ module BatchHelper
   end
 
   # Temporary method helpful for debugging during development
-  def batch_induction_periods_table(batch)
+  def batch_actions_induction_periods_table(batch)
     govuk_table(
       caption: "Last inductions (#{batch.submissions_with_induction_periods.count} periods)",
-      head: %w[TRN FIRST LAST END TERMS OUTCOME],
+      head: ['TRN', 'First name', 'Last name', 'Induction end date', 'Number of terms', 'Outcome'],
       rows: batch.submissions_with_induction_periods.map do |pending_induction_submission, induction_period|
         [
           pending_induction_submission.trn,
@@ -120,6 +120,24 @@ module BatchHelper
           pending_induction_submission.trs_last_name,
           induction_period.finished_on&.to_fs(:iso8601) || '-',
           induction_period.number_of_terms&.to_s || '-',
+          (induction_period.outcome || '-')
+        ]
+      end
+    )
+  end
+
+  # Temporary method helpful for debugging during development
+  def batch_claims_induction_periods_table(batch)
+    govuk_table(
+      caption: "Last inductions (#{batch.submissions_with_induction_periods.count} periods)",
+      head: ['TRN', 'First name', 'Last name', 'Induction programme', 'Induction start date', 'Outcome'],
+      rows: batch.submissions_with_induction_periods.map do |pending_induction_submission, induction_period|
+        [
+          pending_induction_submission.trn,
+          pending_induction_submission.trs_first_name,
+          pending_induction_submission.trs_last_name,
+          induction_period.induction_programme&.to_s || '-',
+          induction_period.started_on&.to_fs(:iso8601) || '-',
           (induction_period.outcome || '-')
         ]
       end

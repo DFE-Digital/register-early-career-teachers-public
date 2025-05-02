@@ -1,5 +1,3 @@
-<%= govuk_back_link(href: ab_batch_actions_path) %> 
-
 <%= turbo_stream_from "batch_progress_stream_#{@pending_induction_submission_batch.id}" %>
 
 <div id="batch_progress_target_<%= @pending_induction_submission_batch.id %>" data-turbo="true">
@@ -15,6 +13,6 @@
     <%= batch_raw_data_table(@pending_induction_submission_batch) %>
     <%= batch_processed_data_table(@pending_induction_submission_batch) %>
     <%= batch_download_data_table(@pending_induction_submission_batch) %>
-    <%= batch_induction_periods_table(@pending_induction_submission_batch) %>
+    <%= batch_actions_induction_periods_table(@pending_induction_submission_batch) %>
   <% end %>
 </div>
