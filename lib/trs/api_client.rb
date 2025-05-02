@@ -29,10 +29,10 @@ module TRS
 
       return TRS::Teacher.new(JSON.parse(response.body)) if response.success?
 
-      case response.status
-      when 404
+      case Rack::Utils::HTTP_STATUS_CODES.fetch(response.status)
+      when "Not Found"
         raise(TRS::Errors::TeacherNotFound)
-      when 410
+      when "Gone"
         raise(TRS::Errors::TeacherDeactivated)
       else
         fail(TRS::Errors::APIRequestError, "#{response.status} #{response.body}")
