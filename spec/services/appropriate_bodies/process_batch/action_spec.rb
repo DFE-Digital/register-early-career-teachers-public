@@ -103,6 +103,16 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
+      context 'when the date of birth is in the future' do
+        let(:date_of_birth) { 1.year.from_now }
+
+        it 'captures an error message' do
+          expect(submission.error_messages).to eq [
+            'Date of birth must be a real date and the teacher must be between 18 and 100 years old',
+          ]
+        end
+      end
+
       context 'when the number of terms is missing' do
         let(:number_of_terms) { '' }
 
@@ -246,7 +256,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       it 'captures no error message' do
-        expect(pending_induction_submission_batch.reload.error_message).to be_nil # singular error
+        expect(pending_induction_submission_batch.reload.error_message).to be_nil # singular batch error
         expect(submission.error_messages).to be_empty
       end
 
@@ -282,6 +292,23 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq ['Finished on End date cannot be in the future']
+        end
+      end
+
+      context 'with a completed induction' do
+        let!(:induction_period) do
+          FactoryBot.create(:induction_period, :pass,
+                            appropriate_body:,
+                            teacher:)
+        end
+
+        before do
+          service.process!
+          induction_period.reload
+        end
+
+        it 'captures an error message' do
+          expect(submission.error_messages).to eq ['Kirk Van Houten has already completed their induction']
         end
       end
 

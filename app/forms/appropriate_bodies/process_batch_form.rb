@@ -44,7 +44,7 @@ module AppropriateBodies
   private
 
     def parse
-      @parse ||= CSV.parse(file_content, headers: true, skip_lines: /^#/)
+      @parse ||= CSV.parse(file_content, headers: true, skip_lines: /^#/) # NB: lines can be commented out for easier dev and testing
     end
 
     # Validation messages
@@ -88,8 +88,14 @@ module AppropriateBodies
       parse.count.zero?
     end
 
+    # The "error" column is optional. Failed rows downloaded as a CSV contain errors
+    # and the user need not remove that column before reuploading the corrected data.
     def has_valid_headers?
-      parse.headers.sort.eql?(headers.values.sort)
+      # File is a second attempt resolving errors
+      return true if parse.headers.sort.eql?(headers.values.sort)
+
+      # File is a first attempt using the template with no error column
+      parse.headers.sort.eql?(headers.values.reverse.drop(1).sort)
     end
 
     def has_unique_trns?

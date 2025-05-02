@@ -28,17 +28,22 @@ module AppropriateBodies
           end
 
           if teacher.blank?
-            capture_error("Teacher #{name} has not yet been claimed")
-            next
-          end
-
-          if ongoing_induction_period.blank?
-            capture_error("#{name} does not have an open induction")
+            capture_error("#{name} has not yet been claimed")
             next
           end
 
           if claimed_by_another_ab?
             capture_error("#{name} is completing their induction with another appropriate body")
+            next
+          end
+
+          if completed_induction_period?
+            capture_error("#{name} has already completed their induction")
+            next
+          end
+
+          if ongoing_induction_period?
+            capture_error("#{name} does not have an open induction")
             next
           end
 
@@ -132,13 +137,24 @@ module AppropriateBodies
       end
 
       # @return [nil, InductionPeriod]
-      def ongoing_induction_period
-        ::Teachers::InductionPeriod.new(teacher).ongoing_induction_period
+      def ongoing_induction_period?
+        induction_periods.ongoing_induction_period.blank?
+      end
+
+      # @return [nil, InductionPeriod]
+      def completed_induction_period?
+        induction_periods.last_induction_period&.outcome.present?
+      end
+
+      def induction_periods
+        @induction_periods ||= ::Teachers::InductionPeriod.new(teacher)
       end
 
       # @return [Boolean]
       def claimed_by_another_ab?
-        teacher && ongoing_induction_period && (appropriate_body != ongoing_induction_period.appropriate_body)
+        teacher &&
+          induction_periods.ongoing_induction_period &&
+          (appropriate_body != induction_periods.ongoing_induction_period&.appropriate_body)
       end
 
       # @return [AppropriateBodies::ReleaseECT]
