@@ -175,6 +175,20 @@ describe TrainingPeriod do
         expect(TrainingPeriod.for_mentor(456).to_sql).to end_with(%(WHERE "training_periods"."mentor_at_school_period_id" = 456))
       end
     end
+
+    describe ".for_school" do
+      it "returns training periods only for the specified school" do
+        ect_at_school_period_1 = create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 1.week.ago)
+        training_period_1 = create(:training_period, ect_at_school_period: ect_at_school_period_1, started_on: 1.month.ago, finished_on: 1.week.ago)
+        ect_at_school_period_2 = create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 1.week.ago)
+        training_period_2 = create(:training_period, ect_at_school_period: ect_at_school_period_2, started_on: 1.month.ago, finished_on: 1.week.ago)
+        mentor_at_school_period = create(:mentor_at_school_period, school: training_period_1.ect_at_school_period.school, started_on: 1.year.ago, finished_on: 1.week.ago)
+        training_period_3 = create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 2.months.ago, finished_on: 1.month.ago)
+
+        expect(TrainingPeriod.for_school(training_period_1.ect_at_school_period.school)).to contain_exactly(training_period_1, training_period_3)
+        expect(TrainingPeriod.for_school(training_period_2.ect_at_school_period.school)).to contain_exactly(training_period_2)
+      end
+    end
   end
 
   describe "#siblings" do

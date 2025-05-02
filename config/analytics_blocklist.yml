@@ -197,6 +197,7 @@
   - chosen_lead_provider_id
   - chosen_programme_type
   - id
+  - ecf_id
   - created_at
   - updated_at
   - urn
@@ -279,6 +280,7 @@
   - email
   :lead_providers:
   - id
+  - ecf_id
   - name
   - created_at
   - updated_at
@@ -330,6 +332,7 @@
   - updated_at
   :delivery_partners:
   - id
+  - ecf_id
   - name
   - created_at
   - updated_at

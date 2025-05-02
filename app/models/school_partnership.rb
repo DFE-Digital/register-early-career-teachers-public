@@ -7,6 +7,7 @@ class SchoolPartnership < ApplicationRecord
   has_one :lead_provider, through: :lead_provider_delivery_partnership
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
   has_one :registration_period, through: :lead_provider_delivery_partnership
+  has_one :lead_provider_active_period, through: :lead_provider_delivery_partnership
 
   # Validations
   validates :school, presence: true

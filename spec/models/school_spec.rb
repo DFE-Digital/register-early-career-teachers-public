@@ -122,4 +122,148 @@ describe School do
       end
     end
   end
+
+  describe "#eligible_establishment_type?" do
+    subject(:school) { create(:school) }
+
+    before { school.gias_school.update(type_name:) }
+
+    context "when an eligible establishment type" do
+      let(:type_name) { GIAS::Types::ELIGIBLE_TYPES.sample }
+
+      it { is_expected.to be_eligible_establishment_type }
+    end
+
+    context "when not an eligible establishment type" do
+      let(:type_name) { GIAS::Types::NOT_ELIGIBLE_TYPES.sample }
+
+      it { is_expected.not_to be_eligible_establishment_type }
+    end
+  end
+
+  describe "#cip_only_type?" do
+    subject(:school) { create(:school) }
+
+    before { school.gias_school.update(type_name:) }
+
+    context "when a CIP only type" do
+      let(:type_name) { GIAS::Types::CIP_ONLY_TYPES.sample }
+
+      it { is_expected.to be_cip_only_type }
+    end
+
+    context "when not a CIP only type" do
+      let(:type_name) { (GIAS::Types::ALL_TYPES - GIAS::Types::CIP_ONLY_TYPES).sample }
+
+      it { is_expected.not_to be_cip_only_type }
+    end
+  end
+
+  describe "#open?" do
+    subject(:school) { create(:school) }
+
+    before { school.gias_school.update(status:) }
+
+    context "when status is open" do
+      let(:status) { :open }
+
+      it { is_expected.to be_open }
+    end
+
+    context "when status is proposed_to_close" do
+      let(:status) { :proposed_to_close }
+
+      it { is_expected.to be_open }
+    end
+
+    context "when status is closed" do
+      let(:status) { :closed }
+
+      it { is_expected.not_to be_open }
+    end
+  end
+
+  describe "#eligible?" do
+    subject(:school) { create(:school) }
+
+    before { school.gias_school.update(status:, type_name:, in_england:, section_41_approved:) }
+
+    context "when open, in england and an eligible establishment type" do
+      let(:status) { :open }
+      let(:in_england) { true }
+      let(:type_name) { GIAS::Types::ELIGIBLE_TYPES.sample }
+      let(:section_41_approved) { false }
+
+      it { is_expected.to be_eligible }
+    end
+
+    context "when open, in england and an section 41 approved" do
+      let(:status) { :open }
+      let(:in_england) { true }
+      let(:type_name) { GIAS::Types::NOT_ELIGIBLE_TYPES.sample }
+      let(:section_41_approved) { true }
+
+      it { is_expected.to be_eligible }
+    end
+
+    context "when not open, in engliand and an eligible establishment type" do
+      let(:status) { :closed }
+      let(:in_england) { true }
+      let(:type_name) { GIAS::Types::NOT_ELIGIBLE_TYPES.sample }
+      let(:section_41_approved) { false }
+
+      it { is_expected.not_to be_eligible }
+    end
+
+    context "when open, not in england and section 41 approved" do
+      let(:status) { :open }
+      let(:in_england) { false }
+      let(:type_name) { GIAS::Types::NOT_ELIGIBLE_TYPES.sample }
+      let(:section_41_approved) { true }
+
+      it { is_expected.not_to be_eligible }
+    end
+  end
+
+  describe "#cip_only?" do
+    subject(:school) { create(:school) }
+
+    before { school.gias_school.update(status:, type_name:, in_england:, section_41_approved:) }
+
+    context "when ineligible, open and a cip only type" do
+      let(:in_england) { false }
+      let(:status) { :open }
+      let(:type_name) { GIAS::Types::CIP_ONLY_TYPES.sample }
+      let(:section_41_approved) { false }
+
+      it { is_expected.to be_cip_only }
+    end
+
+    context "when eligible, open and a cip only type" do
+      let(:in_england) { true }
+      let(:status) { :open }
+      let(:type_name) { GIAS::Types::CIP_ONLY_TYPES.sample }
+      let(:section_41_approved) { true }
+
+      it { is_expected.not_to be_cip_only }
+    end
+
+    context "when ineligible, closed and a cip only type" do
+      let(:in_england) { false }
+      let(:status) { :closed }
+      let(:type_name) { GIAS::Types::CIP_ONLY_TYPES.sample }
+      let(:section_41_approved) { false }
+
+      it { is_expected.not_to be_cip_only }
+    end
+
+    context "when ineligible, open and not a cip only type" do
+      let(:in_england) { false }
+      let(:status) { :open }
+      let(:type_name) { (GIAS::Types::ALL_TYPES - GIAS::Types::CIP_ONLY_TYPES).sample }
+      let(:section_41_approved) { false }
+
+      it { is_expected.not_to be_cip_only }
+    end
+  end
 end

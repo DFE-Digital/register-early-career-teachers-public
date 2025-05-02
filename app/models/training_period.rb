@@ -26,6 +26,10 @@ class TrainingPeriod < ApplicationRecord
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
   scope :for_mentor, ->(mentor_at_school_period_id) { where(mentor_at_school_period_id:) }
   scope :for_school_partnership, ->(school_partnership_id) { where(school_partnership_id:) }
+  scope :for_school, ->(school) do
+    left_outer_joins(:ect_at_school_period, :mentor_at_school_period)
+    .where("ect_at_school_periods.school_id = :school_id OR mentor_at_school_periods.school_id = :school_id", school_id: school.id)
+  end
 
   # Instance methods
   def for_ect?
