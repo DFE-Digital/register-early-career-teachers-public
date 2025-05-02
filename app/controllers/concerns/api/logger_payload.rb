@@ -14,7 +14,7 @@ module API
         "HTTP_ACCEPT",
         "HTTP_ACCEPT_ENCODING",
         "HTTP_CONNECTION",
-        "HTTP_CACHE_CONTROL",
+        "HTTP_CACHE_CONTROL"
       ).transform_values(&:to_s)
       params[:request_body] = request.raw_post
 

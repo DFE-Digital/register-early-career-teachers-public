@@ -48,7 +48,6 @@ gem 'rubypants'
 # For the API
 gem "blueprinter"
 gem "oj"
-gem "pagy"
 
 group :development do
   gem 'better_errors'
