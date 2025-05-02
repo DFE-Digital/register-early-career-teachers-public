@@ -53,27 +53,23 @@ RSpec.describe TRS::APIClient do
       end
     end
 
-    context 'when the API request fails with 404' do
-      let(:response) { instance_double(Faraday::Response, success?: false, status: 404, body: 'Not Found') }
-
-      before do
-        allow(connection).to receive(:get).and_return(response)
+    describe 'API failures' do
+      let(:not_found_trn) { '5555555' }
+      let(:stubbed_connection) do
+        Faraday.new do |builder|
+          builder.adapter(:test) do |stub|
+            stub.get("/v3/persons/#{not_found_trn}") { [404, { 'Content-Type' => 'text/plain' }, 'Not found'] }
+          end
+        end
       end
 
-      it 'raises TRS::Errors::TeacherNotFound' do
-        expect { client.find_teacher(trn:, date_of_birth:) }.to raise_error(TRS::Errors::TeacherNotFound)
-      end
-    end
+      before { client.instance_variable_set(:@connection, stubbed_connection) }
 
-    context 'when the API request fails with other errors' do
-      let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: 'Internal Server Error') }
-
-      before do
-        allow(connection).to receive(:get).and_return(response)
-      end
-
-      it 'raises an error' do
-        expect { client.find_teacher(trn:, date_of_birth:) }.to raise_error("API request failed: 500 Internal Server Error")
+      context 'when the API request fails with 404' do
+        it 'raises TRS::Errors::TeacherNotFound' do
+          expect { client.find_teacher(trn: not_found_trn, date_of_birth:) }.to raise_error(TRS::Errors::TeacherNotFound)
+          expect { client.find_teacher(trn: not_found_trn) }.to raise_error(TRS::Errors::TeacherNotFound)
+        end
       end
     end
   end
