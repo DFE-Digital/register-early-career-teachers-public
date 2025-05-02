@@ -14,6 +14,7 @@ All of these items of work are related [to our objectives as a team.](/product/o
 ## The services that make up Register early career teachers
 
 Register early career teachers is comprised of:
+
 - Register ECTs, where schools register their ECTs and mentors to receive training and funding
 - an API for lead providers, where they can receive and send information about the training of ECTs and mentors to the DfE
 - Record inductions, where appropriate bodies can tell us an ECT is serving induction with them, and whether they've passed or failed
