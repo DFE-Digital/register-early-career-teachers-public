@@ -5,9 +5,9 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
 
   let(:csv_content) do
     <<~CSV
-      TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
-      1234567,2000-01-01,2023-12-31,1,Pass,No error
-      2345678,2001-02-02,2024-12-31,2,Fail,No error
+      TRN,Date of birth,Induction end date,Number of terms,Outcome
+      1234567,2000-01-01,2023-12-31,1,Pass
+      2345678,2001-02-02,2024-12-31,2,Fail
     CSV
   end
 
@@ -19,6 +19,26 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
                     content_type:,
                     size: csv_file_size,
                     read: csv_content)
+  end
+
+  context 'when the attached file is valid' do
+    specify do
+      expect(form).to be_valid
+    end
+
+    describe '2nd attempt containing error messages column' do
+      let(:csv_content) do
+        <<~CSV
+          TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
+          1234567,2000-01-01,2023-12-31,1,Pass,An error was fixed
+          2345678,2001-02-02,2024-12-31,2,Fail,An error was fixed
+        CSV
+      end
+
+      specify do
+        expect(form).to be_valid
+      end
+    end
   end
 
   context 'when the attached file is invalid' do
