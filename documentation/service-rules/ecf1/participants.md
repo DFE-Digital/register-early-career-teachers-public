@@ -6,7 +6,7 @@ title: Lead provider API
 
 This documentation provides a comprehensive guide to the ECF API (Early Career Framework) participants endpoint. It serves as a reference for both technical and product teams, ensuring everyone understands how participant data is structured, accessed, and managed within the system.
 
-The ECF participants endpoint allows authorized users to retrieve information about Early Career Teachers (ECTs) and Mentors who are registered in the ECF programme. This documentation explains the participant journey from registration to API visibility, detailing the conditions, attributes, and interactions involved in the process.
+The ECF participants endpoint allows authorised users to retrieve information about Early Career Teachers (ECTs) and Mentors who are registered in the ECF programme. This documentation explains the participant journey from registration to API visibility, detailing the conditions, attributes, and interactions involved in the process.
 
 ## Contents
 
@@ -321,9 +321,9 @@ Admin users have comprehensive access through the admin application to:
 
 ## Error handling
 
-### Authentication errors (401 unauthorized)
+### Authentication errors (401 unauthorised)
 
-If the request does not include valid authentication credentials, the API will return a 401 Unauthorized response:
+If the request does not include valid authentication credentials, the API will return a 401 Unauthorised response:
 
 <pre><code>{
   "error": "HTTP Token: Access denied"
@@ -401,7 +401,7 @@ If the requested participant ID does not exist, the API will return a 404 Not Fo
    - For single participant: processes the detailed participant data
 
 6. **Error Handling**: If errors occur during the API request, they are handled appropriately:
-   - Authentication errors (401 Unauthorized) if credentials are invalid
+   - Authentication errors (401 Unauthorised) if credentials are invalid
    - Bad Request errors (400 Bad Request) if parameters are invalid
    - Not Found errors (404 Not Found) if the requested participant doesn't exist
 
