@@ -90,6 +90,10 @@ class PendingInductionSubmission < ApplicationRecord
            if: -> { started_on.present? },
            on: :register_ect
 
+  validate :no_end_date_before_start_date,
+           if: -> { finished_on.present? },
+           on: %i[release_ect record_outcome]
+
   # Instance methods
   def exempt?
     trs_induction_status.eql?('Exempt')
@@ -111,7 +115,7 @@ class PendingInductionSubmission < ApplicationRecord
       started_on: nil,
       finished_on: nil,
       number_of_terms: nil,
-      error_messages: errors.full_messages
+      error_messages: errors.messages.values.flatten
     )
     errors.clear
     save!
@@ -139,6 +143,19 @@ private
 
     if started_on <= latest_date_of_induction
       errors.add(:started_on, "Enter a start date after the last induction period finished (#{latest_date_of_induction.to_fs(:govuk)})")
+    end
+  end
+
+  # Bulk CSV outcomes may attempt this. Error message only seen in failed CSV downloads
+  def no_end_date_before_start_date
+    return if teacher.blank?
+
+    latest_date_of_induction = teacher.induction_periods.maximum(:started_on)
+
+    return unless latest_date_of_induction
+
+    if finished_on <= latest_date_of_induction
+      errors.add(:finished_on, "Induction end date must be after the induction start date (#{latest_date_of_induction.to_fs(:govuk)})")
     end
   end
 end

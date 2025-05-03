@@ -26,6 +26,20 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
       expect(form).to be_valid
     end
 
+    describe 'contains cell padding' do
+      let(:csv_content) do
+        <<~CSV
+          TRN,Date of birth,Induction end date,Number of terms,Outcome
+            1234567  ,  2000-01-01  ,  2023-12-31  , 1 , Pass
+            2345678  ,  2001-02-02  ,  2024-12-31  , 2 , Fail
+        CSV
+      end
+
+      specify do
+        expect(form).to be_valid
+      end
+    end
+
     describe '2nd attempt containing error messages column' do
       let(:csv_content) do
         <<~CSV
@@ -107,7 +121,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
 
         specify do
           expect(form).not_to be_valid
-          expect(form.errors[:csv_file]).to include('The selected file must have fewer than 1000 rows')
+          expect(form.errors[:csv_file]).to include('The selected file must have fewer than 5 rows')
         end
       end
     end

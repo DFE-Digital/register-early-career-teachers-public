@@ -13,6 +13,23 @@
 <%= batch_processed_data_table(@pending_induction_submission_batch) %>
 <%= batch_download_data_table(@pending_induction_submission_batch) %>
 
+<%=
+  govuk_table(
+    caption: "Last inductions (#{@pending_induction_submission_batch.submissions_with_induction_periods.count} periods)",
+    head: %w[TRN FIRST LAST START PROGRAMME OUTCOME],      
+    rows: @pending_induction_submission_batch.submissions_with_induction_periods.map do |pending_induction_submission, induction_period|
+      [
+        pending_induction_submission.trn, 
+        pending_induction_submission.trs_first_name, 
+        pending_induction_submission.trs_last_name, 
+        induction_period.started_on&.to_fs(:iso8601) || '-', 
+        induction_period.induction_programme&.to_s || '-', 
+        (induction_period.outcome || '-')
+      ]
+    end,
+  )
+%>
+
 <% if @pending_induction_submission_batch.processed? %>
 <%# govuk_button_link_to 'Confirm changes', edit_ab_batch_claim_path(@pending_induction_submission_batch) %>
 <% end %>
