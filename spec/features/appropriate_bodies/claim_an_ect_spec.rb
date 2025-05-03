@@ -118,6 +118,10 @@ private
     expect(page.url).to end_with(path)
   end
 
+  # FIXME: flaky spec, result changes depending on day it is run
+  # On 3rd May (2005-05-03) the "finished_on: 13.months.ago" causes the unexpected error
+  # Enter a start date after the last induction period finished (3 April 2024)
+  #
   def when_i_enter_the_start_date
     @new_start_date = induction_period.finished_on + 1.week
 
