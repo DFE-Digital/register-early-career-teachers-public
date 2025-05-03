@@ -146,6 +146,42 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
+      context 'when the TRN contains additional padding' do
+        let(:trn) { '  1234567  ' }
+
+        it 'passes validation' do
+          expect(submission.error_messages).not_to eq ['Enter a valid TRN using 7 digits']
+        end
+
+        it 'uses a sanitised version to bypass database restrictions' do
+          expect(submission.trn).to eq '1234567'
+        end
+      end
+
+      context 'when the TRN contains additional non-digits' do
+        let(:trn) { '1234567L' }
+
+        it 'captures an error message' do
+          expect(submission.error_messages).to eq ['Enter a valid TRN using 7 digits']
+        end
+
+        it 'uses a sanitised version to bypass database restrictions' do
+          expect(submission.trn).to eq '1234567'
+        end
+      end
+
+      context 'when the TRN contains too many digits' do
+        let(:trn) { '1 2 3 4 5 6 7 8 9' }
+
+        it 'captures an error message' do
+          expect(submission.error_messages).to eq ['Enter a valid TRN using 7 digits']
+        end
+
+        it 'uses a sanitised version to bypass database restrictions' do
+          expect(submission.trn).to eq '1234567'
+        end
+      end
+
       context 'when the TRN is missing digits' do
         let(:trn) { '0004' }
 
@@ -238,6 +274,25 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
     end
 
+    context 'with an ongoing induction at another Appropriate Body' do
+      let(:other_body) { FactoryBot.create(:appropriate_body) }
+
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period, :active,
+                          appropriate_body: other_body,
+                          teacher:,
+                          started_on: '2024-1-1')
+      end
+
+      before do
+        service.process!
+      end
+
+      it 'captures error message' do
+        expect(submission.error_messages).to eq ['Kirk Van Houten is completing their induction with another appropriate body']
+      end
+    end
+
     context 'with an ongoing induction' do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :active,
@@ -248,7 +303,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
       before do
         service.process!
-        induction_period.reload
       end
 
       it 'creates a pending induction submission' do
@@ -291,7 +345,15 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:finished_on) { 1.year.from_now.to_date.to_s }
 
         it 'captures an error message' do
-          expect(submission.error_messages).to eq ['Finished on End date cannot be in the future']
+          expect(submission.error_messages).to eq ['End date cannot be in the future']
+        end
+      end
+
+      context 'when the end date is before the start date' do
+        let(:finished_on) { '2000-01-01' }
+
+        it 'captures an error message' do
+          expect(submission.error_messages).to eq ['Induction end date must be after the induction start date (1 January 2024)']
         end
       end
 
@@ -304,7 +366,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
         before do
           service.process!
-          induction_period.reload
         end
 
         it 'captures an error message' do

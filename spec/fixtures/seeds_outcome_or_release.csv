@@ -11,5 +11,5 @@ TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
 3002578,1977-09-10,2025-04-01,15,pass,
 3002577,2000-12-02,2025-04-01,12,fail,
 3002576,1999-03-04,2025-04-01,0.1,release,
-2632412,1984-02-16,2025-04-01,16,pass,
-2908239,1978-08-12,2025-04-01,1,fail,
+2632412,1984-02-16,2025-04-01,16,pass,Not claimable because prohibited
+2908239,1978-08-12,2025-04-01,1,fail,Not claimable because prohibited

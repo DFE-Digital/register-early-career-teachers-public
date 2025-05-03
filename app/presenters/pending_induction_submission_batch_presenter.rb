@@ -7,7 +7,7 @@ class PendingInductionSubmissionBatchPresenter < SimpleDelegator
     raise MissingCSVDataError, "No persisted CSV data found" if data.blank?
 
     rows.filter_map do |row|
-      failed_submission = pending_induction_submissions.with_errors.find_by(trn: row.trn)
+      failed_submission = pending_induction_submissions.with_errors.find_by(trn: row.sanitised_trn)
       row.with_errors(failed_submission.error_messages) if failed_submission.present?
     end
   end
@@ -67,7 +67,7 @@ class PendingInductionSubmissionBatchPresenter < SimpleDelegator
     pending_induction_submissions.without_errors.map do |pending_induction_submission|
       [
         pending_induction_submission,
-        pending_induction_submission.teacher.induction_periods.last
+        pending_induction_submission&.teacher&.induction_periods&.last
       ]
     end
   end

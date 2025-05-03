@@ -289,8 +289,8 @@ RSpec.describe PendingInductionSubmission do
     it 'persists error messages' do
       expect(pending_induction_submission.errors).to be_empty
       expect(pending_induction_submission.error_messages).to eq([
-        'Number of terms Enter a number of terms',
-        "Outcome Outcome must be either 'passed' or 'failed'"
+        'Enter a number of terms',
+        "Outcome must be either 'passed' or 'failed'"
       ])
       expect(pending_induction_submission.save).to be(true)
     end

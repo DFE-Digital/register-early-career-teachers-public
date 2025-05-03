@@ -108,7 +108,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submissions.first.error_messages }
 
-        it { is_expected.to eq ['TRS induction status TRS Induction Status is not known'] }
+        it { is_expected.to eq ['TRS Induction Status is not known'] }
       end
     end
 
@@ -251,9 +251,9 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
         it {
           expect(subject).to eq [
-            'Started on Start date cannot be in the future',
-            'TRS qts awarded on QTS has not been awarded',
-            'TRS induction status TRS Induction Status is not known'
+            'Start date cannot be in the future',
+            'QTS has not been awarded',
+            'TRS Induction Status is not known'
           ]
         }
       end

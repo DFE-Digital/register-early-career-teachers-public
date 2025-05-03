@@ -58,7 +58,7 @@ module AppropriateBodies
     end
 
     def row_count
-      errors.add(:csv_file, 'The selected file must have fewer than 1000 rows') if has_too_many_rows?
+      errors.add(:csv_file, "The selected file must have fewer than #{MAX_ROW_SIZE} rows") if has_too_many_rows?
       errors.add(:csv_file, 'The selected file is empty') if has_too_few_rows?
     end
 

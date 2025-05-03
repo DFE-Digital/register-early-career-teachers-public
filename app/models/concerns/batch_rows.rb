@@ -26,7 +26,7 @@ module BatchRows
 
       # @return [Boolean] 7 digits only
       def invalid_trn?
-        trn !~ /\A\d{7}\z/
+        trn.strip !~ /\A\d{7}\z/
       end
 
       # @return [Boolean] only "error" cell can be blank
@@ -77,8 +77,14 @@ module BatchRows
       # @return [Array<String>] encoded values for the row
       def to_a
         members.map do |key|
-          public_send(key).dup&.force_encoding("UTF-8")
+          public_send(key).to_s.dup.force_encoding("UTF-8")
         end
+      end
+
+      # @see Schools::Validation::TeacherReferenceNumber
+      # @return [String] Ensure a sparse record can be created even if it changes the TRN
+      def sanitised_trn
+        trn.to_s.gsub(/[^\d]/, "")[0, 7]
       end
     end
   end
