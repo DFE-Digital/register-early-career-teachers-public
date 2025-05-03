@@ -20,7 +20,7 @@ module AppropriateBodies
         ::PendingInductionSubmission.create(
           pending_induction_submission_batch:,
           appropriate_body:,
-          trn: row.trn,
+          trn: row.sanitised_trn,
           date_of_birth: row.date_of_birth
         )
       end

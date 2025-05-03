@@ -18,34 +18,7 @@ module AppropriateBodies
           @row = row
           @pending_induction_submission = sparse_pending_induction_submission
 
-          if incorrectly_formatted?
-            next
-          end
-
-          if (trs_error = fetch_trs_details!)
-            capture_error(trs_error)
-            next
-          end
-
-          if teacher.blank?
-            capture_error("#{name} has not yet been claimed")
-            next
-          end
-
-          if claimed_by_another_ab?
-            capture_error("#{name} is completing their induction with another appropriate body")
-            next
-          end
-
-          if completed_induction_period?
-            capture_error("#{name} has already completed their induction")
-            next
-          end
-
-          if ongoing_induction_period?
-            capture_error("#{name} does not have an open induction")
-            next
-          end
+          next if fails_pre_checks?
 
           validate_submission!
         rescue StandardError => e
@@ -98,6 +71,30 @@ module AppropriateBodies
       end
 
       # @return [Boolean]
+      def fails_pre_checks?
+        if incorrectly_formatted?
+          true
+        elsif (trs_error = fetch_trs_details!)
+          capture_error(trs_error)
+          true
+        elsif teacher.blank?
+          capture_error("#{name} has not yet been claimed")
+          true
+        elsif completed_induction_period?
+          capture_error("#{name} has already completed their induction")
+          true
+        elsif ongoing_induction_period?
+          capture_error("#{name} does not have an open induction")
+          true
+        elsif claimed_by_another_ab?
+          capture_error("#{name} is completing their induction with another appropriate body")
+          true
+        else
+          false
+        end
+      end
+
+      # @return [Boolean]
       def incorrectly_formatted?
         pending_induction_submission.errors.add(:base, 'Fill in the blanks on this row') if row.blank_cell?
         pending_induction_submission.errors.add(:base, 'Dates must be in the format YYYY-MM-DD') if row.invalid_date?
@@ -119,6 +116,11 @@ module AppropriateBodies
         ::PendingInductionSubmissions::Name.new(pending_induction_submission).full_name
       end
 
+      # @return [Teachers::InductionPeriod]
+      def induction_periods
+        ::Teachers::InductionPeriod.new(teacher)
+      end
+
       # @return [nil, String]
       def fetch_trs_details!
         pending_induction_submission.update(
@@ -133,28 +135,22 @@ module AppropriateBodies
       rescue TRS::Errors::QTSNotAwarded
         'QTS not awarded'
       rescue StandardError
-        'TRS API could not be contacted'
+        'Something went wrong. You’ll need to try again later'
       end
 
-      # @return [nil, InductionPeriod]
+      # @return [Boolean]
       def ongoing_induction_period?
         induction_periods.ongoing_induction_period.blank?
       end
 
-      # @return [nil, InductionPeriod]
+      # @return [Boolean]
       def completed_induction_period?
         induction_periods.last_induction_period&.outcome.present?
       end
 
-      def induction_periods
-        @induction_periods ||= ::Teachers::InductionPeriod.new(teacher)
-      end
-
       # @return [Boolean]
       def claimed_by_another_ab?
-        teacher &&
-          induction_periods.ongoing_induction_period &&
-          (appropriate_body != induction_periods.ongoing_induction_period&.appropriate_body)
+        appropriate_body != induction_periods.ongoing_induction_period&.appropriate_body
       end
 
       # @return [AppropriateBodies::ReleaseECT]
