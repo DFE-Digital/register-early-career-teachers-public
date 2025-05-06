@@ -193,6 +193,15 @@ module Events
       new(event_type:, author:, modifications:, teacher:, heading:, happened_at:).record_event!
     end
 
+    def self.record_teacher_trs_deactivated_event!(author:, teacher:, happened_at: Time.zone.now)
+      event_type = :teacher_trs_deactivated
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name} was deactivated in TRS"
+      body = "TRS API returned 410 so the record was marked as deactivated"
+
+      new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
+    end
+
     # Induction Extension Events
 
     def self.record_induction_extension_created_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)

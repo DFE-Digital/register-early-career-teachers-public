@@ -14,6 +14,7 @@ class Event < ApplicationRecord
     teacher_name_updated_by_trs
     teacher_passes_induction
     teacher_trs_attributes_updated
+    teacher_trs_deactivated
     teacher_trs_induction_status_updated
     teacher_registered_as_mentor
     teacher_registered_as_ect
