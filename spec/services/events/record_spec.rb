@@ -463,6 +463,23 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe '.record_teacher_trs_deactivated_event!' do
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_teacher_trs_deactivated_event!(author:, teacher:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "Rhys Ifans was deactivated in TRS",
+          event_type: :teacher_trs_deactivated,
+          happened_at: Time.zone.now,
+          body: "TRS API returned 410 so the record was marked as deactivated",
+          **author_params
+        )
+      end
+    end
+  end
+
   describe 'record_teacher_induction_status_reset_event!' do
     let(:event_type) { :teacher_induction_status_reset }
     let(:happened_at) { Time.zone.now }
