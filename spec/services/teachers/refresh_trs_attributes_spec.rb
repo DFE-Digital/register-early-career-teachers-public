@@ -57,5 +57,25 @@ describe Teachers::RefreshTRSAttributes do
 
       expect(teacher.events.last(expected_events.count).map(&:event_type)).to eql(expected_events)
     end
+
+    context 'when the teacher has been deactivated in TRS' do
+      include_context 'fake trs api client deactivated teacher'
+
+      let(:fake_manage) do
+        double(Teachers::Manage, mark_teacher_as_deactivated!: true)
+      end
+
+      before do
+        allow(Teachers::Manage).to receive(:new).with(any_args).and_return(fake_manage)
+      end
+
+      it "marks the teacher as deactivated when the TRS reports the teacher as 'gone'" do
+        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+
+        expect(fake_manage).to have_received(:mark_teacher_as_deactivated!).once.with(
+          trs_data_last_refreshed_at: within(0.001.seconds).of(Time.zone.now)
+        )
+      end
+    end
   end
 end
