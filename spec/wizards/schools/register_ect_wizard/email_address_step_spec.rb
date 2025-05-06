@@ -1,7 +1,8 @@
 RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
   subject { described_class.new(wizard:) }
 
-  let(:store) { FactoryBot.build(:session_repository, email: 'prepopulated@example.com') }
+  let(:teacher) { create(:teacher) }
+  let(:store) { FactoryBot.build(:session_repository, email: 'prepopulated@example.com', trn: teacher.trn) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :email_address, store:) }
 
   describe '#initialize' do
@@ -62,8 +63,18 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
   end
 
   describe '#previous_step' do
-    it 'returns the previous step' do
-      expect(subject.previous_step).to eq(:previous_ect_details)
+    context 'with ECTAtSchoolPeriods' do
+      let!(:ect_at_school_period) { create(:ect_at_school_period, teacher:) }
+
+      it 'returns the previous ect details page' do
+        expect(subject.previous_step).to eq(:previous_ect_details)
+      end
+    end
+
+    context 'with no ECTAtSchoolPeriods' do
+      it 'returns the review ect details page' do
+        expect(subject.previous_step).to eq(:review_ect_details)
+      end
     end
   end
 

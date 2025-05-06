@@ -13,7 +13,11 @@ module Schools
       end
 
       def next_step
-        :previous_ect_details
+        if Teacher.find_by_trn(@wizard.ect.trn)&.ect_at_school_periods&.exists?
+          :previous_ect_details
+        else
+          :email_address
+        end
       end
 
       def previous_step
