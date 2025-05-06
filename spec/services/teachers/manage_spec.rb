@@ -200,4 +200,29 @@ RSpec.describe Teachers::Manage do
       end
     end
   end
+
+  describe '#mark_teacher_as_deactivated!' do
+    let(:author) { Events::SystemAuthor.new }
+    let(:trs_data_last_refreshed_at) { 2.minutes.ago }
+
+    context 'when the teacher is already deactivated' do
+      let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs) }
+
+      it 'fails with a Teachers::Manage::AlreadyDeactivated error' do
+        expect { service.mark_teacher_as_deactivated!(trs_data_last_refreshed_at:) }.to raise_error(Teachers::Manage::AlreadyDeactivated)
+      end
+    end
+
+    context 'when the teacher is active' do
+      it 'sets the trs_deactivated flag to true' do
+        expect(teacher.trs_deactivated).to be(false)
+
+        service.mark_teacher_as_deactivated!(trs_data_last_refreshed_at:)
+        teacher.reload
+
+        expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
+        expect(teacher.trs_deactivated).to be(true)
+      end
+    end
+  end
 end
