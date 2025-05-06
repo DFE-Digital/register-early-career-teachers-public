@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::BranchChangeStateSchoolAppropriateBodyStep, type: :model do
+RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeStateSchoolAppropriateBodyStep, type: :model do
   subject { described_class.new(wizard:, appropriate_body_id: '123') }
 
   let(:school) { FactoryBot.create(:school, :independent) }
@@ -16,7 +16,7 @@ RSpec.describe Schools::RegisterECTWizard::BranchChangeStateSchoolAppropriateBod
     context 'when the school has programme choices' do
       let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_ab_chosen, :provider_led_chosen) }
 
-      it { expect(subject.next_step).to eq(:branch_change_programme_type) }
+      it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_programme_type) }
     end
 
     context 'when the school has no programme choices' do
@@ -28,7 +28,7 @@ RSpec.describe Schools::RegisterECTWizard::BranchChangeStateSchoolAppropriateBod
     context 'when the school has programme choices' do
       let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
-      it { expect(subject.previous_step).to eq(:branch_change_use_previous_ect_choices) }
+      it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_use_previous_ect_choices) }
     end
 
     context 'when the school has no programme choices' do

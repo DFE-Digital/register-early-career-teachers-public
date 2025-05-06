@@ -1,8 +1,8 @@
 module Schools
   module RegisterECTWizard
-    class BranchChangeStateSchoolAppropriateBodyStep < StateSchoolAppropriateBodyStep
+    class NoPreviousECTChoicesChangeStateSchoolAppropriateBodyStep < StateSchoolAppropriateBodyStep
       def next_step
-        return :branch_change_programme_type if school.programme_choices?
+        return :no_previous_ect_choices_change_programme_type if school.programme_choices?
 
         :check_answers
       end
