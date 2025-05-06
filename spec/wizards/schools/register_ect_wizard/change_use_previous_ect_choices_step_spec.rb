@@ -29,13 +29,13 @@ RSpec.describe Schools::RegisterECTWizard::ChangeUsePreviousECTChoicesStep, type
       context 'independent school' do
         let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
-        it { expect(subject.next_step).to eq(:branch_change_independent_school_appropriate_body) }
+        it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_independent_school_appropriate_body) }
       end
 
       context 'state funded school' do
         let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
-        it { expect(subject.next_step).to eq(:branch_change_state_school_appropriate_body) }
+        it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_state_school_appropriate_body) }
       end
     end
   end

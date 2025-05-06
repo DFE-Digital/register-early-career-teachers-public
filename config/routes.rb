@@ -137,22 +137,22 @@ Rails.application.routes.draw do
       post "state-school-appropriate-body", action: :create
       get "change-state-school-appropriate-body", action: :new
       post "change-state-school-appropriate-body", action: :create
-      get "branch-change-state-school-appropriate-body", action: :new
-      post "branch-change-state-school-appropriate-body", action: :create
+      get "no-previous-ect-choices-change-state-school-appropriate-body", action: :new
+      post "no-previous-ect-choices-change-state-school-appropriate-body", action: :create
 
       get "independent-school-appropriate-body", action: :new
       post "independent-school-appropriate-body", action: :create
       get "change-independent-school-appropriate-body", action: :new
       post "change-independent-school-appropriate-body", action: :create
-      get "branch-change-independent-school-appropriate-body", action: :new
-      post "branch-change-independent-school-appropriate-body", action: :create
+      get "no-previous-ect-choices-change-independent-school-appropriate-body", action: :new
+      post "no-previous-ect-choices-change-independent-school-appropriate-body", action: :create
 
       get "programme-type", action: :new
       post "programme-type", action: :create
       get "change-programme-type", action: :new
       post "change-programme-type", action: :create
-      get "branch-change-programme-type", action: :new
-      post "branch-change-programme-type", action: :create
+      get "no-previous-ect-choices-change-programme-type", action: :new
+      post "no-previous-ect-choices-change-programme-type", action: :create
 
       get "lead-provider", action: :new
       post "lead-provider", action: :create
@@ -172,8 +172,8 @@ Rails.application.routes.draw do
 
       get "change-lead-provider", action: :new
       post "change-lead-provider", action: :create
-      get "branch-change-lead-provider", action: :new
-      post "branch-change-lead-provider", action: :create
+      get "no-previous-ect-choices-change-lead-provider", action: :new
+      post "no-previous-ect-choices-change-lead-provider", action: :create
 
       get "cant-use-email", action: :new
       post "cant-use-email", action: :create
