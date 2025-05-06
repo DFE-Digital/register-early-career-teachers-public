@@ -6,7 +6,7 @@ RSpec.describe 'Claiming an ECT' do
   before { sign_in_as_appropriate_body_user(appropriate_body:) }
 
   describe "when the ECT has not passed the induction" do
-    before do
+    let!(:induction_period) do
       FactoryBot.create(:induction_period, teacher:, started_on: 14.months.ago, finished_on: 13.months.ago, appropriate_body: other_body)
     end
 
@@ -119,10 +119,11 @@ private
   end
 
   def when_i_enter_the_start_date
-    page.get_by_label('Day').fill('3')
-    page.get_by_label('Month').fill('4')
-    @start_year = Time.zone.today.year - 1
-    page.get_by_label('Year').fill(@start_year.to_s)
+    @new_start_date = induction_period.finished_on + 1.week
+
+    page.get_by_label('Day').fill(@new_start_date.day.to_s)
+    page.get_by_label('Month').fill(@new_start_date.month.to_s)
+    page.get_by_label('Year').fill(@new_start_date.year.to_s)
   end
 
   def and_choose_an_induction_programme
@@ -139,7 +140,7 @@ private
       expect(sub.date_of_birth).to eql(Date.new(2003, 2, 1))
       expect(sub.trs_first_name).to eql('Kirk')
       expect(sub.trs_last_name).to eql('Van Houten')
-      expect(sub.started_on).to eql(Date.new(@start_year, 4, 3))
+      expect(sub.started_on).to eql(@new_start_date)
     end
   end
 
