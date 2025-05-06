@@ -47,6 +47,9 @@ class Teacher < ApplicationRecord
     order(arel_table[:trs_data_last_refreshed_at].asc.nulls_first)
   }
 
+  scope :deactivated_in_trs, -> { where(trs_deactivated: true) }
+  scope :active_in_trs, -> { where(trs_deactivated: false) }
+
   # Instance methods
   def eligible_for_mentor_funding?
     mentor_became_ineligible_for_funding_on.blank? && mentor_became_ineligible_for_funding_reason.blank?

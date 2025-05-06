@@ -42,3 +42,4 @@ shared:
     - trs_initial_teacher_training_provider_name
     - trs_initial_teacher_training_end_date
     - trs_data_last_refreshed_at
+    - trs_deactivated
