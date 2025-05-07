@@ -9,13 +9,13 @@ RSpec.describe ProgrammeHelper, type: :helper do
     end
   end
 
-  describe '#programme_choices' do
+  describe '#previous_choice_message' do
     context 'when use_previous_ect_choices is true' do
-      it { expect(programme_choices(true)).to eq("Yes, use the programme choices used by my school previously") }
+      it { expect(previous_choice_message(true)).to eq("Yes, use the programme choices used by my school previously") }
     end
 
     context 'when use_previous_ect_choices is false' do
-      it { expect(programme_choices(false)).to eq("No, don't use the programme choices used by my school previously") }
+      it { expect(previous_choice_message(false)).to eq("No, don't use the programme choices used by my school previously") }
     end
   end
 end
