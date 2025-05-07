@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_29_103043) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_01_130805) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -123,6 +123,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_103043) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.index ["name"], name: "index_delivery_partners_on_name", unique: true
   end
 
@@ -295,6 +296,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_103043) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
   end
 
@@ -399,6 +401,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_103043) do
     t.bigint "chosen_appropriate_body_id"
     t.bigint "chosen_lead_provider_id"
     t.enum "chosen_programme_type", enum_type: "programme_type"
+    t.uuid "ecf_id", default: -> { "gen_random_uuid()" }, null: false
     t.index ["chosen_appropriate_body_id"], name: "index_schools_on_chosen_appropriate_body_id"
     t.index ["chosen_lead_provider_id"], name: "index_schools_on_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true

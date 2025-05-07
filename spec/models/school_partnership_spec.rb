@@ -6,6 +6,7 @@ describe SchoolPartnership do
     it { is_expected.to have_one(:lead_provider).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:registration_period).through(:lead_provider_delivery_partnership) }
+    it { is_expected.to have_one(:lead_provider_active_period).through(:lead_provider_delivery_partnership) }
   end
 
   describe "validations" do
