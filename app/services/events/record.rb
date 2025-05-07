@@ -238,6 +238,26 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, happened_at:).record_event!
     end
 
+    def self.record_teacher_starts_mentoring_event!(author:, mentor:, mentee:, mentor_at_school_period:, mentorship_period:, school:, happened_at: Time.zone.now)
+      event_type = :teacher_starts_mentoring
+      mentor_name = Teachers::Name.new(mentor).full_name
+      mentee_name = Teachers::Name.new(mentee).full_name
+      heading = "#{mentor_name} started mentoring #{mentee_name}"
+      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+
+      new(event_type:, author:, heading:, mentorship_period:, mentor_at_school_period:, teacher: mentor, school:, metadata:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_starts_being_mentored_event!(author:, mentor:, mentee:, ect_at_school_period:, mentorship_period:, school:, happened_at: Time.zone.now)
+      event_type = :teacher_starts_being_mentored
+      mentor_name = Teachers::Name.new(mentor).full_name
+      mentee_name = Teachers::Name.new(mentee).full_name
+      heading = "#{mentee_name} is being mentored by #{mentor_name}"
+      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+
+      new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
+    end
+
   private
 
     def attributes
