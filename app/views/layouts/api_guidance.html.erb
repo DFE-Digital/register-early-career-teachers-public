@@ -18,7 +18,12 @@
 
     <div class="x-govuk-masthead">
       <div class="govuk-width-container">
-        <%= environment_specific_phase_banner %>
+        <%=
+          environment_specific_phase_banner(
+            html_attributes: { class: %w[x-govuk-phase-banner--inverse] },
+            tag_html_attributes: { class: %w[x-govuk-tag--inverse] }
+          )
+        %>
 
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds-from-desktop">
