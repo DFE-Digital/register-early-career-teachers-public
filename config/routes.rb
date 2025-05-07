@@ -250,6 +250,8 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
+    get 'guidance', to: 'guidance#show'
+
     namespace :v3 do
       resources :participants, only: %i[index show] do
         put :change_schedule, path: "change-schedule"
