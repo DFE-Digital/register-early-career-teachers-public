@@ -152,6 +152,17 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
       expect(expression_of_interest.reload.school_partnership).to eq(created_school_partnership)
     end
 
+    it "ignores expressions of interest that have already been actioned" do
+      ect_at_school_period = create(:ect_at_school_period, school:, started_on: 1.year.ago, finished_on: 1.week.ago)
+      expression_of_interest = create(:training_period,
+                                      expression_of_interest: lead_provider_active_period,
+                                      ect_at_school_period:,
+                                      started_on: 2.months.ago,
+                                      finished_on: 1.month.ago)
+
+      expect { create_school_partnership }.not_to(change { expression_of_interest.reload.school_partnership })
+    end
+
     it "ignores expressions of interest for the lead provider active period if the school is different" do
       ect_at_school_period = create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 1.week.ago)
       expression_of_interest = create(:training_period,

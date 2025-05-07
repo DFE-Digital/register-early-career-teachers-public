@@ -33,7 +33,7 @@ module API::SchoolPartnerships
   private
 
     def accept_expressions_of_interest(school_partnership)
-      expressions_of_interest = school_partnership.lead_provider_active_period.expressions_of_interest
+      expressions_of_interest = school_partnership.lead_provider_active_period.expressions_of_interest.pending
       expressions_of_interest.for_school(school).each do |expression_of_interest|
         expression_of_interest.update!(school_partnership:)
       end

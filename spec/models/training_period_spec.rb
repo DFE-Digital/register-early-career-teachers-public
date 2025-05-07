@@ -164,6 +164,16 @@ describe TrainingPeriod do
   end
 
   describe "scopes" do
+    describe ".pending" do
+      subject { described_class.pending }
+
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01') }
+      let!(:actioned_expression_of_interest) { create(:training_period, ect_at_school_period:, started_on: '2022-01-01', finished_on: '2022-06-01') }
+      let!(:pending_expression_of_interest) { create(:training_period, ect_at_school_period:, school_partnership: nil, started_on: '2022-06-01', finished_on: '2023-01-01') }
+
+      it { is_expected.to contain_exactly(pending_expression_of_interest) }
+    end
+
     describe ".for_ect" do
       it "returns training periods only for the specified ect at school period" do
         expect(TrainingPeriod.for_ect(123).to_sql).to end_with(%(WHERE "training_periods"."ect_at_school_period_id" = 123))

@@ -30,6 +30,7 @@ class TrainingPeriod < ApplicationRecord
     left_outer_joins(:ect_at_school_period, :mentor_at_school_period)
     .where("ect_at_school_periods.school_id = :school_id OR mentor_at_school_periods.school_id = :school_id", school_id: school.id)
   end
+  scope :pending, -> { where(school_partnership_id: nil) }
 
   # Instance methods
   def for_ect?
