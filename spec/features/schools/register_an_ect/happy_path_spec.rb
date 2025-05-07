@@ -79,7 +79,7 @@ RSpec.describe 'Registering an ECT' do
     when_i_select_provider_led
     and_i_click_continue
 
-    then_i_should_be_taken_to_the_change_lead_provider_page
+    then_i_should_be_taken_to_the_programme_type_change_lead_provider_page
     when_i_select_a_lead_provider
     and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
@@ -298,8 +298,8 @@ RSpec.describe 'Registering an ECT' do
     page.get_by_label("Provider-led").check
   end
 
-  def then_i_should_be_taken_to_the_change_lead_provider_page
-    expect(page.url).to end_with('/schools/register-ect/change-lead-provider')
+  def then_i_should_be_taken_to_the_programme_type_change_lead_provider_page
+    expect(page.url).to end_with('/schools/register-ect/programme-type-change-lead-provider')
   end
 
   def when_i_select_a_lead_provider

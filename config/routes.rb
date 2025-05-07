@@ -160,6 +160,8 @@ Rails.application.routes.draw do
       post "change-lead-provider", action: :create
       get "no-previous-ect-choices-change-lead-provider", action: :new
       post "no-previous-ect-choices-change-lead-provider", action: :create
+      get "programme-type-change-lead-provider", action: :new
+      post "programme-type-change-lead-provider", action: :create
 
       get "working-pattern", action: :new
       post "working-pattern", action: :create
