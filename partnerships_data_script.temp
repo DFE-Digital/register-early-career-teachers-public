@@ -1,0 +1,80 @@
+Migration::Cohort.find_each do |cohort|
+  RegistrationPeriod.create!(year: cohort.start_year, started_on: "#{cohort.start_year}-06-01", finished_on: "#{cohort.start_year + 1}-05-31") unless RegistrationPeriod.exists?(year: cohort.start_year) 
+end
+
+Migration::LeadProvider.find_each do |lead_provider|
+  LeadProvider.find_or_create_by!(name: lead_provider.name, ecf_id: lead_provider.id)
+end
+
+Migration::DeliveryPartner.find_each do |delivery_partner|
+  DeliveryPartner.find_or_create_by!(name: delivery_partner.name, ecf_id: delivery_partner.id)
+end
+
+schools_not_found = {}
+Migration::School.find_each do |ecf_school|
+  gias_school = GIAS::School.find_by(urn: ecf_school.urn)
+  
+  if gias_school.nil?
+    school_status = {
+      "Open" => :open,
+      "Closed" => :closed,
+      "Open, but proposed to close" => :proposed_to_close,
+      "Proposed to open" => :proposed_to_open,
+    }.freeze
+
+    gias_school = GIAS::School.new(
+      urn: ecf_school.urn,
+      name: ecf_school.name,
+      status: school_status[ecf_school.school_status_name],
+      funding_eligibility: :eligible_for_fip, # not used
+      section_41_approved: ecf_school.section_41_approved,
+      type_name: ecf_school.school_type_name,
+      local_authority_code: rand(20), # not used
+      establishment_number: ecf_school.urn, # not used
+      induction_eligibility: true, # not used
+      ukprn: ecf_school.ukprn, # not used
+      in_england: ecf_school.in_england?,
+    )
+
+    unless gias_school.save
+      schools_not_found[ecf_school.id] << ecf_school.errors.full_messages
+      next
+    end
+  end
+
+  school = School.find_or_create_by!(urn: ecf_school.urn)
+  school.update!(ecf_id: ecf_school.id)
+end
+
+schools_not_found.count
+=> 3007 (out of 54796 total)
+
+invalid_school_partnerships = {}
+Migration::Partnership.includes(:cohort).find_each do |partnership|
+  lead_provider = LeadProvider.find_by(ecf_id: partnership.lead_provider_id)
+  registration_period = RegistrationPeriod.find_by(year: partnership.cohort.start_year)
+  delivery_partner = DeliveryPartner.find_by(ecf_id: partnership.delivery_partner_id)
+
+  lead_provider_active_period = LeadProviderActivePeriod.find_or_create_by!(lead_provider:, registration_period:)
+  LeadProviderDeliveryPartnership.find_or_create_by!(lead_provider_active_period:, delivery_partner:)
+
+  service = API::SchoolPartnerships::Create.new(
+    registration_year: partnership.cohort.start_year,
+    school_ecf_id: partnership.school_id,
+    lead_provider_ecf_id: partnership.lead_provider_id,
+    delivery_partner_ecf_id: partnership.delivery_partner_id,
+  )
+
+  unless service.create
+    invalid_school_partnerships[partnership.id] = service.errors
+  end
+end
+
+invalid_school_partnerships.values.map(&:full_messages).flatten.tally
+
+=> 
+{"School ECF School is not eligible"=>399,
+ "School ECF School is CIP only"=>69,
+ "School ECF School does not exist"=>14}
+
+ # 63879 total
