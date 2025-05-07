@@ -47,7 +47,7 @@ end %>
   if @school.programme_choices?
     summary_list.with_row do |row|
       row.with_key(text: 'Choices used by your school previously')
-      row.with_value(text: programme_choices(@ect.use_previous_ect_choices))
+      row.with_value(text: previous_choice_message(@ect.use_previous_ect_choices))
       row.with_action(text: 'Change',
                       href: change_use_previous_ect_choices_path(@school),
                       visually_hidden_text: 'choices used by your school previously')
