@@ -251,6 +251,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     get 'guidance', to: 'guidance#show'
+    get 'guidance/*page', to: 'guidance#page', as: :guidance_page
 
     namespace :v3 do
       resources :participants, only: %i[index show] do
