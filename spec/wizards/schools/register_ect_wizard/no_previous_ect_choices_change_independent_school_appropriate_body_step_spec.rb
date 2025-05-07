@@ -28,7 +28,7 @@ RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeIndependent
     context 'when the school has programme choices' do
       let(:school) { FactoryBot.create(:school, :independent, :national_ab_chosen, :school_led_chosen) }
 
-      it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_use_previous_ect_choices) }
+      it { expect(subject.previous_step).to eq(:change_use_previous_ect_choices) }
     end
 
     context 'when the school has no programme choices' do

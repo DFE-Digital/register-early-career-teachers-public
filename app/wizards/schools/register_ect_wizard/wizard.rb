@@ -18,6 +18,7 @@ module Schools
             change_email_address: ChangeEmailAddressStep,
             change_independent_school_appropriate_body: ChangeIndependentSchoolAppropriateBodyStep,
             change_lead_provider: ChangeLeadProviderStep,
+            programme_type_change_lead_provider: ProgrammeTypeChangeLeadProviderStep,
             change_programme_type: ChangeProgrammeTypeStep,
             change_review_ect_details: ChangeReviewECTDetailsStep,
             change_start_date: ChangeStartDateStep,
