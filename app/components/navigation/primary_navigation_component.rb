@@ -27,9 +27,15 @@ module Navigation
       'register-early-career-teachers-service-navigation-list'
     end
 
-    def navigation_items
-      return [] unless current_user_type
+    def navigation_area
+      if current_path.start_with?('/api/guidance')
+        :api_guidance
+      else
+        current_user_type
+      end
+    end
 
+    def navigation_items
       {
         appropriate_body_user: [],
         dfe_staff_user: [
@@ -39,8 +45,14 @@ module Navigation
         school_user: [
           { text: "Your ECTs", href: schools_ects_home_path },
           { text: "Your Mentors", href: schools_mentors_home_path },
+        ],
+        api_guidance: [
+          { text: "Home", href: '/api/guidance' },
+          { text: "Page 1", href: '/api/guidance/page-1' },
+          { text: "Page 2", href: '/api/guidance/page-2' },
+          { text: "Page 3", href: '/api/guidance/page-3' },
         ]
-      }.fetch(current_user_type)
+      }.fetch(navigation_area, [])
     end
   end
 end
