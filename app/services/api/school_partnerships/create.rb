@@ -19,7 +19,7 @@ module API::SchoolPartnerships
     validate :delivery_partner_exists
     validate :lead_provider_delivery_partnership_exists
     validate :school_partnership_does_not_already_exists
-    validate :school_training_period_exists
+    validate :school_training_period_exists # NOTE: disable before running partnership migration script
 
     def create
       return false unless valid?
@@ -72,6 +72,8 @@ module API::SchoolPartnerships
     end
 
     def school_is_eligible
+      return unless school
+
       errors.add(:school_ecf_id, "School is not eligible") unless school&.eligible?
     end
 
