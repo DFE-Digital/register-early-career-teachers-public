@@ -5,7 +5,7 @@
 
 <% else %>
   <p class='govuk-body'>
-    Your CSV named '<%= batch.filename %>' has <%= batch.pending_induction_submissions.count %> ECT records including:
+    Your CSV named '<%= batch.filename %>' has <%= batch.pending_induction_submissions.without_errors.count %> ECT records including:
   </p>
 
   <%= batch_summary(batch) %>

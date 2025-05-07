@@ -8,7 +8,7 @@
 <%= govuk_panel(title_text: "Outcomes successfully recorded") %>
 
 <p class='govuk-body'>
-  You uploaded <%= batch.pending_induction_submissions.count %> ECT records including:
+  You uploaded <%= batch.pending_induction_submissions.without_errors.count %> ECT records including:
 </p>
 
 <%= batch_summary(batch) %>
