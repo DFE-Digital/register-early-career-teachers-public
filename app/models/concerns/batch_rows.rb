@@ -101,7 +101,7 @@ module BatchRows
 
   # @return [Enumerator::Lazy<ClaimRow, ActionRow>] Struct-like without headers
   def rows
-    data.each.lazy.map { |row| row_class.new(**row.symbolize_keys) }
+    data.each.lazy.map { |row| row_class.new(error: nil, **row.symbolize_keys) }
   end
 
 private

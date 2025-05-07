@@ -1,4 +1,5 @@
 module BatchHelper
+  # @param batch [PendingInductionSubmissionBatch]  
   def batch_status_tag(batch)
     colours = {
       pending: 'grey',
@@ -11,6 +12,7 @@ module BatchHelper
     govuk_tag(text: batch.batch_status, colour: colours[batch.batch_status.to_sym])
   end
 
+  # @param batches [Array<PendingInductionSubmissionBatches>]
   def batch_list_table(batches)
     govuk_table(
       caption: 'Upload history',
@@ -29,8 +31,9 @@ module BatchHelper
     )
   end
 
+  # @param batch [PendingInductionSubmissionBatch]
   def batch_summary(batch)
-    submissions = batch.pending_induction_submissions
+    submissions = batch.pending_induction_submissions.without_errors
 
     govuk_list([
       "#{pluralize(submissions.pass.count, 'ECT')} with a passed induction",
