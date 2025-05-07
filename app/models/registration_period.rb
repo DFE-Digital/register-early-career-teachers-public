@@ -5,7 +5,6 @@ class RegistrationPeriod < ApplicationRecord
 
   # Associations
   has_many :lead_provider_active_periods
-  has_many :school_partnerships, inverse_of: :registration_period
 
   # Validations
   validates :year,
