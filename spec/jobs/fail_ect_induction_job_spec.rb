@@ -6,9 +6,12 @@ RSpec.describe FailECTInductionJob, type: :job do
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
   let!(:pending_induction_submission_id) { pending_induction_submission.id }
   let(:api_client) { instance_double(TRS::APIClient) }
+  let(:refresh_service) { instance_double(Teachers::RefreshTRSAttributes) }
 
   before do
     allow(TRS::APIClient).to receive(:new).and_return(api_client)
+    allow(Teachers::RefreshTRSAttributes).to receive(:new).with(teacher).and_return(refresh_service)
+    allow(refresh_service).to receive(:refresh!)
   end
 
   describe '#perform' do
@@ -43,6 +46,17 @@ RSpec.describe FailECTInductionJob, type: :job do
 
           expect(pending_induction_submission.delete_at).to eql(24.hours.from_now)
         end
+      end
+
+      it "refreshes the teacher's TRS attributes" do
+        expect(refresh_service).to receive(:refresh!)
+
+        described_class.perform_now(
+          trn:,
+          start_date:,
+          completed_date:,
+          pending_induction_submission_id:
+        )
       end
     end
   end
