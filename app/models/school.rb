@@ -8,6 +8,7 @@ class School < ApplicationRecord
        suffix: :programme_type_chosen
 
   # Associations
+  has_many :school_partnerships
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
   belongs_to :chosen_appropriate_body, class_name: 'AppropriateBody'
   belongs_to :chosen_lead_provider, class_name: 'LeadProvider'
@@ -81,6 +82,16 @@ class School < ApplicationRecord
 
   # chosen_lead_provider_name
   delegate :name, to: :chosen_lead_provider, prefix: true, allow_nil: true
+
+  def cip_only? = !eligible? && open? && cip_only_type?
+
+  def eligible? = open? && in_england && (eligible_establishment_type? || section_41_approved)
+
+  def open? = status.in?(%w[open proposed_to_close])
+
+  def cip_only_type? = type_name.in?(GIAS::Types::CIP_ONLY_TYPES)
+
+  def eligible_establishment_type? = type_name.in?(GIAS::Types::ELIGIBLE_TYPES)
 
   def independent? = GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(type_name)
 

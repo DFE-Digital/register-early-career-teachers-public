@@ -4,7 +4,8 @@ class TrainingPeriod < ApplicationRecord
   # Associations
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
-  belongs_to :school_partnership
+  belongs_to :school_partnership, optional: true
+  belongs_to :expression_of_interest, class_name: "LeadProviderActivePeriod", inverse_of: :expressions_of_interest
 
   has_many :declarations, inverse_of: :training_period
   has_many :events
@@ -13,20 +14,23 @@ class TrainingPeriod < ApplicationRecord
   has_one :delivery_partner, through: :school_partnership
 
   # Validations
-  validates :started_on,
-            presence: true
+  validates :started_on, presence: true
 
-  validates :school_partnership_id,
-            presence: true
-
+  validate :at_least_one_partnership
   validate :one_id_of_trainee_present
   validate :trainee_distinct_period
   validate :enveloped_by_trainee_at_school_period
+  validate :school_partnership_school_is_consistent
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
   scope :for_mentor, ->(mentor_at_school_period_id) { where(mentor_at_school_period_id:) }
   scope :for_school_partnership, ->(school_partnership_id) { where(school_partnership_id:) }
+  scope :for_school, ->(school) do
+    left_outer_joins(:ect_at_school_period, :mentor_at_school_period)
+    .where("ect_at_school_periods.school_id = :school_id OR mentor_at_school_periods.school_id = :school_id", school_id: school.id)
+  end
+  scope :pending, -> { where(school_partnership_id: nil) }
 
   # Instance methods
   def for_ect?
@@ -48,6 +52,18 @@ class TrainingPeriod < ApplicationRecord
   end
 
 private
+
+  def school_partnership_school_is_consistent
+    school_ids = [school_partnership&.school_id, ect_at_school_period&.school_id, mentor_at_school_period&.school_id].compact
+    return if school_ids.uniq.one?
+
+    errors.add(:base, "School partnership is not consistent with the trainee's school")
+  end
+
+  def at_least_one_partnership
+    ids = [expression_of_interest_id, school_partnership_id]
+    errors.add(:base, "An expression of interest or school partnership is required") if ids.none?
+  end
 
   def one_id_of_trainee_present
     ids = [ect_at_school_period_id, mentor_at_school_period_id]

@@ -1,5 +1,12 @@
 ---
 :shared:
+  :api_tokens:
+  - id
+  - lead_provider_id
+  - hashed_token
+  - last_used_at
+  - created_at
+  - updated_at
   :appropriate_bodies:
     - body_type
   :blazer_queries:
@@ -182,6 +189,8 @@
   - range
   - ecf_start_induction_record_id
   - ecf_end_induction_record_id
+  - expression_of_interest_id
+  - school_partnership_id
   :teacher_migration_failures:
   - id
   - teacher_id
@@ -195,6 +204,7 @@
   - chosen_lead_provider_id
   - chosen_programme_type
   - id
+  - ecf_id
   - created_at
   - updated_at
   - urn
@@ -203,6 +213,8 @@
   - registration_period_id
   - lead_provider_id
   - delivery_partner_id
+  - lead_provider_delivery_partnership_id
+  - school_id
   - created_at
   - updated_at
   :teachers:
@@ -275,6 +287,7 @@
   - email
   :lead_providers:
   - id
+  - ecf_id
   - name
   - created_at
   - updated_at
@@ -326,6 +339,7 @@
   - updated_at
   :delivery_partners:
   - id
+  - ecf_id
   - name
   - created_at
   - updated_at
@@ -358,5 +372,17 @@
   :early_roll_out_mentors:
   - id
   - trn
+  - created_at
+  - updated_at
+  :lead_provider_delivery_partnerships:
+  - id
+  - lead_provider_active_period_id
+  - delivery_partner_id
+  - created_at
+  - updated_at
+  :lead_provider_active_periods:
+  - id
+  - lead_provider_id
+  - registration_period_id
   - created_at
   - updated_at

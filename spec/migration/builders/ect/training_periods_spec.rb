@@ -1,9 +1,12 @@
 describe Builders::ECT::TrainingPeriods do
   subject(:service) { described_class.new(teacher:, training_period_data:) }
 
-  let(:registration_period) { FactoryBot.create(:registration_period) }
-  let(:partnership_1) { FactoryBot.create(:school_partnership, registration_period:) }
-  let(:partnership_2) { FactoryBot.create(:school_partnership, registration_period:) }
+  let(:lead_provider_active_period) { FactoryBot.create(:lead_provider_active_period) }
+  let(:registration_period) { lead_provider_active_period.registration_period }
+  let(:lead_provider_delivery_partnership_1) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider_active_period:) }
+  let(:lead_provider_delivery_partnership_2) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider_active_period:) }
+  let(:partnership_1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_1, school: school_1) }
+  let(:partnership_2) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_2, school: school_2) }
   let(:school_1) { FactoryBot.create(:school, :independent, urn: "123456") }
   let(:school_2) { FactoryBot.create(:school, :independent, urn: "987654") }
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -29,12 +32,14 @@ describe Builders::ECT::TrainingPeriods do
       expect(periods.first.finished_on).to eq training_period_1.end_date
       expect(periods.first.ecf_start_induction_record_id).to eq training_period_1.start_source_id
       expect(periods.first.ecf_end_induction_record_id).to eq training_period_1.end_source_id
+      expect(periods.first.expression_of_interest).to eq lead_provider_active_period
 
       expect(periods.last.school_partnership).to eq partnership_2
       expect(periods.last.started_on).to eq training_period_2.start_date
       expect(periods.last.finished_on).to be_blank
       expect(periods.last.ecf_start_induction_record_id).to eq training_period_2.start_source_id
       expect(periods.last.ecf_end_induction_record_id).to eq training_period_2.end_source_id
+      expect(periods.last.expression_of_interest).to eq lead_provider_active_period
     end
 
     context "when there is no ECTAtSchoolPeriod that contains the training dates" do
