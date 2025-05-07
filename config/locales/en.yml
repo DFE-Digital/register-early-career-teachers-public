@@ -1,0 +1,7 @@
+en:
+  api:
+    errors:
+      bad_request: "Bad request"
+      invalid_page_parameters: "The '#/page[page]' and '#/page[per_page]' parameter values must be a valid number (equal and more than 1)"
+      unauthorized: "HTTP Token: Access denied"
+      unpermitted_parameters: "Unpermitted parameters"

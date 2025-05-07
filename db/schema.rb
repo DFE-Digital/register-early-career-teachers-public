@@ -30,6 +30,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_01_130805) do
   create_enum "programme_type", ["provider_led", "school_led"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
+  create_table "api_tokens", force: :cascade do |t|
+    t.bigint "lead_provider_id", null: false
+    t.string "hashed_token", null: false
+    t.datetime "last_used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hashed_token"], name: "index_api_tokens_on_hashed_token", unique: true
+    t.index ["lead_provider_id"], name: "index_api_tokens_on_lead_provider_id"
+  end
+
   create_table "appropriate_bodies", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -594,6 +604,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_01_130805) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "api_tokens", "lead_providers"
   add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "lead_providers"
