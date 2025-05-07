@@ -5,11 +5,11 @@ module Admin
     end
 
     def full_name
-      Teachers::Name.new(teacher).full_name
+      ::Teachers::Name.new(teacher).full_name
     end
 
     def roles
-      Teachers::Role.new(teacher:).to_s
+      ::Teachers::Role.new(teacher:).to_s
     end
 
     def ect?
