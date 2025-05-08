@@ -15,11 +15,21 @@ module Admin
     def delete_induction_period!
       modifications = induction_period.attributes.transform_values { |v| [v, nil] }
       appropriate_body = induction_period.appropriate_body
+      has_other_periods = teacher.induction_periods.where.not(id: induction_period.id).exists?
 
       ActiveRecord::Base.transaction do
+        # Store the induction period ID before destroying
+        induction_period_id = induction_period.id
+
         induction_period.destroy!
-        record_event(modifications, appropriate_body)
-        reset_trs_if_needed
+
+        if has_other_periods
+          update_trs_start_date
+          record_update_event(modifications, appropriate_body)
+        else
+          reset_trs_status
+          record_delete_event(modifications, appropriate_body)
+        end
       end
 
       true
@@ -27,13 +37,29 @@ module Admin
 
   private
 
-    def reset_trs_if_needed
-      if teacher.induction_periods.reload.none?
-        TRS::APIClient.new.reset_teacher_induction(trn: teacher.trn)
-      end
+    def update_trs_start_date
+      next_earliest_period = teacher.induction_periods.reload.earliest_first.first
+      TRS::APIClient.new.begin_induction!(
+        trn: teacher.trn,
+        start_date: next_earliest_period.started_on
+      )
     end
 
-    def record_event(modifications, appropriate_body)
+    def reset_trs_status
+      TRS::APIClient.new.reset_teacher_induction(trn: teacher.trn)
+    end
+
+    def record_update_event(modifications, appropriate_body)
+      Events::Record.record_induction_period_updated_event!(
+        author:,
+        modifications:,
+        teacher:,
+        appropriate_body:,
+        happened_at: Time.zone.now
+      )
+    end
+
+    def record_delete_event(modifications, appropriate_body)
       Events::Record.record_induction_period_deleted_event!(
         author:,
         modifications:,

@@ -18,7 +18,7 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period)
-      and_an_event_should_have_been_recorded
+      and_an_event_should_have_been_recorded("induction_period_deleted")
       and_trs_status_should_be_reset
     end
   end
@@ -36,7 +36,7 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period1)
-      and_an_event_should_have_been_recorded
+      and_an_event_should_have_been_recorded("induction_period_updated")
       and_trs_status_should_not_be_reset
     end
   end
@@ -83,9 +83,9 @@ RSpec.describe "Admin deletes an induction period" do
     expect(InductionPeriod.exists?(id: period.id)).to be false
   end
 
-  def and_an_event_should_have_been_recorded
+  def and_an_event_should_have_been_recorded(event_type)
     event = Event.last
-    expect(event.event_type).to eq("induction_period_deleted")
+    expect(event.event_type).to eq(event_type)
     expect(event.teacher).to eq(teacher)
   end
 
