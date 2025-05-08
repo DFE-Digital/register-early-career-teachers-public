@@ -6,6 +6,7 @@ RSpec.describe Teachers::ScheduleTRSSyncJob, type: :job do
     let!(:teacher3) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 3.days.ago) }
     let!(:teacher4) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 2.days.ago) }
     let!(:teacher5) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 1.day.ago) }
+    let!(:teacher6) { FactoryBot.create(:teacher, :deactivated_in_trs, trs_data_last_refreshed_at: 0.days.ago) }
 
     it "schedules sync jobs for teachers ordered by trs_data_last_refreshed_at" do
       [
@@ -44,6 +45,15 @@ RSpec.describe Teachers::ScheduleTRSSyncJob, type: :job do
 
     it "uses the default queue" do
       expect(described_class.queue_name).to eq("default")
+    end
+
+    it "never includes deactivated teachers" do
+      stub_const("Teachers::ScheduleTRSSyncJob::BATCH_SIZE", 10)
+
+      expect(Teachers::SyncTeacherWithTRSJob).not_to receive(:perform_later).with(teacher: teacher6)
+      allow(Teachers::SyncTeacherWithTRSJob).to receive(:set).and_return(Teachers::SyncTeacherWithTRSJob)
+
+      described_class.perform_now
     end
   end
 end

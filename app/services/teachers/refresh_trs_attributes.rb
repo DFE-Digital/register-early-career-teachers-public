@@ -7,6 +7,8 @@ module Teachers
     end
 
     def refresh!
+      trs_teacher = TRS::APIClient.new.find_teacher(trn: teacher.trn)
+
       Teacher.transaction do
         manage_teacher.update_name!(trs_first_name: trs_teacher.first_name, trs_last_name: trs_teacher.last_name)
         manage_teacher.update_trs_induction_status!(trs_induction_status: trs_teacher.induction_status)
@@ -21,13 +23,13 @@ module Teachers
 
         teacher.save
       end
+    rescue TRS::Errors::TeacherDeactivated
+      Teacher.transaction do
+        manage_teacher.mark_teacher_as_deactivated!(trs_data_last_refreshed_at: Time.zone.now)
+      end
     end
 
   private
-
-    def trs_teacher
-      @trs_teacher ||= TRS::APIClient.new.find_teacher(trn: teacher.trn)
-    end
 
     def manage_teacher
       @manage_teacher ||= Teachers::Manage.new(teacher:, author:, appropriate_body: nil)

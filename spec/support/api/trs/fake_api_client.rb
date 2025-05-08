@@ -1,7 +1,8 @@
 module TRS
   class FakeAPIClient
-    def initialize(raise_not_found: false, include_qts: true, include_itt: true, prohibited_from_teaching: false, induction_status: nil)
+    def initialize(raise_not_found: false, raise_deactivated: false, include_qts: true, include_itt: true, prohibited_from_teaching: false, induction_status: nil)
       @raise_not_found = raise_not_found
+      @raise_deactivated = raise_deactivated
       @include_qts = include_qts
       @include_itt = include_itt
       @prohibited_from_teaching = prohibited_from_teaching
@@ -10,6 +11,7 @@ module TRS
 
     def find_teacher(trn:, date_of_birth: "1977-02-03", national_insurance_number: nil)
       raise(TRS::Errors::TeacherNotFound, "Teacher with TRN #{trn} not found") if @raise_not_found
+      raise(TRS::Errors::TeacherDeactivated, "Teacher with TRN #{trn} deactivated") if @raise_deactivated
 
       Rails.logger.info("TRSFakeAPIClient pretending to find teacher with TRN=#{trn} and Date of birth=#{date_of_birth} and National Insurance Number=#{national_insurance_number}")
 
