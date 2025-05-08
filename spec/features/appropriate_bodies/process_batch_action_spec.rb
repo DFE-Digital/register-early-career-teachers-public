@@ -36,18 +36,17 @@ RSpec.describe 'Process bulk actions' do
 
     context 'with valid CSV file' do
       scenario 'creates a pending submission for each row' do
-        expect(page.get_by_text('0%')).to be_visible
-
         # This job does validation first, leaving the user to confirm with a CTA
         perform_enqueued_jobs
         page.reload
-        expect(page.get_by_text('Upload summary')).to be_visible
+        expect(page.get_by_text('CSV summary')).to be_visible
 
         # NB: these will have failed because we have not factoried the ECTs and their inductions
         expect(page.get_by_text("Your CSV named 'valid_complete_action.csv' has 2 ECTs")).to be_visible
       end
 
       scenario 'displays progress as batch is processing and submission records are created' do
+        expect(page.get_by_text("We're processing your CSV file, it could take up to 5 minutes.")).to be_visible
         expect(page.get_by_text('0%')).to be_visible
 
         teacher = FactoryBot.create(:teacher, trn: '1234567')
@@ -63,6 +62,7 @@ RSpec.describe 'Process bulk actions' do
 
         expect(batch.progress).to eq(50.0)
         page.reload
+        # NB: not Hotwire capable
         expect(page.get_by_text('50%')).to be_visible
       end
     end

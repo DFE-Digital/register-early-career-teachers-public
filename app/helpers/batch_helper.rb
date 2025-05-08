@@ -1,5 +1,5 @@
 module BatchHelper
-  # @param batch [PendingInductionSubmissionBatch]  
+  # @param batch [PendingInductionSubmissionBatch]
   def batch_status_tag(batch)
     colours = {
       pending: 'grey',
@@ -40,6 +40,17 @@ module BatchHelper
       "#{pluralize(submissions.fail.count, 'ECT')} with a failed induction",
       "#{pluralize(submissions.release.count, 'ECT')} with a released outcome",
     ], type: :bullet)
+  end
+
+  # Temporary method helpful for debugging during development
+  def batch_debugging_info(batch)
+    govuk_details(summary_text: 'Debugging information') do
+      batch_progress_card(batch)
+      batch_raw_data_table(batch)
+      batch_processed_data_table(batch)
+      batch_download_data_table(batch)
+      batch_actions_induction_periods_table(batch)
+    end
   end
 
   # Temporary method helpful for debugging during development
@@ -115,15 +126,15 @@ module BatchHelper
   def batch_actions_induction_periods_table(batch)
     govuk_table(
       caption: "Last inductions (#{batch.submissions_with_induction_periods.count} periods)",
-      head: ['TRN', 'First name', 'Last name', 'Induction end date', 'Number of terms', 'Outcome'],
+      head: ['TRN', 'First name', 'Last name', 'Induction period end date', 'Number of terms', 'Outcome'],
       rows: batch.submissions_with_induction_periods.map do |pending_induction_submission, induction_period|
         [
           pending_induction_submission.trn,
           pending_induction_submission.trs_first_name,
           pending_induction_submission.trs_last_name,
-          induction_period.finished_on&.to_fs(:iso8601) || '-',
-          induction_period.number_of_terms&.to_s || '-',
-          (induction_period.outcome || '-')
+          induction_period&.finished_on&.to_fs(:iso8601) || '-',
+          induction_period&.number_of_terms&.to_s || '-',
+          (induction_period&.outcome || '-')
         ]
       end
     )
@@ -133,15 +144,15 @@ module BatchHelper
   def batch_claims_induction_periods_table(batch)
     govuk_table(
       caption: "Last inductions (#{batch.submissions_with_induction_periods.count} periods)",
-      head: ['TRN', 'First name', 'Last name', 'Induction programme', 'Induction start date', 'Outcome'],
+      head: ['TRN', 'First name', 'Last name', 'Induction programme', 'Induction period start date', 'Outcome'],
       rows: batch.submissions_with_induction_periods.map do |pending_induction_submission, induction_period|
         [
           pending_induction_submission.trn,
           pending_induction_submission.trs_first_name,
           pending_induction_submission.trs_last_name,
-          induction_period.induction_programme&.to_s || '-',
-          induction_period.started_on&.to_fs(:iso8601) || '-',
-          (induction_period.outcome || '-')
+          induction_period&.induction_programme&.to_s || '-',
+          induction_period&.started_on&.to_fs(:iso8601) || '-',
+          (induction_period&.outcome || '-')
         ]
       end
     )

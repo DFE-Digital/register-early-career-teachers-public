@@ -29,8 +29,7 @@ RSpec.describe ProcessBatchActionJob, type: :job do
           described_class.perform_now(pending_induction_submission_batch, author.email, author.name)
         }.to have_broadcasted_to(
           "batch_progress_stream_#{pending_induction_submission_batch.id}"
-        ).from_channel(pending_induction_submission_batch).exactly(5).times # update only on 0% and 100%
-        # ).from_channel(pending_induction_submission_batch).exactly(11).times    # update on every incremental touch
+        ).from_channel(pending_induction_submission_batch).exactly(11).times
       end
     end
   end
