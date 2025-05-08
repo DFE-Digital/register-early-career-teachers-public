@@ -30,7 +30,7 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
 
       expect(response).to redirect_to(ab_batch_action_path(batch))
       follow_redirect!
-      expect(response.body).to include("Uploaded CSV data (2 rows)") # debugging data
+      expect(response.body).to include("We're processing your CSV file, it could take up to 5 minutes.")
     end
 
     context "with an unsupported file type" do

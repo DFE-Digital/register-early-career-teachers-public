@@ -53,16 +53,20 @@ class PendingInductionSubmissionBatch < ApplicationRecord
 
 private
 
-  # guard clause displays throbber for the duration of processing
-  # removing it can display percentage progress
   def update_batch_progress
-    return if progress.between?(1, 99)
-
-    broadcast_update_to(
-      "batch_progress_stream_#{id}",
-      target: "batch_progress_target_#{id}",
-      partial: "appropriate_bodies/process_batch/#{batch_type.pluralize}/#{batch_status}",
-      locals: { batch: self }
-    )
+    if processing?
+      broadcast_update_to(
+        "batch_progress_stream_#{id}",
+        target: "batch_progress_percentage_#{id}",
+        html: "#{progress.round}%"
+      )
+    else
+      broadcast_update_to(
+        "batch_progress_stream_#{id}",
+        target: "batch_progress_status_#{id}",
+        partial: "appropriate_bodies/process_batch/#{batch_type.pluralize}/#{batch_status}",
+        locals: { batch: self }
+      )
+    end
   end
 end

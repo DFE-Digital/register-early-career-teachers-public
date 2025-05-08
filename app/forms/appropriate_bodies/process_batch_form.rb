@@ -2,7 +2,7 @@ module AppropriateBodies
   # Validate an uploaded CSV file using file size, content type, column headers, row counts and unique TRNs
   # Export an array of hashes which can be saved to PendingInductionSubmissionBatch#data
   class ProcessBatchForm
-    MAX_FILE_SIZE = 1.megabyte
+    MAX_FILE_SIZE = 100.kilobytes
     MAX_ROW_SIZE = 1_000
     MIME_TYPES = %w[text/csv text/comma-separated-values application/csv].freeze
 
@@ -59,7 +59,7 @@ module AppropriateBodies
     end
 
     def csv_file_size
-      errors.add(:csv_file, 'File size must be less than 1MB') if is_too_large?
+      errors.add(:csv_file, 'File size must be less than 100KB') if is_too_large?
     end
 
     def row_count
