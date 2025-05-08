@@ -59,6 +59,18 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
       expect(page).not_to have_link("Edit")
     end
 
+    it "includes a delete link when enable_edit is true" do
+      component = described_class.new(teacher:, enable_edit: true)
+      render_inline(component)
+      expect(page).to have_link("Delete", href: confirm_delete_admin_teacher_induction_period_path(teacher_id: teacher.id, id: current_period.id))
+    end
+
+    it "does not include a delete link when enable_edit is false" do
+      component = described_class.new(teacher:)
+      render_inline(component)
+      expect(page).not_to have_link("Delete")
+    end
+
     context "when the induction period has an outcome" do
       let!(:current_period) do
         FactoryBot.create(:induction_period, :active,
@@ -73,6 +85,12 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
         component = described_class.new(teacher:, enable_edit: true)
         render_inline(component)
         expect(page).not_to have_link("Edit")
+      end
+
+      it "does not include a delete link even when enable_edit true" do
+        component = described_class.new(teacher:, enable_edit: true)
+        render_inline(component)
+        expect(page).not_to have_link("Delete")
       end
     end
   end
