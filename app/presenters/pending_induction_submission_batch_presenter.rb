@@ -24,9 +24,9 @@ class PendingInductionSubmissionBatchPresenter < SimpleDelegator
   def processed_headers
     common_headers = ['TRN', 'First name', 'Last name', 'Date of birth']
     if action?
-      common_headers.push('Induction end date', 'Number of terms', 'Outcome', 'Error messages')
+      common_headers.push('Induction period end date', 'Number of terms', 'Outcome', 'Error messages')
     elsif claim?
-      common_headers.push('Induction programme', 'Induction start date', 'Error messages')
+      common_headers.push('Induction programme', 'Induction period start date', 'Error messages')
     end
   end
 

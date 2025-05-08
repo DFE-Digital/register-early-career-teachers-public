@@ -29,8 +29,8 @@ RSpec.describe BatchRows do
     it { expect(dummy_claim.row_headings).to eql(BatchRows::CLAIM_CSV_HEADINGS) }
     it { expect(dummy_action.row_headings).to eql(BatchRows::ACTION_CSV_HEADINGS) }
 
-    it { expect(dummy_claim.row_headings.values).to eql(["TRN", "Date of birth", "Induction programme", "Induction start date", "Error message"]) }
-    it { expect(dummy_action.row_headings.values).to eql(["TRN", "Date of birth", "Induction end date", "Number of terms", "Outcome", "Error message"]) }
+    it { expect(dummy_claim.row_headings.values).to eql(["TRN", "Date of birth", "Induction programme", "Induction period start date", "Error message"]) }
+    it { expect(dummy_action.row_headings.values).to eql(["TRN", "Date of birth", "Induction period end date", "Number of terms", "Outcome", "Error message"]) }
 
     it { expect(dummy_unknown.row_headings).to be_nil }
   end

@@ -1,4 +1,4 @@
-TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
+TRN,Date of birth,Induction period end date,Number of terms,Outcome,Error message
 1000890,1997-01-15,2025-04-01,1,pass,
 3002564,1991-07-05,2025-04-01,2,fail,
 3002586,1977-02-03,2025-04-01,3,release,

@@ -1,4 +1,4 @@
-<h1 class="govuk-heading-l">Upload summary</h1>
+<h1 class="govuk-heading-l">CSV summary</h1>
 
 <% if batch.no_valid_data? %>
   <%= render partial: 'appropriate_bodies/process_batch/actions/no_valid_data', locals: { batch: } %>
@@ -18,10 +18,10 @@
 
   <%= form_with(model: batch, url: ab_batch_action_path(batch), method: 'put') do |f| %>
     <%= content_for(:error_summary) { f.govuk_error_summary } %>
-    <%= f.govuk_submit 'Continue' %>
+    <%= f.govuk_submit 'Upload outcomes' %>
   <% end %>
 
   <p class='govuk-body'>
-    <%= govuk_link_to 'Cancel and go back to homepage', ab_teachers_path %>
+    <%= govuk_link_to 'Go back to your overview', ab_teachers_path %>
   </p>  
 <% end %>  

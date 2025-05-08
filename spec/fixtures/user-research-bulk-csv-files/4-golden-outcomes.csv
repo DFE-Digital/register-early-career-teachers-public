@@ -1,4 +1,4 @@
-TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
+TRN,Date of birth,Induction period end date,Number of terms,Outcome,Error message
 3002564L,1991-07-05,20/02/2025,17.23,Pass,"Wrong date format, TRN contains a letter, terms over 16 and not to 1.dp"
 300258,1977-02-03,2025-01-15,,Released,"TRN not 7 digits and outcome not 'pass', 'fail' or 'release', blank cell"
 3002585,1980-10-10,2024-12-11,4.4,Fail,TRS reports 'Not found'

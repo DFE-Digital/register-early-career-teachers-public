@@ -5,14 +5,14 @@ module BatchRows
     trn: 'TRN',
     date_of_birth: 'Date of birth',
     induction_programme: 'Induction programme',
-    started_on: 'Induction start date',
+    started_on: 'Induction period start date',
     error: 'Error message',
   }.freeze
 
   ACTION_CSV_HEADINGS = {
     trn: 'TRN',
     date_of_birth: 'Date of birth',
-    finished_on: 'Induction end date',
+    finished_on: 'Induction period end date',
     number_of_terms: 'Number of terms',
     outcome: 'Outcome',
     error: 'Error message',
