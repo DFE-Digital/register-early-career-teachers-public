@@ -105,7 +105,7 @@ RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
     end
 
     context 'with extensions and teacher' do
-      let!(:extension) { create(:induction_extension, teacher:) }
+      let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
 
       it 'displays the row' do
         render
