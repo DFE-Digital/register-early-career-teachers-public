@@ -10,6 +10,12 @@ shared_context 'fake trs api client that finds nothing' do
   end
 end
 
+shared_context 'fake trs api client deactivated teacher' do
+  before do
+    allow(TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(raise_deactivated: true))
+  end
+end
+
 shared_context 'fake trs api client returns 200 then 400' do
   before do
     allow(TRS::APIClient).to receive(:new).and_return(

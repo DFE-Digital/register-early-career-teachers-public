@@ -5,6 +5,8 @@
 # 3. ITT provider name changes (tbc)
 #
 class Teachers::Manage
+  class AlreadyDeactivated < StandardError; end
+
   attr_reader :author, :teacher, :appropriate_body
 
   def initialize(author:, teacher:, appropriate_body:)
@@ -90,6 +92,15 @@ class Teachers::Manage
     end
   end
 
+  def mark_teacher_as_deactivated!(trs_data_last_refreshed_at:)
+    fail(AlreadyDeactivated) if teacher.trs_deactivated?
+
+    Teacher.transaction do
+      teacher.update!(trs_deactivated: true, trs_data_last_refreshed_at:)
+      record_teacher_deactivated_event(teacher:, author:)
+    end
+  end
+
 private
 
   def full_name
@@ -113,5 +124,9 @@ private
     return if modifications.empty?
 
     Events::Record.teacher_trs_attributes_updated_event!(author:, teacher:, modifications:)
+  end
+
+  def record_teacher_deactivated_event(teacher:, author:)
+    Events::Record.record_teacher_trs_deactivated_event!(author:, teacher:)
   end
 end

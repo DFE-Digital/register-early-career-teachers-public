@@ -8,6 +8,10 @@ FactoryBot.define do
       corrected_name { [trs_first_name, Faker::Name.middle_name, trs_last_name].join(' ') }
     end
 
+    trait :deactivated_in_trs do
+      trs_deactivated { true }
+    end
+
     trait :ineligible_for_mentor_funding do
       mentor_became_ineligible_for_funding_on { Time.zone.today }
       mentor_became_ineligible_for_funding_reason do

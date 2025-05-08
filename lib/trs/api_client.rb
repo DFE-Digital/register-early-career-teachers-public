@@ -27,12 +27,15 @@ module TRS
       params = { dateOfBirth: date_of_birth, nationalInsuranceNumber: national_insurance_number, include: include.join(",") }.compact
       response = @connection.get(persons_path(trn), params)
 
-      if response.success?
-        TRS::Teacher.new(JSON.parse(response.body))
-      elsif response.status == 404
-        raise TRS::Errors::TeacherNotFound
+      return TRS::Teacher.new(JSON.parse(response.body)) if response.success?
+
+      case Rack::Utils::HTTP_STATUS_CODES.fetch(response.status)
+      when "Not Found"
+        raise(TRS::Errors::TeacherNotFound)
+      when "Gone"
+        raise(TRS::Errors::TeacherDeactivated)
       else
-        raise "API request failed: #{response.status} #{response.body}"
+        fail(TRS::Errors::APIRequestError, "#{response.status} #{response.body}")
       end
     end
 

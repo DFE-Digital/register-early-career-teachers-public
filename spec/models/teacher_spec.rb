@@ -97,5 +97,21 @@ describe Teacher do
         expect(Teacher.ordered_by_trs_data_last_refreshed_at_nulls_first.to_sql).to end_with(expected_clause)
       end
     end
+
+    describe '.deactivated_in_trs' do
+      it 'only includes records where trs_deactivated = TRUE' do
+        expected_clause = %("teachers"."trs_deactivated" = TRUE)
+
+        expect(Teacher.deactivated_in_trs.to_sql).to end_with(expected_clause)
+      end
+    end
+
+    describe '.active_in_trs' do
+      it 'only includes records where trs_deactivated = FALSE' do
+        expected_clause = %("teachers"."trs_deactivated" = FALSE)
+
+        expect(Teacher.active_in_trs.to_sql).to end_with(expected_clause)
+      end
+    end
   end
 end
