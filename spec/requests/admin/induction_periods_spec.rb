@@ -433,11 +433,11 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
           perform_enqueued_jobs do
             delete admin_teacher_induction_period_path(teacher, induction_period)
           end
-        }.to change(Event, :count).by(1)
+        }.to change(Event, :count).by(2)
 
-        event = Event.last
-        expect(event.event_type).to eq("induction_period_deleted")
-        expect(event.teacher).to eq(teacher)
+        expect(Event.all.map(&:event_type)).to match_array(%w[
+          induction_period_deleted teacher_induction_status_reset
+        ])
       end
     end
 
@@ -449,6 +449,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
       before do
         allow(TRS::APIClient).to receive(:new).and_return(trs_api_client)
         allow(trs_api_client).to receive(:reset_teacher_induction)
+        allow(trs_api_client).to receive(:begin_induction!)
       end
 
       it "deletes only the specified induction period" do

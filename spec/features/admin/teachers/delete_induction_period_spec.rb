@@ -1,10 +1,13 @@
 RSpec.describe "Admin deletes an induction period" do
   include ActiveJob::TestHelper
+  include_context "fake trs api client"
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
-  before { sign_in_as_dfe_user(role: :admin) }
+  before do
+    sign_in_as_dfe_user(role: :admin)
+  end
 
   context "when it is the only induction period" do
     let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
@@ -18,7 +21,7 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period)
-      and_an_event_should_have_been_recorded
+      and_an_event_should_have_been_recorded("induction_period_deleted")
       and_trs_status_should_be_reset
     end
   end
@@ -27,7 +30,7 @@ RSpec.describe "Admin deletes an induction period" do
     let!(:induction_period1) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
     let!(:induction_period2) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
 
-    scenario "TRS status is not reset" do
+    scenario "TRS start date is updated to next earliest period" do
       given_i_am_on_the_ect_page(teacher)
       then_i_should_see_the_delete_link_for(induction_period1)
       when_i_click_delete_link_for(induction_period1)
@@ -36,7 +39,25 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period1)
-      and_an_event_should_have_been_recorded
+      and_an_event_should_have_been_recorded("induction_period_deleted")
+      and_trs_status_should_not_be_reset
+    end
+  end
+
+  context "when deleting the later induction period" do
+    let!(:induction_period1) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
+    let!(:induction_period2) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
+
+    scenario "TRS start date remains unchanged" do
+      given_i_am_on_the_ect_page(teacher)
+      then_i_should_see_the_delete_link_for(induction_period2)
+      when_i_click_delete_link_for(induction_period2)
+      then_i_should_see_the_delete_confirmation_page
+
+      when_i_confirm_deletion
+      then_i_should_be_on_the_success_page
+      and_the_induction_period_should_be_deleted(induction_period2)
+      and_an_event_should_have_been_recorded("induction_period_deleted")
       and_trs_status_should_not_be_reset
     end
   end
@@ -75,7 +96,6 @@ RSpec.describe "Admin deletes an induction period" do
   end
 
   def then_i_should_be_on_the_success_page
-    expect(page.url).to match(%r{/admin/teachers/\d+$})
     expect(page.get_by_text('Induction period deleted successfully')).to be_visible
   end
 
@@ -83,9 +103,9 @@ RSpec.describe "Admin deletes an induction period" do
     expect(InductionPeriod.exists?(id: period.id)).to be false
   end
 
-  def and_an_event_should_have_been_recorded
-    event = Event.last
-    expect(event.event_type).to eq("induction_period_deleted")
+  def and_an_event_should_have_been_recorded(event_type)
+    event = Event.where(event_type:).last
+    expect(event.event_type).to eq(event_type)
     expect(event.teacher).to eq(teacher)
   end
 

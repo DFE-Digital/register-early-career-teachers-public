@@ -98,7 +98,7 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_updated_event!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
+    def self.record_induction_period_updated_event!(author:, modifications:, teacher:, appropriate_body:, induction_period: nil, happened_at: Time.zone.now)
       event_type = :induction_period_updated
       heading = 'Induction period updated by admin'
 
@@ -316,7 +316,7 @@ module Events
     end
 
     def check_relationship_attributes_are_persisted
-      relationship_attributes.each { |name, object| fail(NotPersistedRecord, name) unless object.persisted? }
+      relationship_attributes.each { |name, object| fail(NotPersistedRecord, name) if object && !object.persisted? }
     end
   end
 end
