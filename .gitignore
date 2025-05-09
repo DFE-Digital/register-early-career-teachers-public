@@ -40,7 +40,3 @@ config/terraform/application/vendor
 config/terraform/domains/infrastructure/vendor
 config/terraform/domains/environment_domains/vendor
 terraform.tfstate*
-
-# File uploads
-storage/*
-!storage/.keep
