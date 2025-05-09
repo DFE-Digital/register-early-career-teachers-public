@@ -5,7 +5,7 @@ RSpec.describe Schools::CheckEarlyRollOutMentor do
 
   describe '#early_roll_out_mentor?' do
     context 'with ERO record' do
-      before { FactoryBot.create(:early_roll_out_mentor, trn:) }
+      before { FactoryBot.create(:teacher, :early_roll_out_mentor, trn:) }
 
       it { expect(service).to be_early_roll_out_mentor }
     end
@@ -17,7 +17,7 @@ RSpec.describe Schools::CheckEarlyRollOutMentor do
 
   describe '#to_h' do
     context 'with ERO record' do
-      before { FactoryBot.create(:early_roll_out_mentor, trn:) }
+      before { FactoryBot.create(:teacher, :early_roll_out_mentor, trn:) }
 
       it 'returns ERO date and reason params' do
         expect(service.to_h).to eq({

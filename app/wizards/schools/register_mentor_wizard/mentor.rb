@@ -42,11 +42,12 @@ module Schools
       end
 
       def funding_available?
-        if (record = Teacher.find_by(trn:))
-          record.eligible_for_mentor_funding?
-        else
-          !check_ero_mentor.early_roll_out_mentor?
-        end
+        teacher = Teacher.find_by(trn:)
+
+        return true if teacher.nil?
+        return false if teacher.early_roll_out_mentor?
+
+        teacher.eligible_for_mentor_funding?
       end
 
       def check_ero_mentor

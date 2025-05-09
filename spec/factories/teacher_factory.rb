@@ -3,6 +3,7 @@ FactoryBot.define do
     sequence(:trn, 1_000_000)
     sequence(:trs_first_name) { |n| "First name #{n}" }
     sequence(:trs_last_name) { |n| "Last name #{n}" }
+    early_roll_out_mentor { false }
 
     trait :with_corrected_name do
       corrected_name { [trs_first_name, Faker::Name.middle_name, trs_last_name].join(' ') }
@@ -10,6 +11,10 @@ FactoryBot.define do
 
     trait :deactivated_in_trs do
       trs_deactivated { true }
+    end
+
+    trait :early_roll_out_mentor do
+      early_roll_out_mentor { true }
     end
 
     trait :ineligible_for_mentor_funding do

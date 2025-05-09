@@ -1,14 +1,20 @@
 module Schools
   class CheckEarlyRollOutMentor
     CUT_OFF_DATE = Date.new(2021, 4, 19).freeze
-    attr_accessor :trn
+    attr_accessor :trn, :teacher
 
     def initialize(trn)
       @trn = trn
+      @teacher = Teacher.find_by(trn:)
     end
 
     def early_roll_out_mentor?
-      EarlyRollOutMentor.find_by(trn:).present?
+      if teacher.nil?
+        Rails.logger.warn("checking if non-existant teacher #{trn} is early roll out mentor")
+        return false
+      end
+
+      teacher.early_roll_out_mentor?
     end
 
     def to_h
