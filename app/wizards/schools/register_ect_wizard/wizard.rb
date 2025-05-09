@@ -9,11 +9,16 @@ module Schools
         [
           {
             already_active_at_school: AlreadyActiveAtSchoolStep,
+            no_previous_ect_choices_change_independent_school_appropriate_body: NoPreviousECTChoicesChangeIndependentSchoolAppropriateBodyStep,
+            no_previous_ect_choices_change_lead_provider: NoPreviousECTChoicesChangeLeadProviderStep,
+            no_previous_ect_choices_change_programme_type: NoPreviousECTChoicesChangeProgrammeTypeStep,
+            no_previous_ect_choices_change_state_school_appropriate_body: NoPreviousECTChoicesChangeStateSchoolAppropriateBodyStep,
             cannot_register_ect: CannotRegisterECTStep,
             cant_use_email: CantUseEmailStep,
             change_email_address: ChangeEmailAddressStep,
             change_independent_school_appropriate_body: ChangeIndependentSchoolAppropriateBodyStep,
             change_lead_provider: ChangeLeadProviderStep,
+            programme_type_change_lead_provider: ProgrammeTypeChangeLeadProviderStep,
             change_programme_type: ChangeProgrammeTypeStep,
             change_review_ect_details: ChangeReviewECTDetailsStep,
             change_start_date: ChangeStartDateStep,
