@@ -40,6 +40,8 @@ module GIAS
       "Voluntary aided school",
       "Voluntary controlled school",
       "Welsh establishment",
+      "Children's centre linked site",
+      "Children's centre",
     ].freeze
 
     CIP_ONLY_TYPES = [
