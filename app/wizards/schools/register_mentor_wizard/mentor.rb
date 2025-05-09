@@ -45,7 +45,7 @@ module Schools
         teacher = Teacher.find_by(trn:)
 
         return true if teacher.nil?
-        return false if teacher.early_roll_out_mentor?
+        return false if teacher.mentor_became_ineligible_for_funding_reason == "completed_during_early_roll_out"
 
         teacher.eligible_for_mentor_funding?
       end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_09_095837) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -531,7 +531,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095837) do
     t.date "mentor_became_ineligible_for_funding_on"
     t.enum "mentor_became_ineligible_for_funding_reason", enum_type: "mentor_became_ineligible_for_funding_reason"
     t.boolean "trs_deactivated", default: false
-    t.boolean "early_roll_out_mentor", default: false, null: false
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true

@@ -14,7 +14,7 @@ module Schools
         return false
       end
 
-      teacher.early_roll_out_mentor?
+      teacher.mentor_became_ineligible_for_funding_reason == "completed_during_early_roll_out"
     end
 
     def to_h
