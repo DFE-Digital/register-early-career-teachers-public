@@ -4,8 +4,6 @@ class PassECTInductionJob < ApplicationJob
       api_client.pass_induction!(trn:, start_date:, completed_date:)
 
       PendingInductionSubmission.find(pending_induction_submission_id).update!(delete_at: 24.hours.from_now)
-
-      Teachers::RefreshTRSAttributes.new(Teacher.find_by!(trn:)).refresh!
     end
   end
 

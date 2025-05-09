@@ -9,13 +9,19 @@ class Teachers::InductionStatus
 
   def status_tag_kwargs
     case induction_info
+    in { teacher_with_induction_periods_present: true, has_an_open_induction_period: true }
+      in_progress
+    in { teacher_with_induction_periods_present: true, has_an_open_induction_period: false, has_an_induction_outcome: false }
+      paused
+    in { teacher_with_induction_periods_present: true, has_an_open_induction_period: false, induction_outcome: 'pass' }
+      passed
+    in { teacher_with_induction_periods_present: true, has_an_open_induction_period: false, induction_outcome: 'fail' }
+      failed
     in { teacher_with_induction_periods_present: false, trs_induction_status: 'RequiredToComplete' }
       required_to_complete
     in { teacher_with_induction_periods_present: false, trs_induction_status: 'Exempt' }
       exempt
-    in { has_an_open_induction_period: false, teacher_with_induction_periods_present: false, trs_induction_status: 'InProgress' }
-      paused
-    in { has_an_open_induction_period: true, teacher_with_induction_periods_present: false, trs_induction_status: 'InProgress' }
+    in { teacher_with_induction_periods_present: false, trs_induction_status: 'InProgress' }
       in_progress
     in { teacher_with_induction_periods_present: false, trs_induction_status: 'Failed' }
       failed
