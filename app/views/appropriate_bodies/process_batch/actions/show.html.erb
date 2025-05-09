@@ -1,0 +1,12 @@
+<%= turbo_stream_from "batch_progress_stream_#{@pending_induction_submission_batch.id}" %>
+
+<div id="batch_progress_status_<%= @pending_induction_submission_batch.id %>" data-turbo="true">
+  <%= 
+    render partial: "appropriate_bodies/process_batch/actions/#{@pending_induction_submission_batch.batch_status}", 
+    locals: { batch: @pending_induction_submission_batch } 
+  %>
+</div> 
+
+<div class="govuk-!-margin-top-4">
+  <%# batch_debugging_info(@pending_induction_submission_batch) %>
+</div>

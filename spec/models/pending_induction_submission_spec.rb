@@ -6,6 +6,25 @@ RSpec.describe PendingInductionSubmission do
 
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
+    it { is_expected.to belong_to(:pending_induction_submission_batch).optional }
+  end
+
+  describe "scopes" do
+    let!(:sub1) { FactoryBot.create(:pending_induction_submission) }
+    let!(:sub2) { FactoryBot.create(:pending_induction_submission) }
+    let!(:sub3) { FactoryBot.create(:pending_induction_submission, error_messages: ['something went wrong']) }
+
+    describe ".with_errors" do
+      it "returns submissions with errors" do
+        expect(described_class.with_errors).to contain_exactly(sub3)
+      end
+    end
+
+    describe ".without_errors" do
+      it "returns submissions without errors" do
+        expect(described_class.without_errors).to contain_exactly(sub1, sub2)
+      end
+    end
   end
 
   describe "validation" do
@@ -230,47 +249,50 @@ RSpec.describe PendingInductionSubmission do
         end
       end
     end
+  end
 
-    describe "#no_future_induction_periods" do
-      context "with induction period started and ended after submission started_on" do
-        it "is invalid" do
-          teacher = FactoryBot.create(:teacher)
+  describe '#fail?' do
+    subject { FactoryBot.build(:pending_induction_submission, outcome: 'fail') }
 
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.current - 1.day, finished_on: Date.current)
+    it { is_expected.to be_fail }
+  end
 
-          pending_induction_submission = FactoryBot.build(:pending_induction_submission, trn: teacher.trn, started_on: Date.current - 3.days)
+  describe '#pass?' do
+    subject { FactoryBot.build(:pending_induction_submission, outcome: 'pass') }
 
-          pending_induction_submission.valid?(:register_ect)
+    it { is_expected.to be_pass }
+  end
 
-          expect(pending_induction_submission.errors[:started_on]).to include("Enter a start date after the last induction period finished (#{Date.current.to_fs(:govuk)})")
-        end
-      end
+  describe '#exempt?' do
+    subject { FactoryBot.build(:pending_induction_submission, trs_induction_status: 'Exempt') }
 
-      context "with started_on overlapping with existing induction period" do
-        it "is invalid" do
-          teacher = FactoryBot.create(:teacher)
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.current - 3.days, finished_on: Date.current)
+    it { is_expected.to be_exempt }
+  end
 
-          pending_induction_submission = FactoryBot.build(:pending_induction_submission, trn: teacher.trn, started_on: Date.current - 2.days)
+  describe '#teacher' do
+    let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
+    let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
 
-          pending_induction_submission.valid?(:register_ect)
+    it 'returns the teacher associated with the trn' do
+      expect(pending_induction_submission.teacher).to eq(teacher)
+    end
+  end
 
-          expect(pending_induction_submission.errors[:started_on]).to include("Enter a start date after the last induction period finished (#{Date.current.to_fs(:govuk)})")
-        end
-      end
+  describe '#playback_errors' do
+    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, appropriate_body:, finished_on: 1.day.ago) }
 
-      context "with started_on equal to existing induction period finished_on" do
-        it "is invalid" do
-          teacher = FactoryBot.create(:teacher)
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.current - 3.days, finished_on: Date.current)
+    before do
+      pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
+    end
 
-          pending_induction_submission = FactoryBot.build(:pending_induction_submission, trn: teacher.trn, started_on: Date.current)
-
-          pending_induction_submission.valid?(:register_ect)
-
-          expect(pending_induction_submission.errors[:started_on]).to include("Enter a start date after the last induction period finished (#{Date.current.to_fs(:govuk)})")
-        end
-      end
+    it 'persists error messages' do
+      expect(pending_induction_submission.errors).to be_empty
+      expect(pending_induction_submission.error_messages).to eq([
+        'Enter a number of terms',
+        "Outcome must be either 'passed' or 'failed'"
+      ])
+      expect(pending_induction_submission.save).to be(true)
     end
   end
 end

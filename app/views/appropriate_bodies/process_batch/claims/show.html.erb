@@ -1,0 +1,23 @@
+<%
+  page_data(
+    title: "Checking bulk claims",
+    error: @pending_induction_submission_batch.errors.present?,
+    backlink_href: new_ab_batch_claim_path,
+  )
+%>
+
+<%= govuk_button_link_to 'Your teachers', ab_teachers_path %>
+
+<%= batch_progress_card(@pending_induction_submission_batch) %>
+<%= batch_raw_data_table(@pending_induction_submission_batch) %>
+<%= batch_processed_data_table(@pending_induction_submission_batch) %>
+<%= batch_download_data_table(@pending_induction_submission_batch) %>
+<%= batch_claims_induction_periods_table(@pending_induction_submission_batch) %>
+
+
+<%# if @pending_induction_submission_batch.processed? %>
+<%# govuk_button_link_to 'Confirm changes', edit_ab_batch_claim_path(@pending_induction_submission_batch) %>
+<%# end %>
+
+<%= govuk_button_link_to 'Confirm changes', '#', disabled: true %>
+<%= govuk_button_link_to 'Upload bulk actions', new_ab_batch_action_path, secondary: true %>
