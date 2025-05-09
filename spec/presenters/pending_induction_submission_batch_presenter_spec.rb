@@ -57,7 +57,7 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
       end
 
       it 'returns a CSV string with the correct headers and no rows' do
-        expect(presenter.to_csv).to eq("TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message\n")
+        expect(presenter.to_csv).to eq("TRN,Date of birth,Induction period end date,Number of terms,Outcome,Error message\n")
       end
 
       context 'and there are failed_submissions' do
@@ -82,7 +82,7 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
         it 'returns only failed submissions with their errors as a sentence' do
           expect(presenter.to_csv).to eq(
             <<~CSV_DATA
-              TRN,Date of birth,Induction end date,Number of terms,Outcome,Error message
+              TRN,Date of birth,Induction period end date,Number of terms,Outcome,Error message
               1234567,1990-01-01,2023-12-31,2.0,pass,"error one, error two, error three, and error four"
             CSV_DATA
           )

@@ -29,8 +29,8 @@ RSpec.describe BatchRows do
     it { expect(dummy_claim.row_headings).to eql(BatchRows::CLAIM_CSV_HEADINGS) }
     it { expect(dummy_action.row_headings).to eql(BatchRows::ACTION_CSV_HEADINGS) }
 
-    it { expect(dummy_claim.row_headings.values).to eql(["TRN", "Date of birth", "Induction programme", "Induction start date", "Error message"]) }
-    it { expect(dummy_action.row_headings.values).to eql(["TRN", "Date of birth", "Induction end date", "Number of terms", "Outcome", "Error message"]) }
+    it { expect(dummy_claim.row_headings.values).to eql(["TRN", "Date of birth", "Induction programme", "Induction period start date", "Error message"]) }
+    it { expect(dummy_action.row_headings.values).to eql(["TRN", "Date of birth", "Induction period end date", "Number of terms", "Outcome", "Error message"]) }
 
     it { expect(dummy_unknown.row_headings).to be_nil }
   end
@@ -44,6 +44,19 @@ RSpec.describe BatchRows do
 
     it { expect(dummy_unknown.rows).to be_an(Enumerator::Lazy) }
     it { expect { dummy_unknown.rows.first }.to raise_error(NoMethodError) }
+
+    context 'when parsed CSV data omits the optional error column' do
+      before do
+        allow(dummy_claim).to receive(:data).and_return([{ trn: '1234567', date_of_birth: '1981-06-30', induction_programme: 'fip', started_on: '2025-01-30' }])
+        allow(dummy_action).to receive(:data).and_return([{ trn: '1234567', date_of_birth: '1981-06-30', number_of_terms: '0.5', finished_on: '2025-01-30', outcome: 'pass' }])
+      end
+
+      it { expect(dummy_claim.rows).to be_an(Enumerator::Lazy) }
+      it { expect(dummy_claim.rows.first).to be_a(BatchRows::ClaimRow) }
+
+      it { expect(dummy_action.rows).to be_an(Enumerator::Lazy) }
+      it { expect(dummy_action.rows.first).to be_a(BatchRows::ActionRow) }
+    end
   end
 end
 
