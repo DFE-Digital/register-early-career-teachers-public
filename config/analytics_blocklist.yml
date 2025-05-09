@@ -214,6 +214,7 @@
   - ecf_mentor_profile_id
   - mentor_became_ineligible_for_funding_on
   - mentor_became_ineligible_for_funding_reason
+  - early_roll_out_mentor
   :pending_induction_submissions:
   - id
   - appropriate_body_id
@@ -355,8 +356,3 @@
   - finished_on
   - enabled
   - range
-  :early_roll_out_mentors:
-  - id
-  - trn
-  - created_at
-  - updated_at
