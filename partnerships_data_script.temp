@@ -13,7 +13,7 @@ end
 schools_not_found = {}
 Migration::School.find_each do |ecf_school|
   gias_school = GIAS::School.find_by(urn: ecf_school.urn)
-  
+
   if gias_school.nil?
     school_status = {
       "Open" => :open,
@@ -37,7 +37,7 @@ Migration::School.find_each do |ecf_school|
     )
 
     unless gias_school.save
-      schools_not_found[ecf_school.id] << ecf_school.errors.full_messages
+      schools_not_found[ecf_school.school_type_name] = gias_school.errors
       next
     end
   end
@@ -47,7 +47,10 @@ Migration::School.find_each do |ecf_school|
 end
 
 schools_not_found.count
-=> 3007 (out of 54796 total)
+=> 5 (out of 54796 total)
+
+schools_not_found.values.map(&:full_messages).flatten.tally
+=> {"Ukprn has already been taken"=>5}
 
 invalid_school_partnerships = {}
 Migration::Partnership.includes(:cohort).find_each do |partnership|
@@ -65,7 +68,7 @@ Migration::Partnership.includes(:cohort).find_each do |partnership|
     delivery_partner_ecf_id: partnership.delivery_partner_id,
   )
 
-  unless service.create
+  unless service.valid?
     invalid_school_partnerships[partnership.id] = service.errors
   end
 end
