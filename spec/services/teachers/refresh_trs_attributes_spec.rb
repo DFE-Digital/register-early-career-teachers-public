@@ -70,11 +70,11 @@ describe Teachers::RefreshTRSAttributes do
       end
 
       it "marks the teacher as deactivated when the TRS reports the teacher as 'gone'" do
-        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+        freeze_time do
+          Teachers::RefreshTRSAttributes.new(teacher).refresh!
 
-        expect(fake_manage).to have_received(:mark_teacher_as_deactivated!).once.with(
-          trs_data_last_refreshed_at: within(0.001.seconds).of(Time.zone.now)
-        )
+          expect(fake_manage).to have_received(:mark_teacher_as_deactivated!).once.with(trs_data_last_refreshed_at: Time.zone.now)
+        end
       end
     end
   end
