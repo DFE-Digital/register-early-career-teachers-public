@@ -109,32 +109,35 @@ def describe_user(user)
   print_seed_info("Added DfE staff user #{user.name} #{user.email}", indent: 2)
 end
 
-def describe_ero_mentor(mentor)
-  if mentor.is_a?(Teacher)
-    mentor_name = Colourize.text("#{mentor.trs_first_name} #{mentor.trs_last_name}", MENTOR_COLOUR)
+def describe_teacher(teacher)
+  teacher_name = "#{teacher.trs_first_name} #{teacher.trs_last_name}"
 
-    print_seed_info(mentor_name, indent: 2)
-  else
-    print_seed_info(Colourize.text(mentor, :red), indent: 2)
-  end
+  ero_status = (teacher.early_roll_out_mentor?) ? Colourize.text('yes', :green) : Colourize.text('no', :red)
+
+
+  print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status})", indent: 2)
 end
 
 print_seed_info("Adding teachers")
 
-emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456', mentor_became_ineligible_for_funding_on: 1.year.from_now)
-kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', mentor_became_ineligible_for_funding_reason: 'completed_declaration_received')
-alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589')
-hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894')
-colin_firth = Teacher.create!(trs_first_name: 'Colin', trs_last_name: 'Firth', trn: '1237894')
-harriet_walter = Teacher.create!(trs_first_name: 'Harriet', trs_last_name: 'Walter', trn: '2017654')
-hugh_laurie = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Laurie', trn: '4786654')
-stephen_fry = Teacher.create!(trs_first_name: 'Stephen', trs_last_name: 'Fry', trn: '4786655')
-andre_roussimoff = Teacher.create!(trs_first_name: 'André', trs_last_name: 'Roussimoff', trn: '8886654')
-imogen_stubbs = Teacher.create!(trs_first_name: 'Imogen', trs_last_name: 'Stubbs', trn: '6352869')
-gemma_jones = Teacher.create!(trs_first_name: 'Gemma', trs_last_name: 'Jones', trn: '9578426')
-anthony_hopkins = Teacher.create!(trs_first_name: 'Anthony', trs_last_name: 'Hopkins', trn: '6228282')
+emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456', mentor_became_ineligible_for_funding_on: 1.year.from_now).tap { |t| describe_teacher(t) }
+kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', mentor_became_ineligible_for_funding_reason: 'completed_declaration_received').tap { |t| describe_teacher(t) }
+alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589').tap { |t| describe_teacher(t) }
+hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894').tap { |t| describe_teacher(t) }
+colin_firth = Teacher.create!(trs_first_name: 'Colin', trs_last_name: 'Firth', trn: '1237894').tap { |t| describe_teacher(t) }
+harriet_walter = Teacher.create!(trs_first_name: 'Harriet', trs_last_name: 'Walter', trn: '2017654', early_roll_out_mentor: true).tap { |t| describe_teacher(t) }
+hugh_laurie = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Laurie', trn: '4786654', early_roll_out_mentor: true).tap { |t| describe_teacher(t) }
+stephen_fry = Teacher.create!(trs_first_name: 'Stephen', trs_last_name: 'Fry', trn: '4786655').tap { |t| describe_teacher(t) }
+andre_roussimoff = Teacher.create!(trs_first_name: 'André', trs_last_name: 'Roussimoff', trn: '8886654').tap { |t| describe_teacher(t) }
+imogen_stubbs = Teacher.create!(trs_first_name: 'Imogen', trs_last_name: 'Stubbs', trn: '6352869').tap { |t| describe_teacher(t) }
+gemma_jones = Teacher.create!(trs_first_name: 'Gemma', trs_last_name: 'Jones', trn: '9578426').tap { |t| describe_teacher(t) }
+anthony_hopkins = Teacher.create!(trs_first_name: 'Anthony', trs_last_name: 'Hopkins', trn: '6228282').tap { |t| describe_teacher(t) }
 john_withers = Teacher.create!(trs_first_name: 'John', trs_last_name: 'Withers', corrected_name: 'Old Man Withers', trn: '8590123')
 helen_mirren = Teacher.create!(trs_first_name: 'Helen', trs_last_name: 'Mirren', corrected_name: 'Dame Helen Mirren', trn: '0000007')
+
+# these teachers map to records in TRS pre-prod
+_robson_scottie = Teacher.create!(trs_first_name: 'Robson', trs_last_name: 'Scottie', trn: '3002582', early_roll_out_mentor: true).tap { |t| describe_teacher(t) }
+_muhammed_ali = Teacher.create!(trs_first_name: 'Muhammed', trs_last_name: 'Ali', trn: '3002580', early_roll_out_mentor: true).tap { |t| describe_teacher(t) }
 
 print_seed_info("Adding schools")
 
@@ -708,9 +711,3 @@ YAML.load_file(Rails.root.join('config/personas.yml'))
 end
 
 print_seed_info('Adding funding exemptions:')
-
-# completed_during_early_roll_out
-EarlyRollOutMentor.create!(trn: hugh_laurie.trn).tap { describe_ero_mentor(hugh_laurie) }
-EarlyRollOutMentor.create!(trn: harriet_walter.trn).tap { describe_ero_mentor(harriet_walter) }
-EarlyRollOutMentor.create!(trn: '3002582').tap { describe_ero_mentor('Robson Scottie') }
-EarlyRollOutMentor.create!(trn: '3002580').tap { describe_ero_mentor('Muhammed Ali') }
