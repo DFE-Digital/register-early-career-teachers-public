@@ -42,15 +42,7 @@ module Schools
       end
 
       def funding_available?
-        if (record = Teacher.find_by(trn:))
-          record.eligible_for_mentor_funding?
-        else
-          !check_ero_mentor.early_roll_out_mentor?
-        end
-      end
-
-      def check_ero_mentor
-        @check_ero_mentor ||= CheckEarlyRollOutMentor.new(trn)
+        Teachers::MentorFundingEligibility.new(trn:).eligible?
       end
 
       def register!(author:)
