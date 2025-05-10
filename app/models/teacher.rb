@@ -49,13 +49,4 @@ class Teacher < ApplicationRecord
 
   scope :deactivated_in_trs, -> { where(trs_deactivated: true) }
   scope :active_in_trs, -> { where(trs_deactivated: false) }
-
-  # Instance methods
-  def eligible_for_mentor_funding?
-    mentor_became_ineligible_for_funding_on.blank? && mentor_became_ineligible_for_funding_reason.blank?
-  end
-
-  def ineligible_for_mentor_funding?
-    !eligible_for_mentor_funding?
-  end
 end
