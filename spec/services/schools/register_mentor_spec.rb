@@ -7,8 +7,6 @@ RSpec.describe Schools::RegisterMentor do
                         school_urn: school.urn,
                         email:,
                         started_on:,
-                        mentor_became_ineligible_for_funding_on:,
-                        mentor_became_ineligible_for_funding_reason:,
                         author:)
   end
 
@@ -20,8 +18,6 @@ RSpec.describe Schools::RegisterMentor do
   let(:school) { FactoryBot.create(:school) }
   let(:email) { "randy@tegridyfarms.com" }
   let(:started_on) { Date.yesterday }
-  let(:mentor_became_ineligible_for_funding_on) { Date.new(2021, 4, 19) }
-  let(:mentor_became_ineligible_for_funding_reason) { 'completed_during_early_roll_out' }
   let(:teacher) { subject.teacher }
 
   describe '#register!' do
@@ -34,8 +30,6 @@ RSpec.describe Schools::RegisterMentor do
         expect(teacher.trs_last_name).to eq(trs_last_name)
         expect(teacher.corrected_name).to eq(corrected_name)
         expect(teacher.trn).to eq(trn)
-        expect(teacher.mentor_became_ineligible_for_funding_reason).to eq(mentor_became_ineligible_for_funding_reason)
-        expect(teacher.mentor_became_ineligible_for_funding_on).to eq(mentor_became_ineligible_for_funding_on)
       end
     end
 
@@ -80,8 +74,6 @@ RSpec.describe Schools::RegisterMentor do
                             trn:,
                             school_urn: school.urn,
                             email:,
-                            mentor_became_ineligible_for_funding_on:,
-                            mentor_became_ineligible_for_funding_reason:,
                             author:)
       end
 
