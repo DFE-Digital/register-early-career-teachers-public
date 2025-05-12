@@ -1,5 +1,5 @@
 RSpec.describe 'schools/ects/index.html.erb' do
-  let(:school) { create(:school) }
+  let(:school) { FactoryBot.create(:school) }
 
   before do
     assign(:ects, [])
@@ -19,8 +19,8 @@ RSpec.describe 'schools/ects/index.html.erb' do
   end
 
   context 'when there are teachers' do
-    let(:teacher) { create(:teacher) }
-    let(:ect_period) { create(:ect_at_school_period, teacher:, school:) }
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:) }
 
     before do
       assign(:ects, [ect_period])
