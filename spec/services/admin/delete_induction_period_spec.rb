@@ -26,7 +26,8 @@ RSpec.describe Admin::DeleteInductionPeriod do
       allow(trs_client).to receive(:reset_teacher_induction)
       allow(trs_client).to receive(:begin_induction!)
       allow(Events::Record).to receive(:record_induction_period_deleted_event!)
-      allow(Events::Record).to receive(:record_induction_period_updated_event!)
+      allow(Events::Record).to receive(:record_teacher_induction_status_reset_event!)
+      allow(Events::Record).to receive(:record_teacher_trs_induction_start_date_updated_event!)
     end
 
     it "destroys the induction period" do
@@ -57,9 +58,9 @@ RSpec.describe Admin::DeleteInductionPeriod do
       )
     end
 
-    it "does not record an update event" do
+    it "does not record a TRS induction start date updated event" do
       service.delete_induction_period!
-      expect(Events::Record).not_to have_received(:record_induction_period_updated_event!)
+      expect(Events::Record).not_to have_received(:record_teacher_trs_induction_start_date_updated_event!)
     end
 
     context "when the induction period has an outcome" do
@@ -70,7 +71,7 @@ RSpec.describe Admin::DeleteInductionPeriod do
           expect { service.delete_induction_period! }.to raise_error(ActiveRecord::RecordInvalid)
         }.not_to change(InductionPeriod, :count)
         expect(Events::Record).not_to have_received(:record_induction_period_deleted_event!)
-        expect(Events::Record).not_to have_received(:record_induction_period_updated_event!)
+        expect(Events::Record).not_to have_received(:record_teacher_trs_induction_start_date_updated_event!)
         expect(trs_client).not_to have_received(:reset_teacher_induction)
         expect(trs_client).not_to have_received(:begin_induction!)
       end
@@ -85,7 +86,8 @@ RSpec.describe Admin::DeleteInductionPeriod do
       allow(trs_client).to receive(:reset_teacher_induction)
       allow(trs_client).to receive(:begin_induction!)
       allow(Events::Record).to receive(:record_induction_period_deleted_event!)
-      allow(Events::Record).to receive(:record_induction_period_updated_event!)
+      allow(Events::Record).to receive(:record_teacher_induction_status_reset_event!)
+      allow(Events::Record).to receive(:record_teacher_trs_induction_start_date_updated_event!)
     end
 
     context "when deleting the earliest period" do
@@ -115,14 +117,15 @@ RSpec.describe Admin::DeleteInductionPeriod do
         expect(trs_client).not_to have_received(:reset_teacher_induction)
       end
 
-      it "records an update event with the correct parameters" do
+      it "records a TRS induction start date updated event with the correct parameters" do
         service.delete_induction_period!
 
-        expect(Events::Record).to have_received(:record_induction_period_updated_event!).with(
+        expect(Events::Record).to have_received(:record_teacher_trs_induction_start_date_updated_event!).with(
           author:,
-          modifications: hash_including("id" => [earliest_period.id, nil]),
           teacher:,
           appropriate_body:,
+          old_date: earliest_period.started_on,
+          new_date: later_period.started_on,
           happened_at: instance_of(ActiveSupport::TimeWithZone)
         )
       end
@@ -161,9 +164,9 @@ RSpec.describe Admin::DeleteInductionPeriod do
         expect(trs_client).not_to have_received(:reset_teacher_induction)
       end
 
-      it "does not record an update event" do
+      it "does not record a TRS induction start date updated event" do
         service.delete_induction_period!
-        expect(Events::Record).not_to have_received(:record_induction_period_updated_event!)
+        expect(Events::Record).not_to have_received(:record_teacher_trs_induction_start_date_updated_event!)
       end
 
       it "records a delete event with the correct parameters" do

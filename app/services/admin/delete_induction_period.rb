@@ -19,20 +19,27 @@ module Admin
 
       modifications = induction_period.attributes.transform_values { |v| [v, nil] }
       appropriate_body = induction_period.appropriate_body
-      has_other_periods = teacher.induction_periods.where.not(id: induction_period.id).exists?
+      was_only_induction_period = teacher.induction_periods.where.not(id: induction_period.id).empty?
       is_earliest_period = induction_period == teacher.induction_periods.earliest_first.first
 
       ActiveRecord::Base.transaction do
         induction_period.destroy!
 
-        if has_other_periods && is_earliest_period
-          update_trs_start_date
-          # This doesn't sound correct, we should either recording a new opening with different start date or a new event type altogether
-          record_update_event(modifications, appropriate_body)
-        elsif !has_other_periods
+        if was_only_induction_period
+          # If this was the only induction period, reset TRS status
           reset_trs_status
           record_trs_status_reset_event(appropriate_body)
+        elsif is_earliest_period
+          # If this was the earliest period but there are others, update TRS start date
+          next_earliest_period = teacher.induction_periods.reload.earliest_first.first
+          update_trs_start_date(next_earliest_period)
+          record_teacher_trs_induction_start_date_updated_event(
+            induction_period.started_on,
+            next_earliest_period.started_on,
+            appropriate_body
+          )
         end
+
         record_delete_event(modifications, appropriate_body)
       end
 
@@ -41,8 +48,7 @@ module Admin
 
   private
 
-    def update_trs_start_date
-      next_earliest_period = teacher.induction_periods.reload.earliest_first.first
+    def update_trs_start_date(next_earliest_period)
       TRS::APIClient.new.begin_induction!(
         trn: teacher.trn,
         start_date: next_earliest_period.started_on
@@ -53,12 +59,13 @@ module Admin
       TRS::APIClient.new.reset_teacher_induction(trn: teacher.trn)
     end
 
-    def record_update_event(modifications, appropriate_body)
-      Events::Record.record_induction_period_updated_event!(
+    def record_teacher_trs_induction_start_date_updated_event(old_date, new_date, appropriate_body)
+      Events::Record.record_teacher_trs_induction_start_date_updated_event!(
         author:,
-        modifications:,
         teacher:,
         appropriate_body:,
+        old_date:,
+        new_date:,
         happened_at: Time.zone.now
       )
     end
