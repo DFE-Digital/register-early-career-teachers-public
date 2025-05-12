@@ -33,6 +33,7 @@ module Schools
             induction_completed: InductionCompletedStep,
             induction_exempt: InductionExemptStep,
             lead_provider: LeadProviderStep,
+            change_provider_led_programme_type: ChangeProviderLedProgrammeTypeStep,
             national_insurance_number: NationalInsuranceNumberStep,
             not_found: NotFoundStep,
             programme_type: ProgrammeTypeStep,

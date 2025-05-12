@@ -21,11 +21,11 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeChangeLeadProviderStep, 
     context 'when the school has programme choices' do
       let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_chosen, :provider_led_chosen) }
 
-      it { expect(subject.previous_step).to eq(:change_programme_type) }
+      it { expect(subject.previous_step).to eq(:change_provider_led_programme_type) }
     end
 
     context 'when the ect has no lead provider set' do
-      it { expect(subject.previous_step).to eq(:change_programme_type) }
+      it { expect(subject.previous_step).to eq(:change_provider_led_programme_type) }
     end
 
     context 'when the school has no programme choices and the ect has a lead provider set' do
