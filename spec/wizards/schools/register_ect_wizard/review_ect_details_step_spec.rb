@@ -3,7 +3,7 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
 
   let(:change_name) { "yes" }
   let(:corrected_name) { "Jane Smith" }
-  let(:teacher) { create(:teacher) }
+  let(:teacher) { FactoryBot.create(:teacher) }
   let(:store) { FactoryBot.build(:session_repository, change_name:, corrected_name:, trn: teacher.trn) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :review_ect_details, store:) }
 
@@ -62,7 +62,7 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
 
   describe '#next_step' do
     context 'with ECTAtSchoolPeriods' do
-      let!(:ect_at_school_period) { create(:ect_at_school_period, teacher:) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
 
       it 'returns the previous ect details page' do
         expect(subject.next_step).to eq(:previous_ect_details)
