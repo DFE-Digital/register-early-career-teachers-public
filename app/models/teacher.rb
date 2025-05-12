@@ -35,6 +35,13 @@ class Teacher < ApplicationRecord
             allow_nil: true,
             length: { maximum: 18, message: 'TRS induction status must be shorter than 18 characters' }
 
+  validates :mentor_became_ineligible_for_funding_on,
+            presence: { message: 'Enter the date when the mentor became ineligible for funding' },
+            if: -> { mentor_became_ineligible_for_funding_reason.present? }
+  validates :mentor_became_ineligible_for_funding_reason,
+            presence: { message: 'Choose the reason why the mentor became ineligible for funding' },
+            if: -> { mentor_became_ineligible_for_funding_on.present? }
+
   # Scopes
   scope :search, ->(query_string) {
     where(
