@@ -99,14 +99,6 @@ class PendingInductionSubmission < ApplicationRecord
     trs_induction_status.eql?('Exempt')
   end
 
-  def pass?
-    outcome.eql?('pass')
-  end
-
-  def fail?
-    outcome.eql?('fail')
-  end
-
   # @return [Boolean] capture multiple error messages and reset before saving
   def playback_errors
     assign_attributes(

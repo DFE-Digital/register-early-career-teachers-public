@@ -3,7 +3,7 @@ module AppropriateBodies
     # Management of induction periods in bulk via CSV upload
     # Handles Pass / Fail / Release in two stages
     class Action < Base
-      # @return [Array<?>] convert the valid submissions into permanent records
+      # @return [Array<Boolean>] convert the valid submissions into permanent records
       def do!
         pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
           @pending_induction_submission = pending_induction_submission
@@ -19,7 +19,7 @@ module AppropriateBodies
         pending_induction_submission_batch.update(error_message: e.message)
       end
 
-      # @return [CSV::Table] validate each row and create a submission capturing the errors
+      # @return [nil] validate each row and create a submission capturing the errors
       def process!
         pending_induction_submission_batch.rows.each do |row|
           @row = row
@@ -40,23 +40,23 @@ module AppropriateBodies
 
     private
 
-      # @return [?]
+      # @return [Boolean]
       def do_action!
         PendingInductionSubmissionBatch.transaction do
           if pending_induction_submission.save(context: :record_outcome)
             record_outcome.pass! if pending_induction_submission.pass?
             record_outcome.fail! if pending_induction_submission.fail?
-
+            true
           elsif pending_induction_submission.save(context: :release_ect)
-
             release_ect.release! if pending_induction_submission.outcome.nil?
+            true
           else
             false
           end
         end
       end
 
-      # @return [?]
+      # @return [nil, Boolean]
       def validate_submission!
         pending_induction_submission.assign_attributes(
           finished_on: row.finished_on,
