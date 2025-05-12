@@ -55,7 +55,7 @@ private
   end
 
   def has_any_open_induction_periods?
-    induction_periods&.any?(&:ongoing?)
+    induction_periods&.any?(&:ongoing?) || false
   end
 
   def has_an_induction_outcome?
