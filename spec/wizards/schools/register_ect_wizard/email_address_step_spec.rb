@@ -1,7 +1,7 @@
 RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
   subject { described_class.new(wizard:) }
 
-  let(:teacher) { create(:teacher) }
+  let(:teacher) { FactoryBot.create(:teacher) }
   let(:store) { FactoryBot.build(:session_repository, email: 'prepopulated@example.com', trn: teacher.trn) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :email_address, store:) }
 
@@ -64,7 +64,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
 
   describe '#previous_step' do
     context 'with ECTAtSchoolPeriods' do
-      let!(:ect_at_school_period) { create(:ect_at_school_period, teacher:) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
 
       it 'returns the previous ect details page' do
         expect(subject.previous_step).to eq(:previous_ect_details)
