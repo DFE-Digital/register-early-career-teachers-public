@@ -98,7 +98,7 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_updated_event!(author:, modifications:, teacher:, appropriate_body:, induction_period: nil, happened_at: Time.zone.now)
+    def self.record_induction_period_updated_event!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
       event_type = :induction_period_updated
       heading = 'Induction period updated by admin'
 
@@ -175,6 +175,14 @@ module Events
     def self.teacher_induction_status_changed_in_trs_event!(old_induction_status:, new_induction_status:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_status_updated
       heading = "Induction status changed from '#{old_induction_status}' to '#{new_induction_status}'"
+
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, old_date:, new_date:, happened_at: Time.zone.now)
+      event_type = :teacher_trs_induction_start_date_updated
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name}'s induction start date changed from #{old_date} to #{new_date}"
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
