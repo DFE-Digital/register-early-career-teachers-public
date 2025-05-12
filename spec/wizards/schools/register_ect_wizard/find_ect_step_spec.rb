@@ -52,38 +52,6 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
       )
     end
 
-    context 'when the teacher is prohibited from teaching' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-
-      before do
-        fake_client = TRS::FakeAPIClient.new
-
-        allow(fake_client).to receive(:find_teacher).and_return(
-          TRS::Teacher.new(
-            'trn' => '1234568',
-            'firstName' => 'Kirk',
-            'lastName' => 'Van Houten',
-            'dateOfBirth' => '1977-02-03',
-            'alerts' => [
-              {
-                'alertType' => {
-                  'alertCategory' => {
-                    'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
-                  }
-                }
-              }
-            ]
-          )
-        )
-        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
-        subject.save!
-      end
-
-      it 'returns :cannot_register_ect' do
-        expect(subject.next_step).to eq(:cannot_register_ect)
-      end
-    end
-
     context 'when the ect is not found in TRS' do
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(raise_not_found: true))
@@ -129,6 +97,116 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
 
       it 'returns :already_active_at_school' do
         expect(subject.next_step).to eq(:already_active_at_school)
+      end
+    end
+
+    context 'when the teacher completed induction' do
+      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+
+      before do
+        fake_client = TRS::FakeAPIClient.new
+
+        allow(fake_client).to receive(:find_teacher).and_return(
+          TRS::Teacher.new(
+            'trn' => '1234568',
+            'firstName' => 'Kirk',
+            'lastName' => 'Van Houten',
+            'dateOfBirth' => '1977-02-03',
+            'induction' => {
+              'status' => 'Passed'
+            }
+          )
+        )
+        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
+        subject.save!
+      end
+
+      it 'returns :induction_completed' do
+        expect(subject.next_step).to eq(:induction_completed)
+      end
+    end
+
+    context 'when the teacher is exempt from induction' do
+      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+
+      before do
+        fake_client = TRS::FakeAPIClient.new
+
+        allow(fake_client).to receive(:find_teacher).and_return(
+          TRS::Teacher.new(
+            'trn' => '1234568',
+            'firstName' => 'Kirk',
+            'lastName' => 'Van Houten',
+            'dateOfBirth' => '1977-02-03',
+            'induction' => {
+              'status' => 'Exempt'
+            }
+          )
+        )
+        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
+        subject.save!
+      end
+
+      it 'returns :induction_exempt' do
+        expect(subject.next_step).to eq(:induction_exempt)
+      end
+    end
+
+    context 'when the teacher failed induction' do
+      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+
+      before do
+        fake_client = TRS::FakeAPIClient.new
+
+        allow(fake_client).to receive(:find_teacher).and_return(
+          TRS::Teacher.new(
+            'trn' => '1234568',
+            'firstName' => 'Kirk',
+            'lastName' => 'Van Houten',
+            'dateOfBirth' => '1977-02-03',
+            'induction' => {
+              'status' => 'Failed'
+            }
+          )
+        )
+        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
+        subject.save!
+      end
+
+      it 'returns :induction_failed' do
+        expect(subject.next_step).to eq(:induction_failed)
+      end
+    end
+
+    context 'when the teacher is prohibited from teaching' do
+      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+
+      before do
+        fake_client = TRS::FakeAPIClient.new
+
+        allow(fake_client).to receive(:find_teacher).and_return(
+          TRS::Teacher.new(
+            'trn' => '1234568',
+            'firstName' => 'Kirk',
+            'lastName' => 'Van Houten',
+            'dateOfBirth' => '1977-02-03',
+            'alerts' => [
+              {
+                'alertType' => {
+                  'alertCategory' => {
+                    'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
+                  }
+                }
+              }
+            ]
+          )
+        )
+        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
+        subject.save!
+      end
+
+      it 'returns :cannot_register_ect' do
+        expect(subject.next_step).to eq(:cannot_register_ect)
       end
     end
 
