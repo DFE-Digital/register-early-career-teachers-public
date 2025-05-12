@@ -11,7 +11,7 @@ By sending this out publicly, we hope to:
 
 All of these items of work are related [to our objectives as a team.](/product/objectives) 
 
-## The services that make up Register early career teachers
+## The services that make up Register early career teachers (ECTs)
 
 Register early career teachers is comprised of:
 
