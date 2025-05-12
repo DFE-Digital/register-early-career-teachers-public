@@ -10,4 +10,3 @@ We will:
 * work out how to communicate best with schools on the transition between services, including how to contact us for support
 * improve how schools can make changes to ECT and mentor records, so we can get more accurate information for them
 * work out how we might integrate with the third party services which appropriate bodies use to manage inductions, so we can make it easier to record inductions
-* improve the record inductions service with appropriate bodies to better meet their needs in peak periods
