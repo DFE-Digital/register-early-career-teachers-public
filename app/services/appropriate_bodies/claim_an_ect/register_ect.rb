@@ -46,6 +46,12 @@ module AppropriateBodies
         )
       end
 
+      def update_trs_induction_status
+        manage_teacher.update_trs_induction_status!(
+          trs_induction_status: pending_induction_submission.trs_induction_status
+        )
+      end
+
       def update_itt_provider_name
         manage_teacher.update_itt_provider_name!(
           trs_initial_teacher_training_provider_name: pending_induction_submission.trs_initial_teacher_training_provider_name
