@@ -93,7 +93,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def when_i_start_adding_an_ect
-    page.get_by_role('link', name: 'Add an ECT').click
+    page.get_by_role('link', name: 'Register an ECT starting at your school').click
   end
 
   def then_i_am_in_the_requirements_page
