@@ -22,6 +22,7 @@ module AppropriateBodies
             update_name,
             update_qts_awarded_on,
             update_itt_provider_name,
+            update_trs_induction_status,
             pending_induction_submission.save(context: :register_ect),
             create_induction_period
           ]
