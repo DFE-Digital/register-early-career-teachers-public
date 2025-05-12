@@ -21,6 +21,7 @@ Register early career teachers is comprised of:
 - a joint admin and finance console to view information and aid in support queries for all our users
 
 We decided to combine Record inductions and the rest of the services for training because:
+
 - induction data is used by these training services, so being closer together made sense
 - historically, there was a separate service for appropriate bodies to check ECT data submitted by schools, whilst now there can be one for them to do this and record inductions
 - in the future, we hope to try to deduplicate registration for schools, so appropriate bodies can just approve of information schools submit relevant to induction
