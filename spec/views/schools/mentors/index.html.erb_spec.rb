@@ -1,5 +1,5 @@
 RSpec.describe 'schools/mentors/index.html.erb' do
-  let(:school) { create(:school) }
+  let(:school) { FactoryBot.create(:school) }
 
   before do
     assign(:school, school)
