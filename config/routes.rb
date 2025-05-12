@@ -117,6 +117,7 @@ Rails.application.routes.draw do
       get "already_active_at_school", action: :new
       get "induction-completed", action: :new
       get "induction-exempt", action: :new
+      get "induction-failed", action: :new
 
       get "review-ect-details", action: :new
       post "review-ect-details", action: :create
