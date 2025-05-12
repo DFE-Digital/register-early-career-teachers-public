@@ -29,12 +29,12 @@ RSpec.describe Teachers::InductionStatus do
           ]
         end
 
-        it "has a status of 'Unknown'" do
-          expect(service.induction_status).to eql('Unknown')
+        it "has a status of 'In progress'" do
+          expect(service.induction_status).to eql('In progress')
         end
 
-        it "has a grey status color" do
-          expect(service.induction_status_colour).to eql('grey')
+        it "has a blue status color" do
+          expect(service.induction_status_colour).to eql('blue')
         end
       end
 
@@ -47,12 +47,12 @@ RSpec.describe Teachers::InductionStatus do
           ]
         end
 
-        it "has a status of 'Unknown'" do
-          expect(service.induction_status).to eql('Unknown')
+        it "has a status of 'Induction paused'" do
+          expect(service.induction_status).to eql('Induction paused')
         end
 
-        it "has a grey status color" do
-          expect(service.induction_status_colour).to eql('grey')
+        it "has a pink status color" do
+          expect(service.induction_status_colour).to eql('pink')
         end
       end
     end
@@ -127,14 +127,55 @@ RSpec.describe Teachers::InductionStatus do
   context 'when no conditions are matched' do
     let(:teacher) { nil }
     let(:induction_periods) { [] }
-    let(:trs_induction_status) { 'SomethingEntirelyDifferent' }
 
-    it "has a status of 'Unknown'" do
-      expect(service.induction_status).to eql('Unknown')
+    context 'with an unknown TRS status' do
+      let(:trs_induction_status) { 'SomethingEntirelyDifferent' }
+
+      it "has a status of 'Unknown'" do
+        expect(service.induction_status).to eql('Unknown')
+      end
+
+      it "has a grey status color" do
+        expect(service.induction_status_colour).to eql('grey')
+      end
     end
 
-    it "has a grey status color" do
-      expect(service.induction_status_colour).to eql('grey')
+    context 'with a nil TRS status' do
+      let(:trs_induction_status) { nil }
+
+      it "has a status of 'Unknown'" do
+        expect(service.induction_status).to eql('Unknown')
+      end
+
+      it "has a grey status color" do
+        expect(service.induction_status_colour).to eql('grey')
+      end
+    end
+
+    context 'with an empty string TRS status' do
+      let(:trs_induction_status) { '' }
+
+      it "has a status of 'Unknown'" do
+        expect(service.induction_status).to eql('Unknown')
+      end
+
+      it "has a grey status color" do
+        expect(service.induction_status_colour).to eql('grey')
+      end
+    end
+  end
+
+  context 'when induction_periods is nil' do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:induction_periods) { nil }
+    let(:trs_induction_status) { 'InProgress' }
+
+    it "handles nil induction_periods gracefully" do
+      expect { service.induction_status }.not_to raise_error
+    end
+
+    it "has a status of 'Induction paused'" do
+      expect(service.induction_status).to eql('Induction paused')
     end
   end
 
