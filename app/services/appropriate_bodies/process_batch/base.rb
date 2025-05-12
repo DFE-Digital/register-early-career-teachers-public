@@ -15,7 +15,8 @@ module AppropriateBodies
 
     private
 
-      # @return [PendingInductionSubmission] formatting validation of TRN and DOB happens after creation so that any errors have somewhere to go
+      # Formatting validation of TRN and DOB happens after creation so a safe version of the TRN is used
+      # @return [PendingInductionSubmission]
       def sparse_pending_induction_submission
         ::PendingInductionSubmission.create(
           pending_induction_submission_batch:,
