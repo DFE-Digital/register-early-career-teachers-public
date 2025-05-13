@@ -82,4 +82,4 @@ COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 ENV PORT=8080
 EXPOSE ${PORT}
 
-CMD ["./bin/rails", "server", "-p", "$PORT"]
+CMD ["./bin/rails", "server", "-p", "${PORT}"]
