@@ -49,7 +49,7 @@ end %>
       row.with_key(text: 'Choices used by your school previously')
       row.with_value(text: previous_choice_message(@ect.use_previous_ect_choices))
       row.with_action(text: 'Change',
-                      href: change_use_previous_ect_choices_path(@school),
+                      href: schools_register_ect_wizard_change_use_previous_ect_choices_path,
                       visually_hidden_text: 'choices used by your school previously')
     end
   end

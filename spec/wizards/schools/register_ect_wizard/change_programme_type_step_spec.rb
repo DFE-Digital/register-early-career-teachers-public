@@ -17,13 +17,13 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
   describe "#next_step" do
     before { subject.send(:persist) }
 
-    context 'when the ect programme type is school led' do
+    context 'when the programme type is school led' do
       let(:new_programme_type) { 'school_led' }
 
       it { expect(subject.next_step).to eq(:check_answers) }
     end
 
-    context 'when the ect programme type is provided led' do
+    context 'when the programme type is provided led' do
       let(:new_programme_type) { 'provider_led' }
 
       context 'when the school has programme choices' do
@@ -38,13 +38,13 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
         it { expect(subject.next_step).to eq(:programme_type_change_lead_provider) }
       end
 
-      context 'when the ect lead provider has not been set' do
+      context 'when a lead provider has not been selected yet' do
         let(:lead_provider_id) { nil }
 
         it { expect(subject.next_step).to eq(:programme_type_change_lead_provider) }
       end
 
-      context 'when no school choices, no changed from school led and the ect lead provider has already been set' do
+      context 'when a lead provider has already been selected' do
         let(:programme_type) { 'provider_led' }
         let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
 
@@ -56,6 +56,24 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
   describe "#previous_step" do
     before { subject.send(:persist) }
 
-    it { expect(subject.previous_step).to eq(:check_answers) }
+    context 'when the programme type is school led' do
+      let(:programme_type) { 'school_led' }
+
+      it { expect(subject.previous_step).to eq(:check_answers) }
+    end
+
+    context 'when the programme type is provided led' do
+      let(:new_programme_type) { 'provider_led' }
+
+      context 'when a lead provider has not been selected yet' do
+        let(:lead_provider_id) { nil }
+
+        it { expect(subject.previous_step).to eq(:programme_type_change_lead_provider) }
+      end
+
+      context 'when a lead provider has already been selected' do
+        it { expect(subject.previous_step).to eq(:check_answers) }
+      end
+    end
   end
 end

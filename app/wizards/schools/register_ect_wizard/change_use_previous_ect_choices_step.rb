@@ -9,6 +9,8 @@ module Schools
       end
 
       def previous_step
+        return :no_previous_ect_choices_change_lead_provider if ect.provider_led? && ect.lead_provider_id.nil?
+
         :check_answers
       end
     end

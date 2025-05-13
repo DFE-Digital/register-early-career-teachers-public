@@ -153,8 +153,6 @@ Rails.application.routes.draw do
       post "change-programme-type", action: :create
       get "no-previous-ect-choices-change-programme-type", action: :new
       post "no-previous-ect-choices-change-programme-type", action: :create
-      get "change-provider-led-programme-type", action: :new
-      post "change-provider-led-programme-type", action: :create
 
       get "lead-provider", action: :new
       post "lead-provider", action: :create
