@@ -23,7 +23,7 @@
 
   <% list.with_row do |row| %>
     <%= row.with_key { "Training programme" } %>
-    <%= row.with_value { programme_type_name(@school.ect_at_school_periods.max_by(&:created_at).programme_type) } %>
+    <%= row.with_value { training_programme_for(@ect.trn) || 'Not confirmed' } %>
   <% end %>
 
   <% if @school.ect_at_school_periods.max_by(&:created_at).provider_led? %>

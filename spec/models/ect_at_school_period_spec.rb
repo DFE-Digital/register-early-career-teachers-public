@@ -223,6 +223,22 @@ describe ECTAtSchoolPeriod do
         expect(described_class.for_teacher(teacher.id)).to match_array([period_1, period_2, period_3])
       end
     end
+
+    describe '.latest_for_teacher' do
+      it 'returns the latest ect_at_school_period for the teacher' do
+        teacher = FactoryBot.create(:teacher)
+        FactoryBot.create(:ect_at_school_period, teacher:, created_at: 3.days.ago)
+        latest_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, created_at: 1.day.ago)
+
+        expect(ECTAtSchoolPeriod.latest_for_teacher(teacher)).to contain_exactly(latest_ect_at_school_period)
+      end
+
+      it 'returns empty when the teacher has no periods' do
+        teacher = FactoryBot.create(:teacher)
+
+        expect(ECTAtSchoolPeriod.latest_for_teacher(teacher)).to be_empty
+      end
+    end
   end
 
   describe "#current_mentorship" do
