@@ -82,5 +82,4 @@ COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 ENV PORT=8080
 EXPOSE ${PORT}
 
-CMD bundle exec rails db:prepare && \
-    bundle exec rails server -b 0.0.0.0 -p ${PORT}
+CMD ["./bin/rails", "server", "-p", "$PORT"]
