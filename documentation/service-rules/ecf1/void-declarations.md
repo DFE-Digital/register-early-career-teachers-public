@@ -17,6 +17,8 @@ This documentation describes:
 
 [Impact of voiding on declaration states](#impact-of-voiding-on-declaration-states)
 
+[Impact of awaiting clawback on statement attachment](#impact-of-awaiting-clawback-on-statement-attachment)
+
 [Interactions](#interactions)
 
 [Lead provider voiding declarations](#lead-provider-voiding-declarations)
@@ -33,7 +35,8 @@ This documentation describes:
 
 **Voiding** is a mechanism that allows a Lead provider or a DfE Finance user to retract or cancel a previously submitted participant declaration.
 
-* This action is necessary in various scenarios, such as correcting errors, ineligible participants, responding to changes in participant circumstances, or when a declaration was made incorrectly.
+* When a declaration is made, it is typically associated with the current open statement or the next upcoming statement, depending on its submission date and the statement cut-off dates. This ensures that providers are compensated for the services they have delivered within that statement period. The `statement_id` attribute within a declaration's data (as seen in the API response) indicates which statement the declaration is currently attached to. Initially, when a declaration is submitted and deemed eligible, it will be assigned to an active statement for payment processing.
+* Voiding a declaration is necessary in various scenarios, such as correcting errors, ineligible participants, responding to changes in participant circumstances, or when a declaration was made incorrectly.
 * A `voided` declaration is effectively cancelled and will not be used in invoicing or funding calculations.
 * Once a declaration is voided, it cannot be restored and must be re-submitted if appropriate.
 * A `voided` declaration will not be soft-deleted.
@@ -42,8 +45,19 @@ This documentation describes:
 
 When a declaration is voided, its resulting state depends on the state it was in prior to the void action:
 
-* **Submitted, Eligible, Payable:** If a declaration is in a `submitted`, `eligible`, `payable` or `ineligible` state, voiding it will transition the declaration to a `voided` state with no further action required. It effectively nullifies the declaration. It will likely be marked as `voided` on any internal DfE listings or reports related to its original intended statement period, but it won't appear as a `payable` item.
-* **Paid:** If a declaration has already been `paid`, voiding it will transition the declaration to an `awaiting_clawback` state. This signifies that the funds paid out for this declaration need to be recouped by DfE, typically by being deducted from a future payment to the Lead provider. The clawback will be detailed on that future statement.
+* **Submitted, Eligible, Payable:** If a declaration is in a `submitted`, `eligible`, `payable` or `ineligible` state, voiding it will transition the declaration to a `voided` state with no further action required. It effectively nullifies the declaration. The declaration won't appear as a `payable` item and remains associated with the same statement it was originally on. It is not moved to a different statement. It will be marked as `voided` on any internal DfE listings or reports related to its original intended statement period.
+* **Paid:** If a declaration has already been `paid`, voiding it will transition the declaration to an `awaiting_clawback` state. This signifies that the funds paid out for this declaration need to be recouped by DfE, typically by being deducted from a future statement to the Lead provider. The declaration is then moved to that future statement which is the latest open output statement for the Lead provider. By the time DfE "freezes" that next available financial statement, declarations in `awaiting_clawback` state, will transition to `clawed_back`.
+
+## Impact of awaiting clawback on statement attachment
+
+As mentioned above, when a paid declaration is `voided`, it enters an `awaiting_clawback` state. The key point here is its attachment to statements:
+
+* The declaration is marked for clawback.
+* It is attached to the latest output statement (or the next one to be generated) via the `clawback_statement_id`. This ensures that the overpayment is reconciled in the upcoming payment cycle.
+
+This distinction is important: for a non-paid voided declaration, the state will be `voided`, and the `statement_id` will remain the original statement, and `clawback_statement_id` will be null, while for a paid-then-voided declaration (`awaiting_clawback`), it is effectively moved to the newest statement for the purpose of financial reconciliation (the clawback) and the `clawback_statement_id` field would be populated with the ID of the statement on which the clawback will be processed.
+
+This mechanism ensures accurate financial accounting, allowing the DfE to manage payments and reclaim funds correctly when declarations are voided after payment has occurred.
 
 ## Interactions
 
@@ -173,7 +187,7 @@ Finance users can view all voided declarations in the output statement interface
 
 ## Frozen cohorts and statements
 
-- When DfE "freezes" a financial statement for assurance tasks, declarations on that statement that are payable typically transition to paid.
+- When DfE "freezes" a financial statement for assurance tasks, declarations on that statement that are `payable` transition to `paid` and `awaiting_clawback` declarations transition to `clawed_back`.
 - Lead providers are generally blocked from directly voiding declarations that are in a paid state, if the associated statement period is closed or "frozen". This is because the payment has been processed and reconciliation is more complex. In this case an error message is returned from the API: `"You cannot submit or void declarations for the 2021 cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us"`.
-- Why LPs are unable to void declarations on frozen cohorts: Once a cohort's financial data is finalized and statements are closed (payments made), direct voiding by LPs is restricted to maintain financial integrity. If a declaration from a frozen cohort needs to be voided (e.g., an error is discovered late), it usually requires intervention or a specific process managed by DfE finance, potentially leading to a clawback.
+- Why LPs are unable to void declarations on frozen cohorts: Once a cohort's financial data is finalised and statements are closed (payments made), direct voiding by LPs is restricted to maintain financial integrity. If a declaration from a frozen cohort needs to be voided (e.g., an error is discovered late), it usually requires intervention or a specific process managed by DfE finance, potentially leading to a clawback.
 - In scenarios like cohort closures (e.g., the 2021 cohort closure), DfE may provide specific guidance for managing declarations, which can include moving participants to new cohorts. If an incorrect declaration was made in a new cohort during such a transition, the Lead provider might need to void that new declaration to allow for correct declaration in the old cohort, sometimes with DfE support.
