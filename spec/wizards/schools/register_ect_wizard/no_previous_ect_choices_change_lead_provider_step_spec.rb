@@ -18,22 +18,6 @@ RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeLeadProvide
   end
 
   describe "#previous_step" do
-    context 'when the school has programme choices' do
-      let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_chosen, :provider_led_chosen) }
-
-      it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_programme_type) }
-    end
-
-    context 'when the ect has no lead provider set' do
-      it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_programme_type) }
-    end
-
-    context 'when the school has no programme choices and the ect has a lead provider set' do
-      let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
-
-      before { subject.send(:persist) }
-
-      it { expect(subject.previous_step).to eq(:check_answers) }
-    end
+    it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_programme_type) }
   end
 end
