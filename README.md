@@ -29,9 +29,3 @@ We still aim to work as openly as possible and will respond to any issues or pul
 ## Entity Relationships
 
 ![Entity Relationship Diagram](documentation/domain-model.png)
-
-You can regenerate this diagram with:
-
-```sh
-bundle exec erd
-```
