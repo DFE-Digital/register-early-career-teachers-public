@@ -10,7 +10,7 @@ RSpec.describe "schools/register_ect_wizard/national_insurance_number.html.erb" 
 
   it "sets the page title" do
     render
-    expect(sanitize(view.content_for(:page_title))).to eql("We cannot find your ECT's details")
+    expect(sanitize(view.content_for(:page_title))).to eql("We cannot find the ECT's details")
   end
 
   context 'when the form is invalid' do
