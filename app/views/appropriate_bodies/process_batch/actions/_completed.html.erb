@@ -15,12 +15,12 @@
 
 <% if batch.pending_induction_submissions.with_errors.any? %>
   <p class='govuk-body'>
-    You had <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors which did not upload.
+    You had <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors.
   </p>
 
   <p class='govuk-body'>
     <%= govuk_link_to 'Download CSV with error messages included', ab_batch_action_path(batch, format: :csv) %>. 
-    You'll need to fix these errors before you upload your CSV again.
+    You'll need to fix these errors before you try again.
   </p>
 <% end %>
 

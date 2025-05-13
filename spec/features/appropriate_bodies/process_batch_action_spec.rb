@@ -39,7 +39,7 @@ RSpec.describe 'Process bulk actions' do
         # This job does validation first, leaving the user to confirm with a CTA
         perform_enqueued_jobs
         page.reload
-        expect(page.get_by_text('CSV summary')).to be_visible
+        expect(page.get_by_text('CSV file summary')).to be_visible
 
         # NB: these will have failed because we have not factoried the ECTs and their inductions
         expect(page.get_by_text("Your CSV named 'valid_complete_action.csv' has 2 ECTs")).to be_visible
@@ -102,7 +102,7 @@ private
 
   def when_i_upload_a_file
     page.locator('input[type="file"]').set_input_files(file_path)
-    page.get_by_role('button', name: "Save and continue").click
+    page.get_by_role('button', name: 'Continue').click
   end
 
   def then_i_should_see_the_error(error)
