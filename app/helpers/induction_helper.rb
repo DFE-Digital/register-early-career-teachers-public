@@ -8,4 +8,14 @@ module InductionHelper
   def induction_start_date_for(trn)
     InductionPeriod.where(teacher: Teacher.find_by(trn:)).order(:started_on).limit(1).pick(:started_on)&.to_fs(:govuk)
   end
+
+  def appropriate_body_name_for(trn)
+    teacher = Teacher.find_by(trn:)
+    return unless teacher
+
+    InductionPeriod
+      .latest_for_teacher(teacher)
+      .includes(:appropriate_body)
+      .pick("appropriate_bodies.name")
+  end
 end
