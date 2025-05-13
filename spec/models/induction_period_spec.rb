@@ -192,6 +192,23 @@ RSpec.describe InductionPeriod do
       end
     end
 
+    describe ".latest_for_teacher" do
+      it "returns the most recently created induction period for the specified teacher" do
+        teacher = FactoryBot.create(:teacher)
+
+        FactoryBot.create(:induction_period, teacher:, created_at: 3.days.ago, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30))
+        latest_induction_period = FactoryBot.create(:induction_period, teacher:, created_at: 1.day.ago, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30))
+
+        expect(InductionPeriod.latest_for_teacher(teacher)).to contain_exactly(latest_induction_period)
+      end
+
+      it "returns an empty ActiveRecord relation if teacher has no periods" do
+        teacher = FactoryBot.create(:teacher)
+
+        expect(InductionPeriod.latest_for_teacher(teacher)).to be_empty
+      end
+    end
+
     describe ".for_appropriate_body" do
       it "returns induction periods only for the specified appropriate_body" do
         expect(InductionPeriod.for_appropriate_body(456).to_sql).to end_with(%( WHERE "induction_periods"."appropriate_body_id" = 456))
