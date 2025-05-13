@@ -1,8 +1,11 @@
 <% page_data(
-    title: "Check if this is your ECT",
+    title: "Check ECT details",
     error: @wizard.current_step.errors.present?,
     backlink_href: @wizard.previous_step_path,
 ) %>
+
+<p class="govuk-body">There is a teacher record that matches the details you've provided.</p>
+
 
 <%= govuk_summary_list do |summary_list|
   summary_list.with_row do |row|
@@ -39,7 +42,7 @@ end %>
                                text: "Enter the correct full name"
                              },
                              hint: {
-                               text: "The name you provide will be used for ECT registration. The ECT can update their name in their teacher record later using the Access your teaching qualifications service."
+                               text: "This is the name that will be used in this service and communications with the ECT. The ECT can update their name in their teacher record later using the Access your teaching qualifications service."
                              } %>
     <% end %>
   <% end %>
