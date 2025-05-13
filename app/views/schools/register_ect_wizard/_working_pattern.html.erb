@@ -4,6 +4,9 @@
     backlink_href: @wizard.previous_step_path,
 ) %>
 
+<p class="govuk-body">We'll pass this information on so adjustments can be made to training if needed.</p>
+
+
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
