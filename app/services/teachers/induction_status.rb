@@ -34,12 +34,7 @@ class Teachers::InductionStatus
   def induction_status_colour = status_tag_kwargs.fetch(:colour)
 
   def completed?
-    %w[
-      Exempt
-      Passed
-      Failed
-      FailedInWales
-    ].include?(trs_induction_status)
+    %w[Exempt Passed Failed FailedInWales].include?(trs_induction_status)
   end
 
 private
@@ -47,25 +42,12 @@ private
   def induction_info
     {
       has_an_open_induction_period: has_any_open_induction_periods?,
-      has_an_induction_outcome: has_an_induction_outcome?,
-      teacher_with_induction_periods_present: teacher.present? && induction_periods.present?,
-      induction_outcome:,
       trs_induction_status:,
     }
   end
 
   def has_any_open_induction_periods?
     induction_periods&.any?(&:ongoing?) || false
-  end
-
-  def has_an_induction_outcome?
-    induction_periods&.any? { |ip| ip.outcome.present? }
-  end
-
-  def induction_outcome
-    return unless (period_with_outcome = induction_periods&.find { |ip| ip.outcome.present? })
-
-    period_with_outcome.outcome
   end
 
   def exempt = { text: 'Exempt', colour: 'green' }
