@@ -22,7 +22,6 @@ module AppropriateBodies
             update_name,
             update_qts_awarded_on,
             update_itt_provider_name,
-            send_begin_induction_notification_to_trs,
             pending_induction_submission.save(context: :register_ect),
             create_induction_period
           ]
@@ -78,16 +77,6 @@ module AppropriateBodies
         true
       rescue ActiveRecord::RecordInvalid
         false
-      end
-
-      def send_begin_induction_notification_to_trs
-        return true if ::Teachers::Induction.new(teacher).has_induction_periods?
-
-        BeginECTInductionJob.perform_later(
-          trn: pending_induction_submission.trn,
-          start_date: pending_induction_submission.started_on,
-          pending_induction_submission_id: pending_induction_submission.id
-        )
       end
     end
   end
