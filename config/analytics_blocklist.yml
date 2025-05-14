@@ -386,3 +386,31 @@
   - registration_period_id
   - created_at
   - updated_at
+  :statement_items:
+  - id
+  - statement_id
+  - ecf_id
+  - state
+  - created_at
+  - updated_at
+  :statement_adjustments:
+  - id
+  - statement_id
+  - ecf_id
+  - payment_type
+  - amount
+  - created_at
+  - updated_at
+  :statements:
+  - id
+  - lead_provider_active_period_id
+  - ecf_id
+  - month
+  - year
+  - deadline_date
+  - payment_date
+  - marked_as_paid_at
+  - output_fee
+  - state
+  - created_at
+  - updated_at
