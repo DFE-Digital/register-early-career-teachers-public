@@ -227,10 +227,10 @@ describe ECTAtSchoolPeriod do
     describe '.latest_for_teacher' do
       it 'returns the latest ect_at_school_period for the teacher' do
         teacher = FactoryBot.create(:teacher)
-        FactoryBot.create(:ect_at_school_period, teacher:, created_at: 3.days.ago)
+        older_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, created_at: 3.days.ago)
         latest_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, created_at: 1.day.ago)
 
-        expect(ECTAtSchoolPeriod.latest_for_teacher(teacher)).to contain_exactly(latest_ect_at_school_period)
+        expect(ECTAtSchoolPeriod.latest_for_teacher(teacher)).to contain_exactly(older_ect_at_school_period, latest_ect_at_school_period)
       end
 
       it 'returns empty when the teacher has no periods' do
