@@ -29,7 +29,7 @@ module API
       end
 
       def to_json(obj)
-        ParticipantSerializer.render(obj, root: "data", lead_provider: current_lead_provider)
+        ParticipantSerializer.render(obj, view: :v3, root: "data")
       end
     end
   end
