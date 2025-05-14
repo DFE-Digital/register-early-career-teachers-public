@@ -9,7 +9,7 @@ RSpec.describe "Partnerships API", type: :request do
   end
 
   describe "#index" do
-    it "returns method not allowed" do
+    it "returns a successful response" do
       api_get(api_v3_partnerships_path)
 
       expect(response).to be_successful
@@ -18,7 +18,7 @@ RSpec.describe "Partnerships API", type: :request do
   end
 
   describe "#show" do
-    it "returns method not allowed" do
+    it "returns a successful response" do
       api_get(api_v3_partnership_path(123))
 
       expect(response).to be_successful
