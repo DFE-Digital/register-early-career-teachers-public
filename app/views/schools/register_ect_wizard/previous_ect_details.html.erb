@@ -8,7 +8,7 @@
 <%= govuk_summary_list(card: { title: 'Previously registered details' } ) do |list| %>
   <% list.with_row do |row| %>
     <%= row.with_key { "School name" } %>
-    <%= row.with_value { Teachers::CurrentSchools.new(trn: @wizard.ect.trn).ect_at&.name || 'Not confirmed' } %>
+    <%= row.with_value { Teachers::CurrentSchools.new(trn: @ect.trn).ect_at&.name || 'Not confirmed' } %>
   <% end %>
 
   <% list.with_row do |row| %>
