@@ -1,4 +1,4 @@
-module Admin
+module InductionPeriods
   class DeleteInductionPeriod
     attr_reader :author, :induction_period, :teacher
 

@@ -1,4 +1,4 @@
-RSpec.describe Admin::DeleteInductionPeriod do
+RSpec.describe InductionPeriods::DeleteInductionPeriod do
   subject(:service) do
     described_class.new(
       author:,

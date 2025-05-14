@@ -470,8 +470,8 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
       let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
 
       before do
-        service = instance_double(Admin::DeleteInductionPeriod)
-        allow(Admin::DeleteInductionPeriod).to receive(:new).and_return(service)
+        service = instance_double(InductionPeriods::DeleteInductionPeriod)
+        allow(InductionPeriods::DeleteInductionPeriod).to receive(:new).and_return(service)
         allow(service).to receive(:delete_induction_period!).and_raise(ActiveRecord::RecordInvalid.new(induction_period))
       end
 
