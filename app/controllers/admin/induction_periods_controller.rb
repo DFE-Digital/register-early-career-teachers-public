@@ -41,7 +41,7 @@ module Admin
 
     def destroy
       @induction_period = induction_period
-      service = Admin::DeleteInductionPeriod.new(author: current_user, induction_period: @induction_period)
+      service = InductionPeriods::DeleteInductionPeriod.new(author: current_user, induction_period: @induction_period)
       service.delete_induction_period!
       redirect_to admin_teacher_path(@induction_period.teacher), alert: 'Induction period deleted successfully'
     rescue ActiveRecord::RecordInvalid, ActiveRecord::Rollback => e
