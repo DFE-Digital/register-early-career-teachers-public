@@ -19,31 +19,32 @@
 
   <div class="govuk-!-margin-bottom-6">
     <dl class="govuk-summary-list">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Teacher</dt>
-        <dd class="govuk-summary-list__value"><%= teacher_full_name(@induction_period.teacher) %></dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Induction programme</dt>
-        <dd class="govuk-summary-list__value"><%= ::INDUCTION_PROGRAMMES[@induction_period.induction_programme.to_sym] %></dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Start date</dt>
-        <dd class="govuk-summary-list__value"><%= @induction_period.started_on.to_fs(:govuk) %></dd>
-      </div>
-      <% if @induction_period.finished_on.present? %>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">End date</dt>
-          <dd class="govuk-summary-list__value"><%= @induction_period.finished_on.to_fs(:govuk) %></dd>
-        </div>
-      <% end %>
-      <% if @induction_period.number_of_terms.present? %>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Number of terms</dt>
-          <dd class="govuk-summary-list__value"><%= @induction_period.number_of_terms %></dd>
-        </div>
-      <% end %>
-    </dl>
+    <%=
+      govuk_summary_list do |sl|
+        sl.with_row do |row|
+          row.with_key(text: 'Teacher')
+          row.with_value(text: teacher_full_name(@induction_period.teacher))
+        end
+        sl.with_row do |row|
+          row.with_key(text: 'Induction programme')
+          row.with_value(text: ::INDUCTION_PROGRAMMES[@induction_period.induction_programme.to_sym])
+        end
+
+        if @induction_period.finished_on.present?
+          sl.with_row do |row|
+            row.with_key(text: 'End date')
+            row.with_value(text: @induction_period.finished_on.to_fs(:govuk))
+          end
+        end
+
+        if @induction_period.number_of_terms.present?
+          sl.with_row do |row|
+            row.with_key(text: 'Number of terms')
+            row.with_value(text: @induction_period.number_of_terms)
+          end
+        end
+      end
+    %>
 
     <%= form_with(
       url: admin_teacher_induction_period_path(@induction_period.teacher, @induction_period),
