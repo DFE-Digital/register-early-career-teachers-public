@@ -43,6 +43,19 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
   describe '#next_step' do
     subject { wizard.current_step }
 
+    let(:fake_trs_client) { TRS::FakeAPIClient.new }
+    let(:fake_trs_teacher) do
+      TRS::Teacher.new(
+        'trn' => '1234568',
+        'firstName' => 'Kirk',
+        'lastName' => 'Van Houten',
+        'dateOfBirth' => '1977-02-03',
+        'induction' => {
+          'status' => induction_status
+        }
+      )
+    end
+    let(:induction_status) {}
     let(:school) { FactoryBot.create(:school, :state_funded) }
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number, step_params:, school:) }
 
@@ -57,81 +70,37 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
       end
     end
 
-    context 'when the teacher completed induction' do
+    context 'blocking registration' do
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
 
       before do
-        fake_client = TRS::FakeAPIClient.new
-
-        allow(fake_client).to receive(:find_teacher).and_return(
-          TRS::Teacher.new(
-            'trn' => '1234568',
-            'firstName' => 'Kirk',
-            'lastName' => 'Van Houten',
-            'dateOfBirth' => '1977-02-03',
-            'induction' => {
-              'status' => 'Passed'
-            }
-          )
-        )
-        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
+        allow(fake_trs_client).to receive(:find_teacher).and_return(fake_trs_teacher)
+        allow(::TRS::APIClient).to receive(:new).and_return(fake_trs_client)
         subject.save!
       end
 
-      it 'returns :induction_completed' do
-        expect(subject.next_step).to eq(:induction_completed)
-      end
-    end
+      context 'when the teacher completed induction' do
+        let(:induction_status) { 'Passed' }
 
-    context 'when the teacher is exempt from induction' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-
-      before do
-        fake_client = TRS::FakeAPIClient.new
-
-        allow(fake_client).to receive(:find_teacher).and_return(
-          TRS::Teacher.new(
-            'trn' => '1234568',
-            'firstName' => 'Kirk',
-            'lastName' => 'Van Houten',
-            'dateOfBirth' => '1977-02-03',
-            'induction' => {
-              'status' => 'Exempt'
-            }
-          )
-        )
-        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
-        subject.save!
+        it 'returns :induction_completed' do
+          expect(subject.next_step).to eq(:induction_completed)
+        end
       end
 
-      it 'returns :induction_exempt' do
-        expect(subject.next_step).to eq(:induction_exempt)
-      end
-    end
+      context 'when the teacher is exempt from induction' do
+        let(:induction_status) { 'Exempt' }
 
-    context 'when the teacher failed induction' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-
-      before do
-        fake_client = TRS::FakeAPIClient.new
-
-        allow(fake_client).to receive(:find_teacher).and_return(
-          TRS::Teacher.new(
-            'trn' => '1234568',
-            'firstName' => 'Kirk',
-            'lastName' => 'Van Houten',
-            'dateOfBirth' => '1977-02-03',
-            'induction' => {
-              'status' => 'Failed'
-            }
-          )
-        )
-        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
-        subject.save!
+        it 'returns :induction_exempt' do
+          expect(subject.next_step).to eq(:induction_exempt)
+        end
       end
 
-      it 'returns :induction_failed' do
-        expect(subject.next_step).to eq(:induction_failed)
+      context 'when the teacher failed induction' do
+        let(:induction_status) { 'Failed' }
+
+        it 'returns :induction_failed' do
+          expect(subject.next_step).to eq(:induction_failed)
+        end
       end
     end
 
