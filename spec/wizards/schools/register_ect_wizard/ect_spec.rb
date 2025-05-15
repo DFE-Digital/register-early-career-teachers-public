@@ -110,15 +110,31 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
   end
 
-  describe '#trs_full_name' do
-    it 'returns the full name of the ECT' do
-      expect(ect.trs_full_name).to eq("Dusty Rhodes")
-    end
-  end
-
   describe '#govuk_date_of_birth' do
     it 'formats the date of birth in the govuk format' do
       expect(ect.govuk_date_of_birth).to eq("11 October 1945")
+    end
+  end
+
+  describe '#induction_completed?' do
+    before do
+      store.trs_induction_status = 'Passed'
+    end
+
+    context "when trs_induction_status is 'Passed'" do
+      it 'returns true' do
+        expect(ect).to be_induction_completed
+      end
+    end
+
+    context "when trs_induction_status is not 'Passed'" do
+      before do
+        store.trs_induction_status = nil
+      end
+
+      it 'returns false' do
+        expect(ect).not_to be_induction_completed
+      end
     end
   end
 
@@ -140,6 +156,28 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
       it 'returns false' do
         expect(ect.induction_exempt?).to be_falsey
+      end
+    end
+  end
+
+  describe '#induction_failed?' do
+    before do
+      store.trs_induction_status = 'Failed'
+    end
+
+    context "when trs_induction_status is 'Failed'" do
+      it 'returns true' do
+        expect(ect).to be_induction_failed
+      end
+    end
+
+    context "when trs_induction_status is not 'Failed'" do
+      before do
+        store.trs_induction_status = nil
+      end
+
+      it 'returns false' do
+        expect(ect).not_to be_induction_failed
       end
     end
   end
@@ -264,6 +302,12 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
   describe '#trn' do
     it 'returns the trn' do
       expect(ect.trn).to eq("3002586")
+    end
+  end
+
+  describe '#trs_full_name' do
+    it 'returns the full name of the ECT' do
+      expect(ect.trs_full_name).to eq("Dusty Rhodes")
     end
   end
 
