@@ -1,14 +1,14 @@
 describe ActiveLeadProvider do
-  describe 'validation' do
-    it { is_expected.to validate_presence_of(:registration_period_id).with_message('Choose a registration period') }
-    it { is_expected.to validate_presence_of(:lead_provider_id).with_message('Choose a lead provider') }
+  describe "associations" do
+    it { is_expected.to belong_to(:registration_period) }
+    it { is_expected.to belong_to(:lead_provider) }
+  end
 
-    it 'validates registration period and lead provider are unique in combination' do
-      alp1 = FactoryBot.create(:active_lead_provider)
-      alp2 = alp1.dup
+  describe "validations" do
+    subject { FactoryBot.create(:active_lead_provider) }
 
-      expect(alp2).to be_invalid
-      expect(alp2.errors.messages[:registration_period_id]).to include('Registration period and lead provider must be unique')
-    end
+    it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Choose a lead provider") }
+    it { is_expected.to validate_presence_of(:registration_period_id).with_message("Choose a registration period") }
+    it { is_expected.to validate_uniqueness_of(:registration_period_id).scoped_to(:lead_provider_id).with_message("Registration period and lead provider must be unique") }
   end
 end
