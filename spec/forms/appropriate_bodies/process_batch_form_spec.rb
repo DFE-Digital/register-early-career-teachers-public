@@ -25,6 +25,10 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
   context 'when the attached file is valid' do
     specify do
       expect(form).to be_valid
+      expect(form.to_a).to eq([
+        { trn: '1234567', date_of_birth: '2000-01-01', finished_on: '2023-12-31', number_of_terms: '1', outcome: 'Pass', },
+        { trn: '2345678', date_of_birth: '2001-02-02', finished_on: '2024-12-31', number_of_terms: '2', outcome: 'Fail' }
+      ])
     end
 
     describe 'contains cell padding' do
@@ -38,6 +42,10 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
 
       specify do
         expect(form).to be_valid
+        expect(form.to_a).to eq([
+          { trn: '1234567', date_of_birth: '2000-01-01', finished_on: '2023-12-31', number_of_terms: '1', outcome: 'Pass', },
+          { trn: '2345678', date_of_birth: '2001-02-02', finished_on: '2024-12-31', number_of_terms: '2', outcome: 'Fail' }
+        ])
       end
     end
 
@@ -52,6 +60,26 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
 
       specify do
         expect(form).to be_valid
+        expect(form.to_a).to eq([
+          { trn: '1234567', date_of_birth: '2000-01-01', finished_on: '2023-12-31', number_of_terms: '1', outcome: 'Pass', error: 'An error was fixed' },
+          { trn: '2345678', date_of_birth: '2001-02-02', finished_on: '2024-12-31', number_of_terms: '2', outcome: 'Fail', error: 'An error was fixed' }
+        ])
+      end
+    end
+
+    describe 'asymmetrical data with uneven rows' do
+      let(:csv_content) do
+        <<~CSV
+          TRN,Date of birth,Induction period end date,Number of terms,Outcome
+          1234567,2000-01-01,2023-12-31,1,Pass,,,
+        CSV
+      end
+
+      specify do
+        expect(form).to be_valid
+        expect(form.to_a).to eq([
+          { trn: '1234567', date_of_birth: '2000-01-01', finished_on: '2023-12-31', number_of_terms: '1', outcome: 'Pass' }
+        ])
       end
     end
   end
@@ -121,7 +149,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
         end
 
         specify do
-          stub_const("AppropriateBodies::ProcessBatchForm::MAX_ROW_SIZE", 5)
+          stub_const('AppropriateBodies::ProcessBatchForm::MAX_ROW_SIZE', 5)
           expect(form).not_to be_valid
           expect(form.errors[:csv_file]).to include('The selected file must have fewer than 5 rows')
         end

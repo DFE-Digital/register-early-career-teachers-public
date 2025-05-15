@@ -17,6 +17,7 @@ module AppropriateBodies
     end
 
     def edit
+      # no-op
     end
 
     def new

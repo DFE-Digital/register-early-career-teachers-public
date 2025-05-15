@@ -24,9 +24,10 @@ module AppropriateBodies
           render :new, status: :unprocessable_entity
         end
       rescue ActionController::ParameterMissing
-        @pending_induction_submission_batch.errors.add(:csv_file, "Select a file")
+        @pending_induction_submission_batch.errors.add(:csv_file, 'Select a file')
         render :new, status: :unprocessable_entity
       rescue StandardError => e
+        # @pending_induction_submission_batch.errors.add(:base, 'Something went wrong') # post-bug-party
         @pending_induction_submission_batch.errors.add(:base, e.message)
         render :new, status: :unprocessable_entity
       end

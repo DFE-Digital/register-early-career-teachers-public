@@ -39,10 +39,10 @@ module AppropriateBodies
       )
     end
 
-    # @return [Array<Hash{Symbol => String}>] replace CSV headers with symbols
+    # @return [Array<Hash{Symbol => String}>]
     def to_a
       parse.map do |row|
-        row.to_h.transform_keys { |k| headers.invert[k] }
+        row.to_h.compact.transform_keys { |k| headers.invert[k] }.transform_values(&:strip)
       end
     end
 
@@ -96,11 +96,10 @@ module AppropriateBodies
     # The "error" column is optional. Failed rows downloaded as a CSV contain errors
     # and the user need not remove that column before reuploading the corrected data.
     def has_valid_headers?
-      # File is a second attempt resolving errors
-      return true if parse.headers.sort.eql?(headers.values.sort)
-
-      # File is a first attempt using the template with no error column
-      parse.headers.sort.eql?(headers.values.reverse.drop(1).sort)
+      template_headers = headers.values.sort
+      template_headers_without_errors = headers.values.reverse.drop(1).sort
+      parsed_headers = parse.headers.compact.sort
+      [template_headers, template_headers_without_errors].to_set.include?(parsed_headers)
     end
 
     def has_unique_trns?
