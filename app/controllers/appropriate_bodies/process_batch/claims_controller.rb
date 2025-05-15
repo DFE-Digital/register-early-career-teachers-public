@@ -32,6 +32,7 @@ module AppropriateBodies
       end
 
       def edit
+        # no confirmation stage yet
       end
 
     private
