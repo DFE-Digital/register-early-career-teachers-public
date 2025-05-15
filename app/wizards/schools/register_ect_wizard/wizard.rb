@@ -27,6 +27,7 @@ module Schools
             independent_school_appropriate_body: IndependentSchoolAppropriateBodyStep,
             induction_completed: InductionCompletedStep,
             induction_exempt: InductionExemptStep,
+            induction_failed: InductionFailedStep,
             lead_provider: LeadProviderStep,
             national_insurance_number: NationalInsuranceNumberStep,
             not_found: NotFoundStep,
