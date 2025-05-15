@@ -355,8 +355,3 @@
   - finished_on
   - enabled
   - range
-  :early_roll_out_mentors:
-  - id
-  - trn
-  - created_at
-  - updated_at
