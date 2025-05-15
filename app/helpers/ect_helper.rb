@@ -24,7 +24,7 @@ module ECTHelper
     end
   end
 
-  # TODO: "status" is yet to be clarified this is just a simple placeholder
+  # TODO: "status" is yet to be clarified this is just a simple placeholder.
   # @param ect [ECTAtSchoolPeriod]
   def ect_status(ect)
     if ect.current_mentor.present?
