@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -361,6 +361,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
     t.string "error_messages", default: [], array: true
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
     t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
+    t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
   create_table "registration_periods", primary_key: "year", id: :serial, force: :cascade do |t|
