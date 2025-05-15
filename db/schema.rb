@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_15_111623) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -37,6 +37,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
     t.datetime "updated_at", null: false
     t.index ["lead_provider_id", "registration_period_id"], name: "idx_on_lead_provider_id_registration_period_id_1c10f35875", unique: true
     t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
+    t.index ["registration_period_id"], name: "index_active_lead_providers_on_registration_period_id"
   end
 
   create_table "appropriate_bodies", force: :cascade do |t|
