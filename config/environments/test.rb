@@ -65,6 +65,7 @@ Rails.application.configure do
   config.enable_personas = true
   config.enable_bulk_upload = true
   config.dfe_sign_in_enabled = true
+  config.enable_api = true
 
   config.active_job.queue_adapter = :test
 end
