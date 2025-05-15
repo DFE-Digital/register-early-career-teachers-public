@@ -9,8 +9,6 @@ module Schools
                 :trn,
                 :email,
                 :started_on,
-                :mentor_became_ineligible_for_funding_on,
-                :mentor_became_ineligible_for_funding_reason,
                 :mentor_at_school_period
 
     def initialize(trs_first_name:,
@@ -19,8 +17,6 @@ module Schools
                    trn:,
                    school_urn:,
                    email:,
-                   mentor_became_ineligible_for_funding_on:,
-                   mentor_became_ineligible_for_funding_reason:,
                    author:,
                    started_on: Date.current)
       @author = author
@@ -31,8 +27,6 @@ module Schools
       @email = email
       @started_on = started_on
       @trn = trn
-      @mentor_became_ineligible_for_funding_on = mentor_became_ineligible_for_funding_on
-      @mentor_became_ineligible_for_funding_reason = mentor_became_ineligible_for_funding_reason
     end
 
     def register!
@@ -58,9 +52,7 @@ module Schools
       @teacher = ::Teacher.create_with(
         trs_first_name:,
         trs_last_name:,
-        corrected_name:,
-        mentor_became_ineligible_for_funding_on:,
-        mentor_became_ineligible_for_funding_reason:
+        corrected_name:
       ).find_or_create_by!(trn:)
     end
 

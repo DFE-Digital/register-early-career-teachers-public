@@ -36,7 +36,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   end
 
   context 'when teacher is not eligible' do
-    let(:teacher) { FactoryBot.create(:teacher, mentor_became_ineligible_for_funding_on: Date.new(2024, 1, 1)) }
+    let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
     let(:ect_teacher) { FactoryBot.create(:teacher) }
     let(:ect_start_date) { mentor_start_date + 1.month }
     let(:ect) do
