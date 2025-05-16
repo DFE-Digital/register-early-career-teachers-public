@@ -241,6 +241,18 @@
   - trs_qts_awarded_on
   - delete_at
   - confirmed
+  - pending_induction_submission_batch_id
+  - error_messages  
+  :pending_induction_submission_batches:
+  - id
+  - appropriate_body_id
+  - batch_type
+  - batch_status
+  - data
+  - filename
+  - error_message
+  - created_at
+  - updated_at
   :migration_failures:
   - id
   - data_migration_id

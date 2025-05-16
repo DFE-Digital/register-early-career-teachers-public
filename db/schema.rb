@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_15_111623) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -20,6 +20,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_111623) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
+  create_enum "batch_status", ["pending", "processing", "processed", "completed", "failed"]
+  create_enum "batch_type", ["action", "claim"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
@@ -328,6 +330,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_111623) do
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
 
+  create_table "pending_induction_submission_batches", force: :cascade do |t|
+    t.bigint "appropriate_body_id", null: false
+    t.enum "batch_type", null: false, enum_type: "batch_type"
+    t.enum "batch_status", default: "pending", null: false, enum_type: "batch_status"
+    t.string "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.jsonb "data"
+    t.string "filename"
+    t.index ["appropriate_body_id"], name: "idx_on_appropriate_body_id_58d86a161e"
+  end
+
   create_table "pending_induction_submissions", force: :cascade do |t|
     t.bigint "appropriate_body_id"
     t.string "establishment_id", limit: 8
@@ -353,7 +367,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_111623) do
     t.enum "outcome", enum_type: "induction_outcomes"
     t.date "trs_qts_awarded_on"
     t.datetime "delete_at", precision: nil
+    t.bigint "pending_induction_submission_batch_id"
+    t.string "error_messages", default: [], array: true
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
+    t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
+    t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
   create_table "registration_periods", primary_key: "year", id: :serial, force: :cascade do |t|
@@ -605,7 +623,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_111623) do
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
+  add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
+  add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
   add_foreign_key "school_partnerships", "delivery_partners"
   add_foreign_key "school_partnerships", "lead_providers"
   add_foreign_key "school_partnerships", "registration_periods", primary_key: "year"

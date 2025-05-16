@@ -1,0 +1,29 @@
+<%
+  page_data(
+    title: "Outcomes successfully recorded",
+    header: false
+  )
+%>
+
+<%= govuk_panel(title_text: "Outcomes successfully recorded") %>
+
+<p class='govuk-body'>
+  You uploaded <%= batch.pending_induction_submissions.without_errors.count %> ECT records including:
+</p>
+
+<%= batch_summary(batch) %>
+
+<% if batch.pending_induction_submissions.with_errors.any? %>
+  <p class='govuk-body'>
+    You had <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors.
+  </p>
+
+  <p class='govuk-body'>
+    <%= govuk_link_to 'Download CSV with error messages included', ab_batch_action_path(batch, format: :csv) %>. 
+    You'll need to fix these errors before you try again.
+  </p>
+<% end %>
+
+<p class='govuk-body'>
+  <%= govuk_link_to 'Go back to your overview', ab_teachers_path %>
+</p>  
