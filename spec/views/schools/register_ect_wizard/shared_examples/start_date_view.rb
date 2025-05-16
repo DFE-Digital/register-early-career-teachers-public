@@ -9,10 +9,10 @@ RSpec.shared_examples "a start date view" do |current_step:, back_path:, back_st
     assign(:ect, ect)
   end
 
-  it "sets the page title to 'What is the date John Smith started or will start teaching as an ECT at your school?'" do
+  it "sets the page title to 'When did or when will John Smith start teaching as an ECT at your school?'" do
     render
 
-    expect(sanitize(view.content_for(:page_title))).to eql("What is the date John Smith started or will start teaching as an ECT at your school?")
+    expect(sanitize(view.content_for(:page_title))).to eql("When did or when will John Smith start teaching as an ECT at your school?")
   end
 
   context "when the start date is invalid" do
