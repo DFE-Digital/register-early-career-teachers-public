@@ -63,5 +63,24 @@ RSpec.describe EnvironmentHelper, type: :helper do
         expect(subject).to include('What a nice service')
       end
     end
+
+    describe 'passing custom HTML attributes through' do
+      subject do
+        Nokogiri.parse(
+          environment_specific_phase_banner(
+            html_attributes: { hello: 'world' },
+            tag_html_attributes: { bonjour: 'le monde' }
+          )
+        )
+      end
+
+      it 'sets the custom attributes on the rendered phase banner' do
+        expect(subject).to have_css(%(div.govuk-phase-banner[hello='world']))
+      end
+
+      it 'sets the custom attributes on the rendered phase banner tag' do
+        expect(subject).to have_css(%(strong[bonjour='le monde']))
+      end
+    end
   end
 end
