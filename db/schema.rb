@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_15_111623) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -29,6 +29,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "programme_type", ["provider_led", "school_led"]
   create_enum "working_pattern", ["part_time", "full_time"]
+
+  create_table "active_lead_providers", force: :cascade do |t|
+    t.bigint "lead_provider_id", null: false
+    t.bigint "registration_period_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lead_provider_id", "registration_period_id"], name: "idx_on_lead_provider_id_registration_period_id_1c10f35875", unique: true
+    t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
+    t.index ["registration_period_id"], name: "index_active_lead_providers_on_registration_period_id"
+  end
 
   create_table "appropriate_bodies", force: :cascade do |t|
     t.string "name", null: false
@@ -566,6 +576,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_095706) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "active_lead_providers", "lead_providers"
+  add_foreign_key "active_lead_providers", "registration_periods", primary_key: "year"
   add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "lead_providers"

@@ -28,16 +28,21 @@ def describe_school_partnership(pp)
   print_seed_info("#{pp.lead_provider.name} (LP) 🤝 #{pp.delivery_partner.name} (DP) in #{pp.registration_period.year}", indent: 2)
 end
 
-def describe_lead_provider(lp)
-  print_seed_info(lp.name, indent: 2)
-end
-
 def describe_delivery_partner(dp)
   print_seed_info(dp.name, indent: 2)
 end
 
 def describe_registration_period(ay)
   print_seed_info("#{ay.year} (running from #{ay.started_on} until #{ay.finished_on})", indent: 2)
+end
+
+def describe_lead_provider(lp, years)
+  years_description = if years.any?
+                        Colourize.text(years.map(&:year).join(', '), :green)
+                      else
+                        Colourize.text('inactive', :red)
+                      end
+  print_seed_info("#{lp.name} (#{years_description})", indent: 2)
 end
 
 def describe_induction_period(ip)
@@ -192,16 +197,39 @@ AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Vista College',
 
 active_appropriate_bodies = [umber_teaching_school_hub, golden_leaf_teaching_school_hub]
 
+print_seed_info("Adding registration periods")
+
+rp_2021 = RegistrationPeriod.create!(year: 2021, started_on: Date.new(2021, 6, 1), finished_on: Date.new(2022, 5, 31), enabled: false).tap { |ay| describe_registration_period(ay) }
+rp_2022 = RegistrationPeriod.create!(year: 2022, started_on: Date.new(2022, 6, 1), finished_on: Date.new(2023, 5, 31), enabled: false).tap { |ay| describe_registration_period(ay) }
+rp_2023 = RegistrationPeriod.create!(year: 2023, started_on: Date.new(2023, 6, 1), finished_on: Date.new(2024, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
+rp_2024 = RegistrationPeriod.create!(year: 2024, started_on: Date.new(2024, 6, 1), finished_on: Date.new(2025, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
+rp_2025 = RegistrationPeriod.create!(year: 2025, started_on: Date.new(2025, 6, 1), finished_on: Date.new(2026, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
+
 print_seed_info("Adding lead providers")
 
-grove_institute = LeadProvider.create!(name: 'Grove Institute').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Evergreen Network').tap { |dp| describe_lead_provider(dp) }
-national_meadows_institute = LeadProvider.create!(name: 'National Meadows Institute').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Woodland Education Trust').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Teach Orchard').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Highland College University').tap { |dp| describe_lead_provider(dp) }
-wildflower_trust = LeadProvider.create!(name: 'Wildflower Trust').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Pine Institute').tap { |dp| describe_lead_provider(dp) }
+grove_institute = LeadProvider.create!(name: 'Grove Institute')
+evergreen_network = LeadProvider.create!(name: 'Evergreen Network')
+national_meadows_institute = LeadProvider.create!(name: 'National Meadows Institute')
+woodland_education_trust = LeadProvider.create!(name: 'Woodland Education Trust')
+teach_orchard = LeadProvider.create!(name: 'Teach Orchard')
+highland_collage_university = LeadProvider.create!(name: 'Highland College University')
+wildflower_trust = LeadProvider.create!(name: 'Wildflower Trust')
+pine_institute = LeadProvider.create!(name: 'Pine Institute')
+
+{
+  evergreen_network => [],
+  grove_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
+  highland_collage_university => [],
+  national_meadows_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
+  pine_institute => [],
+  teach_orchard => [],
+  wildflower_trust => [rp_2022, rp_2023, rp_2024, rp_2025],
+  woodland_education_trust => [],
+}.each do |lead_provider, registration_periods|
+  registration_periods.each { |registration_period| ActiveLeadProvider.create!(registration_period:, lead_provider:) }
+
+  describe_lead_provider(lead_provider, registration_periods)
+end
 
 print_seed_info("Adding delivery partners")
 
@@ -213,54 +241,46 @@ rising_minds = DeliveryPartner.create!(name: 'Rising Minds Network').tap { |dp| 
 DeliveryPartner.create!(name: 'Proving Potential Teaching School Hub').tap { |dp| describe_delivery_partner(dp) }
 DeliveryPartner.create!(name: 'Harvest Academy').tap { |dp| describe_delivery_partner(dp) }
 
-print_seed_info("Adding registration periods")
-
-registration_period_2021 = RegistrationPeriod.create!(year: 2021, started_on: Date.new(2021, 6, 1), finished_on: Date.new(2022, 5, 31), enabled: false).tap { |ay| describe_registration_period(ay) }
-registration_period_2022 = RegistrationPeriod.create!(year: 2022, started_on: Date.new(2022, 6, 1), finished_on: Date.new(2023, 5, 31), enabled: false).tap { |ay| describe_registration_period(ay) }
-registration_period_2023 = RegistrationPeriod.create!(year: 2023, started_on: Date.new(2023, 6, 1), finished_on: Date.new(2024, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
-registration_period_2024 = RegistrationPeriod.create!(year: 2024, started_on: Date.new(2024, 6, 1), finished_on: Date.new(2025, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
-_registration_period_2025 = RegistrationPeriod.create!(year: 2025, started_on: Date.new(2025, 6, 1), finished_on: Date.new(2026, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
-
 print_seed_info("Adding provider partnerships")
 
 grove_artisan_partnership_2021 = SchoolPartnership.create!(
-  registration_period: registration_period_2021,
+  registration_period: rp_2021,
   lead_provider: grove_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 SchoolPartnership.create!(
-  registration_period: registration_period_2022,
+  registration_period: rp_2022,
   lead_provider: grove_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 grove_artisan_partnership_2023 = SchoolPartnership.create!(
-  registration_period: registration_period_2023,
+  registration_period: rp_2023,
   lead_provider: grove_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 meadow_grain_partnership_2022 = SchoolPartnership.create!(
-  registration_period: registration_period_2022,
+  registration_period: rp_2022,
   lead_provider: national_meadows_institute,
   delivery_partner: grain_teaching_school_hub
 ).tap { |pp| describe_school_partnership(pp) }
 
 _meadow_grain_partnership_2023 = SchoolPartnership.create!(
-  registration_period: registration_period_2023,
+  registration_period: rp_2023,
   lead_provider: national_meadows_institute,
   delivery_partner: grain_teaching_school_hub
 ).tap { |pp| describe_school_partnership(pp) }
 
 _wildflower_rising_partnership_2023 = SchoolPartnership.create!(
-  registration_period: registration_period_2023,
+  registration_period: rp_2023,
   lead_provider: wildflower_trust,
   delivery_partner: rising_minds
 ).tap { |pp| describe_school_partnership(pp) }
 
 _wildflower_rising_partnership_2024 = SchoolPartnership.create!(
-  registration_period: registration_period_2024,
+  registration_period: rp_2024,
   lead_provider: wildflower_trust,
   delivery_partner: rising_minds
 ).tap { |pp| describe_school_partnership(pp) }
