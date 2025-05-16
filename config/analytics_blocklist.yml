@@ -367,3 +367,9 @@
   - finished_on
   - enabled
   - range
+  :active_lead_providers:
+  - id
+  - lead_provider_id
+  - registration_period_id
+  - created_at
+  - updated_at
