@@ -736,3 +736,9 @@ YAML.load_file(Rails.root.join('config/personas.yml'))
 end
 
 print_seed_info('Adding funding exemptions:')
+
+print_seed_info('Adding APITokens:')
+
+lead_provider = LeadProvider.find_by_name("National Meadows Institute")
+APIToken.create_with_known_token!("national-token", lead_provider:)
+print_seed_info("Added APIToken for #{lead_provider.name}: 'national-token'", indent: 2)
