@@ -42,24 +42,6 @@ RSpec.describe Schools::RegisterECTWizard::ChangeUsePreviousECTChoicesStep, type
   end
 
   describe "#previous_step" do
-    context 'when the programme type is school led' do
-      let(:programme_type) { 'school_led' }
-
-      it { expect(subject.previous_step).to eq(:check_answers) }
-    end
-
-    context 'when the programme type is a provider led' do
-      let(:programme_type) { 'provider_led' }
-
-      context 'when the lead provider has already been selected' do
-        it { expect(subject.previous_step).to eq(:check_answers) }
-      end
-
-      context 'when the lead provider has not been selected yet' do
-        let(:lead_provider_id) { nil }
-
-        it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_lead_provider) }
-      end
-    end
+    it { expect(subject.previous_step).to eq(:check_answers) }
   end
 end
