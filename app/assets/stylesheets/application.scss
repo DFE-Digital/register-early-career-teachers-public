@@ -9,6 +9,7 @@ $govuk-assets-path: "/";
 @import "header/colour-overrides";
 @import "header/navigation";
 @import "timeline";
+@import "bulk_upload";
 
 // library styles
 @import "accessible-autocomplete/src/autocomplete";

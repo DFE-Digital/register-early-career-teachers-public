@@ -45,6 +45,10 @@ gem "savon"
 # Render smart quotes
 gem 'rubypants'
 
+# Batch progress bar
+gem 'hotwire-rails'
+gem 'turbo-rails'
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'

@@ -80,6 +80,13 @@ Rails.application.routes.draw do
         get 'prohibited-from-teaching/:id', to: '/appropriate_bodies/claim_an_ect/errors#prohibited_from_teaching', as: 'prohibited'
       end
     end
+
+    constraints -> { Rails.application.config.enable_bulk_upload } do
+      namespace :process_batch, path: 'bulk', as: 'batch' do
+        resources :claims, format: %i[html csv]
+        resources :actions, format: %i[html csv]
+      end
+    end
   end
 
   namespace :migration do
