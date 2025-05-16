@@ -1,0 +1,4 @@
+en:
+  api:
+    errors:
+      unauthorized: "HTTP Token: Access denied"

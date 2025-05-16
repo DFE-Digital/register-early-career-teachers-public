@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "api_token_scopes", ["lead_provider", "teacher_record_service"]
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
   create_enum "batch_status", ["pending", "processing", "processed", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
@@ -40,6 +41,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
     t.index ["lead_provider_id", "registration_period_id"], name: "idx_on_lead_provider_id_registration_period_id_1c10f35875", unique: true
     t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
     t.index ["registration_period_id"], name: "index_active_lead_providers_on_registration_period_id"
+  end
+
+  create_table "api_tokens", force: :cascade do |t|
+    t.bigint "lead_provider_id", null: false
+    t.string "hashed_token", null: false
+    t.datetime "last_used_at"
+    t.enum "scope", default: "lead_provider", null: false, enum_type: "api_token_scopes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hashed_token", "scope"], name: "index_api_tokens_on_hashed_token_and_scope"
+    t.index ["hashed_token"], name: "index_api_tokens_on_hashed_token", unique: true
+    t.index ["lead_provider_id"], name: "index_api_tokens_on_lead_provider_id"
+    t.check_constraint "lead_provider_id IS NOT NULL AND scope = 'lead_provider'::api_token_scopes OR lead_provider_id IS NULL AND scope <> 'lead_provider'::api_token_scopes"
   end
 
   create_table "appropriate_bodies", force: :cascade do |t|
@@ -596,6 +610,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
 
   add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "active_lead_providers", "registration_periods", primary_key: "year"
+  add_foreign_key "api_tokens", "lead_providers"
   add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "lead_providers"
