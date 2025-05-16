@@ -4,6 +4,9 @@ RSpec.configure do |config|
   # Set a timeout for request specs
   config.add_setting :request_timeout, default: 3
 
+  # Include helpers for API testing
+  config.include Helpers::APIHelpers, type: :request
+
   # Set a timeout for each request spec
   config.around(:each, type: :request) do |example|
     Timeout.timeout(config.request_timeout) do
