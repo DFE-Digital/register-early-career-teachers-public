@@ -13,13 +13,14 @@ class Event < ApplicationRecord
     teacher_induction_status_reset
     teacher_name_updated_by_trs
     teacher_passes_induction
+    teacher_registered_as_ect
+    teacher_registered_as_mentor
+    teacher_starts_being_mentored
+    teacher_starts_mentoring
     teacher_trs_attributes_updated
     teacher_trs_deactivated
+    teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
-    teacher_registered_as_mentor
-    teacher_registered_as_ect
-    teacher_starts_mentoring
-    teacher_starts_being_mentored
   ].freeze
 
   belongs_to :teacher
