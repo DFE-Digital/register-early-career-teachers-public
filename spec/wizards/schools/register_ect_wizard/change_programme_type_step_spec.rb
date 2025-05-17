@@ -17,34 +17,34 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
   describe "#next_step" do
     before { subject.send(:persist) }
 
-    context 'when the ect programme type is school led' do
+    context 'when the programme type is school led' do
       let(:new_programme_type) { 'school_led' }
 
       it { expect(subject.next_step).to eq(:check_answers) }
     end
 
-    context 'when the ect programme type is provided led' do
+    context 'when the programme type is provided led' do
       let(:new_programme_type) { 'provider_led' }
 
       context 'when the school has programme choices' do
         let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_chosen, :school_led_chosen) }
 
-        it { expect(subject.next_step).to eq(:change_lead_provider) }
+        it { expect(subject.next_step).to eq(:programme_type_change_lead_provider) }
       end
 
       context 'when it has changed from school led' do
         let(:programme_type) { 'school_led' }
 
-        it { expect(subject.next_step).to eq(:change_lead_provider) }
+        it { expect(subject.next_step).to eq(:programme_type_change_lead_provider) }
       end
 
-      context 'when the ect lead provider has not been set' do
+      context 'when a lead provider has not been selected yet' do
         let(:lead_provider_id) { nil }
 
-        it { expect(subject.next_step).to eq(:change_lead_provider) }
+        it { expect(subject.next_step).to eq(:programme_type_change_lead_provider) }
       end
 
-      context 'when no school choices, no changed from school led and the ect lead provider has already been set' do
+      context 'when a lead provider has already been selected' do
         let(:programme_type) { 'provider_led' }
         let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
 
@@ -56,74 +56,22 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
   describe "#previous_step" do
     before { subject.send(:persist) }
 
-    context 'when the ect programme type is provided led' do
-      let(:new_programme_type) { 'provider_led' }
+    context 'when the programme type is school led' do
+      let(:programme_type) { 'school_led' }
 
-      context 'when the it has changed from school led' do
-        let(:programme_type) { 'school_led' }
-
-        it "returns :change_lead_provider" do
-          expect(subject.previous_step).to eq(:change_lead_provider)
-        end
-      end
-
-      context 'when it has not changed from school led' do
-        let(:programme_type) { 'provider_led' }
-
-        context 'when the ect lead provider has not been set' do
-          let(:lead_provider_id) { nil }
-
-          it { expect(subject.previous_step).to eq(:change_lead_provider) }
-        end
-
-        context 'when the ect lead provider has already been set' do
-          let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
-          let(:school) { FactoryBot.create(:school, school_type, :teaching_school_hub_ab_chosen, :school_led_chosen) }
-
-          context 'when the school has programme choices' do
-            context 'independent school' do
-              let(:school_type) { :independent }
-
-              it { expect(subject.previous_step).to eq(:change_independent_school_appropriate_body) }
-            end
-
-            context 'state funded school' do
-              let(:school_type) { :state_funded }
-
-              it { expect(subject.previous_step).to eq(:change_state_school_appropriate_body) }
-            end
-          end
-
-          context 'when the school has no programme choices' do
-            let(:school) { FactoryBot.create(:school, :independent) }
-
-            it { expect(subject.previous_step).to eq(:check_answers) }
-          end
-        end
-      end
+      it { expect(subject.previous_step).to eq(:check_answers) }
     end
 
-    context 'when the ect programme type is school led' do
-      let(:new_programme_type) { 'school_led' }
-      let(:school) { FactoryBot.create(:school, school_type, :teaching_school_hub_ab_chosen, :school_led_chosen) }
+    context 'when the programme type is provided led' do
+      let(:new_programme_type) { 'provider_led' }
 
-      context 'when the school has programme choices' do
-        context 'independent school' do
-          let(:school_type) { :independent }
+      context 'when a lead provider has not been selected yet' do
+        let(:lead_provider_id) { nil }
 
-          it { expect(subject.previous_step).to eq(:change_independent_school_appropriate_body) }
-        end
-
-        context 'state funded school' do
-          let(:school_type) { :state_funded }
-
-          it { expect(subject.previous_step).to eq(:change_state_school_appropriate_body) }
-        end
+        it { expect(subject.previous_step).to eq(:programme_type_change_lead_provider) }
       end
 
-      context 'when the school has no programme choices' do
-        let(:school) { FactoryBot.create(:school, :independent) }
-
+      context 'when a lead provider has already been selected' do
         it { expect(subject.previous_step).to eq(:check_answers) }
       end
     end
