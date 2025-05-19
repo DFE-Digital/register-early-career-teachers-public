@@ -8,6 +8,15 @@
     - scope
     - created_at
     - updated_at
+  :new_api_tokens:
+    - id
+    - tokenable_type
+    - tokenable_id
+    - hashed_token
+    - description
+    - last_used_at
+    - created_at
+    - updated_at
   :appropriate_bodies:
     - body_type
   :blazer_queries:
@@ -250,7 +259,7 @@
   - delete_at
   - confirmed
   - pending_induction_submission_batch_id
-  - error_messages  
+  - error_messages
   :pending_induction_submission_batches:
   - id
   - appropriate_body_id

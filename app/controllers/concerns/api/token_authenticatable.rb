@@ -15,12 +15,21 @@ module API
 
     def authenticate_token
       authenticate_with_http_token do |unhashed_token|
+        # Option 1
         @current_api_token = APIToken.find_by_unhashed_token(unhashed_token, scope: api_token_scope).tap do |api_token|
+          # Option 2
+          # @current_api_token = APIToken.find_by_unhashed_token(unhashed_token, tokenable_type: api_tokenable_type).tap do |api_token|
           if api_token
             api_token.update!(last_used_at: Time.zone.now)
           end
         end
       end
+    end
+
+    def api_tokenable_type
+      # This would be overridden in specific API controllers
+      # For example, in API::BaseController it would return "LeadProvider"
+      raise NotImplementedError
     end
 
     def render_unauthorized

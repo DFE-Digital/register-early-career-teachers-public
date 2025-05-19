@@ -742,3 +742,7 @@ print_seed_info('Adding APITokens:')
 lead_provider = LeadProvider.find_by_name("National Meadows Institute")
 APIToken.create_with_known_token!("national-token", lead_provider:)
 print_seed_info("Added APIToken for #{lead_provider.name}: 'national-token'", indent: 2)
+
+lead_provider = LeadProvider.find_by_name("Evergreen Network")
+NewAPIToken.create_with_known_token!('egreen-token', tokenable: lead_provider, description: "API access for #{lead_provider.name}")
+print_seed_info("Added APIToken for #{lead_provider.name}: 'egreen-token'", indent: 2)

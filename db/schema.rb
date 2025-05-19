@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_19_155554) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -342,6 +342,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
     t.string "parent_type"
     t.index ["data_migration_id"], name: "index_migration_failures_on_data_migration_id"
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
+  end
+
+  create_table "new_api_tokens", force: :cascade do |t|
+    t.string "tokenable_type"
+    t.bigint "tokenable_id"
+    t.string "hashed_token", null: false
+    t.string "description"
+    t.datetime "last_used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hashed_token"], name: "index_new_api_tokens_on_hashed_token", unique: true
+    t.index ["tokenable_type", "tokenable_id"], name: "index_new_api_tokens_on_tokenable"
   end
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|
