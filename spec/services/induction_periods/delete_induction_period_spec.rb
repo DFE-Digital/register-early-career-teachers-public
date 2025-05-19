@@ -124,9 +124,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
           author:,
           teacher:,
           appropriate_body:,
-          old_date: earliest_period.started_on,
-          new_date: later_period.started_on,
-          happened_at: instance_of(ActiveSupport::TimeWithZone)
+          induction_period: later_period
         )
       end
 

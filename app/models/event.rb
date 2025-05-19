@@ -17,8 +17,10 @@ class Event < ApplicationRecord
     teacher_registered_as_mentor
     teacher_starts_being_mentored
     teacher_starts_mentoring
+    teacher_starts_mentoring
     teacher_trs_attributes_updated
     teacher_trs_deactivated
+    teacher_trs_induction_end_date_updated
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
   ].freeze
