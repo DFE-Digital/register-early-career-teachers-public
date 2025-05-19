@@ -1,4 +1,5 @@
-# Randomly select 1k valid pre-prod TRNs and create 2 CSV files (for Claims and Actions)
+# Select from known pre-prod TRNs and create 2 CSV files (for Claims and Actions)
+# NB: randomised and limited to maximum row size, TRS status cannot be guaranteed
 class BulkGenerate
   def call
     export(headers: columns_for(claim_template), rows: claim_rows, filename: 'tmp/bulk-max-claim.csv')
@@ -19,30 +20,18 @@ private
     @ects ||= trns.shuffle.take(sample_size)
   end
 
-  def claimable_ects
-    ects.select do |_trn, _dob, status|
-      %w[RequiredToComplete InProgress].include?(status)
-    end
-  end
-
-  def unclaimable_ects
-    ects.select do |_trn, _dob, status|
-      %w[Failed FailedInWales Exempt Passed None].include?(status)
-    end
-  end
-
   def columns_for(template)
     template.values.reject { |v| v.match?(/error/i) }
   end
 
   def claim_rows
-    claimable_ects.map do |trn, dob, _status|
+    ects.map do |trn, dob|
       [trn, dob, random_programme, random_start_date]
     end
   end
 
   def action_rows
-    claimable_ects.map do |trn, dob, _status|
+    ects.map do |trn, dob|
       [trn, dob, random_end_date, random_term, random_outcome]
     end
   end
@@ -75,8 +64,7 @@ private
   end
 
   def sample_size
-    # ::AppropriateBodies::ProcessBatchForm::MAX_ROW_SIZE
-    500
+    ::AppropriateBodies::ProcessBatchForm::MAX_ROW_SIZE
   end
 
   def claim_template
