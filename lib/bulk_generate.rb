@@ -2,11 +2,15 @@
 # NB: TRS status cannot be guaranteed
 class BulkGenerate
   def call
-    export(headers: columns_for(claim_template), rows: claim_rows, filename: 'tmp/bulk-max-claim.csv')
-    export(headers: columns_for(action_template), rows: action_rows, filename: 'tmp/bulk-max-action.csv')
+    export(headers: ::BatchRows::CLAIM_CSV_HEADINGS.values, rows: claim_rows, filename: 'tmp/bulk-claim.csv')
+    export(headers: ::BatchRows::ACTION_CSV_HEADINGS.values, rows: action_rows, filename: 'tmp/bulk-action.csv')
   end
 
 private
+
+  def api_client
+    @api_client ||= ::TRS::APIClient.new
+  end
 
   def dataset
     Rails.root.join('spec/fixtures/pre-prod-trns.csv')
@@ -17,22 +21,23 @@ private
   end
 
   def ects
-    @ects ||= trns # .shuffle.take(sample_size)
-  end
-
-  def columns_for(template)
-    template.values.reject { |v| v.match?(/error/i) }
+    @ects ||= trns.map do |trn, date_of_birth|
+      status = api_client.find_teacher(trn:, date_of_birth:).present[:trs_induction_status]
+      [trn, date_of_birth, status]
+    rescue StandardError
+      [trn, date_of_birth, 'API could not be contacted']
+    end
   end
 
   def claim_rows
-    ects.map do |trn, dob|
-      [trn, dob, random_programme, random_start_date]
+    ects.map do |trn, date_of_birth, status|
+      [trn, date_of_birth, random_programme, random_start_date, status]
     end
   end
 
   def action_rows
-    ects.map do |trn, dob|
-      [trn, dob, random_end_date, random_term, random_outcome]
+    ects.map do |trn, date_of_birth, status|
+      [trn, date_of_birth, random_end_date, random_term, random_outcome, status]
     end
   end
 
@@ -61,17 +66,5 @@ private
       csv << headers
       rows.each { |row| csv << row }
     end
-  end
-
-  def sample_size
-    ::AppropriateBodies::ProcessBatchForm::MAX_ROW_SIZE
-  end
-
-  def claim_template
-    ::BatchRows::CLAIM_CSV_HEADINGS
-  end
-
-  def action_template
-    ::BatchRows::ACTION_CSV_HEADINGS
   end
 end
