@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::ChangeLeadProviderStep, type: :model do
+RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeLeadProviderStep, type: :model do
   subject { described_class.new(wizard:, lead_provider_id:) }
 
   let(:lead_provider_id) { '1' }
@@ -18,6 +18,6 @@ RSpec.describe Schools::RegisterECTWizard::ChangeLeadProviderStep, type: :model 
   end
 
   describe "#previous_step" do
-    it { expect(subject.previous_step).to eq(:check_answers) }
+    it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_programme_type) }
   end
 end
