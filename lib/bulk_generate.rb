@@ -1,5 +1,5 @@
 # Select from known pre-prod TRNs and create 2 CSV files (for Claims and Actions)
-# NB: randomised and limited to maximum row size, TRS status cannot be guaranteed
+# NB: TRS status cannot be guaranteed
 class BulkGenerate
   def call
     export(headers: columns_for(claim_template), rows: claim_rows, filename: 'tmp/bulk-max-claim.csv')
@@ -17,7 +17,7 @@ private
   end
 
   def ects
-    @ects ||= trns.shuffle.take(sample_size)
+    @ects ||= trns # .shuffle.take(sample_size)
   end
 
   def columns_for(template)

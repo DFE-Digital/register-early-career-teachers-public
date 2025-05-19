@@ -267,6 +267,31 @@ module Events
       new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
     end
 
+    # Bulk Upload Events
+
+    def self.record_bulk_upload_started_event!(author:, batch:, csv_data:)
+      event_type = :bulk_upload_started
+      heading = "#{batch.appropriate_body.name} started a bulk #{batch.batch_type}"
+      metadata = { batch_type: batch.batch_type, rows: batch.rows.count, **csv_data.metadata }
+
+      new(event_type:, author:, appropriate_body: batch.appropriate_body, heading:, happened_at: Time.zone.now, metadata:).record_event!
+    end
+
+    def self.record_bulk_upload_completed_event!(author:, batch:)
+      event_type = :bulk_upload_completed
+      heading = "#{batch.appropriate_body.name} completed a bulk #{batch.batch_type}"
+      metadata = {
+        batch_type: batch.batch_type,
+        total: batch.pending_induction_submissions.count,
+        skipped: batch.pending_induction_submissions.with_errors.count,
+        pass: batch.pending_induction_submissions.pass.count,
+        fail: batch.pending_induction_submissions.fail.count,
+        release: batch.pending_induction_submissions.release.count,
+      }
+
+      new(event_type:, author:, appropriate_body: batch.appropriate_body, heading:, happened_at: Time.zone.now, metadata:).record_event!
+    end
+
   private
 
     def attributes

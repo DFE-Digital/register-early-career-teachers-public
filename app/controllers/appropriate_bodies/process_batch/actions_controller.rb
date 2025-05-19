@@ -16,6 +16,7 @@ module AppropriateBodies
           @pending_induction_submission_batch.filename = csv_data.file_name
           @pending_induction_submission_batch.save!
 
+          record_bulk_upload_started_event
           process_batch_action
 
           redirect_to ab_batch_action_path(@pending_induction_submission_batch)
@@ -26,9 +27,8 @@ module AppropriateBodies
       rescue ActionController::ParameterMissing
         @pending_induction_submission_batch.errors.add(:csv_file, 'Select a file')
         render :new, status: :unprocessable_entity
-      rescue StandardError => e
-        # @pending_induction_submission_batch.errors.add(:base, 'Something went wrong') # post-bug-party
-        @pending_induction_submission_batch.errors.add(:base, e.message)
+      rescue StandardError
+        @pending_induction_submission_batch.errors.add(:base, 'Something went wrong')
         render :new, status: :unprocessable_entity
       end
 
@@ -40,6 +40,7 @@ module AppropriateBodies
         @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
 
         process_batch_action
+        record_bulk_upload_completed_event
 
         redirect_to ab_batch_action_path(@pending_induction_submission_batch)
       end
