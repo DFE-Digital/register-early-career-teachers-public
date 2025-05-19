@@ -322,4 +322,123 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       expect(ect.working_pattern).to eq("full_time")
     end
   end
+
+  describe 'previous registration' do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:school) { FactoryBot.create(:school) }
+    let(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: Date.new(2023, 12, 25), finished_on: Date.new(2024, 12, 25)) }
+
+    before do
+      store.trn = teacher.trn
+    end
+
+    describe '#induction_start_date' do
+      context 'when the teacher has induction periods' do
+        before do
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30))
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30))
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2024, 5, 1), finished_on: Date.new(2024, 6, 30))
+        end
+
+        it 'returns the earliest started_on date' do
+          expect(ect.induction_start_date).to eq(Date.new(2023, 6, 10))
+        end
+      end
+
+      context 'when the teacher has no induction periods' do
+        it 'returns nil' do
+          expect(ect.induction_start_date).to be_nil
+        end
+      end
+    end
+
+    describe '#previous_appropriate_body_name' do
+      context 'when the teacher has induction periods' do
+        let!(:older_body) { FactoryBot.create(:appropriate_body, name: 'Older Body') }
+        let!(:more_recent_body) { FactoryBot.create(:appropriate_body, name: 'More Recent Body') }
+
+        before do
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30), appropriate_body: older_body)
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30), appropriate_body: more_recent_body)
+        end
+
+        it 'returns the name of the latest appropriate body by started_on' do
+          expect(ect.previous_appropriate_body_name).to eq('More Recent Body')
+        end
+      end
+
+      context 'when the teacher has no induction periods' do
+        it 'returns nil' do
+          expect(ect.previous_appropriate_body_name).to be_nil
+        end
+      end
+    end
+
+    describe '#previous_training_programme' do
+      context 'when the teacher has ECTAtSchoolPeriods' do
+        before do
+          FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :school_led, lead_provider_id: nil, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+          FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+        end
+
+        it 'returns the programme type from the latest ECTAtSchoolPeriod by started_on' do
+          expect(ect.previous_training_programme).to eq('provider_led')
+        end
+      end
+
+      context 'when the teacher has no ECTAtSchoolPeriods' do
+        it 'returns nil' do
+          expect(ect.previous_training_programme).to be_nil
+        end
+      end
+    end
+
+    describe '#previous_provider_led?' do
+      it 'returns true when the latest ECTAtSchoolPeriod is provider-led' do
+        FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+        expect(ect.previous_provider_led?).to be(true)
+      end
+
+      it 'returns false when the latest ECTAtSchoolPeriod is school-led' do
+        FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :school_led, lead_provider_id: nil, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+        expect(ect.previous_provider_led?).to be(false)
+      end
+
+      it 'returns nil when there are no ECTAtSchoolPeriods' do
+        expect(ect.previous_provider_led?).to be_nil
+      end
+    end
+
+    describe '#previous_lead_provider_name' do
+      let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Confirmed LP') }
+
+      before do
+        FactoryBot.create(:training_period,
+                          ect_at_school_period: ect_period,
+                          school_partnership: FactoryBot.create(:school_partnership, lead_provider:),
+                          started_on: Date.new(2024, 1, 1),
+                          finished_on: Date.new(2024, 6, 1))
+      end
+
+      it 'returns the name of the lead provider from the latest training period' do
+        expect(ect.previous_lead_provider_name).to eq('Confirmed LP')
+      end
+    end
+
+    describe '#previous_delivery_partner_name' do
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: 'DP') }
+
+      before do
+        FactoryBot.create(:training_period,
+                          ect_at_school_period: ect_period,
+                          school_partnership: FactoryBot.create(:school_partnership, delivery_partner:),
+                          started_on: Date.new(2024, 1, 1),
+                          finished_on: Date.new(2024, 6, 1))
+      end
+
+      it 'returns the name of the delivery partner from the latest training period' do
+        expect(ect.previous_delivery_partner_name).to eq("DP")
+      end
+    end
+  end
 end

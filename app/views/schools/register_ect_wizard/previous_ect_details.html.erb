@@ -13,28 +13,29 @@
 
    list.with_row do |row|
     row.with_key { "Induction start date" }
-    row.with_value { Teachers::PreviousECTRegistrationDetails.new(trn: @ect.trn).induction_start_date&.to_fs(:govuk) || 'Not confirmed' }
+    row.with_value { @ect.induction_start_date&.to_fs(:govuk) || 'Not confirmed' }
    end
 
    list.with_row do |row|
     row.with_key { "Appropriate body" }
-    row.with_value {  Teachers::PreviousECTRegistrationDetails.new(trn: @ect.trn).appropriate_body_name || 'Not confirmed' }
+    row.with_value {@ect.previous_appropriate_body_name || "Not confirmed" }
+
    end
 
    list.with_row do |row|
     row.with_key { "Training programme" }
-    row.with_value { programme_type_name(Teachers::PreviousECTRegistrationDetails.new(trn: @ect.trn).training_programme)  || 'Not confirmed' }
+    row.with_value { programme_type_name(@ect.previous_training_programme)  || 'Not confirmed' }
    end
 
-   if Teachers::PreviousECTRegistrationDetails.new(trn: @ect.trn).provider_led?
+   if @ect.previous_provider_led?
      list.with_row do |row|
       row.with_key { "Lead provider" }
-      row.with_value { Teachers::PreviousECTRegistrationDetails.new(trn: @ect.trn).lead_provider_name || 'Not confirmed' }
+      row.with_value { @ect.previous_lead_provider_name || 'Not confirmed' }
       end
 
      list.with_row do |row|
       row.with_key { "Delivery partner" }
-      row.with_value { Teachers::PreviousECTRegistrationDetails.new(trn: @ect.trn).delivery_partner_name || 'Not confirmed' }
+      row.with_value { @ect.previous_delivery_partner_name || 'Not confirmed' }
      end
    end
  end %>

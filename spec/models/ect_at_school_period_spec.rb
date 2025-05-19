@@ -224,19 +224,19 @@ describe ECTAtSchoolPeriod do
       end
     end
 
-    describe '.latest_for_teacher' do
-      it 'returns the latest ect_at_school_period for the teacher' do
+    describe '.latest_to_start_first' do
+      it 'returns ECTAtSchoolPeriods for a teacher ordered by started_on descending' do
         teacher = FactoryBot.create(:teacher)
-        older_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, created_at: 3.days.ago)
-        latest_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, created_at: 1.day.ago)
+        older_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 6, 1))
+        latest_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 6, 1))
 
-        expect(ECTAtSchoolPeriod.latest_for_teacher(teacher)).to contain_exactly(older_ect_at_school_period, latest_ect_at_school_period)
+        expect(ECTAtSchoolPeriod.for_teacher(teacher).latest_to_start_first).to eq([latest_ect_at_school_period, older_ect_at_school_period])
       end
 
       it 'returns empty when the teacher has no periods' do
         teacher = FactoryBot.create(:teacher)
 
-        expect(ECTAtSchoolPeriod.latest_for_teacher(teacher)).to be_empty
+        expect(ECTAtSchoolPeriod.for_teacher(teacher).latest_to_start_first).to be_empty
       end
     end
   end

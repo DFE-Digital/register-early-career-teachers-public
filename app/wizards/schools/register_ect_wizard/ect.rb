@@ -102,6 +102,76 @@ module Schools
       def previously_registered?
         @previously_registered ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn:).exists?
       end
+
+      def induction_start_date
+        first_induction_period&.started_on
+      end
+
+      def previous_appropriate_body_name
+        previous_appropriate_body&.name
+      end
+
+      def previous_training_programme
+        previous_ect_at_school_period&.programme_type
+      end
+
+      def previous_provider_led?
+        previous_ect_at_school_period&.provider_led_programme_type?
+      end
+
+      def previous_lead_provider_name
+        previous_lead_provider&.name
+      end
+
+      def previous_delivery_partner_name
+        previous_delivery_partner&.name
+      end
+
+    private
+
+      def previous_training_period
+        @previous_training_period ||= TrainingPeriod
+          .for_ect(previous_ect_at_school_period.id)
+          .latest_to_start_first
+          .first
+      end
+
+      def previous_lead_provider
+        previous_training_period&.lead_provider
+      end
+
+      def previous_delivery_partner
+        previous_training_period&.delivery_partner
+      end
+
+      def previous_ect_at_school_period
+        @previous_ect_at_school_period ||= ECTAtSchoolPeriod
+          .for_teacher(teacher)
+          .latest_to_start_first
+          .first
+      end
+
+      def previous_induction_period
+        @previous_induction_period ||= InductionPeriod
+          .for_teacher(teacher)
+          .latest_to_start_first
+          .first
+      end
+
+      def previous_appropriate_body
+        previous_induction_period&.appropriate_body
+      end
+
+      def first_induction_period
+        @first_induction_period ||= InductionPeriod
+          .for_teacher(teacher)
+          .earliest_to_start_first
+          .first
+      end
+
+      def teacher
+        @teacher ||= Teacher.find_by(trn:)
+      end
     end
   end
 end
