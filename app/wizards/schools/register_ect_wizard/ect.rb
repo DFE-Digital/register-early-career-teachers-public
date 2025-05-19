@@ -98,6 +98,10 @@ module Schools
       def trs_full_name
         Teachers::Name.new(self).full_name_in_trs
       end
+
+      def previously_registered?
+        @previously_registered ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn:).exists?
+      end
     end
   end
 end
