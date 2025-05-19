@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::ChangeIndependentSchoolAppropriateBodyStep, type: :model do
+RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeIndependentSchoolAppropriateBodyStep, type: :model do
   subject { described_class.new(wizard:, appropriate_body_id: '123', appropriate_body_type: 'Some Teaching School Hub') }
 
   let(:school) { FactoryBot.create(:school, :independent) }
@@ -13,10 +13,10 @@ RSpec.describe Schools::RegisterECTWizard::ChangeIndependentSchoolAppropriateBod
   end
 
   describe "#next_step" do
-    it { expect(subject.next_step).to eq(:check_answers) }
+    it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_programme_type) }
   end
 
   describe "#previous_step" do
-    it { expect(subject.previous_step).to eq(:check_answers) }
+    it { expect(subject.previous_step).to eq(:change_use_previous_ect_choices) }
   end
 end

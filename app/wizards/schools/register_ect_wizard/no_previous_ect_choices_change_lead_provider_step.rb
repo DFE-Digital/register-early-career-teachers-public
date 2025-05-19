@@ -1,12 +1,12 @@
 module Schools
   module RegisterECTWizard
-    class ChangeIndependentSchoolAppropriateBodyStep < IndependentSchoolAppropriateBodyStep
+    class NoPreviousECTChoicesChangeLeadProviderStep < LeadProviderStep
       def next_step
         :check_answers
       end
 
       def previous_step
-        :check_answers
+        :no_previous_ect_choices_change_programme_type
       end
     end
   end
