@@ -8,6 +8,18 @@ FactoryBot.define do
     deadline_date { Faker::Date.forward(days: 30) }
     payment_date { Faker::Date.forward(days: 30) }
     output_fee { true }
-    state { :open }
+    open
+
+    trait :open do
+      state { :open }
+    end
+
+    trait :payable do
+      state { :payable }
+    end
+
+    trait :paid do
+      state { :paid }
+    end
   end
 end
