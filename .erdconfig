@@ -13,6 +13,8 @@ exclude:
   - Blazer::DashboardQuery
   - Blazer::Upload
   - Event
+  - DataMigration
+  - MigrationFailure
   - SolidQueue::Process
   - SolidQueue::Job
   - SolidQueue::BlockedExecution
