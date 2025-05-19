@@ -48,5 +48,20 @@ module AppropriateBodies
 
       render "errors/unauthorised", status: :unauthorized if wrong_appropriate_body?
     end
+
+    def record_bulk_upload_started_event
+      Events::Record.record_bulk_upload_started_event!(
+        author: current_user,
+        batch: @pending_induction_submission_batch,
+        csv_data:
+      )
+    end
+
+    def record_bulk_upload_completed_event
+      Events::Record.record_bulk_upload_completed_event!(
+        author: current_user,
+        batch: @pending_induction_submission_batch
+      )
+    end
   end
 end

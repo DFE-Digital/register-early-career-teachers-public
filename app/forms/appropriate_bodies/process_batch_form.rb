@@ -46,6 +46,11 @@ module AppropriateBodies
       end
     end
 
+    # @return [Hash{Symbol => String}]
+    def metadata
+      { file_name:, file_size: file_size.to_s, file_type: }
+    end
+
   private
 
     def parse

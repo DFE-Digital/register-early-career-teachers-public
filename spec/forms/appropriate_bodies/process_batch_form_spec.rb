@@ -22,6 +22,16 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
                     original_filename: 'test.csv')
   end
 
+  describe '#metadata' do
+    specify do
+      expect(form.metadata).to eq(
+        file_name: 'test.csv',
+        file_size: '51200',
+        file_type: 'text/csv'
+      )
+    end
+  end
+
   context 'when the attached file is valid' do
     specify do
       expect(form).to be_valid

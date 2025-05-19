@@ -23,6 +23,24 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
       }.to have_enqueued_job(ProcessBatchActionJob)
     end
 
+    it "records an upload started event" do
+      allow(Events::Record).to receive(:record_bulk_upload_started_event!).and_call_original
+
+      post ab_batch_actions_path, params: {
+        pending_induction_submission_batch: { csv_file: }
+      }
+
+      expect(Events::Record).to have_received(:record_bulk_upload_started_event!).with(
+        batch: an_instance_of(PendingInductionSubmissionBatch),
+        author: an_instance_of(Sessions::Users::AppropriateBodyPersona),
+        csv_data: an_instance_of(AppropriateBodies::ProcessBatchForm)
+      )
+
+      perform_enqueued_jobs
+
+      expect(Event.last.event_type).to eq("bulk_upload_started")
+    end
+
     it "redirects" do
       post ab_batch_actions_path, params: {
         pending_induction_submission_batch: { csv_file: }
