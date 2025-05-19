@@ -192,37 +192,21 @@ RSpec.describe InductionPeriod do
       end
     end
 
-    describe ".latest_for_teacher" do
-      it "returns the most recently created induction period for the specified teacher" do
-        teacher = FactoryBot.create(:teacher)
+    describe ".earliest_to_start_first" do
+      it "orders induction periods by started_on ascending" do
+        older_induction_period = FactoryBot.create(:induction_period, started_on: Date.new(2023, 6, 10))
+        latest_induction_period = FactoryBot.create(:induction_period, started_on: Date.new(2023, 10, 1))
 
-        older_induction_period = FactoryBot.create(:induction_period, teacher:, created_at: 3.days.ago, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30))
-        latest_induction_period = FactoryBot.create(:induction_period, teacher:, created_at: 1.day.ago, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30))
-
-        expect(InductionPeriod.latest_for_teacher(teacher)).to contain_exactly(older_induction_period, latest_induction_period)
-      end
-
-      it "returns an empty ActiveRecord relation if teacher has no periods" do
-        teacher = FactoryBot.create(:teacher)
-
-        expect(InductionPeriod.latest_for_teacher(teacher)).to be_empty
+        expect(InductionPeriod.earliest_to_start_first).to eq([older_induction_period, latest_induction_period])
       end
     end
 
-    describe ".earliest_for_teacher" do
-      it "returns the earliest created induction period for the specified teacher" do
-        teacher = FactoryBot.create(:teacher)
+    describe ".latest_to_start_first" do
+      it "orders induction periods by started_on descending" do
+        older_induction_period = FactoryBot.create(:induction_period, started_on: Date.new(2023, 6, 10))
+        latest_induction_period = FactoryBot.create(:induction_period, started_on: Date.new(2023, 10, 1))
 
-        older_induction_period = FactoryBot.create(:induction_period, teacher:, created_at: 3.days.ago, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30))
-        latest_induction_period = FactoryBot.create(:induction_period, teacher:, created_at: 1.day.ago, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30))
-
-        expect(InductionPeriod.earliest_for_teacher(teacher)).to contain_exactly(latest_induction_period, older_induction_period)
-      end
-
-      it "returns an empty ActiveRecord relation if teacher has no periods" do
-        teacher = FactoryBot.create(:teacher)
-
-        expect(InductionPeriod.latest_for_teacher(teacher)).to be_empty
+        expect(InductionPeriod.latest_to_start_first).to eq([latest_induction_period, older_induction_period])
       end
     end
 
