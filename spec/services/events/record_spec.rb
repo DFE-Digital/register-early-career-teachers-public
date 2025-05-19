@@ -423,17 +423,19 @@ RSpec.describe Events::Record do
   describe '.record_teacher_trs_induction_start_date_updated_event!' do
     let(:old_date) { Date.new(2020, 1, 1) }
     let(:new_date) { Date.new(2021, 1, 1) }
+    let(:teacher_name) { Teachers::Name.new(teacher).full_name }
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, old_date:, new_date:)
+        Events::Record.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
           appropriate_body:,
-          heading: "Rhys Ifans's induction start date changed from #{old_date} to #{new_date}",
+          heading: "#{teacher_name}'s induction start date was updated",
           event_type: :teacher_trs_induction_start_date_updated,
           happened_at: Time.zone.now,
+          induction_period:,
           **author_params
         )
       end
