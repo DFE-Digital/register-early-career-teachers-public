@@ -244,24 +244,18 @@ rp_2025 = RegistrationPeriod.create!(year: 2025, started_on: Date.new(2025, 6, 1
 
 print_seed_info("Adding lead providers")
 
-grove_institute = LeadProvider.create!(name: 'Grove Institute')
-evergreen_network = LeadProvider.create!(name: 'Evergreen Network')
-national_meadows_institute = LeadProvider.create!(name: 'National Meadows Institute')
-woodland_education_trust = LeadProvider.create!(name: 'Woodland Education Trust')
-teach_orchard = LeadProvider.create!(name: 'Teach Orchard')
-highland_collage_university = LeadProvider.create!(name: 'Highland College University')
-wildflower_trust = LeadProvider.create!(name: 'Wildflower Trust')
-pine_institute = LeadProvider.create!(name: 'Pine Institute')
+ambitious_institute = LeadProvider.create!(name: 'Ambitious Institute')
+capitan = LeadProvider.create!(name: 'Capitan')
+teach_fast = LeadProvider.create!(name: 'Teach Fast')
+international_institute_of_teaching = LeadProvider.create!(name: 'International Institute of Teaching')
+better_practice_network = LeadProvider.create!(name: 'Better Practice Network')
 
 {
-  evergreen_network => [],
-  grove_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
-  highland_collage_university => [],
-  national_meadows_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
-  pine_institute => [],
-  teach_orchard => [],
-  wildflower_trust => [rp_2022, rp_2023, rp_2024, rp_2025],
-  woodland_education_trust => [],
+  capitan => [rp_2021, rp_2022, rp_2023],
+  ambitious_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
+  teach_fast => [rp_2022, rp_2023, rp_2024, rp_2025],
+  better_practice_network => [rp_2022, rp_2023, rp_2024, rp_2025],
+  international_institute_of_teaching => [rp_2021],
 }.each do |lead_provider, registration_periods|
   registration_periods.each { |registration_period| ActiveLeadProvider.create!(registration_period:, lead_provider:) }
 
@@ -282,43 +276,43 @@ print_seed_info("Adding provider partnerships")
 
 grove_artisan_partnership_2021 = SchoolPartnership.create!(
   registration_period: rp_2021,
-  lead_provider: grove_institute,
+  lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 SchoolPartnership.create!(
   registration_period: rp_2022,
-  lead_provider: grove_institute,
+  lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 grove_artisan_partnership_2023 = SchoolPartnership.create!(
   registration_period: rp_2023,
-  lead_provider: grove_institute,
+  lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 meadow_grain_partnership_2022 = SchoolPartnership.create!(
   registration_period: rp_2022,
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   delivery_partner: grain_teaching_school_hub
 ).tap { |pp| describe_school_partnership(pp) }
 
 _meadow_grain_partnership_2023 = SchoolPartnership.create!(
   registration_period: rp_2023,
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   delivery_partner: grain_teaching_school_hub
 ).tap { |pp| describe_school_partnership(pp) }
 
 _wildflower_rising_partnership_2023 = SchoolPartnership.create!(
   registration_period: rp_2023,
-  lead_provider: wildflower_trust,
+  lead_provider: better_practice_network,
   delivery_partner: rising_minds
 ).tap { |pp| describe_school_partnership(pp) }
 
 _wildflower_rising_partnership_2024 = SchoolPartnership.create!(
   registration_period: rp_2024,
-  lead_provider: wildflower_trust,
+  lead_provider: better_practice_network,
   delivery_partner: rising_minds
 ).tap { |pp| describe_school_partnership(pp) }
 
@@ -406,13 +400,13 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   school: ackley_bridge,
   email: 'alan.rickman@diehard.com',
   started_on: 2.years.ago,
-  lead_provider: wildflower_trust,
+  lead_provider: better_practice_network,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-ackley_bridge.update!(last_chosen_lead_provider: wildflower_trust,
+ackley_bridge.update!(last_chosen_lead_provider: better_practice_network,
                       last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
                       last_chosen_programme_type: 'provider_led')
 
@@ -611,13 +605,13 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   school: mallory_towers,
   email: 'gemma.jones@rocketman.com',
   started_on: 21.months.ago,
-  lead_provider: wildflower_trust,
+  lead_provider: better_practice_network,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-mallory_towers.update!(last_chosen_lead_provider: wildflower_trust,
+mallory_towers.update!(last_chosen_lead_provider: better_practice_network,
                        last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
                        last_chosen_programme_type: 'provider_led')
 
@@ -653,7 +647,7 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   teacher: anthony_hopkins,
   school: brookfield_school,
   email: 'anthony.hopkins@favabeans.com',
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   school_reported_appropriate_body: umber_teaching_school_hub,
   programme_type: 'provider_led',
   started_on: 2.years.ago,
@@ -673,13 +667,13 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'stephen.fry@sausage.com',
   started_on: 2.years.ago,
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led',
   working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-brookfield_school.update!(last_chosen_lead_provider: national_meadows_institute,
+brookfield_school.update!(last_chosen_lead_provider: teach_fast,
                           last_chosen_appropriate_body: south_yorkshire_studio_hub,
                           last_chosen_programme_type: 'provider_led')
 
@@ -696,7 +690,7 @@ ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'harriet-walter@history.com',
   started_on: 2.years.ago,
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
