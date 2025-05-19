@@ -97,7 +97,7 @@ module AppropriateBodies
     # and the user need not remove that column before reuploading the corrected data.
     def has_valid_headers?
       template_headers = headers.values.sort
-      template_headers_without_errors = headers.values.reverse.drop(1).sort
+      template_headers_without_errors = template_headers.reject { |v| v.match?(/error/i) }
       parsed_headers = parse.headers.compact.sort
       [template_headers, template_headers_without_errors].to_set.include?(parsed_headers)
     end
