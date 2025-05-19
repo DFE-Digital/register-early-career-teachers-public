@@ -144,65 +144,48 @@ describe TrainingPeriod do
       end
     end
 
-    describe '.latest_for_teacher' do
+    describe '.latest_to_start_first' do
       let(:teacher) { FactoryBot.create(:teacher) }
-
-      it 'returns the most recently created training period for the teacher' do
-        # First training period
-        ect_period_1 = FactoryBot.create(
-          :ect_at_school_period,
-          teacher:,
-          started_on: Date.new(2023, 9, 1),
-          finished_on: Date.new(2023, 10, 1),
-          created_at: 3.days.ago
-        )
-
+      let(:ect_period) do
         FactoryBot.create(
-          :training_period,
-          ect_at_school_period: ect_period_1,
-          started_on: Date.new(2023, 9, 1),
-          finished_on: Date.new(2023, 9, 30),
-          created_at: 2.days.ago
-        )
-
-        # Second training period - more recent `created_at``
-        ect_period_2 = FactoryBot.create(
           :ect_at_school_period,
           teacher:,
-          started_on: Date.new(2022, 11, 1),
-          finished_on: Date.new(2023, 12, 1),
-          created_at: 2.days.ago
+          started_on: Date.new(2023, 9, 1),
+          finished_on: Date.new(2023, 12, 1)
         )
+      end
 
-        training_period_2 = FactoryBot.create(
+      it 'returns the training periods for the teacher ordered by started_on descending' do
+        training_period1 = FactoryBot.create(
           :training_period,
-          ect_at_school_period: ect_period_2,
-          started_on: Date.new(2023, 11, 1),
-          finished_on: Date.new(2023, 11, 30),
-          created_at: 1.day.ago
+          ect_at_school_period: ect_period,
+          started_on: Date.new(2023, 9, 15),
+          finished_on: Date.new(2023, 10, 15)
         )
 
-        expect(TrainingPeriod.latest_for_teacher(teacher).first).to eq(training_period_2)
+        training_period2 = FactoryBot.create(
+          :training_period,
+          ect_at_school_period: ect_period,
+          started_on: Date.new(2023, 10, 20),
+          finished_on: Date.new(2023, 11, 20)
+        )
+
+        result = TrainingPeriod
+                   .for_ect(ect_period.id)
+                   .latest_to_start_first
+
+        expect(result).to eq([training_period2, training_period1])
       end
 
       it 'returns nothing if the teacher has no training periods' do
-        teacher_with_no_training_periods = FactoryBot.create(:teacher)
-
-        ect_period = FactoryBot.create(
+        new_ect_period = FactoryBot.create(
           :ect_at_school_period,
-          teacher: teacher_with_no_training_periods,
-          started_on: Date.new(2023, 9, 1),
-          finished_on: Date.new(2023, 10, 1)
+          teacher:,
+          started_on: Date.new(2024, 1, 1),
+          finished_on: Date.new(2024, 12, 1)
         )
 
-        FactoryBot.create(
-          :training_period,
-          ect_at_school_period: ect_period,
-          started_on: Date.new(2023, 9, 1),
-          finished_on: Date.new(2023, 9, 30)
-        )
-
-        expect(TrainingPeriod.latest_for_teacher(teacher)).to be_empty
+        expect(TrainingPeriod.for_ect(new_ect_period.id).latest_to_start_first).to be_empty
       end
     end
   end
