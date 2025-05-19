@@ -60,6 +60,9 @@ module Schools
       # lead_provider_name
       delegate :name, to: :lead_provider, prefix: true, allow_nil: true
 
+      # previous_school_name
+      delegate :name, to: :previous_school, prefix: true, allow_nil: true
+
       def matches_trs_dob?
         return false if [date_of_birth, trs_date_of_birth].any?(&:blank?)
 
@@ -125,6 +128,10 @@ module Schools
 
       def previous_delivery_partner_name
         previous_delivery_partner&.name
+      end
+
+      def previous_school
+        @previous_school ||= ECTAtSchoolPeriods::Search.new.current_school(trn:)
       end
 
     private

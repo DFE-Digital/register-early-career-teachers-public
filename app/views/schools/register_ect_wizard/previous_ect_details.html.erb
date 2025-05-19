@@ -8,10 +8,7 @@
 <%= govuk_summary_list(card: { title: 'Previously registered details' } ) do |list|
   list.with_row do |row|
     row.with_key { "School name" }
-    row.with_value { ECTAtSchoolPeriods::Search.new.current_school(trn: @ect.trn)&.name || 'Not confirmed' }
-
-
-    
+    row.with_value { @ect.previous_school_name || 'Not confirmed' }
    end
 
    list.with_row do |row|
