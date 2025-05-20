@@ -1,0 +1,47 @@
+# - title: This is an example note
+#   date: 2025-05-20
+#   body: |
+#     Enter the release note body here.
+#
+#     It can contain any markdown [supported by govuk-markdown](https://github.com/DFE-Digital/govuk-markdown#usage),
+#     including:
+#
+#     * bulleted lists
+#     * bulleted lists
+#     * bulleted lists
+#
+#     1. numbered lists
+#     2. numbered lists
+#     3. numbered lists
+#
+#     [links](https://www.gov.uk)
+#
+#     **bold** and _italic_ text
+
+- title: An example release
+  date: 2025-05-20
+  body: |
+    Nam libero velit, ornare quis sollicitudin quis, mollis vitae purus. Mauris
+    ullamcorper viverra sapien, a tincidunt ipsum mattis a. Nullam sit amet
+    metus vehicula, **faucibus** velit eu, dapibus turpis. Donec nisi nibh,
+    commodo quis lectus ut, euismod malesuada erat. Vestibulum et nibh aliquet,
+    blandit arcu a, suscipit sem. Integer nulla odio, aliquam eu purus in,
+    laoreet dignissim ex. Suspendisse eget turpis diam. Mauris ut nulla
+    ipsum. Aliquam nec nibh fringilla orci vulputate feugiat. Nullam non leo
+    magna. Aenean et nisi semper tortor lacinia imperdiet sed at ipsum.
+
+- title: Another example release
+  date: 2025-04-20
+  body: |
+    Morbi iaculis finibus tempus. Phasellus a tristique urna, ac tincidunt
+    mi. [Nam ultricies mi vel](#) mauris mattis mollis. Etiam blandit neque id
+    porttitor dapibus. Nulla nibh massa, maximus hendrerit sollicitudin
+    pellentesque:
+
+    * sagittis
+    * egestas
+    * massa
+
+    Nulla auctor purus odio, sit amet molestie libero accumsan in. Integer eu
+    lacus ac mauris mattis fermentum et a lorem. Praesent faucibus a mauris vel
+    commodo.
