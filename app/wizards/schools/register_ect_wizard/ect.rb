@@ -137,10 +137,10 @@ module Schools
     private
 
       def previous_training_period
-        @previous_training_period ||= TrainingPeriod
-          .for_ect(previous_ect_at_school_period.id)
-          .latest_to_start_first
-          .first
+        @previous_training_period ||= TrainingPeriods::Search
+          .new(order: :started_on)
+          .training_periods(ect_id: previous_ect_at_school_period.id)
+          .last
       end
 
       def previous_lead_provider
