@@ -159,21 +159,21 @@ module Schools
       end
 
       def previous_induction_period
-        @previous_induction_period ||= InductionPeriod
-          .for_teacher(teacher)
-          .latest_to_start_first
-          .first
+        ordered_induction_periods.last
+      end
+
+      def first_induction_period
+        ordered_induction_periods.first
+      end
+
+      def ordered_induction_periods
+        @ordered_induction_periods ||= InductionPeriods::Search
+          .new(order: :started_on)
+          .induction_periods(trn:)
       end
 
       def previous_appropriate_body
         previous_induction_period&.appropriate_body
-      end
-
-      def first_induction_period
-        @first_induction_period ||= InductionPeriod
-          .for_teacher(teacher)
-          .earliest_to_start_first
-          .first
       end
 
       def teacher
