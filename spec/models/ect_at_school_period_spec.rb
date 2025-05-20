@@ -223,22 +223,6 @@ describe ECTAtSchoolPeriod do
         expect(described_class.for_teacher(teacher.id)).to match_array([period_1, period_2, period_3])
       end
     end
-
-    describe '.latest_to_start_first' do
-      it 'returns ECTAtSchoolPeriods for a teacher ordered by started_on descending' do
-        teacher = FactoryBot.create(:teacher)
-        older_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 6, 1))
-        latest_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 6, 1))
-
-        expect(ECTAtSchoolPeriod.for_teacher(teacher).latest_to_start_first).to eq([latest_ect_at_school_period, older_ect_at_school_period])
-      end
-
-      it 'returns empty when the teacher has no periods' do
-        teacher = FactoryBot.create(:teacher)
-
-        expect(ECTAtSchoolPeriod.for_teacher(teacher).latest_to_start_first).to be_empty
-      end
-    end
   end
 
   describe "#current_mentorship" do

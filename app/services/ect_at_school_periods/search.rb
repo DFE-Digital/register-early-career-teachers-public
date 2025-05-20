@@ -2,8 +2,8 @@ module ECTAtSchoolPeriods
   class Search
     attr_reader :scope
 
-    def initialize
-      @scope = ECTAtSchoolPeriod.all.order(:created_at)
+    def initialize(order: :created_at)
+      @scope = ECTAtSchoolPeriod.all.order(*Array(order))
     end
 
     def ect_periods(urn: nil, trn: nil)

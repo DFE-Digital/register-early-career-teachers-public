@@ -58,7 +58,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   # Scopes
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
-  scope :latest_to_start_first, -> { order(started_on: :desc) }
 
   # Instance methods
   def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
