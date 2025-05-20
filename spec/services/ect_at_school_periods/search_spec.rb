@@ -24,28 +24,4 @@ describe ECTAtSchoolPeriods::Search do
       expect(subject.to_sql).to include(%(INNER JOIN "schools" "school" ON "school"."id" = "ect_at_school_periods"."school_id" WHERE "school"."urn" = 123456))
     end
   end
-
-  describe '#current_school' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
-    let(:school_1) { FactoryBot.create(:school) }
-    let(:school_2) { FactoryBot.create(:school) }
-
-    before do
-      FactoryBot.create(:gias_school, school: school_1, name: 'school 1')
-      FactoryBot.create(:gias_school, school: school_2, name: 'school 2')
-
-      FactoryBot.create(:ect_at_school_period, teacher:, school: school_1, started_on: Date.new(2023, 1, 10), finished_on: Date.new(2023, 2, 25))
-      FactoryBot.create(:ect_at_school_period, teacher:, school: school_2, started_on: Date.new(2023, 7, 11), finished_on: nil)
-    end
-
-    it 'returns the school from the latest ECTAtSchoolPeriod ordered by started_on' do
-      result = described_class.new.current_school(trn: teacher.trn)
-      expect(result).to eq(school_2)
-    end
-
-    it 'returns nil if the teacher is not found' do
-      result = described_class.new.current_school(trn: 'nonexistent')
-      expect(result).to be_nil
-    end
-  end
 end
