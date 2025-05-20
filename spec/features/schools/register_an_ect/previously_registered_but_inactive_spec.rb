@@ -35,7 +35,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_on_the_view_previous_choices_page
-    expect(page.url).to end_with('/schools/register-ect/previous-ect-details')
+    expect(page.url).to end_with('/schools/register-ect/registered-before')
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user_who_has_previously_registered_an_ect
