@@ -103,7 +103,7 @@ module Schools
       end
 
       def previously_registered?
-        @previously_registered ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn:).exists?
+        previous_ect_at_school_period.present?
       end
 
       def induction_start_date
@@ -131,7 +131,7 @@ module Schools
       end
 
       def previous_school
-        @previous_school ||= previous_ect_at_school_period&.school
+        previous_ect_at_school_period&.school
       end
 
     private
@@ -152,10 +152,10 @@ module Schools
       end
 
       def previous_ect_at_school_period
-        @previous_ect_at_school_period ||= ECTAtSchoolPeriod
-          .for_teacher(teacher)
-          .latest_to_start_first
-          .first
+        @previous_ect_at_school_period ||= ECTAtSchoolPeriods::Search
+          .new(order: :started_on)
+          .ect_periods(trn:)
+          .last
       end
 
       def previous_induction_period

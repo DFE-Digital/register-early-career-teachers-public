@@ -24,4 +24,12 @@ describe ECTAtSchoolPeriods::Search do
       expect(subject.to_sql).to include(%(INNER JOIN "schools" "school" ON "school"."id" = "ect_at_school_periods"."school_id" WHERE "school"."urn" = 123456))
     end
   end
+
+  context "with custom order" do
+    subject(:result) { described_class.new(order: :started_on).ect_periods }
+
+    it "orders the records by the provided field" do
+      expect(subject.to_sql).to eq(%(SELECT "ect_at_school_periods".* FROM "ect_at_school_periods" ORDER BY "ect_at_school_periods"."started_on" ASC))
+    end
+  end
 end
