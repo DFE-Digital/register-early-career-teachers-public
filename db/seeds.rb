@@ -6,7 +6,9 @@ STATEMENT_STATE_COLOURS = {
   paid: :green,
 }.freeze
 
-def print_seed_info(text, indent: 0, colour: nil)
+def print_seed_info(text, indent: 0, colour: nil, blank_lines_before: 0)
+  blank_lines_before.times { puts "🌱 \n" }
+
   if colour
     puts "🌱 " + (" " * indent) + Colourize.text(text, colour)
   else
@@ -131,19 +133,35 @@ def describe_teacher(teacher)
   print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status})", indent: 2)
 end
 
-def describe_statement(statement)
-  statement_name = "#{Date::MONTHNAMES[statement.month]} #{statement.year}"
-  state = Colourize.text(statement.state, STATEMENT_STATE_COLOURS[statement.state.to_sym])
-  print_seed_info("#{statement_name} #{state}", indent: 4)
-end
+def describe_group_of_statements(lead_provider, statements, month_col_width: 15, year_col_width: 18)
+  return if statements.empty?
 
-def describe_group_of_statements(active_lead_provider)
-  lead_provider_name = active_lead_provider.lead_provider.name
-  year = active_lead_provider.registration_period.year
-  colour_index = Digest::MD5.hexdigest(lead_provider_name).to_i(16) % Colourize::COLOURS.size
-  lead_provider = Colourize.text(lead_provider_name, Colourize::COLOURS.keys[colour_index])
+  statements_by_year_and_month = statements.group_by(&:year).transform_values { |v| v.group_by(&:month) }
+  registration_periods_with_statements = statements_by_year_and_month.keys.sort
 
-  print_seed_info("#{lead_provider} #{year}", indent: 2)
+  print_seed_info(lead_provider.name, indent: 2, blank_lines_before: 1)
+  print_seed_info((" " * month_col_width) + (registration_periods_with_statements.map { |y| y.to_s.rjust(year_col_width) }.join), indent: 2)
+
+  rows = 1.upto(12).map do |m|
+    states = registration_periods_with_statements.map do |y|
+      if statements_by_year_and_month[y]
+        status_names = statements_by_year_and_month[y][m].map(&:state)
+
+        colourized_text = status_names.map { |sn| Colourize.text(sn, STATEMENT_STATE_COLOURS[sn.to_sym]) }
+
+        # the colourizing characters affect the length so offset the rjust
+        offset = colourized_text.sum(&:length) - status_names.sum(&:length)
+
+        colourized_text.join(", ").rjust(year_col_width + offset)
+      else
+        'none'.rjust(year_col_width)
+      end
+    end
+
+    [Date::MONTHNAMES[m].rjust(month_col_width), *states].join
+  end
+
+  rows.each { |r| print_seed_info(r, indent: 2) }
 end
 
 print_seed_info("Adding teachers")
@@ -757,39 +775,41 @@ end
 
 print_seed_info('Adding statements:')
 
-active_lead_providers = ActiveLeadProvider
+lead_providers_with_active_lead_providers = ActiveLeadProvider
   .joins(:registration_period)
-  .order(registration_period: { year: :asc })
+  .group_by(&:lead_provider)
 
-active_lead_providers.each do |active_lead_provider|
-  registration_year = active_lead_provider.registration_period.year
-  months = (1..12).to_a
-  years = [registration_year, registration_year + 1]
+lead_providers_with_active_lead_providers.each do |lead_provider, active_lead_providers|
+  statements = []
 
-  describe_group_of_statements(active_lead_provider)
+  active_lead_providers.each do |active_lead_provider|
+    registration_year = active_lead_provider.registration_period.year
+    months = (1..12).to_a
+    years = [registration_year, registration_year + 1]
 
-  years.product(months).collect do |year, month|
-    deadline_date = Time.zone.local(year, month).end_of_month
-    payment_date = Time.zone.at(rand(deadline_date.to_i..(deadline_date + 2.months).to_i))
-    output_fee = [true, false].sample
-    state = if payment_date < Date.current
-              :paid
-            elsif Date.current.between?(deadline_date, payment_date)
-              :payable
-            else
-              :open
-            end
+    statements << years.product(months).collect do |year, month|
+      deadline_date = Time.zone.local(year, month).end_of_month
+      payment_date = Time.zone.at(rand(deadline_date.to_i..(deadline_date + 2.months).to_i))
+      output_fee = [true, false].sample
+      state = if payment_date < Date.current
+                :paid
+              elsif Date.current.between?(deadline_date, payment_date)
+                :payable
+              else
+                :open
+              end
 
-    statement = Statement.create!(
-      active_lead_provider:,
-      month:,
-      year:,
-      deadline_date:,
-      payment_date:,
-      output_fee:,
-      state:
-    )
-
-    describe_statement(statement)
+      Statement.create!(
+        active_lead_provider:,
+        month:,
+        year:,
+        deadline_date:,
+        payment_date:,
+        output_fee:,
+        state:
+      )
+    end
   end
+
+  describe_group_of_statements(lead_provider, statements.flatten)
 end
