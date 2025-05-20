@@ -133,14 +133,14 @@ def describe_teacher(teacher)
   print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status})", indent: 2)
 end
 
-def describe_group_of_statements(lead_provider, statements, month_col_width: 15, year_col_width: 10)
+def describe_group_of_statements(lead_provider, statements, month_col_width: 15, year_col_width: 18)
   lead_provider_name = lead_provider.name
   colour_index = Digest::MD5.hexdigest(lead_provider_name).to_i(16) % Colourize::COLOURS.size
   lead_provider = Colourize.text(lead_provider_name, Colourize::COLOURS.keys[colour_index])
 
   return if statements.empty?
 
-  statements_by_year_and_month = statements.group_by(&:year).transform_values { |v| v.index_by(&:month) }
+  statements_by_year_and_month = statements.group_by(&:year).transform_values { |v| v.group_by(&:month) }
   registration_periods_with_statements = statements_by_year_and_month.keys.sort
 
   print_seed_info(lead_provider, indent: 2, blank_lines_before: 1)
@@ -149,14 +149,14 @@ def describe_group_of_statements(lead_provider, statements, month_col_width: 15,
   rows = 1.upto(12).map do |m|
     states = registration_periods_with_statements.map do |y|
       if statements_by_year_and_month[y]
-        status_name = statements_by_year_and_month[y][m].state
+        status_names = statements_by_year_and_month[y][m].map(&:state)
 
-        colourized_text = Colourize.text(status_name, STATEMENT_STATE_COLOURS[status_name.to_sym])
+        colourized_text = status_names.map { |sn| Colourize.text(sn, STATEMENT_STATE_COLOURS[sn.to_sym]) }
 
         # the colourizing characters affect the length so offset the rjust
-        offset = colourized_text.length - status_name.length
+        offset = colourized_text.sum(&:length) - status_names.sum(&:length)
 
-        colourized_text.rjust(year_col_width + offset)
+        colourized_text.join(", ").rjust(year_col_width + offset)
       else
         'none'.rjust(year_col_width)
       end
