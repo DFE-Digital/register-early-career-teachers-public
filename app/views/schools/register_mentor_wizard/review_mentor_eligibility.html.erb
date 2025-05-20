@@ -9,6 +9,10 @@
 
 <p class="govuk-body">We'll pass on their details to <%= @wizard.ect.lead_provider.name %> who will contact them to arrange the training.</p>
 
+<p class="govuk-body">If you don't know who will be providing training you can continue and update this later.</p>
+
+
+
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= f.govuk_submit "Continue" %>
 <% end %>

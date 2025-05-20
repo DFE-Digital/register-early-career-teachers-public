@@ -16,6 +16,10 @@ Once a participant has been registered to the service by their school, data asso
 
 [Participants](/service-rules/ecf1/participants)
 
+[Partnerships](/service-rules/ecf1/partnerships)
+
+[Void declarations](/service-rules/ecf1/void-declarations)
+
 ## API versioning and updates management
 
 We continuously implement improvements and feature enhancements to the API codebase. Internal teams can reference the <a href="https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/release-notes.html" target="_blank">release notes</a> for detailed changelogs and implementation notes.

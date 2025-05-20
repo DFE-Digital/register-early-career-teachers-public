@@ -13,26 +13,10 @@ RSpec.describe Schools::RegisterECTWizard::ChangeIndependentSchoolAppropriateBod
   end
 
   describe "#next_step" do
-    context 'when the school has programme choices' do
-      let(:school) { FactoryBot.create(:school, :independent, :national_ab_chosen, :school_led_chosen) }
-
-      it { expect(subject.next_step).to eq(:change_programme_type) }
-    end
-
-    context 'when the school has no programme choices' do
-      it { expect(subject.next_step).to eq(:check_answers) }
-    end
+    it { expect(subject.next_step).to eq(:check_answers) }
   end
 
   describe "#previous_step" do
-    context 'when the school has programme choices' do
-      let(:school) { FactoryBot.create(:school, :independent, :national_ab_chosen, :school_led_chosen) }
-
-      it { expect(subject.previous_step).to eq(:change_use_previous_ect_choices) }
-    end
-
-    context 'when the school has no programme choices' do
-      it { expect(subject.previous_step).to eq(:check_answers) }
-    end
+    it { expect(subject.previous_step).to eq(:check_answers) }
   end
 end

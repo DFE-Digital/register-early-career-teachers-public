@@ -2,6 +2,7 @@ describe LeadProvider do
   describe "associations" do
     it { is_expected.to have_many(:school_partnerships) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_many(:active_lead_providers).inverse_of(:lead_provider) }
   end
 
   describe "validations" do

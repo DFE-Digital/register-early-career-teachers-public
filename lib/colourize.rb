@@ -8,7 +8,6 @@ module Colourize
 
   # ANSI sequence colors
   COLOURS = {
-    black: 30,
     red: 31,
     green: 32,
     yellow: 33,

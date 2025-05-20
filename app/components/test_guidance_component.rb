@@ -15,6 +15,9 @@ class TestGuidanceComponent < ViewComponent::Base
       [
         ["1000890", "15/01/1997", "JL049125A", "Induction completed"],
         ["3002564", "05/07/1991", "JK028223B", "Exempt from induction"],
+        ["3001899", "16/07/1991", "JL056123C", "Failed induction"],
+        ["3003943", "02/02/1964", "AB722128C", "No QTS"],
+        ["1000787", "01/04/1984", "JL056123B", "Alerts but not prohibited"],
         ["3002586", "03/02/1977", "OA647867D", ""],
         ["3002585", "02/01/1966", "MA251209B", ""],
         ["3002584", "24/11/1955", "RE937588C", ""],

@@ -15,6 +15,7 @@ module Schools
         return :not_found unless ect.in_trs?
         return :induction_completed if ect.induction_completed?
         return :induction_exempt if ect.induction_exempt?
+        return :induction_failed if ect.induction_failed?
 
         :review_ect_details
       end

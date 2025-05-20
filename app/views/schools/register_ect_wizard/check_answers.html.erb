@@ -39,30 +39,50 @@
                     href: schools_register_ect_wizard_change_working_pattern_path,
                     visually_hidden_text: 'working pattern')
   end
+end %>
+
+<h2 class="govuk-heading-m">Programme details</h2>
+
+<%= govuk_summary_list do |summary_list|
+  if @school.programme_choices?
+    summary_list.with_row do |row|
+      row.with_key(text: 'Choices used by your school previously')
+      row.with_value(text: previous_choice_message(@ect.use_previous_ect_choices))
+      row.with_action(text: 'Change',
+                      href: schools_register_ect_wizard_change_use_previous_ect_choices_path,
+                      visually_hidden_text: 'choices used by your school previously')
+    end
+  end
 
   summary_list.with_row do |row|
     row.with_key(text: 'Appropriate body')
     row.with_value(text: @ect.appropriate_body_name)
-    row.with_action(text: 'Change',
-                    href: change_appropriate_body_path(@school),
-                    visually_hidden_text: 'appropriate body')
+    unless @ect.use_previous_ect_choices
+      row.with_action(text: 'Change',
+                      href: change_appropriate_body_path(@school),
+                      visually_hidden_text: 'appropriate body')
+    end
   end
 
   summary_list.with_row do |row|
     row.with_key(text: 'Programme type')
     row.with_value(text: programme_type_name(@ect.programme_type))
-    row.with_action(text: 'Change',
-                    href: change_programme_type_path(@school),
-                    visually_hidden_text: 'programme type')
+    unless @ect.use_previous_ect_choices
+      row.with_action(text: 'Change',
+                      href: schools_register_ect_wizard_change_programme_type_path,
+                      visually_hidden_text: 'programme type')
+    end
   end
 
   if @ect.provider_led?
     summary_list.with_row do |row|
       row.with_key(text: 'Lead provider')
       row.with_value(text: @ect.lead_provider_name)
-      row.with_action(text: 'Change',
-                      href: change_lead_provider_path(@school),
-                      visually_hidden_text: 'lead provider')
+      unless @ect.use_previous_ect_choices
+        row.with_action(text: 'Change',
+                        href: schools_register_ect_wizard_change_lead_provider_path,
+                        visually_hidden_text: 'lead provider')
+      end
     end
   end
 end %>

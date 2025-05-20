@@ -45,6 +45,10 @@ module Schools
         trs_induction_status == 'Exempt'
       end
 
+      def induction_failed?
+        trs_induction_status == 'Failed'
+      end
+
       def in_trs?
         trs_first_name.present?
       end

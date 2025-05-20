@@ -1,7 +1,14 @@
 ECT_COLOUR = :magenta
 MENTOR_COLOUR = :yellow
+STATEMENT_STATE_COLOURS = {
+  open: :blue,
+  payable: :cyan,
+  paid: :green,
+}.freeze
 
-def print_seed_info(text, indent: 0, colour: nil)
+def print_seed_info(text, indent: 0, colour: nil, blank_lines_before: 0)
+  blank_lines_before.times { puts "🌱 \n" }
+
   if colour
     puts "🌱 " + (" " * indent) + Colourize.text(text, colour)
   else
@@ -28,16 +35,21 @@ def describe_school_partnership(pp)
   print_seed_info("#{pp.lead_provider.name} (LP) 🤝 #{pp.delivery_partner.name} (DP) in #{pp.registration_period.year}", indent: 2)
 end
 
-def describe_lead_provider(lp)
-  print_seed_info(lp.name, indent: 2)
-end
-
 def describe_delivery_partner(dp)
   print_seed_info(dp.name, indent: 2)
 end
 
 def describe_registration_period(ay)
   print_seed_info("#{ay.year} (running from #{ay.started_on} until #{ay.finished_on})", indent: 2)
+end
+
+def describe_lead_provider(lp, years)
+  years_description = if years.any?
+                        Colourize.text(years.map(&:year).join(', '), :green)
+                      else
+                        Colourize.text('inactive', :red)
+                      end
+  print_seed_info("#{lp.name} (#{years_description})", indent: 2)
 end
 
 def describe_induction_period(ip)
@@ -109,32 +121,71 @@ def describe_user(user)
   print_seed_info("Added DfE staff user #{user.name} #{user.email}", indent: 2)
 end
 
-def describe_ero_mentor(mentor)
-  if mentor.is_a?(Teacher)
-    mentor_name = Colourize.text("#{mentor.trs_first_name} #{mentor.trs_last_name}", MENTOR_COLOUR)
+def describe_teacher(teacher)
+  teacher_name = "#{teacher.trs_first_name} #{teacher.trs_last_name}"
 
-    print_seed_info(mentor_name, indent: 2)
-  else
-    print_seed_info(Colourize.text(mentor, :red), indent: 2)
+  ero_status = if teacher.mentor_became_ineligible_for_funding_reason == 'completed_during_early_roll_out'
+                 Colourize.text('yes', :green)
+               else
+                 Colourize.text('no', :red)
+               end
+
+  print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status})", indent: 2)
+end
+
+def describe_group_of_statements(lead_provider, statements, month_col_width: 15, year_col_width: 18)
+  return if statements.empty?
+
+  statements_by_year_and_month = statements.group_by(&:year).transform_values { |v| v.group_by(&:month) }
+  registration_periods_with_statements = statements_by_year_and_month.keys.sort
+
+  print_seed_info(lead_provider.name, indent: 2, blank_lines_before: 1)
+  print_seed_info((" " * month_col_width) + (registration_periods_with_statements.map { |y| y.to_s.rjust(year_col_width) }.join), indent: 2)
+
+  rows = 1.upto(12).map do |m|
+    states = registration_periods_with_statements.map do |y|
+      if statements_by_year_and_month[y]
+        status_names = statements_by_year_and_month[y][m].map(&:state)
+
+        colourized_text = status_names.map { |sn| Colourize.text(sn, STATEMENT_STATE_COLOURS[sn.to_sym]) }
+
+        # the colourizing characters affect the length so offset the rjust
+        offset = colourized_text.sum(&:length) - status_names.sum(&:length)
+
+        colourized_text.join(", ").rjust(year_col_width + offset)
+      else
+        'none'.rjust(year_col_width)
+      end
+    end
+
+    [Date::MONTHNAMES[m].rjust(month_col_width), *states].join
   end
+
+  rows.each { |r| print_seed_info(r, indent: 2) }
 end
 
 print_seed_info("Adding teachers")
 
-emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456', mentor_became_ineligible_for_funding_on: 1.year.from_now)
-kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', mentor_became_ineligible_for_funding_reason: 'completed_declaration_received')
-alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589')
-hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894')
-colin_firth = Teacher.create!(trs_first_name: 'Colin', trs_last_name: 'Firth', trn: '1237894')
-harriet_walter = Teacher.create!(trs_first_name: 'Harriet', trs_last_name: 'Walter', trn: '2017654')
-hugh_laurie = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Laurie', trn: '4786654')
-stephen_fry = Teacher.create!(trs_first_name: 'Stephen', trs_last_name: 'Fry', trn: '4786655')
-andre_roussimoff = Teacher.create!(trs_first_name: 'André', trs_last_name: 'Roussimoff', trn: '8886654')
-imogen_stubbs = Teacher.create!(trs_first_name: 'Imogen', trs_last_name: 'Stubbs', trn: '6352869')
-gemma_jones = Teacher.create!(trs_first_name: 'Gemma', trs_last_name: 'Jones', trn: '9578426')
-anthony_hopkins = Teacher.create!(trs_first_name: 'Anthony', trs_last_name: 'Hopkins', trn: '6228282')
+early_roll_out_mentor_attrs = { mentor_became_ineligible_for_funding_reason: 'completed_during_early_roll_out', mentor_became_ineligible_for_funding_on: Date.new(2021, 4, 19) }
+
+emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456').tap { |t| describe_teacher(t) }
+kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457').tap { |t| describe_teacher(t) }
+alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589').tap { |t| describe_teacher(t) }
+hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894').tap { |t| describe_teacher(t) }
+colin_firth = Teacher.create!(trs_first_name: 'Colin', trs_last_name: 'Firth', trn: '1237894').tap { |t| describe_teacher(t) }
+harriet_walter = Teacher.create!(trs_first_name: 'Harriet', trs_last_name: 'Walter', trn: '2017654', **early_roll_out_mentor_attrs).tap { |t| describe_teacher(t) }
+hugh_laurie = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Laurie', trn: '4786654', **early_roll_out_mentor_attrs).tap { |t| describe_teacher(t) }
+stephen_fry = Teacher.create!(trs_first_name: 'Stephen', trs_last_name: 'Fry', trn: '4786655').tap { |t| describe_teacher(t) }
+andre_roussimoff = Teacher.create!(trs_first_name: 'André', trs_last_name: 'Roussimoff', trn: '8886654').tap { |t| describe_teacher(t) }
+imogen_stubbs = Teacher.create!(trs_first_name: 'Imogen', trs_last_name: 'Stubbs', trn: '6352869').tap { |t| describe_teacher(t) }
+gemma_jones = Teacher.create!(trs_first_name: 'Gemma', trs_last_name: 'Jones', trn: '9578426').tap { |t| describe_teacher(t) }
+anthony_hopkins = Teacher.create!(trs_first_name: 'Anthony', trs_last_name: 'Hopkins', trn: '6228282').tap { |t| describe_teacher(t) }
 john_withers = Teacher.create!(trs_first_name: 'John', trs_last_name: 'Withers', corrected_name: 'Old Man Withers', trn: '8590123')
 helen_mirren = Teacher.create!(trs_first_name: 'Helen', trs_last_name: 'Mirren', corrected_name: 'Dame Helen Mirren', trn: '0000007')
+
+# these teachers map to records in TRS pre-prod
+_robson_scottie = Teacher.create!(trs_first_name: 'Robson', trs_last_name: 'Scottie', trn: '3002582', **early_roll_out_mentor_attrs).tap { |t| describe_teacher(t) }
+_muhammed_ali = Teacher.create!(trs_first_name: 'Muhammed', trs_last_name: 'Ali', trn: '3002580', **early_roll_out_mentor_attrs).tap { |t| describe_teacher(t) }
 
 print_seed_info("Adding schools")
 
@@ -184,16 +235,39 @@ AppropriateBody.create!(body_type: 'teaching_school_hub', name: 'Vista College',
 
 active_appropriate_bodies = [umber_teaching_school_hub, golden_leaf_teaching_school_hub]
 
+print_seed_info("Adding registration periods")
+
+rp_2021 = RegistrationPeriod.create!(year: 2021, started_on: Date.new(2021, 6, 1), finished_on: Date.new(2022, 5, 31), enabled: false).tap { |ay| describe_registration_period(ay) }
+rp_2022 = RegistrationPeriod.create!(year: 2022, started_on: Date.new(2022, 6, 1), finished_on: Date.new(2023, 5, 31), enabled: false).tap { |ay| describe_registration_period(ay) }
+rp_2023 = RegistrationPeriod.create!(year: 2023, started_on: Date.new(2023, 6, 1), finished_on: Date.new(2024, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
+rp_2024 = RegistrationPeriod.create!(year: 2024, started_on: Date.new(2024, 6, 1), finished_on: Date.new(2025, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
+rp_2025 = RegistrationPeriod.create!(year: 2025, started_on: Date.new(2025, 6, 1), finished_on: Date.new(2026, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
+
 print_seed_info("Adding lead providers")
 
-grove_institute = LeadProvider.create!(name: 'Grove Institute').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Evergreen Network').tap { |dp| describe_lead_provider(dp) }
-national_meadows_institute = LeadProvider.create!(name: 'National Meadows Institute').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Woodland Education Trust').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Teach Orchard').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Highland College University').tap { |dp| describe_lead_provider(dp) }
-wildflower_trust = LeadProvider.create!(name: 'Wildflower Trust').tap { |dp| describe_lead_provider(dp) }
-LeadProvider.create!(name: 'Pine Institute').tap { |dp| describe_lead_provider(dp) }
+grove_institute = LeadProvider.create!(name: 'Grove Institute')
+evergreen_network = LeadProvider.create!(name: 'Evergreen Network')
+national_meadows_institute = LeadProvider.create!(name: 'National Meadows Institute')
+woodland_education_trust = LeadProvider.create!(name: 'Woodland Education Trust')
+teach_orchard = LeadProvider.create!(name: 'Teach Orchard')
+highland_collage_university = LeadProvider.create!(name: 'Highland College University')
+wildflower_trust = LeadProvider.create!(name: 'Wildflower Trust')
+pine_institute = LeadProvider.create!(name: 'Pine Institute')
+
+{
+  evergreen_network => [],
+  grove_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
+  highland_collage_university => [],
+  national_meadows_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
+  pine_institute => [],
+  teach_orchard => [],
+  wildflower_trust => [rp_2022, rp_2023, rp_2024, rp_2025],
+  woodland_education_trust => [],
+}.each do |lead_provider, registration_periods|
+  registration_periods.each { |registration_period| ActiveLeadProvider.create!(registration_period:, lead_provider:) }
+
+  describe_lead_provider(lead_provider, registration_periods)
+end
 
 print_seed_info("Adding delivery partners")
 
@@ -205,54 +279,46 @@ rising_minds = DeliveryPartner.create!(name: 'Rising Minds Network').tap { |dp| 
 DeliveryPartner.create!(name: 'Proving Potential Teaching School Hub').tap { |dp| describe_delivery_partner(dp) }
 DeliveryPartner.create!(name: 'Harvest Academy').tap { |dp| describe_delivery_partner(dp) }
 
-print_seed_info("Adding registration periods")
-
-registration_period_2021 = RegistrationPeriod.create!(year: 2021, started_on: Date.new(2021, 6, 1), finished_on: Date.new(2022, 5, 31), enabled: false).tap { |ay| describe_registration_period(ay) }
-registration_period_2022 = RegistrationPeriod.create!(year: 2022, started_on: Date.new(2022, 6, 1), finished_on: Date.new(2023, 5, 31), enabled: false).tap { |ay| describe_registration_period(ay) }
-registration_period_2023 = RegistrationPeriod.create!(year: 2023, started_on: Date.new(2023, 6, 1), finished_on: Date.new(2024, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
-registration_period_2024 = RegistrationPeriod.create!(year: 2024, started_on: Date.new(2024, 6, 1), finished_on: Date.new(2025, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
-_registration_period_2025 = RegistrationPeriod.create!(year: 2025, started_on: Date.new(2025, 6, 1), finished_on: Date.new(2026, 5, 31), enabled: true).tap { |ay| describe_registration_period(ay) }
-
 print_seed_info("Adding provider partnerships")
 
 grove_artisan_partnership_2021 = SchoolPartnership.create!(
-  registration_period: registration_period_2021,
+  registration_period: rp_2021,
   lead_provider: grove_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 SchoolPartnership.create!(
-  registration_period: registration_period_2022,
+  registration_period: rp_2022,
   lead_provider: grove_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 grove_artisan_partnership_2023 = SchoolPartnership.create!(
-  registration_period: registration_period_2023,
+  registration_period: rp_2023,
   lead_provider: grove_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 meadow_grain_partnership_2022 = SchoolPartnership.create!(
-  registration_period: registration_period_2022,
+  registration_period: rp_2022,
   lead_provider: national_meadows_institute,
   delivery_partner: grain_teaching_school_hub
 ).tap { |pp| describe_school_partnership(pp) }
 
 _meadow_grain_partnership_2023 = SchoolPartnership.create!(
-  registration_period: registration_period_2023,
+  registration_period: rp_2023,
   lead_provider: national_meadows_institute,
   delivery_partner: grain_teaching_school_hub
 ).tap { |pp| describe_school_partnership(pp) }
 
 _wildflower_rising_partnership_2023 = SchoolPartnership.create!(
-  registration_period: registration_period_2023,
+  registration_period: rp_2023,
   lead_provider: wildflower_trust,
   delivery_partner: rising_minds
 ).tap { |pp| describe_school_partnership(pp) }
 
 _wildflower_rising_partnership_2024 = SchoolPartnership.create!(
-  registration_period: registration_period_2024,
+  registration_period: rp_2024,
   lead_provider: wildflower_trust,
   delivery_partner: rising_minds
 ).tap { |pp| describe_school_partnership(pp) }
@@ -707,10 +773,43 @@ YAML.load_file(Rails.root.join('config/personas.yml'))
       .then { |user| describe_user(user) }
 end
 
-print_seed_info('Adding funding exemptions:')
+print_seed_info('Adding statements:')
 
-# completed_during_early_roll_out
-EarlyRollOutMentor.create!(trn: hugh_laurie.trn).tap { describe_ero_mentor(hugh_laurie) }
-EarlyRollOutMentor.create!(trn: harriet_walter.trn).tap { describe_ero_mentor(harriet_walter) }
-EarlyRollOutMentor.create!(trn: '3002582').tap { describe_ero_mentor('Robson Scottie') }
-EarlyRollOutMentor.create!(trn: '3002580').tap { describe_ero_mentor('Muhammed Ali') }
+lead_providers_with_active_lead_providers = ActiveLeadProvider
+  .joins(:registration_period)
+  .group_by(&:lead_provider)
+
+lead_providers_with_active_lead_providers.each do |lead_provider, active_lead_providers|
+  statements = []
+
+  active_lead_providers.each do |active_lead_provider|
+    registration_year = active_lead_provider.registration_period.year
+    months = (1..12).to_a
+    years = [registration_year, registration_year + 1]
+
+    statements << years.product(months).collect do |year, month|
+      deadline_date = Time.zone.local(year, month).end_of_month
+      payment_date = Time.zone.at(rand(deadline_date.to_i..(deadline_date + 2.months).to_i))
+      output_fee = [true, false].sample
+      state = if payment_date < Date.current
+                :paid
+              elsif Date.current.between?(deadline_date, payment_date)
+                :payable
+              else
+                :open
+              end
+
+      Statement.create!(
+        active_lead_provider:,
+        month:,
+        year:,
+        deadline_date:,
+        payment_date:,
+        output_fee:,
+        state:
+      )
+    end
+  end
+
+  describe_group_of_statements(lead_provider, statements.flatten)
+end

@@ -241,6 +241,18 @@
   - trs_qts_awarded_on
   - delete_at
   - confirmed
+  - pending_induction_submission_batch_id
+  - error_messages  
+  :pending_induction_submission_batches:
+  - id
+  - appropriate_body_id
+  - batch_type
+  - batch_status
+  - data
+  - filename
+  - error_message
+  - created_at
+  - updated_at
   :migration_failures:
   - id
   - data_migration_id
@@ -355,8 +367,30 @@
   - finished_on
   - enabled
   - range
-  :early_roll_out_mentors:
+  :active_lead_providers:
   - id
-  - trn
+  - lead_provider_id
+  - registration_period_id
+  - created_at
+  - updated_at
+  :statement_adjustments:
+  - id
+  - statement_id
+  - api_id
+  - payment_type
+  - amount
+  - created_at
+  - updated_at
+  :statements:
+  - id
+  - active_lead_provider_id
+  - api_id
+  - month
+  - year
+  - deadline_date
+  - payment_date
+  - marked_as_paid_at
+  - output_fee
+  - state
   - created_at
   - updated_at

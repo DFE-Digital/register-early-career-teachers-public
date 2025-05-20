@@ -1,0 +1,58 @@
+<%
+  page_data(
+    title: "Upload a CSV to record outcomes for multiple ECTs",
+    error: @pending_induction_submission_batch.errors.any?,
+    backlink_href: ab_teachers_path
+  )
+%>
+
+<p class="govuk-body">
+  If you already have a CSV file which follows our formatting, you can upload it.
+  Or you can <%= govuk_link_to('download a CSV template', '/bulk-actions-template.csv') %>.
+</p>
+
+<%= govuk_details(summary_text: 'What to include in your CSV file') do %>
+  <p class="govuk-body">
+    For each ECT you must include:
+  </p>
+
+  <%= 
+    govuk_list([
+      'their date of birth in YYYY-MM-DD format',
+      'their teacher reference number (TRN) - must be 7 digits',
+      'their induction period end date in YYYY-MM-DD format',
+      "the number of terms they've completed with you - must be between 0 and 16 and you can use up to one decimal place if the term is not a whole number",
+      'their outcome - must be either a pass, a fail, or release'
+      ], type: :bullet) 
+  %>
+  
+  <p class="govuk-body">
+    For dates, you may need to reformat each cell so it follows our formatting before save and upload the CSV file.
+  </p>
+
+  <%=   
+    govuk_table(
+      caption: "Your file needs to look like this example",
+      head: BatchRows::ACTION_CSV_HEADINGS.values.reverse.drop(1).reverse,
+      rows: [
+        %w[1234567 2000-11-10 2025-04-17 2.5   pass],
+        %w[2345671 1987-03-29 2024-10-31 10  fail],
+        %w[3456712 1992-01-14 2025-06-30 16  release],
+      ]
+    )
+  %>    
+<% end %>
+
+
+<%= form_with(model: @pending_induction_submission_batch, url: ab_batch_actions_path, method: 'post') do |f| %>
+
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_file_field :csv_file, 
+    accept: '.csv', 
+    label: { text: 'Upload a file' }, 
+    hint: { text: 'File type must be a CSV' } 
+  %>  
+  
+  <%= f.govuk_submit 'Continue' %>
+<% end %>

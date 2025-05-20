@@ -50,7 +50,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'with legacy exemption' do
       before do
-        FactoryBot.create(:early_roll_out_mentor, trn: mentor.trn)
+        FactoryBot.create(:teacher, :early_roll_out_mentor, trn: mentor.trn)
         render
       end
 
@@ -99,7 +99,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'with legacy exemption' do
       before do
-        FactoryBot.create(:early_roll_out_mentor, trn: mentor.trn)
+        FactoryBot.create(:teacher, :early_roll_out_mentor, trn: mentor.trn)
         render
       end
 
