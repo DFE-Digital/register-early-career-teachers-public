@@ -167,21 +167,20 @@ end
 print_seed_info("Adding teachers")
 
 early_roll_out_mentor_attrs = { mentor_became_ineligible_for_funding_reason: 'completed_during_early_roll_out', mentor_became_ineligible_for_funding_on: Date.new(2021, 4, 19) }
-
-emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456').tap { |t| describe_teacher(t) }
-kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457').tap { |t| describe_teacher(t) }
-alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589').tap { |t| describe_teacher(t) }
-hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894').tap { |t| describe_teacher(t) }
-colin_firth = Teacher.create!(trs_first_name: 'Colin', trs_last_name: 'Firth', trn: '1237894').tap { |t| describe_teacher(t) }
-harriet_walter = Teacher.create!(trs_first_name: 'Harriet', trs_last_name: 'Walter', trn: '2017654', **early_roll_out_mentor_attrs).tap { |t| describe_teacher(t) }
-hugh_laurie = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Laurie', trn: '4786654', **early_roll_out_mentor_attrs).tap { |t| describe_teacher(t) }
-stephen_fry = Teacher.create!(trs_first_name: 'Stephen', trs_last_name: 'Fry', trn: '4786655').tap { |t| describe_teacher(t) }
-andre_roussimoff = Teacher.create!(trs_first_name: 'André', trs_last_name: 'Roussimoff', trn: '8886654').tap { |t| describe_teacher(t) }
-imogen_stubbs = Teacher.create!(trs_first_name: 'Imogen', trs_last_name: 'Stubbs', trn: '6352869').tap { |t| describe_teacher(t) }
-gemma_jones = Teacher.create!(trs_first_name: 'Gemma', trs_last_name: 'Jones', trn: '9578426').tap { |t| describe_teacher(t) }
-anthony_hopkins = Teacher.create!(trs_first_name: 'Anthony', trs_last_name: 'Hopkins', trn: '6228282').tap { |t| describe_teacher(t) }
-john_withers = Teacher.create!(trs_first_name: 'John', trs_last_name: 'Withers', corrected_name: 'Old Man Withers', trn: '8590123')
-helen_mirren = Teacher.create!(trs_first_name: 'Helen', trs_last_name: 'Mirren', corrected_name: 'Dame Helen Mirren', trn: '0000007')
+emma_thompson = Teacher.create!(trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456', trs_induction_status: 'InProgress').tap { |t| describe_teacher(t) }
+kate_winslet = Teacher.create!(trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', trs_induction_status: 'Passed').tap { |t| describe_teacher(t) }
+alan_rickman = Teacher.create!(trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589', trs_induction_status: 'RequiredToComplete').tap { |t| describe_teacher(t) }
+hugh_grant = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894', trs_induction_status: 'Failed').tap { |t| describe_teacher(t) }
+colin_firth = Teacher.create!(trs_first_name: 'Colin', trs_last_name: 'Firth', trn: '1237894', trs_induction_status: 'Exempt').tap { |t| describe_teacher(t) }
+harriet_walter = Teacher.create!(trs_first_name: 'Harriet', trs_last_name: 'Walter', trn: '2017654', trs_induction_status: 'InProgress', **early_roll_out_mentor_attrs).tap { |t| describe_teacher(t) }
+hugh_laurie = Teacher.create!(trs_first_name: 'Hugh', trs_last_name: 'Laurie', trn: '4786654', trs_induction_status: 'Passed', **early_roll_out_mentor_attrs).tap { |t| describe_teacher(t) }
+stephen_fry = Teacher.create!(trs_first_name: 'Stephen', trs_last_name: 'Fry', trn: '4786655', trs_induction_status: 'RequiredToComplete').tap { |t| describe_teacher(t) }
+andre_roussimoff = Teacher.create!(trs_first_name: 'André', trs_last_name: 'Roussimoff', trn: '8886654', trs_induction_status: 'FailedInWales').tap { |t| describe_teacher(t) }
+imogen_stubbs = Teacher.create!(trs_first_name: 'Imogen', trs_last_name: 'Stubbs', trn: '6352869', trs_induction_status: 'InProgress').tap { |t| describe_teacher(t) }
+gemma_jones = Teacher.create!(trs_first_name: 'Gemma', trs_last_name: 'Jones', trn: '9578426', trs_induction_status: 'InProgress').tap { |t| describe_teacher(t) }
+anthony_hopkins = Teacher.create!(trs_first_name: 'Anthony', trs_last_name: 'Hopkins', trn: '6228282', trs_induction_status: 'Exempt').tap { |t| describe_teacher(t) }
+john_withers = Teacher.create!(trs_first_name: 'John', trs_last_name: 'Withers', corrected_name: 'Old Man Withers', trn: '8590123', trs_induction_status: 'Failed')
+helen_mirren = Teacher.create!(trs_first_name: 'Helen', trs_last_name: 'Mirren', corrected_name: 'Dame Helen Mirren', trn: '0000007', trs_induction_status: 'Passed')
 
 # these teachers map to records in TRS pre-prod
 _robson_scottie = Teacher.create!(trs_first_name: 'Robson', trs_last_name: 'Scottie', trn: '3002582', **early_roll_out_mentor_attrs).tap { |t| describe_teacher(t) }
