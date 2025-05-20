@@ -5,6 +5,10 @@
 <p class="govuk-body">We need an email so we can ask for their consent to share their details if needed for
   training.</p>
 
+<p class="govuk-body">Make sure you use an email the mentor can access. You can update it later if they haven't got a school email set up yet.</p>
+
+<p class="govuk-body">Do not use a generic email like <a href="admin@example.com">admin@example.com</a>.</p>
+
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 

@@ -255,3 +255,35 @@ When an ECT has no extensions the view ECT screen shows 'None' and has a 'Add' l
 2. Click the 'Edit' link next to the extension you intend to modify
 3. Enter a number in the 'Number of terms' field. The number must adhere to the validation rules above.
 4. Click 'Update extension'
+
+
+## Processing multiple ECTs
+
+Appropriate Bodies can upload files and process multiple claims, outcomes or releases at a time.
+
+Files must:
+
+- use the provided CSV template
+- contain between 1-1000 rows
+- not exceed 100KB
+- use the date format `YYYY-MM-DD`
+- identify ECTs using date of birth and TRN
+- not contain duplicate TRNs
+- satisfy existing validation criteria for induction periods
+
+### Templates
+
+Every column is mandatory.
+
+#### Claims
+
+`TRN,Date of birth,Induction programme,Induction period start date`
+
+#### Actions - pass/fail outcomes or release
+
+`TRN,Date of birth,Induction period end date,Number of terms,Outcome`
+
+#### Errors
+
+Optionally, an `Error message` column is supported. 
+Unprocessable ECTs can be downloaded as a CSV with actionable feedback on why the task was not completed.

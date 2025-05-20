@@ -30,6 +30,46 @@ describe Teacher do
         end
       end
     end
+
+    describe 'mentor ineligibility' do
+      context 'when both the ineligibility date and reason are present' do
+        subject { FactoryBot.build(:teacher) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when both the ineligibility date and reason are blank' do
+        subject { FactoryBot.build(:teacher, :ineligible_for_mentor_funding) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when the ineligibility date is present but the reason is missing' do
+        subject { FactoryBot.build(:teacher, mentor_became_ineligible_for_funding_reason: 'started_not_completed') }
+
+        it { is_expected.to be_invalid }
+
+        it 'has validation errors on the ineligibilty date field' do
+          subject.valid?
+
+          expected_message = /Enter the date when the mentor became ineligible for funding/
+          expect(subject.errors.messages[:mentor_became_ineligible_for_funding_on]).to include(expected_message)
+        end
+      end
+
+      context 'when the ineligibility reason is present but the date is missing' do
+        subject { FactoryBot.build(:teacher, mentor_became_ineligible_for_funding_on: 3.days.ago) }
+
+        it { is_expected.to be_invalid }
+
+        it 'has validation errors on the ineligibilty date field' do
+          subject.valid?
+
+          expected_message = /Choose the reason why the mentor became ineligible for funding/
+          expect(subject.errors.messages[:mentor_became_ineligible_for_funding_reason]).to include(expected_message)
+        end
+      end
+    end
   end
 
   describe 'scopes' do

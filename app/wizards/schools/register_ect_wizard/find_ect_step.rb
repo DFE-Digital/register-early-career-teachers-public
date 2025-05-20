@@ -18,6 +18,7 @@ module Schools
         return :already_active_at_school if ect.active_at_school?(school.urn)
         return :induction_completed if ect.induction_completed?
         return :induction_exempt if ect.induction_exempt?
+        return :induction_failed if ect.induction_failed?
         return :cannot_register_ect if trs_teacher.prohibited_from_teaching?
 
         :review_ect_details

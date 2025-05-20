@@ -1,0 +1,11 @@
+<div class="bulk-loader">
+</div>
+
+<h1 class='govuk-heading-l govuk-!-margin-top-4 govuk-!-text-align-centre'>
+    We're processing your CSV file, it could take up to 5 minutes. 
+    If you leave this page, you'll need to start again.
+</h1>
+
+<h2 id="batch_progress_percentage_<%= batch.id %>" data-turbo="true" class='govuk-heading-m govuk-!-text-align-centre'>
+<%= batch.progress.round %>%
+</h2>

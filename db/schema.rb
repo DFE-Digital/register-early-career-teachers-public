@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -20,6 +20,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
+  create_enum "batch_status", ["pending", "processing", "processed", "completed", "failed"]
+  create_enum "batch_type", ["action", "claim"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
@@ -28,7 +30,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "programme_type", ["provider_led", "school_led"]
+  create_enum "statement_states", ["open", "payable", "paid"]
   create_enum "working_pattern", ["part_time", "full_time"]
+
+  create_table "active_lead_providers", force: :cascade do |t|
+    t.bigint "lead_provider_id", null: false
+    t.bigint "registration_period_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lead_provider_id", "registration_period_id"], name: "idx_on_lead_provider_id_registration_period_id_1c10f35875", unique: true
+    t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
+    t.index ["registration_period_id"], name: "index_active_lead_providers_on_registration_period_id"
+  end
 
   create_table "appropriate_bodies", force: :cascade do |t|
     t.string "name", null: false
@@ -132,12 +145,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_dfe_roles_on_user_id"
-  end
-
-  create_table "early_roll_out_mentors", force: :cascade do |t|
-    t.string "trn", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "ect_at_school_periods", force: :cascade do |t|
@@ -324,6 +331,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
 
+  create_table "pending_induction_submission_batches", force: :cascade do |t|
+    t.bigint "appropriate_body_id", null: false
+    t.enum "batch_type", null: false, enum_type: "batch_type"
+    t.enum "batch_status", default: "pending", null: false, enum_type: "batch_status"
+    t.string "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.jsonb "data"
+    t.string "filename"
+    t.index ["appropriate_body_id"], name: "idx_on_appropriate_body_id_58d86a161e"
+  end
+
   create_table "pending_induction_submissions", force: :cascade do |t|
     t.bigint "appropriate_body_id"
     t.string "establishment_id", limit: 8
@@ -349,7 +368,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
     t.enum "outcome", enum_type: "induction_outcomes"
     t.date "trs_qts_awarded_on"
     t.datetime "delete_at", precision: nil
+    t.bigint "pending_induction_submission_batch_id"
+    t.string "error_messages", default: [], array: true
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
+    t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
+    t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
   create_table "registration_periods", primary_key: "year", id: :serial, force: :cascade do |t|
@@ -507,6 +530,31 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "statement_adjustments", force: :cascade do |t|
+    t.bigint "statement_id", null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.string "payment_type", null: false
+    t.decimal "amount", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["statement_id"], name: "index_statement_adjustments_on_statement_id"
+  end
+
+  create_table "statements", force: :cascade do |t|
+    t.bigint "active_lead_provider_id", null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.integer "month", null: false
+    t.integer "year", null: false
+    t.date "deadline_date", null: false
+    t.date "payment_date", null: false
+    t.datetime "marked_as_paid_at"
+    t.boolean "output_fee", default: true, null: false
+    t.enum "state", default: "open", null: false, enum_type: "statement_states"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
+  end
+
   create_table "teacher_migration_failures", force: :cascade do |t|
     t.bigint "teacher_id"
     t.string "message", null: false
@@ -572,6 +620,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "active_lead_providers", "lead_providers"
+  add_foreign_key "active_lead_providers", "registration_periods", primary_key: "year"
   add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "lead_providers"
@@ -599,7 +649,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
+  add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
+  add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
   add_foreign_key "school_partnerships", "delivery_partners"
   add_foreign_key "school_partnerships", "lead_providers"
   add_foreign_key "school_partnerships", "registration_periods", primary_key: "year"
@@ -612,6 +664,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_02_131734) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "statement_adjustments", "statements"
+  add_foreign_key "statements", "active_lead_providers"
   add_foreign_key "teacher_migration_failures", "teachers"
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "mentor_at_school_periods"

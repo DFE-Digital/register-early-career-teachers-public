@@ -12,6 +12,11 @@ FactoryBot.define do
       trs_deactivated { true }
     end
 
+    trait :early_roll_out_mentor do
+      mentor_became_ineligible_for_funding_on { Date.new(2021, 4, 19) }
+      mentor_became_ineligible_for_funding_reason { 'completed_during_early_roll_out' }
+    end
+
     trait :ineligible_for_mentor_funding do
       mentor_became_ineligible_for_funding_on { Time.zone.today }
       mentor_became_ineligible_for_funding_reason do

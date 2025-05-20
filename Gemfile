@@ -28,6 +28,7 @@ gem "sentry-rails"
 gem "sentry-ruby"
 gem "solid_queue"
 gem "stackprof"
+gem "state_machines-activerecord"
 
 # DfE Sign-In
 gem "omniauth"
@@ -44,6 +45,10 @@ gem "savon"
 
 # Render smart quotes
 gem 'rubypants'
+
+# Batch progress bar
+gem 'hotwire-rails'
+gem 'turbo-rails'
 
 group :development do
   gem 'better_errors'
