@@ -131,7 +131,7 @@ module Schools
       end
 
       def previous_school
-        @previous_school ||= ECTAtSchoolPeriods::Search.new.current_school(trn:)
+        @previous_school ||= previous_ect_at_school_period&.school
       end
 
     private
