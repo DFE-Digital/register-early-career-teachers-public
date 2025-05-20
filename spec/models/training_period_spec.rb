@@ -143,51 +143,6 @@ describe TrainingPeriod do
         expect(TrainingPeriod.for_mentor(456).to_sql).to end_with(%(WHERE "training_periods"."mentor_at_school_period_id" = 456))
       end
     end
-
-    describe '.latest_to_start_first' do
-      let(:teacher) { FactoryBot.create(:teacher) }
-      let(:ect_period) do
-        FactoryBot.create(
-          :ect_at_school_period,
-          teacher:,
-          started_on: Date.new(2023, 9, 1),
-          finished_on: Date.new(2023, 12, 1)
-        )
-      end
-
-      it 'returns the training periods for the teacher ordered by started_on descending' do
-        training_period1 = FactoryBot.create(
-          :training_period,
-          ect_at_school_period: ect_period,
-          started_on: Date.new(2023, 9, 15),
-          finished_on: Date.new(2023, 10, 15)
-        )
-
-        training_period2 = FactoryBot.create(
-          :training_period,
-          ect_at_school_period: ect_period,
-          started_on: Date.new(2023, 10, 20),
-          finished_on: Date.new(2023, 11, 20)
-        )
-
-        result = TrainingPeriod
-                   .for_ect(ect_period.id)
-                   .latest_to_start_first
-
-        expect(result).to eq([training_period2, training_period1])
-      end
-
-      it 'returns nothing if the teacher has no training periods' do
-        new_ect_period = FactoryBot.create(
-          :ect_at_school_period,
-          teacher:,
-          started_on: Date.new(2024, 1, 1),
-          finished_on: Date.new(2024, 12, 1)
-        )
-
-        expect(TrainingPeriod.for_ect(new_ect_period.id).latest_to_start_first).to be_empty
-      end
-    end
   end
 
   describe "#siblings" do

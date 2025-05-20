@@ -27,7 +27,6 @@ class TrainingPeriod < ApplicationRecord
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
   scope :for_mentor, ->(mentor_at_school_period_id) { where(mentor_at_school_period_id:) }
   scope :for_school_partnership, ->(school_partnership_id) { where(school_partnership_id:) }
-  scope :latest_to_start_first, -> { order(started_on: :desc) }
 
   # Instance methods
   def for_ect?
