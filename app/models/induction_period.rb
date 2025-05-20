@@ -30,8 +30,6 @@ class InductionPeriod < ApplicationRecord
 
   # Scopes
   scope :for_teacher, ->(teacher) { where(teacher:) }
-  scope :earliest_to_start_first, -> { order(started_on: :asc) }
-  scope :latest_to_start_first, -> { order(started_on: :desc) }
 
   scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
   scope :ongoing, -> { where(finished_on: nil) }
