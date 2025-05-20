@@ -67,7 +67,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
       let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
 
       it 'returns the previous ect details page' do
-        expect(subject.previous_step).to eq(:previous_ect_details)
+        expect(subject.previous_step).to eq(:registered_before)
       end
     end
 

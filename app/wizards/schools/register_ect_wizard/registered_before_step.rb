@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class PreviousECTDetailsStep < Step
+    class RegisteredBeforeStep < Step
       def next_step
         :email_address
       end
