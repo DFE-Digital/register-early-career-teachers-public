@@ -175,10 +175,6 @@ module Schools
       def previous_appropriate_body
         previous_induction_period&.appropriate_body
       end
-
-      def teacher
-        @teacher ||= Teacher.find_by(trn:)
-      end
     end
   end
 end
