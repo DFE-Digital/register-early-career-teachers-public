@@ -134,16 +134,12 @@ def describe_teacher(teacher)
 end
 
 def describe_group_of_statements(lead_provider, statements, month_col_width: 15, year_col_width: 18)
-  lead_provider_name = lead_provider.name
-  colour_index = Digest::MD5.hexdigest(lead_provider_name).to_i(16) % Colourize::COLOURS.size
-  lead_provider = Colourize.text(lead_provider_name, Colourize::COLOURS.keys[colour_index])
-
   return if statements.empty?
 
   statements_by_year_and_month = statements.group_by(&:year).transform_values { |v| v.group_by(&:month) }
   registration_periods_with_statements = statements_by_year_and_month.keys.sort
 
-  print_seed_info(lead_provider, indent: 2, blank_lines_before: 1)
+  print_seed_info(lead_provider.name, indent: 2, blank_lines_before: 1)
   print_seed_info((" " * month_col_width) + (registration_periods_with_statements.map { |y| y.to_s.rjust(year_col_width) }.join), indent: 2)
 
   rows = 1.upto(12).map do |m|
