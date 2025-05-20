@@ -186,7 +186,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
           perform_enqueued_jobs
 
-          expect(Event.all.map(&:event_type)).to match_array(%w[teacher_name_updated_by_trs induction_period_opened])
+          expect(Event.all.map(&:event_type)).to match_array(%w[teacher_name_updated_by_trs induction_period_opened teacher_trs_induction_status_updated])
         end
 
         it 'saves the pending_induction_submission' do

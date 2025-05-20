@@ -22,6 +22,7 @@ module AppropriateBodies
             update_name,
             update_qts_awarded_on,
             update_itt_provider_name,
+            update_trs_induction_status,
             pending_induction_submission.save(context: :register_ect),
             create_induction_period
           ]
@@ -42,6 +43,12 @@ module AppropriateBodies
       def update_qts_awarded_on
         manage_teacher.update_qts_awarded_on!(
           trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on
+        )
+      end
+
+      def update_trs_induction_status
+        manage_teacher.update_trs_induction_status!(
+          trs_induction_status: pending_induction_submission.trs_induction_status
         )
       end
 
