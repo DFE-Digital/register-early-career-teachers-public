@@ -2,6 +2,7 @@ describe ActiveLeadProvider do
   describe "associations" do
     it { is_expected.to belong_to(:registration_period) }
     it { is_expected.to belong_to(:lead_provider) }
+    it { is_expected.to have_many(:statements) }
   end
 
   describe "validations" do
