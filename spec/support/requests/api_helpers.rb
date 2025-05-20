@@ -27,7 +27,7 @@ module Helpers
     end
 
     def parsed_response
-      Oj.load(response.body)
+      Oj.load(response.body).deep_symbolize_keys
     end
 
     def lead_provider_token
