@@ -191,9 +191,9 @@
   - created_at
   - updated_at
   :schools:
-  - chosen_appropriate_body_id
-  - chosen_lead_provider_id
-  - chosen_programme_type
+  - last_chosen_appropriate_body_id
+  - last_chosen_lead_provider_id
+  - last_chosen_programme_type
   - id
   - created_at
   - updated_at
@@ -242,7 +242,7 @@
   - delete_at
   - confirmed
   - pending_induction_submission_batch_id
-  - error_messages  
+  - error_messages
   :pending_induction_submission_batches:
   - id
   - appropriate_body_id
