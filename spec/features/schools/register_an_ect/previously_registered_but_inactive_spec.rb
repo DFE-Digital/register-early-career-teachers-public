@@ -9,12 +9,12 @@ RSpec.describe 'Registering an ECT' do
     and_i_submit_the_find_ect_form
     and_i_choose_that_the_details_are_correct
     and_i_click_confirm_and_continue
-    then_i_am_on_the_view_previous_choices_page
+    then_i_am_on_the_registered_before_page
     and_i_click_the_continue_button
     then_i_am_on_the_email_address_page
 
     when_i_click_back
-    then_i_am_on_the_view_previous_choices_page
+    then_i_am_on_the_registered_before_page
 
     when_i_click_back
     then_i_am_on_the_review_ect_details_page
@@ -34,7 +34,7 @@ RSpec.describe 'Registering an ECT' do
     then_i_am_on_the_review_ect_details_page
   end
 
-  def then_i_am_on_the_view_previous_choices_page
+  def then_i_am_on_the_registered_before_page
     expect(page.url).to end_with('/schools/register-ect/registered-before')
   end
 
