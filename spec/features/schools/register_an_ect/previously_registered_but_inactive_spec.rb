@@ -1,7 +1,7 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client'
 
-  scenario 'previously registered but inactive' do
+  scenario 'previously registered' do
     given_i_am_logged_in_as_a_state_funded_school_user_who_has_previously_registered_an_ect
     and_i_am_on_the_schools_ects_index_page
     and_i_start_adding_an_ect
@@ -15,20 +15,6 @@ RSpec.describe 'Registering an ECT' do
 
     when_i_click_back
     then_i_am_on_the_registered_before_page
-
-    when_i_click_back
-    then_i_am_on_the_review_ect_details_page
-  end
-
-  scenario 'not previously registered' do
-    given_i_am_logged_in_as_a_state_funded_school_user_who_has_not_previously_registered_an_ect
-    and_i_am_on_the_schools_ects_index_page
-    and_i_start_adding_an_ect
-    and_i_click_continue
-    and_i_submit_the_find_ect_form
-    and_i_choose_that_the_details_are_correct
-    and_i_click_confirm_and_continue
-    then_i_am_on_the_email_address_page
 
     when_i_click_back
     then_i_am_on_the_review_ect_details_page
@@ -63,11 +49,6 @@ RSpec.describe 'Registering an ECT' do
     FactoryBot.create(:induction_period, teacher: @teacher, started_on: Date.new(2023, 9, 1))
 
     sign_in_as_school_user(school:)
-  end
-
-  def given_i_am_logged_in_as_a_state_funded_school_user_who_has_not_previously_registered_an_ect
-    @teacher = FactoryBot.create(:teacher)
-    sign_in_as_school_user(school: FactoryBot.create(:school))
   end
 
   def and_i_am_on_the_schools_ects_index_page
