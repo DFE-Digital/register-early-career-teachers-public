@@ -217,6 +217,14 @@ Participant is leaving.
 - `incomplete` - both leaving end date and joining (if set) start date are in the future
 - `complete` - both leaving end date and joining (if set) start date are in the past
 
+|                                                   | Leaving Provider     | Leaving Provider                  | Joining Provider     | Joining Provider                  | Same Leaving/Joining Provider | Same Leaving/Joining Provider     |
+| ------------------------------------------------- | -------------------- | --------------------------------- | -------------------- | --------------------------------- | ----------------------------- | --------------------------------- |
+|                                                   | Participant Response | Transfer Response                 | Participant Response | Transfer Response                 | Participant Response          | Transfer Response                 |
+| **Before Transfer**                               | active               | n/a                               | n/a                  | n/a                               | active                        | n/a                               |
+| **Old school SIT reports leaver**                 | leaving              | Shows leaving details             | n/a                  | n/a                               | leaving                       | Shows leaving details             |
+| **New school SIT reports joiner**                 | leaving              | Shows leaving and joining details | joining              | Shows leaving and joining details | joining                       | Shows leaving and joining details |
+| **After transfer (today's date => joining_date)** | left                 | Shows leaving and joining details | active               | Shows leaving and joining details | active                        | Shows leaving and joining details |
+
 ## School Induction Tutor (SIT)
 
 Participant transfer is created when SIT report participants as leaving and the new school SIT reports participants as joining.
@@ -230,3 +238,5 @@ Admin user is able to see transfer entries in the participants audit log with `S
 Participant transfers is dynamically generated using the `Api::V3::ECF::BuildTransfers` service.
 
 Induction record with `induction_status` is set to `leaving` is used for leaving. The next induction record which does not have `induction_status` as `leaving` and has `school_transfer` set to `true` is used for joining.
+
+Take note, old induction records might have incorrect formatting or sequence which could result in the transfer record being incorrect.
