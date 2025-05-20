@@ -6,7 +6,9 @@ STATEMENT_STATE_COLOURS = {
   paid: :green,
 }.freeze
 
-def print_seed_info(text, indent: 0, colour: nil)
+def print_seed_info(text, indent: 0, colour: nil, blank_lines_before: 0)
+  blank_lines_before.times { puts "🌱 \n" }
+
   if colour
     puts "🌱 " + (" " * indent) + Colourize.text(text, colour)
   else
@@ -141,7 +143,7 @@ def describe_group_of_statements(lead_provider, statements, month_col_width: 15,
   statements_by_year_and_month = statements.group_by(&:year).transform_values { |v| v.index_by(&:month) }
   registration_periods_with_statements = statements_by_year_and_month.keys.sort
 
-  print_seed_info(lead_provider, indent: 2)
+  print_seed_info(lead_provider, indent: 2, blank_lines_before: 1)
   print_seed_info((" " * month_col_width) + (registration_periods_with_statements.map { |y| y.to_s.rjust(year_col_width) }.join), indent: 2)
 
   rows = 1.upto(12).map do |m|
