@@ -697,7 +697,7 @@ RSpec.describe Events::Record do
           appropriate_body:,
           event_type: :bulk_upload_started,
           happened_at: Time.zone.now,
-          metadata: { batch_type: "action", file_name: "test.csv", file_size: "102400", file_type: "text/csv", rows: 1 },
+          metadata: { batch_id: batch.id, batch_type: "action", file_name: "test.csv", file_size: "102400", file_type: "text/csv", rows: 1 },
           **author_params
         )
       end
@@ -708,8 +708,10 @@ RSpec.describe Events::Record do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:) }
 
     before do
-      AppropriateBodies::ProcessBatch::Claim.new(pending_induction_submission_batch: batch, author:).process!
+      ProcessBatchClaimJob.perform_now(batch, author.email, author.name)
     end
+
+    include_context 'fake trs api client'
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
@@ -720,7 +722,7 @@ RSpec.describe Events::Record do
           appropriate_body:,
           event_type: :bulk_upload_completed,
           happened_at: Time.zone.now,
-          metadata: { batch_type: "claim", fail: 0, pass: 0, release: 0, skipped: 1, total: 1 },
+          metadata: { batch_id: batch.id, batch_status: 'completed', batch_type: "claim", failed: 0, passed: 0, released: 0, skipped: 1, total: 1 },
           **author_params
         )
       end
