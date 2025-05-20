@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_20_064223) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -401,11 +401,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
     t.integer "urn", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "chosen_appropriate_body_id"
-    t.bigint "chosen_lead_provider_id"
-    t.enum "chosen_programme_type", enum_type: "programme_type"
-    t.index ["chosen_appropriate_body_id"], name: "index_schools_on_chosen_appropriate_body_id"
-    t.index ["chosen_lead_provider_id"], name: "index_schools_on_chosen_lead_provider_id"
+    t.bigint "last_chosen_appropriate_body_id"
+    t.bigint "last_chosen_lead_provider_id"
+    t.enum "last_chosen_programme_type", enum_type: "programme_type"
+    t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
+    t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true
   end
 
@@ -655,9 +655,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
   add_foreign_key "school_partnerships", "delivery_partners"
   add_foreign_key "school_partnerships", "lead_providers"
   add_foreign_key "school_partnerships", "registration_periods", primary_key: "year"
-  add_foreign_key "schools", "appropriate_bodies", column: "chosen_appropriate_body_id"
+  add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
-  add_foreign_key "schools", "lead_providers", column: "chosen_lead_provider_id"
+  add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

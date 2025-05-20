@@ -1,7 +1,7 @@
 describe School do
   describe "enums" do
     it do
-      is_expected.to define_enum_for(:chosen_programme_type)
+      is_expected.to define_enum_for(:last_chosen_programme_type)
                        .with_values({ provider_led: "provider_led",
                                       school_led: "school_led" })
                        .validating(allowing_nil: true)
@@ -25,34 +25,34 @@ describe School do
     it { is_expected.to validate_presence_of(:urn) }
     it { is_expected.to validate_uniqueness_of(:urn) }
 
-    context "chosen_lead_provider_id" do
+    context "last_chosen_lead_provider_id" do
       subject { FactoryBot.build(:school) }
 
-      context "when chosen_programme_type is 'school_led'" do
-        subject { FactoryBot.build(:school, :school_led_chosen) }
+      context "when last_chosen_programme_type is 'school_led'" do
+        subject { FactoryBot.build(:school, :school_led_last_chosen) }
 
-        it { is_expected.to validate_absence_of(:chosen_lead_provider_id).with_message('Must be nil') }
+        it { is_expected.to validate_absence_of(:last_chosen_lead_provider_id).with_message('Must be nil') }
       end
     end
 
-    context "chosen_programme_type" do
+    context "last_chosen_programme_type" do
       subject { FactoryBot.build(:school) }
 
       it do
-        is_expected.to validate_inclusion_of(:chosen_programme_type)
+        is_expected.to validate_inclusion_of(:last_chosen_programme_type)
                          .in_array(%w[provider_led school_led])
                          .with_message("Must be nil or provider-led or school-led")
                          .allow_nil
       end
 
-      context "when chosen_lead_provider has been set" do
-        subject { FactoryBot.build(:school, chosen_lead_provider_id: 123) }
+      context "when last_chosen_lead_provider has been set" do
+        subject { FactoryBot.build(:school, last_chosen_lead_provider_id: 123) }
 
-        it { is_expected.to validate_presence_of(:chosen_programme_type).with_message("Must be provider-led") }
+        it { is_expected.to validate_presence_of(:last_chosen_programme_type).with_message("Must be provider-led") }
       end
     end
 
-    context "chosen_appropriate_body_id" do
+    context "last_chosen_appropriate_body_id" do
       context "when the school is independent" do
         subject { FactoryBot.build(:school, :independent) }
 
@@ -61,24 +61,24 @@ describe School do
         end
 
         context "when national ab chosen" do
-          subject { FactoryBot.build(:school, :independent, :national_ab_chosen) }
+          subject { FactoryBot.build(:school, :independent, :national_ab_last_chosen) }
 
           it { is_expected.to be_valid }
         end
 
         context "when teaching school hub ab chosen" do
-          subject { FactoryBot.build(:school, :independent, :teaching_school_hub_ab_chosen) }
+          subject { FactoryBot.build(:school, :independent, :teaching_school_hub_ab_last_chosen) }
 
           it { is_expected.to be_valid }
         end
 
         context "when local authority ab chosen" do
-          subject { FactoryBot.build(:school, :independent, :local_authority_ab_chosen) }
+          subject { FactoryBot.build(:school, :independent, :local_authority_ab_last_chosen) }
 
           before { subject.valid? }
 
           it do
-            expect(subject.errors.messages[:chosen_appropriate_body_id])
+            expect(subject.errors.messages[:last_chosen_appropriate_body_id])
               .to contain_exactly('Must be national or teaching school hub')
           end
         end
@@ -92,29 +92,29 @@ describe School do
         end
 
         context "when national ab chosen" do
-          subject { FactoryBot.build(:school, :state_funded, :national_ab_chosen) }
+          subject { FactoryBot.build(:school, :state_funded, :national_ab_last_chosen) }
 
           before { subject.valid? }
 
           it do
-            expect(subject.errors.messages[:chosen_appropriate_body_id])
+            expect(subject.errors.messages[:last_chosen_appropriate_body_id])
               .to contain_exactly('Must be teaching school hub')
           end
         end
 
         context "when teaching school hub ab chosen" do
-          subject { FactoryBot.build(:school, :state_funded, :teaching_school_hub_ab_chosen) }
+          subject { FactoryBot.build(:school, :state_funded, :teaching_school_hub_ab_last_chosen) }
 
           it { is_expected.to be_valid }
         end
 
         context "when local authority ab chosen" do
-          subject { FactoryBot.build(:school, :state_funded, :local_authority_ab_chosen) }
+          subject { FactoryBot.build(:school, :state_funded, :local_authority_ab_last_chosen) }
 
           before { subject.valid? }
 
           it do
-            expect(subject.errors.messages[:chosen_appropriate_body_id])
+            expect(subject.errors.messages[:last_chosen_appropriate_body_id])
               .to contain_exactly('Must be teaching school hub')
           end
         end

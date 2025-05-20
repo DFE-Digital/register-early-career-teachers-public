@@ -37,11 +37,11 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
   describe 'programme details section' do
     before do
-      allow(wizard.school).to receive(:programme_choices?).and_return(school_programme_choices)
+      allow(wizard.school).to receive(:last_programme_choices?).and_return(school_last_programme_choices)
     end
 
     context 'when the use previous ect choices is true' do
-      let(:school_programme_choices) { true }
+      let(:school_last_programme_choices) { true }
 
       context 'when choosing the same choices' do
         let(:use_previous_ect_choices) { true }
@@ -71,7 +71,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
         end
       end
 
-      context 'when the school programme choices is false' do
+      context 'when use the school last programme choices is false' do
         let(:use_previous_ect_choices) { false }
 
         it 'displays the "Choices used by your school previously" row' do
@@ -100,8 +100,8 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
       end
     end
 
-    context 'when school does not have programme choices' do
-      let(:school_programme_choices) { false }
+    context 'when school does not have last programme choices' do
+      let(:school_last_programme_choices) { false }
 
       it 'does not display the "Choices used by your school previously" row' do
         render

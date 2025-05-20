@@ -70,14 +70,14 @@ RSpec.describe Schools::RegisterECTWizard::AppropriateBodyStep, type: :model do
     end
 
     describe '#previous_step' do
-      context 'when the school has no programme choices' do
+      context 'when the school has no last programme choices' do
         it 'returns the previous step' do
           expect(subject.previous_step).to eq(:working_pattern)
         end
       end
 
-      context 'when the school has programme choices' do
-        let(:school) { FactoryBot.create(:school, :independent, :national_ab_chosen, :school_led_chosen) }
+      context 'when the school has last programme choices' do
+        let(:school) { FactoryBot.create(:school, :independent, :national_ab_last_chosen, :school_led_last_chosen) }
 
         it 'returns the previous step' do
           expect(subject.previous_step).to eq(:use_previous_ect_choices)
