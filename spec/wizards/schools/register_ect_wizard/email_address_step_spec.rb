@@ -63,7 +63,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
   end
 
   describe '#previous_step' do
-    context 'with ECTAtSchoolPeriods' do
+    context 'when the teacher has been registered before' do
       let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
 
       it 'returns the previous ect details page' do
@@ -71,7 +71,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
       end
     end
 
-    context 'with no ECTAtSchoolPeriods' do
+    context 'when the teacher has never been registered before' do
       it 'returns the review ect details page' do
         expect(subject.previous_step).to eq(:review_ect_details)
       end
