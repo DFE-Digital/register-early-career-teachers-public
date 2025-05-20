@@ -30,6 +30,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "programme_type", ["provider_led", "school_led"]
+  create_enum "statement_states", ["open", "payable", "paid"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "active_lead_providers", force: :cascade do |t|
@@ -529,6 +530,31 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "statement_adjustments", force: :cascade do |t|
+    t.bigint "statement_id", null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.string "payment_type", null: false
+    t.decimal "amount", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["statement_id"], name: "index_statement_adjustments_on_statement_id"
+  end
+
+  create_table "statements", force: :cascade do |t|
+    t.bigint "active_lead_provider_id", null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.integer "month", null: false
+    t.integer "year", null: false
+    t.date "deadline_date", null: false
+    t.date "payment_date", null: false
+    t.datetime "marked_as_paid_at"
+    t.boolean "output_fee", default: true, null: false
+    t.enum "state", default: "open", null: false, enum_type: "statement_states"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
+  end
+
   create_table "teacher_migration_failures", force: :cascade do |t|
     t.bigint "teacher_id"
     t.string "message", null: false
@@ -638,6 +664,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_154445) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "statement_adjustments", "statements"
+  add_foreign_key "statements", "active_lead_providers"
   add_foreign_key "teacher_migration_failures", "teachers"
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "mentor_at_school_periods"

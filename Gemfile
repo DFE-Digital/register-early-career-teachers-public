@@ -28,6 +28,7 @@ gem "sentry-rails"
 gem "sentry-ruby"
 gem "solid_queue"
 gem "stackprof"
+gem "state_machines-activerecord"
 
 # DfE Sign-In
 gem "omniauth"

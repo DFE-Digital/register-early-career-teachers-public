@@ -1,5 +1,10 @@
 ECT_COLOUR = :magenta
 MENTOR_COLOUR = :yellow
+STATEMENT_STATE_COLOURS = {
+  open: :blue,
+  payable: :cyan,
+  paid: :green,
+}.freeze
 
 def print_seed_info(text, indent: 0, colour: nil)
   if colour
@@ -124,6 +129,21 @@ def describe_teacher(teacher)
                end
 
   print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status})", indent: 2)
+end
+
+def describe_statement(statement)
+  statement_name = "#{Date::MONTHNAMES[statement.month]} #{statement.year}"
+  state = Colourize.text(statement.state, STATEMENT_STATE_COLOURS[statement.state.to_sym])
+  print_seed_info("#{statement_name} #{state}", indent: 4)
+end
+
+def describe_group_of_statements(active_lead_provider)
+  lead_provider_name = active_lead_provider.lead_provider.name
+  year = active_lead_provider.registration_period.year
+  colour_index = Digest::MD5.hexdigest(lead_provider_name).to_i(16) % Colourize::COLOURS.size
+  lead_provider = Colourize.text(lead_provider_name, Colourize::COLOURS.keys[colour_index])
+
+  print_seed_info("#{lead_provider} #{year}", indent: 2)
 end
 
 print_seed_info("Adding teachers")
@@ -735,4 +755,41 @@ YAML.load_file(Rails.root.join('config/personas.yml'))
       .then { |user| describe_user(user) }
 end
 
-print_seed_info('Adding funding exemptions:')
+print_seed_info('Adding statements:')
+
+active_lead_providers = ActiveLeadProvider
+  .joins(:registration_period)
+  .order(registration_period: { year: :asc })
+
+active_lead_providers.each do |active_lead_provider|
+  registration_year = active_lead_provider.registration_period.year
+  months = (1..12).to_a
+  years = [registration_year, registration_year + 1]
+
+  describe_group_of_statements(active_lead_provider)
+
+  years.product(months).collect do |year, month|
+    deadline_date = Time.zone.local(year, month).end_of_month
+    payment_date = Time.zone.at(rand(deadline_date.to_i..(deadline_date + 2.months).to_i))
+    output_fee = [true, false].sample
+    state = if payment_date < Date.current
+              :paid
+            elsif Date.current.between?(deadline_date, payment_date)
+              :payable
+            else
+              :open
+            end
+
+    statement = Statement.create!(
+      active_lead_provider:,
+      month:,
+      year:,
+      deadline_date:,
+      payment_date:,
+      output_fee:,
+      state:
+    )
+
+    describe_statement(statement)
+  end
+end

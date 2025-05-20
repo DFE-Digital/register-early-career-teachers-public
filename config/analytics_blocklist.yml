@@ -373,3 +373,24 @@
   - registration_period_id
   - created_at
   - updated_at
+  :statement_adjustments:
+  - id
+  - statement_id
+  - api_id
+  - payment_type
+  - amount
+  - created_at
+  - updated_at
+  :statements:
+  - id
+  - active_lead_provider_id
+  - api_id
+  - month
+  - year
+  - deadline_date
+  - payment_date
+  - marked_as_paid_at
+  - output_fee
+  - state
+  - created_at
+  - updated_at
