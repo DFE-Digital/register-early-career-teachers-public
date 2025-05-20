@@ -4,7 +4,7 @@
   <% past_periods.each do |period| %>
     <li>
       <%=
-        govuk_summary_list(card: { title: period.appropriate_body.name, actions: enable_edit == true ? [edit_link(period)] : [] }) do |sl|
+        govuk_summary_list(card: { title: period.appropriate_body.name, actions: enable_edit == true ? [edit_link(period), delete_link(period)].compact : [] }) do |sl|
           sl.with_row do |row|
             row.with_key(text: "Induction programme")
             row.with_value(text: ::INDUCTION_PROGRAMMES[period.induction_programme.to_sym])
