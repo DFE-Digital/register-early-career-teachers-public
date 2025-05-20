@@ -18,7 +18,7 @@ module Schools
       end
 
       def previous_step
-        @wizard.ect.previously_registered? ? :registered_before : :review_ect_details
+        ect.previously_registered? ? :registered_before : :review_ect_details
       end
     end
   end
