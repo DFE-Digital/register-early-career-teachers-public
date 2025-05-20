@@ -13,17 +13,6 @@ module ECTAtSchoolPeriods
       @scope
     end
 
-    def current_school(trn:)
-      teacher = Teacher.find_by(trn:)
-      return unless teacher
-
-      ECTAtSchoolPeriod
-        .for_teacher(teacher.id)
-        .latest_to_start_first
-        .first
-        &.school
-    end
-
   private
 
     def where_school_urn_is(urn)
