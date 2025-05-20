@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::PreviousECTDetailsStep, type: :model do
+RSpec.describe Schools::RegisterECTWizard::RegisteredBeforeStep, type: :model do
   subject(:previous_ect_details_step) { described_class.new }
 
   describe '#next_step' do

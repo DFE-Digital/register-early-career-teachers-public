@@ -1,4 +1,4 @@
-RSpec.describe 'schools/register_ect_wizard/previous_ect_details.html.erb' do
+RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -30,7 +30,7 @@ RSpec.describe 'schools/register_ect_wizard/previous_ect_details.html.erb' do
   let(:wizard) do
     FactoryBot.build(
       :register_ect_wizard,
-      current_step: :previous_ect_details,
+      current_step: :registered_before,
       school:,
       store:
     )
