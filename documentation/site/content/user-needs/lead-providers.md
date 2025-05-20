@@ -18,7 +18,7 @@ The following are the core user needs for lead provider users, which have been i
 
 **As a** lead provider, **I need** to receive payment from DfE for the training I provide **so that** I can afford to run training that is high quality and follows policy 
 
-**As a** lead provider, **I need** to be informed of the amount I am due to be paid by DfE in each milestone period, **so that** I can compare this with the amount I expected and identify and resolve any discrepencies 
+**As a** lead provider, **I need** to be informed of the amount I am due to be paid by DfE in each milestone period, **so that** I can compare this with the amount I expected and identify and resolve any discrepancies 
 
 **As a** lead provider, **I need** to understand which declarations relate to payments I receive in each milestone period **so that** I can understand the amount due and resolve any issues, and distribute a share of funds on to the right delivery partner 
 
