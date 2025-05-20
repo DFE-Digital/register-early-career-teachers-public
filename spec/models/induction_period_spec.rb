@@ -192,24 +192,6 @@ RSpec.describe InductionPeriod do
       end
     end
 
-    describe ".earliest_to_start_first" do
-      it "orders induction periods by started_on ascending" do
-        older_induction_period = FactoryBot.create(:induction_period, started_on: Date.new(2023, 6, 10))
-        latest_induction_period = FactoryBot.create(:induction_period, started_on: Date.new(2023, 10, 1))
-
-        expect(InductionPeriod.earliest_to_start_first).to eq([older_induction_period, latest_induction_period])
-      end
-    end
-
-    describe ".latest_to_start_first" do
-      it "orders induction periods by started_on descending" do
-        older_induction_period = FactoryBot.create(:induction_period, started_on: Date.new(2023, 6, 10))
-        latest_induction_period = FactoryBot.create(:induction_period, started_on: Date.new(2023, 10, 1))
-
-        expect(InductionPeriod.latest_to_start_first).to eq([latest_induction_period, older_induction_period])
-      end
-    end
-
     describe ".for_appropriate_body" do
       it "returns induction periods only for the specified appropriate_body" do
         expect(InductionPeriod.for_appropriate_body(456).to_sql).to end_with(%( WHERE "induction_periods"."appropriate_body_id" = 456))
