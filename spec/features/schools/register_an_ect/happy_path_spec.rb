@@ -1,7 +1,7 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client'
 
-  let(:school) { FactoryBot.create(:school, :state_funded, :provider_led_chosen, :teaching_school_hub_ab_chosen) }
+  let(:school) { FactoryBot.create(:school, :state_funded, :provider_led_last_chosen, :teaching_school_hub_ab_last_chosen) }
   let(:trn) { '9876543' }
 
   before do
@@ -195,11 +195,11 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def and_i_should_see_the_previous_programme_choices
-    expect(page.get_by_text(school.chosen_appropriate_body.name)).to be_visible
+    expect(page.get_by_text(school.last_chosen_appropriate_body.name)).to be_visible
     row = page.locator('.govuk-summary-list__row', has: page.locator('text=Programme type'))
     expect(row.text_content).to include('Programme type')
     expect(row.text_content).to include('Provider-led')
-    expect(page.get_by_text(school.chosen_lead_provider_name).first).to be_visible
+    expect(page.get_by_text(school.last_chosen_lead_provider_name).first).to be_visible
   end
 
   def when_i_select_that_i_dont_want_to_use_the_school_previous_choices
@@ -313,9 +313,9 @@ RSpec.describe 'Registering an ECT' do
 
   def and_i_should_see_all_the_new_programme_choices
     expect(page.get_by_text(trn)).to be_visible
-    expect(page.get_by_text(school.chosen_appropriate_body_name)).to be_visible
+    expect(page.get_by_text(school.last_chosen_appropriate_body_name)).to be_visible
     expect(page.get_by_text('Provider-led')).to be_visible
-    expect(page.get_by_text(school.chosen_lead_provider_name)).to be_visible
+    expect(page.get_by_text(school.last_chosen_lead_provider_name)).to be_visible
   end
 
   def when_i_click_confirm_details

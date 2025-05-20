@@ -7,24 +7,24 @@
 <%= govuk_summary_list do |summary_list|
   summary_list.with_row do |row|
     row.with_key(text: 'Appropriate body')
-    row.with_value(text: @school.chosen_appropriate_body_name)
+    row.with_value(text: @school.last_chosen_appropriate_body_name)
   end
 
   summary_list.with_row do |row|
     row.with_key(text: 'Programme type')
-    row.with_value(text: programme_type_name(@school.chosen_programme_type))
+    row.with_value(text: programme_type_name(@school.last_chosen_programme_type))
   end
 
   if @school.provider_led_programme_type_chosen?
     summary_list.with_row do |row|
       row.with_key(text: 'Lead provider')
-      row.with_value(text: @school.chosen_lead_provider_name)
+      row.with_value(text: @school.last_chosen_lead_provider_name)
     end
   end
 end %>
 
 <% if @school.provider_led_programme_type_chosen? %>
-  <p class="govuk-body"><%= @school.chosen_lead_provider_name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.</p>
+  <p class="govuk-body"><%= @school.last_chosen_lead_provider_name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.</p>
 <% end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
@@ -57,4 +57,3 @@ end %>
 
   <%= f.govuk_submit "Continue" %>
 <% end %>
-

@@ -86,11 +86,11 @@ RSpec.describe Schools::RegisterECT do
 
     it 'sets ab and provider choices for the school' do
       expect { service.register! }
-        .to change(school, :chosen_appropriate_body_id)
+        .to change(school, :last_chosen_appropriate_body_id)
               .to(school_reported_appropriate_body.id)
-              .and change(school, :chosen_programme_type)
+              .and change(school, :last_chosen_programme_type)
                      .to(programme_type)
-                     .and change(school, :chosen_lead_provider_id).to(lead_provider.id)
+                     .and change(school, :last_chosen_lead_provider_id).to(lead_provider.id)
     end
   end
 end

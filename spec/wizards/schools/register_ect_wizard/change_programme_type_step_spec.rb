@@ -26,8 +26,8 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
     context 'when the programme type is provided led' do
       let(:new_programme_type) { 'provider_led' }
 
-      context 'when the school has programme choices' do
-        let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_chosen, :school_led_chosen) }
+      context 'when the school has last programme choices' do
+        let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_last_chosen, :school_led_last_chosen) }
 
         it { expect(subject.next_step).to eq(:programme_type_change_lead_provider) }
       end
