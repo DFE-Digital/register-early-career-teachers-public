@@ -45,7 +45,7 @@ module Schools
       not_registered_as_an_ect!
 
       ActiveRecord::Base.transaction do
-        update_school_choices!
+        update_school_last_choices!
         create_teacher!
         @ect_at_school_period = start_at_school!
         record_event!
@@ -80,10 +80,10 @@ module Schools
       end
     end
 
-    def update_school_choices!
-      school.update!(chosen_appropriate_body: school_reported_appropriate_body,
-                     chosen_lead_provider: lead_provider,
-                     chosen_programme_type: programme_type)
+    def update_school_last_choices!
+      school.update!(last_chosen_appropriate_body: school_reported_appropriate_body,
+                     last_chosen_lead_provider: lead_provider,
+                     last_chosen_programme_type: programme_type)
     end
 
     def record_event!

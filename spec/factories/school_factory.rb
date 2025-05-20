@@ -11,25 +11,25 @@ FactoryBot.define do
       gias_school { association :gias_school, :state_school_type, urn: }
     end
 
-    trait :provider_led_chosen do
-      chosen_programme_type { 'provider_led' }
-      association :chosen_lead_provider, factory: :lead_provider
+    trait :provider_led_last_chosen do
+      last_chosen_programme_type { 'provider_led' }
+      association :last_chosen_lead_provider, factory: :lead_provider
     end
 
-    trait :school_led_chosen do
-      chosen_programme_type { 'school_led' }
+    trait :school_led_last_chosen do
+      last_chosen_programme_type { 'school_led' }
     end
 
-    trait :local_authority_ab_chosen do
-      association :chosen_appropriate_body, :local_authority, factory: :appropriate_body
+    trait :local_authority_ab_last_chosen do
+      association :last_chosen_appropriate_body, :local_authority, factory: :appropriate_body
     end
 
-    trait :national_ab_chosen do
-      association :chosen_appropriate_body, :national, factory: :appropriate_body
+    trait :national_ab_last_chosen do
+      association :last_chosen_appropriate_body, :national, factory: :appropriate_body
     end
 
-    trait :teaching_school_hub_ab_chosen do
-      association :chosen_appropriate_body, :teaching_school_hub, factory: :appropriate_body
+    trait :teaching_school_hub_ab_last_chosen do
+      association :last_chosen_appropriate_body, :teaching_school_hub, factory: :appropriate_body
     end
   end
 end

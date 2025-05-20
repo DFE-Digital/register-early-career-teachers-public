@@ -412,9 +412,9 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-ackley_bridge.update!(chosen_lead_provider: wildflower_trust,
-                      chosen_appropriate_body: golden_leaf_teaching_school_hub,
-                      chosen_programme_type: 'provider_led')
+ackley_bridge.update!(last_chosen_lead_provider: wildflower_trust,
+                      last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
+                      last_chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: alan_rickman_ect_at_ackley_bridge,
@@ -497,9 +497,9 @@ colin_firth_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   programme_type: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-abbey_grove_school.update!(chosen_lead_provider: nil,
-                           chosen_appropriate_body: golden_leaf_teaching_school_hub,
-                           chosen_programme_type: 'school_led')
+abbey_grove_school.update!(last_chosen_lead_provider: nil,
+                           last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
+                           last_chosen_programme_type: 'school_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: colin_firth_ect_at_abbey_grove,
@@ -617,9 +617,9 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-mallory_towers.update!(chosen_lead_provider: wildflower_trust,
-                       chosen_appropriate_body: golden_leaf_teaching_school_hub,
-                       chosen_programme_type: 'provider_led')
+mallory_towers.update!(last_chosen_lead_provider: wildflower_trust,
+                       last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
+                       last_chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: gemma_jones_at_malory_towers,
@@ -679,9 +679,9 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-brookfield_school.update!(chosen_lead_provider: national_meadows_institute,
-                          chosen_appropriate_body: south_yorkshire_studio_hub,
-                          chosen_programme_type: 'provider_led')
+brookfield_school.update!(last_chosen_lead_provider: national_meadows_institute,
+                          last_chosen_appropriate_body: south_yorkshire_studio_hub,
+                          last_chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: stephen_fry_ect_at_brookfield_school,

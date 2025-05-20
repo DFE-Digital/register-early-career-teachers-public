@@ -58,7 +58,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
   end
 
   context "when school-led" do
-    let(:school) { FactoryBot.create(:school, :school_led_chosen) }
+    let(:school) { FactoryBot.create(:school, :school_led_last_chosen) }
 
     before do
       assign(:school, school)
@@ -72,7 +72,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
   end
 
   context "when provider-led" do
-    let(:school) { FactoryBot.create(:school, :provider_led_chosen) }
+    let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
 
     before do
       assign(:school, school)

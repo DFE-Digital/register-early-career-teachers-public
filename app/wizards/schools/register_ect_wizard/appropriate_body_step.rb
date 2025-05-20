@@ -16,7 +16,7 @@ module Schools
       def next_step = :programme_type
 
       def previous_step
-        return :use_previous_ect_choices if school.programme_choices?
+        return :use_previous_ect_choices if school.last_programme_choices?
 
         :working_pattern
       end
