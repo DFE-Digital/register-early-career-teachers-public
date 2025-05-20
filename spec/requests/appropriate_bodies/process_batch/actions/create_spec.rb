@@ -14,6 +14,8 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
     PendingInductionSubmissionBatch.for_appropriate_body(appropriate_body).last
   end
 
+  include_context 'fake trs api client'
+
   describe 'POST /appropriate-body/bulk/actions' do
     it "enqueues a job" do
       expect {
