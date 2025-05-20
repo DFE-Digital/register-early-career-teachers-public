@@ -179,6 +179,14 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
+    def self.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, old_date:, new_date:, happened_at: Time.zone.now)
+      event_type = :teacher_trs_induction_start_date_updated
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name}'s induction start date changed from #{old_date} to #{new_date}"
+
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
     def self.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
       event_type = :teacher_imported_from_trs
       heading = "Imported from TRS"
@@ -316,7 +324,7 @@ module Events
     end
 
     def check_relationship_attributes_are_persisted
-      relationship_attributes.each { |name, object| fail(NotPersistedRecord, name) unless object.persisted? }
+      relationship_attributes.each { |name, object| fail(NotPersistedRecord, name) if object && !object.persisted? }
     end
   end
 end

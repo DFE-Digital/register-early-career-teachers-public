@@ -407,4 +407,81 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
       end
     end
   end
+
+  describe "DELETE /admin/induction_periods/:id" do
+    context "when it is the only induction period" do
+      let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
+      let(:trs_api_client) { instance_double(TRS::APIClient) }
+
+      before do
+        allow(TRS::APIClient).to receive(:new).and_return(trs_api_client)
+        allow(trs_api_client).to receive(:reset_teacher_induction)
+      end
+
+      it "deletes the induction period and redirects with success message" do
+        expect {
+          delete admin_teacher_induction_period_path(teacher, induction_period)
+        }.to change(InductionPeriod, :count).by(-1)
+
+        expect(response).to redirect_to(admin_teacher_path(teacher))
+        expect(flash[:alert]).to eq("Induction period deleted successfully")
+        expect { induction_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "creates a deletion event" do
+        expect {
+          perform_enqueued_jobs do
+            delete admin_teacher_induction_period_path(teacher, induction_period)
+          end
+        }.to change(Event, :count).by(2)
+
+        expect(Event.all.map(&:event_type)).to match_array(%w[
+          induction_period_deleted teacher_induction_status_reset
+        ])
+      end
+    end
+
+    context "when there are multiple induction periods" do
+      let!(:induction_period1) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 9.months.ago, number_of_terms: 2) }
+      let!(:induction_period2) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 3.months.ago, number_of_terms: 2) }
+      let(:trs_api_client) { instance_double(TRS::APIClient) }
+
+      before do
+        allow(TRS::APIClient).to receive(:new).and_return(trs_api_client)
+        allow(trs_api_client).to receive(:reset_teacher_induction)
+        allow(trs_api_client).to receive(:begin_induction!)
+      end
+
+      it "deletes only the specified induction period" do
+        expect {
+          perform_enqueued_jobs do
+            delete admin_teacher_induction_period_path(teacher, induction_period1)
+          end
+        }.to change(InductionPeriod, :count).by(-1)
+
+        expect(response).to redirect_to(admin_teacher_path(teacher))
+        expect(flash[:alert]).to eq("Induction period deleted successfully")
+        expect { induction_period1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { induction_period2.reload }.not_to raise_error
+      end
+    end
+
+    context "when deletion fails" do
+      let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
+
+      before do
+        service = instance_double(InductionPeriods::DeleteInductionPeriod)
+        allow(InductionPeriods::DeleteInductionPeriod).to receive(:new).and_return(service)
+        allow(service).to receive(:delete_induction_period!).and_raise(ActiveRecord::RecordInvalid.new(induction_period))
+      end
+
+      it "redirects with error message" do
+        delete admin_teacher_induction_period_path(teacher, induction_period)
+
+        expect(response).to redirect_to(admin_teacher_path(teacher))
+        expect(flash[:alert]).to match(/Could not delete induction period:/)
+        expect { induction_period.reload }.not_to raise_error
+      end
+    end
+  end
 end
