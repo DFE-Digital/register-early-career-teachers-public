@@ -1,0 +1,26 @@
+.app-search form {
+
+  // Inline the input and button on tablet and up
+  align-items: flex-end;
+
+  @include govuk-media-query($from: tablet) {
+    display: flex;
+  }
+}
+
+.app-search .govuk-form-group {
+  flex: 1;
+  margin-bottom: govuk-spacing(4);
+}
+
+
+.app-search__button {
+  margin-top: govuk-spacing(2);
+  margin-bottom: govuk-spacing(4);
+
+  @include govuk-media-query($from: tablet) {
+    margin-left: govuk-spacing(2);
+    position: relative;
+    top: -2px;
+  }
+}
