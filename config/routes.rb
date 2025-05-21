@@ -250,7 +250,7 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
-    namespace :v3 do
+    namespace :v3, defaults: { format: :json } do
       resources :participants, only: %i[index show] do
         put :change_schedule, path: "change-schedule"
         put :defer
