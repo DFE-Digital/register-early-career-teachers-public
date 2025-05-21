@@ -48,7 +48,7 @@ module AppropriateBodies
 
       def update_trs_induction_status
         manage_teacher.update_trs_induction_status!(
-          trs_induction_status: pending_induction_submission.trs_induction_status
+          trs_induction_status: 'InProgress'
         )
       end
 
