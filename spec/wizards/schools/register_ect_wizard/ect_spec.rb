@@ -442,26 +442,24 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
 
     describe '#previous_school_name' do
-      let(:school_1) { FactoryBot.create(:school) }
-      let(:school_2) { FactoryBot.create(:school) }
+      context 'when ECTAtSchoolPeriods exist' do
+        let(:school_1) { FactoryBot.create(:school) }
+        let(:school_2) { FactoryBot.create(:school) }
 
-      before do
-        FactoryBot.create(:gias_school, school: school_1, name: 'Old School')
-        FactoryBot.create(:gias_school, school: school_2, name: 'Recent School')
+        before do
+          FactoryBot.create(:gias_school, school: school_1, name: 'Old School')
+          FactoryBot.create(:gias_school, school: school_2, name: 'Recent School')
 
-        FactoryBot.create(:ect_at_school_period, teacher:, school: school_1, started_on: Date.new(2023, 1, 1), finished_on: Date.new(2023, 6, 30))
-        FactoryBot.create(:ect_at_school_period, teacher:, school: school_2, started_on: Date.new(2023, 9, 1), finished_on: nil)
-      end
+          FactoryBot.create(:ect_at_school_period, teacher:, school: school_1, started_on: Date.new(2023, 1, 1), finished_on: Date.new(2023, 6, 30))
+          FactoryBot.create(:ect_at_school_period, teacher:, school: school_2, started_on: Date.new(2023, 9, 1), finished_on: nil)
+        end
 
-      it 'returns the name of the most recent school by started_on' do
-        expect(ect.previous_school_name).to eq('Recent School')
+        it 'returns the name of the most recent school by started_on' do
+          expect(ect.previous_school_name).to eq('Recent School')
+        end
       end
 
       context 'when no ECTAtSchoolPeriods exist' do
-        before do
-          ECTAtSchoolPeriod.destroy_all
-        end
-
         it 'returns nil' do
           expect(ect.previous_school_name).to be_nil
         end
