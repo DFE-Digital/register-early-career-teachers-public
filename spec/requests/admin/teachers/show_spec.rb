@@ -33,6 +33,11 @@ RSpec.describe "Admin::Teachers#show", type: :request do
         expect(response.body).to include(CGI.escape_html(Teachers::Name.new(teacher).full_name))
       end
 
+      it "links to teacher timeline" do
+        get admin_teacher_path(teacher)
+        expect(response.body).to include(admin_teacher_timeline_path(teacher))
+      end
+
       context "when teacher has migration failures" do
         before do
           MigrationFailure.create!(parent_type: "Teacher", parent_id: teacher.id, failure_message: "foo", item: { foo: :bar }, data_migration_id: 1)
