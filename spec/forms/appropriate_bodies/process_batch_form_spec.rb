@@ -82,6 +82,22 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
         ])
       end
     end
+
+    describe 'formatting errors and blank cells' do
+      let(:csv_content) do
+        <<~CSV
+          TRN,Date of birth,Induction period end date,Number of terms,Outcome
+          123456789X,01/01/2000,2023-12-31,,PASSED
+        CSV
+      end
+
+      specify do
+        expect(form).to be_valid
+        expect(form.to_a).to eq([
+          { trn: '123456789X', date_of_birth: '01/01/2000', finished_on: '2023-12-31', outcome: 'PASSED' }
+        ])
+      end
+    end
   end
 
   context 'when the attached file is invalid' do

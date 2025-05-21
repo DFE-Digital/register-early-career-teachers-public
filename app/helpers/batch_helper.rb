@@ -43,17 +43,6 @@ module BatchHelper
   end
 
   # Temporary method helpful for debugging during development
-  def batch_debugging_info(batch)
-    govuk_details(summary_text: 'Debugging information') do
-      batch_progress_card(batch)
-      batch_raw_data_table(batch)
-      batch_processed_data_table(batch)
-      batch_download_data_table(batch)
-      batch_actions_induction_periods_table(batch)
-    end
-  end
-
-  # Temporary method helpful for debugging during development
   def batch_progress_card(batch)
     govuk_summary_list(card: { title: 'Progress' }, rows: [
       {
