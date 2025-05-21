@@ -14,27 +14,37 @@
 <div class="govuk-grid-row">
   <% if @teachers.present? %>
 
-    <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">Search by name</h2>
+    <div class='govuk-grid-column-two-thirds'>
+
+      <div class="app-search ">
+        <%= form_with method: :get do |f| %>
+          <div class="govuk-form-group">
+            <%= f.govuk_text_field(
+            :q,
+            value: params[:q],
+            label: { text: "Search by name or teacher reference number (TRN)", size: "s" }
+            ) %>
+          </div>
+          <%= f.govuk_submit "Search", class: "govuk-button--secondary app-search__button" %>
+        <% end %>
+      </div>
+
+      <% @teachers.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
+        <%=
+          govuk_summary_card(title: link_to_ect(ect)) do |card|
+            card.with_summary_list(
+              borders: false,
+              rows: [
+                { key: { text: 'Status' }, value: { text: ect_status(ect) } },
+                { key: { text: 'Mentor' }, value: { text: ect_mentor_details(ect) } },
+              ]
+            )
+          end
+        %>
+      <% end %>
+
+      <%= govuk_pagination(pagy: @pagy) %>
     </div>
-
-        <div class='govuk-grid-column-two-thirds'>
-          <% @teachers.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
-            <%=
-              govuk_summary_card(title: link_to_ect(ect)) do |card|
-                card.with_summary_list(
-                  borders: false,
-                  rows: [
-                    { key: { text: 'Status' }, value: { text: ect_status(ect) } },
-                    { key: { text: 'Mentor' }, value: { text: ect_mentor_details(ect) } },
-                  ]
-                )
-              end
-            %>
-          <% end %>
-
-          <%= govuk_pagination(pagy: @pagy) %>
-        </div>
 
   <% else %>
 
