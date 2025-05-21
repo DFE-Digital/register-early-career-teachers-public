@@ -394,18 +394,30 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
 
     describe '#previous_provider_led?' do
-      it 'returns true when the latest ECTAtSchoolPeriod is provider-led' do
-        FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
-        expect(ect.previous_provider_led?).to be(true)
+      context 'when the latest ECTAtSchoolPeriod is provider-led' do
+        before do
+          FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+        end
+
+        it 'returns true' do
+          expect(ect.previous_provider_led?).to be(true)
+        end
       end
 
-      it 'returns false when the latest ECTAtSchoolPeriod is school-led' do
-        FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :school_led, lead_provider_id: nil, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
-        expect(ect.previous_provider_led?).to be(false)
+      context 'when the latest ECTAtSchoolPeriod is school-led' do
+        before do
+          FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :school_led, lead_provider_id: nil, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+        end
+
+        it 'returns false' do
+          expect(ect.previous_provider_led?).to be(false)
+        end
       end
 
-      it 'returns nil when there are no ECTAtSchoolPeriods' do
-        expect(ect.previous_provider_led?).to be_nil
+      context 'when there are no ECTAtSchoolPeriods' do
+        it 'returns nil' do
+          expect(ect.previous_provider_led?).to be_nil
+        end
       end
     end
 
