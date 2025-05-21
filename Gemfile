@@ -50,6 +50,10 @@ gem 'rubypants'
 gem 'hotwire-rails'
 gem 'turbo-rails'
 
+# JSON Serializer
+gem "blueprinter"
+gem "oj"
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
