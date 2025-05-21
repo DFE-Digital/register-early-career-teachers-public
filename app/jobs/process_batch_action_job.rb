@@ -20,8 +20,6 @@ class ProcessBatchActionJob < ApplicationJob
 
     pending_induction_submission_batch.update!(error_message: e.message)
     pending_induction_submission_batch.failed!
-
-    raise
   end
 
 private

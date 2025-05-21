@@ -36,14 +36,20 @@ RSpec.describe BatchRows do
   end
 
   describe '#rows' do
-    it { expect(dummy_claim.rows).to be_an(Enumerator::Lazy) }
-    it { expect(dummy_claim.rows.first).to be_a(BatchRows::ClaimRow) }
+    context 'when the batch type is a "claim"' do
+      it { expect(dummy_claim.rows).to be_an(Enumerator::Lazy) }
+      it { expect(dummy_claim.rows.first).to be_a(BatchRows::ClaimRow) }
+    end
 
-    it { expect(dummy_action.rows).to be_an(Enumerator::Lazy) }
-    it { expect(dummy_action.rows.first).to be_a(BatchRows::ActionRow) }
+    context 'when the batch type is an "action"' do
+      it { expect(dummy_action.rows).to be_an(Enumerator::Lazy) }
+      it { expect(dummy_action.rows.first).to be_a(BatchRows::ActionRow) }
+    end
 
-    it { expect(dummy_unknown.rows).to be_an(Enumerator::Lazy) }
-    it { expect { dummy_unknown.rows.first }.to raise_error(NoMethodError) }
+    context 'when the batch type cannot be determined' do
+      it { expect(dummy_unknown.rows).to be_an(Enumerator::Lazy) }
+      it { expect { dummy_unknown.rows.first }.to raise_error(NoMethodError) }
+    end
 
     context 'when parsed CSV data omits the optional error column' do
       before do
@@ -56,6 +62,25 @@ RSpec.describe BatchRows do
 
       it { expect(dummy_action.rows).to be_an(Enumerator::Lazy) }
       it { expect(dummy_action.rows.first).to be_a(BatchRows::ActionRow) }
+    end
+
+    context 'when parsed CSV data contains missing or blank cells' do
+      before do
+        allow(dummy_action).to receive(:data).and_return([{ trn: '1234567', date_of_birth: nil, outcome: '' }])
+      end
+
+      it 'does not raise an error' do
+        expect(dummy_action.rows).to be_an(Enumerator::Lazy)
+      end
+
+      it 'all omitted attributes return nil' do
+        expect(dummy_action.rows.first.trn).to eq('1234567')
+        expect(dummy_action.rows.first.date_of_birth).to be_nil
+        expect(dummy_action.rows.first.finished_on).to be_nil
+        expect(dummy_action.rows.first.number_of_terms).to be_nil
+        expect(dummy_action.rows.first.outcome).to be_empty
+        expect(dummy_action.rows.first.error).to be_nil
+      end
     end
   end
 end
