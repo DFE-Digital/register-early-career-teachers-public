@@ -5,4 +5,8 @@ module RegisterECTHelper
 
     schools_register_ect_wizard_change_state_school_appropriate_body_path
   end
+
+  def formatted_academic_year_range(year)
+    "#{year} to #{year + 1}"
+  end
 end
