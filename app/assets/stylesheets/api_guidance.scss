@@ -33,6 +33,7 @@ $x-govuk-masthead-text-colour: govuk-colour("white");
   @include govuk-font($size: 48, $weight: "bold");
   @include govuk-responsive-margin(6, "bottom");
   @include govuk-responsive-margin(6, "top");
+  color: $x-govuk-masthead-text-colour;
 }
 
 .x-govuk-masthead__description {
