@@ -1,12 +1,21 @@
 module TRS
   class FakeAPIClient
-    def initialize(raise_not_found: false, raise_deactivated: false, include_qts: true, include_itt: true, prohibited_from_teaching: false, induction_status: nil)
+    def initialize(
+      raise_not_found: false,
+      raise_deactivated: false,
+      include_qts: true,
+      include_itt: true,
+      prohibited_from_teaching: false,
+      induction_status: nil,
+      random_names: false
+    )
       @raise_not_found = raise_not_found
       @raise_deactivated = raise_deactivated
       @include_qts = include_qts
       @include_itt = include_itt
       @prohibited_from_teaching = prohibited_from_teaching
       @induction_status = induction_status
+      @random_names = random_names
     end
 
     def find_teacher(trn:, date_of_birth: "1977-02-03", national_insurance_number: nil)
@@ -38,14 +47,20 @@ module TRS
 
   private
 
-    def teacher_params(trn:, date_of_birth:, national_insurance_number:)
+    def teacher_params(trn:, date_of_birth:, national_insurance_number:, first_name: 'Kirk', last_name: 'Van Houten')
+      first_name, last_name = *random_name if @random_names
+
       {
         'trn' => trn,
-        'firstName' => 'Kirk',
-        'lastName' => 'Van Houten',
+        'firstName' => first_name,
+        'lastName' => last_name,
         'dateOfBirth' => date_of_birth,
         'nationalInsuranceNumber' => national_insurance_number,
       }
+    end
+
+    def random_name
+      File.read(Rails.root.join('spec/support/api/trs/fake_api_names.yml')).split("\n").sample.split(" ", 2)
     end
 
     def qts
