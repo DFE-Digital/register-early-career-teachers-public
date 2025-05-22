@@ -14,11 +14,20 @@
 <div class="govuk-grid-row">
   <% if @mentors.present? %>
   
-    <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">Search by name or teacher reference number (TRN)</h2>
-    </div>
-
     <div class='govuk-grid-column-two-thirds'>
+
+      <div class="app-search ">
+        <%= form_with method: :get do |f| %>
+          <div class="govuk-form-group">
+            <%= f.govuk_text_field(
+            :q,
+            value: params[:q],
+            label: { text: "Search by name or teacher reference number (TRN)", size: "s" }
+            ) %>
+          </div>
+          <%= f.govuk_submit "Search", class: "govuk-button--secondary app-search__button" %>
+        <% end %>
+      </div>
       <% @mentors.map do |mentor| %>
         <%= render Schools::Mentors::SummaryComponent.new(mentor: mentor, school: @school) %>
       <% end %>
