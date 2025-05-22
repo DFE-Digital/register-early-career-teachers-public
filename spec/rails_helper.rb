@@ -20,6 +20,7 @@ RSpec.configure do |config|
     Rails.root.join('spec/fixtures')
   ]
 
+  config.include FactoryBot::Syntax::Methods
   config.include ActiveSupport::Testing::TimeHelpers
   config.include Features::ViewHelpers, type: :feature
   config.include APIHelper, type: :request
