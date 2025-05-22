@@ -20,7 +20,7 @@ module Schools
     private
 
       def link_to_mentor
-        govuk_link_to(teacher_full_name(@mentor.teacher), schools_mentor_path(@mentor))
+        govuk_link_to(teacher_full_name(@mentor), schools_mentor_path(mentor_period_for_school))
       end
 
       def trn_row
@@ -32,11 +32,15 @@ module Schools
       end
 
       def trn
-        @mentor.teacher.trn
+        @mentor.trn
       end
 
       def assigned_ects
-        @assigned_ects ||= @mentor.currently_assigned_ects
+        @assigned_ects ||= mentor_period_for_school&.currently_assigned_ects
+      end
+
+      def mentor_period_for_school
+        @mentor.mentor_at_school_periods.find_by(school: @school)
       end
 
       def assigned_ects_summary
