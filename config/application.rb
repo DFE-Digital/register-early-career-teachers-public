@@ -40,6 +40,7 @@ module RegisterEarlyCareerTeachers
     config.active_record.encryption.key_derivation_salt = ENV["ENCRYPTION_DERIVATION_SALT"]
 
     # Custom config
+    config.enable_fake_trs_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_FAKE_TRS_API', false))
     config.enable_personas = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_PERSONAS', false))
     config.enable_persona_avatars = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_PERSONA_AVATARS', true))
     config.enable_migration_testing = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_MIGRATION_TESTING', false))
