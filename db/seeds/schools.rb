@@ -2,7 +2,7 @@ def describe_school(school)
   print_seed_info("#{school.name} (URN #{school.urn})", indent: 2)
 end
 
-school_data = [
+[
   { urn: 3_375_958, name: "Ackley Bridge" },
   { urn: 1_759_427, name: "Abbey Grove School" },
   { urn: 2_472_261, name: "Grange Hill" },
@@ -12,17 +12,15 @@ school_data = [
   { urn: 2_976_163, name: "Brookfield School" },
   { urn: 4_594_193, name: "Crunchem Hall Primary School" },
   { urn: 6_384_201, name: "Greyfriars School" }
-]
-
-school_data.map do |school_args|
+].map do |data|
   # FIXME: this is a bit nasty but gets the seeds working again
-  GIAS::School.create!(school_args.merge(funding_eligibility: :eligible_for_fip,
-                                         induction_eligibility: :eligible,
-                                         local_authority_code: rand(20),
-                                         establishment_number: school_args[:urn],
-                                         type_name: school_args[:name] == 'Brookfield School' ? GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.sample : GIAS::Types::STATE_SCHOOL_TYPES.sample,
-                                         in_england: true,
-                                         section_41_approved: false))
+  GIAS::School.create!(data.merge(funding_eligibility: :eligible_for_fip,
+                                  induction_eligibility: :eligible,
+                                  local_authority_code: rand(20),
+                                  establishment_number: data[:urn],
+                                  type_name: data[:name] == 'Brookfield School' ? GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.sample : GIAS::Types::STATE_SCHOOL_TYPES.sample,
+                                  in_england: true,
+                                  section_41_approved: false))
 
-  School.create!(school_args.except(:name)).tap { |school| describe_school(school) }
+  School.create!(data.except(:name)).tap { |school| describe_school(school) }
 end

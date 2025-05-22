@@ -1,11 +1,16 @@
-def describe_delivery_partner(dp)
-  print_seed_info(dp.name, indent: 2)
+def describe_delivery_partner(delivery_partner)
+  print_seed_info(delivery_partner.name, indent: 2)
 end
 
-DeliveryPartner.create!(name: 'Rise Teaching School Hub').tap { |dp| describe_delivery_partner(dp) }
-DeliveryPartner.create!(name: 'Miller Teaching School Hub').tap { |dp| describe_delivery_partner(dp) }
-DeliveryPartner.create!(name: 'Grain Teaching School Hub').tap { |dp| describe_delivery_partner(dp) }
-DeliveryPartner.create!(name: 'Artisan Education Group').tap { |dp| describe_delivery_partner(dp) }
-DeliveryPartner.create!(name: 'Rising Minds Network').tap { |dp| describe_delivery_partner(dp) }
-DeliveryPartner.create!(name: 'Proving Potential Teaching School Hub').tap { |dp| describe_delivery_partner(dp) }
-DeliveryPartner.create!(name: 'Harvest Academy').tap { |dp| describe_delivery_partner(dp) }
+[
+  'Rise Teaching School Hub',
+  'Miller Teaching School Hub',
+  'Grain Teaching School Hub',
+  'Artisan Education Group',
+  'Rising Minds Network',
+  'Proving Potential Teaching School Hub',
+  'Harvest Academy'
+].each do |name|
+  delivery_partner = DeliveryPartner.create!(name:)
+  describe_delivery_partner(delivery_partner)
+end
