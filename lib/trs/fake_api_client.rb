@@ -1,6 +1,7 @@
 module TRS
   class FakeAPIClient
     class FakeAPIClientUsedInProduction < StandardError; end
+    attr_reader :random_names
 
     def initialize(
       raise_not_found: false,
@@ -28,13 +29,11 @@ module TRS
 
       Rails.logger.info("TRSFakeAPIClient pretending to find teacher with TRN=#{trn} and Date of birth=#{date_of_birth} and National Insurance Number=#{national_insurance_number}")
 
-      TRS::Teacher.new(
-        teacher_params(trn:, date_of_birth:, national_insurance_number:)
-          .merge(qts)
-          .merge(itt)
-          .merge(prohibited_from_teaching)
-          .merge(induction_status)
-      )
+      if random_names
+        build_trs_teacher_based_on_trn_range(trn:, date_of_birth:, national_insurance_number:)
+      else
+        build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
+      end
     end
 
     def pass_induction!(...)
@@ -50,6 +49,29 @@ module TRS
     end
 
   private
+
+    def build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
+      TRS::Teacher.new(
+        teacher_params(trn:, date_of_birth:, national_insurance_number:)
+          .merge(qts)
+          .merge(itt)
+          .merge(prohibited_from_teaching)
+          .merge(induction_status)
+      )
+    end
+
+    def build_trs_teacher_based_on_trn_range(trn:, date_of_birth:, national_insurance_number:)
+      @induction_status = 'RequiredToComplete'
+
+      case trn.to_i
+      when 7_000_001 then raise(TRS::Errors::QTSNotAwarded)
+      when 7_000_002 then raise(TRS::Errors::TeacherNotFound)
+      when 7_000_003 then raise(TRS::Errors::ProhibitedFromTeaching)
+      when 7_000_004 then raise(TRS::Errors::TeacherDeactivated)
+      else
+        build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
+      end
+    end
 
     def teacher_params(trn:, date_of_birth:, national_insurance_number:, first_name: 'Kirk', last_name: 'Van Houten')
       first_name, last_name = *random_name if @random_names
