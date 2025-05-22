@@ -1,5 +1,4 @@
-.app-search form {
-
+.app-search-form {
   // Inline the input and button on tablet and up
   align-items: flex-end;
 
@@ -8,7 +7,7 @@
   }
 }
 
-.app-search .govuk-form-group {
+.app-search-form .govuk-form-group {
   flex: 1;
   margin-bottom: govuk-spacing(4);
 }
