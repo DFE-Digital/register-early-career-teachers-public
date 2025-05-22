@@ -16,7 +16,6 @@ module TRS
     def self.build
       if Rails.application.config.enable_fake_trs_api
         Rails.logger.warn("Using TRS::FakeAPIClient")
-        require Rails.root.join('spec/support/api/trs/fake_api_client')
 
         return TRS::FakeAPIClient.new(random_names: true)
       end

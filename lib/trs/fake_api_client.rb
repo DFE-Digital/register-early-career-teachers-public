@@ -1,5 +1,7 @@
 module TRS
   class FakeAPIClient
+    class FakeAPIClientUsedInProduction < StandardError; end
+
     def initialize(
       raise_not_found: false,
       raise_deactivated: false,
@@ -9,6 +11,8 @@ module TRS
       induction_status: nil,
       random_names: false
     )
+      fail(FakeAPIClientUsedInProduction) if Rails.env.production?
+
       @raise_not_found = raise_not_found
       @raise_deactivated = raise_deactivated
       @include_qts = include_qts
