@@ -1,7 +1,7 @@
 module ApplicationHelper
   include Pagy::Frontend
 
-  def page_data(title:, header: nil, header_size: "l", error: false, backlink_href: nil, caption: nil, caption_size: 'm')
+  def page_data(title:, header: nil, header_size: "l", error: false, backlink_href: nil, caption: nil, caption_size: 'm', header_classes: [])
     page_title = title_with_error_prefix(title, error:)
 
     content_for(:page_title) { page_title }
@@ -12,7 +12,7 @@ module ApplicationHelper
 
     content_for(:backlink_or_breadcrumb) { backlink_or_breadcrumb }
 
-    page_header = tag.h1(header || title, class: "govuk-heading-#{header_size}")
+    page_header = tag.h1(header || title, class: ["govuk-heading-#{header_size}", *header_classes])
 
     content_for(:page_header) { page_header }
 
