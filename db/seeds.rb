@@ -244,24 +244,18 @@ rp_2025 = RegistrationPeriod.create!(year: 2025, started_on: Date.new(2025, 6, 1
 
 print_seed_info("Adding lead providers")
 
-grove_institute = LeadProvider.create!(name: 'Grove Institute')
-evergreen_network = LeadProvider.create!(name: 'Evergreen Network')
-national_meadows_institute = LeadProvider.create!(name: 'National Meadows Institute')
-woodland_education_trust = LeadProvider.create!(name: 'Woodland Education Trust')
-teach_orchard = LeadProvider.create!(name: 'Teach Orchard')
-highland_collage_university = LeadProvider.create!(name: 'Highland College University')
-wildflower_trust = LeadProvider.create!(name: 'Wildflower Trust')
-pine_institute = LeadProvider.create!(name: 'Pine Institute')
+ambitious_institute = LeadProvider.create!(name: 'Ambitious Institute')
+capitan = LeadProvider.create!(name: 'Capitan')
+teach_fast = LeadProvider.create!(name: 'Teach Fast')
+international_institute_of_teaching = LeadProvider.create!(name: 'International Institute of Teaching')
+better_practice_network = LeadProvider.create!(name: 'Better Practice Network')
 
 {
-  evergreen_network => [],
-  grove_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
-  highland_collage_university => [],
-  national_meadows_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
-  pine_institute => [],
-  teach_orchard => [],
-  wildflower_trust => [rp_2022, rp_2023, rp_2024, rp_2025],
-  woodland_education_trust => [],
+  capitan => [rp_2021, rp_2022, rp_2023],
+  ambitious_institute => [rp_2022, rp_2023, rp_2024, rp_2025],
+  teach_fast => [rp_2022, rp_2023, rp_2024, rp_2025],
+  better_practice_network => [rp_2022, rp_2023, rp_2024, rp_2025],
+  international_institute_of_teaching => [rp_2021],
 }.each do |lead_provider, registration_periods|
   registration_periods.each { |registration_period| ActiveLeadProvider.create!(registration_period:, lead_provider:) }
 
@@ -280,45 +274,45 @@ DeliveryPartner.create!(name: 'Harvest Academy').tap { |dp| describe_delivery_pa
 
 print_seed_info("Adding provider partnerships")
 
-grove_artisan_partnership_2021 = SchoolPartnership.create!(
+ambitious_artisan_partnership_2021 = SchoolPartnership.create!(
   registration_period: rp_2021,
-  lead_provider: grove_institute,
+  lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
 SchoolPartnership.create!(
   registration_period: rp_2022,
-  lead_provider: grove_institute,
+  lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
-grove_artisan_partnership_2023 = SchoolPartnership.create!(
+ambitious_artisan_partnership_2023 = SchoolPartnership.create!(
   registration_period: rp_2023,
-  lead_provider: grove_institute,
+  lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group
 ).tap { |pp| describe_school_partnership(pp) }
 
-meadow_grain_partnership_2022 = SchoolPartnership.create!(
+teach_fast_grain_partnership_2022 = SchoolPartnership.create!(
   registration_period: rp_2022,
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   delivery_partner: grain_teaching_school_hub
 ).tap { |pp| describe_school_partnership(pp) }
 
-_meadow_grain_partnership_2023 = SchoolPartnership.create!(
+_teach_fast_grain_partnership_2023 = SchoolPartnership.create!(
   registration_period: rp_2023,
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   delivery_partner: grain_teaching_school_hub
 ).tap { |pp| describe_school_partnership(pp) }
 
-_wildflower_rising_partnership_2023 = SchoolPartnership.create!(
+_better_practice_rising_partnership_2023 = SchoolPartnership.create!(
   registration_period: rp_2023,
-  lead_provider: wildflower_trust,
+  lead_provider: better_practice_network,
   delivery_partner: rising_minds
 ).tap { |pp| describe_school_partnership(pp) }
 
-_wildflower_rising_partnership_2024 = SchoolPartnership.create!(
+_better_practice_rising_partnership_2024 = SchoolPartnership.create!(
   registration_period: rp_2024,
-  lead_provider: wildflower_trust,
+  lead_provider: better_practice_network,
   delivery_partner: rising_minds
 ).tap { |pp| describe_school_partnership(pp) }
 
@@ -337,7 +331,7 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 3.years.ago,
   finished_on: 140.weeks.ago,
-  school_partnership: grove_artisan_partnership_2021
+  school_partnership: ambitious_artisan_partnership_2021
 ).tap { |tp| describe_training_period(tp) }
 
 # 10 week break
@@ -346,7 +340,7 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 130.weeks.ago,
   finished_on: nil,
-  school_partnership: grove_artisan_partnership_2021
+  school_partnership: ambitious_artisan_partnership_2021
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Kate Winslet (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -365,7 +359,7 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: kate_winslet_ect_at_ackley_bridge,
   started_on: 1.year.ago,
-  school_partnership: grove_artisan_partnership_2023
+  school_partnership: ambitious_artisan_partnership_2023
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
@@ -396,7 +390,7 @@ hugh_laurie_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: hugh_laurie_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Alan Rickman (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -406,20 +400,20 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   school: ackley_bridge,
   email: 'alan.rickman@diehard.com',
   started_on: 2.years.ago,
-  lead_provider: wildflower_trust,
+  lead_provider: better_practice_network,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-ackley_bridge.update!(last_chosen_lead_provider: wildflower_trust,
+ackley_bridge.update!(last_chosen_lead_provider: better_practice_network,
                       last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
                       last_chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: alan_rickman_ect_at_ackley_bridge,
   started_on: 2.years.ago + 1.month,
-  school_partnership: meadow_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
@@ -462,7 +456,7 @@ TrainingPeriod.create!(
   ect_at_school_period: hugh_grant_ect_at_abbey_grove,
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
-  school_partnership: grove_artisan_partnership_2021
+  school_partnership: ambitious_artisan_partnership_2021
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
@@ -505,7 +499,7 @@ TrainingPeriod.create!(
   ect_at_school_period: colin_firth_ect_at_abbey_grove,
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
-  school_partnership: grove_artisan_partnership_2021
+  school_partnership: ambitious_artisan_partnership_2021
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
@@ -588,7 +582,7 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: imogen_stubbs_at_malory_towers,
   started_on: 1.year.ago,
-  school_partnership: meadow_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 InductionExtension.create!(
@@ -611,20 +605,20 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   school: mallory_towers,
   email: 'gemma.jones@rocketman.com',
   started_on: 21.months.ago,
-  lead_provider: wildflower_trust,
+  lead_provider: better_practice_network,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-mallory_towers.update!(last_chosen_lead_provider: wildflower_trust,
+mallory_towers.update!(last_chosen_lead_provider: better_practice_network,
                        last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
                        last_chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: gemma_jones_at_malory_towers,
   started_on: 20.months.ago,
-  school_partnership: meadow_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 InductionExtension.create!(
@@ -644,7 +638,7 @@ andre_roussimoff_mentoring_at_ackley_bridge = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: andre_roussimoff_mentoring_at_ackley_bridge,
   started_on: 1.year.ago,
-  school_partnership: meadow_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Anthony Hopkins (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -653,7 +647,7 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   teacher: anthony_hopkins,
   school: brookfield_school,
   email: 'anthony.hopkins@favabeans.com',
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   school_reported_appropriate_body: umber_teaching_school_hub,
   programme_type: 'provider_led',
   started_on: 2.years.ago,
@@ -663,7 +657,7 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: anthony_hopkins_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Stephen Fry (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -673,20 +667,20 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'stephen.fry@sausage.com',
   started_on: 2.years.ago,
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led',
   working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-brookfield_school.update!(last_chosen_lead_provider: national_meadows_institute,
+brookfield_school.update!(last_chosen_lead_provider: teach_fast,
                           last_chosen_appropriate_body: south_yorkshire_studio_hub,
                           last_chosen_programme_type: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: stephen_fry_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Harriet Walter (ECT) with multiple induction periods", indent: 2, colour: ECT_COLOUR)
@@ -696,7 +690,7 @@ ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'harriet-walter@history.com',
   started_on: 2.years.ago,
-  lead_provider: national_meadows_institute,
+  lead_provider: teach_fast,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
   programme_type: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -713,7 +707,7 @@ helen_mirren_mentoring_at_brookfield_school = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: helen_mirren_mentoring_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("John Withers (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -728,7 +722,7 @@ john_withers_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
-  school_partnership: meadow_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Adding mentorships:")
