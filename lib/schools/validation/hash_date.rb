@@ -37,6 +37,8 @@ module Schools
       def extra_validation_error_message = nil
 
       def invalid_date?
+        return true if year_zero?
+
         value_as_date
         false
       rescue ArgumentError
@@ -48,6 +50,10 @@ module Schools
         return self.class::INVALID_FORMAT_MESSAGE if invalid_date?
 
         extra_validation_error_message
+      end
+
+      def year_zero?
+        date_as_hash[1].to_i.zero?
       end
     end
   end

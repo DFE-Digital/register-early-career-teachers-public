@@ -41,7 +41,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
     end
 
     context "when the year is non-integer" do
-      # "abcd".to_i == 0 and and therefore a valid date year but it is out of range
+      # "abcd".to_i == 0 and and therefore a valid date year but it is not valid
       let(:start_date) { { 1 => "abcd", 2 => "07", 3 => "1" } }
 
       it "adds an error" do
