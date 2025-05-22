@@ -10,9 +10,9 @@ end
 
 priority_seeds = %w[
   registration_periods
+  lead_providers
   appropriate_bodies
   delivery_partners
-  lead_providers
   schools
   school_partnerships
   teachers
