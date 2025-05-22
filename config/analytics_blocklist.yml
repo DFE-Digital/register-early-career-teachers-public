@@ -394,3 +394,11 @@
   - state
   - created_at
   - updated_at
+  :api_tokens:
+  - id
+  - lead_provider_id
+  - token
+  - description
+  - last_used_at
+  - created_at
+  - updated_at
