@@ -84,8 +84,24 @@ RSpec.describe 'Process bulk actions' do
         end
       end
 
-      context 'when file is not a CSV' do
+      context 'when template is empty' do
+        let(:file_path) { Rails.root.join('public/bulk-actions-template.csv').to_s }
+
+        scenario 'fails immediately' do
+          then_i_should_see_the_error('The selected file is empty')
+        end
+      end
+
+      context 'when file is not a CSV (text)' do
         let(:file_name) { 'invalid_not_a_csv_file.txt' }
+
+        scenario 'fails immediately' do
+          then_i_should_see_the_error('The selected file must be a CSV')
+        end
+      end
+
+      context 'when file is not a CSV (image)' do
+        let(:file_path) { Rails.root.join('documentation/domain-model.png').to_s }
 
         scenario 'fails immediately' do
           then_i_should_see_the_error('The selected file must be a CSV')
