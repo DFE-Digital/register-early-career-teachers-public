@@ -2,6 +2,8 @@ describe Statement do
   describe "associations" do
     it { is_expected.to belong_to(:active_lead_provider) }
     it { is_expected.to have_many(:adjustments) }
+    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
+    it { is_expected.to have_one(:registration_period).through(:active_lead_provider) }
   end
 
   describe "validations" do
@@ -13,6 +15,24 @@ describe Statement do
     it { is_expected.to validate_numericality_of(:year).only_integer.is_greater_than_or_equal_to(2020).with_message("Year must be on or after 2020 and on or before #{described_class.maximum_year}") }
     it { is_expected.to validate_uniqueness_of(:active_lead_provider_id).scoped_to(:year, :month).with_message("Statement with the same month and year already exists for the lead provider") }
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another statement") }
+  end
+
+  describe "scopes" do
+    describe ".with_state" do
+      it "selects only statements with states matching the provided name" do
+        expect(Statement.with_state("foo").to_sql).to include(%(WHERE "statements"."state" = 'foo'))
+      end
+
+      it "selects only multiple statements with states matching the provided names" do
+        expect(Statement.with_state("foo", "bar").to_sql).to include(%(WHERE "statements"."state" IN ('foo', 'bar')))
+      end
+    end
+
+    describe ".with_output_fee" do
+      it "selects only output fee statements" do
+        expect(Statement.with_output_fee.to_sql).to include(%(WHERE "statements"."output_fee" = TRUE))
+      end
+    end
   end
 
   describe ".maximum_year" do
