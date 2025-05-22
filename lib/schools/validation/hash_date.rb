@@ -8,7 +8,7 @@ module Schools
 
       # Expects value with the format { 1 => year, 2 => month, 3 => day } or a date string or a Date instance
       def initialize(value)
-        @date_as_hash = value.is_a?(Hash) ? value : convert_to_hash(value&.to_date)
+        @date_as_hash = value.is_a?(Hash) ? integerize_keys!(value) : convert_to_hash(value&.to_date)
       end
 
       def valid?
@@ -17,6 +17,10 @@ module Schools
       end
 
     private
+
+      def integerize_keys!(hash)
+        hash.transform_keys(&:to_i)
+      end
 
       def convert_to_hash(date)
         { 3 => date.day, 2 => date.month, 1 => date.year } if date
