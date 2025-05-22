@@ -7,7 +7,7 @@ module Teachers
     end
 
     def refresh!
-      trs_teacher = TRS::APIClient.new.find_teacher(trn: teacher.trn)
+      trs_teacher = TRS::APIClient.build.find_teacher(trn: teacher.trn)
 
       Teacher.transaction do
         manage_teacher.update_name!(trs_first_name: trs_teacher.first_name, trs_last_name: trs_teacher.last_name)
