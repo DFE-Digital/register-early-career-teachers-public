@@ -1,8 +1,10 @@
 RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
   let(:school) { FactoryBot.create(:school) }
-  let(:mentor_teacher) { FactoryBot.create(:teacher, trs_first_name: 'Naruto', trs_last_name: 'Uzumaki') }
+  let(:mentor) { FactoryBot.create(:teacher, trs_first_name: 'Naruto', trs_last_name: 'Uzumaki') }
   let(:started_on) { Date.new(2023, 9, 1) }
-  let(:mentor) { FactoryBot.create(:mentor_at_school_period, teacher: mentor_teacher, school:, started_on:, finished_on: nil) }
+  let!(:mentor_at_school_period) do
+    FactoryBot.create(:mentor_at_school_period, teacher: mentor, school:, started_on:, finished_on: nil)
+  end
 
   context 'with no ECTs' do
     it 'shows No ECTs assigned' do
@@ -14,10 +16,10 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
 
   context 'with less than or equal to 5 ECTs' do
     let!(:ects) do
-      FactoryBot.create_list(:teacher, 5).map do |teacher|
-        ect = FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on:, finished_on: nil)
-        FactoryBot.create(:mentorship_period, mentor:, mentee: ect, started_on:, finished_on: nil)
-        teacher
+      FactoryBot.create_list(:teacher, 5).map do |ect_teacher|
+        ect = FactoryBot.create(:ect_at_school_period, teacher: ect_teacher, school:, started_on:, finished_on: nil)
+        FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: ect, started_on:, finished_on: nil)
+        ect_teacher
       end
     end
 
@@ -32,9 +34,9 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
 
   context 'with more than 5 ECTs' do
     before do
-      FactoryBot.create_list(:teacher, 6).each do |teacher|
-        ect = FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on:, finished_on: nil)
-        FactoryBot.create(:mentorship_period, mentor:, mentee: ect, started_on:, finished_on: nil)
+      FactoryBot.create_list(:teacher, 6).each do |ect_teacher|
+        ect = FactoryBot.create(:ect_at_school_period, teacher: ect_teacher, school:, started_on:, finished_on: nil)
+        FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: ect, started_on:, finished_on: nil)
       end
     end
 
@@ -45,8 +47,10 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
   end
 
   context 'when there are multiple mentors' do
-    let(:mentor2_teacher) { FactoryBot.create(:teacher, trs_first_name: 'Sasuke', trs_last_name: 'Uchiha') }
-    let(:mentor2) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor2_teacher, school:, started_on:) }
+    let(:second_mentor) { FactoryBot.create(:teacher, trs_first_name: 'Sasuke', trs_last_name: 'Uchiha') }
+    let!(:second_mentor_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, :active, teacher: second_mentor, school:, started_on:)
+    end
 
     let(:ect1_teacher) { FactoryBot.create(:teacher, trs_first_name: 'Konohamaru', trs_last_name: 'Sarutobi') }
     let(:ect2_teacher) { FactoryBot.create(:teacher, trs_first_name: 'Boruto', trs_last_name: 'Uzumaki') }
@@ -55,8 +59,8 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
     let(:ect2) { FactoryBot.create(:ect_at_school_period, teacher: ect2_teacher, school:, started_on:, finished_on: nil) }
 
     before do
-      FactoryBot.create(:mentorship_period, mentor:, mentee: ect1, started_on:, finished_on: nil)
-      FactoryBot.create(:mentorship_period, mentor: mentor2, mentee: ect2, started_on:, finished_on: nil)
+      FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: ect1, started_on:, finished_on: nil)
+      FactoryBot.create(:mentorship_period, mentor: second_mentor_at_school_period, mentee: ect2, started_on:, finished_on: nil)
     end
 
     it 'only shows ECTs assigned to the specific mentor' do
