@@ -1,5 +1,7 @@
 module TRS
   class APIClient
+    private_class_method :new
+
     def initialize
       @connection = Faraday.new(url: Rails.application.config.trs_api_base_url) do |faraday|
         faraday.headers['Authorization'] = "Bearer #{Rails.application.config.trs_api_key}"
@@ -9,6 +11,18 @@ module TRS
         faraday.adapter Faraday.default_adapter
         faraday.response :logger if Rails.env.development?
       end
+    end
+
+    def self.build
+      if Rails.application.config.enable_fake_trs_api
+        Rails.logger.warn("Using TRS::FakeAPIClient")
+        require Rails.root.join('spec/support/api/trs/fake_api_client')
+
+        return TRS::FakeAPIClient.new(random_names: true)
+      end
+
+      Rails.logger.warn("Using real TRS::APIClient")
+      new
     end
 
     # Included items:

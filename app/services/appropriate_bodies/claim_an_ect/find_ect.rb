@@ -36,7 +36,7 @@ module AppropriateBodies
       end
 
       def api_client
-        @api_client ||= TRS::APIClient.new
+        @api_client ||= TRS::APIClient.build
       end
 
       def check_if_teacher_has_ongoing_induction_period_with_appropriate_body!

@@ -70,13 +70,13 @@ mismatched_teachers.each do |teacher|
 
   begin
     if latest_period.outcome == 'pass'
-      TRS::APIClient.new.pass_induction!(
+      TRS::APIClient.build.pass_induction!(
         trn:,
         start_date: latest_period.started_on,
         completed_date: latest_period.finished_on
       )
     elsif latest_period.outcome == 'fail'
-      TRS::APIClient.new.fail_induction!(
+      TRS::APIClient.build.fail_induction!(
         trn:,
         start_date: latest_period.started_on,
         completed_date: latest_period.finished_on
