@@ -1,0 +1,18 @@
+<%
+  page_data(
+    title: "Edit extension",
+    caption: teacher_full_name(@teacher),
+    caption_size: "m",
+    backlink_href: admin_teacher_extensions_path(@teacher)
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: @extension, url: admin_teacher_extension_path(@teacher, @extension), method: :patch do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+      <%= render "form", f: f %>
+      <%= f.govuk_submit "Update extension" %>
+    <% end %>
+  </div>
+</div>

@@ -69,4 +69,37 @@ RSpec.describe InductionExtensions::Manage do
       end
     end
   end
+
+  describe '#delete!' do
+    before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+
+    context 'when deleting an extension' do
+      let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 2.5) }
+
+      it 'deletes the extension and records a delete event' do
+        freeze_time do
+          expect {
+            service.delete!(id: induction_extension.id)
+          }.to change(InductionExtension, :count).by(-1)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            appropriate_body:,
+            author_email: 'christopher.biggins@education.gov.uk',
+            author_name: 'Christopher Biggins',
+            author_type: :appropriate_body_user,
+            event_type: :induction_extension_deleted,
+            happened_at: Time.zone.now,
+            heading: "Andy Zaltzman's induction extension of 2.5 terms was deleted",
+            teacher:
+          )
+        end
+      end
+
+      it 'raises an error if the extension does not exist' do
+        expect {
+          service.delete!(id: 999)
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
 end
