@@ -15,19 +15,17 @@ module Shared
     end
 
     def call
-      content_tag(:div, class: "app-search") do
-        form_with(method: :get, url: form_url) do |f|
-          safe_join([
-            content_tag(:div, class: "govuk-form-group") do
-              f.govuk_text_field(
-                query_param,
-                value: search_value,
-                label: { text: label_text, size: "s" }
-              )
-            end,
-            f.govuk_submit(submit_text, class: "govuk-button--secondary app-search__button")
-          ])
-        end
+      form_with(method: :get, url: form_url, html: { class: "app-search-form" }) do |f|
+        safe_join([
+          content_tag(:div, class: "govuk-form-group") do
+            f.govuk_text_field(
+              query_param,
+              value: search_value,
+              label: { text: label_text, size: "s" }
+            )
+          end,
+          f.govuk_submit(submit_text, class: "govuk-button--secondary app-search__button")
+        ])
       end
     end
 
