@@ -16,18 +16,8 @@
 
     <div class='govuk-grid-column-two-thirds'>
 
-      <div class="app-search ">
-        <%= form_with method: :get do |f| %>
-          <div class="govuk-form-group">
-            <%= f.govuk_text_field(
-            :q,
-            value: params[:q],
-            label: { text: "Search by name or teacher reference number (TRN)", size: "s" }
-            ) %>
-          </div>
-          <%= f.govuk_submit "Search", class: "govuk-button--secondary app-search__button" %>
-        <% end %>
-      </div>
+
+      <%= render Shared::TopSearchComponent.new %>
 
       <% @teachers.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
         <%=
