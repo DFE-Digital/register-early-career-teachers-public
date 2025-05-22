@@ -50,8 +50,94 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
   end
 
   describe '#next_step' do
-    it 'returns the next step' do
-      expect(subject.next_step).to eq(:working_pattern)
+    subject { described_class.new(start_date:) }
+
+    around do |example|
+      travel_to(today) { example.run }
+    end
+
+    let(:today) { Date.new(2024, 4, 15) }
+    let(:period_2023) { FactoryBot.create(:registration_period, year: 2023, enabled: enabled_2023) }
+    let(:enabled_2023) { true }
+
+    let(:period_2024) { FactoryBot.create(:registration_period, year: 2024, enabled: enabled_2024) }
+    let(:enabled_2024) { true }
+
+    let(:period_2025) { FactoryBot.create(:registration_period, year: 2025, enabled: enabled_2025) }
+    let(:enabled_2025) { true }
+
+    before do
+      period_2023
+      period_2024
+      period_2025
+    end
+
+    context "when the start date does not fall in any registration period" do
+      let(:start_date) { { 1 => "2030", 2 => "01", 3 => "01" } }
+
+      it "returns the cannot register ect yet step" do
+        expect(subject.next_step).to eq(:cannot_register_ect_yet)
+      end
+    end
+
+    context 'when the start date is in the past' do
+      let(:start_date) { { 1 => period_2023.year, 2 => "07", 3 => "01" } }
+
+      context 'when the past registration period is disabled' do
+        let(:enabled_2023) { false }
+
+        it 'returns the working pattern step' do
+          expect(subject.next_step).to eq(:working_pattern)
+        end
+      end
+
+      context 'when the past registration period is enabled' do
+        let(:enabled_2023) { true }
+
+        it 'returns the working pattern step' do
+          expect(subject.next_step).to eq(:working_pattern)
+        end
+      end
+    end
+
+    context 'when the start date is in the present' do
+      let(:start_date) { { 1 => period_2024.year, 2 => "07", 3 => "01" } }
+
+      context 'when the past registration period is disabled' do
+        let(:enabled_2024) { false }
+
+        it 'returns the cannot register ect yet step' do
+          expect(subject.next_step).to eq(:cannot_register_ect_yet)
+        end
+      end
+
+      context 'when the past registration period is enabled' do
+        let(:enabled_2024) { true }
+
+        it 'returns the working pattern step' do
+          expect(subject.next_step).to eq(:working_pattern)
+        end
+      end
+    end
+
+    context 'when the start date is in the future' do
+      let(:start_date) { { 1 => period_2025.year, 2 => "07", 3 => "01" } }
+
+      context 'when the past registration period is disabled' do
+        let(:enabled_2025) { false }
+
+        it 'returns the cannot register ect yet step' do
+          expect(subject.next_step).to eq(:cannot_register_ect_yet)
+        end
+      end
+
+      context 'when the past registration period is enabled' do
+        let(:enabled_2025) { true }
+
+        it 'returns the working pattern step' do
+          expect(subject.next_step).to eq(:working_pattern)
+        end
+      end
     end
   end
 
