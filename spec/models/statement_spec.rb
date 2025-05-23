@@ -19,18 +19,25 @@ describe Statement do
 
   describe "scopes" do
     describe ".with_state" do
+      let!(:statement1) { FactoryBot.create(:statement, :open) }
+      let!(:statement2) { FactoryBot.create(:statement, :payable) }
+      let!(:statement3) { FactoryBot.create(:statement, :paid) }
+
       it "selects only statements with states matching the provided name" do
-        expect(Statement.with_state("foo").to_sql).to include(%(WHERE "statements"."state" = 'foo'))
+        expect(described_class.with_state("open")).to contain_exactly(statement1)
       end
 
       it "selects only multiple statements with states matching the provided names" do
-        expect(Statement.with_state("foo", "bar").to_sql).to include(%(WHERE "statements"."state" IN ('foo', 'bar')))
+        expect(described_class.with_state("payable", "paid")).to contain_exactly(statement2, statement3)
       end
     end
 
     describe ".with_output_fee" do
+      let!(:statement1) { FactoryBot.create(:statement, output_fee: true) }
+      let!(:statement2) { FactoryBot.create(:statement, output_fee: false) }
+
       it "selects only output fee statements" do
-        expect(Statement.with_output_fee.to_sql).to include(%(WHERE "statements"."output_fee" = TRUE))
+        expect(described_class.with_output_fee).to contain_exactly(statement1)
       end
     end
   end
