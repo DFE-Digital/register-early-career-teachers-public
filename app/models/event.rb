@@ -23,6 +23,8 @@ class Event < ApplicationRecord
     teacher_trs_deactivated
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
+    lead_provider_api_token_created
+    lead_provider_api_token_revoked
   ].freeze
 
   belongs_to :teacher
