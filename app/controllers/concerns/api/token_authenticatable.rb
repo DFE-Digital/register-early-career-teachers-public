@@ -15,7 +15,7 @@ module API
 
     def authenticate_token
       authenticate_with_http_token do |token|
-        API::TokenManager.find_lead_provider_api_token(token:)
+        TokenManager.find_lead_provider_api_token(token:)
       end
     end
 

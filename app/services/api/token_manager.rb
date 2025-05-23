@@ -4,7 +4,7 @@ module API
       def create_lead_provider_api_token!(lead_provider:, token: nil, description: nil)
         description = "A lead provider token for #{lead_provider.name}" if description.nil?
 
-        APIToken.create!(
+        Token.create!(
           lead_provider:,
           token:,
           description:
@@ -19,7 +19,7 @@ module API
       end
 
       def find_lead_provider_api_token(token:)
-        APIToken.find_by(token:).tap { |api_token| api_token&.touch(:last_used_at) }
+        Token.lead_provider_tokens.find_by(token:).tap { |api_token| api_token&.touch(:last_used_at) }
       end
     end
   end
