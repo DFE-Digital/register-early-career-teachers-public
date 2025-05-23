@@ -42,8 +42,11 @@ RSpec.describe "Appropriate Body bulk actions show page", type: :request do
         get("/appropriate-body/bulk/actions/#{batch.id}.csv")
         expect(response).to be_successful
         expect(response.headers['Content-Disposition']).to include('filename="Errors for 3 valid actions.csv"')
-
-        expect(response.body).to eq "TRN,Date of birth,Induction period end date,Number of terms,Outcome,Error message\n"
+        expect(response.body).to eq(
+          <<~CSV_DATA
+            "TRN","Date of birth","Induction period end date","Number of terms","Outcome","Error message"
+          CSV_DATA
+        )
       end
     end
   end

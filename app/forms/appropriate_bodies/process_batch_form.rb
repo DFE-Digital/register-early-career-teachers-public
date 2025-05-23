@@ -16,15 +16,19 @@ module AppropriateBodies
                   :file_type,
                   :file_content
 
-    validates :file_content, presence: true
+    # Attribute validations
+    validates :file_name, presence: true
+    validates :file_type, presence: true
+    validates :file_size, presence: true
     validates :headers, presence: true
+    validates :file_content, presence: true
 
-    # validations
-    validate :csv_mime_type
+    # File validations
+    validate :csv_file
     validate :csv_file_size
-    validate :wrong_headers
-    validate :row_count
-    validate :unique_trns
+    validate :template, if: -> { is_a_csv? }
+    validate :row_count, if: -> { is_a_csv? }
+    validate :unique_trns, if: -> { is_a_csv? }
 
     # @param headers [Hash{Symbol => String}]
     # @param csv_file [ActionDispatch::Http::UploadedFile]
@@ -41,7 +45,7 @@ module AppropriateBodies
 
     # @return [Array<Hash{Symbol => String}>]
     def to_a
-      parse.map do |row|
+      rows.map do |row|
         row.to_h.compact.transform_keys { |k| headers.invert[k] }.transform_values(&:strip)
       end
     end
@@ -53,13 +57,18 @@ module AppropriateBodies
 
   private
 
+    def rows
+      parse.reject { |row| row['TRN'].blank? }
+    end
+
+    # NB: lines can be commented out for easier dev and testing
     def parse
-      @parse ||= CSV.parse(file_content, headers: true, skip_lines: /^#/) # NB: lines can be commented out for easier dev and testing
+      @parse ||= CSV.parse(file_content, headers: true, skip_lines: /^#/)
     end
 
     # Validation messages
 
-    def csv_mime_type
+    def csv_file
       errors.add(:csv_file, 'The selected file must be a CSV') unless is_a_csv?
     end
 
@@ -76,14 +85,14 @@ module AppropriateBodies
       errors.add(:csv_file, 'The selected file has duplicate ECTs') unless has_unique_trns?
     end
 
-    def wrong_headers
+    def template
       errors.add(:csv_file, 'The selected file must follow the template') unless has_valid_headers?
     end
 
     # Validation checks
 
     def is_a_csv?
-      MIME_TYPES.include?(file_type)
+      MIME_TYPES.include?(file_type) && file_name.match?(/\.csv\z/i)
     end
 
     def is_too_large?
@@ -91,11 +100,11 @@ module AppropriateBodies
     end
 
     def has_too_many_rows?
-      parse.count > MAX_ROW_SIZE
+      rows.count > MAX_ROW_SIZE
     end
 
     def has_too_few_rows?
-      parse.count.zero?
+      rows.count.zero?
     end
 
     # The "error" column is optional. Failed rows downloaded as a CSV contain errors
@@ -108,7 +117,8 @@ module AppropriateBodies
     end
 
     def has_unique_trns?
-      parse.map { |row| row['TRN'] }.uniq.count.eql?(parse.count)
+      trns = rows.map { |row| row['TRN'] }
+      trns.uniq.count.eql?(trns.count)
     end
   end
 end
