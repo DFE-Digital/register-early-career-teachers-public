@@ -14,27 +14,27 @@
 <div class="govuk-grid-row">
   <% if @teachers.present? %>
 
-    <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">Search by name</h2>
+    <div class='govuk-grid-column-two-thirds'>
+
+
+      <%= render Shared::TopSearchComponent.new %>
+
+      <% @teachers.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
+        <%=
+          govuk_summary_card(title: link_to_ect(ect)) do |card|
+            card.with_summary_list(
+              borders: false,
+              rows: [
+                { key: { text: 'Status' }, value: { text: ect_status(ect) } },
+                { key: { text: 'Mentor' }, value: { text: ect_mentor_details(ect) } },
+              ]
+            )
+          end
+        %>
+      <% end %>
+
+      <%= govuk_pagination(pagy: @pagy) %>
     </div>
-
-        <div class='govuk-grid-column-two-thirds'>
-          <% @teachers.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
-            <%=
-              govuk_summary_card(title: link_to_ect(ect)) do |card|
-                card.with_summary_list(
-                  borders: false,
-                  rows: [
-                    { key: { text: 'Status' }, value: { text: ect_status(ect) } },
-                    { key: { text: 'Mentor' }, value: { text: ect_mentor_details(ect) } },
-                  ]
-                )
-              end
-            %>
-          <% end %>
-
-          <%= govuk_pagination(pagy: @pagy) %>
-        </div>
 
   <% else %>
 

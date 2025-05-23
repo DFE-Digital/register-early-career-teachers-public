@@ -8,7 +8,7 @@ module Schools
     before_action :set_ects, only: :show
 
     def index
-      @pagy, @mentors = pagy(@school_home.mentors_with_ects, limit: 20)
+      @pagy, @mentors = pagy_array(Teachers::Search.new(mentor_at_school: school, query_string: params[:q]).search, limit: 20)
     end
 
     def show

@@ -14,11 +14,10 @@
 <div class="govuk-grid-row">
   <% if @mentors.present? %>
   
-    <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">Search by name or teacher reference number (TRN)</h2>
-    </div>
-
     <div class='govuk-grid-column-two-thirds'>
+
+      <%= render Shared::TopSearchComponent.new %>
+      
       <% @mentors.map do |mentor| %>
         <%= render Schools::Mentors::SummaryComponent.new(mentor: mentor, school: @school) %>
       <% end %>
