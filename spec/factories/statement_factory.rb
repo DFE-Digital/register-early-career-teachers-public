@@ -3,8 +3,11 @@ FactoryBot.define do
     active_lead_provider
 
     api_id { SecureRandom.uuid }
-    month { Faker::Number.between(from: 1, to: 12) }
-    year { Faker::Number.between(from: 2021, to: Date.current.year) }
+    sequence(:month) { |n| ((n - 1) % 12) + 1 }
+    sequence(:year) do |n|
+      available_years = (2021..Date.current.year).to_a
+      available_years[(n - 1) % available_years.size]
+    end
     deadline_date { Faker::Date.forward(days: 30) }
     payment_date { Faker::Date.forward(days: 30) }
     output_fee { true }
