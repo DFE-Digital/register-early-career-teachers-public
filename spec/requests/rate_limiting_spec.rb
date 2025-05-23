@@ -34,6 +34,29 @@ RSpec.describe "Rack::Attack" do
     end
   end
 
-  xit 'POST /otp-sign-in'
-  xit 'POST /otp-sign-in/verify'
+  context "rate limit /api/ endpoints by auth token" do
+    let(:headers) { { Authorization: "Bearer TEST_TOKEN" } }
+
+    it "throttles over 1000 requests within 5 minutes" do
+      freeze_time do
+        1000.times do
+          get(api_v3_statements_path, headers:)
+          expect(response).to have_http_status(:method_not_allowed) # change to :ok when /api/v3/statements is ready
+        end
+
+        5.times do
+          get(api_v3_statements_path, headers:)
+          expect(response).to have_http_status(:too_many_requests)
+        end
+      end
+
+      # After 5 minutes
+      travel(5.minutes) do
+        5.times do
+          get(api_v3_statements_path, headers:)
+          expect(response).to have_http_status(:method_not_allowed) # change to :ok when /api/v3/statements is ready
+        end
+      end
+    end
+  end
 end
