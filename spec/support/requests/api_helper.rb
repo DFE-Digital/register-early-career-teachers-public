@@ -19,6 +19,6 @@ module APIHelper
 
   def generate_api_token
     lead_provider = FactoryBot.create(:lead_provider)
-    APIToken.create_lead_provider_api_token!(lead_provider:)
+    API::TokenManager.create_lead_provider_api_token!(lead_provider:)
   end
 end

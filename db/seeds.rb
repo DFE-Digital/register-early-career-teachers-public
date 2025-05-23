@@ -35,7 +35,7 @@ maximum_lead_provider_name_length = LeadProvider.maximum("LENGTH(name)")
 
 LeadProvider.find_each do |lead_provider|
   token = lead_provider.name.parameterize
-  APIToken.create_lead_provider_api_token!(lead_provider:, token:)
+  API::TokenManager.create_lead_provider_api_token!(lead_provider:, token:)
 
   lead_provider_name = lead_provider.name.ljust(maximum_lead_provider_name_length)
   print_seed_info("#{lead_provider_name} \t '#{token}'", indent: 2)
