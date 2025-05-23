@@ -1,6 +1,6 @@
 def describe_lead_provider(lead_provider, years)
   years_description = if years.any?
-                        Colourize.text(years.map(&:year).join(', '), :green)
+                        Colourize.text(years.join(', '), :green)
                       else
                         Colourize.text('inactive', :red)
                       end
