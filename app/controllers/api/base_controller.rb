@@ -1,5 +1,5 @@
 module API
   class BaseController < ActionController::Base
-    include API::TokenAuthenticatable
+    include TokenAuthenticatable
   end
 end
