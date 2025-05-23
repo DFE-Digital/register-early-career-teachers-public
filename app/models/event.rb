@@ -1,5 +1,7 @@
 class Event < ApplicationRecord
   EVENT_TYPES = %w[
+    bulk_upload_completed
+    bulk_upload_started
     import_from_dqt
     induction_extension_created
     induction_extension_updated
