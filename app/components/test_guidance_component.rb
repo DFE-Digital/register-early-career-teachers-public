@@ -1,9 +1,10 @@
 class TestGuidanceComponent < ViewComponent::Base
   renders_one :trs_example_teacher_details, "TRSExampleTeacherDetails"
+  renders_one :trs_fake_api_instructions, "TRSFakeAPIInstructions"
 
   def render?
     ActiveModel::Type::Boolean.new.cast(ENV.fetch('TEST_GUIDANCE', false)) &&
-      (content.present? || trs_example_teacher_details.present?)
+      (content.present? || trs_example_teacher_details.present? || trs_fake_api_instructions.present?)
   end
 
   class TRSExampleTeacherDetails < ViewComponent::Base
@@ -53,6 +54,25 @@ class TestGuidanceComponent < ViewComponent::Base
         tag.p('To successfully locate an ECT from the TRS API, use credentials from the table below:'),
         govuk_table(head:, rows: rows_with_buttons),
         javascript_include_tag('populate-find-ect-form', data: { turbo_track: 'reload' }, defer: true)
+      ])
+    end
+  end
+
+  class TRSFakeAPIInstructions < ViewComponent::Base
+    def call
+      safe_join([
+        tag.h3("Information to review this journey", class: "govuk-heading-m"),
+        tag.p("Enter any TRN with the date of birth 03-02-1977 to register a random ECT.", class: "govuk-body"),
+        tag.p("The following TRNs are special and will result in an early exit.", class: "govuk-body"),
+        govuk_list(
+          [
+            '7000001 (QTS not awarded)',
+            '7000002 (teacher not found)',
+            '7000003 (prohibited from teaching)',
+            '7000004 (teacher has been deactivated in TRS)',
+          ],
+          type: 'bullet'
+        )
       ])
     end
   end

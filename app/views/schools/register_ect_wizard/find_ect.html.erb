@@ -23,6 +23,12 @@
   <%= f.govuk_submit "Continue" %>
 <% end %>
 
-<%= render TestGuidanceComponent.new do |component| %>
-  <% component.with_trs_example_teacher_details %>
-<% end %>
+<%=
+  render TestGuidanceComponent.new do |component|
+    if Rails.application.config.enable_fake_trs_api
+      component.with_trs_fake_api_instructions
+    else
+      component.with_trs_example_teacher_details
+    end
+  end
+%>
