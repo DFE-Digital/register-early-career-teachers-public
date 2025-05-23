@@ -60,7 +60,7 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
       end
     end
 
-    describe 'contains some empty rows' do
+    describe 'contains some empty rows (at the end)' do
       let(:csv_content) do
         <<~CSV
           TRN,Date of birth,Induction period end date,Number of terms,Outcome
@@ -68,6 +68,26 @@ RSpec.describe AppropriateBodies::ProcessBatchForm, type: :model do
           2345678,2001-02-02,2024-12-31,2,Fail
           ,,,,
           ,,,,
+        CSV
+      end
+
+      specify do
+        expect(form).to be_valid
+        expect(form.to_a).to eq([
+          { trn: '1234567', date_of_birth: '2000-01-01', finished_on: '2023-12-31', number_of_terms: '1', outcome: 'Pass', },
+          { trn: '2345678', date_of_birth: '2001-02-02', finished_on: '2024-12-31', number_of_terms: '2', outcome: 'Fail' }
+        ])
+      end
+    end
+
+    describe 'contains some empty rows (in the middle)' do
+      let(:csv_content) do
+        <<~CSV
+          TRN,Date of birth,Induction period end date,Number of terms,Outcome
+          ,,,,
+          1234567,2000-01-01,2023-12-31,1,Pass
+          ,,,,
+          2345678,2001-02-02,2024-12-31,2,Fail
         CSV
       end
 
