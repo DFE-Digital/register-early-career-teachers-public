@@ -19,11 +19,10 @@ module Statements
       scope.order(payment_date: :asc)
     end
 
-    def statement(id: nil, api_id: nil)
+    def statement_by_api_id(api_id)
       return scope.find_by!(api_id:) if api_id.present?
-      return scope.find(id) if id.present?
 
-      fail(ArgumentError, "id or api_id needed")
+      fail(ArgumentError, "api_id needed")
     end
 
   private
