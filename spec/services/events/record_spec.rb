@@ -748,4 +748,42 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe '.record_lead_provider_api_token_created_event!' do
+    let(:api_token) { FactoryBot.create(:api_token) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_lead_provider_api_token_created_event!(author:, api_token:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "An API token was created for lead provider: #{api_token.lead_provider.name}",
+          lead_provider: api_token.lead_provider,
+          event_type: :lead_provider_api_token_created,
+          happened_at: Time.zone.now,
+          metadata: { description: api_token.description },
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_lead_provider_api_token_revoked_event!' do
+    let(:api_token) { FactoryBot.create(:api_token) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_lead_provider_api_token_revoked_event!(author:, api_token:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "An API token was revoked for lead provider: #{api_token.lead_provider.name}",
+          lead_provider: api_token.lead_provider,
+          event_type: :lead_provider_api_token_revoked,
+          happened_at: Time.zone.now,
+          metadata: { description: api_token.description },
+          **author_params
+        )
+      end
+    end
+  end
 end
