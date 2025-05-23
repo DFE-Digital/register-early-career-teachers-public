@@ -6,6 +6,7 @@ ENABLE_SENTRY: true
 SENTRY_ENVIRONMENT: sandbox
 ENABLE_PERSONAS: false
 ENABLE_BULK_UPLOAD: false
+ENABLE_API: true
 DFE_SIGN_IN_API_AUDIENCE: signin.education.gov.uk
 DFE_SIGN_IN_API_BASE_URL: 'https://dev-api.signin.education.gov.uk'
 DFE_SIGN_IN_CLIENT_ID: RegisterECTs

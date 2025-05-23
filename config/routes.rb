@@ -249,29 +249,35 @@ Rails.application.routes.draw do
     end
   end
 
-  namespace :api do
-    namespace :v3 do
-      resources :participants, only: %i[index show] do
-        put :change_schedule, path: "change-schedule"
-        put :defer
-        put :resume
-        put :withdraw
-        get :transfers, to: "transfers#show"
+  constraints -> { Rails.application.config.enable_api } do
+    namespace :api do
+      get 'guidance', to: 'guidance#show'
+      get 'guidance/release-notes', to: 'guidance#release_notes'
+      get 'guidance/*page', to: 'guidance#page', as: :guidance_page
 
-        collection do
-          resources :transfers, only: %i[index]
+      namespace :v3 do
+        resources :participants, only: %i[index show] do
+          put :change_schedule, path: "change-schedule"
+          put :defer
+          put :resume
+          put :withdraw
+          get :transfers, to: "transfers#show"
+
+          collection do
+            resources :transfers, only: %i[index]
+          end
         end
-      end
 
-      resources :declarations, only: %i[create show index] do
-        put :void, path: "void"
-      end
+        resources :declarations, only: %i[create show index] do
+          put :void, path: "void"
+        end
 
-      resources :statements, only: %i[index show]
-      resources :delivery_partners, only: %i[index show], path: "delivery-partners"
-      resources :partnerships, only: %i[show index create update]
-      resources :schools, only: %i[index show]
-      resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors"
+        resources :statements, only: %i[index show]
+        resources :delivery_partners, only: %i[index show], path: "delivery-partners"
+        resources :partnerships, only: %i[show index create update]
+        resources :schools, only: %i[index show]
+        resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors"
+      end
     end
   end
 end

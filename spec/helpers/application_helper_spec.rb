@@ -35,6 +35,12 @@ RSpec.describe ApplicationHelper, type: :helper do
         expect(page_data(title: "Some title", caption: 'Some caption', caption_size: 'l').fetch(:page_caption)).to eq('<span class="govuk-caption-l">Some caption</span>')
       end
     end
+
+    context 'when extra page header classes are provided' do
+      it 'adds the extra classes to the existing one' do
+        expect(page_data(title: "Some title", header: "Some header", header_classes: 'extra').fetch(:page_header)).to eq(%(<h1 class="govuk-heading-l extra">Some header</h1>))
+      end
+    end
   end
 
   describe "#page_data_from_front_matter" do

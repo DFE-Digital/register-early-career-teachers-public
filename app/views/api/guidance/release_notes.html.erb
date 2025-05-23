@@ -1,0 +1,10 @@
+<% page_data(title: "Release notes") %>
+
+<% @release_notes.each do |release_note| %>
+  <h2 class="govuk-heading-m">
+    <span class="govuk-caption-m"><%= release_note.date %></span>
+    <%= release_note.title %>
+  </h2>
+
+  <%== release_note.body %>
+<% end %>
