@@ -1,0 +1,47 @@
+<% page_data(
+    title: "#{@ect.full_name} has been registered before",
+    error: @wizard.current_step.errors.present?,
+    backlink_href: @wizard.previous_step_path
+) %>
+
+<%= govuk_summary_list(card: { title: 'Previously registered details' } ) do |list|
+  list.with_row do |row|
+    row.with_key { "School name" }
+    row.with_value { @ect.previous_school_name || 'Not confirmed' }
+   end
+
+   list.with_row do |row|
+    row.with_key { "Induction start date" }
+    row.with_value { @ect.induction_start_date&.to_fs(:govuk) || 'Not confirmed' }
+   end
+
+   list.with_row do |row|
+    row.with_key { "Appropriate body" }
+    row.with_value {@ect.previous_appropriate_body_name || "Not confirmed" }
+
+   end
+
+   list.with_row do |row|
+    row.with_key { "Training programme" }
+    row.with_value { programme_type_name(@ect.previous_training_programme)  || 'Not confirmed' }
+   end
+
+   if @ect.previous_provider_led?
+     list.with_row do |row|
+      row.with_key { "Lead provider" }
+      row.with_value { @ect.previous_lead_provider_name || 'Not confirmed' }
+      end
+
+     list.with_row do |row|
+      row.with_key { "Delivery partner" }
+      row.with_value { @ect.previous_delivery_partner_name || 'Not confirmed' }
+     end
+   end
+ end %>
+
+<p class="govuk-body">You’ll be able to tell us what kind of training they’ll continue with later.
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f|
+  content_for(:error_summary) { f.govuk_error_summary }
+  f.govuk_submit('Continue')
+end %>

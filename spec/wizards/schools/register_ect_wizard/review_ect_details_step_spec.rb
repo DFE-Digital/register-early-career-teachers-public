@@ -3,7 +3,8 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
 
   let(:change_name) { "yes" }
   let(:corrected_name) { "Jane Smith" }
-  let(:store) { FactoryBot.build(:session_repository, change_name:, corrected_name:) }
+  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:store) { FactoryBot.build(:session_repository, change_name:, corrected_name:, trn: teacher.trn) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :review_ect_details, store:) }
 
   describe '#initialize' do
@@ -60,8 +61,18 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
   end
 
   describe '#next_step' do
-    it 'returns :check_answers' do
-      expect(subject.next_step).to eq(:email_address)
+    context 'when the teacher has been registered before' do
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+
+      it 'returns the previous ect details page' do
+        expect(subject.next_step).to eq(:registered_before)
+      end
+    end
+
+    context 'when the teacher has never been registered before' do
+      it 'returns the email address page' do
+        expect(subject.next_step).to eq(:email_address)
+      end
     end
   end
 

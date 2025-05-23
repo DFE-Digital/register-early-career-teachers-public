@@ -38,6 +38,7 @@ module Schools
             programme_type: ProgrammeTypeStep,
             programme_type_change_lead_provider: ProgrammeTypeChangeLeadProviderStep,
             review_ect_details: ReviewECTDetailsStep,
+            registered_before: RegisteredBeforeStep,
             start_date: StartDateStep,
             state_school_appropriate_body: StateSchoolAppropriateBodyStep,
             trn_not_found: TRNNotFoundStep,
