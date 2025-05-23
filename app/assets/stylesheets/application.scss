@@ -17,6 +17,7 @@ $govuk-assets-path: "/";
 
 // X-Govuk Prototype
 @import "admin";
+@import "api_guidance";
 
 // Migration classes
 @import "migration";

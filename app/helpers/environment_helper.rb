@@ -5,11 +5,11 @@ module EnvironmentHelper
     "app-header--#{ENVIRONMENT_COLOUR}"
   end
 
-  def environment_specific_phase_banner
+  def environment_specific_phase_banner(html_attributes: {}, tag_html_attributes: {})
     tag_text = ENVIRONMENT_PHASE_BANNER_TAG || "Beta"
     banner_text = ENVIRONMENT_PHASE_BANNER_CONTENT || environment_phase_banner_default_content
 
-    govuk_phase_banner(text: banner_text, tag: { text: tag_text, colour: ENVIRONMENT_COLOUR }.compact)
+    govuk_phase_banner(text: banner_text, tag: { text: tag_text, colour: ENVIRONMENT_COLOUR, html_attributes: tag_html_attributes }.compact, html_attributes:)
   end
 
 private

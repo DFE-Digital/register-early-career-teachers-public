@@ -86,5 +86,24 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
         expect(rendered_content).to have_css("a[aria-current='page']", text: "Teachers")
       end
     end
+
+    context "when in api guidance section" do
+      let(:current_path) { "/api/guidance" }
+      let(:current_user_type) { nil }
+
+      it "marks the home page as active" do
+        render_inline(subject)
+
+        expect(rendered_content).to have_css("a[aria-current='page']", text: "Home")
+      end
+
+      it "lists the other pages" do
+        render_inline(subject)
+
+        ["Release notes", "Page 1", "Page 2", "Page 3"].each do |other_page|
+          expect(rendered_content).to have_css(".govuk-service-navigation__link", text: other_page)
+        end
+      end
+    end
   end
 end
