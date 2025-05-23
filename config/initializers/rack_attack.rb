@@ -12,8 +12,21 @@ class Rack::Attack
     PROTECTED_ROUTES.any? { |route| request.path.start_with?(route) }
   end
 
+  def self.api_request?(request)
+    request.path.starts_with?("/api/")
+  end
+
+  def self.auth_token(request)
+    request.get_header("HTTP_AUTHORIZATION")
+  end
+
   throttle("protected routes (OTP)", limit: 5, period: 20.seconds) do |request|
     request.ip if protected_path?(request)
+  end
+
+  # Throttle /api requests by auth token (1000 requests per 5 minutes)
+  throttle("API requests by auth token", limit: 1000, period: 5.minutes) do |request|
+    auth_token(request) if api_request?(request) && !protected_path?(request)
   end
 end
 
