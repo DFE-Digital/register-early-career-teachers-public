@@ -6,6 +6,6 @@ class ReopenInductionJob < ApplicationJob
 private
 
   def api_client
-    TRS::APIClient.new
+    TRS::APIClient.build
   end
 end

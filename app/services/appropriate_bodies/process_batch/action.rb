@@ -190,7 +190,7 @@ module AppropriateBodies
 
       # @return [TRS::APIClient]
       def api_client
-        @api_client ||= ::TRS::APIClient.new
+        @api_client ||= ::TRS::APIClient.build
       end
     end
   end
