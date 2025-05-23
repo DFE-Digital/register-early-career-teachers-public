@@ -86,7 +86,7 @@ module TRS
     end
 
     def random_name
-      File.read(Rails.root.join('spec/support/api/trs/fake_api_names.yml')).split("\n").sample.split(" ", 2)
+      File.read(Rails.root.join('lib/trs/fake_api_names.yml')).split("\n").sample.split(" ", 2)
     end
 
     def qts
