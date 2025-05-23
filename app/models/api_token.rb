@@ -9,20 +9,4 @@ class APIToken < ApplicationRecord
   validates :token, uniqueness: { message: "Hashed token must be unique" }
 
   scope :lead_provider_tokens, -> { where.not(lead_provider: nil) }
-
-  class << self
-    def create_lead_provider_api_token!(lead_provider:, token: nil, description: nil)
-      description = "A lead provider token for #{lead_provider.name}" if description.nil?
-
-      create!(
-        lead_provider:,
-        token:,
-        description:
-      )
-    end
-
-    def find_lead_provider_api_token(token:)
-      find_by(token:).tap { |api_token| api_token&.touch(:last_used_at) }
-    end
-  end
 end
