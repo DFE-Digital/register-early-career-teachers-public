@@ -1,7 +1,7 @@
 module Statements
   class Query
     include Queries::ConditionFormats
-    include API::Concerns::FilterIgnorable
+    include FilterIgnorable
 
     attr_reader :scope
 

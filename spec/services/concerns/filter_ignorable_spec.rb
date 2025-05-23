@@ -1,8 +1,8 @@
 class TestQuery
-  include API::Concerns::FilterIgnorable
+  include FilterIgnorable
 end
 
-RSpec.describe API::Concerns::FilterIgnorable do
+RSpec.describe FilterIgnorable do
   let(:query) { TestQuery.new }
 
   describe "#ignore?" do
