@@ -145,6 +145,20 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           induction_period = InductionPeriod.last
           expect(induction_period.teacher).to eq(existing_teacher)
         end
+
+        it "updates the teacher's trs_induction_status to InProgress" do
+          existing_teacher.update!(trs_induction_status: "None")
+
+          subject.register(pending_induction_submission_params)
+          existing_teacher.reload
+
+          expect(existing_teacher.trs_induction_status).to eq("InProgress")
+        end
+
+        it "enqueues BeginECTInductionJob" do
+          subject.register(pending_induction_submission_params)
+          expect(BeginECTInductionJob).to have_been_enqueued
+        end
       end
 
       context 'when the teacher has no existing induction periods' do
@@ -156,10 +170,31 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
       context 'when the teacher has an existing induction period' do
         let!(:existing_teacher) { FactoryBot.create(:teacher, trn:) }
-        let!(:induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher) }
+        let!(:induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher, finished_on: Date.new(2025, 4, 21)) }
+        let(:pending_induction_submission_params) do
+          {
+            induction_programme: "fip",
+            started_on: Date.new(2025, 4, 22), # One day after the existing induction period finished
+            trn: "1234567",
+            trs_first_name: "John",
+            trs_last_name: "Doe",
+            trs_induction_status: "None",
+            trs_qts_awarded_on: Date.new(2023, 5, 2),
+            trs_initial_teacher_training_provider_name: "ITT"
+          }
+        end
 
         it "does not enqueue BeginECTInductionJob" do
           expect { subject.register(pending_induction_submission_params) }.not_to have_enqueued_job(BeginECTInductionJob)
+        end
+
+        it "updates the teacher's trs_induction_status to InProgress" do
+          existing_teacher.update!(trs_induction_status: "None")
+
+          subject.register(pending_induction_submission_params)
+          existing_teacher.reload
+
+          expect(existing_teacher.trs_induction_status).to eq("InProgress")
         end
       end
 
