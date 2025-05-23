@@ -19,4 +19,8 @@
   component.with_past_induction_periods(enable_edit: true)
 end %>
 
+<p class='govuk-body'>
+  <%= govuk_link_to('View change history', admin_teacher_timeline_path(@teacher)) %>
+</p>
+
 <%= govuk_warning_text(text: "Some of this teacher's records could not be migrated") if @teacher.has_migration_failures? %>
