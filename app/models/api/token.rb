@@ -1,4 +1,6 @@
-class APIToken < ApplicationRecord
+class API::Token < ApplicationRecord
+  self.table_name = :api_tokens
+
   has_secure_token :token, length: 32
   encrypts :token, deterministic: true
 

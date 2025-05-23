@@ -1,4 +1,4 @@
-describe APIToken do
+describe API::Token do
   describe "associations" do
     it { is_expected.to belong_to(:lead_provider) }
   end

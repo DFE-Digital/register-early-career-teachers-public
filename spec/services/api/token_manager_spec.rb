@@ -6,8 +6,8 @@ describe API::TokenManager do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:token) { "a-token" }
 
-    it { expect { create_token }.to change(APIToken, :count).by(1) }
-    it { is_expected.to be_a(APIToken) }
+    it { expect { create_token }.to change(API::Token, :count).by(1) }
+    it { is_expected.to be_a(API::Token) }
     it { is_expected.to have_attributes(lead_provider:, token:, description:) }
 
     it "records an event" do
@@ -40,7 +40,7 @@ describe API::TokenManager do
     let!(:api_token) { FactoryBot.create(:api_token) }
 
     it "destroys the API token" do
-      expect { revoke_token }.to change(APIToken, :count).by(-1)
+      expect { revoke_token }.to change(API::Token, :count).by(-1)
       expect { api_token.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
