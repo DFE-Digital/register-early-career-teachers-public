@@ -50,6 +50,9 @@ gem 'rubypants'
 gem 'hotwire-rails'
 gem 'turbo-rails'
 
+# Fast JSON parser
+gem 'oj'
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
