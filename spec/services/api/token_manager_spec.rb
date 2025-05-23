@@ -6,8 +6,8 @@ describe API::TokenManager do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:token) { "a-token" }
 
-    it { expect { create_token }.to change(APIToken, :count).by(1) }
-    it { is_expected.to be_a(APIToken) }
+    it { expect { create_token }.to change(API::Token, :count).by(1) }
+    it { is_expected.to be_a(API::Token) }
     it { is_expected.to have_attributes(lead_provider:, token:, description:) }
 
     it "records an event" do
@@ -40,7 +40,7 @@ describe API::TokenManager do
     let!(:api_token) { FactoryBot.create(:api_token) }
 
     it "destroys the API token" do
-      expect { revoke_token }.to change(APIToken, :count).by(-1)
+      expect { revoke_token }.to change(API::Token, :count).by(-1)
       expect { api_token.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
@@ -66,6 +66,17 @@ describe API::TokenManager do
 
     context "when the API token does not exist" do
       let(:api_token) { FactoryBot.build(:api_token, token: "does-not-exist-yet") }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when a matching, non-lead provider token exists" do
+      let(:api_token) do
+        API::Token.new(
+          lead_provider: nil,
+          description: "Non-lead provider token"
+        ).tap { |token| token.save!(validate: false) }
+      end
 
       it { is_expected.to be_nil }
     end

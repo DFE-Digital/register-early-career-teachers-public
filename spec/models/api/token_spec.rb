@@ -1,4 +1,4 @@
-describe APIToken do
+describe API::Token do
   describe "associations" do
     it { is_expected.to belong_to(:lead_provider) }
   end
@@ -20,7 +20,7 @@ describe APIToken do
       before do
         # Contrived example as we only support lead provider tokens at
         # the moment, but provides a safety net for future changes.
-        described_class.new(lead_provider: nil, description: "Non-lead provider token").save(validate: false)
+        described_class.new(lead_provider: nil, description: "Non-lead provider token").save!(validate: false)
       end
 
       it { is_expected.to contain_exactly(lead_provider_token) }
