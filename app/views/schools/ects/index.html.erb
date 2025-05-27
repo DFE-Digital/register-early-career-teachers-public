@@ -19,7 +19,7 @@
 
       <%= render Shared::TopSearchComponent.new %>
 
-      <% @teachers.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
+      <% @filtered_teachers.to_a.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
         <%=
           govuk_summary_card(title: link_to_ect(ect)) do |card|
             card.with_summary_list(

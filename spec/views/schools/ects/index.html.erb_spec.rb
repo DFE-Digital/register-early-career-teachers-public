@@ -23,6 +23,7 @@ RSpec.describe 'schools/ects/index.html.erb' do
     let(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:) }
 
     before do
+      assign(:filtered_teachers, [teacher])
       assign(:ects, [ect_period])
       assign(:teachers, [teacher])
       assign(:school, school)
