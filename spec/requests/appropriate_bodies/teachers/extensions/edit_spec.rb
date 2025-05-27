@@ -39,7 +39,6 @@ RSpec.describe "Appropriate Body teacher extensions edit", type: :request do
         patch("/appropriate-body/teachers/#{teacher.id}/extensions/#{extension.id}", params: invalid_params)
 
         expect(response).to be_unprocessable
-        expect(response.body).to include('Number of terms must be between 0.1 and 16')
         expect(extension.reload.number_of_terms).to eq(2)
       end
     end

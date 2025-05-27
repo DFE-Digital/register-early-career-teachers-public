@@ -1,0 +1,32 @@
+RSpec.describe "appropriate_bodies/teachers/extensions/edit.html.erb" do
+  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:extension) { FactoryBot.create(:induction_extension) }
+
+  before do
+    assign(:appropriate_body, appropriate_body)
+    assign(:teacher, teacher)
+    assign(:extension, extension)
+  end
+
+  it "renders a form with a 'How many additional terms of induction' field" do
+    render
+
+    expect(rendered).to have_css('label', text: /How many additional terms of induction do you need to add to .* induction?/)
+  end
+
+  context 'when the extension has an error' do
+    let(:extension) { FactoryBot.create(:induction_extension, number_of_terms: 10) }
+
+    before do
+      extension.number_of_terms = 17
+      extension.valid?
+    end
+
+    it 'shows the error message on the page' do
+      render
+
+      expect(rendered).to have_css('.govuk-form-group--error', text: /Number of terms must be between 0.1 and 16/)
+    end
+  end
+end
