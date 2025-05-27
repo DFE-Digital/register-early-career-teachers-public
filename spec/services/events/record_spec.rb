@@ -1,4 +1,6 @@
 RSpec.describe Events::Record do
+  include ActiveJob::TestHelper
+
   let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Rhys', trs_last_name: 'Ifans') }
   let(:induction_period) { FactoryBot.create(:induction_period) }
@@ -11,7 +13,11 @@ RSpec.describe Events::Record do
   let(:body) { 'A very important event' }
   let(:happened_at) { 2.minutes.ago }
 
-  before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+  before { allow(RecordEventJob).to receive(:perform_later).and_call_original }
+
+  around do |example|
+    perform_enqueued_jobs { example.run }
+  end
 
   describe '#initialize' do
     context "when the user isn't a Sessions::User" do
@@ -743,6 +749,44 @@ RSpec.describe Events::Record do
           event_type: :bulk_upload_completed,
           happened_at: Time.zone.now,
           metadata: { batch_id: batch.id, batch_status: 'completed', batch_type: "claim", failed: 0, passed: 0, released: 0, skipped: 1, total: 1 },
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_lead_provider_api_token_created_event!' do
+    let(:api_token) { FactoryBot.create(:api_token) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_lead_provider_api_token_created_event!(author:, api_token:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "An API token was created for lead provider: #{api_token.lead_provider.name}",
+          lead_provider: api_token.lead_provider,
+          event_type: :lead_provider_api_token_created,
+          happened_at: Time.zone.now,
+          metadata: { description: api_token.description },
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_lead_provider_api_token_revoked_event!' do
+    let(:api_token) { FactoryBot.create(:api_token) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_lead_provider_api_token_revoked_event!(author:, api_token:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "An API token was revoked for lead provider: #{api_token.lead_provider.name}",
+          lead_provider: api_token.lead_provider,
+          event_type: :lead_provider_api_token_revoked,
+          happened_at: Time.zone.now,
+          metadata: { description: api_token.description },
           **author_params
         )
       end

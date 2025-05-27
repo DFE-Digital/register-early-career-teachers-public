@@ -307,6 +307,26 @@ module Events
       new(event_type:, author:, appropriate_body: batch.appropriate_body, heading:, happened_at: Time.zone.now, metadata:).record_event!
     end
 
+    # API Token Events
+
+    def self.record_lead_provider_api_token_created_event!(author:, api_token:)
+      event_type = :lead_provider_api_token_created
+      lead_provider = api_token.lead_provider
+      heading = "An API token was created for lead provider: #{lead_provider.name}"
+      metadata = { description: api_token.description }
+
+      new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
+    end
+
+    def self.record_lead_provider_api_token_revoked_event!(author:, api_token:)
+      event_type = :lead_provider_api_token_revoked
+      lead_provider = api_token.lead_provider
+      heading = "An API token was revoked for lead provider: #{lead_provider.name}"
+      metadata = { description: api_token.description }
+
+      new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
+    end
+
   private
 
     def attributes
