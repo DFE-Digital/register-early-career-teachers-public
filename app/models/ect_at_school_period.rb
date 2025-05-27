@@ -60,18 +60,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
 
   # Instance methods
-  def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
-
-  def school_reported_appropriate_body_type = school_reported_appropriate_body&.body_type
 
   # lead_provider_name
   delegate :name, to: :lead_provider, prefix: true, allow_nil: true
-
-  def current_mentorship = mentorship_periods.ongoing.last
-
-  def current_mentor = current_mentorship&.mentor
-
-  delegate :trn, to: :teacher
 
   def provider_led?
     programme_type == 'provider_led'
@@ -81,11 +72,17 @@ class ECTAtSchoolPeriod < ApplicationRecord
     programme_type == 'school_led'
   end
 
+  def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
+
+  def school_reported_appropriate_body_type = school_reported_appropriate_body&.body_type
+
   def siblings
     return ECTAtSchoolPeriod.none unless teacher
 
     teacher.ect_at_school_periods.excluding(self)
   end
+
+  delegate :trn, to: :teacher
 
 private
 
