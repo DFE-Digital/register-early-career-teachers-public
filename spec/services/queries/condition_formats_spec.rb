@@ -34,7 +34,7 @@ RSpec.describe Queries::ConditionFormats do
       let(:allowlist) { %w[one three] }
 
       it "returns an array containing only the allowed values when the input is a string" do
-        expect(object.extract_conditions("one", allowlist:)).to eql(%w[one])
+        expect(object.extract_conditions("one,two", allowlist:)).to eql(%w[one])
       end
 
       it "returns an array containing only the allowed values when the input is an array" do

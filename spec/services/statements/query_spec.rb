@@ -226,4 +226,34 @@ RSpec.describe Statements::Query do
       expect { described_class.new.statement_by_api_id(nil) }.to raise_error(ArgumentError, "api_id needed")
     end
   end
+
+  describe "#statement" do
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+
+    it "returns the statement for a Lead Provider" do
+      statement = FactoryBot.create(:statement, lead_provider:)
+      query = described_class.new
+
+      expect(query.statement(statement.id)).to eq(statement)
+    end
+
+    it "raises an error if the statement does not exist" do
+      query = described_class.new
+
+      expect { query.statement("XXX123") }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "raises an error if the statement is not in the filtered query" do
+      other_lead_provider = FactoryBot.create(:lead_provider)
+      other_statement = FactoryBot.create(:statement, lead_provider: other_lead_provider)
+
+      query = described_class.new(lead_provider:)
+
+      expect { query.statement(other_statement.id) }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "raises an error if an api_id is not supplied" do
+      expect { described_class.new.statement(nil) }.to raise_error(ArgumentError, "id needed")
+    end
+  end
 end

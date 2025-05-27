@@ -25,6 +25,12 @@ module Statements
       fail(ArgumentError, "api_id needed")
     end
 
+    def statement(id)
+      return scope.find(id) if id.present?
+
+      fail(ArgumentError, "id needed")
+    end
+
   private
 
     def where_lead_provider_is(lead_provider)
