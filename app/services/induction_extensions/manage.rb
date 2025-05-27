@@ -18,9 +18,9 @@ class InductionExtensions::Manage
 
     InductionExtension.transaction do
       success = if induction_extension.new_record?
-                  [induction_extension.save!, record_create_event!].all?
+                  induction_extension.save && record_create_event!
                 else
-                  [induction_extension.save!, record_update_event!].all?
+                  induction_extension.save && record_update_event!
                 end
 
       success or raise ActiveRecord::Rollback
