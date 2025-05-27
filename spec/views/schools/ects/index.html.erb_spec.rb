@@ -16,10 +16,14 @@ RSpec.describe 'schools/ects/index.html.erb' do
     it 'shows the Register an ECT starting at your school button' do
       expect(rendered).to have_css('a.govuk-button', text: 'Register an ECT starting at your school')
     end
+
+    it 'does not render the summary component' do
+      expect(rendered).not_to have_css('.govuk-summary-card')
+    end
   end
 
   context 'when there are teachers' do
-    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Johnnie', trs_last_name: 'Walker') }
     let(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:) }
 
     before do
@@ -32,6 +36,10 @@ RSpec.describe 'schools/ects/index.html.erb' do
 
     it 'shows the "Add an ECT" button' do
       expect(rendered).to have_css('a.govuk-button', text: 'Add an ECT')
+    end
+
+    it 'renders the summary component' do
+      expect(rendered).to have_css('.govuk-summary-card__title', text: 'Johnnie Walker')
     end
   end
 end
