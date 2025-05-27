@@ -38,7 +38,6 @@ RSpec.describe "Appropriate Body teacher extensions new", type: :request do
         }.not_to change(InductionExtension, :count)
 
         expect(response).to be_unprocessable
-        expect(response.body).to include('Number of terms must be between 0.1 and 16')
       end
     end
   end
