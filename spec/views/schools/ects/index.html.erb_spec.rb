@@ -9,10 +9,15 @@ RSpec.describe 'schools/ects/index.html.erb' do
     render
   end
 
+  it 'shows the Register an ECT starting at your school button' do
+    expect(rendered).to have_css('a.govuk-button', text: 'Register an ECT starting at your school')
+  end
+
   context 'when there are no teachers' do
     it 'shows a message that there are no registered ECTs' do
       expect(rendered).to have_css('div.govuk-grid-column-two-thirds p.govuk-body', text: 'Your school currently has no registered early career teachers.')
     end
+<<<<<<< HEAD
 
     it 'shows the Register an ECT starting at your school button' do
       expect(rendered).to have_css('a.govuk-button', text: 'Register an ECT starting at your school')
@@ -68,5 +73,7 @@ RSpec.describe 'schools/ects/index.html.erb' do
         expect(rendered).to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
       end
     end
+=======
+>>>>>>> efba5b40 (rename button to add an ECT)
   end
 end
