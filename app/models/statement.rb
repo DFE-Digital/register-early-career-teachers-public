@@ -1,6 +1,8 @@
 class Statement < ApplicationRecord
   belongs_to :active_lead_provider
   has_many :adjustments
+  has_one :lead_provider, through: :active_lead_provider
+  has_one :registration_period, through: :active_lead_provider
 
   def self.maximum_year = Date.current.year + 5
 
@@ -9,6 +11,9 @@ class Statement < ApplicationRecord
   validates :year, numericality: { greater_than_or_equal_to: 2020, is_less_than_or_equal_to: :maximum_year, only_integer: true, message: "Year must be on or after 2020 and on or before #{maximum_year}" }
   validates :active_lead_provider_id, uniqueness: { scope: %i[year month], message: "Statement with the same month and year already exists for the lead provider" }
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another statement" }
+
+  scope :with_output_fee, ->(output_fee: true) { where(output_fee:) }
+  scope :with_state, ->(*state) { where(state:) }
 
   state_machine :state, initial: :open do
     state :open

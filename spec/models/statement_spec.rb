@@ -2,6 +2,8 @@ describe Statement do
   describe "associations" do
     it { is_expected.to belong_to(:active_lead_provider) }
     it { is_expected.to have_many(:adjustments) }
+    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
+    it { is_expected.to have_one(:registration_period).through(:active_lead_provider) }
   end
 
   describe "validations" do
@@ -13,6 +15,31 @@ describe Statement do
     it { is_expected.to validate_numericality_of(:year).only_integer.is_greater_than_or_equal_to(2020).with_message("Year must be on or after 2020 and on or before #{described_class.maximum_year}") }
     it { is_expected.to validate_uniqueness_of(:active_lead_provider_id).scoped_to(:year, :month).with_message("Statement with the same month and year already exists for the lead provider") }
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another statement") }
+  end
+
+  describe "scopes" do
+    describe ".with_state" do
+      let!(:statement1) { FactoryBot.create(:statement, :open) }
+      let!(:statement2) { FactoryBot.create(:statement, :payable) }
+      let!(:statement3) { FactoryBot.create(:statement, :paid) }
+
+      it "selects only statements with states matching the provided name" do
+        expect(described_class.with_state("open")).to contain_exactly(statement1)
+      end
+
+      it "selects only multiple statements with states matching the provided names" do
+        expect(described_class.with_state("payable", "paid")).to contain_exactly(statement2, statement3)
+      end
+    end
+
+    describe ".with_output_fee" do
+      let!(:statement1) { FactoryBot.create(:statement, output_fee: true) }
+      let!(:statement2) { FactoryBot.create(:statement, output_fee: false) }
+
+      it "selects only output fee statements" do
+        expect(described_class.with_output_fee).to contain_exactly(statement1)
+      end
+    end
   end
 
   describe ".maximum_year" do
