@@ -54,6 +54,10 @@ module Statements
     def where_state_is(state)
       return if ignore?(filter: state)
 
+      unless Statement.state_machine.states[state]
+        raise API::Errors::FilterValidationError, "The filter '#/state' must be #{Statement.state_machine.states.keys.map(&:to_s)}"
+      end
+
       scope.merge!(Statement.with_state(extract_conditions(state)))
     end
 
