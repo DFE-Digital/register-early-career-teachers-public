@@ -3,7 +3,8 @@ module Schools
     layout "full"
 
     def index
-      @pagy, @teachers = pagy_array(Teachers::Search.new(ect_at_school: school, query_string: params[:q]).search)
+      @teachers = Teachers::Search.new(ect_at_school: school).search
+      @pagy, @filtered_teachers = pagy_array(Teachers::Search.new(ect_at_school: school, query_string: params[:q]).search)
     end
 
     def show

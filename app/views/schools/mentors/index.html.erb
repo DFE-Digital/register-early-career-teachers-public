@@ -18,7 +18,7 @@
 
       <%= render Shared::TopSearchComponent.new %>
       
-      <% @mentors.map do |mentor| %>
+      <% @filtered_mentors.to_a.map do |mentor| %>
         <%= render Schools::Mentors::SummaryComponent.new(mentor: mentor, school: @school) %>
       <% end %>
 
