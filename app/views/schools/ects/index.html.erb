@@ -25,48 +25,8 @@
 
     <div class='govuk-grid-column-full'>
       <% @teachers.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
-
-        <div class="govuk-summary-card">
-          <div class="govuk-summary-card__title-wrapper">
-            <h3 class="govuk-summary-card__title govuk-!-font-size-24">
-              <strong><%= link_to_ect(ect) %></strong>
-            </h3>
-          </div>
-          <div class="govuk-summary-card__content">
-            <div class="govuk-grid-row">
-              <div class='govuk-grid-column-one-half'>
-                <%= govuk_summary_list(
-                      borders: false,
-                      rows: [
-                        { key: { text: 'Status' }, value: { text: ect_status(ect) } },
-                        { key: { text: 'TRN' }, value: { text: ect.trn } },
-                        { key: { text: 'School start date' }, value: { text: ect.started_on.to_fs(:govuk) } },
-                      ]
-                    ) %>
-              </div>
-              <div class='govuk-grid-column-one-half'>
-                <%= govuk_summary_list(
-                      borders: false,
-                      rows: [
-                        { key: { text: 'Appropriate body' }, value: { text: ect.school_reported_appropriate_body_name } },
-                        { key: { text: 'Lead provider' }, value: { text: latest_lead_provider_name(ect) } },
-                        { key: { text: 'Delivery partner' }, value: { text: latest_delivery_partner_name(ect) } },
-                      ]
-                    ) %>
-              </div>
-            </div>
-            <%= govuk_summary_list(
-                  html_attributes: { class: "govuk-!-margin-bottom-0" },
-                  borders: false,
-                  rows: [
-                    { key: { text: 'Mentor', classes: ['mentor-key'] }, value: { text: ect_mentor_details(ect) } },
-                  ]
-                ) %>
-          </div>
-        </div>
-
+        <%= render Schools::ECTs::ListingCardComponent.new(ect:) %>
       <% end %>
-
       <%= govuk_pagination(pagy: @pagy) %>
     </div>
 
