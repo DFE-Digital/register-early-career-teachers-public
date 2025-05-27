@@ -57,4 +57,28 @@ RSpec.describe "Rack::Attack" do
       end
     end
   end
+
+  context "rate limit all other requests by ip" do
+    it "throttles over 1000 requests within 5 minutes" do
+      freeze_time do
+        1000.times do
+          authenticated_api_get(ab_landing_path)
+          expect(response).to have_http_status(:ok)
+        end
+
+        5.times do
+          authenticated_api_get(ab_landing_path)
+          expect(response).to have_http_status(:too_many_requests)
+        end
+      end
+
+      # After 5 minutes
+      travel(5.minutes) do
+        5.times do
+          authenticated_api_get(ab_landing_path)
+          expect(response).to have_http_status(:ok)
+        end
+      end
+    end
+  end
 end
