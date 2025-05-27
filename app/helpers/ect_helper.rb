@@ -1,5 +1,25 @@
 module ECTHelper
   # @param ect [ECTAtSchoolPeriod]
+  def current_mentor_name(ect)
+    ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor_name
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
+  def latest_delivery_partner_name(ect)
+    ECTAtSchoolPeriods::Training.new(ect).latest_delivery_partner_name || 'Their lead provider will confirm this'
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
+  def latest_lead_provider_name(ect)
+    ECTAtSchoolPeriods::Training.new(ect).latest_lead_provider_name
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
+  def latest_mentor_name(ect)
+    ECTAtSchoolPeriods::Mentorship.new(ect).latest_mentor_name
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
   def link_to_assign_mentor(ect)
     govuk_warning_text(text: "You must #{assign_or_create_mentor_link(ect)} for this ECT.".html_safe)
   end
@@ -17,17 +37,13 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def ect_mentor_details(ect)
-    if ect.current_mentor.present?
-      teacher_full_name(ect.current_mentor.teacher)
-    else
-      link_to_assign_mentor(ect)
-    end
+    latest_mentor_name(ect) || link_to_assign_mentor(ect)
   end
 
   # TODO: "status" is yet to be clarified this is just a simple placeholder
   # @param ect [ECTAtSchoolPeriod]
   def ect_status(ect)
-    if ect.current_mentor.present?
+    if current_mentor_name(ect)
       govuk_tag(text: 'Registered', colour: 'green')
     else
       govuk_tag(text: 'Mentor required', colour: 'red')
