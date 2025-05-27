@@ -162,6 +162,10 @@ RSpec.describe Statements::Query do
 
           expect(query.statements).to contain_exactly(open_statement, payable_statement, paid_statement)
         end
+
+        it "raises when invalid states queried" do
+          expect { described_class.new(state: "error").statements }.to raise_error(API::Errors::FilterValidationError, "The filter '#\/state' must be open, payable, paid")
+        end
       end
 
       describe "by `output_fee`" do
