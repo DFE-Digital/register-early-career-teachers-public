@@ -18,7 +18,7 @@ module Schools
     end
 
     def confirmation
-      @mentor_name = Teachers::Name.new(ect.current_mentor.teacher).full_name
+      @mentor_name = ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor_name
     end
 
   private
