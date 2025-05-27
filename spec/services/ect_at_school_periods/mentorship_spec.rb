@@ -119,7 +119,7 @@ describe ECTAtSchoolPeriods::Mentorship do
     context "when the ect has had past mentorships" do
       before do
         FactoryBot.create(:mentorship_period, mentee:, mentor: old_mentor, started_on: 2.years.ago)
-        FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 1.years.ago)
+        FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 1.year.ago)
       end
 
       it { is_expected.to eq(mentor) }
@@ -149,7 +149,7 @@ describe ECTAtSchoolPeriods::Mentorship do
     context "when the ect has had past mentorships" do
       before do
         FactoryBot.create(:mentorship_period, mentee:, mentor: old_mentor, started_on: 2.years.ago)
-        FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 1.years.ago)
+        FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 1.year.ago)
       end
 
       it { is_expected.to eq(Teachers::Name.new(mentor.teacher).full_name) }
