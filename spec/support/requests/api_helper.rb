@@ -1,14 +1,14 @@
 module APIHelper
-  def authenticated_api_get(path, params: {}, token: nil)
-    get path, headers: api_headers(token:), params:
+  def authenticated_api_get(path, params: {}, token: nil, headers: {})
+    get path, headers: api_headers(token:).merge(headers), params:
   end
 
-  def authenticated_api_post(path, params: {}, token: nil)
-    post path, headers: api_headers(token:), params:
+  def authenticated_api_post(path, params: {}, token: nil, headers: {})
+    post path, headers: api_headers(token:).merge(headers), params:
   end
 
-  def authenticated_api_put(path, params: {}, token: nil)
-    put path, headers: api_headers(token:), params:
+  def authenticated_api_put(path, params: {}, token: nil, headers: {})
+    put path, headers: api_headers(token:).merge(headers), params:
   end
 
   def api_headers(token: nil)
