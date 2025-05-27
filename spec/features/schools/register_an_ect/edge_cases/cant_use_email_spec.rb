@@ -50,7 +50,7 @@ RSpec.describe 'Registering an ECT', :js do
   end
 
   def when_i_start_adding_an_ect
-    page.get_by_role('link', name: 'Add an ECT').click
+    page.get_by_role('link', name: 'Register an ECT starting at your school').click
   end
 
   def and_i_click_continue
