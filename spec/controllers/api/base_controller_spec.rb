@@ -6,8 +6,12 @@ RSpec.describe API::BaseController, type: :controller do
       end
     end
 
-    before { get :index }
+    before do
+      request.headers["HTTP_AUTHORIZATION"] = "Bearer #{token}"
+      get :index
+    end
 
+    let(:token) { FactoryBot.create(:api_token).token }
     let(:parsed_response) { JSON.parse(response.body) }
 
     it "renders correct error message" do
@@ -31,8 +35,12 @@ RSpec.describe API::BaseController, type: :controller do
       end
     end
 
-    before { get :index }
+    before do
+      request.headers["HTTP_AUTHORIZATION"] = "Bearer #{token}"
+      get :index
+    end
 
+    let(:token) { FactoryBot.create(:api_token).token }
     let(:parsed_response) { JSON.parse(response.body) }
 
     it "renders correct error message" do
@@ -56,8 +64,12 @@ RSpec.describe API::BaseController, type: :controller do
       end
     end
 
-    before { get :index }
+    before do
+      request.headers["HTTP_AUTHORIZATION"] = "Bearer #{token}"
+      get :index
+    end
 
+    let(:token) { FactoryBot.create(:api_token).token }
     let(:parsed_response) { JSON.parse(response.body) }
 
     it "renders correct error message" do
@@ -81,8 +93,12 @@ RSpec.describe API::BaseController, type: :controller do
       end
     end
 
-    before { get :index }
+    before do
+      request.headers["HTTP_AUTHORIZATION"] = "Bearer #{token}"
+      get :index
+    end
 
+    let(:token) { FactoryBot.create(:api_token).token }
     let(:parsed_response) { JSON.parse(response.body) }
 
     it "renders correct error message" do

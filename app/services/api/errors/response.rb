@@ -9,17 +9,9 @@ module API
       end
 
       def call
-        params.map do |param|
-          {
-            title: error,
-            detail: param,
-          }
+        Array(params).map do |param|
+          { title: error, detail: param }
         end
-      rescue StandardError
-        [{
-          title: error,
-          detail: params,
-        }]
       end
     end
   end
