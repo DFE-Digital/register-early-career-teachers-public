@@ -1,0 +1,18 @@
+<div class="govuk-summary-card">
+  <div class="govuk-summary-card__title-wrapper">
+    <h3 class="govuk-summary-card__title govuk-!-font-size-24">
+      <strong><%= link_to_ect(ect) %></strong>
+    </h3>
+  </div>
+  <div class="govuk-summary-card__content">
+    <div class="govuk-grid-row">
+      <div class='govuk-grid-column-one-half'>
+        <%= govuk_summary_list(borders: false, rows: left_rows) %>
+      </div>
+      <div class='govuk-grid-column-one-half'>
+        <%= govuk_summary_list(borders: false, rows: right_rows) %>
+      </div>
+    </div>
+    <%= govuk_summary_list(html_attributes: { class: "govuk-!-margin-bottom-0" }, borders: false, rows: [mentor_row]) %>
+  </div>
+</div>
