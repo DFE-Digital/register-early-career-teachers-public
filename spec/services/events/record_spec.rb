@@ -1,4 +1,6 @@
 RSpec.describe Events::Record do
+  include ActiveJob::TestHelper
+
   let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Rhys', trs_last_name: 'Ifans') }
   let(:induction_period) { FactoryBot.create(:induction_period) }
@@ -11,7 +13,11 @@ RSpec.describe Events::Record do
   let(:body) { 'A very important event' }
   let(:happened_at) { 2.minutes.ago }
 
-  before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+  before { allow(RecordEventJob).to receive(:perform_later).and_call_original }
+
+  around do |example|
+    perform_enqueued_jobs { example.run }
+  end
 
   describe '#initialize' do
     context "when the user isn't a Sessions::User" do
