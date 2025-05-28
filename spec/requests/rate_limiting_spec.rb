@@ -39,6 +39,26 @@ RSpec.describe "Rack::Attack" do
     end
   end
 
+  # TODO: enable when we have guidance and api docs
+  # [
+  #   "/api/guidance",
+  #   "/api/docs/v3",
+  # ].each do |public_api_path|
+  #   context "when requesting the public API path #{public_api_path}" do
+  #     let(:path) { public_api_path }
+  #
+  #     it_behaves_like "a rate limited endpoint", "public API requests by ip" do
+  #       def perform_request
+  #         get path
+  #       end
+  #
+  #       def change_condition
+  #         set_request_ip(other_ip)
+  #       end
+  #     end
+  #   end
+  # end
+
   context "rate limit all other requests by ip" do
     it_behaves_like "a rate limited endpoint", "All other requests by ip" do
       def perform_request
