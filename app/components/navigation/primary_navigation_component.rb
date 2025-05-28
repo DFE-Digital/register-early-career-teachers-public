@@ -43,8 +43,8 @@ module Navigation
           { text: "Organisations", href: admin_organisations_path, active_when: '/admin/organisations' },
         ],
         school_user: [
-          { text: "Your ECTs", href: schools_ects_home_path },
-          { text: "Your Mentors", href: schools_mentors_home_path },
+          { text: "ECTs", href: schools_ects_home_path },
+          { text: "Mentors", href: schools_mentors_home_path },
         ],
         api_guidance: [
           { text: "Home", href: '/api/guidance' },
