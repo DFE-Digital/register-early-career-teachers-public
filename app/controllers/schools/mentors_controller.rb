@@ -8,8 +8,12 @@ module Schools
     before_action :set_ects, only: :show
 
     def index
-      @mentors = Teachers::Search.new(mentor_at_school: school).search
-      @pagy, @filtered_mentors = pagy_array(Teachers::Search.new(mentor_at_school: school, query_string: params[:q]).search, limit: 20)
+      query = params[:q].presence
+      mentors = Teachers::Search.new(mentor_at_school: school, query_string: query)
+      results = mentors.search
+
+      @pagy, @filtered_mentors = pagy_array(results, limit: 20)
+      @has_any_mentors = query ? Teachers::Search.new(mentor_at_school: school).scope.exists? : results.any?
     end
 
     def show

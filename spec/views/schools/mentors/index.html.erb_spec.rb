@@ -27,7 +27,7 @@ RSpec.describe 'schools/mentors/index.html.erb' do
 
     before do
       assign(:school, school)
-      assign(:mentors, [teacher])
+      assign(:has_any_mentors, true)
       assign(:filtered_mentors, [teacher])
       assign(:mentor_period_for_school, [mentor_period])
       render

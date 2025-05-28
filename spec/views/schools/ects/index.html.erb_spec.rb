@@ -29,7 +29,7 @@ RSpec.describe 'schools/ects/index.html.erb' do
     before do
       assign(:filtered_teachers, [teacher])
       assign(:ects, [ect_period])
-      assign(:teachers, [teacher])
+      assign(:has_any_teachers, true)
       assign(:school, school)
       render
     end
