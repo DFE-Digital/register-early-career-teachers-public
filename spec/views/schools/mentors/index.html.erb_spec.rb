@@ -4,6 +4,7 @@ RSpec.describe 'schools/mentors/index.html.erb' do
   before do
     assign(:school, school)
     assign(:mentors, [])
+    assign(:number_of_mentors, 0)
     render
   end
 
@@ -27,7 +28,7 @@ RSpec.describe 'schools/mentors/index.html.erb' do
 
     before do
       assign(:school, school)
-      assign(:has_any_mentors, true)
+      assign(:number_of_mentors, 1)
       assign(:filtered_mentors, [teacher])
       assign(:mentor_period_for_school, [mentor_period])
       render
