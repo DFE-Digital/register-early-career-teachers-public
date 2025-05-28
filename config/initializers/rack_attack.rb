@@ -23,8 +23,17 @@ class Rack::Attack
     /healthcheck
   ].freeze
 
+  PUBLIC_API_PATH_PREFIXES = [
+    "/api/guidance",
+    "/api/docs",
+  ].freeze
+
   def self.protected_path?(request)
     PROTECTED_ROUTES.any? { |route| request.path.start_with?(route) }
+  end
+
+  def self.public_api_path?(request)
+    PUBLIC_API_PATH_PREFIXES.any? { |prefix| request.path.starts_with?(prefix) }
   end
 
   def self.api_request?(request)
@@ -41,12 +50,19 @@ class Rack::Attack
 
   # Throttle /api requests by auth token (1000 requests per 5 minutes)
   throttle("API requests by auth token", limit: 1000, period: 5.minutes) do |request|
-    if api_request?(request)
+    if api_request?(request) && !public_api_path?(request)
       auth_token(request)
     end
   end
 
-  # Fallback throttling for all other paths
+  # Throttle public /api requests by ip (300 requests per 5 minutes)
+  throttle("public API requests by ip", limit: 300, period: 5.minutes) do |request|
+    request.ip if public_api_path?(request)
+  end
+
+  # Catch all/backstop; throttle all requests by IP (1500 requests per 5 minutes).
+  # Important: this should be a higher limit than the other throttles to ensure that
+  # it only comes into effect when the other throttles have been exhausted.
   throttle("All other requests by ip", limit: 1500, period: 5.minutes, &:remote_ip)
 end
 
