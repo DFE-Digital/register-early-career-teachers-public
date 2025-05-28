@@ -12,19 +12,6 @@ RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
   end
 
   # TODO: refactor role-based logic
-  context "#render_extension_links?" do
-    context "when the user is an admin" do
-      let(:component) { described_class.new(teacher:, is_admin: true) }
-
-      it { expect(component.render_extension_links?).to be false }
-    end
-
-    context "when the user is not an admin" do
-      it { expect(component.render_extension_links?).to be true }
-    end
-  end
-
-  # TODO: refactor role-based logic
   context "#render_add_induction_button?" do
     context "when the user is an admin" do
       let(:component) { described_class.new(teacher:, is_admin: true) }
@@ -95,19 +82,40 @@ RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
     context "with extensions" do
       let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
 
-      it "displays extension information" do
+      it "displays extension information and link to AB extensions path" do
         render_inline(component)
         expect(page).to have_content("Extensions")
         expect(page).to have_link("View", href: ab_teacher_extensions_path(teacher))
       end
+
+      context "when user is admin" do
+        let(:component) { described_class.new(teacher:, is_admin: true) }
+
+        it "displays extension information and link to admin extensions path" do
+          render_inline(component)
+          expect(page).to have_content("Extensions")
+          expect(page).to have_link("View", href: admin_teacher_extensions_path(teacher))
+        end
+      end
     end
 
     context "without extensions" do
-      it "displays no extension information" do
+      it "displays no extension information and link to AB extensions path" do
         render_inline(component)
         expect(page).to have_content("Extensions")
         expect(page).to have_content("None")
         expect(page).to have_link("Add", href: ab_teacher_extensions_path(teacher))
+      end
+
+      context "when user is admin" do
+        let(:component) { described_class.new(teacher:, is_admin: true) }
+
+        it "displays no extension information and link to admin extensions path" do
+          render_inline(component)
+          expect(page).to have_content("Extensions")
+          expect(page).to have_content("None")
+          expect(page).to have_link("Add", href: admin_teacher_extensions_path(teacher))
+        end
       end
     end
   end

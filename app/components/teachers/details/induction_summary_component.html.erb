@@ -25,9 +25,7 @@
       <%= induction_extensions.formatted_number_of_terms %>
     <% end %>
 
-    <% if render_extension_links? %>
-      <%= row.with_action(text: extensions_action_text, visually_hidden_text: "extensions", href: ab_teacher_extensions_path(teacher), classes: 'govuk-link--no-visited-state') %>
-    <% end %>
+    <%= row.with_action(text: extensions_action_text, visually_hidden_text: "extensions", href: extensions_path, classes: 'govuk-link--no-visited-state') %>
   <% end %>
 
   <% if teacher.trs_qts_awarded_on.present? %>
