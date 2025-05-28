@@ -47,7 +47,7 @@ class Rack::Attack
   end
 
   # Fallback throttling for all other paths
-  throttle("All other requests by ip", limit: 1000, period: 5.minutes, &:remote_ip)
+  throttle("All other requests by ip", limit: 1500, period: 5.minutes, &:remote_ip)
 end
 
 ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start, _finish, request_id, payload|
