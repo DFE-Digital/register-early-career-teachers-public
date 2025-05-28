@@ -21,6 +21,10 @@ RSpec.describe 'schools/ects/index.html.erb' do
     it 'does not render the summary component' do
       expect(rendered).not_to have_css('.govuk-summary-card')
     end
+
+    it 'does not render the search box' do
+      expect(rendered).not_to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
+    end
   end
 
   context 'when there are teachers' do
@@ -41,6 +45,28 @@ RSpec.describe 'schools/ects/index.html.erb' do
 
     it 'renders the summary component' do
       expect(rendered).to have_css('.govuk-summary-card__title', text: 'Johnnie Walker')
+    end
+
+    it 'renders the search box' do
+      expect(rendered).to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
+    end
+
+    context 'when the filtered teachers is empty' do
+      before do
+        assign(:filtered_teachers, [])
+        assign(:ects, [ect_period])
+        assign(:number_of_teachers, 1)
+        assign(:school, school)
+        render
+      end
+
+      it 'renders the no ects text' do
+        expect(rendered).to have_css('.govuk-body', text: 'There are no ECTs that match your search.')
+      end
+
+      it 'renders the search box' do
+        expect(rendered).to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
+      end
     end
   end
 end
