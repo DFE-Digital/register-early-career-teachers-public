@@ -7,12 +7,12 @@
   )
 %>
 
-<%= govuk_button_link_to(@teachers.present? ? "Add an ECT" : "Register an ECT starting at your school", schools_register_ect_wizard_start_path) %>
+<%= govuk_button_link_to(@has_any_teachers ? "Add an ECT" : "Register an ECT starting at your school", schools_register_ect_wizard_start_path) %>
 
 <hr class="govuk-section-break--m" />
 
 <div class="govuk-grid-row">
-  <% if @teachers.present? %>
+  <% if @has_any_teachers %>
 
     <div class='govuk-grid-column-two-thirds'>
 
