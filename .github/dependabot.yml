@@ -19,6 +19,12 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - Dependencies
+    groups:
+      esbuild-group:
+        patterns:
+          - esbuild
+          - "@esbuild/linux-x64"
+          - "@esbuild/darwin-arm64"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
