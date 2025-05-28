@@ -17,12 +17,16 @@ module Teachers::Details
       (induction_extensions.extended?) ? 'View' : 'Add'
     end
 
-    def render_extension_links?
-      is_admin == false
-    end
-
     def render_add_induction_button?
       is_admin == true
+    end
+
+    def extensions_path
+      if is_admin
+        helpers.admin_teacher_extensions_path(teacher)
+      else
+        helpers.ab_teacher_extensions_path(teacher)
+      end
     end
 
   private
@@ -36,7 +40,7 @@ module Teachers::Details
     end
 
     def extension_view_link
-      helpers.govuk_link_to("View", helpers.ab_teacher_extensions_path(teacher), no_visited_state: true)
+      helpers.govuk_link_to("View", extensions_path, no_visited_state: true)
     end
 
     def trs_induction_status
