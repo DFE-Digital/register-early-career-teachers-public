@@ -1,5 +1,6 @@
 module API
-  class BaseController < ActionController::Base
+  class BaseController < ActionController::API
     include TokenAuthenticatable
+    include ErrorRescuable
   end
 end
