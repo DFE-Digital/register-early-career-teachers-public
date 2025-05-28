@@ -3,12 +3,8 @@ module Schools
     layout "full"
 
     def index
-      query = params[:q].presence
-      teachers = Teachers::Search.new(ect_at_school: school, query_string: query)
-      results = teachers.search
-
-      @pagy, @filtered_teachers = pagy_array(results)
-      @has_any_teachers = query ? Teachers::Search.new(ect_at_school: school).scope.exists? : results.any?
+      @pagy, @filtered_teachers = pagy_array(Teachers::Search.new(ect_at_school: school, query_string: params[:q]).search)
+      @number_of_teachers = Teachers::Search.new(ect_at_school: school).count
     end
 
     def show
