@@ -3,53 +3,50 @@ name: Delete review app on AKS
 on:
   pull_request:
     branches:
-    - main
+      - main
     types:
-    - closed
-
-permissions:
-  id-token: write
-  pull-requests: write
+      - closed
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number of review app to delete
+        required: false
+        type: string
 
 jobs:
   delete-review-app:
-    name: Delete Review App ${{ github.event.pull_request.number }}
-    concurrency: deploy_review_${{ github.event.pull_request.number }}
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'Dependencies') }}
+    name: Delete Review App ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+    concurrency: deploy_review_${{ github.event.pull_request.number || github.event.inputs.pr_number }}
     runs-on: ubuntu-latest
+    if: >
+      !contains(github.event.pull_request.labels.*.name, 'Dependencies') ||
+      github.event_name == 'workflow_dispatch'
+
     environment: review
+    permissions:
+      pull-requests: write
+      id-token: write
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set environment variables
+        id: pull_request_number
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "PULL_REQUEST_NUMBER=${{ github.event.inputs.pr_number }}" >> $GITHUB_ENV
+          else
+            echo "PULL_REQUEST_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          fi
 
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.9.8
-        terraform_wrapper: false
-
-    - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
-      with:
-        azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-
-    - uses: google-github-actions/auth@v2
-      with:
-        project_id: ecf-bq
-        workload_identity_provider: projects/808138694727/locations/global/workloadIdentityPools/register-early-career-teachers-p/providers/register-early-career-teachers-p
-
-    - name: Terraform Destroy
-      run: |
-        make ci review terraform-destroy
-      env:
-        PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
-
-    - name: Post Pull Request Comment
-      if: ${{ github.event_name == 'pull_request' }}
-      uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        header: aks
-        message: |
-                Review app ECF2 deployed to <https://ec2-review-${{ github.event.number }}-web.test.teacherservices.cloud> was deleted
+      - uses: DFE-Digital/github-actions/delete-review-app@master
+        with:
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          gcp-wip: projects/808138694727/locations/global/workloadIdentityPools/register-early-career-teachers-p/providers/register-early-career-teachers-p
+          gcp-project-id: ecf-bq
+          terraform-base: config/terraform/application
+          pr-number: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+          resource-group-name: s189t01-cpdec2-rv-rg
+          storage-account-name: s189t01cpdec2rvtfsa
+          container-name: terraform-state
+          tf-state-file: review-${{ github.event.pull_request.number || github.event.inputs.pr_number }}_kubernetes.tfstate
