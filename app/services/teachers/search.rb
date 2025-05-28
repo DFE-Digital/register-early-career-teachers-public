@@ -15,6 +15,8 @@ module Teachers
       scope.order(order)
     end
 
+    delegate :count, to: :scope
+
   private
 
     def order

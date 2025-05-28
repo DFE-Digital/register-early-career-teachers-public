@@ -6,22 +6,21 @@
     caption_size: 'l'
   )
 %>
-
-<%= govuk_button_link_to(@has_any_teachers ? "Add an ECT" : "Register an ECT starting at your school", schools_register_ect_wizard_start_path) %>
-
+<%= govuk_button_link_to(@number_of_teachers.zero? ? "Register an ECT starting at your school" : "Add an ECT", schools_register_ect_wizard_start_path) %>
 <hr class="govuk-section-break--m" />
-
 <div class="govuk-grid-row">
-  <% if @has_any_teachers %>
-
+  <% if @number_of_teachers.zero? %>
     <div class='govuk-grid-column-two-thirds'>
-
-
+      <p class="govuk-body">Your school currently has no registered early career teachers.</p>
+    </div>
+  <% else %>
+    <div class='govuk-grid-column-two-thirds'>
       <%= render Shared::TopSearchComponent.new %>
-
-      <% @filtered_teachers.to_a.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
-        <%=
-          govuk_summary_card(title: link_to_ect(ect)) do |card|
+      <% if @filtered_teachers.count.zero? %>
+        <p class="govuk-body">There are no ECTs that match your search.</p>
+      <% else %>
+        <% @filtered_teachers.to_a.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
+          <%= govuk_summary_card(title: link_to_ect(ect)) do |card|
             card.with_summary_list(
               borders: false,
               rows: [
@@ -29,18 +28,10 @@
                 { key: { text: 'Mentor' }, value: { text: ect_mentor_details(ect) } },
               ]
             )
-          end
-        %>
+            end %>
+        <% end %>
       <% end %>
-
       <%= govuk_pagination(pagy: @pagy) %>
     </div>
-
-  <% else %>
-
-    <div class='govuk-grid-column-two-thirds'>
-      <p class="govuk-body">Your school currently has no registered early career teachers.</p>
-    </div>
-    
   <% end %>
 </div>
