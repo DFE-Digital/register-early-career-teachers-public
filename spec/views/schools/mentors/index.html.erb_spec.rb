@@ -20,6 +20,10 @@ RSpec.describe 'schools/mentors/index.html.erb' do
     it 'does not render the summary component' do
       expect(rendered).not_to have_css('.govuk-summary-card')
     end
+
+    it 'does not render the search box' do
+      expect(rendered).not_to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
+    end
   end
 
   context 'when there are mentors' do
@@ -40,6 +44,28 @@ RSpec.describe 'schools/mentors/index.html.erb' do
 
     it 'renders the summary component' do
       expect(rendered).to have_css('.govuk-summary-card__title', text: 'Johnnie Walker')
+    end
+
+    it 'renders the search box' do
+      expect(rendered).to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
+    end
+
+    context 'when the filtered mentors is empty' do
+      before do
+        assign(:school, school)
+        assign(:number_of_mentors, 1)
+        assign(:filtered_mentors, [])
+        assign(:mentor_period_for_school, [mentor_period])
+        render
+      end
+
+      it 'renders the no mentors text' do
+        expect(rendered).to have_css('.govuk-body', text: 'There are no mentors that match your search.')
+      end
+
+      it 'renders the search box' do
+        expect(rendered).to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
+      end
     end
   end
 end
