@@ -10,6 +10,16 @@ default: &default
   host: "<%= ENV['DB_HOSTNAME'] %>"
   port: "<%= ENV['DB_PORT'] %>"
 
+default_ecf: &default_ecf
+  <<: *shared_settings
+  migrations_paths: db/ecf_migrate
+  database: "<%= ENV['ECF_DB_DATABASE'] %>"
+  username: "<%= ENV['ECF_DB_USERNAME'] %>"
+  password: "<%= ENV['ECF_DB_PASSWORD'] %>"
+  host: "<%= ENV['ECF_DB_HOSTNAME'] %>"
+  port: "<%= ENV['ECF_DB_PORT'] %>"
+  url: <%= ENV.fetch("ECF_DATABASE_URL", "postgres://localhost:5432") %>
+
 production_default: &production_default
   database: ecf2_production
   username: ecf2
@@ -20,8 +30,12 @@ development:
   database: ecf2_development
 
 test:
-  <<: *default
-  database: ecf2_test
+  primary:
+    <<: *default
+    database: ecf2_test
+  ecf:
+    <<: *default_ecf
+    database: ecf_test
 
 legacy:
   <<: *shared_settings
