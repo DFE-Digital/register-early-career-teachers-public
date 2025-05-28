@@ -13,7 +13,7 @@ module Schools
       end
 
       def next_step
-        :email_address
+        ect.previously_registered? ? :registered_before : :email_address
       end
 
       def previous_step
