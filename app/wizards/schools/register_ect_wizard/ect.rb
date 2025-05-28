@@ -37,6 +37,10 @@ module Schools
         trs_date_of_birth&.to_date&.to_formatted_s(:govuk)
       end
 
+      def in_trs?
+        trs_first_name.present?
+      end
+
       def induction_completed?
         trs_induction_status == 'Passed'
       end
@@ -49,8 +53,8 @@ module Schools
         trs_induction_status == 'Failed'
       end
 
-      def in_trs?
-        trs_first_name.present?
+      def induction_start_date
+        first_induction_period&.started_on
       end
 
       def lead_provider
@@ -69,6 +73,37 @@ module Schools
       # Extract into their own SO when this logic becomes dependant of the ECT being assigned
       def possible_lead_providers
         @possible_lead_providers ||= LeadProvider.select(:id, :name).all
+      end
+
+      def previously_registered?
+        previous_ect_at_school_period.present?
+      end
+
+      def previous_appropriate_body_name
+        previous_appropriate_body&.name
+      end
+
+      def previous_delivery_partner_name
+        previous_delivery_partner&.name
+      end
+
+      def previous_lead_provider_name
+        previous_lead_provider&.name
+      end
+
+      def previous_provider_led?
+        previous_ect_at_school_period&.provider_led_programme_type?
+      end
+
+      def previous_school
+        previous_ect_at_school_period&.school
+      end
+
+      # previous_school_name
+      delegate :name, to: :previous_school, prefix: true, allow_nil: true
+
+      def previous_training_programme
+        previous_ect_at_school_period&.programme_type
       end
 
       def provider_led?
@@ -97,6 +132,48 @@ module Schools
 
       def trs_full_name
         Teachers::Name.new(self).full_name_in_trs
+      end
+
+    private
+
+      def first_induction_period
+        ordered_induction_periods.first
+      end
+
+      def ordered_induction_periods
+        @ordered_induction_periods ||= InductionPeriods::Search
+          .new(order: :started_on)
+          .induction_periods(trn:)
+      end
+
+      def previous_appropriate_body
+        previous_induction_period&.appropriate_body
+      end
+
+      def previous_delivery_partner
+        previous_training_period&.delivery_partner
+      end
+
+      def previous_ect_at_school_period
+        @previous_ect_at_school_period ||= ECTAtSchoolPeriods::Search
+          .new(order: :started_on)
+          .ect_periods(trn:)
+          .last
+      end
+
+      def previous_induction_period
+        ordered_induction_periods.last
+      end
+
+      def previous_lead_provider
+        previous_training_period&.lead_provider
+      end
+
+      def previous_training_period
+        @previous_training_period ||= TrainingPeriods::Search
+          .new(order: :started_on)
+          .training_periods(ect_id: previous_ect_at_school_period.id)
+          .last
       end
     end
   end
