@@ -2,10 +2,11 @@ module Teachers
   class Search
     attr_reader :scope
 
-    def initialize(query_string: :ignore, appropriate_bodies: :ignore, ect_at_school: :ignore)
+    def initialize(query_string: :ignore, appropriate_bodies: :ignore, ect_at_school: :ignore, mentor_at_school: :ignore)
       @scope = Teacher.all
 
       where_ect_at(ect_at_school)
+      where_mentor_at(mentor_at_school)
       where_appropriate_bodies_in(appropriate_bodies)
       matching(query_string)
     end
@@ -13,6 +14,8 @@ module Teachers
     def search
       scope.order(order)
     end
+
+    delegate :count, to: :scope
 
   private
 
@@ -68,6 +71,16 @@ module Teachers
       )
 
       @sort_order = :mentorless_first_then_by_registration_date
+    end
+
+    def where_mentor_at(school)
+      return if school == :ignore
+
+      @scope = @scope
+        .joins(:mentor_at_school_periods)
+        .where(mentor_at_school_periods: { school_id: school.id })
+        .distinct
+        .includes(:mentor_at_school_periods)
     end
   end
 end
