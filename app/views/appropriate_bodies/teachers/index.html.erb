@@ -3,6 +3,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <%= govuk_button_link_to("Find and claim a new ECT", new_ab_claim_an_ect_find_path) %>
+    <% if Rails.application.config.enable_bulk_upload %>
+      <%= govuk_button_link_to("Claim ECTs in bulk", new_ab_batch_claim_path, secondary: true) %>
+    <% end %>
     <hr class="govuk-section-break--l">
   </div>
 </div>
