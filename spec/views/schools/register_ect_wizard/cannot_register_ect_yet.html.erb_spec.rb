@@ -1,7 +1,9 @@
 RSpec.describe "schools/register_ect_wizard/cannot_register_ect_yet" do
+  let(:formatted_year) { '2024 to 2025' }
   let(:ect) { double('ECT', full_name: 'John Doe', start_date: '15 May 2025') }
 
   before do
+    FactoryBot.create(:registration_period, year: 2024, enabled: true)
     assign(:ect, ect)
     render
   end
@@ -11,7 +13,7 @@ RSpec.describe "schools/register_ect_wizard/cannot_register_ect_yet" do
   end
 
   it "displays the cannot register ECT message" do
-    expect(rendered).to have_content("Registration for the 2025 to 2026 academic year is not open")
+    expect(rendered).to have_content("Registration for the #{formatted_year} academic year is not open")
     expect(rendered).to have_content("We'll email you to let you know when registration will open. This is usually in June.")
   end
 
