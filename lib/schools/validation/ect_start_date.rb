@@ -14,10 +14,6 @@ module Schools
         value_as_date.strftime(Date::DATE_FORMATS[:govuk])
       end
 
-      def value_as_date
-        @value_as_date ||= Time.zone.local(*date_as_hash.values_at(1, 2, 3).map(&:to_i))
-      end
-
     private
 
       attr_reader :current_date
