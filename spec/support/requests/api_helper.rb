@@ -1,14 +1,14 @@
 module APIHelper
-  def authenticated_api_get(path, params: {}, token: nil)
-    get path, headers: api_headers(token:), params:
+  def authenticated_api_get(path, token: nil, headers: {}, params: {})
+    get path, headers: api_headers(token:).merge(headers), params:
   end
 
-  def authenticated_api_post(path, params: {}, token: nil)
-    post path, headers: api_headers(token:), params:
+  def authenticated_api_post(path, token: nil, headers: {}, params: {})
+    post path, headers: api_headers(token:).merge(headers), params:
   end
 
-  def authenticated_api_put(path, params: {}, token: nil)
-    put path, headers: api_headers(token:), params:
+  def authenticated_api_put(path, token: nil, headers: {}, params: {})
+    put path, headers: api_headers(token:).merge(headers), params:
   end
 
   def api_headers(token: nil)
@@ -18,8 +18,13 @@ module APIHelper
   end
 
   def generate_api_token
-    lead_provider = FactoryBot.create(:lead_provider)
-    API::TokenManager.create_lead_provider_api_token!(lead_provider:)
+    API::TokenManager.create_lead_provider_api_token!(lead_provider: lead_provider_to_authenticate_with)
+  end
+
+  def lead_provider_to_authenticate_with
+    return FactoryBot.create(:lead_provider) unless defined?(active_lead_provider)
+
+    active_lead_provider.lead_provider
   end
 
   def parsed_response
