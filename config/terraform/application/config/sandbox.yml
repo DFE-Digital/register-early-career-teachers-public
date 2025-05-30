@@ -1,6 +1,6 @@
 ---
 ENVIRONMENT_COLOUR: yellow
-ENVIRONMENT_PHASE_BANNER_TAG: Sandbox 🏖️
+ENVIRONMENT_PHASE_BANNER_TAG: Lead provider sandbox 🏖️
 ENVIRONMENT_PHASE_BANNER_CONTENT: This sandbox environment is for lead provider testing.
 ENABLE_SENTRY: true
 SENTRY_ENVIRONMENT: sandbox
