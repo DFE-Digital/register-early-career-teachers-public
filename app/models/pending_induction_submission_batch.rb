@@ -39,7 +39,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   validates :data, presence: true
 
   # Callbacks
-  after_update_commit :update_batch_progress, if: :action?
+  after_update_commit :update_batch_progress
 
   # @return [Boolean]
   def no_valid_data?

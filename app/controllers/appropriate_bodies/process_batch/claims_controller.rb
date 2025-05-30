@@ -20,7 +20,7 @@ module AppropriateBodies
           process_batch_claim
           record_bulk_upload_completed_event
 
-          redirect_to ab_batch_claim_path(@pending_induction_submission_batch), alert: 'File processing'
+          redirect_to ab_batch_claim_path(@pending_induction_submission_batch)
         else
           @pending_induction_submission_batch = csv_data
           render :new, status: :unprocessable_entity

@@ -3,6 +3,9 @@ class ProcessBatchClaimJob < ApplicationJob
   # @param author_email [String]
   # @param author_name [String]
   def perform(pending_induction_submission_batch, author_email, author_name)
+    return if pending_induction_submission_batch.processing?
+    return unless pending_induction_submission_batch.pending?
+
     pending_induction_submission_batch.processing!
 
     AppropriateBodies::ProcessBatch::Claim.new(
@@ -10,6 +13,10 @@ class ProcessBatchClaimJob < ApplicationJob
       author: author_session(pending_induction_submission_batch, author_email, author_name)
     ).process!
 
+    # First transition to processed so user sees the summary
+    pending_induction_submission_batch.processed!
+
+    # Then immediately transition to completed for claims
     pending_induction_submission_batch.completed!
   rescue StandardError => e
     Rails.logger.debug("Attempt #{executions}: #{e.message}")
