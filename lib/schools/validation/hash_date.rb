@@ -16,6 +16,10 @@ module Schools
         error_message.blank?
       end
 
+      def value_as_date
+        @value_as_date ||= Time.zone.local(*date_as_hash.values_at(1, 2, 3).map(&:to_i))
+      end
+
     private
 
       def integerize_keys!(hash)
@@ -24,10 +28,6 @@ module Schools
 
       def convert_to_hash(date)
         { 3 => date.day, 2 => date.month, 1 => date.year } if date
-      end
-
-      def value_as_date
-        @value_as_date ||= Date.new(*date_as_hash.values_at(1, 2, 3).map(&:to_i))
       end
 
       def date_missing?
