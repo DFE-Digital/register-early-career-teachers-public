@@ -49,6 +49,7 @@ module RegisterEarlyCareerTeachers
     config.enable_bulk_upload = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BULK_UPLOAD', false))
     config.enable_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_API', false))
     config.sentry_dsn = ENV['SENTRY_DSN']
+    config.enable_request_specs_timeout = ActiveModel::Type::Boolean.new.cast(ENV.fetch('CI', false))
 
     config.dfe_sign_in_issuer = ENV.fetch('DFE_SIGN_IN_ISSUER', 'https://dev-oidc.signin.education.gov.uk')
     config.dfe_sign_in_client_id = ENV['DFE_SIGN_IN_CLIENT_ID']
