@@ -29,19 +29,23 @@
 <% end %>
 
 <%= render TestGuidanceComponent.new do |component| %>
-  <% component.with_trs_example_teacher_details %>
+  <% if Rails.application.config.enable_fake_trs_api %>
+    <% component.with_trs_fake_api_instructions %>
+  <% else %>
+    <% component.with_trs_example_teacher_details %>
 
-  <% pending_induction_submission = PendingInductionSubmissions::Search.new(appropriate_body: @appropriate_body).pending_induction_submissions.first %>
+    <% pending_induction_submission = PendingInductionSubmissions::Search.new(appropriate_body: @appropriate_body).pending_induction_submissions.first %>
 
-  <% if pending_induction_submission.present? %>
-    <h2 class="govuk-heading-m">Error preview</h2>
-    <%=
-      govuk_list([
-        govuk_link_to('Induction already completed', ab_claim_an_ect_errors_already_complete_path(pending_induction_submission), no_visited_state: true),
-        govuk_link_to('Induction with another appropriate body', ab_claim_an_ect_errors_another_ab_path(pending_induction_submission), no_visited_state: true),
-        govuk_link_to('No QTS', ab_claim_an_ect_errors_no_qts_path(pending_induction_submission), no_visited_state: true),
-        govuk_link_to('Prohibited from teaching', ab_claim_an_ect_errors_prohibited_path(pending_induction_submission), no_visited_state: true),
-      ])
-    %>
+    <% if pending_induction_submission.present? %>
+      <h2 class="govuk-heading-m">Error preview</h2>
+      <%=
+        govuk_list([
+          govuk_link_to('Induction already completed', ab_claim_an_ect_errors_already_complete_path(pending_induction_submission), no_visited_state: true),
+          govuk_link_to('Induction with another appropriate body', ab_claim_an_ect_errors_another_ab_path(pending_induction_submission), no_visited_state: true),
+          govuk_link_to('No QTS', ab_claim_an_ect_errors_no_qts_path(pending_induction_submission), no_visited_state: true),
+          govuk_link_to('Prohibited from teaching', ab_claim_an_ect_errors_prohibited_path(pending_induction_submission), no_visited_state: true),
+        ])
+      %>
+    <% end %>
   <% end %>
 <% end %>

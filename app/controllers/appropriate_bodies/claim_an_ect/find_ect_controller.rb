@@ -33,7 +33,7 @@ module AppropriateBodies
       rescue TRS::Errors::ProhibitedFromTeaching
         @pending_induction_submission.save!
         redirect_to ab_claim_an_ect_errors_prohibited_path(@pending_induction_submission)
-      rescue TRS::Errors::TeacherNotFound
+      rescue TRS::Errors::TeacherNotFound, TRS::Errors::TeacherDeactivated
         @pending_induction_submission.errors.add(:base, "No teacher with this TRN and date of birth was found")
 
         render(:new)
