@@ -59,6 +59,12 @@ Rails.application.routes.draw do
       resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: 'teachers/record_failed_outcome'
       resource :reopen_induction, only: %i[update], path: 'reopen-induction', controller: 'teachers/reopen_induction'
     end
+
+    resource :finance, only: %i[show], controller: 'finance' do
+      collection do
+        resources :statements, as: 'finance_statements', controller: 'finance/statements', only: %i[index show]
+      end
+    end
   end
 
   resource :appropriate_bodies, only: %i[show], path: 'appropriate-body', as: 'ab_landing', controller: 'appropriate_bodies/landing'
