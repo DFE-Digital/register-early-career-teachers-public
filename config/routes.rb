@@ -124,6 +124,7 @@ Rails.application.routes.draw do
       get "trn-not-found", action: :new
       get "not-found", action: :new
       get "cannot-register-ect", action: :new
+      get "cannot-register-ect-yet", action: :new
 
       get "already_active_at_school", action: :new
       get "induction-completed", action: :new

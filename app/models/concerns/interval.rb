@@ -16,6 +16,7 @@ module Interval
     scope :finished_before, ->(date) { where(finished_on: ...date) }
     scope :finished_on_or_after, ->(date) { where(finished_on: date..) }
     scope :containing_period, ->(period) { where("range @> daterange(?, ?)", period.started_on, period.finished_on) }
+    scope :ongoing_on, ->(date) { where('?::date BETWEEN started_on AND finished_on', date) }
   end
 
   # Validations

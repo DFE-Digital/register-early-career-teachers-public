@@ -1,0 +1,6 @@
+<% page_data(title: "You cannot register #{@ect.full_name} yet", error: false) %>
+
+<p class="govuk-body">Registration for the <%= formatted_year_range_for_registration_date(@ect.start_date.to_date) %> academic year is not open.</p>
+<p class="govuk-body">We'll email you to let you know when registration will open. This is usually in June.</p>
+
+<p class="govuk-body"><%= govuk_link_to("Back to ECTs", schools_ects_home_path) %></p>
