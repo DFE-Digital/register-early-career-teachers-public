@@ -8,6 +8,7 @@ $govuk-assets-path: "/";
 // app styles
 @import "header/colour-overrides";
 @import "header/navigation";
+@import "schools/ects";
 @import "timeline";
 @import "bulk_upload";
 @import "search";
