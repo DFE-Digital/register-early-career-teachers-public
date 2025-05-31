@@ -35,7 +35,7 @@ module Teachers::Details
     end
 
     def edit_link
-      return unless enable_edit && can_edit?
+      return unless enable_edit
 
       helpers.govuk_link_to('Edit', helpers.edit_admin_teacher_induction_period_path(teacher_id: teacher.id, id: current_period.id), no_visited_state: true)
     end
@@ -44,10 +44,6 @@ module Teachers::Details
       return unless enable_edit && can_delete?
 
       helpers.govuk_link_to('Delete', helpers.confirm_delete_admin_teacher_induction_period_path(teacher_id: teacher.id, id: current_period.id), no_visited_state: true)
-    end
-
-    def can_edit?
-      current_period.outcome.blank?
     end
 
     def can_delete?

@@ -16,20 +16,20 @@ module Admin
     # @return [true]
     # @raise [ActiveRecord::RecordInvalid, ActiveRecord::Rollback]
     def update_induction_period!
-      validate_can_update!
-
       previous_start_date = induction_period.started_on
+      previous_end_date = induction_period.finished_on
       induction_period.assign_attributes(params)
       modifications = induction_period.changes
 
-      ActiveRecord::Base.transaction do
-        success = [
-          induction_period.save!,
-          record_event(modifications),
-          notify_trs_of_start_date_change(previous_start_date)
-        ].all?
+      # Prevent setting dates to nil for induction periods with outcomes
+      if induction_period.outcome.present? && params.key?(:finished_on) && params[:finished_on].nil?
+        raise ActiveRecord::RecordInvalid.new(induction_period), "End date cannot be set to nil for induction periods with outcomes"
+      end
 
-        success or raise ActiveRecord::Rollback
+      ActiveRecord::Base.transaction do
+        induction_period.save!
+        record_induction_period_update_event(modifications)
+        handle_trs_notifications(previous_start_date, previous_end_date)
       end
 
       true
@@ -40,9 +40,7 @@ module Admin
     delegate :teacher, :appropriate_body, to: :induction_period
 
     # @param modifications [Hash{String => Array}]
-    def record_event(modifications)
-      return true unless induction_period.persisted?
-
+    def record_induction_period_update_event(modifications)
       Events::Record.record_induction_period_updated_event!(
         author:,
         modifications:,
@@ -50,26 +48,70 @@ module Admin
         teacher:,
         appropriate_body:
       )
-
-      true
     end
 
-    def validate_can_update!
-      return if induction_period.outcome.blank?
+    def handle_trs_notifications(previous_start_date, previous_end_date)
+      start_date_changed = previous_start_date != induction_period.started_on
+      end_date_changed = previous_end_date != induction_period.finished_on
 
-      # Only allow updates to number_of_terms if outcome is present
-      changes_only_number_of_terms = params.keys.map(&:to_s).all? { |key| key == "number_of_terms" }
-      raise RecordedOutcomeError, "Only number of terms can be edited when outcome is recorded" unless changes_only_number_of_terms
+      if induction_period.outcome.blank?
+        if start_date_changed
+          is_earliest_period = teacher.induction_periods.earliest_first.first == induction_period
+          if is_earliest_period && induction_period.finished_on.nil?
+            BeginECTInductionJob.perform_later(
+              trn: teacher.trn,
+              start_date: induction_period.started_on
+            )
+            record_teacher_trs_induction_start_date_updated_event!
+          end
+        end
+      else
+        if end_date_changed
+          send_pass_or_fail_notification
+          record_teacher_trs_induction_end_date_updated_event!
+        end
+
+        if start_date_changed
+          record_teacher_trs_induction_start_date_updated_event!
+        end
+      end
     end
 
-    def notify_trs_of_start_date_change(previous_start_date)
-      return true if induction_period.has_predecessors?
-      return true if previous_start_date == induction_period.started_on
-
-      BeginECTInductionJob.perform_later(
-        trn: teacher.trn,
-        start_date: induction_period.started_on
+    def record_teacher_trs_induction_start_date_updated_event!
+      Events::Record.record_teacher_trs_induction_start_date_updated_event!(
+        author:,
+        teacher:,
+        appropriate_body:,
+        induction_period:
       )
+    end
+
+    def record_teacher_trs_induction_end_date_updated_event!
+      Events::Record.record_teacher_trs_induction_end_date_updated_event!(
+        author:,
+        teacher:,
+        appropriate_body:,
+        induction_period:
+      )
+    end
+
+    def send_pass_or_fail_notification
+      @pass_or_fail_notification_sent = true
+      if induction_period.outcome == "pass"
+        PassECTInductionJob.perform_later(
+          trn: teacher.trn,
+          start_date: induction_period.started_on,
+          completed_date: induction_period.finished_on,
+          pending_induction_submission_id: nil
+        )
+      elsif induction_period.outcome == "fail"
+        FailECTInductionJob.perform_later(
+          trn: teacher.trn,
+          start_date: induction_period.started_on,
+          completed_date: induction_period.finished_on,
+          pending_induction_submission_id: nil
+        )
+      end
     end
   end
 end

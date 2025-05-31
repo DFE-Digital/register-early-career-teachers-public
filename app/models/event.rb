@@ -21,6 +21,7 @@ class Event < ApplicationRecord
     teacher_starts_mentoring
     teacher_trs_attributes_updated
     teacher_trs_deactivated
+    teacher_trs_induction_end_date_updated
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
     lead_provider_api_token_created
