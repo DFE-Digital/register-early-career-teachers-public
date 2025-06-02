@@ -40,7 +40,7 @@ module ECTHelper
     latest_mentor_name(ect) || link_to_assign_mentor(ect)
   end
 
-  # TODO: "status" is yet to be clarified this is just a simple placeholder
+  # TODO: "status" is yet to be clarified this is just a simple placeholder.
   # @param ect [ECTAtSchoolPeriod]
   def ect_status(ect)
     if current_mentor_name(ect)
