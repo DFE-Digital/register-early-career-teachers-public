@@ -11,6 +11,10 @@ services:
     environment:
       ENABLE_PERSONAS: true
       ENABLE_BULK_UPLOAD: true
+      ECF_DATABASE_URL: 'postgresql://postgres:postgres@postgres/ecf_development'
+      ENCRYPTION_PRIMARY_KEY: local_primary_key
+      ENCRYPTION_DETERMINISTIC_KEY: local_deterministic_key
+      ENCRYPTION_DERIVATION_SALT: local_derivation_salt
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
