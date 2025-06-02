@@ -38,7 +38,7 @@ module Schools
       end
 
       def past_start_date?
-        start_date_as_date < Time.zone.now
+        start_date_as_date < Date.current
       end
 
       def start_date_registration_period
