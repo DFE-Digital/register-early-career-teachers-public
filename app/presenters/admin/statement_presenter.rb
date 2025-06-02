@@ -1,7 +1,7 @@
 module Admin
   class StatementPresenter < SimpleDelegator
     def self.wrap(collection)
-      collection.map { |teacher| new(teacher) }
+      collection.map { |statement| new(statement) }
     end
 
     def month_and_year
