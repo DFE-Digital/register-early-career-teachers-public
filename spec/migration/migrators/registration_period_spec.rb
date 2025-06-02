@@ -51,7 +51,7 @@ RSpec.describe Migrators::RegistrationPeriod do
       expect {
         described_class.new(worker: 0).migrate!
       }.to change(RegistrationPeriod, :count).by(2)
-      expect(RegistrationPeriod.pluck(:id)).to contain_exactly(2021, 2022)
+      expect(RegistrationPeriod.pluck(:year)).to contain_exactly(2021, 2022)
     end
   end
 end
