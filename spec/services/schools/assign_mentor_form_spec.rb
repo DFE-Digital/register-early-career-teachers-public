@@ -59,12 +59,12 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
       let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, school: ect.school) }
 
       it 'adds a new mentorship for the ect and the mentor starting today' do
-        expect(ect.current_mentor).to be_nil
+        expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to be_nil
 
         expect(subject.save(author:)).to be_truthy
 
-        expect(ect.current_mentor).to eq(mentor)
-        expect(ect.current_mentorship.started_on).to eq(Date.current)
+        expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to eq(mentor)
+        expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentorship_period.started_on).to eq(Date.current)
       end
     end
   end

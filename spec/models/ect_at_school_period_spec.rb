@@ -225,60 +225,6 @@ describe ECTAtSchoolPeriod do
     end
   end
 
-  describe "#current_mentorship" do
-    let(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
-    let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
-
-    context "when the ect has had no mentorships ever" do
-      it { expect(mentee.current_mentorship).to be_nil }
-    end
-
-    context "when the ect has had past mentorships" do
-      before do
-        FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago)
-      end
-
-      it { expect(mentee.current_mentorship).to be_nil }
-    end
-
-    context "when the ect has an ongoing mentorship at a school" do
-      let!(:old_mentorship) { FactoryBot.create(:mentorship_period, mentee:, mentor:) }
-      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :active, mentee:, mentor:) }
-
-      it "returns the ongoing mentorship period" do
-        expect(mentee.current_mentorship).to eq(ongoing_mentorship)
-      end
-    end
-  end
-
-  describe "#current_mentor" do
-    let(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
-    let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
-
-    context "when the ect has had no mentorships ever" do
-      it { expect(mentee.current_mentor).to be_nil }
-    end
-
-    context "when the ect has had past mentorships" do
-      before do
-        FactoryBot.create(:mentorship_period, mentee:, mentor:)
-      end
-
-      it { expect(mentee.current_mentor).to be_nil }
-    end
-
-    context "when the ect has an ongoing mentorship at a school" do
-      before do
-        FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago)
-        FactoryBot.create(:mentorship_period, :active, mentee:, mentor:, started_on: 1.year.ago)
-      end
-
-      it "returns the mentor associated to that mentorship" do
-        expect(mentee.current_mentor).to eql(mentor)
-      end
-    end
-  end
-
   describe "#siblings" do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { period_1.school }
