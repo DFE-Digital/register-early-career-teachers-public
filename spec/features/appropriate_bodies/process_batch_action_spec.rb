@@ -107,6 +107,25 @@ RSpec.describe 'Process bulk actions' do
           then_i_should_see_the_error('The selected file must be a CSV')
         end
       end
+
+      context 'when uploading corrected file after invalid file upload' do
+        let(:file_name) { 'invalid_missing_columns.csv' }
+        let(:corrected_file_name) { 'valid_complete_action.csv' }
+        let(:corrected_file_path) { Rails.root.join("spec/fixtures/#{corrected_file_name}").to_s }
+
+        scenario 'should allow uploading the corrected file' do
+          # First upload fails as expected
+          then_i_should_see_the_error('The selected file must follow the template')
+
+          # Now try to upload a corrected file
+          when_i_upload_a_corrected_file
+
+          perform_enqueued_jobs
+          page.reload
+          expect(page.get_by_text('CSV file summary')).to be_visible
+          expect(page.get_by_text("Your CSV named 'valid_complete_action.csv' has 2 ECTs")).to be_visible
+        end
+      end
     end
   end
 
@@ -118,6 +137,11 @@ private
 
   def when_i_upload_a_file
     page.locator('input[type="file"]').set_input_files(file_path)
+    page.get_by_role('button', name: 'Continue').click
+  end
+
+  def when_i_upload_a_corrected_file
+    page.locator('input[type="file"]').set_input_files(corrected_file_path)
     page.get_by_role('button', name: 'Continue').click
   end
 
