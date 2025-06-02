@@ -10,7 +10,7 @@ RSpec.describe "schools/register_ect_wizard/not_found.html.erb" do
   end
 
   it 'includes a link to reviewing the teacher record' do
-    expect(rendered).to have_link('reviewing their teacher record', href: "https://check-a-teachers-record.education.gov.uk/check-records/sign-in")
+    expect(rendered).to have_link('reviewing their teacher record', href: "https://www.gov.uk/guidance/check-a-teachers-record")
   end
 
   it 'includes a link to the Find a lost TRN service' do
