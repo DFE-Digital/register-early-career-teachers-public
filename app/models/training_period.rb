@@ -29,6 +29,9 @@ class TrainingPeriod < ApplicationRecord
   scope :for_school_partnership, ->(school_partnership_id) { where(school_partnership_id:) }
 
   # Instance methods
+  # delivery_partner_name
+  delegate :name, to: :delivery_partner, prefix: true
+
   def for_ect?
     ect_at_school_period_id.present?
   end
@@ -36,6 +39,9 @@ class TrainingPeriod < ApplicationRecord
   def for_mentor?
     mentor_at_school_period_id.present?
   end
+
+  # lead_provider_name
+  delegate :name, to: :lead_provider, prefix: true
 
   def trainee
     ect_at_school_period || mentor_at_school_period

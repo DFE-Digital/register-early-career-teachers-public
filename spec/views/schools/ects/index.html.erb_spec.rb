@@ -2,11 +2,15 @@ RSpec.describe 'schools/ects/index.html.erb' do
   let(:school) { FactoryBot.create(:school) }
 
   before do
+    assign(:filtered_teachers, [])
     assign(:ects, [])
-    assign(:teachers, [])
     assign(:number_of_teachers, 0)
     assign(:school, school)
     render
+  end
+
+  it 'shows the Register an ECT starting at your school button' do
+    expect(rendered).to have_css('a.govuk-button', text: 'Register an ECT starting at your school')
   end
 
   context 'when there are no teachers' do
@@ -37,10 +41,6 @@ RSpec.describe 'schools/ects/index.html.erb' do
       assign(:number_of_teachers, 1)
       assign(:school, school)
       render
-    end
-
-    it 'shows the "Add an ECT" button' do
-      expect(rendered).to have_css('a.govuk-button', text: 'Add an ECT')
     end
 
     it 'renders the summary component' do

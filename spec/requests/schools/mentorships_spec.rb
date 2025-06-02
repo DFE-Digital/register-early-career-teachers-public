@@ -80,7 +80,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
           post("/school/ects/#{ect.id}/mentorship", params:)
 
           expect(Schools::AssignMentorForm).to have_received(:new).with(ect:, mentor_id: mentor.id.to_s).once
-          expect(ect.current_mentor).to eq(mentor)
+          expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to eq(mentor)
           expect(response).to be_redirection
           expect(response.redirect_url).to eq(confirmation_schools_ect_mentorship_url(ect_id: ect.id))
         end

@@ -12,12 +12,12 @@ FactoryBot.define do
       finished_on { nil }
     end
 
-    trait(:for_ect) do
+    trait :for_ect do
       association :ect_at_school_period
       mentor_at_school_period { nil }
     end
 
-    trait(:for_mentor) do
+    trait :for_mentor do
       association :mentor_at_school_period
       ect_at_school_period { nil }
     end
