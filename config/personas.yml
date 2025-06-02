@@ -60,7 +60,7 @@
   appropriate_body_name: Null
   dfe_staff: No
   school_name: Greyfriars School
-  school_type: State-funded
+  school_type: State-funded without any prior ECTs registered
   image: personas/felix.png
   alt: Felix with a celestial-themed magical outfit.
   type: School user
