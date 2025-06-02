@@ -50,7 +50,7 @@ RSpec.describe Migrators::RegistrationPeriod do
     it 'creates registration periods with cohort start years as IDs' do
       expect {
         described_class.new(worker: 0).migrate!
-      }.to change { RegistrationPeriod.count }.by(2)
+      }.to change(RegistrationPeriod, :count).by(2)
       expect(RegistrationPeriod.pluck(:id)).to contain_exactly(2021, 2022)
     end
   end
