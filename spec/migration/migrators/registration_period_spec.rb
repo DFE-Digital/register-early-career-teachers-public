@@ -45,7 +45,7 @@ RSpec.describe Migrators::RegistrationPeriod do
   describe '#migrate!' do
     let!(:cohort1) { FactoryBot.create(:migration_cohort, start_year: 2021) }
     let!(:cohort2) { FactoryBot.create(:migration_cohort, start_year: 2022) }
-    let!(:data_migration) { DataMigration.create!(model: :registration_period, worker: 0) }
+    let!(:data_migration) { FactoryBot.create(:data_migration, model: :registration_period) }
 
     it 'creates registration periods with cohort start years as IDs' do
       expect {
