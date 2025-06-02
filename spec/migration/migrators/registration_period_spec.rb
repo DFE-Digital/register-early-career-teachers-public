@@ -20,24 +20,24 @@ RSpec.describe Migrators::RegistrationPeriod do
   end
 
   describe '.reset!' do
-    before { allow(::RegistrationPeriod).to receive_message_chain(:connection, :execute) }
+    before do
+      FactoryBot.create(:registration_period)
+      allow(Rails.application.config).to receive(:enable_migration_testing).and_return(enabled_migration_testing)
+    end
 
     context 'when migration testing is enabled' do
-      it 'truncates the registration periods table' do
-        allow(Rails.application.config).to receive(:enable_migration_testing).and_return(true)
-        expect(::RegistrationPeriod.connection).to receive(:execute) do |sql|
-          expect(sql).to include('TRUNCATE')
-          expect(sql).to include(::RegistrationPeriod.table_name)
-        end
-        described_class.reset!
+      let(:enabled_migration_testing) { true }
+
+      it 'removes all records from the registration_periods table' do
+        expect { described_class.reset! }.to change(RegistrationPeriod, :count).from(1).to(0)
       end
     end
 
     context 'when migration testing is disabled' do
-      it 'does not truncate the table' do
-        allow(Rails.application.config).to receive(:enable_migration_testing).and_return(false)
-        expect(::RegistrationPeriod.connection).not_to receive(:execute)
-        described_class.reset!
+      let(:enabled_migration_testing) { false }
+
+      it 'does not remove records from the registration_periods table' do
+        expect { described_class.reset! }.not_to(change(RegistrationPeriod, :count))
       end
     end
   end
