@@ -14,15 +14,11 @@ module API
     end
 
     def per_page
-      [page_params.dig(:page, :per_page).to_i.nonzero? || Pagy::DEFAULT[:api_per_page], Pagy::DEFAULT[:api_max_per_page]].min
+      [params.dig(:page, :per_page).to_i.nonzero? || Pagy::DEFAULT[:api_per_page], Pagy::DEFAULT[:api_max_per_page]].min
     end
 
     def page
-      page_params.dig(:page, :page).to_i.nonzero? || 1
-    end
-
-    def page_params
-      params.permit(page: %i[per_page page])
+      params.dig(:page, :page).to_i.nonzero? || 1
     end
 
     def raise_as_bad_request!
