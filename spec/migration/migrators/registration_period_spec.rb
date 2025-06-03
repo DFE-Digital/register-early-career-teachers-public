@@ -43,15 +43,26 @@ RSpec.describe Migrators::RegistrationPeriod do
   end
 
   describe '#migrate!' do
+    subject { described_class.new(worker: 0) }
+
     let!(:cohort1) { FactoryBot.create(:migration_cohort, start_year: 2021) }
     let!(:cohort2) { FactoryBot.create(:migration_cohort, start_year: 2022) }
     let!(:data_migration) { FactoryBot.create(:data_migration, model: :registration_period) }
+    let(:registration_period) { RegistrationPeriod.find_by(year: cohort1.start_year) }
 
-    it 'creates registration periods with cohort start years as IDs' do
-      expect {
-        described_class.new(worker: 0).migrate!
-      }.to change(RegistrationPeriod, :count).by(2)
+    before { subject.migrate! }
+
+    it 'creates a registration period for each cohort' do
+      expect(RegistrationPeriod.count).to eq(2)
       expect(RegistrationPeriod.pluck(:year)).to contain_exactly(2021, 2022)
+    end
+
+    it 'sets the registration period started_on to match the cohort registration_start_date' do
+      expect(registration_period.started_on).to eq(cohort1.registration_start_date)
+    end
+
+    it 'sets the registration period finished_on to one year after started_on, minus one day' do
+      expect(registration_period.finished_on).to eq(registration_period.started_on.next_year.prev_day)
     end
   end
 end
