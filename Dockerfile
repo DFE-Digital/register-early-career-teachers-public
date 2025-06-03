@@ -3,7 +3,7 @@
 # production: runs the actual app
 
 # Build builder image
-FROM ruby:3.3.4-alpine AS builder
+FROM ruby:3.4.4-alpine AS builder
 
 # RUN apk -U upgrade && \
 #     apk add --update --no-cache gcc git libc6-compat libc-dev make nodejs \
@@ -21,7 +21,7 @@ RUN apk add --update --no-cache tzdata && \
 
 # build-base: dependencies for bundle
 # postgresql-dev: postgres driver and libraries
-RUN apk add --no-cache build-base nodejs npm postgresql14-dev
+RUN apk add --no-cache build-base yaml-dev nodejs npm postgresql16-dev
 
 # Install gems defined in Gemfile
 COPY .ruby-version Gemfile Gemfile.lock ./
@@ -30,7 +30,7 @@ COPY .ruby-version Gemfile Gemfile.lock ./
 RUN bundler -v && \
     bundle config set no-cache 'true' && \
     bundle config set no-binstubs 'true' && \
-    bundle config set without 'development test' && \
+    bundle config set without 'development test nanoc' && \
     bundle install --retry=5 --jobs=4 && \
     rm -rf /usr/local/bundle/cache
 
@@ -57,7 +57,7 @@ RUN rm -rf node_modules log/* tmp/* /tmp && \
     find /usr/local/bundle/gems -name "*.html" -delete
 
 # Build runtime image
-FROM ruby:3.3.4-alpine AS production
+FROM ruby:3.4.4-alpine AS production
 
 ARG COMMIT_SHA
 

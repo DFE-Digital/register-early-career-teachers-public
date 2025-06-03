@@ -8,7 +8,7 @@ The quickest way to get up and running with the ECF2 application is to use a [Co
 
 ### Prerequisites
 
-* Ruby 3.3.4 (via [rbenv](https://github.com/rbenv/rbenv), [rvm](https://github.com/rvm/rvm), or [asdf](https://github.com/asdf-vm/asdf))
+* Ruby 3.4.4 (via [rbenv](https://github.com/rbenv/rbenv), [rvm](https://github.com/rvm/rvm), or [asdf](https://github.com/asdf-vm/asdf))
 * NodeJS (via [fnm](https://github.com/Schniz/fnm), [nvm](https://github.com/nvm-sh/nvm) or asdf)
 * PostgreSQL (via your package manager or [Postgres.app](https://postgresapp.com/))
 
@@ -125,7 +125,7 @@ $ make staging vendor-modules
 $ make staging terraform-init
 ```
 
-Activate Microsoft Entra Privileged Identity Management and ask for approval in `#cpd-dev` 
+Activate Microsoft Entra Privileged Identity Management and ask for approval in `#cpd-dev`
 
 ```sh
 # staging environment rails console:
