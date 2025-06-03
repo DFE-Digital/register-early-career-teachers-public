@@ -6,7 +6,7 @@ module Statements
     attr_reader :scope
 
     def initialize(lead_provider: :ignore, registration_period_years: :ignore, updated_since: :ignore, state: :ignore, output_fee: true)
-      @scope = Statement.distinct.includes(:lead_provider, :registration_period)
+      @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider registration_period])
 
       where_lead_provider_is(lead_provider)
       where_registration_period_year_in(registration_period_years)
