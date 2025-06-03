@@ -21,7 +21,7 @@ RUN apk add --update --no-cache tzdata && \
 
 # build-base: dependencies for bundle
 # postgresql-dev: postgres driver and libraries
-RUN apk add --no-cache build-base nodejs npm postgresql14-dev
+RUN apk add --no-cache build-base nodejs npm postgresql16-dev
 
 # Install gems defined in Gemfile
 COPY .ruby-version Gemfile Gemfile.lock ./
