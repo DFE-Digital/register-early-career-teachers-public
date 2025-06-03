@@ -7,6 +7,10 @@ module Teachers
     end
 
     def refresh!
+      # In some environments (e.g. sandbox) we don't want to allow data in TRS to
+      # overwrite existing teacher data, so we skip the refresh.
+      return unless Rails.application.config.enable_trs_teacher_refresh
+
       trs_teacher = TRS::APIClient.build.find_teacher(trn: teacher.trn)
 
       Teacher.transaction do
