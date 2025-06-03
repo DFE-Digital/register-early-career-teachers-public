@@ -6,13 +6,13 @@
   </p>
 
   <p class='govuk-body'>
-    <%= govuk_link_to 'Download CSV with error messages included', ab_batch_action_path(batch, format: :csv) %>. 
+    <%= govuk_link_to 'Download CSV with error messages included', ab_batch_action_path(batch, format: :csv) %>.
     You'll need to fix these errors before you try again.
   </p>
 
   <p class='govuk-body'>
-    <%= govuk_link_to 'Go back to your overview', ab_teachers_path %>
-  </p> 
+    <%= govuk_link_to 'Go back to your overview', ab_batch_actions_path %>
+  </p>
 
 <% else %>
   <p class='govuk-body'>
@@ -33,6 +33,6 @@
   <% end %>
 
   <p class='govuk-body'>
-    <%= govuk_link_to 'Cancel and go back to your overview', ab_teachers_path %>
-  </p>  
-<% end %>  
+    <%= govuk_link_to 'Cancel and go back to your overview', ab_batch_actions_path %>
+  </p>
+<% end %>
