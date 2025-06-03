@@ -20,7 +20,6 @@ module TRS
         return TRS::FakeAPIClient.new(random_names: true)
       end
 
-      Rails.logger.warn("Using real TRS::APIClient")
       new
     end
 
