@@ -8,7 +8,7 @@
       head: ["ID", "Lead provider", "Contract year", "Statement", "Status"],
       rows: @statements.map { |s| [
         govuk_link_to(s.id, admin_finance_statement_path(s)),
-        govuk_link_to(s.lead_provider_name, '#', text_colour: true),
+        s.lead_provider_name,
         s.registration_period_year,
         s.month_and_year,
         govuk_tag(**s.status_tag_kwargs)
