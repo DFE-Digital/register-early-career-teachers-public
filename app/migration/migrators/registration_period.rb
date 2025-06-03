@@ -20,7 +20,11 @@ module Migrators
 
     def migrate!
       migrate(self.class.cohorts) do |cohort|
-        ::RegistrationPeriod.create!(id: cohort.start_year)
+        ::RegistrationPeriod.create!(
+          id: cohort.start_year,
+          started_on: cohort.registration_start_date,
+          finished_on: cohort.registration_start_date.next_year.prev_day
+        )
       end
     end
   end
