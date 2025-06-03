@@ -22,11 +22,11 @@ RSpec.describe Migrators::RegistrationPeriod do
   describe '.reset!' do
     before do
       FactoryBot.create(:registration_period)
-      allow(Rails.application.config).to receive(:enable_migration_testing).and_return(enabled_migration_testing)
+      allow(Rails.application.config).to receive(:enable_migration_testing).and_return(enable_migration_testing)
     end
 
     context 'when migration testing is enabled' do
-      let(:enabled_migration_testing) { true }
+      let(:enable_migration_testing) { true }
 
       it 'removes all records from the registration_periods table' do
         expect { described_class.reset! }.to change(RegistrationPeriod, :count).from(1).to(0)
@@ -34,7 +34,7 @@ RSpec.describe Migrators::RegistrationPeriod do
     end
 
     context 'when migration testing is disabled' do
-      let(:enabled_migration_testing) { false }
+      let(:enable_migration_testing) { false }
 
       it 'does not remove records from the registration_periods table' do
         expect { described_class.reset! }.not_to(change(RegistrationPeriod, :count))
