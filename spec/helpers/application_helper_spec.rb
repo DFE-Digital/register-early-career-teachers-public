@@ -120,4 +120,20 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(helper.smart_quotes("")).to eq("")
     end
   end
+
+  describe '#boolean_to_yes_or_no' do
+    subject { boolean_to_yes_or_no(value) }
+
+    context 'when value is true' do
+      let(:value) { true }
+
+      it { is_expected.to eql('Yes') }
+    end
+
+    context 'when value is false' do
+      let(:value) { false }
+
+      it { is_expected.to eql('No') }
+    end
+  end
 end
