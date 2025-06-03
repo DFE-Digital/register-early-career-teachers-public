@@ -49,4 +49,8 @@ module ApplicationHelper
 
     RubyPants.new(string, %i[quotes], ruby_pants_options).to_html
   end
+
+  def boolean_to_yes_or_no(value)
+    value ? "Yes" : "No"
+  end
 end
