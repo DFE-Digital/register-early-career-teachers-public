@@ -19,6 +19,12 @@ RSpec.describe 'admin/finance/statements/index.html.erb' do
     expect(rendered).to have_css('.govuk-table')
   end
 
+  it 'has a link to each statement' do
+    render
+
+    raw_statements.each { |s| expect(rendered).to have_link('View', href: admin_finance_statement_path(s)) }
+  end
+
   it 'has the right number of rows' do
     render
 

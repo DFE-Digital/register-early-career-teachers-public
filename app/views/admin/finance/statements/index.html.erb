@@ -5,13 +5,13 @@
 <% else %>
   <%=
     govuk_table(
-      head: ["ID", "Lead provider", "Contract year", "Statement", "Status"],
+      head: ["Lead provider", "Contract year", "Statement", "Status", govuk_visually_hidden("Actions")],
       rows: @statements.map { |s| [
-        govuk_link_to(s.id, admin_finance_statement_path(s)),
         s.lead_provider_name,
         s.registration_period_year,
         s.month_and_year,
-        govuk_tag(**s.status_tag_kwargs)
+        govuk_tag(**s.status_tag_kwargs),
+        govuk_link_to("View", admin_finance_statement_path(s)),
       ] }
     )
   %>
