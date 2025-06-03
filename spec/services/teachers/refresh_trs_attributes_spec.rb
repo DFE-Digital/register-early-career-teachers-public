@@ -5,6 +5,9 @@ describe Teachers::RefreshTRSAttributes do
     include_context 'fake trs api client that finds teacher that has passed their induction'
 
     let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Kermit", trs_last_name: "Van Bouten") }
+    let(:enable_trs_teacher_refresh) { true }
+
+    before { allow(Rails.application.config).to receive(:enable_trs_teacher_refresh).and_return(enable_trs_teacher_refresh) }
 
     it 'updates the relevant TRS attributes' do
       freeze_time do
@@ -75,6 +78,16 @@ describe Teachers::RefreshTRSAttributes do
 
           expect(fake_manage).to have_received(:mark_teacher_as_deactivated!).once.with(trs_data_last_refreshed_at: Time.zone.now)
         end
+      end
+    end
+
+    context "when enable_trs_teacher_refresh is false" do
+      let(:enable_trs_teacher_refresh) { false }
+
+      it "does not refresh the teacher's TRS attributes" do
+        service = Teachers::RefreshTRSAttributes.new(teacher)
+
+        expect { service.refresh! }.not_to(change { teacher.reload.attributes })
       end
     end
   end
