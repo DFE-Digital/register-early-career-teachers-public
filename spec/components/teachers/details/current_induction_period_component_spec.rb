@@ -81,10 +81,10 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
                           induction_programme: "cip")
       end
 
-      it "does not include an edit link even when enable_edit true" do
+      it "includes an edit link when enable_edit is true" do
         component = described_class.new(teacher:, enable_edit: true)
         render_inline(component)
-        expect(page).not_to have_link("Edit")
+        expect(page).to have_link("Edit", href: edit_admin_teacher_induction_period_path(teacher_id: teacher.id, id: current_period.id))
       end
 
       it "does not include a delete link even when enable_edit true" do
