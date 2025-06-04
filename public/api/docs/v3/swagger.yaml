@@ -1,0 +1,19 @@
+---
+openapi: 3.0.1
+info:
+  title: ECF Registration API
+  version: v3
+externalDocs:
+  description: Find out more about Swagger
+  url: https://swagger.io/
+paths:
+  api/v3/statements:
+    get:
+      summary: Retrieve financial statements
+      tags:
+      - Statements
+      responses:
+        '401':
+          description: Unauthorized
+servers:
+- url: http://0.0.0.0:3000
