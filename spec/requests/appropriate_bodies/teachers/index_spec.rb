@@ -28,8 +28,8 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
           get("/appropriate-body/teachers")
         end
 
-        it "displays the count of claimed inductions" do
-          expect(response.body).to include("2 claimed inductions")
+        it "displays the count of open inductions" do
+          expect(response.body).to include("2 open inductions")
         end
 
         it 'renders the page successfully' do
@@ -41,10 +41,9 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
         end
       end
 
-      context "when there are more than 10 claimed ECTs" do
-        # FIXME: move this to a view spec
+      context "when there are more than 50 teachers" do
         let!(:additional_teachers) do
-          FactoryBot.create_list(:teacher, 21, trs_first_name: "John", trs_last_name: "Smith").tap do |teachers|
+          FactoryBot.create_list(:teacher, 49, trs_first_name: "John", trs_last_name: "Smith").tap do |teachers|
             teachers.each do |teacher|
               FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
             end
