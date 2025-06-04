@@ -1,5 +1,4 @@
 name: "Lead Provider OpenAPI Check"
-
 on:
   workflow_call:
     inputs:
@@ -7,19 +6,13 @@ on:
         description: Ruby version
         type: string
         required: false
-        default: "3.3.4"
-      node-version:
-        description: Node version
-        type: string
-        required: false
-        default: "22.14.0"
-
+        default: "3.4.4"
 jobs:
-  rspec:
+  openapi-check:
     name: Check OpenAPI schema
-
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
     env:
       RAILS_ENV: test
       DB_USERNAME: postgres
