@@ -24,11 +24,6 @@ RSpec.configure do |config|
         url: "https://swagger.io/",
       },
       paths: {},
-      servers: [
-        {
-          url: "http://0.0.0.0:3000", # Replaced in hosted environments by config/initializers/swagger_server_url.rb
-        },
-      ],
     }
   }
 
