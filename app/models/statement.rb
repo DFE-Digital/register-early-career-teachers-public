@@ -28,4 +28,17 @@ class Statement < ApplicationRecord
       transition [:payable] => :paid
     end
   end
+
+  def shorthand_state
+    case state
+    when "open"
+      "OP"
+    when "payable"
+      "PB"
+    when "paid"
+      "PD"
+    else
+      raise ArgumentError, "Unknown state: #{state}"
+    end
+  end
 end
