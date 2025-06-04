@@ -67,6 +67,16 @@ Style/HashSyntax:
 Style/Lambda:
   EnforcedStyle: literal
 
+Rails/UnknownEnv:
+  Environments:
+    - production
+    - staging
+    - development
+    - test
+    - sandbox
+    - review
+    - migration
+
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
 
