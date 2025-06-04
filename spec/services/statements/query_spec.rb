@@ -50,12 +50,12 @@ RSpec.describe Statements::Query do
         end
       end
 
-      describe "by `registration_period_start_years`" do
+      describe "by `registration_period_years`" do
         let!(:registration_period1) { FactoryBot.create(:registration_period) }
         let!(:registration_period2) { FactoryBot.create(:registration_period) }
         let!(:registration_period3) { FactoryBot.create(:registration_period) }
 
-        context "when `registration_period_start_years` param is omitted" do
+        context "when `registration_period_years` param is omitted" do
           it "returns all statements" do
             statement1 = FactoryBot.create(:statement, registration_period: registration_period1)
             statement2 = FactoryBot.create(:statement, registration_period: registration_period2)
@@ -65,37 +65,37 @@ RSpec.describe Statements::Query do
           end
         end
 
-        it "filters by `registration_period_start_years`" do
+        it "filters by `registration_period_years`" do
           _statement = FactoryBot.create(:statement, registration_period: registration_period1)
           statement = FactoryBot.create(:statement, registration_period: registration_period2)
-          query = described_class.new(registration_period_start_years: registration_period2.year)
+          query = described_class.new(registration_period_years: registration_period2.year)
 
           expect(query.statements).to eq([statement])
         end
 
-        it "filters by multiple `registration_period_start_years`" do
+        it "filters by multiple `registration_period_years`" do
           statement1 = FactoryBot.create(:statement, registration_period: registration_period1)
           statement2 = FactoryBot.create(:statement, registration_period: registration_period2)
           statement3 = FactoryBot.create(:statement, registration_period: registration_period3)
 
-          query1 = described_class.new(registration_period_start_years: "#{registration_period1.year},#{registration_period2.year}")
+          query1 = described_class.new(registration_period_years: "#{registration_period1.year},#{registration_period2.year}")
           expect(query1.statements).to contain_exactly(statement1, statement2)
 
-          query2 = described_class.new(registration_period_start_years: [registration_period2.year.to_s, registration_period3.year.to_s])
+          query2 = described_class.new(registration_period_years: [registration_period2.year.to_s, registration_period3.year.to_s])
           expect(query2.statements).to contain_exactly(statement2, statement3)
         end
 
-        it "returns no statements if no `registration_period_start_years` are found" do
-          query = described_class.new(registration_period_start_years: "0000")
+        it "returns no statements if no `registration_period_years` are found" do
+          query = described_class.new(registration_period_years: "0000")
 
           expect(query.statements).to be_empty
         end
 
-        it "does not filter by `registration_period_start_years` if blank" do
+        it "does not filter by `registration_period_years` if blank" do
           statement1 = FactoryBot.create(:statement, registration_period: registration_period1)
           statement2 = FactoryBot.create(:statement, registration_period: registration_period2)
 
-          query = described_class.new(registration_period_start_years: " ")
+          query = described_class.new(registration_period_years: " ")
 
           expect(query.statements).to contain_exactly(statement1, statement2)
         end
