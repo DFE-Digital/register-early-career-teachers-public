@@ -136,8 +136,6 @@ We also make sure the email follows a correct format.
 The school user is asked for the date when the ECT will start or started as an early career teacher.
 
 We ask this question because it helps us assign what registration_period the ECT will begin their training in. This determines:
-* what funding the ECT receives
-* what funding the lead provider receives
 * if they can progress with the journey to register the ECT - a registration_period needs to be enabled and ready before an ECT can be registered, and there are often policy changes or contract decisions which require changes before this can be done
 * if they can roll over their partnership when their previous lead provider and delivery partner are still available in the relevant registration_period
 *  what lead provider schools can select for any ECTs, when they're not using an existing partnership 
