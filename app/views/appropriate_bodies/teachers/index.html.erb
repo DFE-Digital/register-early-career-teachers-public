@@ -1,41 +1,9 @@
 <% page_data(title: @appropriate_body.name, error: false) %>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <%= govuk_button_link_to("Find and claim a new ECT", new_ab_claim_an_ect_find_path) %>
-    <hr class="govuk-section-break--l">
-  </div>
-</div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">
-      <%= claimed_inductions_text(@claimed_inductions_count) %>
-    </h2>
-  </div>
-</div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-third">
-    <%= form_with method: :get do |f| %>
-      <%= f.govuk_text_field(
-            "q",
-            value: params[:q],
-            label: { text: "Search claimed ECTs", size: "s" },
-            hint: { text: "Enter a name or TRN" },
-          )
-      %>
-
-      <div class="govuk-button-group">
-        <%= f.govuk_submit("Search") %>
-        <%= govuk_link_to("Reset", ab_teachers_path, secondary: true) %>
-      </div>
-    <% end %>
-  </div>
-
-  <div class="govuk-grid-column-two-thirds">
-    <% @teachers.each do |teacher| %>
-      <%= summary_card_for_teacher(teacher:) %>
-    <% end %>
-
-    <%= govuk_pagination pagy: @pagy %>
-  </div>
-</div>
+<%= render TeachersIndexComponent.new(
+      appropriate_body: @appropriate_body,
+      teachers: @teachers,
+      pagy: @pagy,
+      status: @status,
+      query: params[:q]
+    ) %>
