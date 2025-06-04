@@ -342,25 +342,25 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
         end
 
         context "when updating earliest period start date" do
+          before do
+            teacher.induction_periods.destroy_all
+            allow(BeginECTInductionJob).to receive(:perform_later)
+          end
+
           let!(:earliest_period) do
             FactoryBot.create(:induction_period,
                               teacher:,
                               started_on: 12.months.ago,
-                              finished_on: 9.months.ago)
+                              finished_on: nil,
+                              number_of_terms: nil)
           end
 
           let(:params) do
             {
               induction_period: {
-                started_on: 11.months.ago,
-                finished_on: 9.months.ago
+                started_on: 11.months.ago
               }
             }
-          end
-
-          before do
-            allow(BeginECTInductionJob).to receive(:perform_later)
-            teacher.induction_periods.started_before(earliest_period.started_on).destroy_all
           end
 
           it "enqueues BeginECTInductionJob" do
@@ -403,6 +403,144 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
             expect(response).to be_unprocessable
             expect(response.body).to include("Start date cannot be before QTS award date")
           end
+        end
+      end
+    end
+
+    context "when induction period has an outcome" do
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: 9.months.ago,
+                          finished_on: 6.months.ago,
+                          outcome: "pass",
+                          number_of_terms: 3)
+      end
+
+      context "when updating dates" do
+        let(:params) do
+          {
+            induction_period: {
+              started_on: 8.months.ago,
+              finished_on: 5.months.ago,
+              number_of_terms: 3.5,
+              induction_programme: "cip"
+            }
+          }
+        end
+
+        before do
+          allow(PassECTInductionJob).to receive(:perform_later)
+        end
+
+        it "updates all fields" do
+          patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
+
+          expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
+          expect(flash[:alert]).to eq("Induction period updated successfully")
+
+          induction_period.reload
+          expect(induction_period.started_on).to eq(params[:induction_period][:started_on].to_date)
+          expect(induction_period.finished_on).to eq(params[:induction_period][:finished_on].to_date)
+          expect(induction_period.number_of_terms).to eq(params[:induction_period][:number_of_terms])
+          expect(induction_period.induction_programme).to eq(params[:induction_period][:induction_programme])
+        end
+
+        it "notifies TRS of the updated dates" do
+          patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
+
+          expect(PassECTInductionJob).to have_received(:perform_later).with(
+            trn: teacher.trn,
+            start_date: params[:induction_period][:started_on].to_date,
+            completed_date: params[:induction_period][:finished_on].to_date,
+            pending_induction_submission_id: nil
+          )
+        end
+      end
+
+      context "when updating number of terms" do
+        let(:params) do
+          {
+            induction_period: {
+              number_of_terms: 3.5
+            }
+          }
+        end
+
+        it "updates the number of terms" do
+          patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
+
+          expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
+          expect(flash[:alert]).to eq("Induction period updated successfully")
+
+          induction_period.reload
+          expect(induction_period.number_of_terms).to eq(3.5)
+        end
+      end
+
+      context "when trying to update induction programme" do
+        let(:params) do
+          {
+            induction_period: {
+              induction_programme: "cip"
+            }
+          }
+        end
+
+        it "updates the induction programme" do
+          patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
+
+          expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
+          expect(flash[:alert]).to eq("Induction period updated successfully")
+
+          induction_period.reload
+          expect(induction_period.induction_programme).to eq("cip")
+        end
+      end
+    end
+
+    context "when induction period has a fail outcome" do
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: 9.months.ago,
+                          finished_on: 6.months.ago,
+                          outcome: "fail",
+                          number_of_terms: 3)
+      end
+
+      context "when updating end date" do
+        let(:params) do
+          {
+            induction_period: {
+              finished_on: 5.months.ago
+            }
+          }
+        end
+
+        before do
+          allow(FailECTInductionJob).to receive(:perform_later)
+        end
+
+        it "updates the end date" do
+          patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
+
+          expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
+          expect(flash[:alert]).to eq("Induction period updated successfully")
+
+          induction_period.reload
+          expect(induction_period.finished_on).to eq(params[:induction_period][:finished_on].to_date)
+        end
+
+        it "notifies TRS of the updated end date" do
+          patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
+
+          expect(FailECTInductionJob).to have_received(:perform_later).with(
+            trn: teacher.trn,
+            start_date: induction_period.started_on,
+            completed_date: params[:induction_period][:finished_on].to_date,
+            pending_induction_submission_id: nil
+          )
         end
       end
     end

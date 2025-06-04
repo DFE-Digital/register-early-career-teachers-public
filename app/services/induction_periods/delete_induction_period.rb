@@ -33,11 +33,7 @@ module InductionPeriods
           # If this was the earliest period but there are others, update TRS start date
           next_earliest_period = teacher.induction_periods.reload.earliest_first.first
           update_trs_start_date(next_earliest_period)
-          record_teacher_trs_induction_start_date_updated_event(
-            induction_period.started_on,
-            next_earliest_period.started_on,
-            appropriate_body
-          )
+          record_teacher_trs_induction_start_date_updated_event(appropriate_body, next_earliest_period)
         end
 
         record_delete_event(modifications, appropriate_body)
@@ -59,14 +55,12 @@ module InductionPeriods
       TRS::APIClient.new.reset_teacher_induction(trn: teacher.trn)
     end
 
-    def record_teacher_trs_induction_start_date_updated_event(old_date, new_date, appropriate_body)
+    def record_teacher_trs_induction_start_date_updated_event(appropriate_body, induction_period)
       Events::Record.record_teacher_trs_induction_start_date_updated_event!(
         author:,
         teacher:,
         appropriate_body:,
-        old_date:,
-        new_date:,
-        happened_at: Time.zone.now
+        induction_period:
       )
     end
 

@@ -34,13 +34,6 @@ RSpec.describe "Admin amending number of terms of an induction period" do
     then_i_should_see_validation_errors
   end
 
-  scenario 'Cannot edit induction period with outcome' do
-    induction_period.update!(outcome: 'pass')
-
-    given_i_am_on_the_ect_page(teacher)
-    then_i_should_not_see_the_edit_link
-  end
-
   scenario 'Can edit number of terms when period has outcome' do
     # Set up induction period with an outcome and required number_of_terms
     induction_period.update!(
@@ -75,6 +68,15 @@ RSpec.describe "Admin amending number of terms of an induction period" do
     then_i_should_be_on_the_edit_induction_period_page
 
     then_i_should_see_only_number_of_terms_field
+  end
+
+  scenario 'Can edit induction period with outcome' do
+    induction_period.update!(outcome: 'pass')
+
+    given_i_am_on_the_ect_page(teacher)
+    then_i_should_see_the_edit_link
+    when_i_click_edit_link
+    then_i_should_be_on_the_edit_induction_period_page
   end
 
 private
