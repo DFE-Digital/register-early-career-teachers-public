@@ -131,7 +131,7 @@ In addition, it prevents us sending privacy notes or other communication intende
 
 We also make sure the email follows a correct format.
 
-### Giving the school start date for an ECT and assigning the registration_period
+### Giving the school start date for an ECT and assigning the `registration_period`
 
 The school user is asked for the date when the ECT will start or started as an early career teacher.
 
