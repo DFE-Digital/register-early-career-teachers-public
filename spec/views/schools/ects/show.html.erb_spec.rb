@@ -119,7 +119,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
 
     it 'keys' do
       expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Appropriate body')
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Programme type')
+      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Training programme')
       expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
       expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Delivery partner')
       expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Induction start date')
