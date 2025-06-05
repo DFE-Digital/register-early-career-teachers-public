@@ -3,13 +3,7 @@ RSpec.describe ContentHelper, type: :helper do
     let(:label) { helper.generic_email_label }
 
     it 'returns the label' do
-      expect(label).to include('Do not use a generic email like')
-      expect(label).to end_with(".")
-    end
-
-    it 'renders the link' do
-      expect(label).to include('headteacher@school.com')
-      expect(label).to include("govuk-link--no-visited-state")
+      expect(label).to eql('Do not use a generic email like headteacher@school.com')
     end
   end
 end
