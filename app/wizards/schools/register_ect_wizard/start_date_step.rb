@@ -10,7 +10,9 @@ module Schools
       end
 
       def next_step
-        :working_pattern
+        return :working_pattern if past_start_date? || start_date_registration_period&.enabled?
+
+        :cannot_register_ect_yet
       end
 
       def previous_step
@@ -28,7 +30,23 @@ module Schools
       end
 
       def start_date_formatted
-        Schools::Validation::ECTStartDate.new(date_as_hash: start_date).formatted_date
+        @start_date_formatted ||= start_date_obj.formatted_date
+      end
+
+      def start_date_as_date
+        @start_date_as_date ||= start_date_obj.value_as_date
+      end
+
+      def past_start_date?
+        start_date_as_date < Date.current
+      end
+
+      def start_date_registration_period
+        @start_date_registration_period ||= RegistrationPeriod.ongoing_on(start_date_as_date).first
+      end
+
+      def start_date_obj
+        @start_date_obj ||= Schools::Validation::ECTStartDate.new(date_as_hash: start_date)
       end
     end
   end

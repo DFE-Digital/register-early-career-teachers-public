@@ -10,6 +10,7 @@ module Schools
           {
             already_active_at_school: AlreadyActiveAtSchoolStep,
             cannot_register_ect: CannotRegisterECTStep,
+            cannot_register_ect_yet: CannotRegisterECTYetStep,
             cant_use_email: CantUseEmailStep,
             change_email_address: ChangeEmailAddressStep,
             change_independent_school_appropriate_body: ChangeIndependentSchoolAppropriateBodyStep,
