@@ -54,9 +54,6 @@ gem 'turbo-rails'
 gem "blueprinter"
 gem "oj"
 
-# Swagger api docs
-gem 'rswag-ui'
-
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
