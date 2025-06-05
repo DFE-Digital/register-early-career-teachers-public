@@ -1,6 +1,7 @@
 RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
+  let(:trs_qts_awarded_on) { 3.years.ago.to_date }
   let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:) }
+  let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_qts_awarded_on:) }
   let(:page_heading) { "Tell us about" }
   let(:pending_induction_submission_id_param) { pending_induction_submission.id.to_s }
 
@@ -50,13 +51,14 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
       before { allow(AppropriateBodies::ClaimAnECT::RegisterECT).to receive(:new).with(any_args).and_call_original }
 
       context 'when the submission is valid' do
+        let(:start_date) { trs_qts_awarded_on + 1.year }
         let(:registration_params) do
           {
             trs_induction_status: 'None',
             induction_programme: 'fip',
-            'started_on(3)' => '4',
-            'started_on(2)' => '6',
-            'started_on(1)' => '2023'
+            'started_on(3)' => start_date.day.to_s,
+            'started_on(2)' => start_date.month.to_s,
+            'started_on(1)' => start_date.year.to_s
           }
         end
 
