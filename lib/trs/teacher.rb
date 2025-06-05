@@ -66,6 +66,10 @@ module TRS
 
   private
 
+    def api_client
+      @api_client ||= TRS::APIClient.build
+    end
+
     def qts_awarded?
       @qts_awarded_on.present?
     end

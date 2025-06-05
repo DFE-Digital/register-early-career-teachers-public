@@ -163,6 +163,22 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
         end
       end
 
+      context "when the submission is valid but the ECT is deactivated" do
+        include_context 'fake trs api client deactivated teacher'
+        let(:birth_year_param) { "2001" }
+
+        it 're-renders the find page and displays the relevant error' do
+          post(
+            '/appropriate-body/claim-an-ect/find-ect',
+            params: { pending_induction_submission: search_params }
+          )
+
+          expect(response).to be_ok
+          expect(response.body).to include(page_heading)
+          expect(response.body).to include(/No teacher with this TRN and date of birth was found/)
+        end
+      end
+
       context "when the submission is invalid" do
         let(:birth_year_param) { (Date.current.year - 2).to_s }
 

@@ -18,7 +18,7 @@ class BulkGenerate
     action_csv_file: 'tmp/bulk-action.csv'
   )
     @trs = trs
-    @api_client = ::TRS::APIClient.new
+    @api_client = ::TRS::APIClient.build
     @dataset = Rails.root.join(trn_csv_file)
     @trns = CSV.read(dataset, skip_lines: /^#/)
     @period_min_interval = period_min_interval

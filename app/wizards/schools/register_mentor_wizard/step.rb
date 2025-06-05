@@ -12,7 +12,7 @@ module Schools
       end
 
       def fetch_trs_teacher(**args)
-        ::TRS::APIClient.new.find_teacher(**args)
+        ::TRS::APIClient.build.find_teacher(**args)
       rescue TRS::Errors::TeacherNotFound
         TRS::Teacher.new({})
       end

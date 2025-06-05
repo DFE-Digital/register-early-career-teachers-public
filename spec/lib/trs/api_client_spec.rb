@@ -1,5 +1,5 @@
 RSpec.describe TRS::APIClient do
-  let(:client) { described_class.new }
+  let(:client) { described_class.build }
   let(:trn) { '1234567' }
   let(:date_of_birth) { '1990-01-01' }
   let(:national_insurance_number) { 'QQ123456A' }
