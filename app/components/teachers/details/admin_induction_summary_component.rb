@@ -1,12 +1,11 @@
 module Teachers::Details
-  class InductionSummaryComponent < ViewComponent::Base
-    attr_reader :teacher, :induction, :induction_periods, :is_admin
+  class AdminInductionSummaryComponent < ViewComponent::Base
+    attr_reader :teacher, :induction, :induction_periods
 
-    def initialize(teacher:, is_admin: false)
+    def initialize(teacher:)
       @teacher = teacher
       @induction = Teachers::Induction.new(teacher)
       @induction_periods = teacher.induction_periods
-      @is_admin = is_admin
     end
 
     def render?
@@ -17,18 +16,6 @@ module Teachers::Details
       (induction_extensions.extended?) ? 'View' : 'Add'
     end
 
-    def render_add_induction_button?
-      is_admin == true
-    end
-
-    def extensions_path
-      if is_admin
-        helpers.admin_teacher_extensions_path(teacher)
-      else
-        helpers.ab_teacher_extensions_path(teacher)
-      end
-    end
-
   private
 
     def induction_extensions
@@ -37,10 +24,6 @@ module Teachers::Details
 
     def status_tag
       helpers.govuk_tag(**Teachers::InductionStatus.new(teacher:, induction_periods:, trs_induction_status:).status_tag_kwargs)
-    end
-
-    def extension_view_link
-      helpers.govuk_link_to("View", extensions_path, no_visited_state: true)
     end
 
     def trs_induction_status
