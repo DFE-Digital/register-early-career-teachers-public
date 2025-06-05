@@ -1,0 +1,38 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "swagger-ui", type: "module" %>
+  <%= stylesheet_link_tag "swagger-ui", media: "all" %>
+<% end %>
+<!DOCTYPE html>
+<html lang="en" class="govuk-template">
+  <%= render partial: "layouts/shared/head" %>
+
+  <body class="govuk-template__body" data-turbo="false">
+    <%= render partial: "layouts/shared/js_enabled" %>
+
+    <%= govuk_skip_link %>
+    <%= govuk_header(full_width_border: true, html_attributes: { class: [environment_specific_header_colour_class] }) do |header| %>
+      <%= header.with_navigation_item(text: current_user.organisation_name) if current_user %>
+      <%= header.with_navigation_item(text: "Sign out", href: current_user.sign_out_path) if current_user %>
+    <% end %>
+
+    <%= render Navigation::PrimaryNavigationComponent.new(
+      current_path: request.fullpath,
+      current_user_type: current_user&.user_type,
+    ) %>
+
+    <div class="govuk-width-container">
+      <%= environment_specific_phase_banner %>
+      <%= yield(:backlink_or_breadcrumb) %>
+
+      <main class="govuk-main-wrapper" id="main-content" role="main">
+        <%= render partial: "layouts/shared/main_preamble" %>
+
+        <div class="govuk-grid-row">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+
+    <%= render partial: "layouts/shared/footer" %>
+  </body>
+</html>
