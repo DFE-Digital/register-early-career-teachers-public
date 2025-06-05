@@ -25,7 +25,7 @@
       <%= induction_extensions.formatted_number_of_terms %>
     <% end %>
 
-    <%= row.with_action(text: extensions_action_text, visually_hidden_text: "extensions", href: extensions_path, classes: 'govuk-link--no-visited-state') %>
+    <%= row.with_action(text: extensions_action_text, visually_hidden_text: "extensions", href: helpers.admin_teacher_extensions_path(teacher), classes: 'govuk-link--no-visited-state') %>
   <% end %>
 
   <% if teacher.trs_qts_awarded_on.present? %>
@@ -49,8 +49,6 @@
   <% end %>
 <% end %>
 
-<% if render_add_induction_button?  %>
-  <p class='govuk-!-text-align-right govuk-!-margin-bottom-0'>
-    <%= govuk_link_to('Add an induction period', new_admin_teacher_induction_period_path(teacher_id: teacher.id)) %>
-  </p>
-<% end %>
+<p class='govuk-!-text-align-right govuk-!-margin-bottom-0'>
+  <%= govuk_link_to('Add an induction period', new_admin_teacher_induction_period_path(teacher_id: teacher.id)) %>
+</p>

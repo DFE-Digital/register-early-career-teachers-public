@@ -70,23 +70,45 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
   end
 
   describe "InductionSummaryComponent" do
-    before do
-      allow(Teachers::Details::InductionSummaryComponent).to receive(:new).and_call_original
-    end
+    context "when mode is :admin" do
+      let(:mode) { :admin }
 
-    context "when is_admin is true" do
-      it "passes the correct is_admin argument to InductionSummaryComponent" do
-        render_inline(component) { |c| c.with_induction_summary(is_admin: true) }
+      before do
+        allow(Teachers::Details::AdminInductionSummaryComponent).to receive(:new).and_call_original
+      end
 
-        expect(Teachers::Details::InductionSummaryComponent).to have_received(:new).with(teacher:, is_admin: true)
+      it "uses AdminInductionSummaryComponent" do
+        render_inline(component, &:with_induction_summary)
+
+        expect(Teachers::Details::AdminInductionSummaryComponent).to have_received(:new).with(teacher:)
       end
     end
 
-    context "when is_admin is not specified" do
-      it "defaults is_admin to false" do
+    context "when mode is :appropriate_body" do
+      let(:mode) { :appropriate_body }
+
+      before do
+        allow(Teachers::Details::AppropriateBodyInductionSummaryComponent).to receive(:new).and_call_original
+      end
+
+      it "uses AppropriateBodyInductionSummaryComponent" do
         render_inline(component, &:with_induction_summary)
 
-        expect(Teachers::Details::InductionSummaryComponent).to have_received(:new).with(teacher:, is_admin: false)
+        expect(Teachers::Details::AppropriateBodyInductionSummaryComponent).to have_received(:new).with(teacher:)
+      end
+    end
+
+    context "when mode is :school" do
+      let(:mode) { :school }
+
+      before do
+        allow(Teachers::Details::AppropriateBodyInductionSummaryComponent).to receive(:new).and_call_original
+      end
+
+      it "uses AppropriateBodyInductionSummaryComponent for school mode" do
+        render_inline(component, &:with_induction_summary)
+
+        expect(Teachers::Details::AppropriateBodyInductionSummaryComponent).to have_received(:new).with(teacher:)
       end
     end
   end
