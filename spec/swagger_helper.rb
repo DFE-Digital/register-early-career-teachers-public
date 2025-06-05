@@ -16,7 +16,7 @@ RSpec.configure do |config|
     'v3/swagger.yaml' => {
       openapi: "3.0.1",
       info: {
-        title: "ECF Registration API",
+        title: "Lead Provider API",
         version: "v3",
       },
       externalDocs: {
