@@ -65,12 +65,12 @@ end %>
   end
 
   summary_list.with_row do |row|
-    row.with_key(text: 'Programme type')
+    row.with_key(text: 'Training programme')
     row.with_value(text: programme_type_name(@ect.programme_type))
     unless @ect.use_previous_ect_choices
       row.with_action(text: 'Change',
                       href: schools_register_ect_wizard_change_programme_type_path,
-                      visually_hidden_text: 'programme type')
+                      visually_hidden_text: 'training programme')
     end
   end
 
