@@ -165,7 +165,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_training_programme_page
-    expect(page.url).to end_with('/schools/register-ect/programme-type')
+    expect(page.url).to end_with('/schools/register-ect/training-programme')
   end
 
   def when_i_select_school_led
@@ -291,7 +291,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_change_training_programme_page
-    expect(page.url).to end_with('/schools/register-ect/change-programme-type')
+    expect(page.url).to end_with('/schools/register-ect/change-training-programme')
   end
 
   def when_i_select_provider_led
@@ -299,7 +299,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_training_programme_change_lead_provider_page
-    expect(page.url).to end_with('/schools/register-ect/programme-type-change-lead-provider')
+    expect(page.url).to end_with('/schools/register-ect/training-programme-change-lead-provider')
   end
 
   def when_i_select_a_lead_provider
