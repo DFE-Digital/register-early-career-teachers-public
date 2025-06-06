@@ -79,15 +79,17 @@ Neither date of birth or national insurance number should be stored longer-term 
 
 When an ECT is being registered for training, we should check if their record already exists in the Register ECTs service.
 
-If the ECT being registered already exists as an ‘in progress’ or ‘completed’ ECT at their school, we should not let them progress with registration. This is because the ECT record already exists and we do not want duplicates. If the ECT has ‘left’ their school, we should still let them progress with registration, as the ECT may have returned.
+If the ECT being registered already exists as an ECT at their school, we should not let them progress with registration. This is because the ECT record already exists and we do not want duplicates. If the ECT has ‘left’ their school, we should still let them progress with registration, as the ECT may have returned.
 
-At this stage, when we check the TRS for the existence of the ECT’s record, we also need to make sure the ECT:
+At this stage, when we check the TRS for the existence of the ECT’s record, we also need to make sure the ECT hasn't:
 
-* has not passed induction already
-* has not failed induction already
-* is not exempt from induction
+* passed induction already
+* failed induction already
+* been submitted as exempt from induction
+* been prohibited from teaching
+
+If they have met any of the criteria above, we do not allow the school user to progress registering that ECT.
   
-
 Whilst an ECT needs qualified teaching status in order to be eligible for funding for training, we do allow them to be registered in advance without it. Similarly, an ECT needs an open induction period reported by an appropriate body to be eligible for funding for training, but they can be registered in advance without this.
 
 This is because we know schools might want to register an ECT before they actually start working in a school. This might mean that ECT doesn’t always have QTS before they are registered for training.
@@ -129,16 +131,27 @@ In addition, it prevents us sending privacy notes or other communication intende
 
 We also make sure the email follows a correct format.
 
-### Giving the school start date for an ECT
+### Giving the school start date for an ECT and assigning the `registration_period`
 
 The school user is asked for the date when the ECT will start or started as an early career teacher.
 
-We ask this question so we can get a better understanding of when the ECT is starting before we have the induction start date.
+We ask this question because it helps us assign what registration_period the ECT will begin their training in. This determines:
+* if they can progress with the journey to register the ECT - a registration_period needs to be enabled and ready before an ECT can be registered, and there are often policy changes or contract decisions which require changes before this can be done
+* if they can roll over their partnership when their previous lead provider and delivery partner are still available in the relevant registration_period
+*  what lead provider schools can select for any ECTs, when they're not using an existing partnership 
 
-The school start date is important because:
+We use the logic below to determine what registration_period to assign to the ECT:
 
-* it informs lead providers of when the training should start for the ECT
-* it alters what funding the ECT might be eligible for
+| School_start date given | Assign registration_period |
+| -------- | ------- |
+| Before the current registration_period | The current registration_period - this is because they cannot be trained until this period anyway |
+| During the current registration_period | The current registration_period |
+| After the current registration_period | If the registration_period for their school_start_date is open, assign the future registration_period |
+| After the current registration_period | If the registration_period for their school_start_date is closed, nothing can be assigned and they cannot progress with registration |
+
+The school start date is also helpful for lead providers to start training ECTs at the right time and onboard them efficiently.
+
+As we don't have the induction start date for ECTs from appropriate bodies when most ECTs are registered, it helps us reach all of these ends. However, the induction start date might eventually over-write this to dictate the above. We'll add more detail on how this works later.
 
 You can read more about why we chose to add this question [in the design history entry here](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/ects-start-date/).
 
@@ -156,11 +169,6 @@ This question is new for Register early career teachers, so the working pattern 
 
 You can read more about why we chose to add this question [in the design history entry here](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/asking-schools-whether-an-ect-is-full-or-part-time/).
 
-### Generating an expected training start year
-
-The expected training start year is generated from when the ECT is registered and when the school reports the ECT is starting. This is because if an ECT had started at a school in January 2024, which would be in the 2023 to 2024 academic year, but they’re only registered by the school in September 2024, they wouldn’t be starting with a lead provider for training until the 2024 to 2025 academic year. Essentially, training can’t be expected to start until they’re registered with DfE and have their details passed to a lead provider. 
-
-Similarly, if an ECT is starting in October 2025, the 2025 to 2026 academic year, but is registered in April 2025, the 2024 to 2025 academic year, we would want to show them lead providers for the 2025 to 2026 academic year. Both pieces of information are needed to work out when realistically the ECT will be starting training, and therefore who will be a legitimate lead provider (or delivery partner) to work with them.
 
 ### Reusing previous programme details when registering an ECT
 
