@@ -1,11 +1,11 @@
 describe ECTAtSchoolPeriod do
   describe "enums" do
     it do
-      is_expected.to define_enum_for(:programme_type)
+      is_expected.to define_enum_for(:training_programme)
                        .with_values({ provider_led: "provider_led",
                                       school_led: "school_led" })
                        .validating
-                       .with_suffix(:programme_type)
+                       .with_suffix(:training_programme)
                        .backed_by_column_of_type(:enum)
     end
   end
@@ -140,7 +140,7 @@ describe ECTAtSchoolPeriod do
     context "lead_provider_id" do
       subject { FactoryBot.build(:ect_at_school_period) }
 
-      context "when programme_type is 'school_led'" do
+      context "when training_programme is 'school_led'" do
         subject { FactoryBot.build(:ect_at_school_period, :school_led) }
 
         it { is_expected.to validate_absence_of(:lead_provider_id).with_message('Must be nil') }
@@ -193,11 +193,11 @@ describe ECTAtSchoolPeriod do
       end
     end
 
-    context "programme_type" do
+    context "training_programme" do
       subject { FactoryBot.build(:ect_at_school_period) }
 
       it do
-        is_expected.to validate_inclusion_of(:programme_type)
+        is_expected.to validate_inclusion_of(:training_programme)
                          .in_array(%w[provider_led school_led])
                          .with_message("Must be provider-led or school-led")
       end
@@ -205,7 +205,7 @@ describe ECTAtSchoolPeriod do
       context "when lead_provider has been set" do
         subject { FactoryBot.create(:ect_at_school_period) }
 
-        it { is_expected.to validate_presence_of(:programme_type).with_message("Must be provider-led") }
+        it { is_expected.to validate_presence_of(:training_programme).with_message("Must be provider-led") }
       end
     end
   end

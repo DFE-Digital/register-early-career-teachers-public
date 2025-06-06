@@ -12,7 +12,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
       FactoryBot.create(:ect_at_school_period,
                         teacher: ect_teacher,
                         school:,
-                        programme_type: 'provider_led',
+                        training_programme: 'provider_led',
                         lead_provider:,
                         started_on: ect_start_date,
                         finished_on: nil)
@@ -43,7 +43,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
       FactoryBot.create(:ect_at_school_period,
                         teacher: ect_teacher,
                         school:,
-                        programme_type: 'provider_led',
+                        training_programme: 'provider_led',
                         started_on: ect_start_date,
                         finished_on: nil)
     end
@@ -64,7 +64,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
       FactoryBot.create(:ect_at_school_period,
                         teacher: ect_teacher,
                         school:,
-                        programme_type: 'school_led',
+                        training_programme: 'school_led',
                         lead_provider: nil,
                         started_on: mentor_start_date + 1.month,
                         finished_on: nil)

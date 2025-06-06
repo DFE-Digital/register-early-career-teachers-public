@@ -10,7 +10,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       school_reported_appropriate_body: requested_appropriate_body,
                       school: current_school,
                       working_pattern: 'full_time',
-                      programme_type:,
+                      training_programme:,
                       email: 'love@whale.com')
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
@@ -24,7 +24,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
   let(:current_school) { FactoryBot.create(:school, :state_funded, urn: '987654') }
   let(:requested_lead_provider) { FactoryBot.create(:lead_provider, name: 'Requested LP') }
   let(:requested_appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Requested AB') }
-  let(:programme_type) { 'provider_led' }
+  let(:training_programme) { 'provider_led' }
 
   before do
     FactoryBot.create(:ect_at_school_period, :state_funded_school,
@@ -136,7 +136,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
     end
 
     context 'when school-led' do
-      let(:programme_type) { 'school_led' }
+      let(:training_programme) { 'school_led' }
       let(:requested_lead_provider) { nil }
 
       it 'does not render the lead provider summary card' do
@@ -145,7 +145,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
     end
 
     context 'when provider-led' do
-      let(:programme_type) { 'provider_led' }
+      let(:training_programme) { 'provider_led' }
 
       it 'renders the lead provider summary card' do
         expect(rendered).to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')

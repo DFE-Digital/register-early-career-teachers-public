@@ -162,7 +162,7 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   lead_provider: nil,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
-  programme_type: 'school_led'
+  training_programme: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -214,12 +214,12 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   lead_provider: better_practice_network,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
-  programme_type: 'provider_led'
+  training_programme: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 ackley_bridge.update!(last_chosen_lead_provider: better_practice_network,
                       last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
-                      last_chosen_programme_type: 'provider_led')
+                      last_chosen_training_programme: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: alan_rickman_ect_at_ackley_bridge,
@@ -261,7 +261,7 @@ hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   lead_provider: nil,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
-  programme_type: 'school_led'
+  training_programme: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -301,12 +301,12 @@ colin_firth_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   lead_provider: nil,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
-  programme_type: 'school_led'
+  training_programme: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 abbey_grove_school.update!(last_chosen_lead_provider: nil,
                            last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
-                           last_chosen_programme_type: 'school_led')
+                           last_chosen_training_programme: 'school_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: colin_firth_ect_at_abbey_grove,
@@ -391,7 +391,7 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
   lead_provider: nil,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
-  programme_type: 'school_led'
+  training_programme: 'school_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -424,12 +424,12 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   lead_provider: better_practice_network,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
-  programme_type: 'provider_led'
+  training_programme: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 mallory_towers.update!(last_chosen_lead_provider: better_practice_network,
                        last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
-                       last_chosen_programme_type: 'provider_led')
+                       last_chosen_training_programme: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: gemma_jones_at_malory_towers,
@@ -467,7 +467,7 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   email: 'anthony.hopkins@favabeans.com',
   lead_provider: teach_fast,
   school_reported_appropriate_body: umber_teaching_school_hub,
-  programme_type: 'provider_led',
+  training_programme: 'provider_led',
   started_on: 2.years.ago,
   working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -488,13 +488,13 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   started_on: 2.years.ago,
   lead_provider: teach_fast,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
-  programme_type: 'provider_led',
+  training_programme: 'provider_led',
   working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 brookfield_school.update!(last_chosen_lead_provider: teach_fast,
                           last_chosen_appropriate_body: south_yorkshire_studio_hub,
-                          last_chosen_programme_type: 'provider_led')
+                          last_chosen_training_programme: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: stephen_fry_ect_at_brookfield_school,
@@ -511,7 +511,7 @@ ECTAtSchoolPeriod.create!(
   started_on: 2.years.ago,
   lead_provider: teach_fast,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
-  programme_type: 'provider_led'
+  training_programme: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 print_seed_info("Helen Mirren (mentor)", indent: 2, colour: MENTOR_COLOUR)

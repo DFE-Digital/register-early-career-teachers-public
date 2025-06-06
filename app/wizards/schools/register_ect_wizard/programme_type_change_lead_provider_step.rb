@@ -6,7 +6,7 @@ module Schools
       end
 
       def previous_step
-        :change_programme_type
+        :change_training_programme
       end
     end
   end

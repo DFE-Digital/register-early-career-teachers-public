@@ -4,7 +4,7 @@ RSpec.describe Schools::RegisterECT do
                         corrected_name:,
                         email:,
                         lead_provider:,
-                        programme_type:,
+                        training_programme:,
                         school:,
                         started_on:,
                         trn:,
@@ -19,7 +19,7 @@ RSpec.describe Schools::RegisterECT do
   let(:corrected_name) { "Randy Marsh" }
   let(:email) { "randy@tegridyfarms.com" }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:programme_type) { 'provider_led' }
+  let(:training_programme) { 'provider_led' }
   let(:school) { FactoryBot.create(:school) }
   let(:started_on) { Date.yesterday }
   let(:trn) { "3002586" }
@@ -69,7 +69,7 @@ RSpec.describe Schools::RegisterECT do
       expect(ect_at_school_period.email).to eq(email)
       expect(ect_at_school_period.school_reported_appropriate_body_id).to eq(school_reported_appropriate_body.id)
       expect(ect_at_school_period.lead_provider_id).to eq(lead_provider.id)
-      expect(ect_at_school_period.programme_type).to eq(programme_type)
+      expect(ect_at_school_period.training_programme).to eq(training_programme)
     end
 
     describe 'recording an event' do
@@ -88,8 +88,8 @@ RSpec.describe Schools::RegisterECT do
       expect { service.register! }
         .to change(school, :last_chosen_appropriate_body_id)
               .to(school_reported_appropriate_body.id)
-              .and change(school, :last_chosen_programme_type)
-                     .to(programme_type)
+              .and change(school, :last_chosen_training_programme)
+                     .to(training_programme)
                      .and change(school, :last_chosen_lead_provider_id).to(lead_provider.id)
     end
   end

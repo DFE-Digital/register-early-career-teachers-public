@@ -32,8 +32,8 @@ private
 
     induction_records.each_with_object([]) do |induction_record, periods|
       record_school = induction_record.induction_programme.school_cohort.school
-      programme_type = discover_programme_type(induction_record)
-      lead_provider_id = discover_lead_provider_id(induction_record, programme_type)
+      training_programme = discover_training_programme(induction_record)
+      lead_provider_id = discover_lead_provider_id(induction_record, training_programme)
 
       if current_school != record_school
         current_school = record_school
@@ -43,7 +43,7 @@ private
                                                      end_date: induction_record.end_date,
                                                      start_source_id: induction_record.id,
                                                      end_source_id: induction_record.id,
-                                                     programme_type:,
+                                                     training_programme:,
                                                      lead_provider_id:)
         periods << current_period
       else
@@ -71,13 +71,13 @@ private
     @participant_profile ||= induction_records.first.participant_profile
   end
 
-  def discover_programme_type(induction_record)
+  def discover_training_programme(induction_record)
     extracted_training_programme = induction_record.induction_programme.training_programme
     Mappers::TrainingProgrammeTypeMapper.new(extracted_training_programme).mapped_value
   end
 
-  def discover_lead_provider_id(induction_record, programme_type)
-    return nil if programme_type == 'school_led'
+  def discover_lead_provider_id(induction_record, training_programme)
+    return nil if training_programme == 'school_led'
 
     return nil if induction_record.induction_programme.partnership.nil?
 

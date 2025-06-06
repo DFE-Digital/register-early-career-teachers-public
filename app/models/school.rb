@@ -1,11 +1,11 @@
 class School < ApplicationRecord
   # Enums
-  enum :last_chosen_programme_type,
+  enum :last_chosen_training_programme,
        { provider_led: "provider_led",
          school_led: "school_led" },
        validate: { message: "Must be nil or provider-led or school-led",
                    allow_nil: true },
-       suffix: :programme_type_chosen
+       suffix: :training_programme_chosen
 
   # Associations
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
@@ -22,14 +22,14 @@ class School < ApplicationRecord
   validates :last_chosen_lead_provider_id,
             presence: {
               message: 'Must contain the id of a lead provider',
-              if: -> { provider_led_programme_type_chosen? }
+              if: -> { provider_led_training_programme_chosen? }
             },
             absence: {
               message: 'Must be nil',
-              unless: -> { provider_led_programme_type_chosen? }
+              unless: -> { provider_led_training_programme_chosen? }
             }
 
-  validates :last_chosen_programme_type,
+  validates :last_chosen_training_programme,
             presence: {
               message: 'Must be provider-led',
               if: -> { last_chosen_lead_provider_id }
@@ -100,12 +100,12 @@ class School < ApplicationRecord
   def last_programme_choices
     {
       appropriate_body_id: last_chosen_appropriate_body_id,
-      programme_type: last_chosen_programme_type,
+      training_programme: last_chosen_training_programme,
       lead_provider_id: last_chosen_lead_provider_id
     }.compact
   end
 
-  def last_programme_choices? = last_chosen_appropriate_body_id && last_chosen_programme_type
+  def last_programme_choices? = last_chosen_appropriate_body_id && last_chosen_training_programme
 
   def state_funded? = GIAS::Types::STATE_SCHOOL_TYPES.include?(type_name)
 

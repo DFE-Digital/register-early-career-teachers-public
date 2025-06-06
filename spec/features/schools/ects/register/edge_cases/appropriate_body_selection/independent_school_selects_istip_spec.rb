@@ -6,7 +6,7 @@ RSpec.describe 'Registering an ECT' do
     when_i_enter_a_valid_start_date
     and_i_select_full_time
     and_i_select_istip_as_the_appropriate_body
-    and_i_select_school_led_as_programme_type
+    and_i_select_school_led_as_training_programme
     then_i_am_taken_to_the_check_answers_page
 
     and_i_see_the_correct_appropriate_body_on_the_page
@@ -46,7 +46,7 @@ RSpec.describe 'Registering an ECT' do
     and_i_click_continue
   end
 
-  def and_i_select_school_led_as_programme_type
+  def and_i_select_school_led_as_training_programme
     page.get_by_label("School-led").check
     and_i_click_continue
   end
