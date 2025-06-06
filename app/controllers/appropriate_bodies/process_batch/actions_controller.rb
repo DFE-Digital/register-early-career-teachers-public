@@ -21,7 +21,9 @@ module AppropriateBodies
 
           redirect_to ab_batch_action_path(@pending_induction_submission_batch)
         else
-          @pending_induction_submission_batch = csv_data
+          csv_data.errors.each do |error|
+            @pending_induction_submission_batch.errors.add(error.attribute, error.message)
+          end
           render :new, status: :unprocessable_entity
         end
       rescue ActionController::ParameterMissing
