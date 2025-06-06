@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class ChangeProgrammeTypeStep < ProgrammeTypeStep
+    class ChangeTrainingProgrammeStep < TrainingProgrammeStep
       def next_step
         return :check_answers if ect.school_led?
         return :training_programme_change_lead_provider if was_school_led || ect.lead_provider_id.nil?
