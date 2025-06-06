@@ -24,7 +24,7 @@ RSpec.describe TrainingProgrammeValidator, type: :model do
     context 'is invalid when training_programme is nil' do
       let(:training_programme) { nil }
 
-      it 'it adds an error' do
+      it 'adds an error' do
         expect(subject).not_to be_valid
         expect(subject.errors[:training_programme]).to include("Select either 'Provider-led' or 'School-led' training")
       end
