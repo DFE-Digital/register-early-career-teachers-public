@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class ProgrammeTypeChangeLeadProviderStep < LeadProviderStep
+    class TrainingProgrammeChangeLeadProviderStep < LeadProviderStep
       def next_step
         :check_answers
       end

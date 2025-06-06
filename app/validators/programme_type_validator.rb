@@ -1,4 +1,4 @@
-class ProgrammeTypeValidator < ActiveModel::EachValidator
+class TrainingProgrammeValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     if value.blank?
       record.errors.add(attribute, "Select either 'Provider-led' or 'School-led' training")
