@@ -33,7 +33,7 @@ RSpec.describe "schools/register_ect_wizard/lead_provider.html.erb" do
 
   it 'includes a back link' do
     render
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: schools_register_ect_wizard_programme_type_path)
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: schools_register_ect_wizard_training_programme_path)
   end
 
   it 'includes a continue button' do

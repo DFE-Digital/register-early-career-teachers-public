@@ -43,8 +43,8 @@ module AppropriateBodies
         :qualification,
         :start_date,
         :end_date,
-        :programme_type,
-        :programme_type_description,
+        :training_programme,
+        :training_programme_description,
         :age_range,
         :subjects,
         keyword_init: true
@@ -56,7 +56,7 @@ module AppropriateBodies
         @itt_data = [
           ITTData.new(
             provider_name: "Education Development Trust",
-            programme_type: "Future Teaching Scholars",
+            training_programme: "Future Teaching Scholars",
             start_date: 3.years.ago.to_date + 13.days,
             end_date: 1.year.ago.to_date - 40.days,
             subjects: %w[Maths English],
@@ -64,7 +64,7 @@ module AppropriateBodies
           ),
           # ITTData.new(
           #   provider_name: "Some provider",
-          #   programme_type: "Teach First Programme",
+          #   training_programme: "Teach First Programme",
           #   start_date: 24.weeks.ago.to_date,
           #   end_date: 47.days.ago.to_date,
           #   subjects: %w[Science],

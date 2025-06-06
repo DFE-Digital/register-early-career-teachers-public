@@ -43,7 +43,7 @@ RSpec.describe Schools::RegisterECTWizard::LeadProviderStep, type: :model do
 
     describe '#previous_step' do
       it 'returns the previous step' do
-        expect(subject.previous_step).to eq(:programme_type)
+        expect(subject.previous_step).to eq(:training_programme)
       end
     end
   end

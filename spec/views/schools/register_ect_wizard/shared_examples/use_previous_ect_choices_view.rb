@@ -6,7 +6,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
                      email: 'foo@bar.com',
                      govuk_date_of_birth: '12 January 1931',
                      start_date: 'September 2022',
-                     programme_type: 'school_led',
+                     training_programme: 'school_led',
                      appropriate_body_type: 'teaching_school_hub',
                      appropriate_body: double(name: 'Teaching Regulation Agency'),
                      lead_provider: double(name: 'Acme Lead Provider'),

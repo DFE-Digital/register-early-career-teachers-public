@@ -8,7 +8,7 @@ module Schools
       def previous_step
         return :use_previous_ect_choices if ect.use_previous_ect_choices
 
-        ect.provider_led? ? :lead_provider : :programme_type
+        ect.provider_led? ? :lead_provider : :training_programme
       end
 
     private

@@ -7,13 +7,13 @@
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= f.govuk_radio_buttons_fieldset :programme_type, legend: { text: "What training programme will #{@ect.full_name} follow?", hidden: true} do %>
-    <%= f.govuk_radio_button :programme_type,
+  <%= f.govuk_radio_buttons_fieldset :training_programme, legend: { text: "What training programme will #{@ect.full_name} follow?", hidden: true} do %>
+    <%= f.govuk_radio_button :training_programme,
                              :provider_led,
                              label: { text: "Provider-led" },
                              hint: { text: "Your school will work with providers who will deliver early career framework based training funded by the Department for Education." },
                              link_errors: true %>
-    <%= f.govuk_radio_button :programme_type,
+    <%= f.govuk_radio_button :training_programme,
                              :school_led,
                              label: { text: "School-led" },
                              hint: { text: "Your school will deliver training based on the early career framework." }

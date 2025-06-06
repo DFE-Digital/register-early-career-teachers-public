@@ -18,6 +18,6 @@ RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeChangeLeadProviderStep, 
   end
 
   describe "#previous_step" do
-    it { expect(subject.previous_step).to eq(:change_programme_type) }
+    it { expect(subject.previous_step).to eq(:change_training_programme) }
   end
 end

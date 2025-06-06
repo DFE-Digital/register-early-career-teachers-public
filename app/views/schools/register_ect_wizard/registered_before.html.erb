@@ -23,7 +23,7 @@
 
    list.with_row do |row|
     row.with_key { "Training programme" }
-    row.with_value { programme_type_name(@ect.previous_training_programme)  || 'Not confirmed' }
+    row.with_value { training_programme_name(@ect.previous_training_programme)  || 'Not confirmed' }
    end
 
    if @ect.previous_provider_led?

@@ -92,7 +92,7 @@ module Schools
       end
 
       def previous_provider_led?
-        previous_ect_at_school_period&.provider_led_programme_type?
+        previous_ect_at_school_period&.provider_led_training_programme?
       end
 
       def previous_school
@@ -103,11 +103,11 @@ module Schools
       delegate :name, to: :previous_school, prefix: true, allow_nil: true
 
       def previous_training_programme
-        previous_ect_at_school_period&.programme_type
+        previous_ect_at_school_period&.training_programme
       end
 
       def provider_led?
-        programme_type == 'provider_led'
+        training_programme == 'provider_led'
       end
 
       def register!(school, author:)
@@ -115,7 +115,7 @@ module Schools
                                  corrected_name:,
                                  email:,
                                  lead_provider: (lead_provider if provider_led?),
-                                 programme_type:,
+                                 training_programme:,
                                  school:,
                                  started_on: Date.parse(start_date),
                                  trn:,
@@ -127,7 +127,7 @@ module Schools
       end
 
       def school_led?
-        programme_type == 'school_led'
+        training_programme == 'school_led'
       end
 
       def trs_full_name

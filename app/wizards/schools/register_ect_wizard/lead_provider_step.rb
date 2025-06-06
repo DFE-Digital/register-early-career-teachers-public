@@ -14,7 +14,7 @@ module Schools
       end
 
       def previous_step
-        :programme_type
+        :training_programme
       end
 
     private
