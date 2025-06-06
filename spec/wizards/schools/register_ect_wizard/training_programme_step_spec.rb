@@ -96,19 +96,10 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
   context '#save!' do
     subject { wizard.current_step }
 
-    let(:step_params) do
-      ActionController::Parameters.new(
-        "training_programme" => {
-          "training_programme" => 'provider_led',
-        }
-      )
-    end
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :training_programme, step_params:) }
 
     context 'when the step is not valid' do
-      before do
-        allow(subject).to receive(:valid?).and_return(false)
-      end
+      let(:step_params) { ActionController::Parameters.new("training_programme" => {}) }
 
       it 'does not update any data in the wizard ect' do
         expect { subject.save! }.not_to change(subject.ect, :training_programme)
@@ -116,8 +107,12 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
     end
 
     context 'when the step is valid' do
-      before do
-        allow(subject).to receive(:valid?).and_return(true)
+      let(:step_params) do
+        ActionController::Parameters.new(
+          "training_programme" => {
+            "training_programme" => 'provider_led',
+          }
+        )
       end
 
       it 'updates the wizard ect programme type' do
