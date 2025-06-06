@@ -381,7 +381,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
           FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
-        it 'returns the programme type from the latest ECTAtSchoolPeriod by started_on' do
+        it 'returns the training programme from the latest ECTAtSchoolPeriod by started_on' do
           expect(ect.previous_training_programme).to eq('provider_led')
         end
       end

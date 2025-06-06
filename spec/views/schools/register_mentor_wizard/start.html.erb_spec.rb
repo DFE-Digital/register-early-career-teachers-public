@@ -45,20 +45,20 @@ RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
     expect(rendered).to have_link('Continue', href: continue_path)
   end
 
-  context 'when the ect has chosen a provider led programme type' do
+  context 'when the ect has chosen a provider led training programme' do
     let(:ect) { FactoryBot.build(:ect_at_school_period, :provider_led) }
 
-    it 'informs the user about the mentor programme type requirements' do
+    it 'informs the user about the mentor training programme requirements' do
       render
 
       expect(rendered).to have_text('You may also need to tell us about the mentor’s training programme.')
     end
   end
 
-  context 'when the ect has chosen a school led programme type' do
+  context 'when the ect has chosen a school led training programme' do
     let(:ect) { FactoryBot.build(:ect_at_school_period, :school_led) }
 
-    it 'does not inform the user about the mentor programme type requirements' do
+    it 'does not inform the user about the mentor training programme requirements' do
       render
 
       expect(rendered).not_to have_text('You may also need to tell us about the mentor’s training programme.')

@@ -18,7 +18,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
   end
 
   describe 'back link' do
-    it 'links to the programme type step' do
+    it 'links to the training programme step' do
       render
       expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: wizard.previous_step_path)
     end
@@ -53,7 +53,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
           expect(rendered).to have_link('Change', href: schools_register_ect_wizard_change_use_previous_ect_choices_path)
         end
 
-        it 'hides change links for appropriate body, programme type and lead provider' do
+        it 'hides change links for appropriate body, training programme and lead provider' do
           render
           expect(rendered).not_to have_link('Change', href: schools_register_ect_wizard_change_state_school_appropriate_body_path)
           expect(rendered).not_to have_link('Change', href: schools_register_ect_wizard_change_lead_provider_path)
@@ -81,7 +81,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
           expect(rendered).to have_link('Change', href: schools_register_ect_wizard_change_use_previous_ect_choices_path)
         end
 
-        it 'shows change links for appropriate body, programme type and lead provider' do
+        it 'shows change links for appropriate body, training programme and lead provider' do
           render
           expect(rendered).to have_link('Change', href: schools_register_ect_wizard_change_state_school_appropriate_body_path)
           expect(rendered).to have_link('Change', href: schools_register_ect_wizard_change_lead_provider_path)
@@ -108,7 +108,7 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
         expect(rendered).not_to have_content('Choices used by your school previously')
       end
 
-      it 'shows change links for appropriate body, programme type and lead provider' do
+      it 'shows change links for appropriate body, training programme and lead provider' do
         render
         expect(rendered).to have_link('Change', href: schools_register_ect_wizard_change_state_school_appropriate_body_path)
         expect(rendered).to have_link('Change', href: schools_register_ect_wizard_change_lead_provider_path)
