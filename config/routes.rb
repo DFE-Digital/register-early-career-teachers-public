@@ -171,12 +171,12 @@ Rails.application.routes.draw do
       get "no-previous-ect-choices-change-independent-school-appropriate-body", action: :new
       post "no-previous-ect-choices-change-independent-school-appropriate-body", action: :create
 
-      get "programme-type", action: :new
-      post "programme-type", action: :create
-      get "change-programme-type", action: :new
-      post "change-programme-type", action: :create
-      get "no-previous-ect-choices-change-programme-type", action: :new
-      post "no-previous-ect-choices-change-programme-type", action: :create
+      get "training-programme", action: :new
+      post "training-programme", action: :create
+      get "change-training-programme", action: :new
+      post "change-training-programme", action: :create
+      get "no-previous-ect-choices-change-training-programme", action: :new
+      post "no-previous-ect-choices-change-training-programme", action: :create
 
       get "lead-provider", action: :new
       post "lead-provider", action: :create
@@ -184,8 +184,8 @@ Rails.application.routes.draw do
       post "change-lead-provider", action: :create
       get "no-previous-ect-choices-change-lead-provider", action: :new
       post "no-previous-ect-choices-change-lead-provider", action: :create
-      get "programme-type-change-lead-provider", action: :new
-      post "programme-type-change-lead-provider", action: :create
+      get "training-programme-change-lead-provider", action: :new
+      post "training-programme-change-lead-provider", action: :create
 
       get "working-pattern", action: :new
       post "working-pattern", action: :create
