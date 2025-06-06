@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model do
+RSpec.describe Schools::RegisterECTWizard::ChangeTrainingProgrammeStep, type: :model do
   subject { described_class.new(wizard:, training_programme: new_training_programme) }
 
   let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
@@ -9,8 +9,8 @@ RSpec.describe Schools::RegisterECTWizard::ChangeProgrammeTypeStep, type: :model
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :change_training_programme, store:, school:) }
 
   describe "inheritance" do
-    it "inherits from ProgrammeTypeStep" do
-      expect(subject).to be_a(Schools::RegisterECTWizard::ProgrammeTypeStep)
+    it "inherits from TrainingProgrammeStep" do
+      expect(subject).to be_a(Schools::RegisterECTWizard::TrainingProgrammeStep)
     end
   end
 

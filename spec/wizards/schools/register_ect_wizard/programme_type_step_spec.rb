@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::ProgrammeTypeStep, type: :model do
+RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model do
   let(:school) { FactoryBot.build(:school) }
   let(:store) { FactoryBot.build(:session_repository, training_programme: 'prepopulated_training_programme') }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :training_programme, school:, store:) }

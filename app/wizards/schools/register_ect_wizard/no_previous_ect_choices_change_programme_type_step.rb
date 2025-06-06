@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class NoPreviousECTChoicesChangeProgrammeTypeStep < ProgrammeTypeStep
+    class NoPreviousECTChoicesChangeTrainingProgrammeStep < TrainingProgrammeStep
       def next_step
         return :no_previous_ect_choices_change_lead_provider if ect.provider_led?
 

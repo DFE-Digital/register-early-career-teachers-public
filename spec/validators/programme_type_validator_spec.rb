@@ -1,4 +1,4 @@
-RSpec.describe ProgrammeTypeValidator, type: :model do
+RSpec.describe TrainingProgrammeValidator, type: :model do
   subject { test_class.new(training_programme:) }
 
   let(:test_class) do

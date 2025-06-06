@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class ProgrammeTypeStep < Step
+    class TrainingProgrammeStep < Step
       attr_accessor :training_programme
 
       validates :training_programme, training_programme: true
