@@ -58,7 +58,15 @@ module SandboxSeedData
     end
 
     def payment_date(deadline_date)
-      Time.zone.at(rand(deadline_date.to_i..(deadline_date + 2.months).to_i))
+      payment_date_range = deadline_date..(deadline_date + 2.months)
+
+      # If the range includes the current date, adjust the window
+      # to ensure we always get a payable statement.
+      if Date.current.in?(payment_date_range)
+        payment_date_range = Date.current..payment_date_range.end
+      end
+
+      Time.zone.at(rand(payment_date_range.begin.to_time.to_i..payment_date_range.end.to_time.to_i))
     end
 
     def deadline_date(year, month)
