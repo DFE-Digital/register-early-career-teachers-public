@@ -1,44 +1,93 @@
 RSpec.describe ApplicationHelper, type: :helper do
   include GovukVisuallyHiddenHelper
   include GovukLinkHelper
+  include GovukComponentsHelper
   include TitleWithErrorPrefixHelper
 
   describe "#page_data" do
     it "sets the title to the provided value" do
-      expect(page_data(title: "Some title").fetch(:page_title)).to eq('Some title')
+      page_data(title: "Some title")
+
+      expect(content_for(:page_title)).to eql("Some title")
     end
 
     it "prefixes title with 'Error:' when there's an error present" do
-      expect(page_data(title: "Some title", error: true).fetch(:page_title)).to eq('Error: Some title')
+      page_data(title: "Some title", error: true)
+
+      expect(content_for(:page_title)).to eq('Error: Some title')
     end
 
-    it "wraps the header in a h1 with govuk-heading-l" do
-      expect(page_data(title: "Some title", header: "Some header").fetch(:page_header)).to eq(%(<h1 class="govuk-heading-l">Some header</h1>))
-    end
+    describe "backlink and breadcrumbs" do
+      it "adds a backlink using the backlink_href" do
+        page_data(backlink_href: "/retreat", title: 'Back link test')
 
-    context "when no header is provided" do
-      it "sets the header to the title value" do
-        expect(page_data(title: "Some title").fetch(:page_header)).to eq(%(<h1 class="govuk-heading-l">Some title</h1>))
+        expect(content_for(:backlink_or_breadcrumb)).to eq(%(<a class="govuk-back-link" href="/retreat">Back</a>))
       end
+
+      it "adds provided breadcrumbs"
     end
 
-    it "allows the title size to be overridden" do
-      expect(page_data(title: "Some title", header: "Some header", header_size: "m").fetch(:page_header)).to eq(%(<h1 class="govuk-heading-m">Some header</h1>))
-    end
+    describe "page_header" do
+      it "wraps the header in a h1 with govuk-heading-l" do
+        page_data(title: "Some title", header: "Some header")
 
-    it 'sets the heading caption to the provided value with the default size m' do
-      expect(page_data(title: "Some title", caption: 'Some caption').fetch(:page_caption)).to eq('<span class="govuk-caption-m">Some caption</span>')
-    end
-
-    context 'when the caption size is overridden' do
-      it 'sets the heading caption to the provided value with the provided size' do
-        expect(page_data(title: "Some title", caption: 'Some caption', caption_size: 'l').fetch(:page_caption)).to eq('<span class="govuk-caption-l">Some caption</span>')
+        expect(content_for(:page_header)).to eq(%(<h1 class="govuk-heading-l">Some header</h1>))
       end
-    end
 
-    context 'when extra page header classes are provided' do
-      it 'adds the extra classes to the existing one' do
-        expect(page_data(title: "Some title", header: "Some header", header_classes: 'extra').fetch(:page_header)).to eq(%(<h1 class="govuk-heading-l extra">Some header</h1>))
+      context "when no header is provided" do
+        it "sets the header to the title value" do
+          page_data(title: "Some title")
+
+          expect(content_for(:page_header)).to eq(%(<h1 class="govuk-heading-l">Some title</h1>))
+        end
+      end
+
+      context "when header is set to false" do
+        it "sets the page_header to nil" do
+          page_data(title: "Some title")
+
+          expect(content_for(:page_header)).to eq(%(<h1 class="govuk-heading-l">Some title</h1>))
+        end
+      end
+
+      context "when the header size is overridden" do
+        it "has the appropriate govuk size class" do
+          page_data(title: "Some title", header: "Some header", header_size: "m")
+
+          expect(content_for(:page_header)).to eq(%(<h1 class="govuk-heading-m">Some header</h1>))
+        end
+      end
+
+      context "when the header has a caption" do
+        it 'sets the heading caption to the provided value with the default size m' do
+          page_data(title: "Some title", caption: 'Some caption')
+
+          expect(content_for(:page_caption)).to eq('<span class="govuk-caption-m">Some caption</span>')
+        end
+
+        context 'when the caption size is overridden' do
+          it 'sets the heading caption to the provided value with the provided size' do
+            page_data(title: "Some title", caption: 'Some caption', caption_size: 'l')
+
+            expect(content_for(:page_caption)).to eq('<span class="govuk-caption-l">Some caption</span>')
+          end
+        end
+      end
+
+      context 'when the caption is specified without a header' do
+        it 'sets no caption' do
+          page_data(title: nil, caption: 'Some caption')
+
+          expect(content_for(:page_caption)).to be_nil
+        end
+      end
+
+      context 'when extra page header classes are provided' do
+        it 'adds the extra classes to the existing one' do
+          page_data(title: "Some title", header: "Some header", header_classes: 'extra')
+
+          expect(content_for(:page_header)).to eq(%(<h1 class="govuk-heading-l extra">Some header</h1>))
+        end
       end
     end
   end
