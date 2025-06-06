@@ -62,8 +62,8 @@ module Schools
       return NO_INFORMATION_REPORTED[:lead_provider] unless (period = @ect.training_periods.earliest_first.last)
 
       [
-        { key: { text: 'Lead provider' }, value: { text: period.lead_provider.name } },
-        { key: { text: 'Delivery partner' }, value: { text: period.delivery_partner.name } }
+        { key: { text: 'Lead provider' }, value: { text: period.school_partnership.available_provider_pairing.active_lead_provider.lead_provider.name } },
+        { key: { text: 'Delivery partner' }, value: { text: period.school_partnership.available_provider_pairing.delivery_partner.name } }
       ]
     end
 
