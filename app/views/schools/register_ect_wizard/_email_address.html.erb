@@ -6,7 +6,7 @@
 
 <p class="govuk-body">We ask for an email so we can share their details if needed for training.</p>
 
-<p class="govuk-body">Please make sure you use an email the ECT can access. You can update it later if they haven’t got a school email set up yet.</p>
+<p class="govuk-body">Make sure you use an email the ECT can access. You can update it later if they haven’t got a school email set up yet.</p>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
