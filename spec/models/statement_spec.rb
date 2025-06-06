@@ -67,4 +67,34 @@ describe Statement do
       it { expect { statement.mark_as_payable! }.to raise_error(StateMachines::InvalidTransition) }
     end
   end
+
+  describe "#shorthand_state" do
+    subject(:shorthand_state) { statement.shorthand_state }
+
+    let(:statement) { FactoryBot.build(:statement, state:) }
+
+    context "when state is open" do
+      let(:state) { :open }
+
+      it { is_expected.to eq("OP") }
+    end
+
+    context "when state is payable" do
+      let(:state) { :payable }
+
+      it { is_expected.to eq("PB") }
+    end
+
+    context "when state is paid" do
+      let(:state) { :paid }
+
+      it { is_expected.to eq("PD") }
+    end
+
+    context "when state is unknown" do
+      let(:state) { :unknown_state }
+
+      it { expect { shorthand_state }.to raise_error(ArgumentError, "Unknown state: unknown_state") }
+    end
+  end
 end
