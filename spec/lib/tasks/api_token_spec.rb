@@ -1,7 +1,7 @@
 describe "API Token tasks" do
-  describe "api_token:lead_provider:generate_token" do
+  describe "lead_provider:generate_api_token" do
     subject :run_task do
-      Rake::Task["api_token:lead_provider:generate_token"].invoke(lead_provider_name_or_id)
+      Rake::Task["lead_provider:generate_api_token"].invoke(lead_provider_name_or_id)
     end
 
     let(:lead_provider_name_or_id) {}
@@ -12,7 +12,7 @@ describe "API Token tasks" do
     end
 
     after do
-      Rake::Task["api_token:lead_provider:generate_token"].reenable
+      Rake::Task["lead_provider:generate_api_token"].reenable
     end
 
     it "calls the correct service class" do
