@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_21_084933) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_06_144431) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -64,6 +64,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_21_084933) do
     t.uuid "dqt_id"
     t.enum "body_type", default: "teaching_school_hub", enum_type: "appropriate_body_type"
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_bodies_on_dfe_sign_in_organisation_id", unique: true
+  end
+
+  create_table "available_provider_pairings", force: :cascade do |t|
+    t.bigint "active_lead_provider_id", null: false
+    t.bigint "delivery_partner_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id", "delivery_partner_id"], name: "idx_on_active_lead_provider_id_delivery_partner_id_2f71f8cda6", unique: true
+    t.index ["active_lead_provider_id"], name: "index_available_provider_pairings_on_active_lead_provider_id"
+    t.index ["delivery_partner_id"], name: "index_available_provider_pairings_on_delivery_partner_id"
   end
 
   create_table "blazer_audits", force: :cascade do |t|
@@ -397,15 +407,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_21_084933) do
   end
 
   create_table "school_partnerships", force: :cascade do |t|
-    t.bigint "registration_period_id", null: false
-    t.bigint "lead_provider_id", null: false
     t.bigint "delivery_partner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "available_provider_pairing_id", null: false
+    t.index ["available_provider_pairing_id"], name: "index_school_partnerships_on_available_provider_pairing_id"
     t.index ["delivery_partner_id"], name: "index_school_partnerships_on_delivery_partner_id"
-    t.index ["lead_provider_id"], name: "index_school_partnerships_on_lead_provider_id"
-    t.index ["registration_period_id", "lead_provider_id", "delivery_partner_id"], name: "yearly_unique_provider_partnerships", unique: true
-    t.index ["registration_period_id"], name: "index_school_partnerships_on_registration_period_id"
   end
 
   create_table "schools", force: :cascade do |t|
@@ -664,8 +671,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_21_084933) do
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
   add_foreign_key "school_partnerships", "delivery_partners"
-  add_foreign_key "school_partnerships", "lead_providers"
-  add_foreign_key "school_partnerships", "registration_periods", primary_key: "year"
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"
