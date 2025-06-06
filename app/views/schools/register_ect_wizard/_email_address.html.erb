@@ -1,17 +1,25 @@
 <% page_data(
     title: "What is #{@ect.full_name}’s email address?",
+    header: false,
     error: @wizard.current_step.errors.present?,
     backlink_href: @wizard.previous_step_path,
 ) %>
 
-<p class="govuk-body">We ask for an email so we can share their details if needed for training.</p>
-
-<p class="govuk-body">Make sure you use an email the ECT can access. You can update it later if they haven’t got a school email set up yet.</p>
-
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= f.govuk_email_field(:email, label: { text: generic_email_label, class: 'govuk-!-margin-bottom-4' }) %>
+  <%=
+    f.govuk_email_field(
+      :email,
+      label: { text: "What is #{@ect.full_name}’s email address?",
+               tag: 'h1',
+               size: 'l' },
+      hint: { text: 'Do not use a generic email like headteacher@school.com' }
+    ) do %>
+    <p class="govuk-body">We ask for an email so we can share their details if needed for training.</p>
+
+    <p class="govuk-body">Make sure you use an email the ECT can access. You can update it later if they haven’t got a school email set up yet.</p>
+  <% end %>
 
   <%= f.govuk_submit "Continue" %>
 <% end %>
