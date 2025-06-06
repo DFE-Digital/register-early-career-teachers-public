@@ -1,6 +1,6 @@
 module ProgrammeHelper
   def training_programme_name(training_programme)
-    ::PROGRAMME_TYPES.fetch(training_programme&.to_sym, 'Programme type is not recognised')
+    ::TRAINING_PROGRAMME.fetch(training_programme&.to_sym, 'Programme type is not recognised')
   end
 
   def previous_choice_message(use_previous_ect_choices)
