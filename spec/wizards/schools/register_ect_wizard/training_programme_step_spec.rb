@@ -42,7 +42,7 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
 
       it 'is not valid' do
         expect(subject).not_to be_valid
-        expect(subject.errors[:training_programme]).to include("'unknown_training_programme' is not a valid programme type")
+        expect(subject.errors[:training_programme]).to include("'unknown_training_programme' is not a valid training programme")
       end
     end
 
@@ -115,7 +115,7 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
         )
       end
 
-      it 'updates the wizard ect programme type' do
+      it 'updates the wizard ect training programme' do
         expect { subject.save! }
           .to change(subject.ect, :training_programme).from(nil).to('provider_led')
       end

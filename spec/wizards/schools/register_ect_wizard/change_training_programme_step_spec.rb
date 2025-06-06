@@ -17,13 +17,13 @@ RSpec.describe Schools::RegisterECTWizard::ChangeTrainingProgrammeStep, type: :m
   describe "#next_step" do
     before { subject.send(:persist) }
 
-    context 'when the programme type is school led' do
+    context 'when the training programme is school led' do
       let(:new_training_programme) { 'school_led' }
 
       it { expect(subject.next_step).to eq(:check_answers) }
     end
 
-    context 'when the programme type is provided led' do
+    context 'when the training programme is provided led' do
       let(:new_training_programme) { 'provider_led' }
 
       context 'when the school has last programme choices' do
@@ -56,13 +56,13 @@ RSpec.describe Schools::RegisterECTWizard::ChangeTrainingProgrammeStep, type: :m
   describe "#previous_step" do
     before { subject.send(:persist) }
 
-    context 'when the programme type is school led' do
+    context 'when the training programme is school led' do
       let(:training_programme) { 'school_led' }
 
       it { expect(subject.previous_step).to eq(:check_answers) }
     end
 
-    context 'when the programme type is provided led' do
+    context 'when the training programme is provided led' do
       let(:new_training_programme) { 'provider_led' }
 
       context 'when a lead provider has not been selected yet' do

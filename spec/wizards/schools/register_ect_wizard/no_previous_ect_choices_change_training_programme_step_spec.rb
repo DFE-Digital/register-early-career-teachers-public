@@ -19,13 +19,13 @@ RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeTrainingPro
   describe "#next_step" do
     before { subject.send(:persist) }
 
-    context 'when the programme type is school led' do
+    context 'when the training programme is school led' do
       let(:new_training_programme) { 'school_led' }
 
       it { expect(subject.next_step).to eq(:check_answers) }
     end
 
-    context 'when the programme type is provided led' do
+    context 'when the training programme is provided led' do
       let(:new_training_programme) { 'provider_led' }
 
       it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_lead_provider) }
@@ -35,7 +35,7 @@ RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeTrainingPro
   describe "#previous_step" do
     before { subject.send(:persist) }
 
-    context 'when the programme type is school led' do
+    context 'when the training programme is school led' do
       let(:training_programme) { 'school_led' }
 
       context 'when the school is state funded' do
@@ -51,7 +51,7 @@ RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeTrainingPro
       end
     end
 
-    context 'when the programme type is provided led' do
+    context 'when the training programme is provided led' do
       let(:training_programme) { 'provider_led' }
 
       context 'when the lead provider has already been selected' do
