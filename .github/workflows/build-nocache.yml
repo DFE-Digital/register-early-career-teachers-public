@@ -6,6 +6,9 @@ on:
     - cron: "30 12 * * 0"
     # Will run once a week on Sunday afternoon
 
+  push:
+    branches:
+      - add_build_image_gh_wrkflws
 jobs:
   build-no-cache:
     outputs:
