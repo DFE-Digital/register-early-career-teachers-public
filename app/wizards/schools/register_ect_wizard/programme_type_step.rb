@@ -1,12 +1,12 @@
 module Schools
   module RegisterECTWizard
     class ProgrammeTypeStep < Step
-      attr_accessor :programme_type
+      attr_accessor :training_programme
 
-      validates :programme_type, programme_type: true
+      validates :training_programme, training_programme: true
 
       def self.permitted_params
-        %i[programme_type]
+        %i[training_programme]
       end
 
       def next_step
@@ -22,7 +22,7 @@ module Schools
     private
 
       def persist
-        ect.update!(programme_type:)
+        ect.update!(training_programme:)
       end
     end
   end

@@ -14,7 +14,7 @@ RSpec.describe 'Registering an ECT' do
     and_i_select_a_teaching_school_hub_as_the_appropriate_body_type
     and_i_select_an_appropriate_body
     and_i_click_continue
-    then_i_am_taken_to_the_programme_type_page
+    then_i_am_taken_to_the_training_programme_page
 
     when_i_select_school_led
     and_i_click_continue
@@ -59,7 +59,7 @@ RSpec.describe 'Registering an ECT' do
         .select_option(value: "Golden Leaf Teaching Hub")
   end
 
-  def then_i_am_taken_to_the_programme_type_page
+  def then_i_am_taken_to_the_training_programme_page
     expect(page.url).to end_with('/schools/register-ect/programme-type')
   end
 

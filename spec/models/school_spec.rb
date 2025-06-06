@@ -1,11 +1,11 @@
 describe School do
   describe "enums" do
     it do
-      is_expected.to define_enum_for(:last_chosen_programme_type)
+      is_expected.to define_enum_for(:last_chosen_training_programme)
                        .with_values({ provider_led: "provider_led",
                                       school_led: "school_led" })
                        .validating(allowing_nil: true)
-                       .with_suffix(:programme_type_chosen)
+                       .with_suffix(:training_programme_chosen)
                        .backed_by_column_of_type(:enum)
     end
   end
@@ -28,18 +28,18 @@ describe School do
     context "last_chosen_lead_provider_id" do
       subject { FactoryBot.build(:school) }
 
-      context "when last_chosen_programme_type is 'school_led'" do
+      context "when last_chosen_training_programme is 'school_led'" do
         subject { FactoryBot.build(:school, :school_led_last_chosen) }
 
         it { is_expected.to validate_absence_of(:last_chosen_lead_provider_id).with_message('Must be nil') }
       end
     end
 
-    context "last_chosen_programme_type" do
+    context "last_chosen_training_programme" do
       subject { FactoryBot.build(:school) }
 
       it do
-        is_expected.to validate_inclusion_of(:last_chosen_programme_type)
+        is_expected.to validate_inclusion_of(:last_chosen_training_programme)
                          .in_array(%w[provider_led school_led])
                          .with_message("Must be nil or provider-led or school-led")
                          .allow_nil
@@ -48,7 +48,7 @@ describe School do
       context "when last_chosen_lead_provider has been set" do
         subject { FactoryBot.build(:school, last_chosen_lead_provider_id: 123) }
 
-        it { is_expected.to validate_presence_of(:last_chosen_programme_type).with_message("Must be provider-led") }
+        it { is_expected.to validate_presence_of(:last_chosen_training_programme).with_message("Must be provider-led") }
       end
     end
 

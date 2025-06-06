@@ -1,41 +1,41 @@
 RSpec.describe ProgrammeTypeValidator, type: :model do
-  subject { test_class.new(programme_type:) }
+  subject { test_class.new(training_programme:) }
 
   let(:test_class) do
     Class.new do
       include ActiveModel::Model
-      attr_accessor :programme_type
+      attr_accessor :training_programme
 
-      validates :programme_type, programme_type: true
+      validates :training_programme, training_programme: true
     end
   end
 
-  context 'when programme_type is valid' do
+  context 'when training_programme is valid' do
     %w[provider_led school_led].each do |valid_value|
-      let(:programme_type) { valid_value }
+      let(:training_programme) { valid_value }
 
-      it "is valid when programme_type is '#{valid_value}'" do
+      it "is valid when training_programme is '#{valid_value}'" do
         expect(subject).to be_valid
       end
     end
   end
 
-  context 'when programme_type is invalid' do
-    context 'is invalid when programme_type is nil' do
-      let(:programme_type) { nil }
+  context 'when training_programme is invalid' do
+    context 'is invalid when training_programme is nil' do
+      let(:training_programme) { nil }
 
       it 'it adds an error' do
         expect(subject).not_to be_valid
-        expect(subject.errors[:programme_type]).to include("Select either 'Provider-led' or 'School-led' training")
+        expect(subject.errors[:training_programme]).to include("Select either 'Provider-led' or 'School-led' training")
       end
     end
 
-    context 'is invalid when programme_type is an unrecognized value' do
-      let(:programme_type) { 'Invalid-value' }
+    context 'is invalid when training_programme is an unrecognized value' do
+      let(:training_programme) { 'Invalid-value' }
 
       it 'adds an error' do
         expect(subject).not_to be_valid
-        expect(subject.errors[:programme_type]).to include("'Invalid-value' is not a valid programme type")
+        expect(subject.errors[:training_programme]).to include("'Invalid-value' is not a valid programme type")
       end
     end
   end

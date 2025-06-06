@@ -27,7 +27,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
       started_on: start_date,
       finished_on: nil,
       lead_provider:,
-      programme_type: 'provider_led'
+      training_programme: 'provider_led'
     )
   end
 

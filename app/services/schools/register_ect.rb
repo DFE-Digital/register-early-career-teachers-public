@@ -4,7 +4,7 @@ module Schools
                 :corrected_name,
                 :email,
                 :lead_provider,
-                :programme_type,
+                :training_programme,
                 :school,
                 :started_on,
                 :teacher,
@@ -19,7 +19,7 @@ module Schools
                    corrected_name:,
                    email:,
                    lead_provider:,
-                   programme_type:,
+                   training_programme:,
                    school:,
                    started_on:,
                    trn:,
@@ -31,7 +31,7 @@ module Schools
       @corrected_name = corrected_name
       @email = email
       @lead_provider = lead_provider
-      @programme_type = programme_type
+      @training_programme = training_programme
       @school = school
       @started_on = started_on
       @trn = trn
@@ -72,7 +72,7 @@ module Schools
       teacher.ect_at_school_periods.build(school_reported_appropriate_body:,
                                           email:,
                                           lead_provider:,
-                                          programme_type:,
+                                          training_programme:,
                                           school:,
                                           started_on:,
                                           working_pattern:) do |ect|
@@ -83,7 +83,7 @@ module Schools
     def update_school_last_choices!
       school.update!(last_chosen_appropriate_body: school_reported_appropriate_body,
                      last_chosen_lead_provider: lead_provider,
-                     last_chosen_programme_type: programme_type)
+                     last_chosen_training_programme: training_programme)
     end
 
     def record_event!

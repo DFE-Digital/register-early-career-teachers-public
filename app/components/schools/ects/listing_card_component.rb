@@ -17,13 +17,13 @@ module Schools
       end
 
       def delivery_partner_row
-        return if ect.school_led_programme_type?
+        return if ect.school_led_training_programme?
 
         { key: { text: 'Delivery partner' }, value: { text: latest_delivery_partner_name(ect) } }
       end
 
       def lead_provider_row
-        return if ect.school_led_programme_type?
+        return if ect.school_led_training_programme?
 
         { key: { text: 'Lead provider' }, value: { text: latest_lead_provider_name(ect) } }
       end
@@ -33,7 +33,7 @@ module Schools
       end
 
       def left_start_date_row
-        start_date_row if ect.provider_led_programme_type?
+        start_date_row if ect.provider_led_training_programme?
       end
 
       def mentor_row
@@ -45,7 +45,7 @@ module Schools
       end
 
       def right_start_date_row
-        start_date_row if ect.school_led_programme_type?
+        start_date_row if ect.school_led_training_programme?
       end
 
       def start_date_row
