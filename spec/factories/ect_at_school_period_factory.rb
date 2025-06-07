@@ -18,12 +18,12 @@ FactoryBot.define do
     end
 
     trait :provider_led do
-      programme_type { 'provider_led' }
+      training_programme { 'provider_led' }
       association :lead_provider
     end
 
     trait :school_led do
-      programme_type { 'school_led' }
+      training_programme { 'school_led' }
       lead_provider { nil }
     end
 

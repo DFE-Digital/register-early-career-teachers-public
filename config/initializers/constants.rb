@@ -4,7 +4,7 @@ ECF_ROLLOUT_DATE = Date.new(2021, 9, 1).freeze
 # Introduction of ECT statutory induction: 1st September 1999
 STATUTORY_INDUCTION_ROLLOUT_DATE = Date.new(1999, 9, 1).freeze
 
-PROGRAMME_TYPES = {
+TRAINING_PROGRAMME = {
   provider_led: 'Provider-led',
   school_led: 'School-led'
 }.freeze

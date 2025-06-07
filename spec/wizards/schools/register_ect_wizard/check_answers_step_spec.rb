@@ -1,10 +1,10 @@
 describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
   subject { wizard.current_step }
 
-  let(:programme_type) { 'provider_led' }
+  let(:training_programme) { 'provider_led' }
   let(:use_previous_ect_choices) { true }
   let(:school) { FactoryBot.build(:school, :independent) }
-  let(:store) { FactoryBot.build(:session_repository, use_previous_ect_choices:, programme_type:) }
+  let(:store) { FactoryBot.build(:session_repository, use_previous_ect_choices:, training_programme:) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :check_answers, store:, school:) }
 
   describe 'steps' do
@@ -22,16 +22,16 @@ describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
       context 'when school choices has not been used' do
         let(:use_previous_ect_choices) { false }
 
-        context 'when the ect programme_type is school_led' do
-          let(:programme_type) { 'school_led' }
+        context 'when the ect training_programme is school_led' do
+          let(:training_programme) { 'school_led' }
 
-          it 'returns :programme_type' do
-            expect(subject.previous_step).to eq(:programme_type)
+          it 'returns :training_programme' do
+            expect(subject.previous_step).to eq(:training_programme)
           end
         end
 
-        context 'when the ect programme_type is provider_led' do
-          let(:programme_type) { 'provider_led' }
+        context 'when the ect training_programme is provider_led' do
+          let(:training_programme) { 'provider_led' }
 
           it 'returns :lead_provider' do
             expect(subject.previous_step).to eq(:lead_provider)

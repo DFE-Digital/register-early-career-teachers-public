@@ -11,7 +11,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
                      date_of_birth: "11-10-1945",
                      email: "dusty@rhodes.com",
                      appropriate_body_id: appropriate_body.id,
-                     programme_type: "school_led",
+                     training_programme: "school_led",
                      start_date: 'January 2025',
                      trn: "3002586",
                      trs_first_name: "Dusty",
@@ -240,18 +240,18 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
   describe '#provider_led?' do
     before do
-      store.programme_type = 'provider_led'
+      store.training_programme = 'provider_led'
     end
 
-    context "when programme_type is 'provider_led'" do
+    context "when training_programme is 'provider_led'" do
       it 'returns true' do
         expect(ect.provider_led?).to be_truthy
       end
     end
 
-    context "when programme_type is not 'provider_led'" do
+    context "when training_programme is not 'provider_led'" do
       before do
-        store.programme_type = nil
+        store.training_programme = nil
       end
 
       it 'returns false' do
@@ -279,18 +279,18 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
   describe '#school_led?' do
     before do
-      store.programme_type = 'school_led'
+      store.training_programme = 'school_led'
     end
 
-    context "when programme_type is 'school_led'" do
+    context "when training_programme is 'school_led'" do
       it 'returns true' do
         expect(ect.school_led?).to be_truthy
       end
     end
 
-    context "when programme_type is not 'school_led'" do
+    context "when training_programme is not 'school_led'" do
       before do
-        store.programme_type = nil
+        store.training_programme = nil
       end
 
       it 'returns false' do
@@ -377,11 +377,11 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     describe '#previous_training_programme' do
       context 'when the teacher has ECTAtSchoolPeriods' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :school_led, lead_provider_id: nil, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
-          FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :school_led, lead_provider_id: nil, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
-        it 'returns the programme type from the latest ECTAtSchoolPeriod by started_on' do
+        it 'returns the training programme from the latest ECTAtSchoolPeriod by started_on' do
           expect(ect.previous_training_programme).to eq('provider_led')
         end
       end
@@ -396,7 +396,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     describe '#previous_provider_led?' do
       context 'when the latest ECTAtSchoolPeriod is provider-led' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns true' do
@@ -406,7 +406,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
       context 'when the latest ECTAtSchoolPeriod is school-led' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, programme_type: :school_led, lead_provider_id: nil, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :school_led, lead_provider_id: nil, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns false' do

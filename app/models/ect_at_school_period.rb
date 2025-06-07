@@ -2,11 +2,11 @@ class ECTAtSchoolPeriod < ApplicationRecord
   include Interval
 
   # Enums
-  enum :programme_type,
+  enum :training_programme,
        { provider_led: "provider_led",
          school_led: "school_led" },
        validate: { message: "Must be provider-led or school-led" },
-       suffix: :programme_type
+       suffix: :training_programme
 
   # Associations
   belongs_to :school, inverse_of: :ect_at_school_periods
@@ -36,10 +36,10 @@ class ECTAtSchoolPeriod < ApplicationRecord
   validates :lead_provider_id,
             absence: {
               message: "Must be nil",
-              if: -> { school_led_programme_type? }
+              if: -> { school_led_training_programme? }
             }
 
-  validates :programme_type,
+  validates :training_programme,
             presence: {
               message: "Must be provider-led",
               if: -> { lead_provider_id }
@@ -65,11 +65,11 @@ class ECTAtSchoolPeriod < ApplicationRecord
   delegate :name, to: :lead_provider, prefix: true, allow_nil: true
 
   def provider_led?
-    programme_type == 'provider_led'
+    training_programme == 'provider_led'
   end
 
   def school_led?
-    programme_type == 'school_led'
+    training_programme == 'school_led'
   end
 
   def school_reported_appropriate_body_name = school_reported_appropriate_body&.name

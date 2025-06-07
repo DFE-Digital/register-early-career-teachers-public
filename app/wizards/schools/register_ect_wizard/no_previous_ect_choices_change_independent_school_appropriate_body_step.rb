@@ -2,7 +2,7 @@ module Schools
   module RegisterECTWizard
     class NoPreviousECTChoicesChangeIndependentSchoolAppropriateBodyStep < IndependentSchoolAppropriateBodyStep
       def next_step
-        :no_previous_ect_choices_change_programme_type
+        :no_previous_ect_choices_change_training_programme
       end
 
       def previous_step

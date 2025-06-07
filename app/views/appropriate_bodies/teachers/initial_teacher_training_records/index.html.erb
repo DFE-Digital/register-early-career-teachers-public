@@ -8,7 +8,7 @@
 
 <% @itt_data.each do |itt_record| %>
   <%=
-    govuk_summary_list(card: { title: itt_record.programme_type }) do |summary_list|
+    govuk_summary_list(card: { title: itt_record.training_programme }) do |summary_list|
       summary_list.with_row do |row|
         row.with_key(text: "Provider")
         row.with_value(text: itt_record.provider_name)
