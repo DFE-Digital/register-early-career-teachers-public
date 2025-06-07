@@ -74,6 +74,7 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "faker"
   gem 'rails-erd'
+  gem 'rswag-specs'
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-govuk', require: false
   gem 'rubocop-performance', require: false
