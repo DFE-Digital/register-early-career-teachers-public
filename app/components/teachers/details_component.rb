@@ -8,8 +8,12 @@ module Teachers
       Teachers::Details::ITTDetailsComponent.new(teacher:)
     }
 
-    renders_one :induction_summary, ->(is_admin: false) {
-      Teachers::Details::InductionSummaryComponent.new(teacher:, is_admin:)
+    renders_one :induction_summary, -> {
+      if mode == :admin
+        Teachers::Details::AdminInductionSummaryComponent.new(teacher:)
+      else
+        Teachers::Details::AppropriateBodyInductionSummaryComponent.new(teacher:)
+      end
     }
 
     renders_one :current_induction_period, ->(enable_release: nil, enable_edit: nil) {
