@@ -116,38 +116,6 @@ components:
             is 3000, if the value is greater that the maximum allowed it will fallback
             to 3000.
           example: 10
-    StatementsFilter:
-      description: Filter statements to return more specific results
-      type: object
-      properties:
-        cohort:
-          description: Return statements associated to the specified cohort or cohorts.
-            This is a comma delimited string of years.
-          type: string
-          example: '2021,2022'
-        updated_since:
-          description: Return only records that have been updated since this date
-            and time (ISO 8601 date format)
-          type: string
-          example: '2021-05-13T11:21:55Z'
-    StatementResponse:
-      description: A financial statement.
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          "$ref": "#/components/schemas/Statement"
-    StatementsResponse:
-      description: A list of financial statement.
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Statement"
     Statement:
       description: A financial statement.
       type: object
@@ -209,3 +177,35 @@ components:
               type: string
               format: date-time
               example: '2021-05-31T02:22:32.000Z'
+    StatementsFilter:
+      description: Filter statements to return more specific results
+      type: object
+      properties:
+        cohort:
+          description: Return statements associated to the specified cohort or cohorts.
+            This is a comma delimited string of years.
+          type: string
+          example: '2021,2022'
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    StatementResponse:
+      description: A financial statement.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/Statement"
+    StatementsResponse:
+      description: A list of financial statement.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Statement"
