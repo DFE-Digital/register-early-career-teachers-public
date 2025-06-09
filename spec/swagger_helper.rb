@@ -44,7 +44,7 @@ RSpec.configure do |config|
           NotFoundResponse: NOT_FOUND_RESPONSE,
           PaginationFilter: PAGINATION_FILTER,
 
-          # Statements
+          # Statements
           Statement: STATEMENT,
           StatementsFilter: STATEMENTS_FILTER,
           StatementResponse: STATEMENT_RESPONSE,
