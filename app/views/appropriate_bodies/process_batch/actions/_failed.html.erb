@@ -1,15 +1,16 @@
 <%
   page_data(
-    title: "Batch failed",
-    header: false,
+    title: 'Something went wrong',
     backlink_href: ab_batch_actions_path
   )
 %>
 
 <p class='govuk-body'>
-  This upload has failed
+  You'll need to try again
 </p>
-
+<p class='govuk-body'>
+  We have not saved or uploaded your CSV.
+</p>
 <p class='govuk-body'>
   <%= govuk_link_to 'Go back to your overview', ab_batch_actions_path %>
 </p>
