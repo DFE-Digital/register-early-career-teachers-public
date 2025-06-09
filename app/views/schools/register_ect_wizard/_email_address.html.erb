@@ -13,12 +13,13 @@
       :email,
       label: { text: "What is #{@ect.full_name}’s email address?",
                tag: 'h1',
-               size: 'l' },
-      hint: { text: 'Do not use a generic email like headteacher@school.com' }
+               size: 'l' }
     ) do %>
     <p class="govuk-body">We ask for an email so we can share their details if needed for training.</p>
 
     <p class="govuk-body">Make sure you use an email the ECT can access. You can update it later if they haven’t got a school email set up yet.</p>
+
+    <p class="govuk-body">Do not use a generic email like headteacher@school.com</p>
   <% end %>
 
   <%= f.govuk_submit "Continue" %>
