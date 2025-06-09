@@ -1,4 +1,4 @@
-RSpec.describe API::DocumentationController, type: :request do
+RSpec.describe "Lead provider API docs", type: :request do
   subject { response }
 
   before { get api_documentation_path(version:) }
