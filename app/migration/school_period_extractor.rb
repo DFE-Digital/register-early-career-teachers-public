@@ -73,7 +73,7 @@ private
 
   def discover_training_programme(induction_record)
     extracted_training_programme = induction_record.induction_programme.training_programme
-    Mappers::TrainingTrainingProgrammeMapper.new(extracted_training_programme).mapped_value
+    Mappers::TrainingProgrammeMapper.new(extracted_training_programme).mapped_value
   end
 
   def discover_lead_provider_id(induction_record, training_programme)
