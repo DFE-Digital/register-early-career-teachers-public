@@ -117,6 +117,14 @@ module Migrators
       @data_migration ||= DataMigration.find_by(model: self.class.model, worker:)
     end
 
+    def find_lead_provider_id!(name:)
+      lead_provider_ids_by_name[name] || raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProvider")
+    end
+
+    def find_active_lead_provider_id!(lead_provider_id:, registration_period_id:)
+      active_lead_provider_ids_by_lead_provider_and_registration_period["#{lead_provider_id} #{registration_period_id}"] || raise(ActiveRecord::RecordNotFound, "Couldn't find ActiveLeadProvider")
+    end
+
   private
 
     def offset
@@ -159,6 +167,14 @@ module Migrators
       # Queue a follow up migration to migrate any
       # dependent models.
       MigrationJob.set(wait: 10.seconds).perform_later
+    end
+
+    def lead_provider_ids_by_name
+      @lead_provider_ids_by_name ||= ::LeadProvider.pluck(:name, :id).to_h
+    end
+
+    def active_lead_provider_ids_by_lead_provider_and_registration_period
+      @active_lead_provider_ids_by_lead_provider_and_registration_period ||= ::ActiveLeadProvider.pluck(:lead_provider_id, :registration_period_id, :id).to_h { |s| ["#{s[0]} #{s[1]}", s[2]] }
     end
   end
 end

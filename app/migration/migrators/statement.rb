@@ -26,11 +26,11 @@ module Migrators
       migrate(self.class.statements) do |ecf_statement|
         statement = ::Statement.find_or_initialize_by(api_id: ecf_statement.id)
 
-        lead_provider_id = lead_providers_by_name[ecf_statement.lead_provider.name].id
+        lead_provider_id = find_lead_provider_id!(name: ecf_statement.lead_provider.name)
         registration_period_id = ecf_statement.cohort.start_year
 
         statement.update!(
-          active_lead_provider: active_lead_provider_by_lead_provider_and_registration_period["#{lead_provider_id} #{registration_period_id}"],
+          active_lead_provider_id: find_active_lead_provider_id!(lead_provider_id:, registration_period_id:),
           month: Date::MONTHNAMES.find_index(ecf_statement.name.split[0]),
           year: ecf_statement.name.split[1],
           deadline_date: ecf_statement.deadline_date,
@@ -53,14 +53,6 @@ module Migrators
       else
         :open
       end
-    end
-
-    def lead_providers_by_name
-      @lead_providers_by_name ||= ::LeadProvider.all.index_by(&:name)
-    end
-
-    def active_lead_provider_by_lead_provider_and_registration_period
-      @active_lead_provider_by_lead_provider_and_registration_period ||= ::ActiveLeadProvider.all.index_by { |alp| "#{alp.lead_provider_id} #{alp.registration_period_id}" }
     end
   end
 end
