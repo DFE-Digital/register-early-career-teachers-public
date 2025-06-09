@@ -23,7 +23,8 @@
 
   <% if batch.pending_induction_submissions.with_errors.any? %>
     <p class='govuk-body'>
-      You had <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors which were not included.
+      You had <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors. 
+      You can download a CSV with error messages included after you record your outcomes.
     </p>
   <% end %>
 
