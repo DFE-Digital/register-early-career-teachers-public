@@ -102,14 +102,6 @@ RSpec/SpecFilePathFormat:
   Exclude:
     - "spec/components/schools/ects/listing_card_component_spec.rb"
 
-Rails/FindEach:
-  Exclude:
-    - 'spec/features/api/documentation_spec.rb'
-
-RSpec/VariableName:
-  Exclude:
-    - 'spec/requests/api/docs/**/*'
-
 RSpec/EmptyExampleGroup:
   Exclude:
     - 'spec/requests/api/docs/**/*'
