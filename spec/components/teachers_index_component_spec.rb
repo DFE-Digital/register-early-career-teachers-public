@@ -152,6 +152,30 @@ RSpec.describe TeachersIndexComponent, type: :component do
       end
     end
 
+    context 'with search query and filtered results' do
+      let(:query) { 'Alice' }
+      let(:pagy) { double("Pagy", count: 1, page: 1, limit: 20, pages: 1, series: [1], vars: {}, prev: nil, next: nil) }
+
+      it 'displays filtered results count when searching' do
+        expect(subject.css('h2').text).to include('1 open induction')
+      end
+
+      it 'uses pagy count instead of service count when searching' do
+        # Service would return 2 total, but pagy.count (1) should be used for filtered search results
+        expect(subject.css('h2').text).not_to include('2 open induction')
+        expect(subject.css('h2').text).to include('1 open induction')
+      end
+
+      context 'with closed status' do
+        let(:status) { 'closed' }
+        let(:pagy) { double("Pagy", count: 1, page: 1, limit: 20, pages: 1, series: [1], vars: {}, prev: nil, next: nil) }
+
+        it 'displays filtered results count for closed inductions when searching' do
+          expect(subject.css('h2').text).to include('1 closed induction')
+        end
+      end
+    end
+
     context 'with teachers present' do
       it 'renders the teachers table' do
         expect(subject.css('table').length).to be > 0
