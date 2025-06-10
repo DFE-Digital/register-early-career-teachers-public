@@ -287,6 +287,7 @@
   - email
   :lead_providers:
   - id
+  - api_id
   - name
   - created_at
   - updated_at
