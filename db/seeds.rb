@@ -14,6 +14,7 @@ priority_seeds = %w[
   appropriate_bodies
   delivery_partners
   schools
+  lead_provider_delivery_partnerships
   school_partnerships
   teachers
 ]

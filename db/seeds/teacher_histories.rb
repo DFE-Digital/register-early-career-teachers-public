@@ -63,10 +63,13 @@ def describe_induction_period(ip)
 end
 
 def describe_training_period(tp)
-  pp = tp.school_partnership
+  lpdp = tp.school_partnership.lead_provider_delivery_partnership
   suffix = "(training period)"
 
-  print_seed_info("* was trained by #{pp.lead_provider.name} (LP) and #{pp.delivery_partner.name} #{describe_period_duration(tp)} #{suffix}", indent: 4)
+  lead_provider_name = lpdp.active_lead_provider.lead_provider.name
+  delivery_partner_name = lpdp.delivery_partner.name
+
+  print_seed_info("* was trained by #{lead_provider_name} (LP) and #{delivery_partner_name} #{describe_period_duration(tp)} #{suffix}", indent: 4)
 end
 
 def describe_ect_at_school_period(sp)
@@ -98,17 +101,25 @@ golden_leaf_teaching_school_hub = AppropriateBody.find_by!(name: 'Golden Leaf Te
 umber_teaching_school_hub = AppropriateBody.find_by!(name: 'Umber Teaching School Hub')
 active_appropriate_bodies = [umber_teaching_school_hub, golden_leaf_teaching_school_hub]
 
-ambitious_artisan_partnership_2021 = SchoolPartnership.find_by!(
+def find_school_partnership(delivery_partner:, lead_provider:, registration_period:)
+  SchoolPartnership
+    .eager_load(lead_provider_delivery_partnership: [:delivery_partner, { active_lead_provider: %i[lead_provider registration_period] }])
+    .find_by!(
+      lead_provider_delivery_partnership: { delivery_partner:, active_lead_providers: { lead_provider:, registration_period: } }
+    )
+end
+
+ambitious_artisan_partnership_2022 = find_school_partnership(
   lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group,
-  registration_period: RegistrationPeriod.find_by!(year: 2021)
+  registration_period: RegistrationPeriod.find_by!(year: 2022)
 )
-ambitious_artisan_partnership_2023 = SchoolPartnership.find_by!(
+ambitious_artisan_partnership_2023 = find_school_partnership(
   lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group,
   registration_period: RegistrationPeriod.find_by!(year: 2023)
 )
-teach_fast_grain_partnership_2022 = SchoolPartnership.find_by!(
+teach_fast_grain_partnership_2022 = find_school_partnership(
   registration_period: RegistrationPeriod.find_by!(year: 2022),
   lead_provider: teach_fast,
   delivery_partner: grain_teaching_school_hub
@@ -128,7 +139,7 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 3.years.ago,
   finished_on: 140.weeks.ago,
-  school_partnership: ambitious_artisan_partnership_2021
+  school_partnership: ambitious_artisan_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 # 10 week break
@@ -137,7 +148,7 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 130.weeks.ago,
   finished_on: nil,
-  school_partnership: ambitious_artisan_partnership_2021
+  school_partnership: ambitious_artisan_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Kate Winslet (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -257,7 +268,7 @@ TrainingPeriod.create!(
   ect_at_school_period: hugh_grant_ect_at_abbey_grove,
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
-  school_partnership: ambitious_artisan_partnership_2021
+  school_partnership: ambitious_artisan_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
@@ -301,7 +312,7 @@ TrainingPeriod.create!(
   ect_at_school_period: colin_firth_ect_at_abbey_grove,
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
-  school_partnership: ambitious_artisan_partnership_2021
+  school_partnership: ambitious_artisan_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
