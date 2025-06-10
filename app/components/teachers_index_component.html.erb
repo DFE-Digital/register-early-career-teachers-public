@@ -4,7 +4,8 @@
   status: status,
   current_count: current_count,
   open_count: open_count,
-  closed_count: closed_count
+  closed_count: closed_count,
+  query: query
 ) %>
 
 <%= render TeachersIndex::SearchSectionComponent.new(status: status, query: query) %>

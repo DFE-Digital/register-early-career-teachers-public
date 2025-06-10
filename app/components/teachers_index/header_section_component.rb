@@ -4,19 +4,24 @@ module TeachersIndex
     include Rails.application.routes.url_helpers
     include ActionView::Helpers::TextHelper
 
-    def initialize(status:, current_count:, open_count:, closed_count:)
+    def initialize(status:, current_count:, open_count:, closed_count:, query: nil)
       @status = status
       @current_count = current_count
       @open_count = open_count
       @closed_count = closed_count
+      @query = query
     end
 
   private
 
-    attr_reader :status, :current_count, :open_count, :closed_count
+    attr_reader :status, :current_count, :open_count, :closed_count, :query
 
     def heading_text
-      pluralize(current_count, "#{status} induction")
+      if current_count.zero? && query.present?
+        "No #{status} inductions for \"#{query}\""
+      else
+        pluralize(current_count, "#{status} induction")
+      end
     end
 
     def showing_closed?
@@ -24,24 +29,28 @@ module TeachersIndex
     end
 
     def should_show_navigation_link?
-      return true if showing_closed?
+      navigation_count.positive?
+    end
 
-      closed_count.positive?
+    def navigation_count
+      showing_closed? ? open_count : closed_count
     end
 
     def navigation_link_text
-      if showing_closed?
-        "View open inductions (#{open_count})"
+      target_status = showing_closed? ? "open" : "closed"
+
+      if navigation_count.positive?
+        "View #{target_status} inductions (#{navigation_count})"
       else
-        "View closed inductions (#{closed_count})"
+        "No #{target_status} inductions"
       end
     end
 
     def navigation_link_path
       if showing_closed?
-        ab_teachers_path
+        ab_teachers_path(q: query)
       else
-        ab_teachers_path(status: 'closed')
+        ab_teachers_path(status: 'closed', q: query)
       end
     end
   end

@@ -39,9 +39,12 @@ RSpec.describe TeachersIndex::HeaderSectionComponent, type: :component do
     context 'when no closed inductions exist' do
       let(:closed_count) { 0 }
 
-      it 'does not render navigation link' do
-        expect(rendered.to_html).not_to include('View closed inductions')
-        expect(rendered.css('[class*="govuk-"][class*="padding-bottom"]').length).to eq(0)
+      it 'renders navigation text but not as clickable link' do
+        expect(rendered.to_html).to include('No closed inductions')
+        # Should not be a clickable link since count is 0
+        expect(rendered.css('a').text).not_to include('closed inductions')
+        # Should still render the padding container
+        expect(rendered.css('[class*="govuk-"][class*="padding-bottom"]').length).to eq(1)
       end
     end
   end
