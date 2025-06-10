@@ -423,11 +423,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     describe '#previous_lead_provider_name' do
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Confirmed LP') }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
 
       before do
         FactoryBot.create(:training_period,
                           ect_at_school_period: ect_period,
-                          school_partnership: FactoryBot.create(:school_partnership, lead_provider:),
+                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:),
                           started_on: Date.new(2024, 1, 1),
                           finished_on: Date.new(2024, 6, 1))
       end
@@ -439,11 +441,12 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     describe '#previous_delivery_partner_name' do
       let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: 'DP') }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:) }
 
       before do
         FactoryBot.create(:training_period,
                           ect_at_school_period: ect_period,
-                          school_partnership: FactoryBot.create(:school_partnership, delivery_partner:),
+                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:),
                           started_on: Date.new(2024, 1, 1),
                           finished_on: Date.new(2024, 6, 1))
       end

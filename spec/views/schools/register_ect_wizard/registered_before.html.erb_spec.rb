@@ -4,7 +4,9 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Confirmed LP") }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider:) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
 
   let(:ect_at_school_period) do
     FactoryBot.create(
@@ -44,7 +46,6 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
       ect_at_school_period:,
       started_on: Date.new(2023, 9, 1),
       finished_on: Date.new(2024, 7, 31),
-      delivery_partner:,
       school_partnership:
     )
 

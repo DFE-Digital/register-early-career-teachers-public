@@ -14,8 +14,10 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       email: 'love@whale.com')
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider:, delivery_partner:, registration_period:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Alpha Teaching School Hub') }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Barry', trs_last_name: 'White', corrected_name: 'Baz White') }
   let(:previous_school) { FactoryBot.create(:school, urn: '123456') }
