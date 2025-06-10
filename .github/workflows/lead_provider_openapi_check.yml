@@ -1,0 +1,84 @@
+name: "Lead Provider OpenAPI Check"
+on:
+  workflow_call:
+    inputs:
+      ruby-version:
+        description: Ruby version
+        type: string
+        required: false
+        default: "3.4.4"
+jobs:
+  openapi-check:
+    name: Check OpenAPI schema
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    env:
+      RAILS_ENV: test
+      DB_USERNAME: postgres
+      DB_PASSWORD: ""
+      DB_HOSTNAME: 127.0.0.1
+      DB_PORT: 5432
+      ECF_DB_USERNAME: postgres
+      ECF_DB_PASSWORD: ""
+      ECF_DB_HOSTNAME: 127.0.0.1
+      ECF_DB_PORT: 5432
+      ANALYTICS_DB_USERNAME: postgres
+      ANALYTICS_DB_PASSWORD: ""
+      ANALYTICS_DB_HOSTNAME: 127.0.0.1
+      ANALYTICS_DB_PORT: 5432
+      ENCRYPTION_PRIMARY_KEY: test_primary_key
+      ENCRYPTION_DETERMINISTIC_KEY: test_deterministic_key
+      ENCRYPTION_DERIVATION_SALT: test_derivation_salt
+      CI: true
+
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ""
+          POSTGRES_HOST_AUTH_METHOD: "trust"
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./.github/actions/prepare-app-env
+        id: test
+        with:
+          prepare-test-database: "true"
+          prepare-assets: "true"
+
+      - name: Generate API doc checksums (original)
+        run: |
+          find public/api/docs/ -type f -exec sed -i 's/[[:space:]]\+$//' {} \;
+          find public/api/docs/ -type f | sort | xargs shasum -a 256 > api-doc-checksums-original.txt
+          cat api-doc-checksums-original.txt
+
+      - name: Run swaggerize
+        run: bundle exec rake rswag:specs:swaggerize
+
+      - name: Generate API doc checksums (after swaggerize)
+        run: |
+          find public/api/docs/ -type f -exec sed -i 's/[[:space:]]\+$//' {} \;
+          find public/api/docs/ -type f | sort | xargs shasum -a 256 > api-doc-checksums-after-swaggerize.txt
+          cat api-doc-checksums-after-swaggerize.txt
+
+      - name: Compare Checksums
+        run: |
+          if ! diff -q api-doc-checksums-original.txt api-doc-checksums-after-swaggerize.txt; then
+            echo "OpenAPI schema has changed! run rake rswag:specs:swaggerize"
+            exit 1
+          else
+            echo "OpenAPI schema has not changed"
+          fi

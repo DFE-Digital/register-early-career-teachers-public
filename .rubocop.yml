@@ -101,3 +101,7 @@ Capybara/CurrentPathExpectation:
 RSpec/SpecFilePathFormat:
   Exclude:
     - "spec/components/schools/ects/listing_card_component_spec.rb"
+
+RSpec/EmptyExampleGroup:
+  Exclude:
+    - 'spec/requests/api/docs/**/*'
