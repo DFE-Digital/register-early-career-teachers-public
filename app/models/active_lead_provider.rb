@@ -8,4 +8,7 @@ class ActiveLeadProvider < ApplicationRecord
             uniqueness: { scope: :lead_provider_id, message: 'Registration period and lead provider must be unique' }
 
   validates :lead_provider_id, presence: { message: 'Choose a lead provider' }
+
+  scope :for_registration_period, ->(year) { where(registration_period_id: year) }
+  scope :for_lead_provider, ->(lead_provider_id) { where(lead_provider_id:) }
 end

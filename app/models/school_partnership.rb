@@ -17,8 +17,4 @@ class SchoolPartnership < ApplicationRecord
   validates :delivery_partner_id,
             presence: true
 
-  # Scopes
-  scope :for_registration_period, ->(year) { where(registration_period_id: year) }
-  scope :for_lead_provider, ->(lead_provider_id) { where(lead_provider_id:) }
-  scope :for_delivery_partner, ->(delivery_partner_id) { where(delivery_partner_id:) }
 end
