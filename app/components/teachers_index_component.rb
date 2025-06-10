@@ -56,7 +56,11 @@ private
   end
 
   def current_count
-    showing_closed? ? closed_count : open_count
+    if query.present?
+      pagy.count
+    else
+      showing_closed? ? closed_count : open_count
+    end
   end
 
   def should_show_navigation_link?
