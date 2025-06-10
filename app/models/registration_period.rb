@@ -4,8 +4,9 @@ class RegistrationPeriod < ApplicationRecord
   ECF_FIRST_YEAR = 2020
 
   # Associations
-  has_many :school_partnerships, inverse_of: :registration_period
   has_many :active_lead_providers, inverse_of: :registration_period
+  has_many :lead_provider_delivery_partnerships, through: :active_lead_providers
+  has_many :school_partnerships, through: :lead_provider_delivery_partnerships
 
   # Validations
   validates :year,
