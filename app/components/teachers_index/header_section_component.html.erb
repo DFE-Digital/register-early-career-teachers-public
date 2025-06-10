@@ -3,10 +3,12 @@
     <h2 class="govuk-heading-m">
       <%= heading_text %>
     </h2>
-    <% if should_show_navigation_link? %>
-      <div class="govuk-!-padding-bottom-4">
+    <div class="govuk-!-padding-bottom-4">
+      <% if should_show_navigation_link? %>
         <%= govuk_link_to(navigation_link_text, navigation_link_path) %>
-      </div>
-    <% end %>
+      <% else %>
+        <span class="govuk-body"><%= navigation_link_text %></span>
+      <% end %>
+    </div>
   </div>
 </div>

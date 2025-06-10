@@ -47,14 +47,24 @@ private
     @ects_service ||= AppropriateBodies::ECTs.new(appropriate_body)
   end
 
+  # Return filtered counts when searching, total counts when not searching
   def open_count
-    @open_count ||= ects_service.current.count
+    if query.present?
+      filtered_open_count
+    else
+      @open_count ||= ects_service.current.count
+    end
   end
 
   def closed_count
-    @closed_count ||= ects_service.completed_while_at_appropriate_body.count
+    if query.present?
+      filtered_closed_count
+    else
+      @closed_count ||= ects_service.completed_while_at_appropriate_body.count
+    end
   end
 
+  # Return filtered count when searching, total count when not searching
   def current_count
     if query.present?
       pagy.count
@@ -63,25 +73,19 @@ private
     end
   end
 
-  def should_show_navigation_link?
-    return true if showing_closed?
-
-    closed_count.positive?
+  def filtered_open_count
+    @filtered_open_count ||= Teachers::Search.new(
+      query_string: query,
+      appropriate_bodies: appropriate_body,
+      status: 'open'
+    ).count
   end
 
-  def navigation_link_text
-    if showing_closed?
-      "View open inductions (#{open_count})"
-    else
-      "View closed inductions (#{closed_count})"
-    end
-  end
-
-  def navigation_link_path
-    if showing_closed?
-      ab_teachers_path
-    else
-      ab_teachers_path(status: 'closed')
-    end
+  def filtered_closed_count
+    @filtered_closed_count ||= Teachers::Search.new(
+      query_string: query,
+      appropriate_bodies: appropriate_body,
+      status: 'closed'
+    ).count
   end
 end

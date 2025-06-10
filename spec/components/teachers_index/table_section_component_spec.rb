@@ -110,13 +110,14 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
     context 'with search query' do
       let(:query) { 'John Doe' }
 
-      it 'renders empty state message with query highlighted' do
-        expect(rendered.to_html).to include('No open inductions found matching')
-        expect(rendered.to_html).to include('<strong>John Doe</strong>')
+      it 'does not render empty state message when there is a search query' do
+        expect(rendered.to_html).not_to include('No open inductions found matching')
+        expect(rendered.to_html).not_to include('John Doe')
+        expect(rendered.css('p.govuk-body').length).to eq(0)
       end
 
-      it 'properly escapes query in message' do
-        expect(rendered.css('strong').text).to include('John Doe')
+      it 'does not render table either' do
+        expect(rendered.css('table').length).to eq(0)
       end
     end
 
@@ -251,7 +252,8 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
 
       it 'handles long queries without error' do
         expect { rendered }.not_to raise_error
-        expect(rendered.to_html).to include('matching')
+        # No empty state message should be shown when there's a query
+        expect(rendered.to_html).not_to include('matching')
       end
     end
   end

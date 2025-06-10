@@ -27,7 +27,7 @@
       <% end %>
 
       <%= govuk_pagination pagy: pagy %>
-    <% else %>
+    <% elsif query.blank? %>
       <p class="govuk-body">
         <%= empty_state_message %>
       </p>

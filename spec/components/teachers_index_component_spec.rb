@@ -166,12 +166,32 @@ RSpec.describe TeachersIndexComponent, type: :component do
         expect(subject.css('h2').text).to include('1 open induction')
       end
 
+      it 'navigation shows no results message when filtered count is zero' do
+        expect(subject.to_html).to include('No closed inductions')
+        expect(subject.to_html).not_to include('View closed inductions (')
+        # Should not be a clickable link since count is 0
+        expect(subject.css('a').text).not_to include('closed inductions')
+      end
+
+      it 'navigation text does not include link when count is zero' do
+        # Since filtered closed count is 0, there should be no link to preserve query
+        expect(subject.css('a[href*="q=Alice"]').length).to eq(0)
+      end
+
       context 'with closed status' do
         let(:status) { 'closed' }
         let(:pagy) { double("Pagy", count: 1, page: 1, limit: 20, pages: 1, series: [1], vars: {}, prev: nil, next: nil) }
 
         it 'displays filtered results count for closed inductions when searching' do
           expect(subject.css('h2').text).to include('1 closed induction')
+        end
+
+        it 'navigation link shows filtered count when searching' do
+          expect(subject.to_html).to include('View open inductions (1)')
+        end
+
+        it 'navigation link preserves search query' do
+          expect(subject.css('a[href*="q=Alice"]').length).to be > 0
         end
       end
     end
@@ -220,10 +240,12 @@ RSpec.describe TeachersIndexComponent, type: :component do
     context 'with no teachers and search query' do
       let(:teachers) { [] }
       let(:query) { 'John Doe' }
+      let(:pagy) { double("Pagy", count: 0, page: 1, limit: 20, pages: 0, series: [], vars: {}, prev: nil, next: nil) }
 
-      it 'renders empty state message with query highlighted' do
-        expect(subject.to_html).to include('No open inductions found matching')
-        expect(subject.to_html).to include('<strong>John Doe</strong>')
+      it 'renders heading with no results message instead of table empty state' do
+        expect(subject.to_html).to include('No open inductions for "John Doe"')
+        # Should not render the table empty state message when there's a query
+        expect(subject.to_html).not_to include('No open inductions found matching')
       end
     end
   end
@@ -250,8 +272,10 @@ RSpec.describe TeachersIndexComponent, type: :component do
     context 'when no closed inductions exist' do
       before { teacher_3_closed.induction_periods.destroy_all }
 
-      it 'does not render navigation link to closed inductions' do
-        expect(subject.to_html).not_to include('View closed inductions')
+      it 'renders navigation text but not as clickable link' do
+        expect(subject.to_html).to include('No closed inductions')
+        # Should not be a clickable link since count is 0
+        expect(subject.css('a').text).not_to include('closed inductions')
       end
     end
   end
