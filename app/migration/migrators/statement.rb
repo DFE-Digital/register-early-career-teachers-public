@@ -13,6 +13,7 @@ module Migrators
     end
 
     def self.dependencies
+      # TODO: add :active_lead_provider to the array when migrator is implemented
       %i[lead_provider registration_period]
     end
 
