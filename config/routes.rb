@@ -263,6 +263,7 @@ Rails.application.routes.draw do
       get 'guidance', to: 'guidance#show'
       get 'guidance/release-notes', to: 'guidance#release_notes'
       get 'guidance/*page', to: 'guidance#page', as: :guidance_page
+      get "docs/:version", to: "documentation#index", as: :documentation
 
       namespace :v3 do
         resources :participants, only: %i[index show] do
