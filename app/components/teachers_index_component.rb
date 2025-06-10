@@ -1,4 +1,7 @@
 class TeachersIndexComponent < ViewComponent::Base
+  include GovukLinkHelper
+  include Rails.application.routes.url_helpers
+
   def initialize(appropriate_body:, teachers:, pagy:, status: 'open', query: nil)
     @appropriate_body = appropriate_body
     @teachers = teachers
