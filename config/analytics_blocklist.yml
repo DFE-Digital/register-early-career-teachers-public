@@ -205,6 +205,7 @@
   - delivery_partner_id
   - created_at
   - updated_at
+  - lead_provider_delivery_partnership_id
   :teachers:
   - corrected_name
   - trs_first_name
@@ -401,5 +402,11 @@
   - token
   - description
   - last_used_at
+  - created_at
+  - updated_at
+  :lead_provider_delivery_partnerships:
+  - id
+  - active_lead_provider_id
+  - delivery_partner_id
   - created_at
   - updated_at
