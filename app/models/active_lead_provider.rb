@@ -1,6 +1,8 @@
 class ActiveLeadProvider < ApplicationRecord
   belongs_to :registration_period, inverse_of: :active_lead_providers
   belongs_to :lead_provider, inverse_of: :active_lead_providers
+  has_many :lead_provider_delivery_partnerships
+  has_many :delivery_partners, through: :lead_provider_delivery_partnerships
   has_many :statements
 
   validates :registration_period_id,
