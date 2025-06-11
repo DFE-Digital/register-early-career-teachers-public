@@ -33,7 +33,10 @@ Finally, we want to start a Codespace on this branch by clicking `Code` -> `Crea
 
 <a href="../images/create-codespace.png" target="blank"><img src="../images/create-codespace.png" width="300"/></a>
 
-The first time you create a Codespace it can take quite a while to spin up. You know its ready when the `PORTS` tab contains a port of `3000`:
+The first time you create a Codespace it can take quite a while to spin up.
+
+Once Codepsace is ready click on the `TERMINAL` tab and enter command `./bin/dev` to start rails application.
+You know its ready when the `PORTS` tab contains a port of `3000`:
 
 <a href="../images/create-codespace-finished.png" target="blank"><img src="../images/create-codespace-finished.png" width="300"/></a>
 
