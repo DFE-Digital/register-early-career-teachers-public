@@ -373,11 +373,11 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
-      describe '#do!' do
+      describe '#complete!' do
         before do
           allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
 
-          service.do!
+          service.complete!
 
           induction_period.reload
         end
