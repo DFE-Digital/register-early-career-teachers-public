@@ -1,12 +1,26 @@
 FactoryBot.define do
   factory(:data_migration) do
-    model { :registration_period }
+    model { "model" }
     worker { 0 }
-    processed_count { 0 }
-    failure_count { 0 }
-    queued_at { 2.minutes.ago }
-    total_count { nil }
-    started_at { nil }
-    completed_at { nil }
+
+    trait :in_progress do
+      queued
+      started_at { 30.days.ago }
+      total_count { 100 }
+    end
+
+    trait :with_failures do
+      in_progress
+      failure_count { 1_234 }
+    end
+
+    trait :completed do
+      in_progress
+      completed_at { Time.zone.now }
+    end
+
+    trait :queued do
+      queued_at { Time.zone.now }
+    end
   end
 end
