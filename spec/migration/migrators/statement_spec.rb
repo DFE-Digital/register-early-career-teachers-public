@@ -5,17 +5,17 @@ describe Migrators::Statement do
     end
 
     def create_resource(migration_resource)
+      # creating dependencies resources
       lead_provider = FactoryBot.create(:lead_provider, name: migration_resource.lead_provider.name, api_id: migration_resource.lead_provider.id)
       registration_period = FactoryBot.create(:registration_period, year: migration_resource.cohort.start_year)
-      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:)
+      FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:)
 
-      FactoryBot.create(:statement, active_lead_provider:)
+      FactoryBot.create(:statement)
     end
 
     def setup_failure_state
-      # Statement to be migrated with no output_fee.
-      migration_statement = FactoryBot.create(:migration_statement, output_fee: nil)
-      FactoryBot.create(:lead_provider, name: migration_statement.lead_provider.name, api_id: migration_statement.lead_provider.id)
+      # Record to be migrated with no output_fee.
+      FactoryBot.create(:migration_statement, output_fee: nil)
     end
 
     describe "#migrate!" do
