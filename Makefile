@@ -144,19 +144,19 @@ define KONDUIT_CONNECT
 		(tail -f -n0 "$$tmp_file" & ) | grep -q "postgres://"; \
 		postgres_url=$$(grep -o 'postgres://[^ ]*' "$$tmp_file"); \
 		echo "$$postgres_url"; \
-		sed $(SED_INPLACE) -e "s|npq_registration_development|&\\n    url: \"$$postgres_url\"|g" config/database.yml; \
+		sed $(SED_INPLACE) -e "s|ecf2_development|&\\n  url: \"$$postgres_url\"|g" config/database.yml; \
 	} & \
 	bin/konduit.sh -d
 endef
 
 # Creates a konduit to the DB and points development to it. The konduit URL is removed when the konduit is closed.
-konduit: get-cluster-credentials
-	$(KONDUIT_CONNECT) ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg -n ${NAMESPACE} -k ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-app-kv cpd-ec2-${CONFIG_LONG}-web -- psql > "$$tmp_file"
+konduit: get-cluster-credentials set-namespace
+	$(KONDUIT_CONNECT) ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg -n ${NAMESPACE} -k ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-app-kv cpd-ec2-${CONFIG}-web -- psql > "$$tmp_file"
 	exit 0
 
 # Creates a konduit to the snapshot DB and points development to it. The konduit URL is removed when the konduit is closed.
-konduit-snapshot: get-cluster-credentials
-	$(KONDUIT_CONNECT) ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg-snapshot -n ${NAMESPACE} -k ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-app-kv cpd-ec2-${CONFIG_LONG}-web -- psql > "$$tmp_file"
+konduit-snapshot: get-cluster-credentials set-namespace
+	$(KONDUIT_CONNECT) ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-pg-snapshot -n ${NAMESPACE} -k ${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-app-kv cpd-ec2-${CONFIG}-web -- psql > "$$tmp_file"
 	exit 0
 
 set-namespace:
