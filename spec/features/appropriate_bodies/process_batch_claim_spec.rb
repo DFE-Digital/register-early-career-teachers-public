@@ -30,13 +30,10 @@ RSpec.describe 'Process bulk claims' do
       given_i_am_on_the_upload_page
       when_i_upload_a_file
 
-      expect(page.get_by_text('Batch status')).to be_visible
-      expect(page.get_by_text('pending')).to be_visible
-
       perform_enqueued_jobs
-      # This job does validation and persistence of the claims all at once
       page.reload
-      expect(page.get_by_text('completed', exact: true)).to be_visible
+      expect(page.get_by_text('CSV file summary')).to be_visible
+      expect(page.get_by_text("Your CSV named 'valid_complete_claim.csv' has 2 ECTs")).to be_visible
     end
   end
 
@@ -83,14 +80,12 @@ RSpec.describe 'Process bulk claims' do
         then_i_should_see_the_error('The selected file must follow the template')
 
         # Now try to upload a corrected file
-        when_i_upload_a_corrected_file
-
-        expect(page.get_by_text('Batch status')).to be_visible
-        expect(page.get_by_text('pending')).to be_visible
+        when_i_upload_a_file(corrected_file_path)
 
         perform_enqueued_jobs
         page.reload
-        expect(page.get_by_text('completed', exact: true)).to be_visible
+        expect(page.get_by_text('CSV file summary')).to be_visible
+        expect(page.get_by_text("Your CSV named 'valid_complete_claim.csv' has 2 ECTs")).to be_visible
       end
     end
   end
@@ -101,14 +96,9 @@ private
     expect(page.url).to end_with('/appropriate-body/bulk/claims/new')
   end
 
-  def when_i_upload_a_file
-    page.locator('input[type="file"]').set_input_files(file_path)
-    page.get_by_role('button', name: "Upload claim CSV").click
-  end
-
-  def when_i_upload_a_corrected_file
-    page.locator('input[type="file"]').set_input_files(corrected_file_path)
-    page.get_by_role('button', name: "Upload claim CSV").click
+  def when_i_upload_a_file(input_file = file_path)
+    page.locator('input[type="file"]').set_input_files(input_file)
+    page.get_by_role('button', name: "Continue").click
   end
 
   def then_i_should_see_the_error(error)

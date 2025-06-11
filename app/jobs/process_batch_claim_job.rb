@@ -3,24 +3,33 @@ class ProcessBatchClaimJob < ApplicationJob
   # @param author_email [String]
   # @param author_name [String]
   def perform(pending_induction_submission_batch, author_email, author_name)
-    pending_induction_submission_batch.processing!
+    return if pending_induction_submission_batch.processing?
 
-    AppropriateBodies::ProcessBatch::Claim.new(
-      pending_induction_submission_batch:,
-      author: author_session(pending_induction_submission_batch, author_email, author_name)
-    ).process!
+    if pending_induction_submission_batch.processed?
+      # change status first for quick response
+      pending_induction_submission_batch.completed!
+      batch_claim(pending_induction_submission_batch, author_email, author_name).do!
 
-    pending_induction_submission_batch.completed!
+    elsif pending_induction_submission_batch.pending?
+      pending_induction_submission_batch.processing!
+      batch_claim(pending_induction_submission_batch, author_email, author_name).process!
+      pending_induction_submission_batch.processed!
+    end
   rescue StandardError => e
     Rails.logger.debug("Attempt #{executions}: #{e.message}")
 
     pending_induction_submission_batch.update!(error_message: e.message)
     pending_induction_submission_batch.failed!
-
-    raise
   end
 
 private
+
+  def batch_claim(pending_induction_submission_batch, author_email, author_name)
+    AppropriateBodies::ProcessBatch::Claim.new(
+      pending_induction_submission_batch:,
+      author: author_session(pending_induction_submission_batch, author_email, author_name)
+    )
+  end
 
   def author_session(pending_induction_submission_batch, author_email, author_name)
     Sessions::Users::AppropriateBodyPersona.new(

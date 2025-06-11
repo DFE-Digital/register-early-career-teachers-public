@@ -1,7 +1,6 @@
 module AppropriateBodies
   module ProcessBatch
-    # Management of induction periods in bulk via CSV upload
-    # Handles Pass / Fail / Release in two stages
+    # Management of closing induction periods in bulk via CSV upload
     class Action < Base
       # @return [Array<Boolean>] convert the valid submissions into permanent records
       def do!

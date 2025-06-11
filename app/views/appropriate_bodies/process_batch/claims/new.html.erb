@@ -1,10 +1,37 @@
 <%
   page_data(
-    title: "Claim a group of ECTs",
+    title: "Upload a CSV to claim multiple new ECTs",
     error: @pending_induction_submission_batch.errors.any?,
-    backlink_href: ab_batch_claims_path
+    backlink_href: ab_teachers_path
   )
 %>
+
+<p class="govuk-body">
+  If you already have a CSV file which follows our formatting, you can upload it.
+  Or you can <%= govuk_link_to('download a CSV template', '/bulk-claims-template.csv') %>.
+</p>
+
+<%= govuk_details(summary_text: 'What to include in your CSV file') do %>
+  <p class="govuk-body">
+    For each ECT you must include:
+  </p>
+
+  <%= 
+    govuk_list([
+      'their teacher reference number (TRN) - must be 7 digits',
+      'their date of birth in YYYY-MM-DD format',
+      'their programme type - must be either FIP, CIP or DIY',
+      'their induction period start date in YYYY-MM-DD format',
+      ], type: :bullet) 
+  %>
+  
+  <p class="govuk-body">
+    For dates, you may need to reformat each cell so it follows our formatting before save and upload the CSV file.
+  </p>
+
+  <%= batch_example_claim %>    
+<% end %>
+
 
 <%= form_with(model: @pending_induction_submission_batch, url: ab_batch_claims_path, method: 'post') do |f| %>
 
@@ -12,9 +39,9 @@
 
   <%= f.govuk_file_field :csv_file, 
     accept: '.csv', 
-    label: { text: 'Attach a file' }, 
+    label: { text: 'Upload a file' }, 
     hint: { text: 'File type must be a CSV' } 
   %>  
   
-  <%= f.govuk_submit 'Upload claim CSV' %>
+  <%= f.govuk_submit 'Continue' %>
 <% end %>

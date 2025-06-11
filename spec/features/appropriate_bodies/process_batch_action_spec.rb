@@ -116,9 +116,8 @@ RSpec.describe 'Process bulk actions' do
         scenario 'should allow uploading the corrected file' do
           # First upload fails as expected
           then_i_should_see_the_error('The selected file must follow the template')
-
           # Now try to upload a corrected file
-          when_i_upload_a_corrected_file
+          when_i_upload_a_file(corrected_file_path)
 
           perform_enqueued_jobs
           page.reload
@@ -135,13 +134,8 @@ private
     expect(page.url).to end_with('/appropriate-body/bulk/actions/new')
   end
 
-  def when_i_upload_a_file
-    page.locator('input[type="file"]').set_input_files(file_path)
-    page.get_by_role('button', name: 'Continue').click
-  end
-
-  def when_i_upload_a_corrected_file
-    page.locator('input[type="file"]').set_input_files(corrected_file_path)
+  def when_i_upload_a_file(input_file = file_path)
+    page.locator('input[type="file"]').set_input_files(input_file)
     page.get_by_role('button', name: 'Continue').click
   end
 
