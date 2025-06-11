@@ -1,0 +1,32 @@
+<%
+  page_data(
+    title: "Add an Extension to an ECT's induction",
+    caption: teacher_full_name(@teacher),
+    caption_size: "m",
+    backlink_href: admin_teacher_extensions_path(@teacher)
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <p class="govuk-body">
+      Before recording an extension, a final assessment must have been completed
+      by the ECT's School Induction Tutor or Headteacher, which provides a
+      recommendation on the ECT's performance against the Teaching Standards.
+    </p>
+    <p class="govuk-body">
+      As an Appropriate Body, you must have made a final decision on whether to
+      extend the induction on the basis of this recommendation.
+    </p>
+    <p class="govuk-body">
+      You do not need to record an extension when an induction needs to be
+      extended due to a period of extended absence (an "automatic extension").
+    </p>
+
+    <%= form_with model: @extension, url: admin_teacher_extensions_path(@teacher, @extension), method: :post do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+      <%= render "form", f: f %>
+      <%= f.govuk_submit "Add extension" %>
+    <% end %>
+  </div>
+</div>

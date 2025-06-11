@@ -1,0 +1,38 @@
+<%
+  page_data(
+    title: "Extensions",
+    caption: teacher_full_name(@teacher),
+    caption_size: 'm',
+    backlink_href: admin_teacher_path(@teacher)
+  )
+%>
+
+<%= govuk_button_link_to "Add extension", new_admin_teacher_extension_path(@teacher), margin_bottom: 6 %>
+
+<% @teacher.induction_extensions.each.with_index(1) do |ie, i| %>
+  <%=
+    govuk_summary_list(
+      card: {
+        title: "Extension #{i}",
+        actions: [
+          govuk_link_to("Edit", edit_admin_teacher_extension_path(@teacher, ie)),
+          govuk_link_to("Delete", confirm_delete_admin_teacher_extension_path(@teacher, ie), classes: "govuk-link--no-visited-state govuk-!-margin-left-2")
+        ]
+      }
+    ) do |sl|
+      sl.with_row do |row|
+        row.with_key(text: "Added on")
+        row.with_value(text: ie.created_at.to_date.to_fs(:govuk))
+      end
+
+      sl.with_row do |row|
+        row.with_key(text: "Number of terms")
+        row.with_value(text: "#{ie.number_of_terms} terms")
+      end
+    end
+  %>
+<% end %>
+
+<% if @teacher.induction_extensions.empty? %>
+  <p class="govuk-body">No extensions have been added yet.</p>
+<% end %>

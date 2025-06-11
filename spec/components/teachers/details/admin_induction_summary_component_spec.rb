@@ -1,5 +1,4 @@
-RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
-  include AppropriateBodyHelper
+RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :component do
   include Rails.application.routes.url_helpers
 
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -8,32 +7,6 @@ RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
   context "when teacher has no induction periods" do
     it "does not render" do
       expect(component.render?).to be false
-    end
-  end
-
-  # TODO: refactor role-based logic
-  context "#render_extension_links?" do
-    context "when the user is an admin" do
-      let(:component) { described_class.new(teacher:, is_admin: true) }
-
-      it { expect(component.render_extension_links?).to be false }
-    end
-
-    context "when the user is not an admin" do
-      it { expect(component.render_extension_links?).to be true }
-    end
-  end
-
-  # TODO: refactor role-based logic
-  context "#render_add_induction_button?" do
-    context "when the user is an admin" do
-      let(:component) { described_class.new(teacher:, is_admin: true) }
-
-      it { expect(component.render_add_induction_button?).to be true }
-    end
-
-    context "when the user is not an admin" do
-      it { expect(component.render_add_induction_button?).to be false }
     end
   end
 
@@ -47,6 +20,11 @@ RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
     it "displays the induction start date" do
       render_inline(component)
       expect(page).to have_content(1.year.ago.to_date.to_fs(:govuk))
+    end
+
+    it "displays the add induction period button" do
+      render_inline(component)
+      expect(page).to have_link("Add an induction period", href: new_admin_teacher_induction_period_path(teacher_id: teacher.id))
     end
 
     context "QTS awarded" do
@@ -76,8 +54,6 @@ RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
           render_inline(component)
           expect(page).to have_content("Initial teacher training records")
           expect(page).to have_content("Test University")
-          # FIXME: we have removed this link for MVP
-          # expect(page).to have_link("View", href: ab_teacher_initial_teacher_training_records_path(teacher))
         end
       end
 
@@ -86,7 +62,6 @@ RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
 
         it "does not render ITT section" do
           render_inline(component)
-
           expect(page).not_to have_content("Initial teacher training records")
         end
       end
@@ -95,19 +70,19 @@ RSpec.describe Teachers::Details::InductionSummaryComponent, type: :component do
     context "with extensions" do
       let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
 
-      it "displays extension information" do
+      it "displays extension information and link to admin extensions path" do
         render_inline(component)
         expect(page).to have_content("Extensions")
-        expect(page).to have_link("View", href: ab_teacher_extensions_path(teacher))
+        expect(page).to have_link("View", href: admin_teacher_extensions_path(teacher))
       end
     end
 
     context "without extensions" do
-      it "displays no extension information" do
+      it "displays no extension information and link to admin extensions path" do
         render_inline(component)
         expect(page).to have_content("Extensions")
         expect(page).to have_content("None")
-        expect(page).to have_link("Add", href: ab_teacher_extensions_path(teacher))
+        expect(page).to have_link("Add", href: admin_teacher_extensions_path(teacher))
       end
     end
   end

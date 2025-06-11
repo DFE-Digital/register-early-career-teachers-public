@@ -27,6 +27,17 @@ class InductionExtensions::Manage
     end
   end
 
+  def delete!(id:)
+    @induction_extension = teacher.induction_extensions.find(id)
+    number_of_terms = induction_extension.number_of_terms
+
+    InductionExtension.transaction do
+      success = [induction_extension.destroy!, record_delete_event!(number_of_terms:)].all?
+
+      success or raise ActiveRecord::Rollback
+    end
+  end
+
 private
 
   def record_create_event!
@@ -35,6 +46,15 @@ private
 
   def record_update_event!
     Events::Record.record_induction_extension_updated_event!(**event_params)
+  end
+
+  def record_delete_event!(number_of_terms:)
+    Events::Record.record_induction_extension_deleted_event!(
+      author:,
+      appropriate_body:,
+      teacher:,
+      number_of_terms:
+    )
   end
 
   def event_params
