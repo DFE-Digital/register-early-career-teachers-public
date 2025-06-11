@@ -236,6 +236,14 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
+    def self.record_induction_extension_deleted_event!(author:, appropriate_body:, teacher:, number_of_terms:, happened_at: Time.zone.now)
+      event_type = :induction_extension_deleted
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name}'s induction extension of #{number_of_terms} terms was deleted"
+
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+    end
+
     def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body: nil)
       event_type = :induction_period_reopened
       happened_at = Time.zone.now
