@@ -1,8 +1,4 @@
 class TeachersIndexComponent < ViewComponent::Base
-  include GovukLinkHelper
-  include Pagy::Frontend
-  include Rails.application.routes.url_helpers
-
   def initialize(appropriate_body:, teachers:, pagy:, status: 'open', query: nil)
     @appropriate_body = appropriate_body
     @teachers = teachers
@@ -83,9 +79,5 @@ private
     else
       ab_teachers_path(status: 'closed')
     end
-  end
-
-  def search_form_url
-    ab_teachers_path
   end
 end

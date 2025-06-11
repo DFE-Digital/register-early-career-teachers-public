@@ -1,84 +1,17 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <p><%= govuk_link_to("Find and claim a new ECT", new_ab_claim_an_ect_find_path) %></p>
-    <% if bulk_upload_enabled? %>
-      <p><%= govuk_link_to("Upload a CSV to record outcomes for multiple ECTs", new_ab_batch_action_path) %></p>
-      <p><%= govuk_link_to("Upload a CSV to claim multiple new ECTs", new_ab_batch_claim_path) %></p>
-    <% end %>
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-  </div>
-</div>
+<%= render TeachersIndex::LinkSectionComponent.new(bulk_upload_enabled: bulk_upload_enabled?) %>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-m">
-      <%= pluralize(current_count, "#{status} induction") %>
-    </h2>
-    <% if should_show_navigation_link? %>
-    <div class="govuk-!-padding-bottom-4">
-      <%= govuk_link_to(navigation_link_text, navigation_link_path) %>
-    </div>
-    <% end %>
-  </div>
-</div>
+<%= render TeachersIndex::HeaderSectionComponent.new(
+  status: status,
+  current_count: current_count,
+  open_count: open_count,
+  closed_count: closed_count
+) %>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <%= form_with method: :get, url: search_form_url, local: true do |f| %>
-      <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--s" for="q">
-          <%= search_label_text %>
-        </label>
-        <div class="govuk-hint">Enter a name or TRN</div>
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-two-thirds">
-            <%= f.text_field("q",
-                  value: query,
-                  class: "govuk-input") %>
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <%= f.submit("Search", class: "govuk-button govuk-!-margin-left-2") %>
-          </div>
-        </div>
-      </div>
-      <%= f.hidden_field(:status, value: status) %>
-    <% end %>
-  </div>
-</div>
+<%= render TeachersIndex::SearchSectionComponent.new(status: status, query: query) %>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <% if teachers_present? %>
-      <%= govuk_table(first_cell_is_header: false) do |table| %>
-        <% table.with_head do |head| %>
-          <% head.with_row do |row| %>
-            <% row.with_cell(text: "Name", header: true, scope: "col") %>
-            <% row.with_cell(text: "TRN", header: true, scope: "col") %>
-            <% row.with_cell(text: "Induction start date", header: true, scope: "col") %>
-            <% row.with_cell(text: "Status", header: true, scope: "col") %>
-          <% end %>
-        <% end %>
-        <% table.with_body do |body| %>
-          <% teachers.each do |teacher| %>
-            <% body.with_row do |row| %>
-              <% row.with_cell do %>
-                <%= govuk_link_to(Teachers::Name.new(teacher).full_name, ab_teacher_path(teacher)) %>
-              <% end %>
-              <% row.with_cell(text: teacher.trn) %>
-              <% row.with_cell(text: Teachers::InductionPeriod.new(teacher).formatted_induction_start_date) %>
-              <% row.with_cell do %>
-                <%= govuk_tag(**Teachers::InductionStatus.new(teacher: teacher, induction_periods: teacher.induction_periods, trs_induction_status: teacher.trs_induction_status).status_tag_kwargs) %>
-              <% end %>
-            <% end %>
-          <% end %>
-        <% end %>
-      <% end %>
-
-      <%= govuk_pagination pagy: pagy %>
-    <% else %>
-      <p class="govuk-body">
-        <%= empty_state_message %>
-      </p>
-    <% end %>
-  </div>
-</div>
+<%= render TeachersIndex::TableSectionComponent.new(
+  teachers: teachers,
+  pagy: pagy,
+  status: status,
+  query: query
+) %>
