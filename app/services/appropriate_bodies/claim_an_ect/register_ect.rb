@@ -63,7 +63,7 @@ module AppropriateBodies
           trn: pending_induction_submission.trn,
           trs_first_name: pending_induction_submission.trs_first_name,
           trs_last_name: pending_induction_submission.trs_last_name,
-          event_metadata: { author:, appropriate_body: }
+          event_metadata: Events::Metadata.new(author:, appropriate_body:)
         )
       end
 
