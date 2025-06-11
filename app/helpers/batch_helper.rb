@@ -29,6 +29,7 @@ module BatchHelper
       pending: 'grey',
       processing: 'blue',
       processed: 'turquoise',
+      completing: 'purple',
       completed: 'green',
       failed: 'red'
     }
