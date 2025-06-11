@@ -6,7 +6,6 @@ class LeadProvider < ApplicationRecord
   has_many :api_tokens, class_name: "API::Token"
 
   # Validations
-  validates :name,
-            presence: true,
-            uniqueness: true
+  validates :name, presence: true, uniqueness: true
+  validates :api_id, uniqueness: { case_sensitive: false }, allow_nil: true
 end
