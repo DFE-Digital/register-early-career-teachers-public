@@ -3,11 +3,11 @@ module AppropriateBodies
     # Management of closing induction periods in bulk via CSV upload
     class Action < Base
       # @return [Array<Boolean>] convert the valid submissions into permanent records
-      def do!
+      def complete!
         pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
           @pending_induction_submission = pending_induction_submission
 
-          do_action!
+          record_or_release!
         rescue StandardError => e
           capture_error(e.message)
           next
@@ -40,7 +40,7 @@ module AppropriateBodies
     private
 
       # @return [Boolean]
-      def do_action!
+      def record_or_release!
         PendingInductionSubmissionBatch.transaction do
           if pending_induction_submission.save(context: :record_outcome)
             record_outcome.pass! if pending_induction_submission.pass?

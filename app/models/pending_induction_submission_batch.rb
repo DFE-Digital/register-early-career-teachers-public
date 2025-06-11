@@ -16,6 +16,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     pending: 'pending',
     processing: 'processing',
     processed: 'processed',
+    completing: 'completing',
     completed: 'completed',
     failed: 'failed'
   }

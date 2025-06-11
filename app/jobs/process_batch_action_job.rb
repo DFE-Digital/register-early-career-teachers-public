@@ -5,14 +5,16 @@ class ProcessBatchActionJob < ApplicationJob
   def perform(pending_induction_submission_batch, author_email, author_name)
     return if pending_induction_submission_batch.processing?
 
+    batch = batch_action(pending_induction_submission_batch, author_email, author_name)
+
     if pending_induction_submission_batch.processed?
-      # change status first for quick response
+      pending_induction_submission_batch.completing!
+      batch.complete!
       pending_induction_submission_batch.completed!
-      batch_action(pending_induction_submission_batch, author_email, author_name).do!
 
     elsif pending_induction_submission_batch.pending?
       pending_induction_submission_batch.processing!
-      batch_action(pending_induction_submission_batch, author_email, author_name).process!
+      batch.process!
       pending_induction_submission_batch.processed!
     end
   rescue StandardError => e

@@ -3,11 +3,11 @@ module AppropriateBodies
     # Management of registration and new induction periods in bulk via CSV upload
     class Claim < Base
       # @return [Array<Boolean>] convert the valid submissions into permanent records
-      def do!
+      def complete!
         pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
           @pending_induction_submission = pending_induction_submission
 
-          do_action!
+          register!
         rescue StandardError => e
           capture_error(e.message)
           next
@@ -51,7 +51,7 @@ module AppropriateBodies
     private
 
       # @return [Boolean]
-      def do_action!
+      def register!
         PendingInductionSubmissionBatch.transaction do
           if pending_induction_submission.save(context: :register_ect)
             # OPTIMIZE: params effectively passed in twice

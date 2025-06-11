@@ -63,10 +63,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         expect(submission.trs_last_name).to eq 'Van Houten'
       end
 
-      describe '#do!' do
+      describe '#complete!' do
         before do
           allow(Events::Record).to receive(:record_induction_period_opened_event!).and_call_original
-          service.do!
+          service.complete!
         end
 
         it 'records the teacher' do
@@ -99,7 +99,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
+        service.complete!
       end
 
       it 'does not create a teacher' do
@@ -124,7 +124,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
+        service.complete!
       end
 
       it 'does not create a teacher' do
@@ -149,7 +149,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
+        service.complete!
       end
 
       it 'does not create a teacher' do
@@ -174,7 +174,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
+        service.complete!
       end
 
       it 'does not create a teacher' do
@@ -202,7 +202,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       before do
         FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
         service.process!
-        service.do!
+        service.complete!
       end
 
       describe 'batch error message' do
@@ -227,7 +227,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       before do
         FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_body)
         service.process!
-        service.do!
+        service.complete!
       end
 
       describe 'batch error message' do
@@ -250,7 +250,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
+        service.complete!
       end
 
       describe 'batch error message' do
@@ -273,7 +273,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
+        service.complete!
       end
 
       it 'does not create a teacher' do
