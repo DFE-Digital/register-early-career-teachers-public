@@ -3,9 +3,9 @@ module AppropriateBodies
     class ActionsController < PendingInductionSubmissionBatchController
       def index
         @pending_induction_submission_batches = PendingInductionSubmissionBatch
-        .for_appropriate_body(@appropriate_body)
-        .action
-        .order(id: :desc)
+            .for_appropriate_body(@appropriate_body)
+            .action
+            .order(id: :desc)
       end
 
       def create
@@ -24,6 +24,7 @@ module AppropriateBodies
           csv_data.errors.each do |error|
             @pending_induction_submission_batch.errors.add(error.attribute, error.message)
           end
+
           render :new, status: :unprocessable_entity
         end
       rescue ActionController::ParameterMissing
