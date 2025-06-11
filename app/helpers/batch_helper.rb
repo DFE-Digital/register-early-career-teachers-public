@@ -1,4 +1,28 @@
 module BatchHelper
+  def batch_example_action
+    govuk_table(
+      caption: "Your file needs to look like this example",
+      head: BatchRows::ACTION_CSV_HEADINGS.values.reject { |v| v.match?(/error/i) },
+      rows: [
+        %w[1234567 2000-11-10 2025-04-17 2.5 pass],
+        %w[2345671 1987-03-29 2024-10-31 10 fail],
+        %w[3456712 1992-01-14 2025-06-30 16 release],
+      ]
+    )
+  end
+
+  def batch_example_claim
+    govuk_table(
+      caption: "Your file needs to look like this example",
+      head: BatchRows::CLAIM_CSV_HEADINGS.values.reject { |v| v.match?(/error/i) },
+      rows: [
+        %w[1234567 2000-11-10 FIP 2025-05-17],
+        %w[2345671 1987-03-29 CIP 2024-04-29],
+        %w[3456712 1992-01-14 DIY 2025-02-03],
+      ]
+    )
+  end
+
   # @param batch [PendingInductionSubmissionBatch]
   def batch_status_tag(batch)
     colours = {
@@ -32,7 +56,7 @@ module BatchHelper
   end
 
   # @param batch [PendingInductionSubmissionBatch]
-  def batch_summary(batch)
+  def batch_action_summary(batch)
     submissions = batch.pending_induction_submissions.without_errors
 
     govuk_list([

@@ -1,0 +1,16 @@
+<%
+  page_data(
+    title: 'Something went wrong',
+    backlink_href: ab_batch_claims_path
+  )
+%>
+
+<p class='govuk-body'>
+  You'll need to try again
+</p>
+<p class='govuk-body'>
+  We have not saved or uploaded your CSV.
+</p>
+<p class='govuk-body'>
+  <%= govuk_link_to 'Go back to your overview', ab_batch_claims_path %>
+</p>
