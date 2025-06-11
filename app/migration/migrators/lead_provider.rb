@@ -20,7 +20,7 @@ module Migrators
 
     def migrate!
       migrate(self.class.lead_providers) do |lead_provider|
-        ::LeadProvider.create!(name: lead_provider.name)
+        ::LeadProvider.create!(name: lead_provider.name, api_id: lead_provider.id)
       end
     end
   end
