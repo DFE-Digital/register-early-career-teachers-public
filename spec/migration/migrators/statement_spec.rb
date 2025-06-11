@@ -22,7 +22,7 @@ describe Migrators::Statement do
       it "sets the created statement attributes correctly" do
         instance.migrate!
         statement = Statement.find_by(api_id: migration_resource1.id)
-        expect(statement).to have_attributes(migration_resource1.attributes.slice(:deadline_date, :payment_date, :output_fee, :marked_as_paid_at))
+        expect(statement).to have_attributes(migration_resource1.attributes.slice(:deadline_date, :payment_date, :output_fee, :marked_as_paid_at, :created_at, :updated_at))
         expect(statement.month).to eq(2)
         expect(statement.year).to eq(2025)
         expect(statement.registration_period.year).to eq(migration_resource1.cohort.start_year)

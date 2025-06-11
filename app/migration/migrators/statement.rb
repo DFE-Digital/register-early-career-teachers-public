@@ -27,7 +27,7 @@ module Migrators
       migrate(self.class.statements) do |ecf_statement|
         statement = ::Statement.find_or_initialize_by(api_id: ecf_statement.id)
 
-        lead_provider_id = find_lead_provider_id!(name: ecf_statement.lead_provider.name)
+        lead_provider_id = find_lead_provider_id!(api_id: ecf_statement.lead_provider.id)
         registration_period_id = ecf_statement.cohort.start_year
 
         statement.update!(
@@ -38,7 +38,9 @@ module Migrators
           payment_date: ecf_statement.payment_date,
           marked_as_paid_at: ecf_statement.marked_as_paid_at,
           output_fee: ecf_statement.output_fee,
-          state: state(ecf_statement)
+          state: state(ecf_statement),
+          created_at: ecf_statement.created_at,
+          updated_at: ecf_statement.updated_at
         )
       end
     end
