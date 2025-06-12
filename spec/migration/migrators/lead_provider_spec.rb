@@ -1,50 +1,34 @@
 RSpec.describe Migrators::LeadProvider do
-  subject(:migrator) { described_class.new(worker: 0) }
-
-  let!(:ecf_lead_provider) { FactoryBot.create(:ecf_lead_provider) }
-
-  describe ".record_count" do
-    it "returns the number of LeadProvider records in the ECF database" do
-      expect(described_class.record_count).to eq 1
-    end
-  end
-
-  describe ".model" do
-    it "returns :lead_provider" do
-      expect(described_class.model).to eq :lead_provider
-    end
-  end
-
-  describe ".lead_providers" do
-    it "returns all LeadProvider records in the ECF database" do
-      expect(described_class.lead_providers).to eq [ecf_lead_provider]
-    end
-  end
-
-  describe ".records_per_worker" do
-    it "returns the worker batch size for lead_providers" do
-      expect(described_class.records_per_worker).to eq 5_000
-    end
-  end
-
-  describe ".dependencies" do
-    it "returns a list of migrators that must be run before this one" do
-      expect(described_class.dependencies).to eq []
-    end
-  end
-
-  describe "#migrate!" do
-    let!(:data_migration) { FactoryBot.create(:data_migration, model: :lead_provider) }
-
-    it 'creates a record in the ecf2 database' do
-      expect {
-        migrator.migrate!
-      }.to change(::LeadProvider, :count).by(1)
+  it_behaves_like "a migrator", :lead_provider, [] do
+    def create_migration_resource
+      FactoryBot.create(:migration_lead_provider)
     end
 
-    it "populates the ecf2 model correctly" do
-      migrator.migrate!
-      expect(::LeadProvider.first.name).to eq ecf_lead_provider.name
+    def create_resource(migration_resource)
+    end
+
+    def setup_failure_state
+      lp = FactoryBot.create(:migration_lead_provider)
+      FactoryBot.create(:lead_provider, name: lp.name, api_id: SecureRandom.uuid)
+    end
+
+    describe "#migrate!" do
+      it 'creates a record in the ecf2 database' do
+        expect {
+          instance.migrate!
+        }.to change(::LeadProvider, :count).by(Migration::LeadProvider.count)
+      end
+
+      it "populates the ecf2 model correctly" do
+        instance.migrate!
+
+        ::LeadProvider.find_each do |lead_provider|
+          source_record = Migration::LeadProvider.find(lead_provider.api_id)
+          expect(lead_provider.name).to eq source_record.name
+          expect(lead_provider.created_at).to eq source_record.created_at
+          expect(lead_provider.updated_at).to eq source_record.updated_at
+        end
+      end
     end
   end
 end
