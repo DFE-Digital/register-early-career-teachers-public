@@ -1,0 +1,24 @@
+<%=
+  govuk_summary_card(title: "Additional adjustments") do |card|
+    card.with_action { govuk_link_to("Add", "#", visually_hidden_suffix: "adjustment") if adjustment_editable? }
+    card.with_summary_list do |sl|
+      adjustments.each do |adjustment|
+        sl.with_row do |row|
+          row.with_key(text: adjustment.payment_type)
+          row.with_value(text: number_to_pounds(adjustment.amount))
+          if adjustment_editable?
+            row.with_action(text: "Change", href: '#', visually_hidden_text: "adjustment")
+            row.with_action(text: "Remove", href: '#', visually_hidden_text: "adjustment")
+          end
+        end
+      end
+
+      if adjustments.any?
+        sl.with_row do |row|
+          row.with_key(text: "Total")
+          row.with_value(text: number_to_pounds(total_amount))
+        end
+      end
+    end
+  end
+%>
