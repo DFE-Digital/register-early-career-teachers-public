@@ -66,6 +66,7 @@ group :test do
   gem "rspec-rails"
   gem "shoulda-matchers"
   gem "super_diff"
+  gem "webmock"
 end
 
 group :development, :test do

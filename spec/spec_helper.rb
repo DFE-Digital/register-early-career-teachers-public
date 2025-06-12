@@ -3,6 +3,7 @@ require "view_component/test_helpers"
 require "view_component/system_test_helpers"
 require 'playwright'
 require 'playwright/test'
+require 'webmock/rspec'
 
 RSpec.configure do |config|
   config.include ViewComponent::TestHelpers, type: :component
@@ -23,3 +24,4 @@ RSpec.configure do |config|
 end
 
 RSpec::Matchers.define_negated_matcher :not_change, :change
+WebMock.disable_net_connect!(allow_localhost: true)
