@@ -4,6 +4,7 @@ describe ParityCheck::Request do
   describe "associations" do
     it { is_expected.to belong_to(:run) }
     it { is_expected.to belong_to(:lead_provider) }
+    it { is_expected.to have_many(:responses) }
   end
 
   describe "validations" do

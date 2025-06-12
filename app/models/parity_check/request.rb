@@ -6,6 +6,7 @@ module ParityCheck
 
     belongs_to :run
     belongs_to :lead_provider
+    has_many :responses
 
     validates :lead_provider, presence: true
     validates :run, presence: true
