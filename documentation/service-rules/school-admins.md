@@ -136,6 +136,7 @@ We also make sure the email follows a correct format.
 The school user is asked for the date when the ECT will start or started as an early career teacher.
 
 We ask this question because it helps us assign what registration_period the ECT will begin their training in. This determines:
+
 * if they can progress with the journey to register the ECT - a registration_period needs to be enabled and ready before an ECT can be registered, and there are often policy changes or contract decisions which require changes before this can be done
 * if they can roll over their partnership when their previous lead provider and delivery partner are still available in the relevant registration_period
 *  what lead provider schools can select for any ECTs, when they're not using an existing partnership 
@@ -146,8 +147,8 @@ We use the logic below to determine what registration_period to assign to the EC
 | -------- | ------- |
 | Before the current registration_period | The current registration_period - this is because they cannot be trained until this period anyway |
 | During the current registration_period | The current registration_period |
-| After the current registration_period | If the registration_period for their school_start_date is open, assign the future registration_period |
-| After the current registration_period | If the registration_period for their school_start_date is closed, nothing can be assigned and they cannot progress with registration |
+| After the current registration_period, for a registration_period that is open | Assign the future open registration_period |
+| After the current registration_period, for a registration_period that is closedd | Nothing can be assigned and they cannot progress with registration |
 
 The school start date is also helpful for lead providers to start training ECTs at the right time and onboard them efficiently.
 
