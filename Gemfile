@@ -24,6 +24,7 @@ gem "govuk_markdown"
 
 gem "mail-notify"
 
+gem "httparty"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "solid_queue"
