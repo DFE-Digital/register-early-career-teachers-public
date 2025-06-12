@@ -9,8 +9,8 @@ describe Migrators::RegistrationPeriod do
     end
 
     def setup_failure_state
-      # Record to be migrated with no registration start date
-      FactoryBot.create(:migration_cohort, :with_sequential_start_year, registration_start_date: nil)
+      # Record to be migrated with invalid start year
+      FactoryBot.create(:migration_cohort, start_year: 2010)
     end
 
     describe "#migrate!" do
