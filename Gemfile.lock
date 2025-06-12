@@ -756,6 +756,7 @@ DEPENDENCIES
   govuk_design_system_formbuilder
   govuk_markdown
   hotwire-rails
+  httparty
   jsbundling-rails
   mail-notify
   nanoc
