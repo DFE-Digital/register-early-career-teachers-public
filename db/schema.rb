@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_11_143127) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -352,6 +352,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
     t.string "parent_type"
     t.index ["data_migration_id"], name: "index_migration_failures_on_data_migration_id"
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
+  end
+
+  create_table "parity_check_runs", force: :cascade do |t|
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|
