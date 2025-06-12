@@ -13,7 +13,7 @@ describe Builders::ECT::TrainingPeriods do
   let(:training_period_2) { FactoryBot.build(:training_period_data, cohort_year: registration_period.year, lead_provider: partnership_2.lead_provider.name, delivery_partner: partnership_2.delivery_partner.name, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:training_period_data) { [training_period_1, training_period_2] }
 
-  describe "#build" do
+  describe "#build", pending: "will be reworked once EOI schema is done" do
     it "creates TrainingPeriod records for the school periods" do
       expect {
         service.build

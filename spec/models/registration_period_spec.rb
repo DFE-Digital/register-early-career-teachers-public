@@ -2,6 +2,7 @@ describe RegistrationPeriod do
   describe "associations" do
     it { is_expected.to have_many(:school_partnerships) }
     it { is_expected.to have_many(:active_lead_providers).inverse_of(:registration_period) }
+    it { is_expected.to have_many(:lead_provider_delivery_partnerships).through(:active_lead_providers) }
   end
 
   describe "validations" do
