@@ -55,4 +55,33 @@ RSpec.describe ParityCheck::TokenProvider do
       it { expect { generate }.to raise_error(described_class::UnsupportedEnvironmentError, "The parity check functionality is disabled for this environment") }
     end
   end
+
+  describe "#token" do
+    subject(:token) { instance.token(lead_provider:) }
+
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+
+    context "when parity check is enabled" do
+      let(:enabled) { true }
+
+      context "when the keys are not present" do
+        let(:tokens) { nil }
+
+        it { is_expected.to be_nil }
+      end
+
+      context "when the keys are present" do
+        let(:tokens) { { lead_provider.api_id => "token" } }
+
+        it { is_expected.to eq("token") }
+      end
+    end
+
+    context "when parity check is disabled" do
+      let(:enabled) { false }
+      let(:tokens) { nil }
+
+      it { expect { token }.to raise_error(described_class::UnsupportedEnvironmentError, "The parity check functionality is disabled for this environment") }
+    end
+  end
 end
