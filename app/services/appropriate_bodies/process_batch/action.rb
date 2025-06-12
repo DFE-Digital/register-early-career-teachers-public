@@ -112,21 +112,6 @@ module AppropriateBodies
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end
 
-      # @return [nil, Teacher]
-      def teacher
-        ::Teacher.find_by(trn: pending_induction_submission.trn)
-      end
-
-      # @return [nil, String]
-      def name
-        ::PendingInductionSubmissions::Name.new(pending_induction_submission).full_name
-      end
-
-      # @return [Teachers::InductionPeriod]
-      def induction_periods
-        ::Teachers::InductionPeriod.new(teacher)
-      end
-
       # @return [nil, String]
       def fetch_trs_details!
         pending_induction_submission.update(
@@ -137,9 +122,9 @@ module AppropriateBodies
       rescue TRS::Errors::TeacherNotFound
         'TRN and date of birth do not match'
       rescue TRS::Errors::ProhibitedFromTeaching
-        'Prohibited from teaching'
+        "#{name} is prohibited from teaching"
       rescue TRS::Errors::QTSNotAwarded
-        'QTS not awarded'
+        "#{name} does not have their qualified teacher status (QTS)"
       rescue StandardError
         'Something went wrong. You’ll need to try again later'
       end

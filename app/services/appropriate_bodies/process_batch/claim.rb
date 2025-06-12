@@ -24,28 +24,51 @@ module AppropriateBodies
           @row = row
           @pending_induction_submission = sparse_pending_induction_submission
 
+          # next if fails_pre_checks?
+          next if incorrectly_formatted?
+
+          if teacher
+            teacher_name = ::Teachers::Name.new(teacher).full_name
+
+            if induction_periods.last_induction_period.outcome.eql?('pass')
+              capture_error("#{teacher_name} has already passed their induction")
+              next
+            end
+
+            if induction_periods.last_induction_period.outcome.eql?('fail')
+              capture_error("#{teacher_name} has already failed their induction")
+              next
+            end
+          end
+
           validate_submission!
+
+          # Induction start date must not overlap with any other induction periods
+          # Induction start date must not be before QTS date
+        rescue ::TRS::Errors::TeacherNotFound
+          capture_error('TRN and date of birth do not match')
+          next
         rescue Errors::TeacherHasActiveInductionPeriodWithCurrentAB
-          capture_error('Already claimed by your appropriate body')
+          capture_error("#{name} is already claimed by your appropriate body")
           next
         rescue Errors::TeacherHasActiveInductionPeriodWithAnotherAB
-          capture_error('Already claimed by another appropriate body')
-          next
-        rescue ::TRS::Errors::TeacherNotFound
-          capture_error('Not found in TRS')
+          capture_error("#{name} is already claimed by another appropriate body")
           next
         rescue ::TRS::Errors::ProhibitedFromTeaching
-          capture_error('Prohibited from teaching')
+          capture_error("#{name} is prohibited from teaching")
           next
         rescue ::TRS::Errors::QTSNotAwarded
-          capture_error('QTS not awarded')
+          capture_error("#{name} does not have their qualified teacher status (QTS)")
           next
         rescue StandardError => e
+          # capture_error('Something went wrong. You’ll need to try again later')
           capture_error(e.message)
           next
         end
+
+      # Batch error reporting
       rescue StandardError => e
-        capture_error(e.message)
+        pending_induction_submission_batch.update(error_message: e.message)
       end
 
     private
@@ -72,13 +95,22 @@ module AppropriateBodies
           induction_programme: row.induction_programme.downcase
         )
 
-        # 1. check_if_teacher_has_ongoing_induction_period_with_appropriate_body!
-        # 2. trs_teacher.check_eligibility!
         find_ect.import_from_trs!
-        # 3. check_if_teacher_has_ongoing_induction_period_with_another_appropriate_body!
         check_ect.begin_claim!
 
         pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :find_ect) && pending_induction_submission.save(context: :check_ect) && pending_induction_submission.save(context: :register_ect)
+      end
+
+      # @return [Boolean]
+      def incorrectly_formatted?
+        pending_induction_submission.errors.add(:base, 'Fill in the blanks on this row') if row.blank_cell?
+        pending_induction_submission.errors.add(:base, 'Dates must be in the format YYYY-MM-DD') if row.invalid_date?
+        pending_induction_submission.errors.add(:base, 'Date of birth must be a real date and the teacher must be between 18 and 100 years old') if row.invalid_age?
+        pending_induction_submission.errors.add(:base, 'Enter a valid TRN using 7 digits') if row.invalid_trn?
+        # pending_induction_submission.errors.add(:base, 'Induction programme type must be school-led or provider-led') if row.invalid_training_programme?
+        pending_induction_submission.errors.add(:base, 'Induction programme type must be DIY, FIP or CIP') if row.invalid_training_programme?
+
+        pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end
 
       # @return [AppropriateBodies::ClaimAnECT::FindECT]
