@@ -9,9 +9,6 @@ class TrainingPeriod < ApplicationRecord
   has_many :declarations, inverse_of: :training_period
   has_many :events
 
-  has_one :lead_provider, through: :school_partnership
-  has_one :delivery_partner, through: :school_partnership
-
   # Validations
   validates :started_on,
             presence: true
@@ -51,6 +48,15 @@ class TrainingPeriod < ApplicationRecord
     return TrainingPeriod.none unless trainee
 
     trainee.training_periods.excluding(self)
+  end
+
+  # FIXME: temporary
+  def lead_provider
+    school_partnership&.lead_provider_delivery_partnership&.active_lead_provider&.lead_provider
+  end
+
+  def delivery_partner
+    school_partnership&.lead_provider_delivery_partnership&.delivery_partner
   end
 
 private

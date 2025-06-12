@@ -289,6 +289,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
   end
 
+  create_table "lead_provider_delivery_partnerships", force: :cascade do |t|
+    t.bigint "active_lead_provider_id", null: false
+    t.bigint "delivery_partner_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id", "delivery_partner_id"], name: "idx_on_active_lead_provider_id_delivery_partner_id_3c66d9e812", unique: true
+    t.index ["active_lead_provider_id"], name: "idx_on_active_lead_provider_id_2f96b67fbb"
+    t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
+  end
+
   create_table "lead_providers", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -399,15 +409,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
   end
 
   create_table "school_partnerships", force: :cascade do |t|
-    t.bigint "registration_period_id", null: false
-    t.bigint "lead_provider_id", null: false
-    t.bigint "delivery_partner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["delivery_partner_id"], name: "index_school_partnerships_on_delivery_partner_id"
-    t.index ["lead_provider_id"], name: "index_school_partnerships_on_lead_provider_id"
-    t.index ["registration_period_id", "lead_provider_id", "delivery_partner_id"], name: "yearly_unique_provider_partnerships", unique: true
-    t.index ["registration_period_id"], name: "index_school_partnerships_on_registration_period_id"
+    t.bigint "lead_provider_delivery_partnership_id", null: false
+    t.index ["lead_provider_delivery_partnership_id"], name: "idx_on_lead_provider_delivery_partnership_id_628487f752"
   end
 
   create_table "schools", force: :cascade do |t|
@@ -665,9 +670,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
-  add_foreign_key "school_partnerships", "delivery_partners"
-  add_foreign_key "school_partnerships", "lead_providers"
-  add_foreign_key "school_partnerships", "registration_periods", primary_key: "year"
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"

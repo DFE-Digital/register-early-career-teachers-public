@@ -5,8 +5,6 @@ describe TrainingPeriod do
     it { is_expected.to belong_to(:school_partnership) }
     it { is_expected.to have_many(:declarations).inverse_of(:training_period) }
     it { is_expected.to have_many(:events) }
-    it { is_expected.to have_one(:lead_provider).through(:school_partnership) }
-    it { is_expected.to have_one(:delivery_partner).through(:school_partnership) }
   end
 
   describe "validations" do
