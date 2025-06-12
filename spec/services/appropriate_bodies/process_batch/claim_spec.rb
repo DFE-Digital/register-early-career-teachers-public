@@ -99,7 +99,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
       end
 
       it 'does not create a teacher' do
@@ -124,7 +123,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
       end
 
       it 'does not create a teacher' do
@@ -140,7 +138,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        it { is_expected.to eq ['Not found in TRS'] }
+        it { is_expected.to eq ['TRN and date of birth do not match'] }
       end
     end
 
@@ -149,7 +147,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
       end
 
       it 'does not create a teacher' do
@@ -165,7 +162,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        it { is_expected.to eq ['Prohibited from teaching'] }
+        it { is_expected.to eq ['Kirk Van Houten is prohibited from teaching'] }
       end
     end
 
@@ -174,7 +171,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
       end
 
       it 'does not create a teacher' do
@@ -190,7 +186,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        it { is_expected.to eq ['QTS not awarded'] }
+        it { is_expected.to eq ['Kirk Van Houten does not have their qualified teacher status (QTS)'] }
       end
     end
 
@@ -202,7 +198,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       before do
         FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
         service.process!
-        service.do!
       end
 
       describe 'batch error message' do
@@ -214,7 +209,53 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        it { is_expected.to eq ['Already claimed by your appropriate body'] }
+        it { is_expected.to eq ['Kirk Van Houten is already claimed by your appropriate body'] }
+      end
+    end
+
+    context 'when the ECT has already passed' do
+      include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+
+      let(:teacher) { FactoryBot.create(:teacher, trn:, trs_first_name: 'Luann', trs_last_name: 'Van Houten') }
+
+      before do
+        FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:)
+        service.process!
+      end
+
+      describe 'batch error message' do
+        subject { pending_induction_submission_batch.error_message }
+
+        it { is_expected.to be_nil }
+      end
+
+      describe 'submission error messages' do
+        subject { submission.error_messages }
+
+        it { is_expected.to eq ['Luann Van Houten has already passed their induction'] }
+      end
+    end
+
+    context 'when the ECT has already failed' do
+      include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+
+      let(:teacher) { FactoryBot.create(:teacher, trn:, trs_first_name: 'Luann', trs_last_name: 'Van Houten') }
+
+      before do
+        FactoryBot.create(:induction_period, :fail, teacher:, appropriate_body:)
+        service.process!
+      end
+
+      describe 'batch error message' do
+        subject { pending_induction_submission_batch.error_message }
+
+        it { is_expected.to be_nil }
+      end
+
+      describe 'submission error messages' do
+        subject { submission.error_messages }
+
+        it { is_expected.to eq ['Luann Van Houten has already failed their induction'] }
       end
     end
 
@@ -227,7 +268,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       before do
         FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_body)
         service.process!
-        service.do!
       end
 
       describe 'batch error message' do
@@ -239,18 +279,17 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        it { is_expected.to eq ['Already claimed by another appropriate body'] }
+        it { is_expected.to eq ['Kirk Van Houten is already claimed by another appropriate body'] }
       end
     end
 
-    context 'when induction programme is unknown', pending: 'wip' do
+    context 'when induction programme is unknown' do
       include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
       let(:induction_programme) { 'foo' }
 
       before do
         service.process!
-        service.do!
       end
 
       describe 'batch error message' do
@@ -262,7 +301,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        it { is_expected.to eq ['unknown induction programme WIP'] }
+        # it { is_expected.to eq ['Induction programme type must be school-led or provider-led'] }
+        it { is_expected.to eq ['Induction programme type must be DIY, FIP or CIP'] }
       end
     end
 
@@ -273,7 +313,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         service.process!
-        service.do!
       end
 
       it 'does not create a teacher' do
