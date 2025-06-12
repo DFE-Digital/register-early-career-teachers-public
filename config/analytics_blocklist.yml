@@ -416,3 +416,13 @@
   - completed_at
   - created_at
   - updated_at
+  :parity_check_requests:
+  - id
+  - run_id
+  - lead_provider_id
+  - path
+  - method
+  - started_at
+  - completed_at
+  - created_at
+  - updated_at
