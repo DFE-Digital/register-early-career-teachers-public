@@ -31,6 +31,21 @@ module AppropriateBodies
       def capture_error(message)
         pending_induction_submission.update(error_messages: [message])
       end
+
+      # @return [nil, String]
+      def name
+        ::PendingInductionSubmissions::Name.new(pending_induction_submission).full_name
+      end
+
+      # @return [nil, Teacher]
+      def teacher
+        ::Teacher.find_by(trn: pending_induction_submission.trn)
+      end
+
+      # @return [Teachers::InductionPeriod]
+      def induction_periods
+        ::Teachers::InductionPeriod.new(teacher)
+      end
     end
   end
 end
