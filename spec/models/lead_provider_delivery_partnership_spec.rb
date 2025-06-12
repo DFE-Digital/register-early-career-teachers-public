@@ -14,15 +14,31 @@ describe LeadProviderDeliveryPartnership do
   end
 
   describe 'scopes' do
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+    let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:) }
+
     describe '.with_delivery_partner' do
-      it 'selects records with a matching delivery partner id' do
-        expect(described_class.with_delivery_partner(1001).to_sql).to end_with('WHERE "lead_provider_delivery_partnerships"."delivery_partner_id" = 1001')
+      let(:other_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
+
+      it 'returns the lead provider delivery partnership belonging to the delivery partner' do
+        expect(LeadProviderDeliveryPartnership.with_delivery_partner(delivery_partner)).to include(lead_provider_delivery_partnership)
+      end
+
+      it 'does not return lead provider delivery partnerships belonging to other delivery partners' do
+        expect(LeadProviderDeliveryPartnership.with_delivery_partner(delivery_partner)).not_to include(other_lead_provider_delivery_partnership)
       end
     end
 
     describe '.with_active_lead_provider' do
-      it 'selects records with a matching active_lead_provider_id id' do
-        expect(described_class.with_active_lead_provider(2002).to_sql).to end_with('WHERE "lead_provider_delivery_partnerships"."active_lead_provider_id" = 2002')
+      let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+
+      it 'returns the lead provider delivery partnership belonging to the delivery partner' do
+        expect(LeadProviderDeliveryPartnership.with_active_lead_provider(active_lead_provider)).to include(lead_provider_delivery_partnership)
+      end
+
+      it 'does not return lead provider delivery partnerships belonging to other delivery partners' do
+        expect(LeadProviderDeliveryPartnership.with_active_lead_provider(active_lead_provider)).not_to include(other_active_lead_provider)
       end
     end
   end
