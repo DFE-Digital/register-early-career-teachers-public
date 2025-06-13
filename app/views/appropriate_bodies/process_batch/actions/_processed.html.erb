@@ -19,7 +19,7 @@
     Your CSV named '<%= batch.filename %>' has <%= batch.pending_induction_submissions.without_errors.count %> ECT records including:
   </p>
 
-  <%= batch_summary(batch) %>
+  <%= batch_action_summary(batch) %>
 
   <% if batch.pending_induction_submissions.with_errors.any? %>
     <p class='govuk-body'>

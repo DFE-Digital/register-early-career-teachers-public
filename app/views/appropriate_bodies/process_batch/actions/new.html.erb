@@ -30,17 +30,7 @@
     For dates, you may need to reformat each cell so it follows our formatting before save and upload the CSV file.
   </p>
 
-  <%=   
-    govuk_table(
-      caption: "Your file needs to look like this example",
-      head: BatchRows::ACTION_CSV_HEADINGS.values.reverse.drop(1).reverse,
-      rows: [
-        %w[1234567 2000-11-10 2025-04-17 2.5   pass],
-        %w[2345671 1987-03-29 2024-10-31 10  fail],
-        %w[3456712 1992-01-14 2025-06-30 16  release],
-      ]
-    )
-  %>    
+  <%= batch_example_action %>    
 <% end %>
 
 

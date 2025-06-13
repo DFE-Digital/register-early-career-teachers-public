@@ -1,7 +1,6 @@
 module AppropriateBodies
   module ProcessBatch
-    # Management of induction periods in bulk via CSV upload
-    # Handles Pass / Fail / Release in two stages
+    # Management of closing induction periods in bulk via CSV upload
     class Action < Base
       # @return [Array<Boolean>] convert the valid submissions into permanent records
       def do!
@@ -103,46 +102,12 @@ module AppropriateBodies
 
       # @return [Boolean]
       def incorrectly_formatted?
-        pending_induction_submission.errors.add(:base, 'Fill in the blanks on this row') if row.blank_cell?
-        pending_induction_submission.errors.add(:base, 'Dates must be in the format YYYY-MM-DD') if row.invalid_date?
-        pending_induction_submission.errors.add(:base, 'Date of birth must be a real date and the teacher must be between 18 and 100 years old') if row.invalid_age?
-        pending_induction_submission.errors.add(:base, 'Enter a valid TRN using 7 digits') if row.invalid_trn?
+        super
+
         pending_induction_submission.errors.add(:base, 'Outcome must be either pass, fail or release') if row.invalid_outcome?
         pending_induction_submission.errors.add(:base, 'Enter number of terms between 0 and 16 using up to one decimal place') if row.invalid_terms?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
-      end
-
-      # @return [nil, Teacher]
-      def teacher
-        ::Teacher.find_by(trn: pending_induction_submission.trn)
-      end
-
-      # @return [nil, String]
-      def name
-        ::PendingInductionSubmissions::Name.new(pending_induction_submission).full_name
-      end
-
-      # @return [Teachers::InductionPeriod]
-      def induction_periods
-        ::Teachers::InductionPeriod.new(teacher)
-      end
-
-      # @return [nil, String]
-      def fetch_trs_details!
-        pending_induction_submission.update(
-          **trs_teacher.present.except(:trs_national_insurance_number)
-        )
-
-        nil
-      rescue TRS::Errors::TeacherNotFound
-        'TRN and date of birth do not match'
-      rescue TRS::Errors::ProhibitedFromTeaching
-        'Prohibited from teaching'
-      rescue TRS::Errors::QTSNotAwarded
-        'QTS not awarded'
-      rescue StandardError
-        'Something went wrong. You’ll need to try again later'
       end
 
       # @return [Boolean]
@@ -153,11 +118,6 @@ module AppropriateBodies
       # @return [Boolean]
       def completed_induction_period?
         induction_periods.last_induction_period&.outcome.present?
-      end
-
-      # @return [Boolean]
-      def claimed_by_another_ab?
-        appropriate_body != induction_periods.ongoing_induction_period&.appropriate_body
       end
 
       # @return [AppropriateBodies::ReleaseECT]
@@ -177,20 +137,6 @@ module AppropriateBodies
           teacher:,
           author:
         )
-      end
-
-      # @return [TRS::Teacher]
-      # @raise [TRS::Errors::TeacherNotFound]
-      def trs_teacher
-        api_client.find_teacher(
-          trn: pending_induction_submission.trn,
-          date_of_birth: pending_induction_submission.date_of_birth
-        )
-      end
-
-      # @return [TRS::APIClient]
-      def api_client
-        @api_client ||= ::TRS::APIClient.build
       end
     end
   end

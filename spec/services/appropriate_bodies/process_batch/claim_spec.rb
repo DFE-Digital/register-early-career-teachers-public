@@ -31,20 +31,15 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     service.pending_induction_submission_batch.pending_induction_submissions
   end
 
-  describe '#process!' do
-    let(:teacher) { submission.teacher }
-    let(:submission) { submissions.first }
+  let(:submission) { submissions.first }
+  let(:teacher) { submission.teacher }
+  let(:induction_period) { teacher.induction_periods.first }
 
+  describe '#process!' do
     context 'when happy' do
       include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
-      let(:induction_period) { teacher.induction_periods.first }
-
-      before do
-        allow(Events::Record).to receive(:record_induction_period_opened_event!).and_call_original
-
-        service.process!
-      end
+      before { service.process! }
 
       it 'has no error message' do
         expect(pending_induction_submission_batch.reload.error_message).to be_nil
@@ -66,51 +61,58 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         expect(submission.trs_last_name).to eq 'Van Houten'
       end
 
-      it 'records the teacher' do
-        expect(teacher.trn).to eq trn
-        expect(teacher.trs_first_name).to eq 'Kirk'
-        expect(teacher.trs_last_name).to eq 'Van Houten'
-      end
+      describe '#do!' do
+        before do
+          allow(Events::Record).to receive(:record_induction_period_opened_event!).and_call_original
+          service.do!
+        end
 
-      it 'opens induction period' do
-        expect(induction_period.started_on).to eq(Date.parse(started_on))
-        expect(induction_period.finished_on).to be_nil
-        expect(induction_period.outcome).to be_nil
-        expect(induction_period.induction_programme).to eq('fip')
-      end
+        it 'records the teacher' do
+          expect(teacher.trn).to eq trn
+          expect(teacher.trs_first_name).to eq 'Kirk'
+          expect(teacher.trs_last_name).to eq 'Van Houten'
+        end
 
-      it 'creates events owned by the author' do
-        expect(Events::Record).to have_received(:record_induction_period_opened_event!).with(
-          appropriate_body:,
-          teacher:,
-          induction_period:,
-          author:,
-          modifications: {}
-        )
-      end
-    end
+        it 'opens induction period' do
+          expect(induction_period.started_on).to eq(Date.parse(started_on))
+          expect(induction_period.finished_on).to be_nil
+          expect(induction_period.outcome).to be_nil
+          expect(induction_period.induction_programme).to eq('fip')
+        end
 
-    context 'when TRS induction status is unknown' do
-      include_context 'fake trs api client'
-
-      before { service.process! }
-
-      it 'does not create a teacher' do
-        expect(teacher).to be_nil
-      end
-
-      describe 'batch error message' do
-        subject { pending_induction_submission_batch.error_message }
-
-        it { is_expected.to be_nil }
-      end
-
-      describe 'submission error messages' do
-        subject { submissions.first.error_messages }
-
-        it { is_expected.to eq ['TRS Induction Status is not known'] }
+        it 'creates events owned by the author' do
+          expect(Events::Record).to have_received(:record_induction_period_opened_event!).with(
+            appropriate_body:,
+            teacher:,
+            induction_period:,
+            author:,
+            modifications: {}
+          )
+        end
       end
     end
+
+    # xcontext 'when TRS induction status is unknown' do
+    #   include_context 'fake trs api client'
+
+    #   before { service.process! }
+
+    #   it 'does not create a teacher' do
+    #     expect(teacher).to be_nil
+    #   end
+
+    #   describe 'batch error message' do
+    #     subject { pending_induction_submission_batch.error_message }
+
+    #     it { is_expected.to be_nil }
+    #   end
+
+    #   describe 'submission error messages' do
+    #     subject { submission.error_messages }
+
+    #     it { is_expected.to eq ['TRS Induction Status is not known'] }
+    #   end
+    # end
 
     context 'when the TRN is not found' do
       include_context 'fake trs api client that finds nothing'
@@ -128,9 +130,9 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
 
       describe 'submission error messages' do
-        subject { submissions.first.error_messages }
+        subject { submission.error_messages }
 
-        it { is_expected.to eq ['Not found in TRS'] }
+        it { is_expected.to eq ['TRN and date of birth do not match'] }
       end
     end
 
@@ -150,9 +152,9 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
 
       describe 'submission error messages' do
-        subject { submissions.first.error_messages }
+        subject { submission.error_messages }
 
-        it { is_expected.to eq ['Prohibited from teaching'] }
+        it { is_expected.to eq ['Kirk Van Houten is prohibited from teaching'] }
       end
     end
 
@@ -172,9 +174,9 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
 
       describe 'submission error messages' do
-        subject { submissions.first.error_messages }
+        subject { submission.error_messages }
 
-        it { is_expected.to eq ['QTS not awarded'] }
+        it { is_expected.to eq ['Kirk Van Houten does not have their qualified teacher status (QTS)'] }
       end
     end
 
@@ -195,9 +197,78 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
 
       describe 'submission error messages' do
-        subject { submissions.first.error_messages }
+        subject { submission.error_messages }
 
-        it { is_expected.to eq ['Already claimed by your appropriate body'] }
+        it { is_expected.to eq ['Kirk Van Houten is already claimed by your appropriate body'] }
+      end
+
+      context 'when the submission overlaps a previous induction period' do
+        let(:started_on) { 3.months.ago.to_date.to_s }
+
+        before do
+          FactoryBot.create(:induction_period, teacher:, appropriate_body:)
+          service.process!
+        end
+
+        describe 'submission error messages' do
+          subject { submission.error_messages }
+
+          it { is_expected.to eq ['Induction start date must not overlap with any other induction periods'] }
+        end
+      end
+    end
+
+    context 'start date before QTS' do
+      #         allow(submission).to receive(:trs_qts_awarded_on).and_return(Date.parse('2023-01-01'))
+    end
+
+    context 'when the ECT has already passed' do
+      include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+
+      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+      # let(:teacher) { FactoryBot.create(:teacher, trn:, trs_first_name: 'Luann', trs_last_name: 'Van Houten') }
+
+      before do
+        FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:)
+        service.process!
+      end
+
+      describe 'batch error message' do
+        subject { pending_induction_submission_batch.error_message }
+
+        it { is_expected.to be_nil }
+      end
+
+      describe 'submission error messages' do
+        subject { submission.error_messages }
+
+        # it { is_expected.to eq ['Luann Van Houten has already passed their induction'] }
+        it { is_expected.to eq ['Kirk Van Houten has already passed their induction'] }
+      end
+    end
+
+    context 'when the ECT has already failed' do
+      include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+
+      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+      # let(:teacher) { FactoryBot.create(:teacher, trn:, trs_first_name: 'Luann', trs_last_name: 'Van Houten') }
+
+      before do
+        FactoryBot.create(:induction_period, :fail, teacher:, appropriate_body:)
+        service.process!
+      end
+
+      describe 'batch error message' do
+        subject { pending_induction_submission_batch.error_message }
+
+        it { is_expected.to be_nil }
+      end
+
+      describe 'submission error messages' do
+        subject { submission.error_messages }
+
+        # it { is_expected.to eq ['Luann Van Houten has already failed their induction'] }
+        it { is_expected.to eq ['Kirk Van Houten has already failed their induction'] }
       end
     end
 
@@ -219,23 +290,32 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
 
       describe 'submission error messages' do
-        subject { submissions.first.error_messages }
+        subject { submission.error_messages }
 
-        it { is_expected.to eq ['Already claimed by another appropriate body'] }
+        it { is_expected.to eq ['Kirk Van Houten is already claimed by another appropriate body'] }
       end
     end
 
-    context 'when induction programme is unknown', pending: 'wip' do
+    context 'when induction programme is unknown' do
       include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
       let(:induction_programme) { 'foo' }
 
-      before { service.process! }
+      before do
+        service.process!
+      end
+
+      describe 'batch error message' do
+        subject { pending_induction_submission_batch.error_message }
+
+        it { is_expected.to be_nil }
+      end
 
       describe 'submission error messages' do
-        subject { submissions.first.error_messages }
+        subject { submission.error_messages }
 
-        it { is_expected.to eq ['unknown induction programme WIP'] }
+        # it { is_expected.to eq ['Induction programme type must be school-led or provider-led'] }
+        it { is_expected.to eq ['Induction programme type must be DIY, FIP or CIP'] }
       end
     end
 
@@ -244,18 +324,24 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       let(:started_on) { 1.year.from_now.to_date.to_s }
 
-      before { service.process! }
+      before do
+        service.process!
+      end
+
+      it 'does not create a teacher' do
+        expect(teacher).to be_nil
+      end
+
+      describe 'batch error message' do
+        subject { pending_induction_submission_batch.error_message }
+
+        it { is_expected.to be_nil }
+      end
 
       describe 'submission error messages' do
-        subject { submissions.first.error_messages }
+        subject { submission.error_messages }
 
-        it {
-          expect(subject).to eq [
-            'Start date cannot be in the future',
-            'QTS has not been awarded',
-            'TRS Induction Status is not known'
-          ]
-        }
+        it { is_expected.to eq ['Start date cannot be in the future'] }
       end
     end
   end

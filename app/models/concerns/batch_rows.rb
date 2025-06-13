@@ -60,6 +60,12 @@ module BatchRows
         false
       end
 
+      def invalid_training_programme?
+        # PROGRAMME_TYPES.values.map(&:downcase).exclude?(induction_programme.downcase.strip)
+
+        induction_programme !~ /\A(diy|cip|fip)\z/i
+      end
+
       # @param errors [Array<String>]
       # @return [Array<String>]
       def with_errors(errors)
