@@ -67,7 +67,13 @@ Rails.application.routes.draw do
 
     resource :finance, only: %i[show], controller: 'finance' do
       collection do
-        resources :statements, as: 'finance_statements', controller: 'finance/statements', only: %i[index show]
+        resources :statements, as: 'finance_statements', controller: 'finance/statements', only: %i[index show] do
+          resources :adjustments, controller: 'finance/adjustments', only: %i[new create edit update destroy] do
+            member do
+              get :delete
+            end
+          end
+        end
       end
     end
   end
