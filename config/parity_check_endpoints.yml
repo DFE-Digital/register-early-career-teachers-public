@@ -1,0 +1,4 @@
+get:
+  "/api/v3/statements":
+  "/api/v3/statements/:id":
+    id: statement_id
