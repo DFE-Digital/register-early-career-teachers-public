@@ -2,6 +2,7 @@ module ParityCheck
   class RequestBuilder
     include ActiveModel::Model
     include ActiveModel::Attributes
+    include ParityCheck::Configuration
 
     class UnrecognizedPathIdError < RuntimeError; end
     class IDOptionMissingError < RuntimeError; end
@@ -14,7 +15,7 @@ module ParityCheck
     delegate :method, :path, :options, to: :endpoint
 
     def url(app:)
-      base_url(app:) + formatted_path
+      parity_check_url(app:) + formatted_path
     end
 
     def headers
@@ -40,11 +41,6 @@ module ParityCheck
       raise UnrecognizedPathIdError, "Method missing for path ID: #{id_method}" unless respond_to?(id_method, true)
 
       send(options[:id])
-    end
-
-    def base_url(app:)
-      config_key = "#{app}_url".to_sym
-      Rails.application.config.parity_check[config_key]
     end
 
     def token_provider
