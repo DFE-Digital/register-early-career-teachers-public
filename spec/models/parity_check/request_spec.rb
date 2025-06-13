@@ -4,16 +4,16 @@ describe ParityCheck::Request do
   describe "associations" do
     it { is_expected.to belong_to(:run) }
     it { is_expected.to belong_to(:lead_provider) }
+    it { is_expected.to belong_to(:endpoint) }
     it { is_expected.to have_many(:responses) }
   end
 
   describe "validations" do
     include_context "completable validations"
 
+    it { is_expected.not_to validate_presence_of(:started_at) }
     it { is_expected.to validate_presence_of(:lead_provider) }
+    it { is_expected.to validate_presence_of(:endpoint) }
     it { is_expected.to validate_presence_of(:run) }
-    it { is_expected.to validate_presence_of(:path) }
-    it { is_expected.to validate_presence_of(:method) }
-    it { is_expected.to validate_inclusion_of(:method).in_array(%w[get post put]) }
   end
 end
