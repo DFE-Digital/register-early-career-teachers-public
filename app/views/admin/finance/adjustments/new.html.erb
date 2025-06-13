@@ -1,0 +1,12 @@
+<% page_data(title: "Make adjustment") %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <%= form_with model: @adjustment, url: admin_finance_statement_adjustments_path(@statement) do |form| %>
+      <%= render "fields", form: %>
+      <%= form.submit "Add adjustment", class: "govuk-button" %>
+    <% end %>
+
+    <%= govuk_link_to "Cancel and return to statement", statement_path %>
+  </div>
+</div>
