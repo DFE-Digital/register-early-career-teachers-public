@@ -7,8 +7,8 @@ RSpec.describe "Constants" do
     it { expect(ECF_ROLLOUT_DATE).to eq(Date.new(2021, 9, 1)) }
   end
 
-  describe "PROGRAMME_TYPES" do
-    it { expect(PROGRAMME_TYPES).to eq({ provider_led: 'Provider-led', school_led: 'School-led' }) }
+  describe "TRAINING_PROGRAMME" do
+    it { expect(TRAINING_PROGRAMME).to eq({ provider_led: 'Provider-led', school_led: 'School-led' }) }
   end
 
   describe "INDUCTION_PROGRAMMES" do

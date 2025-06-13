@@ -12,7 +12,7 @@ shared:
   :ect_at_school_periods:
     - school_reported_appropriate_body_id
     - lead_provider_id
-    - programme_type
+    - training_programme
   :induction_extensions:
     - id
     - teacher_id
