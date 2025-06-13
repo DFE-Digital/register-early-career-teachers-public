@@ -1,0 +1,8 @@
+<% page_data(title: "Are you sure you want to remove the '#{@adjustment.payment_type}' adjustment?") %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <%= govuk_button_to "Remove adjustment", admin_finance_statement_adjustment_path(@statement, @adjustment), method: :delete %>
+    <%= govuk_link_to "Cancel and return to statement", statement_path %>
+  </div>
+</div>
