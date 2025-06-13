@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_12_090945) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_13_100244) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -29,9 +29,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_090945) do
   create_enum "induction_outcomes", ["fail", "pass"]
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
-  create_enum "programme_type", ["provider_led", "school_led"]
   create_enum "request_method_types", ["get", "post", "put"]
   create_enum "statement_states", ["open", "payable", "paid"]
+  create_enum "training_programme", ["provider_led", "school_led"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "active_lead_providers", force: :cascade do |t|
@@ -173,7 +173,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_090945) do
     t.citext "email"
     t.bigint "school_reported_appropriate_body_id"
     t.bigint "lead_provider_id"
-    t.enum "programme_type", enum_type: "programme_type"
+    t.enum "training_programme", enum_type: "training_programme"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["lead_provider_id"], name: "index_ect_at_school_periods_on_lead_provider_id"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
@@ -455,7 +455,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_090945) do
     t.datetime "updated_at", null: false
     t.bigint "last_chosen_appropriate_body_id"
     t.bigint "last_chosen_lead_provider_id"
-    t.enum "last_chosen_programme_type", enum_type: "programme_type"
+    t.enum "last_chosen_training_programme", enum_type: "training_programme"
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true
