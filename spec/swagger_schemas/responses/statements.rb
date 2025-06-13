@@ -1,5 +1,5 @@
 STATEMENTS_RESPONSE = {
-  description: "A list of financial statement.",
+  description: "A list of financial statements.",
   type: :object,
   required: %i[data],
   properties: {

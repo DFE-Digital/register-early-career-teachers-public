@@ -17,19 +17,19 @@ STATEMENT = {
     attributes: {
       properties: {
         month: {
-          description: "The month which appears on the statement in the DfE portal.",
+          description: "The calendar month which corresponds to the financial statement.",
           type: :string,
           nullable: false,
           example: "May",
         },
         year: {
-          description: "The calendar year which appears on the statement in the dfe portal.",
+          description: "The calendar year which corresponds to the financial statement.",
           type: :string,
           nullable: false,
           example: "2022",
         },
         cohort: {
-          description: "The cohort - 2021 or 2022 - which the statement funds.",
+          description: "The cohort, for example, 2021 or 2025, which the statement funds.",
           type: :string,
           nullable: false,
           example: "2021",
