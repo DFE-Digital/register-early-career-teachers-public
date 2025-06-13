@@ -37,3 +37,68 @@ teachers = [
 teachers.each do |attrs|
   Teacher.create!(attrs).tap { |teacher| describe_teacher(teacher) }
 end
+
+# Find the Golden Leaf Teaching School Hub
+golden_leaf_teaching_school_hub = AppropriateBody.find_by!(name: 'Golden Leaf Teaching School Hub')
+
+# Create teachers with open inductions (100)
+open_induction_statuses = %w[InProgress RequiredToComplete]
+100.times do |i|
+  trn = sprintf("%07d", 1_000_000 + i)
+  teacher = Teacher.find_or_create_by!(trn:) do |t|
+    t.trs_first_name = "Teacher#{i + 1}"
+    t.trs_last_name = "Open#{i + 1}"
+    t.trs_induction_status = open_induction_statuses.sample
+  end
+
+  # Create open induction period
+  next if teacher.induction_periods.exists?
+
+  InductionPeriod.create!(
+    teacher:,
+    appropriate_body: golden_leaf_teaching_school_hub,
+    started_on: rand(12.months.ago..1.month.ago),
+    finished_on: nil,
+    induction_programme: 'fip'
+  )
+end
+
+# Create teachers with closed inductions (100)
+closed_induction_statuses = %w[Passed Failed FailedInWales Exempt]
+100.times do |i|
+  trn = sprintf("%07d", 2_000_000 + i)
+  teacher = Teacher.find_or_create_by!(trn:) do |t|
+    t.trs_first_name = "Teacher#{i + 1}"
+    t.trs_last_name = "Closed#{i + 1}"
+    t.trs_induction_status = closed_induction_statuses.sample
+  end
+
+  # Create closed induction period
+  next if teacher.induction_periods.exists?
+
+  start_date = rand(3.years.ago..2.years.ago)
+  end_date = start_date + rand(6.months..12.months)
+
+  # Set outcome based on TRS status - pass for Passed/Exempt, fail for Failed/FailedInWales
+  outcome = if %w[Passed Exempt].include?(teacher.trs_induction_status)
+              'pass'
+            else
+              'fail'
+            end
+
+  InductionPeriod.create!(
+    teacher:,
+    appropriate_body: golden_leaf_teaching_school_hub,
+    started_on: start_date,
+    finished_on: end_date,
+    induction_programme: 'fip',
+    number_of_terms: 3,
+    outcome:
+  )
+end
+
+Rails.logger.info "✅ Created #{teachers.length + 200} teachers:"
+Rails.logger.info "   - #{teachers.length} specific named teachers"
+Rails.logger.info "   - 100 with open induction statuses (InProgress/RequiredToComplete)"
+Rails.logger.info "   - 100 with closed induction statuses (Passed/Failed/FailedInWales/Exempt)"
+Rails.logger.info "   - 200 additional teachers associated with Golden Leaf Teaching School Hub"
