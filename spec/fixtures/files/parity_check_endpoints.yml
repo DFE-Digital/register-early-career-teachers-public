@@ -1,0 +1,7 @@
+get:
+  "/a-path":
+    foo: bar
+  "/another-path":
+post:
+  "/yet-another-path":
+    baz: qux
