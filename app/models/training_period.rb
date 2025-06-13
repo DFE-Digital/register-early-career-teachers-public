@@ -5,6 +5,7 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
   belongs_to :school_partnership
+  belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
 
   has_many :declarations, inverse_of: :training_period
   has_many :events
