@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_12_090945) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -30,6 +30,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "programme_type", ["provider_led", "school_led"]
+  create_enum "request_method_types", ["get", "post", "put"]
   create_enum "statement_states", ["open", "payable", "paid"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
@@ -354,6 +355,39 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
 
+  create_table "parity_check_requests", force: :cascade do |t|
+    t.bigint "run_id", null: false
+    t.bigint "lead_provider_id", null: false
+    t.string "path", null: false
+    t.enum "method", null: false, enum_type: "request_method_types"
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lead_provider_id"], name: "index_parity_check_requests_on_lead_provider_id"
+    t.index ["run_id"], name: "index_parity_check_requests_on_run_id"
+  end
+
+  create_table "parity_check_responses", force: :cascade do |t|
+    t.bigint "request_id", null: false
+    t.integer "ecf_status_code", null: false
+    t.integer "rect_status_code", null: false
+    t.string "ecf_body"
+    t.string "rect_body"
+    t.integer "ecf_time_ms", null: false
+    t.integer "rect_time_ms", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["request_id"], name: "index_parity_check_responses_on_request_id"
+  end
+
+  create_table "parity_check_runs", force: :cascade do |t|
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "pending_induction_submission_batches", force: :cascade do |t|
     t.bigint "appropriate_body_id", null: false
     t.enum "batch_type", null: false, enum_type: "batch_type"
@@ -667,6 +701,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
+  add_foreign_key "parity_check_requests", "lead_providers"
+  add_foreign_key "parity_check_requests", "parity_check_runs", column: "run_id"
+  add_foreign_key "parity_check_responses", "parity_check_requests", column: "request_id"
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
