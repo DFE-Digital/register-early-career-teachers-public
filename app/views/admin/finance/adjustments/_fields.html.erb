@@ -1,0 +1,19 @@
+<%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+<%=
+  form.govuk_text_field(
+    :payment_type,
+    label: { text: "Adjustment name", size: "m" },
+    hint: { text: "Describe what the adjustment is for"},
+  )
+%>
+
+<%=
+  form.govuk_text_field(
+    :amount,
+    prefix_text: '£',
+    width: 'one-quarter',
+    label: { text: "Adjustment amount", size: "m" },
+    hint: { text: "Add a minus symbol before the amount if you need to make a negative adjustment. For example, -45" },
+  )
+%>

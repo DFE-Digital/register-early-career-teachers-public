@@ -3,7 +3,7 @@ module Admin
     class Adjustments < ViewComponent::Base
       delegate :number_to_pounds, to: :helpers
 
-      delegate :adjustments, :adjustment_editable?,
+      delegate :adjustment_editable?,
                to: :statement
 
       attr_accessor :statement
@@ -14,6 +14,10 @@ module Admin
 
       def total_amount
         adjustments.sum(&:amount)
+      end
+
+      def adjustments
+        statement.adjustments.order(created_at: :asc)
       end
     end
   end
