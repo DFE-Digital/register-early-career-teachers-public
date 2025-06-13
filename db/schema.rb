@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_13_100244) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_13_104444) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -644,7 +644,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_100244) do
   end
 
   create_table "training_periods", force: :cascade do |t|
-    t.bigint "school_partnership_id", null: false
+    t.bigint "school_partnership_id"
     t.date "started_on", null: false
     t.date "finished_on"
     t.datetime "created_at", null: false
