@@ -1,4 +1,4 @@
-class CreateParityCheckResponse < ActiveRecord::Migration[8.0]
+class CreateParityCheckResponses < ActiveRecord::Migration[8.0]
   def change
     create_table :parity_check_responses do |t|
       t.references :request, foreign_key: { to_table: :parity_check_requests }, null: false, index: true
