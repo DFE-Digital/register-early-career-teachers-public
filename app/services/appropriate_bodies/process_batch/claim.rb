@@ -1,14 +1,30 @@
 module AppropriateBodies
   module ProcessBatch
-    # Claim
+    # Management of registration and new induction periods in bulk via CSV upload
     class Claim < Base
-      # @return [CSV::Table]
+      # @return [Array<Boolean>] convert the valid submissions into permanent records
+      def do!
+        pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
+          @pending_induction_submission = pending_induction_submission
+
+          do_action!
+        rescue StandardError => e
+          capture_error(e.message)
+          next
+        end
+
+        # Batch error reporting
+      rescue StandardError => e
+        pending_induction_submission_batch.update(error_message: e.message)
+      end
+
+      # @return [nil] validate each row and create a submission capturing the errors
       def process!
         pending_induction_submission_batch.rows.each do |row|
           @row = row
           @pending_induction_submission = sparse_pending_induction_submission
 
-          claim!
+          validate_submission!
         rescue Errors::TeacherHasActiveInductionPeriodWithCurrentAB
           capture_error('Already claimed by your appropriate body')
           next
@@ -34,16 +50,9 @@ module AppropriateBodies
 
     private
 
-      def claim!
+      # @return [Boolean]
+      def do_action!
         PendingInductionSubmissionBatch.transaction do
-          pending_induction_submission.assign_attributes(
-            started_on: row.started_on,
-            induction_programme: row.induction_programme.downcase
-          )
-
-          find_ect.import_from_trs!
-          check_ect.begin_claim!
-
           if pending_induction_submission.save(context: :register_ect)
             # OPTIMIZE: params effectively passed in twice
             register_ect.register(
@@ -51,9 +60,25 @@ module AppropriateBodies
               induction_programme: pending_induction_submission.induction_programme
             )
           else
-            pending_induction_submission.playback_errors
+            false
           end
         end
+      end
+
+      # @return [nil, Boolean]
+      def validate_submission!
+        pending_induction_submission.assign_attributes(
+          started_on: row.started_on,
+          induction_programme: row.induction_programme.downcase
+        )
+
+        # 1. check_if_teacher_has_ongoing_induction_period_with_appropriate_body!
+        # 2. trs_teacher.check_eligibility!
+        find_ect.import_from_trs!
+        # 3. check_if_teacher_has_ongoing_induction_period_with_another_appropriate_body!
+        check_ect.begin_claim!
+
+        pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :find_ect) && pending_induction_submission.save(context: :check_ect) && pending_induction_submission.save(context: :register_ect)
       end
 
       # @return [AppropriateBodies::ClaimAnECT::FindECT]
