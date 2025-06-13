@@ -1,5 +1,5 @@
 describe Migrators::Statement do
-  it_behaves_like "a migrator", :statement, %i[lead_provider registration_period] do
+  it_behaves_like "a migrator", :statement, %i[lead_provider registration_period active_lead_provider] do
     def create_migration_resource
       FactoryBot.create(:migration_statement, name: "February 2025")
     end
@@ -14,8 +14,8 @@ describe Migrators::Statement do
     end
 
     def setup_failure_state
-      # Record to be migrated with no output_fee.
-      FactoryBot.create(:migration_statement, output_fee: nil)
+      # Record to be migrated with unmet dependencies in the destination db
+      FactoryBot.create(:migration_statement)
     end
 
     describe "#migrate!" do
