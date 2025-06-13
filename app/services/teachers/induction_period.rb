@@ -5,6 +5,7 @@ class Teachers::InductionPeriod
     @teacher = teacher
   end
 
+  # @return [Date, nil]
   def induction_start_date
     first_induction_period&.started_on
   end
@@ -35,6 +36,12 @@ class Teachers::InductionPeriod
 
   def last_induction_period
     induction_periods.last
+  end
+
+  # @param period [PendingInductionSubmission, InductionPeriod]
+  # @return [Boolean]
+  def overlapping_with?(period)
+    induction_periods.overlapping_with(period).exists?
   end
 
 private
