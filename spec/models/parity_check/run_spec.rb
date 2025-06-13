@@ -7,5 +7,7 @@ describe ParityCheck::Run do
 
   describe "validations" do
     include_context "completable validations"
+
+    it { is_expected.to validate_presence_of(:started_at) }
   end
 end
