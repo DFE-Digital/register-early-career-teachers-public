@@ -1,10 +1,10 @@
 ---
-title: API Guidance Pages
+title: How to make content changes to API guidance
 ---
 
 This document is designed to assist content editors with making changes to the API guidance pages. The general steps to make changes to API guidance are:
 
-- [API Guidance Pages](#main-content)
+- [How to make content changes to API guidance](#main-content)
   - [Start a Github Codespace](#start-a-github-codespace)
   - [Navigate to/create the Markdown file for the guidance page](#navigate-to-create-the-markdown-file-for-the-guidance-page)
   - [Construct the page/contents using supported Markdown syntax](#construct-the-page-contents-using-supported-markdown-syntax)
@@ -35,7 +35,7 @@ Finally, we want to start a Codespace on this branch by clicking `Code` -> `Crea
 
 The first time you create a Codespace it can take quite a while to spin up.
 
-Once Codepsace is ready click on the `TERMINAL` tab and enter command `./bin/dev` to start rails application.
+Once Codespace is ready click on the `TERMINAL` tab and enter command `./bin/dev` to start rails application. This allows you to preview things live before committing them.
 You know its ready when the `PORTS` tab contains a port of `3000`:
 
 <a href="../images/create-codespace-finished.png" target="blank"><img src="../images/create-codespace-finished.png" width="300"/></a>
@@ -74,7 +74,7 @@ Some more content here with [a link](http://link.com) and a code block:
 }
 ```</code></pre>
 
-The sub-headings (any second-level heading) will appear as a link in the sidebar. If you're not familiar with Markdown you can reference [this cheat sheet](https://www.markdownguide.org/cheat-sheet/)
+The sub-headings (any second-level heading) will appear as a link in the sidebar. If you're not familiar with Markdown you can reference [this cheat sheet](https://www.markdownguide.org/cheat-sheet/).
 
 ## Preview your changes
 
