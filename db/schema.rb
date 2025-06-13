@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_12_090945) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -30,6 +30,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "programme_type", ["provider_led", "school_led"]
+  create_enum "request_method_types", ["get", "post", "put"]
   create_enum "statement_states", ["open", "payable", "paid"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
@@ -289,6 +290,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
   end
 
+  create_table "lead_provider_delivery_partnerships", force: :cascade do |t|
+    t.bigint "active_lead_provider_id", null: false
+    t.bigint "delivery_partner_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active_lead_provider_id", "delivery_partner_id"], name: "idx_on_active_lead_provider_id_delivery_partner_id_3c66d9e812", unique: true
+    t.index ["active_lead_provider_id"], name: "idx_on_active_lead_provider_id_2f96b67fbb"
+    t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
+  end
+
   create_table "lead_providers", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -342,6 +353,39 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
     t.string "parent_type"
     t.index ["data_migration_id"], name: "index_migration_failures_on_data_migration_id"
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
+  end
+
+  create_table "parity_check_requests", force: :cascade do |t|
+    t.bigint "run_id", null: false
+    t.bigint "lead_provider_id", null: false
+    t.string "path", null: false
+    t.enum "method", null: false, enum_type: "request_method_types"
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lead_provider_id"], name: "index_parity_check_requests_on_lead_provider_id"
+    t.index ["run_id"], name: "index_parity_check_requests_on_run_id"
+  end
+
+  create_table "parity_check_responses", force: :cascade do |t|
+    t.bigint "request_id", null: false
+    t.integer "ecf_status_code", null: false
+    t.integer "rect_status_code", null: false
+    t.string "ecf_body"
+    t.string "rect_body"
+    t.integer "ecf_time_ms", null: false
+    t.integer "rect_time_ms", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["request_id"], name: "index_parity_check_responses_on_request_id"
+  end
+
+  create_table "parity_check_runs", force: :cascade do |t|
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|
@@ -399,15 +443,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
   end
 
   create_table "school_partnerships", force: :cascade do |t|
-    t.bigint "registration_period_id", null: false
-    t.bigint "lead_provider_id", null: false
-    t.bigint "delivery_partner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["delivery_partner_id"], name: "index_school_partnerships_on_delivery_partner_id"
-    t.index ["lead_provider_id"], name: "index_school_partnerships_on_lead_provider_id"
-    t.index ["registration_period_id", "lead_provider_id", "delivery_partner_id"], name: "yearly_unique_provider_partnerships", unique: true
-    t.index ["registration_period_id"], name: "index_school_partnerships_on_registration_period_id"
+    t.bigint "lead_provider_delivery_partnership_id", null: false
+    t.index ["lead_provider_delivery_partnership_id"], name: "idx_on_lead_provider_delivery_partnership_id_628487f752"
   end
 
   create_table "schools", force: :cascade do |t|
@@ -662,12 +701,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_141739) do
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
+  add_foreign_key "parity_check_requests", "lead_providers"
+  add_foreign_key "parity_check_requests", "parity_check_runs", column: "run_id"
+  add_foreign_key "parity_check_responses", "parity_check_requests", column: "request_id"
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
-  add_foreign_key "school_partnerships", "delivery_partners"
-  add_foreign_key "school_partnerships", "lead_providers"
-  add_foreign_key "school_partnerships", "registration_periods", primary_key: "year"
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"

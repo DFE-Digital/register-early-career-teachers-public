@@ -1,0 +1,63 @@
+name: Refresh migration DB
+description: Backup production DB and restore to migration DB
+
+inputs:
+  environment:
+    description: The name of the environment
+    required: true
+  azure-client-id:
+    description: Azure Client ID
+    required: true
+  azure-tenant-id:
+    description: Azure Tenant ID
+    required: true
+  azure-subscription-id:
+    description: Azure Subscription ID
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Set Environment variables
+      id: set_env_var
+      shell: bash
+      run: |
+        tf_vars_file=config/terraform/application/config/${{ inputs.environment }}.tfvars.json
+        echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ inputs.azure-client-id }}
+        tenant-id: ${{ inputs.azure-tenant-id }}
+        subscription-id: ${{ inputs.azure-subscription-id }}
+
+    - uses: DFE-Digital/github-actions/set-kubelogin-environment@master
+      with:
+        azure-client-id: ${{ inputs.azure-client-id }}
+        azure-tenant-id: ${{ inputs.azure-tenant-id }}
+        azure-subscription-id: ${{ inputs.azure-subscription-id }}
+
+    - name: Install kubectl
+      uses: DFE-Digital/github-actions/set-kubectl@master
+
+    - name: Install konduit
+      shell: bash
+      run: make install-konduit
+
+    - name: Set AKS credentials (production)
+      shell: bash
+      run: make ci production get-cluster-credentials
+
+    - name: Backup production DB
+      shell: bash
+      run: |
+        bin/konduit.sh -n ${{ env.NAMESPACE }} cpd-ec2-${{ inputs.environment }}-web -- pg_dump -E utf8 --compress=1 --clean --if-exists --no-privileges --no-owner --verbose -f backup-${{ inputs.environment }}.sql.gz
+
+    - name: Restore to migration DB
+      shell: bash
+      run: bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-mg-pg -k s189p01-cpdec2-mg-app-kv -i backup-${{ inputs.environment }}.sql.gz -c -t 7200 cpd-ec2-migration-web -- psql

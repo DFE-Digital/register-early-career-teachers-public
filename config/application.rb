@@ -54,6 +54,7 @@ module RegisterEarlyCareerTeachers
     config.enable_trs_teacher_refresh = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_TRS_TEACHER_REFRESH', true))
     config.parity_check = {
       enabled: ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_PARITY_CHECK', false)),
+      tokens: ENV.fetch('PARITY_CHECK_KEYS', "{}")
     }
 
     config.dfe_sign_in_issuer = ENV.fetch('DFE_SIGN_IN_ISSUER', 'https://dev-oidc.signin.education.gov.uk')

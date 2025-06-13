@@ -205,6 +205,7 @@
   - delivery_partner_id
   - created_at
   - updated_at
+  - lead_provider_delivery_partnership_id
   :teachers:
   - corrected_name
   - trs_first_name
@@ -401,5 +402,38 @@
   - token
   - description
   - last_used_at
+  - created_at
+  - updated_at
+  :lead_provider_delivery_partnerships:
+  - id
+  - active_lead_provider_id
+  - delivery_partner_id
+  - created_at
+  - updated_at
+  :parity_check_runs:
+  - id
+  - started_at
+  - completed_at
+  - created_at
+  - updated_at
+  :parity_check_requests:
+  - id
+  - run_id
+  - lead_provider_id
+  - path
+  - method
+  - started_at
+  - completed_at
+  - created_at
+  - updated_at
+  :parity_check_responses:
+  - id
+  - request_id
+  - ecf_status_code
+  - rect_status_code
+  - ecf_body
+  - rect_body
+  - ecf_time_ms
+  - rect_time_ms
   - created_at
   - updated_at
