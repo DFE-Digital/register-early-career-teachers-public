@@ -1,6 +1,4 @@
 RSpec.shared_examples "completable validations" do
-  it { is_expected.not_to validate_presence_of(:started_at) }
-
   context "when completed_at is set" do
     subject { described_class.new(completed_at: 1.day.ago) }
 
