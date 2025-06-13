@@ -10,7 +10,6 @@ describe TrainingPeriod do
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:started_on) }
-    it { is_expected.to validate_presence_of(:school_partnership_id) }
 
     context "exactly one id of trainee present" do
       context "when ect_at_school_period_id and mentor_at_school_period_id are all nil" do
@@ -33,6 +32,38 @@ describe TrainingPeriod do
           subject.valid?
           expect(subject.errors.messages).to include(base: ["Only one id of trainee required. Two given"])
         end
+      end
+    end
+
+    describe 'presence of expression of interest or school partnership' do
+      let(:dates) { { started_on: 3.years.ago.to_date, finished_on: nil } }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **dates) }
+
+      context 'when neither the expression of interest or school partnership is present' do
+        subject { FactoryBot.build(:training_period, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
+
+        it 'has a base error stating either expression of interest or school partnership required' do
+          subject.valid?
+          expect(subject.errors.messages[:base]).to include('Either expression of interest or school partnership required')
+        end
+      end
+
+      context 'when just the expression of interest is present' do
+        subject { FactoryBot.create(:training_period, :with_expression_of_interest, ect_at_school_period:, **dates) }
+
+        it { is_expected.to(be_valid) }
+      end
+
+      context 'when just the school partnership is present' do
+        subject { FactoryBot.create(:training_period, :with_school_partnership, ect_at_school_period:, **dates) }
+
+        it { is_expected.to(be_valid) }
+      end
+
+      context 'when both the expression of interest and school partnership are present' do
+        subject { FactoryBot.create(:training_period, :with_school_partnership, :with_expression_of_interest, ect_at_school_period:, **dates) }
+
+        it { is_expected.to(be_valid) }
       end
     end
 
