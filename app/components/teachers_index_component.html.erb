@@ -1,18 +1,7 @@
-<%= render TeachersIndex::BulkUploadLinksComponent.new(appropriate_body: appropriate_body) %>
+<%= bulk_upload_links %>
 
-<%= render TeachersIndex::HeaderSectionComponent.new(
-  status: status,
-  current_count: current_count,
-  open_count: open_count,
-  closed_count: closed_count,
-  query: query
-) %>
+<%= header %>
 
-<%= render TeachersIndex::SearchSectionComponent.new(status: status, query: query) %>
+<%= search_box %>
 
-<%= render TeachersIndex::TableSectionComponent.new(
-  teachers: teachers,
-  pagy: pagy,
-  status: status,
-  query: query
-) %>
+<%= table %>
