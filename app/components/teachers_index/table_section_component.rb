@@ -3,6 +3,7 @@ module TeachersIndex
     include GovukLinkHelper
     include Pagy::Frontend
     include Rails.application.routes.url_helpers
+    include EmptyStateMessage
 
     def initialize(teachers:, pagy:, status:, query:)
       @teachers = teachers
@@ -19,14 +20,20 @@ module TeachersIndex
       teachers.any?
     end
 
-    def empty_state_message
-      base_message = "No #{status} inductions found"
+    def teacher_full_name(teacher)
+      Teachers::Name.new(teacher).full_name
+    end
 
-      if query.present?
-        "#{base_message} matching \"<strong>#{query}</strong>\".".html_safe
-      else
-        "#{base_message}."
-      end
+    def teacher_induction_start_date(teacher)
+      Teachers::InductionPeriod.new(teacher).formatted_induction_start_date
+    end
+
+    def teacher_status_tag_kwargs(teacher)
+      Teachers::InductionStatus.new(
+        teacher:,
+        induction_periods: teacher.induction_periods,
+        trs_induction_status: teacher.trs_induction_status
+      ).status_tag_kwargs
     end
   end
 end

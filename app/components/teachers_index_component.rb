@@ -1,6 +1,7 @@
 class TeachersIndexComponent < ViewComponent::Base
   include GovukLinkHelper
   include Rails.application.routes.url_helpers
+  include EmptyStateMessage
 
   renders_one :bulk_upload_links, -> {
     TeachersIndex::BulkUploadLinksComponent.new(appropriate_body:)
@@ -64,16 +65,6 @@ private
 
   def search_label_text
     "Search for an #{status} induction by name or teacher reference number (TRN)"
-  end
-
-  def empty_state_message
-    base_message = "No #{status} inductions found"
-
-    if query.present?
-      "#{base_message} matching \"<strong>#{query}</strong>\".".html_safe
-    else
-      "#{base_message}."
-    end
   end
 
   def ects_service
