@@ -49,15 +49,7 @@ module Teachers
       return if appropriate_bodies == :ignore
 
       ects_service = AppropriateBodies::ECTs.new(appropriate_bodies)
-
-      @scope = case status
-               when 'closed'
-                 ects_service.completed_while_at_appropriate_body
-               when 'open'
-                 ects_service.current
-               else
-                 ects_service.current_or_completed_while_at_appropriate_body
-               end
+      @scope = ects_service.with_status(status)
     end
 
     def with_trns(trns)

@@ -88,14 +88,14 @@ describe Teachers::Search do
           expect(subject.search).not_to include(teacher_with_no_induction)
         end
 
-        it 'delegates to ects_service.current' do
+        it 'delegates to ects_service.with_status' do
           ects_service = instance_double(AppropriateBodies::ECTs)
           allow(AppropriateBodies::ECTs).to receive(:new).with(ab1).and_return(ects_service)
-          allow(ects_service).to receive(:current).and_return(Teacher.none)
+          allow(ects_service).to receive(:with_status).with('open').and_return(Teacher.none)
 
           subject.search
 
-          expect(ects_service).to have_received(:current)
+          expect(ects_service).to have_received(:with_status).with('open')
         end
       end
 
@@ -108,14 +108,14 @@ describe Teachers::Search do
           expect(subject.search).not_to include(teacher_with_no_induction)
         end
 
-        it 'delegates to ects_service.completed_while_at_appropriate_body' do
+        it 'delegates to ects_service.with_status' do
           ects_service = instance_double(AppropriateBodies::ECTs)
           allow(AppropriateBodies::ECTs).to receive(:new).with(ab1).and_return(ects_service)
-          allow(ects_service).to receive(:completed_while_at_appropriate_body).and_return(Teacher.none)
+          allow(ects_service).to receive(:with_status).with('closed').and_return(Teacher.none)
 
           subject.search
 
-          expect(ects_service).to have_received(:completed_while_at_appropriate_body)
+          expect(ects_service).to have_received(:with_status).with('closed')
         end
       end
 
@@ -127,14 +127,14 @@ describe Teachers::Search do
           expect(subject.search).not_to include(teacher_with_no_induction)
         end
 
-        it 'delegates to ects_service.current_or_completed_while_at_appropriate_body' do
+        it 'delegates to ects_service.with_status' do
           ects_service = instance_double(AppropriateBodies::ECTs)
           allow(AppropriateBodies::ECTs).to receive(:new).with(ab1).and_return(ects_service)
-          allow(ects_service).to receive(:current_or_completed_while_at_appropriate_body).and_return(Teacher.none)
+          allow(ects_service).to receive(:with_status).with(nil).and_return(Teacher.none)
 
           subject.search
 
-          expect(ects_service).to have_received(:current_or_completed_while_at_appropriate_body)
+          expect(ects_service).to have_received(:with_status).with(nil)
         end
       end
 
@@ -146,14 +146,14 @@ describe Teachers::Search do
           expect(subject.search).not_to include(teacher_with_no_induction)
         end
 
-        it 'delegates to ects_service.current_or_completed_while_at_appropriate_body for unknown statuses' do
+        it 'delegates to ects_service.with_status for unknown statuses' do
           ects_service = instance_double(AppropriateBodies::ECTs)
           allow(AppropriateBodies::ECTs).to receive(:new).with(ab1).and_return(ects_service)
-          allow(ects_service).to receive(:current_or_completed_while_at_appropriate_body).and_return(Teacher.none)
+          allow(ects_service).to receive(:with_status).with('unknown_status').and_return(Teacher.none)
 
           subject.search
 
-          expect(ects_service).to have_received(:current_or_completed_while_at_appropriate_body)
+          expect(ects_service).to have_received(:with_status).with('unknown_status')
         end
       end
 
