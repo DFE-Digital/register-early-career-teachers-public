@@ -5,6 +5,7 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
   belongs_to :school_partnership
+  belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
 
   has_many :declarations, inverse_of: :training_period
   has_many :events
@@ -13,10 +14,8 @@ class TrainingPeriod < ApplicationRecord
   validates :started_on,
             presence: true
 
-  validates :school_partnership_id,
-            presence: true
-
   validate :one_id_of_trainee_present
+  validate :at_least_expression_of_interest_or_school_partnership_present
   validate :trainee_distinct_period
   validate :enveloped_by_trainee_at_school_period
 
@@ -83,5 +82,11 @@ private
 
   def trainee_finished_on_at_school
     ect_at_school_period&.finished_on || mentor_at_school_period&.finished_on
+  end
+
+  def at_least_expression_of_interest_or_school_partnership_present
+    return if expression_of_interest.present? || school_partnership.present?
+
+    errors.add(:base, 'Either expression of interest or school partnership required')
   end
 end
