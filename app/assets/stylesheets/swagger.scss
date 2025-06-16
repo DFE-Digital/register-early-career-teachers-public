@@ -1,0 +1,15 @@
+@use "swagger-ui-dist/swagger-ui";
+
+/* stylelint-disable */
+.swagger-ui .renderedMarkdown p {
+  color: #3b4151;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.swagger-ui .description .renderedMarkdown p {
+  color: #666666;
+  font-weight: 400;
+}
+/* stylelint-enable */
