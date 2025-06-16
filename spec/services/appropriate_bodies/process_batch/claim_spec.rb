@@ -92,28 +92,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
     end
 
-    # xcontext 'when TRS induction status is unknown' do
-    #   include_context 'fake trs api client'
-
-    #   before { service.process! }
-
-    #   it 'does not create a teacher' do
-    #     expect(teacher).to be_nil
-    #   end
-
-    #   describe 'batch error message' do
-    #     subject { pending_induction_submission_batch.error_message }
-
-    #     it { is_expected.to be_nil }
-    #   end
-
-    #   describe 'submission error messages' do
-    #     subject { submission.error_messages }
-
-    #     it { is_expected.to eq ['TRS Induction Status is not known'] }
-    #   end
-    # end
-
     context 'when the TRN is not found' do
       include_context 'fake trs api client that finds nothing'
 
@@ -180,13 +158,18 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
     end
 
-    context 'when the ECT is already claimed' do
+    context 'when the ECT is already claimed by the AB' do
       include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+
+      let(:started_on) { 1.day.ago.to_date.to_s }
 
       let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
       before do
-        FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
+        FactoryBot.create(:induction_period, teacher:,
+                                             appropriate_body:,
+                                             started_on: 30.days.ago.to_date,
+                                             finished_on: 15.days.ago.to_date)
         service.process!
       end
 
@@ -201,32 +184,51 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
         it { is_expected.to eq ['Kirk Van Houten is already claimed by your appropriate body'] }
       end
+    end
 
-      context 'when the submission overlaps a previous induction period' do
-        let(:started_on) { 3.months.ago.to_date.to_s }
+    context 'when the submission overlaps an earlier induction period' do
+      include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
-        before do
-          FactoryBot.create(:induction_period, teacher:, appropriate_body:)
-          service.process!
-        end
+      let(:started_on) { 15.days.ago.to_date.to_s }
 
-        describe 'submission error messages' do
-          subject { submission.error_messages }
+      let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
-          it { is_expected.to eq ['Induction start date must not overlap with any other induction periods'] }
-        end
+      before do
+        FactoryBot.create(:induction_period, teacher:,
+                                             appropriate_body:,
+                                             started_on: 30.days.ago.to_date,
+                                             finished_on: 1.day.ago.to_date)
+        service.process!
+      end
+
+      describe 'submission error messages' do
+        subject { submission.error_messages }
+
+        it { is_expected.to eq ['Induction start date must not overlap with any other induction periods'] }
       end
     end
 
     context 'start date before QTS' do
-      #         allow(submission).to receive(:trs_qts_awarded_on).and_return(Date.parse('2023-01-01'))
+      include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+
+      let(:started_on) { 4.years.ago.to_date.to_s }
+      let(:qts_date) { 3.years.ago.to_date }
+
+      before do
+        service.process!
+      end
+
+      describe 'submission error messages' do
+        subject { submission.error_messages }
+
+        it { is_expected.to eq ["Induction start date must not be before QTS date (#{qts_date.to_fs(:govuk)})"] }
+      end
     end
 
     context 'when the ECT has already passed' do
-      include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+      include_context 'fake trs api client that finds teacher that has passed their induction'
 
       let(:teacher) { FactoryBot.create(:teacher, trn:) }
-      # let(:teacher) { FactoryBot.create(:teacher, trn:, trs_first_name: 'Luann', trs_last_name: 'Van Houten') }
 
       before do
         FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:)
@@ -242,16 +244,14 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        # it { is_expected.to eq ['Luann Van Houten has already passed their induction'] }
         it { is_expected.to eq ['Kirk Van Houten has already passed their induction'] }
       end
     end
 
     context 'when the ECT has already failed' do
-      include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+      include_context 'fake trs api client that finds teacher that has failed their induction'
 
       let(:teacher) { FactoryBot.create(:teacher, trn:) }
-      # let(:teacher) { FactoryBot.create(:teacher, trn:, trs_first_name: 'Luann', trs_last_name: 'Van Houten') }
 
       before do
         FactoryBot.create(:induction_period, :fail, teacher:, appropriate_body:)
@@ -267,7 +267,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        # it { is_expected.to eq ['Luann Van Houten has already failed their induction'] }
         it { is_expected.to eq ['Kirk Van Houten has already failed their induction'] }
       end
     end

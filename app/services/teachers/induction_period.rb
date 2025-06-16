@@ -38,10 +38,10 @@ class Teachers::InductionPeriod
     induction_periods.last
   end
 
-  # @param period [PendingInductionSubmission, InductionPeriod]
+  # @param date [Date]
   # @return [Boolean]
-  def overlapping_with?(period)
-    induction_periods.overlapping_with(period).exists?
+  def overlapping_with?(date)
+    induction_periods.ongoing_on(date).exists?
   end
 
 private
