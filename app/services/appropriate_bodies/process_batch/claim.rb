@@ -85,11 +85,11 @@ module AppropriateBodies
           elsif claimed_by_another_ab?
             capture_error("#{name} is already claimed by another appropriate body")
             true
+          elsif overlapping_with_induction_period?
+            capture_error('Induction start date must not overlap with any other induction periods')
+            true
           elsif !claimed_by_another_ab?
             capture_error("#{name} is already claimed by your appropriate body")
-            true
-          elsif induction_periods.overlapping_with?(pending_induction_submission)
-            capture_error('Induction start date must not overlap with any other induction periods')
             true
           end
         elsif prohibited_from_teaching?
@@ -98,12 +98,22 @@ module AppropriateBodies
         elsif pending_induction_submission.trs_qts_awarded_on.blank?
           capture_error("#{name} does not have their qualified teacher status (QTS)")
           true
-        # elsif pending_induction_submission&.started_on < pending_induction_submission.trs_qts_awarded_on
-        #   capture_error("Induction start date must not be before QTS date (#{pending_induction_submission.trs_qts_awarded_on.to_fs(:govuk)})")
-        #   true
+        elsif predates_qts_award?
+          capture_error("Induction start date must not be before QTS date (#{pending_induction_submission.trs_qts_awarded_on.to_fs(:govuk)})")
+          true
         else
           false
         end
+      end
+
+      # @return [Boolean]
+      def overlapping_with_induction_period?
+        induction_periods.overlapping_with?(row.started_on)
+      end
+
+      # @return [Boolean]
+      def predates_qts_award?
+        Date.parse(row.started_on) < pending_induction_submission.trs_qts_awarded_on
       end
 
       # @see TRS::Teacher#prohibited_from_teaching?
@@ -115,7 +125,7 @@ module AppropriateBodies
       # @return [Boolean]
       def incorrectly_formatted?
         super
-
+        # TODO: ready for training programme types update
         # pending_induction_submission.errors.add(:base, 'Induction programme type must be school-led or provider-led') if row.invalid_training_programme?
         pending_induction_submission.errors.add(:base, 'Induction programme type must be DIY, FIP or CIP') if row.invalid_training_programme?
 

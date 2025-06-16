@@ -57,7 +57,9 @@ module AppropriateBodies
 
       # @return [Boolean]
       def claimed_by_another_ab?
-        appropriate_body != induction_periods.ongoing_induction_period&.appropriate_body
+        return false unless induction_periods.ongoing_induction_period
+
+        appropriate_body != induction_periods.ongoing_induction_period.appropriate_body
       end
 
       # @return [TRS::Teacher]
