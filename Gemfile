@@ -24,6 +24,7 @@ gem "govuk_markdown"
 
 gem "mail-notify"
 
+gem "httparty"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "solid_queue"
@@ -66,6 +67,7 @@ group :test do
   gem "rspec-rails"
   gem "shoulda-matchers"
   gem "super_diff"
+  gem "webmock"
 end
 
 group :development, :test do

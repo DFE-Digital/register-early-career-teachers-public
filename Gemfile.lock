@@ -147,6 +147,9 @@ GEM
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.3)
+    crack (1.0.0)
+      bigdecimal
+      rexml
     crass (1.0.6)
     cri (2.15.12)
     cssbundling-rails (1.4.3)
@@ -241,6 +244,7 @@ GEM
     gyoku (1.4.0)
       builder (>= 2.1.2)
       rexml (~> 3.0)
+    hashdiff (1.2.0)
     hashie (5.0.0)
     hotwire-rails (0.1.3)
       rails (>= 6.0.0)
@@ -704,6 +708,10 @@ GEM
       activesupport
       faraday (~> 2.0)
       faraday-follow_redirects
+    webmock (3.25.1)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.9.1)
     websocket-driver (0.7.7)
       base64
@@ -750,6 +758,7 @@ DEPENDENCIES
   govuk_design_system_formbuilder
   govuk_markdown
   hotwire-rails
+  httparty
   jsbundling-rails
   mail-notify
   nanoc
@@ -785,6 +794,7 @@ DEPENDENCIES
   super_diff
   turbo-rails
   tzinfo-data
+  webmock
   webrick
 
 RUBY VERSION
