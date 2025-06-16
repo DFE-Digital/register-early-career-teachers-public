@@ -16,7 +16,7 @@ For clarity, avoid referring to ‘induction training’ which could be misconst
 
 ## Lead provider
 
-Lead providers are responsible for creating the materials used for training ECTs and mentors.
+Lead providers are responsible for creating the materials and learning platforms used for training ECTs and mentors.
 
 ## Providers of the ECTP
 
