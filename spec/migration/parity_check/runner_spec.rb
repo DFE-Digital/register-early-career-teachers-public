@@ -40,6 +40,16 @@ RSpec.describe ParityCheck::Runner do
       )
     end
 
+    it "enqueues a ParityCheckRequestJob for each request" do
+      FactoryBot.create(:lead_provider)
+
+      expect { run }.to have_enqueued_job(ParityCheckRequestJob).exactly(endpoints.count).times
+
+      ParityCheck::Request.find_each do |request|
+        expect(ParityCheckRequestJob).to have_been_enqueued.with(request_id: request.id)
+      end
+    end
+
     context "when parity check is disabled" do
       let(:enabled) { false }
 
