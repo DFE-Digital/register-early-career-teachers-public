@@ -86,44 +86,26 @@ RSpec.describe TeachersIndexComponent, type: :component do
   describe 'rendered content' do
     subject { render_inline(component) }
 
-    context 'with bulk upload disabled' do
-      before { allow(Rails.application.config).to receive(:enable_bulk_upload).and_return(false) }
-
-      it 'renders the main heading with correct count' do
-        expect(subject.css('h2').text).to include('2 open induction')
-      end
-
-      it 'renders the find ECT link' do
-        expect(subject.to_html).to include('Find and claim a new ECT')
-      end
-
-      it 'does not render bulk upload links when disabled' do
-        expect(subject.to_html).not_to include('Upload a CSV to record outcomes')
-        expect(subject.to_html).not_to include('Upload a CSV to claim multiple')
-      end
-
-      it 'renders the search form with correct label' do
-        expect(subject.css('label').text).to include('Search for an open induction by name or teacher reference number')
-      end
-
-      it 'renders the search form with empty query value' do
-        input_element = subject.css('input[name="q"]').first
-        expect(input_element['value']).to be_blank
-      end
-
-      it 'renders hidden status field with correct value' do
-        hidden_input = subject.css('input[name="status"][type="hidden"]').first
-        expect(hidden_input['value']).to eq('open')
-      end
+    it 'renders the main heading with correct count' do
+      expect(subject.css('h2').text).to include('2 open induction')
     end
 
-    context 'with bulk upload enabled' do
-      before { allow(Rails.application.config).to receive(:enable_bulk_upload).and_return(true) }
+    it 'renders the find ECT link through the bulk upload component' do
+      expect(subject.to_html).to include('Find and claim a new ECT')
+    end
 
-      it 'renders bulk upload links when enabled' do
-        expect(subject.to_html).to include('Upload a CSV to record outcomes')
-        expect(subject.to_html).to include('Upload a CSV to claim multiple')
-      end
+    it 'renders the search form with correct label' do
+      expect(subject.css('label').text).to include('Search for an open induction by name or teacher reference number')
+    end
+
+    it 'renders the search form with empty query value' do
+      input_element = subject.css('input[name="q"]').first
+      expect(input_element['value']).to be_blank
+    end
+
+    it 'renders hidden status field with correct value' do
+      hidden_input = subject.css('input[name="status"][type="hidden"]').first
+      expect(hidden_input['value']).to eq('open')
     end
 
     context 'with closed status' do
@@ -319,20 +301,6 @@ RSpec.describe TeachersIndexComponent, type: :component do
       rendered = render_inline(component_closed)
       # teacher_3_closed has a completed induction with this appropriate body
       expect(rendered.css('h2').text).to include('1 closed induction')
-    end
-
-    context 'when bulk upload is configured' do
-      it 'shows bulk upload links when enabled' do
-        allow(Rails.application.config).to receive(:enable_bulk_upload).and_return(true)
-        rendered = render_inline(component)
-        expect(rendered.to_html).to include('Upload a CSV')
-      end
-
-      it 'hides bulk upload links when disabled' do
-        allow(Rails.application.config).to receive(:enable_bulk_upload).and_return(false)
-        rendered = render_inline(component)
-        expect(rendered.to_html).not_to include('Upload a CSV')
-      end
     end
   end
 end
