@@ -17,6 +17,7 @@ describe School do
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:mentor_at_school_periods).inverse_of(:school) }
     it { is_expected.to have_many(:mentor_teachers).through(:mentor_at_school_periods).source(:teacher) }
+    it { is_expected.to have_many(:school_partnerships) }
   end
 
   describe 'validations' do

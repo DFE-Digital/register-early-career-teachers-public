@@ -207,12 +207,10 @@
   - urn
   :school_partnerships:
   - id
-  - registration_period_id
-  - lead_provider_id
-  - delivery_partner_id
   - created_at
   - updated_at
   - lead_provider_delivery_partnership_id
+  - school_id
   :teachers:
   - corrected_name
   - trs_first_name

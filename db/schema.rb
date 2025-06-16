@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_16_123201) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_16_160837) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -458,7 +458,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_16_123201) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "lead_provider_delivery_partnership_id", null: false
+    t.bigint "school_id", null: false
     t.index ["lead_provider_delivery_partnership_id"], name: "idx_on_lead_provider_delivery_partnership_id_628487f752"
+    t.index ["school_id", "lead_provider_delivery_partnership_id"], name: "idx_on_school_id_lead_provider_delivery_partnership_7b2d6a6684", unique: true
   end
 
   create_table "schools", force: :cascade do |t|
@@ -724,6 +726,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_16_123201) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
+  add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"
