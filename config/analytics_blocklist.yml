@@ -52,6 +52,12 @@
   - expires_at
   - created_at
   - updated_at
+  :cohorts_lead_providers:
+  - id
+  - lead_provider_id
+  - cohort_id
+  - created_at
+  - updated_at
   :solid_queue_recurring_tasks:
   - id
   - key
