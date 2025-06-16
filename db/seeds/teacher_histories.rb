@@ -63,13 +63,19 @@ def describe_induction_period(ip)
 end
 
 def describe_training_period(tp)
-  lpdp = tp.school_partnership.lead_provider_delivery_partnership
   suffix = "(training period)"
 
-  lead_provider_name = lpdp.active_lead_provider.lead_provider.name
-  delivery_partner_name = lpdp.delivery_partner.name
+  if tp.school_partnership.present?
+    lpdp = tp.school_partnership.lead_provider_delivery_partnership
+    lead_provider_name = lpdp.active_lead_provider.lead_provider.name
+    delivery_partner_name = lpdp.delivery_partner.name
 
-  print_seed_info("* was trained by #{lead_provider_name} (LP) and #{delivery_partner_name} #{describe_period_duration(tp)} #{suffix}", indent: 4)
+    print_seed_info("* was trained by #{lead_provider_name} (LP) and #{delivery_partner_name} #{describe_period_duration(tp)} #{suffix}", indent: 4)
+  else
+    lead_provider_name = tp.expression_of_interest.lead_provider.name
+
+    print_seed_info("* was registered with an expression of interest with #{lead_provider_name}", indent: 4)
+  end
 end
 
 def describe_ect_at_school_period(sp)
@@ -109,6 +115,13 @@ def find_school_partnership(delivery_partner:, lead_provider:, registration_peri
     )
 end
 
+rp_2022 = RegistrationPeriod.find_by(year: 2022)
+rp_2023 = RegistrationPeriod.find_by(year: 2023)
+
+ambitious_artisan_2022 = ActiveLeadProvider.find_by!(registration_period: rp_2022, lead_provider: ambitious_institute)
+ambitious_artisan_2023 = ActiveLeadProvider.find_by!(registration_period: rp_2023, lead_provider: ambitious_institute)
+teach_fast_grain_2022 = ActiveLeadProvider.find_by!(registration_period: rp_2022, lead_provider: teach_fast)
+
 ambitious_artisan_partnership_2022 = find_school_partnership(
   lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group,
@@ -139,6 +152,7 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 3.years.ago,
   finished_on: 140.weeks.ago,
+  expression_of_interest: ambitious_artisan_2022,
   school_partnership: ambitious_artisan_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -168,6 +182,7 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: kate_winslet_ect_at_ackley_bridge,
   started_on: 1.year.ago,
+  expression_of_interest: ambitious_artisan_2023,
   school_partnership: ambitious_artisan_partnership_2023
 ).tap { |tp| describe_training_period(tp) }
 
@@ -200,6 +215,7 @@ hugh_laurie_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: hugh_laurie_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
+  expression_of_interest: teach_fast_grain_2022,
   school_partnership: teach_fast_grain_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -268,6 +284,7 @@ TrainingPeriod.create!(
   ect_at_school_period: hugh_grant_ect_at_abbey_grove,
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
+  expression_of_interest: ambitious_artisan_2022,
   school_partnership: ambitious_artisan_partnership_2022
 ).tap { |tp| describe_training_period(tp) }
 
@@ -544,6 +561,25 @@ TrainingPeriod.create!(
   mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
   school_partnership: teach_fast_grain_partnership_2022
+).tap { |tp| describe_training_period(tp) }
+
+print_seed_info("Dominic West (ECT)", indent: 2, colour: ECT_COLOUR)
+
+dominic_west = Teacher.find_by!(trs_first_name: 'Dominic', trs_last_name: 'West')
+dominic_west_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
+  teacher: dominic_west,
+  school: brookfield_school,
+  email: 'harriet-walter@history.com',
+  started_on: 18.months.ago,
+  lead_provider: ambitious_institute,
+  school_reported_appropriate_body: south_yorkshire_studio_hub,
+  training_programme: 'provider_led'
+).tap { |sp| describe_ect_at_school_period(sp) }
+
+TrainingPeriod.create!(
+  ect_at_school_period: dominic_west_ect_at_brookfield_school,
+  started_on: 18.months.ago,
+  expression_of_interest: ambitious_artisan_2023
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Adding mentorships:")
