@@ -176,18 +176,18 @@ You can read more about why we chose to add this question [in the design history
 When ECTs are inducted and trained at a school, most of the time they have the same:
 
 1. appropriate body
-2. programme type (school-led or provider-led)
+2. training programme (school-led or provider-led)
 3. lead provider
 4. delivery partner
 
 Because of this, when schools register ECTs, we show them the programme choices used by their school previously, if they have registered an ECT before. This is so it speeds up schools being able to register ECTs efficiently, as they’ll often use the same information.
 
-We would show programme details including appropriate body, programme type, lead provider and delivery partner if:
+We would show programme details including appropriate body, training programme, lead provider and delivery partner if:
 
 - there is a partnership between a school, lead provider and delivery partner for the academic year which matches the expected training start year of the ECT, and it was the information that was most recently used by the school when registering ECTs
 - or, there is a partnership between a school, lead provider and delivery partner for a previous academic year which was most recently used by the school when registering ECTs
 
-If the above is not the case, we would only show the appropriate body, programme type and lead provider that was most recently used. This is because we don’t want to ask schools for a delivery partner from scratch as it’s a question they find hard to answer and may give inaccurate information for. You can read more about why we decided to do this [in the design history entry here](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/removing-the-delivery-partner-question/).
+If the above is not the case, we would only show the appropriate body, training programme and lead provider that was most recently used. This is because we don’t want to ask schools for a delivery partner from scratch as it’s a question they find hard to answer and may give inaccurate information for. You can read more about why we decided to do this [in the design history entry here](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/removing-the-delivery-partner-question/).
 
 If a school user answers ‘yes’ to if they’re using previous programme details, it will take them straight to the check your answers page.
 
@@ -264,7 +264,7 @@ So, if a school user changes the TRN, it would mean the value it’s changed to 
 
 The school start date provided might impact what lead provider information a school user selects.
 
-If a school has registered an ECT using previously used programme details, if they decide to change the appropriate body, lead provider, delivery partner or programme type, we’d also just take them back to the question if they want to use previously used programme details again. This simplifies the build and also makes sure they don’t pick any options that might not be feasible.
+If a school has registered an ECT using previously used programme details, if they decide to change the appropriate body, lead provider, delivery partner or training programme, we’d also just take them back to the question if they want to use previously used programme details again. This simplifies the build and also makes sure they don’t pick any options that might not be feasible.
 
 Once a school confirms the details, it saves the details for that ECT. The ECT record is created, with a status of ‘mentor required’. It creates an ECT record that can be viewed on the ‘ECTs’ page. However, registration is still not finished!
 

@@ -5,7 +5,7 @@ FactoryBot.define do
     end_date { 1.day.ago.to_date }
     start_source_id { SecureRandom.uuid }
     end_source_id { SecureRandom.uuid }
-    programme_type { "school_led" }
+    training_programme { "school_led" }
     lead_provider_id { nil }
 
     initialize_with { new(**attributes) }

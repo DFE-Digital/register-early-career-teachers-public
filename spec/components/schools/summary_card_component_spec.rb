@@ -38,8 +38,8 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
       end
     end
 
-    it 'renders the programme type' do
-      within page.find(".govuk-summary-list__row", text: "Programme type") do
+    it 'renders the training programme' do
+      within page.find(".govuk-summary-list__row", text: "Training programme") do
         expect(page).to have_text("School-led")
       end
     end
@@ -109,8 +109,8 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
       end
     end
 
-    it 'renders the programme type' do
-      within page.find(".govuk-summary-list__row", text: "Programme type") do
+    it 'renders the training programme' do
+      within page.find(".govuk-summary-list__row", text: "Training programme") do
         expect(page).to have_text("School-led")
       end
     end

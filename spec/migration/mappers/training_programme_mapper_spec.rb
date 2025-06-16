@@ -1,4 +1,4 @@
-describe Mappers::TrainingProgrammeTypeMapper do
+describe Mappers::TrainingProgrammeMapper do
   subject { described_class.new(input).mapped_value }
 
   describe "#mapped_value" do

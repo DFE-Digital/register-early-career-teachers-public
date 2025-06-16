@@ -15,7 +15,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
       school:,
       teacher:,
       started_on: Date.new(2023, 9, 1),
-      programme_type: 'provider_led'
+      training_programme: 'provider_led'
     )
   end
 
@@ -109,7 +109,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
         finished_on: nil,
         school:,
         teacher:,
-        programme_type: 'school_led',
+        training_programme: 'school_led',
         lead_provider_id: nil
       )
     end

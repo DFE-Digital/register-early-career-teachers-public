@@ -13,7 +13,7 @@ RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeStateSchool
   end
 
   describe "#next_step" do
-    it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_programme_type) }
+    it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_training_programme) }
   end
 
   describe "#previous_step" do
