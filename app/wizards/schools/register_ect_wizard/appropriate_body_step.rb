@@ -13,7 +13,7 @@ module Schools
 
       def appropriate_body_type = appropriate_body&.body_type
 
-      def next_step = :programme_type
+      def next_step = :training_programme
 
       def previous_step
         return :use_previous_ect_choices if school.last_programme_choices?

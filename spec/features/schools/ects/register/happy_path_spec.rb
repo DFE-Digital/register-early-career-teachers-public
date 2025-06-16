@@ -47,7 +47,7 @@ RSpec.describe 'Registering an ECT' do
 
     when_i_select_an_appropriate_body
     and_i_click_continue
-    then_i_should_be_taken_to_the_programme_type_page
+    then_i_should_be_taken_to_the_training_programme_page
 
     when_i_select_school_led
     and_i_click_continue
@@ -74,12 +74,12 @@ RSpec.describe 'Registering an ECT' do
     and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
 
-    when_i_try_to_change_the_programme_type
-    then_i_should_be_taken_to_the_change_programme_type_page
+    when_i_try_to_change_the_training_programme
+    then_i_should_be_taken_to_the_change_training_programme_page
     when_i_select_provider_led
     and_i_click_continue
 
-    then_i_should_be_taken_to_the_programme_type_change_lead_provider_page
+    then_i_should_be_taken_to_the_training_programme_change_lead_provider_page
     when_i_select_a_lead_provider
     and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
@@ -164,8 +164,8 @@ RSpec.describe 'Registering an ECT' do
     page.get_by_label('What is Kirk Van Damme’s email address?').fill('example@example.com')
   end
 
-  def then_i_should_be_taken_to_the_programme_type_page
-    expect(page.url).to end_with('/schools/register-ect/programme-type')
+  def then_i_should_be_taken_to_the_training_programme_page
+    expect(page.url).to end_with('/schools/register-ect/training-programme')
   end
 
   def when_i_select_school_led
@@ -196,8 +196,8 @@ RSpec.describe 'Registering an ECT' do
 
   def and_i_should_see_the_previous_programme_choices
     expect(page.get_by_text(school.last_chosen_appropriate_body.name)).to be_visible
-    row = page.locator('.govuk-summary-list__row', has: page.locator('text=Programme type'))
-    expect(row.text_content).to include('Programme type')
+    row = page.locator('.govuk-summary-list__row', has: page.locator('text=Training programme'))
+    expect(row.text_content).to include('Training programme')
     expect(row.text_content).to include('Provider-led')
     expect(page.get_by_text(school.last_chosen_lead_provider_name).first).to be_visible
   end
@@ -286,20 +286,20 @@ RSpec.describe 'Registering an ECT' do
         .select_option(value: "Umber Teaching Hub")
   end
 
-  def when_i_try_to_change_the_programme_type
-    page.get_by_role('link', name: 'change programme type').first.click
+  def when_i_try_to_change_the_training_programme
+    page.get_by_role('link', name: 'change training programme').first.click
   end
 
-  def then_i_should_be_taken_to_the_change_programme_type_page
-    expect(page.url).to end_with('/schools/register-ect/change-programme-type')
+  def then_i_should_be_taken_to_the_change_training_programme_page
+    expect(page.url).to end_with('/schools/register-ect/change-training-programme')
   end
 
   def when_i_select_provider_led
     page.get_by_label("Provider-led").check
   end
 
-  def then_i_should_be_taken_to_the_programme_type_change_lead_provider_page
-    expect(page.url).to end_with('/schools/register-ect/programme-type-change-lead-provider')
+  def then_i_should_be_taken_to_the_training_programme_change_lead_provider_page
+    expect(page.url).to end_with('/schools/register-ect/training-programme-change-lead-provider')
   end
 
   def when_i_select_a_lead_provider

@@ -1,10 +1,10 @@
-RSpec.shared_examples "a programme type view" do |current_step:, back_path:, back_step_name:, continue_path:, continue_step_name:|
+RSpec.shared_examples "a training programme view" do |current_step:, back_path:, back_step_name:, continue_path:, continue_step_name:|
   let(:ect) { wizard.ect }
   let(:school) { FactoryBot.create(:school, :independent) }
-  let(:programme_type) { nil }
+  let(:training_programme) { nil }
   let(:store) do
     FactoryBot.build(:session_repository,
-                     programme_type:,
+                     training_programme:,
                      trs_first_name: 'John',
                      trs_last_name: 'Smith')
   end
@@ -21,7 +21,7 @@ RSpec.shared_examples "a programme type view" do |current_step:, back_path:, bac
     expect(sanitize(view.content_for(:page_title))).to eql("What training programme will John Smith follow?")
   end
 
-  context "when the programme type is invalid" do
+  context "when the training programme is invalid" do
     before do
       wizard.valid_step?
       render

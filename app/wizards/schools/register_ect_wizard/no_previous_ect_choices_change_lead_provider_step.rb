@@ -6,7 +6,7 @@ module Schools
       end
 
       def previous_step
-        :no_previous_ect_choices_change_programme_type
+        :no_previous_ect_choices_change_training_programme
       end
     end
   end

@@ -2,7 +2,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
   subject { wizard.current_step }
 
   let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :provider_led) }
-  let(:programme_type) { 'provider_led' }
+  let(:training_programme) { 'provider_led' }
   let(:use_previous_ect_choices) { true }
   let(:store) { FactoryBot.build(:session_repository) }
   let(:author) { FactoryBot.create(:school_user, school_urn: ect.school.urn) }

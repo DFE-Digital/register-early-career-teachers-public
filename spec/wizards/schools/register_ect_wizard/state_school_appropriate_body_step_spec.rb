@@ -30,7 +30,7 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
 
     describe '#next_step' do
       it 'returns the next step' do
-        expect(subject.next_step).to eq(:programme_type)
+        expect(subject.next_step).to eq(:training_programme)
       end
     end
   end
