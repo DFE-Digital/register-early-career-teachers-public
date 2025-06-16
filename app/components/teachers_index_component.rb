@@ -2,6 +2,35 @@ class TeachersIndexComponent < ViewComponent::Base
   include GovukLinkHelper
   include Rails.application.routes.url_helpers
 
+  renders_one :bulk_upload_links, -> {
+    TeachersIndex::BulkUploadLinksComponent.new(appropriate_body:)
+  }
+
+  renders_one :header, -> {
+    TeachersIndex::HeaderSectionComponent.new(
+      status:,
+      current_count:,
+      open_count:,
+      closed_count:,
+      query:
+    )
+  }
+
+  renders_one :search_box, -> {
+    TeachersIndex::SearchSectionComponent.new(status:, query:)
+  }
+
+  renders_one :table, -> {
+    TeachersIndex::TableSectionComponent.new(
+      teachers:,
+      pagy:,
+      status:,
+      query:
+    )
+  }
+
+  attr_reader :appropriate_body, :teachers, :pagy, :status, :query
+
   def initialize(appropriate_body:, teachers:, pagy:, status: 'open', query: nil)
     @appropriate_body = appropriate_body
     @teachers = teachers
@@ -12,7 +41,12 @@ class TeachersIndexComponent < ViewComponent::Base
 
 private
 
-  attr_reader :appropriate_body, :teachers, :pagy, :status, :query
+  def before_render
+    with_bulk_upload_links
+    with_header
+    with_search_box
+    with_table
+  end
 
   def normalize_status(status)
     return 'open' if status.blank?
