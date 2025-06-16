@@ -1,4 +1,6 @@
-# frozen_string_literal: true
+require "api/version"
+
+Dir[Rails.root.join("spec/swagger_schemas/**/*.rb")].sort.each { |f| require f }
 
 RSpec.configure do |config|
   # Specify a root folder where Swagger JSON files are generated
@@ -24,6 +26,31 @@ RSpec.configure do |config|
         url: "https://swagger.io/",
       },
       paths: {},
+
+      components: {
+        securitySchemes: {
+          api_key: {
+            description: "Bearer token",
+            type: :apiKey,
+            name: "Authorization",
+            in: :header,
+          },
+        },
+
+        schemas: {
+          # Shared
+          IDAttribute: ID_ATTRIBUTE,
+          UnauthorisedResponse: UNAUTHORISED_RESPONSE,
+          NotFoundResponse: NOT_FOUND_RESPONSE,
+          PaginationFilter: PAGINATION_FILTER,
+
+          # Statements
+          Statement: STATEMENT,
+          StatementsFilter: STATEMENTS_FILTER,
+          StatementResponse: STATEMENT_RESPONSE,
+          StatementsResponse: STATEMENTS_RESPONSE,
+        }
+      }
     }
   }
 
