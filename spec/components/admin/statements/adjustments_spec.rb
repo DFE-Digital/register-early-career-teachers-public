@@ -13,7 +13,8 @@ RSpec.describe Admin::Statements::Adjustments, type: :component do
   context "no adjustments" do
     it "renders correctly" do
       expect(statement.adjustments.count).to eq(0)
-      expect(summary_list_values.count).to eq(0)
+      expect(summary_list_values.count).to eq(1)
+      expect(summary_list_values[0][0]).to eq("No adjustments")
 
       expect(subject).to have_link("Add adjustment")
       expect(subject).not_to have_link("Change adjustment")
