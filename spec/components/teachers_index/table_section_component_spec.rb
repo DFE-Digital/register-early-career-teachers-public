@@ -137,6 +137,7 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
       expect(component.class.included_modules).to include(GovukLinkHelper)
       expect(component.class.included_modules).to include(Pagy::Frontend)
       expect(component.class.included_modules).to include(Rails.application.routes.url_helpers)
+      expect(component.class.included_modules).to include(EmptyStateMessage)
     end
 
     describe '#teachers_present?' do
@@ -183,7 +184,7 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
         let(:status) { 'open' }
 
         it 'returns message with highlighted query' do
-          expected_message = 'No open inductions found matching "<strong>Alice Smith</strong>".'
+          expected_message = 'No open inductions found matching "<strong class="govuk-!-font-weight-bold">Alice Smith</strong>".'
           expect(component.send(:empty_state_message)).to eq(expected_message)
         end
       end
@@ -194,7 +195,47 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
 
         it 'properly escapes special characters' do
           message = component.send(:empty_state_message)
-          expect(message).to include('<strong>O\'Connor & <test></strong>')
+          expect(message).to include('<strong class="govuk-!-font-weight-bold">O&#39;Connor &amp; &lt;test&gt;</strong>')
+        end
+      end
+    end
+
+    describe 'helper methods' do
+      let(:teacher) { double("Teacher", trn: "1234567", induction_periods: [], trs_induction_status: nil) }
+
+      describe '#teacher_full_name' do
+        it 'delegates to Teachers::Name service' do
+          name_service = double("Teachers::Name")
+          allow(Teachers::Name).to receive(:new).with(teacher).and_return(name_service)
+          allow(name_service).to receive(:full_name).and_return("John Doe")
+
+          expect(component.send(:teacher_full_name, teacher)).to eq("John Doe")
+        end
+      end
+
+      describe '#teacher_induction_start_date' do
+        it 'delegates to Teachers::InductionPeriod service' do
+          period_service = double("Teachers::InductionPeriod")
+          allow(Teachers::InductionPeriod).to receive(:new).with(teacher).and_return(period_service)
+          allow(period_service).to receive(:formatted_induction_start_date).and_return("1 January 2024")
+
+          expect(component.send(:teacher_induction_start_date, teacher)).to eq("1 January 2024")
+        end
+      end
+
+      describe '#teacher_status_tag_kwargs' do
+        it 'delegates to Teachers::InductionStatus service' do
+          status_service = double("Teachers::InductionStatus")
+          expected_kwargs = { text: "Active", colour: "green" }
+
+          allow(Teachers::InductionStatus).to receive(:new).with(
+            teacher:,
+            induction_periods: teacher.induction_periods,
+            trs_induction_status: teacher.trs_induction_status
+          ).and_return(status_service)
+          allow(status_service).to receive(:status_tag_kwargs).and_return(expected_kwargs)
+
+          expect(component.send(:teacher_status_tag_kwargs, teacher)).to eq(expected_kwargs)
         end
       end
     end
