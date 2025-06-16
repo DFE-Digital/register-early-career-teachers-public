@@ -3,19 +3,18 @@ RSpec.describe ParityCheck::Client do
   let(:rect_url) { "https://rect.example.com:443/test-path" }
   let(:method) { :get }
   let(:headers) { { "Accept" => "application/json" } }
-  let(:endpoint) { double(ParityCheck::Endpoint) }
+  let(:request) { FactoryBot.create(:parity_check_request) }
   let(:request_builder) { instance_double(ParityCheck::RequestBuilder, headers:, method:) }
-  let(:lead_provider) { FactoryBot.build(:lead_provider) }
-  let(:instance) { described_class.new(endpoint:, lead_provider:) }
+  let(:instance) { described_class.new(request:) }
 
   before do
-    allow(ParityCheck::RequestBuilder).to receive(:new).with(endpoint:, lead_provider:).and_return(request_builder)
+    allow(ParityCheck::RequestBuilder).to receive(:new).with(request:).and_return(request_builder)
     allow(request_builder).to receive(:url).with(app: :ecf).and_return(ecf_url)
     allow(request_builder).to receive(:url).with(app: :rect).and_return(rect_url)
   end
 
   it "has the correct attributes" do
-    expect(instance).to have_attributes(endpoint:)
+    expect(instance).to have_attributes(request:)
   end
 
   describe "#perform_requests" do
@@ -41,15 +40,16 @@ RSpec.describe ParityCheck::Client do
       expect(requests.map(&:headers)).to all include(headers)
     end
 
-    it "yields the result of each request to the block" do
-      instance.perform_requests do |ecf_result, rect_result|
-        expect(ecf_result[:response].code).to eq(200)
-        expect(ecf_result[:response].body).to eq("ecf_body")
-        expect(ecf_result[:response_time_ms]).to be >= 0
-
-        expect(rect_result[:response].code).to eq(201)
-        expect(rect_result[:response].body).to eq("rect_body")
-        expect(rect_result[:response_time_ms]).to be >= 0
+    it "yields the response of request to the block" do
+      instance.perform_requests do |response|
+        expect(response).to have_attributes(
+          ecf_body: "ecf_body",
+          ecf_status_code: 200,
+          ecf_time_ms: be >= 0,
+          rect_body: "rect_body",
+          rect_status_code: 201,
+          rect_time_ms: be >= 0
+        )
       end
     end
 
