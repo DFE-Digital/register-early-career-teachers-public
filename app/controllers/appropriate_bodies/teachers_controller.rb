@@ -3,7 +3,7 @@ module AppropriateBodies
     layout "full", only: :index
 
     def index
-      @status = params[:status]
+      @status = params[:status] || 'open'
       @pagy, @teachers = pagy(search_teachers, limit: 50)
     end
 
