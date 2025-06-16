@@ -1,5 +1,5 @@
 describe Migrators::ReconcileAdjustment do
-  it_behaves_like "a migrator", :statement_adjustment, %i[statement] do
+  it_behaves_like "a migrator", :reconcile_adjustment, %i[statement] do
     def create_migration_resource
       FactoryBot.create(:migration_statement, reconcile_amount: 100.77)
     end
