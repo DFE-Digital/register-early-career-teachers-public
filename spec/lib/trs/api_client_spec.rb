@@ -91,7 +91,7 @@ RSpec.describe TRS::APIClient do
         'status' => 'InProgress',
         'startDate' => start_date.iso8601,
         'completedDate' => nil,
-        'modifiedOn' => modified_at.iso8601(3)
+        'modifiedOn' => modified_at.utc.iso8601(3)
       }.to_json
     end
 
@@ -171,7 +171,7 @@ RSpec.describe TRS::APIClient do
         'status' => 'RequiredToComplete',
         'startDate' => nil,
         'completedDate' => nil,
-        'modifiedOn' => modified_at
+        'modifiedOn' => modified_at.utc
       }.to_json
     end
 
@@ -196,7 +196,7 @@ RSpec.describe TRS::APIClient do
         'status' => 'InProgress',
         'startDate' => start_date.iso8601,
         'completedDate' => nil,
-        'modifiedOn' => modified_at
+        'modifiedOn' => modified_at.utc
       }.to_json
     end
 
