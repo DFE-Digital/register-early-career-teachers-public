@@ -24,10 +24,6 @@ private
     status == 'closed'
   end
 
-  def bulk_upload_enabled?
-    Rails.application.config.enable_bulk_upload
-  end
-
   def teachers_present?
     teachers.any?
   end
