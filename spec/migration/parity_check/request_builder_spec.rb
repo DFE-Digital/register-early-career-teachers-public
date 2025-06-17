@@ -79,5 +79,52 @@ RSpec.describe ParityCheck::RequestBuilder do
         )
       end
     end
+
+    describe "#body" do
+      subject(:body) { instance.body }
+
+      context "when the body contains an example_statement_body" do
+        let(:options) { { body: :example_statement_body } }
+
+        it "returns the example statement body JSON encoded" do
+          expect(body).to eq({
+            data: {
+              type: "statements",
+              attributes: {
+                content: "This is an example request body.",
+              },
+            },
+          }.to_json)
+        end
+      end
+
+      context "when the options do not specify a body" do
+        let(:options) { {} }
+
+        it { expect(body).to be_nil }
+      end
+
+      context "when the options[:body] method is missing" do
+        let(:options) { { body: :unrecognized_body } }
+
+        it { expect { body }.to raise_error(described_class::UnrecognizedRequestBodyError, "Method missing for body: unrecognized_body") }
+      end
+    end
+
+    describe "#query" do
+      subject(:query) { instance.query }
+
+      context "when the query is a hash" do
+        let(:options) { { query: { filter: { cohort: 2022 } } } }
+
+        it { is_expected.to eq(options[:query]) }
+      end
+
+      context "when the query is not a hash" do
+        let(:options) { { query: "filter=test" } }
+
+        it { expect { query }.to raise_error(described_class::UnrecognizedQueryError, "Query must be a Hash: filter=test") }
+      end
+    end
   end
 end
