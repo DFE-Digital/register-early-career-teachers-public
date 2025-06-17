@@ -6,11 +6,15 @@ describe ParityCheck::Response do
   end
 
   describe "validations" do
+    subject { FactoryBot.build(:parity_check_response) }
+
     it { is_expected.to validate_presence_of(:request) }
     it { is_expected.to validate_inclusion_of(:ecf_status_code).in_range(100..599) }
     it { is_expected.to validate_inclusion_of(:rect_status_code).in_range(100..599) }
     it { is_expected.to validate_numericality_of(:ecf_time_ms).is_greater_than(0) }
     it { is_expected.to validate_numericality_of(:rect_time_ms).is_greater_than(0) }
+    it { is_expected.to validate_numericality_of(:page).is_greater_than(0).only_integer.allow_nil }
+    it { is_expected.to validate_uniqueness_of(:page).scoped_to(:request_id) }
 
     context "when the response comparison is equal" do
       subject { described_class.new(ecf_status_code: 200, rect_status_code: 200) }
