@@ -735,11 +735,11 @@ RSpec.describe Events::Record do
   describe '.record_bulk_upload_completed_event!' do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:) }
 
+    include_context 'fake trs api client'
+
     before do
       ProcessBatchClaimJob.perform_now(batch, author.email, author.name)
     end
-
-    include_context 'fake trs api client'
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
