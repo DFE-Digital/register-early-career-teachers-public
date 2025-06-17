@@ -19,7 +19,7 @@ module Migrators
 
     def self.reset!
       if Rails.application.config.enable_migration_testing
-        ::StatementAdjustment.connection.execute("TRUNCATE #{::StatementAdjustment.table_name} RESTART IDENTITY CASCADE")
+        ::Statement::Adjustment.connection.execute("TRUNCATE #{::Statement::Adjustment.table_name} RESTART IDENTITY CASCADE")
       end
     end
 
