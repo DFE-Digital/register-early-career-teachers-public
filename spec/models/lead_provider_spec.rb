@@ -11,6 +11,6 @@ describe LeadProvider do
 
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name) }
-    it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.allow_nil }
+    it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.allow_nil }
   end
 end
