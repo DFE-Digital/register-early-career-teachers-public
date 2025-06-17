@@ -1,9 +1,9 @@
 module ParityCheck
   class TokenProvider
-    class UnsupportedEnvironmentError < RuntimeError; end
+    include ParityCheck::Configuration
 
     def generate!
-      ensure_enabled!
+      ensure_parity_check_enabled!
 
       known_tokens_by_lead_provider_api_id.each do |api_id, token|
         lead_provider = LeadProvider.find_by(api_id:)
@@ -12,7 +12,7 @@ module ParityCheck
     end
 
     def token(lead_provider:)
-      ensure_enabled!
+      ensure_parity_check_enabled!
 
       known_tokens_by_lead_provider_api_id[lead_provider.api_id]
     end
@@ -20,21 +20,9 @@ module ParityCheck
   private
 
     def known_tokens_by_lead_provider_api_id
-      JSON.parse(raw_tokens) || {}
+      JSON.parse(parity_check_tokens) || {}
     rescue JSON::ParserError
       {}
-    end
-
-    def raw_tokens
-      Rails.application.config.parity_check[:tokens]
-    end
-
-    def ensure_enabled!
-      raise UnsupportedEnvironmentError, "The parity check functionality is disabled for this environment" unless enabled?
-    end
-
-    def enabled?
-      Rails.application.config.parity_check[:enabled]
     end
   end
 end

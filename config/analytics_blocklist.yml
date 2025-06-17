@@ -427,8 +427,7 @@
   - id
   - run_id
   - lead_provider_id
-  - path
-  - method
+  - endpoint_id
   - started_at
   - completed_at
   - created_at
@@ -442,5 +441,12 @@
   - rect_body
   - ecf_time_ms
   - rect_time_ms
+  - created_at
+  - updated_at
+  :parity_check_endpoints:
+  - id
+  - path
+  - method
+  - options
   - created_at
   - updated_at
