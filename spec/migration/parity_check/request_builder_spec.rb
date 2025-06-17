@@ -21,7 +21,7 @@ RSpec.describe ParityCheck::RequestBuilder do
   end
 
   describe "instance methods" do
-    let(:tokens) { { lead_provider.api_id => "test_token" } }
+    let(:tokens) { { lead_provider.ecf_id => "test_token" } }
     let(:ecf_url) { "https://ecf.example.com" }
     let(:rect_url) { "https://rect.example.com" }
 
