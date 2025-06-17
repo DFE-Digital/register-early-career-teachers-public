@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_13_104444) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_13_131551) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -355,15 +355,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_104444) do
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
 
+  create_table "parity_check_endpoints", force: :cascade do |t|
+    t.string "path", null: false
+    t.enum "method", null: false, enum_type: "request_method_types"
+    t.jsonb "options", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "parity_check_requests", force: :cascade do |t|
     t.bigint "run_id", null: false
     t.bigint "lead_provider_id", null: false
-    t.string "path", null: false
-    t.enum "method", null: false, enum_type: "request_method_types"
     t.datetime "started_at"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "endpoint_id"
+    t.index ["endpoint_id"], name: "index_parity_check_requests_on_endpoint_id"
     t.index ["lead_provider_id"], name: "index_parity_check_requests_on_lead_provider_id"
     t.index ["run_id"], name: "index_parity_check_requests_on_run_id"
   end
@@ -382,7 +390,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_104444) do
   end
 
   create_table "parity_check_runs", force: :cascade do |t|
-    t.datetime "started_at"
+    t.datetime "started_at", null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -704,6 +712,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_104444) do
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
   add_foreign_key "parity_check_requests", "lead_providers"
+  add_foreign_key "parity_check_requests", "parity_check_endpoints", column: "endpoint_id"
   add_foreign_key "parity_check_requests", "parity_check_runs", column: "run_id"
   add_foreign_key "parity_check_responses", "parity_check_requests", column: "request_id"
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
