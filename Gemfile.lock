@@ -754,6 +754,7 @@ DEPENDENCIES
   dfe-wizard!
   factory_bot_rails
   faker
+  faraday
   govuk-components
   govuk_design_system_formbuilder
   govuk_markdown
