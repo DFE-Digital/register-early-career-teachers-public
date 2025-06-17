@@ -390,6 +390,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_17_185849) do
     t.integer "rect_time_ms", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "page"
+    t.index ["request_id", "page"], name: "index_parity_check_responses_on_request_id_and_page", unique: true
     t.index ["request_id"], name: "index_parity_check_responses_on_request_id"
   end
 

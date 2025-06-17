@@ -11,6 +11,7 @@ module ParityCheck
     validates :rect_body, presence: true, if: :different?
     validates :ecf_time_ms, numericality: { greater_than: 0 }
     validates :rect_time_ms, numericality: { greater_than: 0 }
+    validates :page, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true, uniqueness: { scope: :request_id }
 
   private
 
