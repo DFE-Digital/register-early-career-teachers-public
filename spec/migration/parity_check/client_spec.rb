@@ -11,7 +11,7 @@ RSpec.describe ParityCheck::Client do
       enabled: true,
       ecf_url:,
       rect_url:,
-      tokens: { request.lead_provider.api_id => token }.to_json,
+      tokens: { request.lead_provider.ecf_id => token }.to_json,
     })
   end
 

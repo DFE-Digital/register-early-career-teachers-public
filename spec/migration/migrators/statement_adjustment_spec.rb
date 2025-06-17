@@ -10,7 +10,7 @@ describe Migrators::StatementAdjustment do
       ecf_lp = migration_resource.statement.lead_provider
       ecf_cohort = migration_resource.statement.cohort
 
-      lead_provider = FactoryBot.create(:lead_provider, name: ecf_lp.name, api_id: ecf_lp.id)
+      lead_provider = FactoryBot.create(:lead_provider, name: ecf_lp.name, ecf_id: ecf_lp.id)
       registration_period = FactoryBot.create(:registration_period, year: ecf_cohort.start_year)
       active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:)
       FactoryBot.create(:statement, api_id: migration_resource.statement_id, lead_provider:, registration_period:, active_lead_provider:)
