@@ -50,7 +50,7 @@ module BatchHelper
       caption: 'Upload history',
       head: ['Reference', 'File name', 'Status', 'Action'],
       rows: batches.map do |batch|
-        [batch.id, batch.filename, batch_status_tag(batch), batch_link(batch)]
+        [batch.id.to_s, batch.filename, batch_status_tag(batch), batch_link(batch)]
       end
     )
   end
