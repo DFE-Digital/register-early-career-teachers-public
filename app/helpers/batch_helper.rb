@@ -36,21 +36,21 @@ module BatchHelper
     govuk_tag(text: batch.batch_status, colour: colours[batch.batch_status.to_sym])
   end
 
+  # @param batch [PendingInductionSubmissionBatch]
+  def batch_link(batch)
+    case batch.batch_type
+    when 'claim' then govuk_link_to('view', ab_batch_claim_path(batch))
+    when 'action' then govuk_link_to('view', ab_batch_action_path(batch))
+    end
+  end
+
   # @param batches [Array<PendingInductionSubmissionBatches>]
   def batch_list_table(batches)
     govuk_table(
       caption: 'Upload history',
-      head: ['#', 'Type', 'Filename', 'Status'],
+      head: ['Reference', 'File name', 'Status', 'Action'],
       rows: batches.map do |batch|
-        link =
-          case batch.batch_type
-          when 'claim' then govuk_link_to(batch.id, ab_batch_claim_path(batch))
-          when 'action' then govuk_link_to(batch.id, ab_batch_action_path(batch))
-          else
-            batch.id
-          end
-
-        [link, batch.batch_type, batch.filename, batch_status_tag(batch)]
+        [batch.id, batch.filename, batch_status_tag(batch), batch_link(batch)]
       end
     )
   end
