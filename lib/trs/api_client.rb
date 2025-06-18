@@ -56,7 +56,7 @@ module TRS
         trn:,
         status: 'InProgress',
         start_date: start_date.iso8601,
-        modified_at: modified_at.iso8601(3)
+        modified_at: modified_at.utc.iso8601(3)
       )
     end
 
@@ -66,7 +66,7 @@ module TRS
         status: 'Passed',
         start_date: start_date.iso8601,
         completed_date: completed_date.iso8601,
-        modified_at: modified_at.iso8601(3)
+        modified_at: modified_at.utc.iso8601(3)
       )
     end
 
@@ -76,7 +76,7 @@ module TRS
         status: 'Failed',
         start_date: start_date.iso8601,
         completed_date: completed_date.iso8601,
-        modified_at: modified_at.iso8601(3)
+        modified_at: modified_at.utc.iso8601(3)
       )
     end
 
@@ -86,7 +86,7 @@ module TRS
         status: 'RequiredToComplete',
         start_date: nil,
         completed_date: nil,
-        modified_at: modified_at.iso8601(3)
+        modified_at: modified_at.utc.iso8601(3)
       )
     end
 
@@ -96,7 +96,7 @@ module TRS
         status: 'InProgress',
         start_date: start_date.iso8601,
         completed_date: nil,
-        modified_at: modified_at.iso8601(3)
+        modified_at: modified_at.utc.iso8601(3)
       )
     end
 
