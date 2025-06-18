@@ -1,5 +1,6 @@
 get:
   "/api/v3/statements":
+    paginate: true
   "/api/v3/statements":
     query:
       filter:
