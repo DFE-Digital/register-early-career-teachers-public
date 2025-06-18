@@ -5,7 +5,7 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, registration_period_years: :ignore, updated_since: :ignore, status: :ignore, output_fee: true)
+    def initialize(lead_provider: :ignore, registration_period_years: :ignore, updated_since: :ignore, status: :ignore, output_fee: true, statement_date: :ignore)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider registration_period])
 
       where_lead_provider_is(lead_provider)
@@ -13,6 +13,7 @@ module Statements
       where_updated_since(updated_since)
       where_status_is(status)
       where_output_fee_is(output_fee)
+      where_statement_date(statement_date)
     end
 
     def statements
@@ -61,6 +62,14 @@ module Statements
       return if ignore?(filter: output_fee)
 
       scope.merge!(Statement.with_output_fee(output_fee:))
+    end
+
+    def where_statement_date(statement_date)
+      return if ignore?(filter: statement_date)
+      return if statement_date.blank?
+
+      year, month = statement_date.split("-").map(&:to_i) # 2025-01 -> 2025 & 1
+      scope.merge!(Statement.with_statement_date(year:, month:))
     end
   end
 end
