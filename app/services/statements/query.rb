@@ -5,7 +5,7 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, registration_period_years: :ignore, updated_since: :ignore, status: :ignore, output_fee: true, statement_date: :ignore)
+    def initialize(lead_provider: :ignore, registration_period_years: :ignore, updated_since: :ignore, status: :ignore, output_fee: true, statement_date: :ignore, order_by: :payment_date)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider registration_period])
 
       where_lead_provider_is(lead_provider)
@@ -14,10 +14,11 @@ module Statements
       where_status_is(status)
       where_output_fee_is(output_fee)
       where_statement_date(statement_date)
+      set_order_by(order_by)
     end
 
     def statements
-      scope.order(payment_date: :asc)
+      scope
     end
 
     def statement_by_api_id(api_id)
@@ -70,6 +71,17 @@ module Statements
 
       year, month = statement_date.split("-").map(&:to_i) # 2025-01 -> 2025 & 1
       scope.merge!(Statement.with_statement_date(year:, month:))
+    end
+
+    def set_order_by(order_by)
+      return if ignore?(filter: order_by)
+
+      case order_by
+      when :statement_date
+        scope.merge!(Statement.order(year: :asc, month: :asc))
+      when :payment_date
+        scope.merge!(Statement.order(payment_date: :asc))
+      end
     end
   end
 end

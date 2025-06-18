@@ -244,6 +244,32 @@ RSpec.describe Statements::Query do
         end
       end
     end
+
+    describe "ordering" do
+      let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4, payment_date: "2024-01-01") }
+      let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8, payment_date: "2025-01-01") }
+
+      describe "default order" do
+        it "returns statements in correct order" do
+          query = described_class.new
+          expect(query.statements).to eq([statement1, statement2])
+        end
+      end
+
+      describe "order by :payment_date" do
+        it "returns statements in correct order" do
+          query = described_class.new(order_by: :payment_date)
+          expect(query.statements).to eq([statement1, statement2])
+        end
+      end
+
+      describe "order by :statement_date" do
+        it "returns statements in correct order" do
+          query = described_class.new(order_by: :statement_date)
+          expect(query.statements).to eq([statement2, statement1])
+        end
+      end
+    end
   end
 
   describe "#statement_by_api_id" do
