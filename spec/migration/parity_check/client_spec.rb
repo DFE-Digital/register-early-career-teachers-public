@@ -1,16 +1,18 @@
 RSpec.describe ParityCheck::Client do
-  let(:ecf_url) { "https://ecf.example.com:443/test-path" }
-  let(:rect_url) { "https://rect.example.com:443/test-path" }
-  let(:method) { :get }
-  let(:headers) { { "Accept" => "application/json" } }
-  let(:request) { FactoryBot.create(:parity_check_request) }
-  let(:request_builder) { instance_double(ParityCheck::RequestBuilder, headers:, method:) }
+  let(:ecf_url) { "https://ecf.example.com" }
+  let(:rect_url) { "https://rect.example.com" }
+  let(:endpoint) { FactoryBot.build(:parity_check_endpoint) }
+  let(:request) { FactoryBot.build(:parity_check_request, endpoint:) }
+  let(:token) { "test_token" }
   let(:instance) { described_class.new(request:) }
 
   before do
-    allow(ParityCheck::RequestBuilder).to receive(:new).with(request:).and_return(request_builder)
-    allow(request_builder).to receive(:url).with(app: :ecf).and_return(ecf_url)
-    allow(request_builder).to receive(:url).with(app: :rect).and_return(rect_url)
+    allow(Rails.application.config).to receive(:parity_check).and_return({
+      enabled: true,
+      ecf_url:,
+      rect_url:,
+      tokens: { request.lead_provider.api_id => token }.to_json,
+    })
   end
 
   it "has the correct attributes" do
@@ -18,49 +20,44 @@ RSpec.describe ParityCheck::Client do
   end
 
   describe "#perform_requests" do
-    let(:requests) { WebMock::RequestRegistry.instance.requested_signatures.hash.keys }
-    let(:ecf_requests) { requests.select { |r| r.uri.to_s.include?(ecf_url) } }
-    let(:rect_requests) { requests.select { |r| r.uri.to_s.include?(rect_url) } }
+    context "when performing a GET request" do
+      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :get) }
 
-    before do
-      stub_request(method, ecf_url).to_return(status: 200, body: "ecf_body")
-      stub_request(method, rect_url).to_return(status: 201, body: "rect_body")
+      include_examples "client performs requests"
     end
 
-    it "makes requests to the correct URL for each app" do
-      instance.perform_requests {}
+    context "when performing a request with query parameters" do
+      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :with_query_parameters) }
 
-      expect(ecf_requests.count).to eq(1)
-      expect(rect_requests.count).to eq(1)
-    end
+      include_examples "client performs requests"
 
-    it "makes requests with the correct headers" do
-      instance.perform_requests {}
+      context "when both the path and options contain query parameters" do
+        let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :with_query_parameters, path: "/test-path?path=parameter") }
 
-      expect(requests.map(&:headers)).to all include(headers)
-    end
-
-    it "yields the response of request to the block" do
-      instance.perform_requests do |response|
-        expect(response).to have_attributes(
-          ecf_body: "ecf_body",
-          ecf_status_code: 200,
-          ecf_time_ms: be >= 0,
-          rect_body: "rect_body",
-          rect_status_code: 201,
-          rect_time_ms: be >= 0
-        )
+        include_examples "client performs requests"
       end
     end
 
-    context "when an unsupported request method is used" do
-      let(:method) { :fetch }
+    context "when performing a POST request" do
+      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :post) }
 
-      it "raises an UnsupportedRequestMethodError" do
-        expect {
-          instance.perform_requests {}
-        }.to raise_error(NoMethodError, "undefined method 'fetch' for module HTTParty")
-      end
+      include_examples "client performs requests"
+    end
+
+    context "when performing a PUT request" do
+      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :put) }
+
+      include_examples "client performs requests"
+    end
+  end
+
+  context "when an unsupported request method is used" do
+    let(:endpoint) { FactoryBot.build(:parity_check_endpoint, method: :fetch) }
+
+    it "raises an UnsupportedRequestMethodError" do
+      expect {
+        instance.perform_requests {}
+      }.to raise_error(NoMethodError, "undefined method 'fetch' for module HTTParty")
     end
   end
 end
