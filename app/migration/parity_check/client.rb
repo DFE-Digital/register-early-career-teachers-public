@@ -31,7 +31,13 @@ module ParityCheck
     end
 
     def perform_request(app:)
-      HTTParty.send(request_builder.method, request_builder.url(app:), headers: request_builder.headers)
+      HTTParty.send(
+        request_builder.method,
+        request_builder.url(app:),
+        headers: request_builder.headers,
+        query: request_builder.query,
+        body: request_builder.body
+      )
     end
 
     def request_builder

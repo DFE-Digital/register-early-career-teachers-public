@@ -1,4 +1,12 @@
 get:
   "/api/v3/statements":
+  "/api/v3/statements":
+    query:
+      filter:
+        cohort: 2021
   "/api/v3/statements/:id":
     id: statement_id
+post:
+  "/api/v3/statements":
+    body: example_statement_body
+
