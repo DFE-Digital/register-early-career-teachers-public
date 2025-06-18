@@ -79,16 +79,16 @@ authorised 'e.g. Authorised for payment at 10:30am on 5 Aug 2023'.
 
 A Statement can have different types of declarations:
 
- | State               | Definition                                                                                                                    | Action                                                   |
- | -----               | ----------                                                                                                                    | ------                                                   |
- | `submitted`         | A declaration associated with a participant who has not yet been confirmed to be eligible for funding                         | Providers can view and void `submitted` declarations     |
- | `eligible`          | A declaration associated with a participant who has been confirmed eligible for funding                                       | Providers can view and void `eligible` declarations      |
- | `ineligble`         | A declaration associated with a participant who is not eligible for funding or a duplicate submission for a given participant | Providers can view and void `ineligible` declarations    |
- | `payable`           | A declaration that has been approved and is ready for payment by DfE                                                          | Providers can view and void `payable` declarations       |
- | `voided`            | A declaration that has been retracted by a provider                                                                           | Providers can only view `voided` declarations            |
- | `paid`              | A declaration that has been paid by DfE                                                                                       | Providers can view and void `paid` declarations          |
- | `awaiting_clawback` | A `paid` declaration that has since been voided by a provider                                                                 | Providers can only view `awaiting_clawback` declarations |
- | `clawed_back`       | An `awaiting_clawback` declaration that has had its value deducted from payment by DfE to a provider                          | Providers can only view `clawed_back` declarations       |
+| State               | Definition                                                                                                                    | Action                                                   |
+| -----               | ----------                                                                                                                    | ------                                                   |
+| `submitted`         | A declaration associated with a participant who has not yet been confirmed to be eligible for funding                         | Providers can view and void `submitted` declarations     |
+| `eligible`          | A declaration associated with a participant who has been confirmed eligible for funding                                       | Providers can view and void `eligible` declarations      |
+| `ineligble`         | A declaration associated with a participant who is not eligible for funding or a duplicate submission for a given participant | Providers can view and void `ineligible` declarations    |
+| `payable`           | A declaration that has been approved and is ready for payment by DfE                                                          | Providers can view and void `payable` declarations       |
+| `voided`            | A declaration that has been retracted by a provider                                                                           | Providers can only view `voided` declarations            |
+| `paid`              | A declaration that has been paid by DfE                                                                                       | Providers can view and void `paid` declarations          |
+| `awaiting_clawback` | A `paid` declaration that has since been voided by a provider                                                                 | Providers can only view `awaiting_clawback` declarations |
+| `clawed_back`       | An `awaiting_clawback` declaration that has had its value deducted from payment by DfE to a provider                          | Providers can only view `clawed_back` declarations       |
 
 Audit trail -- not visible but exists
 
