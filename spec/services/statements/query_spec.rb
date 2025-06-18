@@ -206,6 +206,43 @@ RSpec.describe Statements::Query do
           expect(query.statements).to contain_exactly(statement1, statement2)
         end
       end
+
+      describe "by `statement_date`" do
+        let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4) }
+        let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8) }
+
+        it "returns statement1 for 2025-04" do
+          query = described_class.new(statement_date: "2025-04")
+          expect(query.statements).to eq([statement1])
+        end
+
+        it "returns statement2 for 2024-04" do
+          query = described_class.new(statement_date: "2024-08")
+          expect(query.statements).to eq([statement2])
+        end
+
+        it "returns empty for 2021-01" do
+          query = described_class.new(statement_date: "2021-01")
+          expect(query.statements).to be_empty
+        end
+
+        context "when filter should be ignored" do
+          it "returns all statements when value is :ignore" do
+            query = described_class.new(statement_date: :ignore)
+            expect(query.statements).to contain_exactly(statement1, statement2)
+          end
+
+          it "returns all statements when value is blank" do
+            query = described_class.new(statement_date: " ")
+            expect(query.statements).to contain_exactly(statement1, statement2)
+          end
+
+          it "returns all statements when value is nil" do
+            query = described_class.new(statement_date: nil)
+            expect(query.statements).to contain_exactly(statement1, statement2)
+          end
+        end
+      end
     end
   end
 
