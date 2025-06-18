@@ -12,4 +12,8 @@ RSpec.describe "appropriate_bodies/process_batch/claims/_completed.html.erb" do
   it 'links back to bulk claims overview' do
     expect(rendered).to have_link('Go back to your overview', href: ab_batch_claims_path)
   end
+
+  it 'links back to homepage' do
+    expect(rendered).to have_link('Go back to your homepage', href: ab_teachers_path)
+  end
 end
