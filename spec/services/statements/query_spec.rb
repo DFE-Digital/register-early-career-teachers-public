@@ -172,11 +172,23 @@ RSpec.describe Statements::Query do
           expect(described_class.new.statements).to eq([statement1])
         end
 
-        context "when `output_fee``: 'false'" do
-          it "return only statements with output fee false" do
-            query = described_class.new(output_fee: "false")
+        ["false", false].each do |bool|
+          context "when `output_fee``: #{bool.inspect}" do
+            it "return only statements with output fee false" do
+              query = described_class.new(output_fee: bool)
 
-            expect(query.statements).to eq([statement2])
+              expect(query.statements).to eq([statement2])
+            end
+          end
+        end
+
+        ["true", true].each do |bool|
+          context "when `output_fee``: #{bool.inspect}" do
+            it "return only statements with output fee true" do
+              query = described_class.new(output_fee: bool)
+
+              expect(query.statements).to eq([statement1])
+            end
           end
         end
 
