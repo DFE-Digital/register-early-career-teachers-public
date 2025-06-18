@@ -293,7 +293,7 @@
   - email
   :lead_providers:
   - id
-  - api_id
+  - ecf_id
   - name
   - created_at
   - updated_at

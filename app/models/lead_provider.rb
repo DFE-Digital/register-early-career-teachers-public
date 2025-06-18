@@ -7,5 +7,5 @@ class LeadProvider < ApplicationRecord
 
   # Validations
   validates :name, presence: true, uniqueness: true
-  validates :api_id, uniqueness: { case_sensitive: false }, allow_nil: true
+  validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
 end

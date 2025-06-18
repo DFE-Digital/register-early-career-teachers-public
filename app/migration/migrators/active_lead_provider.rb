@@ -24,7 +24,7 @@ module Migrators
 
     def migrate!
       migrate(self.class.active_lead_providers) do |ecf_active_lead_provider|
-        lead_provider_id = find_lead_provider_id!(api_id: ecf_active_lead_provider.id)
+        lead_provider_id = find_lead_provider_id!(ecf_id: ecf_active_lead_provider.id)
 
         ::ActiveLeadProvider.find_or_create_by!(
           lead_provider_id:,

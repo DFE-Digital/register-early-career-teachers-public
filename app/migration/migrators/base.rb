@@ -117,8 +117,8 @@ module Migrators
       @data_migration ||= DataMigration.find_by(model: self.class.model, worker:)
     end
 
-    def find_lead_provider_id!(api_id:)
-      lead_provider_ids_by_api_id[api_id] || raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProvider")
+    def find_lead_provider_id!(ecf_id:)
+      lead_provider_ids_by_ecf_id[ecf_id] || raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProvider")
     end
 
     def find_active_lead_provider_id!(lead_provider_id:, registration_period_id:)
@@ -169,8 +169,8 @@ module Migrators
       MigrationJob.set(wait: 10.seconds).perform_later
     end
 
-    def lead_provider_ids_by_api_id
-      @lead_provider_ids_by_api_id ||= ::LeadProvider.pluck(:api_id, :id).to_h
+    def lead_provider_ids_by_ecf_id
+      @lead_provider_ids_by_ecf_id ||= ::LeadProvider.pluck(:ecf_id, :id).to_h
     end
 
     def active_lead_provider_ids_by_lead_provider_and_registration_period
