@@ -1,0 +1,19 @@
+.admin-statements-filter {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  .filter-form-group {
+    flex: 1 1 200px;
+    min-width: 0;
+  }
+
+  .filter-button {
+    margin-top: auto;
+    align-self: flex-end;
+  }
+
+  .full-width-select {
+    width: 100%;
+  }
+}
