@@ -5,8 +5,12 @@ module AppropriateBodyHelper
     AppropriateBody.teaching_school_hub.select(:id, :name).all
   end
 
-  def induction_programme_choices
-    ::INDUCTION_PROGRAMMES.map { |key, value| FormChoice.new(key.to_s, value) }
+  def training_programme_choices
+    if Rails.application.config.enable_bulk_upload
+      ::TRAINING_PROGRAMME.map { |key, value| FormChoice.new(key.to_s, value) }
+    else
+      ::INDUCTION_PROGRAMMES.map { |key, value| FormChoice.new(key.to_s, value) }
+    end
   end
 
   # TODO: not currently in use?

@@ -16,13 +16,25 @@ class InductionPeriod < ApplicationRecord
             presence: { message: "Enter a start date" }
 
   validates :induction_programme,
-            inclusion: { in: %w[fip cip diy unknown pre_september_2021],
-                         message: "Choose an induction programme" }
+            inclusion: { 
+              in: if Rails.application.config.enable_bulk_upload
+                %w[school_led provider_led fip cip diy unknown pre_september_2021] # post-2025                        
+              else
+                %w[fip cip diy unknown pre_september_2021]  # pre-2025                       
+              end,
+                
+              # in: INDUCTION_PROGRAMMES.keys.map(&:to_s), # pre-2025
+              # in: TRAINING_PROGRAMME.keys.map(&:to_s), # post-2025
+              # 
+              message: "Choose an induction programme" 
+            }
 
   validates :outcome,
-            inclusion: { in: OUTCOMES,
-                         message: "Outcome must be either pass or fail",
-                         allow_nil: true }
+            inclusion: { 
+              in: OUTCOMES,
+              message: "Outcome must be either pass or fail",
+              allow_nil: true 
+            }
 
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
