@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_13_131551) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_16_123201) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -209,6 +209,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_131551) do
     t.datetime "updated_at", null: false
     t.jsonb "metadata"
     t.string "modifications", array: true
+    t.bigint "active_lead_provider_id"
+    t.bigint "lead_provider_delivery_partnership_id"
+    t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"
@@ -216,6 +219,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_131551) do
     t.index ["ect_at_school_period_id"], name: "index_events_on_ect_at_school_period_id"
     t.index ["induction_extension_id"], name: "index_events_on_induction_extension_id"
     t.index ["induction_period_id"], name: "index_events_on_induction_period_id"
+    t.index ["lead_provider_delivery_partnership_id"], name: "index_events_on_lead_provider_delivery_partnership_id"
     t.index ["lead_provider_id"], name: "index_events_on_lead_provider_id"
     t.index ["mentor_at_school_period_id"], name: "index_events_on_mentor_at_school_period_id"
     t.index ["mentorship_period_id"], name: "index_events_on_mentorship_period_id"
@@ -689,11 +693,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_131551) do
   add_foreign_key "ect_at_school_periods", "lead_providers"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"
+  add_foreign_key "events", "active_lead_providers", on_delete: :nullify
   add_foreign_key "events", "appropriate_bodies", on_delete: :nullify
   add_foreign_key "events", "delivery_partners", on_delete: :nullify
   add_foreign_key "events", "ect_at_school_periods", on_delete: :nullify
   add_foreign_key "events", "induction_extensions", on_delete: :nullify
   add_foreign_key "events", "induction_periods", on_delete: :nullify
+  add_foreign_key "events", "lead_provider_delivery_partnerships", on_delete: :nullify
   add_foreign_key "events", "lead_providers", on_delete: :nullify
   add_foreign_key "events", "mentor_at_school_periods", on_delete: :nullify
   add_foreign_key "events", "mentorship_periods", on_delete: :nullify

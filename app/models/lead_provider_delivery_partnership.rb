@@ -2,6 +2,7 @@ class LeadProviderDeliveryPartnership < ApplicationRecord
   belongs_to :active_lead_provider
   belongs_to :delivery_partner
   has_many :school_partnerships
+  has_many :events
 
   validates :active_lead_provider_id, presence: { message: 'Select an active lead provider' }
   validates :delivery_partner_id,
