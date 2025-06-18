@@ -56,6 +56,7 @@ module Admin
         :finished_on,
         :number_of_terms,
         :induction_programme,
+        :training_programme,
         :appropriate_body_id
       )
     end

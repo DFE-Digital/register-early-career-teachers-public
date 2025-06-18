@@ -5,8 +5,8 @@ RSpec.shared_context '2 valid claims' do
 
   let(:data) do
     [
-      { trn: '1234567', date_of_birth: '1981-06-30', induction_programme: 'fip', started_on: '2025-01-30', error: '' },
-      { trn: '7654321', date_of_birth: '1981-06-30', induction_programme: 'CIP', started_on: '2025-01-30', error: '' }
+      { trn: '1234567', date_of_birth: '1981-06-30', training_programme: 'PROVIDER-LED', started_on: '2025-01-30', error: '' },
+      { trn: '7654321', date_of_birth: '1981-06-30', training_programme: 'school-led', started_on: '2025-01-30', error: '' }
     ]
   end
 end

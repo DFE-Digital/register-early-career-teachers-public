@@ -9,8 +9,18 @@ module AppropriateBodies
         @author = author
       end
 
+      # @param pending_induction_submission_params [ActionController::Parameters]
       def register(pending_induction_submission_params)
         pending_induction_submission.assign_attributes(**pending_induction_submission_params)
+
+        # Transition induction programme to the new training programme values
+        if Rails.application.config.enable_bulk_claim
+          induction_programme = ::PROGRAMME_MAPPER[pending_induction_submission_params[:training_programme]]
+          pending_induction_submission.assign_attributes(induction_programme:) if induction_programme.present?
+        else
+          training_programme = ::PROGRAMME_MAPPER[pending_induction_submission_params[:induction_programme]]
+          pending_induction_submission.assign_attributes(training_programme:) if training_programme.present?
+        end
 
         # FIXME: I think the behaviour here should be to still allow the AB to claim
         #        the ECT, but we shouldn't report the starting of induction to TRS
@@ -78,7 +88,8 @@ module AppropriateBodies
           params: {
             appropriate_body:,
             started_on: pending_induction_submission.started_on,
-            induction_programme: pending_induction_submission.induction_programme
+            induction_programme: pending_induction_submission.induction_programme,
+            training_programme: pending_induction_submission.training_programme,
           }
         ).create_induction_period!
         true

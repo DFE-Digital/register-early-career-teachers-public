@@ -5,11 +5,18 @@ module AppropriateBodyHelper
     AppropriateBody.teaching_school_hub.select(:id, :name).all
   end
 
+  # @return [Array<FormChoice>]
   def induction_programme_choices
     ::INDUCTION_PROGRAMMES.map { |key, value| FormChoice.new(key.to_s, value) }
   end
 
+  # @return [Array<FormChoice>]
+  def training_programme_choices
+    ::TRAINING_PROGRAMME.map { |key, value| FormChoice.new(key.to_s, value) }
+  end
+
   # TODO: not currently in use?
+  # @return [Array<FormChoice>]
   def induction_outcome_choices
     ::INDUCTION_OUTCOMES.map { |key, value| FormChoice.new(key.to_s, value) }
   end

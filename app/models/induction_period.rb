@@ -1,6 +1,5 @@
 class InductionPeriod < ApplicationRecord
   VALID_NUMBER_OF_TERMS = { min: 0, max: 16 }.freeze
-  OUTCOMES = %w[pass fail].freeze
 
   include Interval
   include SharedInductionPeriodValidation
@@ -16,13 +15,24 @@ class InductionPeriod < ApplicationRecord
             presence: { message: "Enter a start date" }
 
   validates :induction_programme,
-            inclusion: { in: %w[fip cip diy unknown pre_september_2021],
-                         message: "Choose an induction programme" }
+            inclusion: {
+              in: %w[fip cip diy unknown pre_september_2021],
+              message: "Choose an induction programme"
+            }
+
+  # TODO: add null: false to the database column after populating old records
+  validates :training_programme,
+            inclusion: {
+              in: ::TRAINING_PROGRAMME.keys.map(&:to_s),
+              message: "Choose an induction programme"
+            }
 
   validates :outcome,
-            inclusion: { in: OUTCOMES,
-                         message: "Outcome must be either pass or fail",
-                         allow_nil: true }
+            inclusion: {
+              in: ::INDUCTION_OUTCOMES.keys.map(&:to_s),
+              message: "Outcome must be either pass or fail",
+              allow_nil: true
+            }
 
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
@@ -39,6 +49,10 @@ class InductionPeriod < ApplicationRecord
     return InductionPeriod.none unless teacher
 
     teacher.induction_periods.excluding(self)
+  end
+
+  def training_programme
+    super || ::PROGRAMME_MAPPER[induction_programme]
   end
 
 private
