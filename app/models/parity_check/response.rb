@@ -4,6 +4,8 @@ module ParityCheck
 
     belongs_to :request
 
+    before_validation :clear_bodies, unless: :different?
+
     validates :request, presence: true
     validates :ecf_status_code, inclusion: { in: 100..599 }
     validates :rect_status_code, inclusion: { in: 100..599 }
@@ -17,6 +19,10 @@ module ParityCheck
 
     def different?
       [ecf_status_code, ecf_body] != [rect_status_code, rect_body]
+    end
+
+    def clear_bodies
+      self.ecf_body = self.rect_body = nil
     end
   end
 end
