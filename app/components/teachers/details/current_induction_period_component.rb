@@ -50,8 +50,21 @@ module Teachers::Details
       current_period.outcome.blank?
     end
 
-    def started_on
+    def card_title
+      current_period.appropriate_body.name
+    end
+
+    def start_date
       current_period.started_on.to_fs(:govuk)
+    end
+
+    def training_programme
+      # helpers.training_programme_name(current_period.training_programme)
+      if Rails.application.config.enable_bulk_claim
+        ::TRAINING_PROGRAMME[current_period.training_programme.to_sym]
+      else
+        ::INDUCTION_PROGRAMMES[current_period.induction_programme.to_sym]
+      end
     end
   end
 end

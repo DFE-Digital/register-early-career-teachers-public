@@ -41,8 +41,15 @@ class PendingInductionSubmission < ApplicationRecord
 
   validates :induction_programme,
             inclusion: {
-              in: %w[fip cip diy],
+              in: %w[fip cip diy unknown], # pre-2025
               message: "Choose an induction programme"
+            },
+            on: :register_ect
+
+  validates :training_programme,
+            inclusion: {
+              in: ::TRAINING_PROGRAMME.keys.map(&:to_s), # post-2025
+              message: "Choose an induction training programme"
             },
             on: :register_ect
 
@@ -68,7 +75,7 @@ class PendingInductionSubmission < ApplicationRecord
 
   validates :outcome,
             inclusion: {
-              in: PendingInductionSubmission.outcomes.keys,
+              in: ::INDUCTION_OUTCOMES.keys.map(&:to_s),
               message: "Outcome must be either 'passed' or 'failed'"
             },
             on: :record_outcome
@@ -103,6 +110,7 @@ class PendingInductionSubmission < ApplicationRecord
   def playback_errors
     assign_attributes(
       induction_programme: nil,
+      training_programme: nil,
       outcome: nil,
       started_on: nil,
       finished_on: nil,
@@ -116,6 +124,10 @@ class PendingInductionSubmission < ApplicationRecord
   # @return [nil, Teacher]
   def teacher
     @teacher ||= Teacher.find_by(trn:)
+  end
+
+  def training_programme
+    super || ::PROGRAMME_MAPPER[induction_programme]
   end
 
 private

@@ -88,7 +88,7 @@ private
 
   # @return [String]
   def random_programme
-    %w[cip fip diy].sample
+    ::TRAINING_PROGRAMME.values.sample
   end
 
   # @return [Float]
@@ -96,6 +96,7 @@ private
     rand(0.0..16.0).round(1)
   end
 
+  # TODO: "release" is not yet a valid outcome enum value
   # @return [String]
   def random_outcome
     %w[pass fail release].sample
