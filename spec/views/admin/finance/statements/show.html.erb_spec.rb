@@ -1,8 +1,8 @@
 RSpec.describe 'admin/finance/statements/show.html.erb' do
-  let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Some LP") }
-  let(:active_lead_provider) { FactoryBot.build(:active_lead_provider, lead_provider:) }
-  let(:raw_statement) { FactoryBot.build(:statement, active_lead_provider:, month: 5, year: 2023) }
-  let(:statement) { Admin::StatementPresenter.new(raw_statement) }
+  let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:statement_rec) { FactoryBot.create(:statement, active_lead_provider:, month: 5, year: 2023) }
+  let(:statement) { Admin::StatementPresenter.new(statement_rec) }
 
   before do
     assign(:statement, statement)
