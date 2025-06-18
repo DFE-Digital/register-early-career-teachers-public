@@ -12,7 +12,8 @@ module AppropriateBodies
           # OPTIMIZE: params effectively passed in twice
           register_ect.register(
             started_on: pending_induction_submission.started_on,
-            induction_programme: pending_induction_submission.induction_programme
+            induction_programme: pending_induction_submission.induction_programme,
+            training_programme: pending_induction_submission.training_programme
           )
           true
         rescue StandardError => e
@@ -29,9 +30,15 @@ module AppropriateBodies
 
       # @return [nil, Boolean]
       def validate_submission!
+        # coerce new type
+        training_programme = row.training_programme.downcase.underscore
+        # map old type
+        induction_programme = ::PROGRAMME_MAPPER[training_programme]
+
         pending_induction_submission.assign_attributes(
           started_on: row.started_on,
-          induction_programme: row.induction_programme.downcase
+          induction_programme:,
+          training_programme:
         )
 
         find_ect.import_from_trs!
@@ -90,6 +97,11 @@ module AppropriateBodies
         true
       end
 
+      # @return [Boolean] school-led, provider-led (case-insensitive)
+      def invalid_training_programme?
+        TRAINING_PROGRAMME.keys.map(&:to_s).exclude?(row.training_programme.downcase.underscore.strip)
+      end
+
       # @return [Boolean] started_on before 1 September 2021
       def predates_ecf_rollout?
         Date.parse(row.started_on.to_s) <= ::ECF_ROLLOUT_DATE
@@ -108,17 +120,9 @@ module AppropriateBodies
         super
 
         pending_induction_submission.errors.add(:base, 'Induction start date must be after 1 September 2021') if predates_ecf_rollout?
-        # TODO: ready for training programme types update
-        # pending_induction_submission.errors.add(:base, 'Induction programme type must be school-led or provider-led') if invalid_training_programme?
-        pending_induction_submission.errors.add(:base, 'Induction programme type must be DIY, FIP or CIP') if invalid_training_programme?
+        pending_induction_submission.errors.add(:base, 'Induction programme type must be school-led or provider-led') if invalid_training_programme?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
-      end
-
-      # @return [Boolean] school-led, provider-led (case-insensitive) new style
-      # @return [Boolean] diy, cip, fip (case-insensitive) old style
-      def invalid_training_programme?
-        row.induction_programme !~ /\A(diy|cip|fip)\z/i
       end
 
       # @return [AppropriateBodies::ClaimAnECT::FindECT]

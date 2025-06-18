@@ -16,9 +16,8 @@ module BatchHelper
       caption: "Your file needs to look like this example",
       head: BatchRows::CLAIM_CSV_HEADINGS.values.reject { |v| v.match?(/error/i) },
       rows: [
-        %w[1234567 2000-11-10 FIP 2025-05-17],
-        %w[2345671 1987-03-29 CIP 2024-04-29],
-        %w[3456712 1992-01-14 DIY 2025-02-03],
+        %w[1234567 2000-11-10 provider-led 2025-05-17],
+        %w[3456712 1992-01-14 school-led 2025-02-03],
       ]
     )
   end

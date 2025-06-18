@@ -27,6 +27,7 @@ shared:
     - created_at
     - updated_at
     - induction_programme
+    - training_programme
     - number_of_terms
     - range
     - teacher_id

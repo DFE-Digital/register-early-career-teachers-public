@@ -48,19 +48,21 @@ module InductionPeriods
       true
     end
 
+    # Only notify TRS if this is the earliest induction period for the teacher
+    # and the teacher hasn't already passed or failed induction
+    # @return [Boolean]
     def notify_trs?
-      # Only notify TRS if this is the earliest induction period for the teacher
-      # and the teacher hasn't already passed or failed induction
       !teacher_has_earlier_induction_periods? && !teacher_has_passed_or_failed_induction?
     end
 
+    # @return [Boolean]
     def teacher_has_earlier_induction_periods?
       InductionPeriod.where(teacher:).started_before(params[:started_on]).exists?
     end
 
+    # @return [Boolean]
     def teacher_has_passed_or_failed_induction?
-      # Check if the teacher has any induction periods with a pass or fail outcome
-      InductionPeriod.where(teacher:, outcome: InductionPeriod::OUTCOMES).exists?
+      InductionPeriod.where(teacher:, outcome: ::INDUCTION_OUTCOMES.keys.map(&:to_s)).exists?
     end
 
     def notify_trs_of_new_induction_start

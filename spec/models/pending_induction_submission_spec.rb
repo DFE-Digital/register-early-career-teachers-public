@@ -103,7 +103,15 @@ RSpec.describe PendingInductionSubmission do
     end
 
     describe "#induction_programme" do
+      before { allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(false) }
+
       it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy]).with_message("Choose an induction programme").on(:register_ect) }
+    end
+
+    describe "#training_programme" do
+      before { allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(true) }
+
+      it { is_expected.to validate_inclusion_of(:training_programme).in_array(%w[school_led provider_led]).with_message("Choose an induction training programme").on(:register_ect) }
     end
 
     describe "#started_on" do
