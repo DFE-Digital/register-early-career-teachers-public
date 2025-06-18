@@ -1,16 +1,20 @@
 RSpec.describe ParityCheck::RequestBuilder do
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:lead_provider) { request.lead_provider }
   let(:path) { "/test-path" }
   let(:method) { :get }
   let(:options) { { foo: :bar } }
   let(:endpoint) { ParityCheck::Endpoint.new(method:, path:, options:) }
-  let(:instance) { described_class.new(endpoint:, lead_provider:) }
+  let(:request) { FactoryBot.create(:parity_check_request, endpoint:) }
+  let(:instance) { described_class.new(request:) }
 
   it "has the correct attributes" do
-    expect(instance).to have_attributes(endpoint:, lead_provider:)
+    expect(instance).to have_attributes(request:)
   end
 
   describe "delegate methods" do
+    it { is_expected.to delegate_method(:lead_provider).to(:request) }
+    it { is_expected.to delegate_method(:endpoint).to(:request) }
+
     it { is_expected.to delegate_method(:method).to(:endpoint) }
     it { is_expected.to delegate_method(:path).to(:endpoint) }
     it { is_expected.to delegate_method(:options).to(:endpoint) }

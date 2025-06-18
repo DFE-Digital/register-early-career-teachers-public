@@ -13,7 +13,8 @@ module ParityCheck
 
       Run.create!(started_at: Time.current).tap do |run|
         lead_providers.to_a.product(endpoints).each do |lead_provider, endpoint|
-          run.requests.create!(lead_provider:, endpoint:)
+          request = run.requests.create!(lead_provider:, endpoint:)
+          ParityCheckRequestJob.perform_later(request_id: request.id)
         end
       end
     end

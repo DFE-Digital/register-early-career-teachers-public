@@ -9,9 +9,9 @@ module ParityCheck
 
     ID_PLACEHOLDER = ":id".freeze
 
-    attribute :endpoint
-    attribute :lead_provider
+    attribute :request
 
+    delegate :lead_provider, :endpoint, to: :request
     delegate :method, :path, :options, to: :endpoint
 
     def url(app:)
