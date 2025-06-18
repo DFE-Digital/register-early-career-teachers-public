@@ -9,7 +9,7 @@ RSpec.describe Migrators::LeadProvider do
 
     def setup_failure_state
       lp = FactoryBot.create(:migration_lead_provider)
-      FactoryBot.create(:lead_provider, name: lp.name, api_id: SecureRandom.uuid)
+      FactoryBot.create(:lead_provider, name: lp.name, ecf_id: SecureRandom.uuid)
     end
 
     describe "#migrate!" do
@@ -23,7 +23,7 @@ RSpec.describe Migrators::LeadProvider do
         instance.migrate!
 
         ::LeadProvider.find_each do |lead_provider|
-          source_record = Migration::LeadProvider.find(lead_provider.api_id)
+          source_record = Migration::LeadProvider.find(lead_provider.ecf_id)
           expect(lead_provider.name).to eq source_record.name
           expect(lead_provider.created_at).to eq source_record.created_at
           expect(lead_provider.updated_at).to eq source_record.updated_at
