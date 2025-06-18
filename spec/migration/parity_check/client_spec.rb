@@ -4,6 +4,7 @@ RSpec.describe ParityCheck::Client do
   let(:endpoint) { FactoryBot.build(:parity_check_endpoint) }
   let(:request) { FactoryBot.build(:parity_check_request, endpoint:) }
   let(:token) { "test_token" }
+  let(:per_page) { ParityCheck::RequestBuilder::PAGINATION_PER_PAGE }
   let(:instance) { described_class.new(request:) }
 
   before do
@@ -31,10 +32,67 @@ RSpec.describe ParityCheck::Client do
 
       include_examples "client performs requests"
 
-      context "when both the path and options contain query parameters" do
-        let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :with_query_parameters, path: "/test-path?path=parameter") }
+      it "makes requests with the correct query parameters" do
+        instance.perform_requests {}
 
-        include_examples "client performs requests"
+        query_parameters = endpoint.options[:query].to_query
+        expect(ecf_requests.first.uri.query).to eq(query_parameters)
+        expect(rect_requests.first.uri.query).to eq(query_parameters)
+      end
+    end
+
+    context "when the path and options contain query parameters and pagination is enabled" do
+      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :with_query_parameters_and_pagination, path: "/test-path?path=parameter") }
+
+      include_examples "client performs requests"
+
+      it "makes requests with the correct query parameters" do
+        options_query_parameters = endpoint.options[:query]
+        path_query_parameters = Addressable::URI.parse(endpoint.path).query_values
+        page_query_parameters = { page: { page: 1, per_page: } }
+        all_query_parameters = path_query_parameters.merge(options_query_parameters, page_query_parameters).to_query
+
+        instance.perform_requests {}
+
+        expect(ecf_requests.first.uri.query).to eq(all_query_parameters)
+        expect(rect_requests.first.uri.query).to eq(all_query_parameters)
+      end
+    end
+
+    context "when performing a request with pagination" do
+      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :with_pagination) }
+
+      include_examples "client performs requests"
+
+      it "makes multiple requests with the correct pagination parameters" do
+        full_page_of_data = { data: Array.new(per_page, { key: :value }) }.to_json
+        partial_page_of_data = { data: Array.new(per_page / 2, { key: :value }) }.to_json
+
+        stub_request(endpoint.method, %r{#{ecf_url + path_without_query_parameters}.*}).to_return(
+          { status: 200, body: full_page_of_data },
+          { status: 200, body: partial_page_of_data }
+        )
+
+        stub_request(endpoint.method, %r{#{rect_url + path_without_query_parameters}.*}).to_return(
+          { status: 201, body: full_page_of_data },
+          { status: 200, body: partial_page_of_data }
+        )
+
+        yielded_responses = []
+        instance.perform_requests { yielded_responses << it }
+
+        expect(yielded_responses.count).to eq(2)
+
+        first_page_query = { page: { page: 1, per_page: } }.to_query
+        expect(ecf_requests.first.uri.query).to include(first_page_query)
+        expect(rect_requests.first.uri.query).to include(first_page_query)
+
+        second_page_query = { page: { page: 2, per_page: } }.to_query
+        expect(ecf_requests.last.uri.query).to include(second_page_query)
+        expect(rect_requests.last.uri.query).to include(second_page_query)
+
+        expect(ecf_requests.count).to eq(2)
+        expect(rect_requests.count).to eq(2)
       end
     end
 
@@ -42,12 +100,14 @@ RSpec.describe ParityCheck::Client do
       let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :post) }
 
       include_examples "client performs requests"
+      include_examples "client performs requests with body"
     end
 
     context "when performing a PUT request" do
       let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :put) }
 
       include_examples "client performs requests"
+      include_examples "client performs requests with body"
     end
   end
 

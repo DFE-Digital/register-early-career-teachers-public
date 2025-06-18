@@ -21,5 +21,13 @@ FactoryBot.define do
     trait :with_query_parameters do
       options { { query: { filter: "value" } } }
     end
+
+    trait :with_pagination do
+      options { { paginate: true } }
+    end
+
+    trait :with_query_parameters_and_pagination do
+      options { { paginate: true, query: { filter: "value" } } }
+    end
   end
 end
