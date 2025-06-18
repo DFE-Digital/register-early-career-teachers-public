@@ -33,15 +33,17 @@ module BatchHelper
       failed: 'red'
     }
 
-    govuk_tag(text: batch.batch_status, colour: colours[batch.batch_status.to_sym])
+    govuk_tag(text: batch.batch_status.titleize, colour: colours[batch.batch_status.to_sym])
   end
 
   # @param batch [PendingInductionSubmissionBatch]
   def batch_link(batch)
-    case batch.batch_type
-    when 'claim' then govuk_link_to('view', ab_batch_claim_path(batch))
-    when 'action' then govuk_link_to('view', ab_batch_action_path(batch))
-    end
+    paths = {
+      claim: ab_batch_claim_path(batch),
+      action: ab_batch_action_path(batch),
+    }
+
+    govuk_link_to('View', paths[batch.batch_type.to_sym])
   end
 
   # @param batches [Array<PendingInductionSubmissionBatches>]
