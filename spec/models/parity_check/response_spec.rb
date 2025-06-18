@@ -5,6 +5,13 @@ describe ParityCheck::Response do
     it { is_expected.to belong_to(:request) }
   end
 
+  describe "before_validation" do
+    it "clears bodies if the responses are the same" do
+      response = FactoryBot.build(:parity_check_response, :equal)
+      expect { response.save! }.to change { response.ecf_body }.to(nil).and change { response.rect_body }.to(nil)
+    end
+  end
+
   describe "validations" do
     subject { FactoryBot.build(:parity_check_response) }
 
