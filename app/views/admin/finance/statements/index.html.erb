@@ -1,5 +1,7 @@
 <% page_data(title: "Statements") %>
 
+<%= render Admin::Statements::Filter.new(filter_params:) %>
+
 <% if @statements.none? %>
   <p class='govuk-body'>There are no statements</p>
 <% else %>
