@@ -19,6 +19,14 @@ module Admin::Finance
       @statement = Admin::StatementPresenter.new(statement)
     end
 
+    def choose
+      if (statement = statements_query.statements.first)
+        redirect_to admin_finance_statement_path(statement)
+      else
+        redirect_to admin_finance_statements_path(filter_params)
+      end
+    end
+
   private
 
     def statements_query
