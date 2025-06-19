@@ -350,7 +350,7 @@
   - name
   - created_at
   - updated_at
-  - ecf_id
+  - api_id
   :declarations:
   - id
   - training_period_id
