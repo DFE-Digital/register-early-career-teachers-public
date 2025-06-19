@@ -21,10 +21,10 @@ module ECTAtSchoolPeriods
     delegate :school_partnership, to: :current_training_period, allow_nil: true, prefix: :current
 
     # current_lead_provider_delivery_partnership
-    delegate :lead_provider_delivery_partnership, to: :current_school_partnership, allow_nil: true, prefix: :current
+    delegate :lead_provider_delivery_partnership, to: :current_school_partnership, allow_nil: true, prefix: :current, private: true
 
     # current_active_lead_provider
-    delegate :active_lead_provider, to: :current_lead_provider_delivery_partnership, allow_nil: true, prefix: :current
+    delegate :active_lead_provider, to: :current_lead_provider_delivery_partnership, allow_nil: true, prefix: :current, private: true
 
     # current_lead_provider
     delegate :lead_provider, to: :current_active_lead_provider, allow_nil: true, prefix: :current
@@ -44,10 +44,10 @@ module ECTAtSchoolPeriods
     delegate :school_partnership, to: :latest_training_period, allow_nil: true, prefix: :latest
 
     # latest_lead_provider_delivery_partnership
-    delegate :lead_provider_delivery_partnership, to: :latest_school_partnership, allow_nil: true, prefix: :latest
+    delegate :lead_provider_delivery_partnership, to: :latest_school_partnership, allow_nil: true, prefix: :latest, private: true
 
     # latest_active_lead_provider
-    delegate :active_lead_provider, to: :latest_lead_provider_delivery_partnership, allow_nil: true, prefix: :latest
+    delegate :active_lead_provider, to: :latest_lead_provider_delivery_partnership, allow_nil: true, prefix: :latest, private: true
 
     # latest_lead_provider
     delegate :lead_provider, to: :latest_active_lead_provider, allow_nil: true, prefix: :latest
