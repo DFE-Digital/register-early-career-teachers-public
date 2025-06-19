@@ -34,7 +34,6 @@ module BatchHelper
   # @param batches [Array<PendingInductionSubmissionBatches>]
   def admin_batch_list_table(batches)
     govuk_table(
-      caption: 'All bulk upload batches',
       head: [
         'Batch ID',
         'Appropriate Body',
