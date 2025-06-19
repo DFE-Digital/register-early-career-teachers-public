@@ -1,4 +1,4 @@
-# Run BeginECTInductionJob for teachers who have:
+# Run BeginECTInductionJob and Teachers::SyncTeacherWithTRSJob for teachers who have:
 # - trs_induction_status = 'RequiredToComplete'
 # - induction periods that have started (started_on is not null)
 # - induction periods that are ongoing (finished_on is null)
@@ -21,8 +21,10 @@ teachers.each do |teacher|
       trn: teacher.trn,
       start_date: ongoing_induction_period.started_on
     )
-
     Rails.logger.debug "  - Enqueued BeginECTInductionJob"
+
+    Teachers::SyncTeacherWithTRSJob.perform_later(teacher:)
+    Rails.logger.debug "  - Enqueued Teachers::SyncTeacherWithTRSJob"
   else
     Rails.logger.debug "Skipping teacher TRN: #{teacher.trn} - no valid ongoing induction period found"
   end
