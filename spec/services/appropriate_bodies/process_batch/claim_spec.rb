@@ -61,6 +61,176 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         expect(submission.trs_last_name).to eq 'Van Houten'
       end
 
+      describe 'formatting checks' do
+        before { service.process! }
+
+        context 'when the TRN is missing' do
+          let(:trn) { '' }
+          let(:teacher) {}
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq [
+              'Fill in the blanks on this row',
+              'Enter a valid TRN using 7 digits'
+            ]
+          end
+        end
+
+        context 'when the date of birth is missing' do
+          let(:date_of_birth) { '' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq [
+              'Fill in the blanks on this row',
+              'Dates must be in the format YYYY-MM-DD'
+            ]
+          end
+        end
+
+        context 'when the date of birth is unrealistic' do
+          let(:date_of_birth) { 100.years.ago }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq [
+              'Date of birth must be a real date and the teacher must be between 18 and 100 years old',
+            ]
+          end
+        end
+
+        context 'when the date of birth is in the future' do
+          let(:date_of_birth) { 1.year.from_now }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq [
+              'Date of birth must be a real date and the teacher must be between 18 and 100 years old',
+            ]
+          end
+        end
+
+        context 'when the start date is missing' do
+          let(:started_on) { '' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq [
+              'Fill in the blanks on this row',
+              'Dates must be in the format YYYY-MM-DD'
+            ]
+          end
+        end
+
+        context 'when the induction_programme is missing' do
+          let(:induction_programme) { '' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq [
+              'Fill in the blanks on this row',
+              'Induction programme type must be DIY, FIP or CIP'
+            ]
+          end
+        end
+
+        context 'when the TRN contains additional padding' do
+          let(:trn) { '  1234567  ' }
+
+          it 'passes validation' do
+            expect(submission.error_messages).not_to eq ['Enter a valid TRN using 7 digits']
+          end
+
+          it 'uses a sanitised version to bypass database restrictions' do
+            expect(submission.trn).to eq '1234567'
+          end
+        end
+
+        context 'when the TRN contains additional non-digits' do
+          let(:trn) { '1234567L' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq ['Enter a valid TRN using 7 digits']
+          end
+
+          it 'uses a sanitised version to bypass database restrictions' do
+            expect(submission.trn).to eq '1234567'
+          end
+        end
+
+        context 'when the TRN contains too many digits' do
+          let(:trn) { '1 2 3 4 5 6 7 8 9' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq ['Enter a valid TRN using 7 digits']
+          end
+
+          it 'uses a sanitised version to bypass database restrictions' do
+            expect(submission.trn).to eq '1234567'
+          end
+        end
+
+        context 'when the TRN is missing digits' do
+          let(:trn) { '0004' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq ['Enter a valid TRN using 7 digits']
+          end
+        end
+
+        context 'when the TRN contains other characters' do
+          let(:trn) { '123456L' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq ['Enter a valid TRN using 7 digits']
+          end
+        end
+
+        context 'when the date of birth is not ISO8601' do
+          let(:date_of_birth) { '30/06/1981' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq ['Dates must be in the format YYYY-MM-DD']
+          end
+        end
+
+        context 'when the start date is not ISO8601' do
+          let(:started_on) { '30/06/1981' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq ['Dates must be in the format YYYY-MM-DD']
+          end
+        end
+
+        context 'when the induction_programme is not recognised' do
+          let(:induction_programme) { 'foo' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq ['Induction programme type must be DIY, FIP or CIP']
+          end
+        end
+
+        context 'when the induction_programme is capitalised' do
+          let(:induction_programme) { 'FIP' }
+
+          it 'passes validation' do
+            expect(submission.error_messages).not_to eq ['Induction programme type must be DIY, FIP or CIP']
+          end
+        end
+
+        context 'when multiple cells are invalid' do
+          let(:teacher) {}
+          let(:trn) { '0004' }
+          let(:date_of_birth) { '30/06/1981' }
+          let(:induction_programme) { 'foo' }
+          let(:started_on) { '' }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq [
+              'Fill in the blanks on this row',
+              'Dates must be in the format YYYY-MM-DD',
+              'Enter a valid TRN using 7 digits',
+              'Induction programme type must be DIY, FIP or CIP'
+            ]
+          end
+        end
+      end
+
       describe '#complete!' do
         before do
           allow(Events::Record).to receive(:record_induction_period_opened_event!).and_call_original
