@@ -3,7 +3,7 @@
 <%= render Admin::Statements::Filter.new(filter_params:) %>
 
 <% if @statements.none? %>
-  <p class='govuk-body'>There are no statements</p>
+  <p class='govuk-body'>No financial statements found</p>
 <% else %>
   <%=
     govuk_table(
