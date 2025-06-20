@@ -40,6 +40,20 @@ describe Statement do
         expect(described_class.with_output_fee).to contain_exactly(statement1)
       end
     end
+
+    describe ".with_statement_date" do
+      let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 5) }
+      let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 6) }
+
+      it "returns only matching statements" do
+        expect(described_class.with_statement_date(year: 2024, month: 6)).to contain_exactly(statement2)
+        expect(described_class.with_statement_date(year: 2025, month: 5)).to contain_exactly(statement1)
+      end
+
+      it "returns empty if none matching" do
+        expect(described_class.with_statement_date(year: 2021, month: 1)).to be_empty
+      end
+    end
   end
 
   describe ".maximum_year" do
