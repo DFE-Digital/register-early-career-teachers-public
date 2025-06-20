@@ -18,25 +18,6 @@ module AppropriateBodies
         pending_induction_submission_batch.update(error_message: e.message)
       end
 
-      # @return [nil] validate each row and create a submission capturing the errors
-      def process!
-        pending_induction_submission_batch.rows.each do |row|
-          @row = row
-          @pending_induction_submission = sparse_pending_induction_submission
-
-          next if fails_pre_checks?
-
-          validate_submission!
-        rescue StandardError => e
-          capture_error(e.message)
-          next
-        end
-
-      # Batch error reporting
-      rescue StandardError => e
-        pending_induction_submission_batch.update(error_message: e.message)
-      end
-
     private
 
       # @return [Boolean]
