@@ -52,14 +52,14 @@ describe StatementSerializer, type: :serializer do
     end
 
     describe "`paid` status" do
-      it "returns `true` when state is `paid`" do
-        statement.state = :paid
+      it "returns `true` when status is `paid`" do
+        statement.status = :paid
 
         expect(attributes["paid"]).to be(true)
       end
 
       it "returns `false` when `state` is not `paid`" do
-        statement.state = :open
+        statement.status = :open
 
         expect(attributes["paid"]).to be(false)
       end

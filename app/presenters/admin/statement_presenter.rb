@@ -11,9 +11,9 @@ module Admin
     end
 
     def status_tag_kwargs
-      colour = { 'open' => 'blue', 'payable' => 'yellow', 'paid' => 'green' }.fetch(statement.state)
+      colour = { 'open' => 'blue', 'payable' => 'yellow', 'paid' => 'green' }.fetch(statement.status)
 
-      { text: statement.state.capitalize, colour: }
+      { text: statement.status.capitalize, colour: }
     end
 
     def page_title

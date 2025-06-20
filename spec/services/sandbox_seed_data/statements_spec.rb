@@ -27,7 +27,7 @@ RSpec.describe SandboxSeedData::Statements do
           active_lead_provider:,
           deadline_date: expected_deadline_date,
           payment_date: be_between(expected_deadline_date, expected_deadline_date + 2.months),
-          state: be_in(%w[open payable paid])
+          status: be_in(%w[open payable paid])
         )
       end
     end
@@ -35,7 +35,7 @@ RSpec.describe SandboxSeedData::Statements do
     it "creates statements with all states" do
       instance.plant
 
-      expect(Statement.distinct.pluck(:state)).to match_array(%w[open payable paid])
+      expect(Statement.distinct.pluck(:status)).to match_array(%w[open payable paid])
     end
 
     it "logs the creation of statements" do
@@ -55,8 +55,8 @@ RSpec.describe SandboxSeedData::Statements do
         expect(logger).to have_received(:info).with(/#{Date::MONTHNAMES[month]}/).at_least(:once)
       end
 
-      %i[OP PB PD].each do |state|
-        expect(logger).to have_received(:info).with(/#{state}/).at_least(:once)
+      %i[OP PB PD].each do |status|
+        expect(logger).to have_received(:info).with(/#{status}/).at_least(:once)
       end
     end
 
