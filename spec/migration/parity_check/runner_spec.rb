@@ -18,13 +18,13 @@ RSpec.describe ParityCheck::Runner do
   describe "#run" do
     subject(:run) { instance.run }
 
-    it "creates a ParityCheck::Run" do
+    it "creates a pending run" do
       created_run = nil
       expect { created_run = run }.to change(ParityCheck::Run, :count).by(1)
-      expect(created_run).to have_attributes(started_at: be_within(5.seconds).of(Time.current))
+      expect(created_run).to be_pending
     end
 
-    it "creates a ParityCheck::Request for each lead provider and endpoint" do
+    it "creates a request for each lead provider and endpoint" do
       lead_provider1 = FactoryBot.create(:lead_provider)
       lead_provider2 = FactoryBot.create(:lead_provider)
       lead_providers = [lead_provider1, lead_provider2]
@@ -40,14 +40,13 @@ RSpec.describe ParityCheck::Runner do
       )
     end
 
-    it "enqueues a ParityCheckRequestJob for each request" do
-      FactoryBot.create(:lead_provider)
+    it "calls the run dispatcher" do
+      run_dispatcher = instance_double(ParityCheck::RunDispatcher, dispatch: nil)
+      allow(ParityCheck::RunDispatcher).to receive(:new).and_return(run_dispatcher)
 
-      expect { run }.to have_enqueued_job(ParityCheckRequestJob).exactly(endpoints.count).times
+      run
 
-      ParityCheck::Request.find_each do |request|
-        expect(ParityCheckRequestJob).to have_been_enqueued.with(request_id: request.id)
-      end
+      expect(run_dispatcher).to have_received(:dispatch)
     end
 
     context "when parity check is disabled" do
