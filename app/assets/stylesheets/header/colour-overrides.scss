@@ -3,7 +3,7 @@ $colours: ("pink", "orange", "red", "purple", "yellow");
 @each $colour in $colours {
   .govuk-header {
     &.app-header--#{$colour} {
-      border-color: govuk-colour($colour);
+      outline: 5px solid govuk-colour($colour);
     }
   }
 }
