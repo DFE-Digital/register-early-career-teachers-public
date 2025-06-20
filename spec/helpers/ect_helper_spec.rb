@@ -11,6 +11,7 @@ RSpec.describe ECTHelper, type: :helper do
     context "when the ECT has a TRS induction status" do
       context "when the status is Passed" do
         let(:trs_induction_status) { "Passed" }
+
         it "returns a green 'Registered' tag" do
           expect(helper.ect_status(ect_at_school_period)).to have_css('strong.govuk-tag.govuk-tag--blue', text: 'Completed induction')
         end
