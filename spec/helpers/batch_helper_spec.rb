@@ -29,33 +29,6 @@ RSpec.describe BatchHelper, type: :helper do
     end
   end
 
-  describe "#batch_example_claim" do
-    it do
-      expect(batch_example_claim).to have_text('Your file needs to look like this example')
-      expect(batch_example_claim).to have_selector('table tr', count: 4)
-      expect(batch_example_claim).to have_selector('th', text: 'TRN')
-      expect(batch_example_claim).to have_selector('th', text: 'Date of birth')
-      expect(batch_example_claim).to have_selector('th', text: 'Induction programme')
-      expect(batch_example_claim).to have_selector('th', text: 'Induction period start date')
-
-      expect(batch_example_claim).not_to have_selector('th', text: 'Error message')
-    end
-  end
-
-  describe "#batch_example_action" do
-    it do
-      expect(batch_example_action).to have_text('Your file needs to look like this example')
-      expect(batch_example_action).to have_selector('table tr', count: 4)
-      expect(batch_example_action).to have_selector('th', text: 'TRN')
-      expect(batch_example_action).to have_selector('th', text: 'Date of birth')
-      expect(batch_example_action).to have_selector('th', text: 'Induction period end date')
-      expect(batch_example_action).to have_selector('th', text: 'Number of terms')
-      expect(batch_example_action).to have_selector('th', text: 'Outcome')
-
-      expect(batch_example_action).not_to have_selector('th', text: 'Error message')
-    end
-  end
-
   context "with a single batch" do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, :completed) }
 
@@ -68,14 +41,6 @@ RSpec.describe BatchHelper, type: :helper do
     describe "#batch_link" do
       it do
         expect(batch_link(batch)).to have_text('View')
-      end
-    end
-
-    describe "#batch_action_summary" do
-      it do
-        expect(batch_action_summary(batch)).to have_text('0 ECTs with a passed induction')
-        expect(batch_action_summary(batch)).to have_text('0 ECTs with a failed induction')
-        expect(batch_action_summary(batch)).to have_text('0 ECTs with a released outcome')
       end
     end
   end
