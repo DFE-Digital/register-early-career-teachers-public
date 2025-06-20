@@ -1,0 +1,23 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <%= form_with method: :get, url: ab_teachers_path, local: true do |f| %>
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="q">
+          <%= search_label_text %>
+        </label>
+        <div class="govuk-hint">Enter a name or TRN</div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <%= f.text_field("q",
+                  value: query,
+                  class: "govuk-input") %>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <%= f.submit("Search", class: "govuk-button govuk-!-margin-left-2") %>
+          </div>
+        </div>
+      </div>
+      <%= f.hidden_field(:status, value: status) %>
+    <% end %>
+  </div>
+</div>
