@@ -48,9 +48,9 @@ module ECTHelper
     when "Passed"
       govuk_tag(text: "Completed induction", colour: "blue")
     when "Failed"
-      govuk_tag(text: "Failed induction", colour: "red")
+      govuk_tag(text: "Failed induction", colour: "pink")
     when "Exempt"
-      govuk_tag(text: "Exempt", colour: "yellow")
+      govuk_tag(text: "Exempt", colour: "grey")
     when nil, ""
       if current_mentor_name(ect)
         govuk_tag(text: "Registered", colour: "green")
