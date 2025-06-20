@@ -20,7 +20,11 @@ module Migrators
 
     def migrate!
       migrate(self.class.delivery_partners) do |delivery_partner|
-        ::DeliveryPartner.create!(name: delivery_partner.name)
+        dp = ::DeliveryPartner.find_or_initialize_by(api_id: delivery_partner.id)
+        dp.name = delivery_partner.name
+        dp.created_at = delivery_partner.created_at
+        dp.updated_at = delivery_partner.updated_at
+        dp.save!
       end
     end
   end
