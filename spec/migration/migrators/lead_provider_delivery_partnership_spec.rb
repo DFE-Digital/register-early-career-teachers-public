@@ -34,6 +34,8 @@ describe Migrators::LeadProviderDeliveryPartnership do
           lpdp = LeadProviderDeliveryPartnership.find_by!(ecf_id: provider_relationship.id)
           expect(lpdp.active_lead_provider).to eq(active_lead_provider)
           expect(lpdp.delivery_partner).to eq(delivery_partner)
+          expect(lpdp.created_at).to eq provider_relationship.created_at
+          expect(lpdp.updated_at).to eq provider_relationship.updated_at
         end
       end
     end

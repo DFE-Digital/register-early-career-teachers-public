@@ -5,7 +5,7 @@ module Migrators
     end
 
     def self.model
-      :school_partnership
+      :lead_provider_delivery_partnership
     end
 
     def self.provider_relationships
@@ -18,7 +18,7 @@ module Migrators
 
     def self.reset!
       if Rails.application.config.enable_migration_testing
-        ::SchoolPartnership.connection.execute("TRUNCATE #{::SchoolPartnership.table_name} RESTART IDENTITY CASCADE")
+        ::LeadProviderDeliveryPartnership.connection.execute("TRUNCATE #{::LeadProviderDeliveryPartnership.table_name} RESTART IDENTITY CASCADE")
       end
     end
 
@@ -29,6 +29,9 @@ module Migrators
           lead_provider_id: ::LeadProvider.find_by!(ecf_id: provider_relationship.lead_provider_id),
           registration_period_id: ::RegistratonPeriod.find(provider_relationship.cohort.start_year))
         partnership.delivery_partner = ::DeliveryPartner.find_by!(api_id: provider_relationship.delivery_partner_id)
+        partnership.created_at = provider_relationship.created_at
+        partnership.updated_at = provider_relationship.updated_at
+
         partnership.save!
       end
     end
