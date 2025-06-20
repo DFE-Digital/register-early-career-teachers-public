@@ -7,7 +7,7 @@ RSpec.describe "Admin Bulk Batches", type: :request do
 
   describe "GET /admin/bulk/batches" do
     context "when signed in as admin" do
-      before { admin_user }
+      include_context 'sign in as DfE user'
 
       it "renders successfully" do
         get admin_bulk_batches_path
@@ -22,6 +22,15 @@ RSpec.describe "Admin Bulk Batches", type: :request do
       end
     end
 
+    context "when signed in as a non-DfE user" do
+      include_context 'sign in as non-DfE user'
+
+      it "requires authorisation" do
+        get admin_bulk_batches_path
+        expect(response.status).to eq(401)
+      end
+    end
+
     context "when not signed in" do
       it "redirects to sign in" do
         get admin_bulk_batches_path
@@ -32,7 +41,7 @@ RSpec.describe "Admin Bulk Batches", type: :request do
 
   describe "GET /admin/bulk/batches/:id" do
     context "when signed in as admin" do
-      before { admin_user }
+      include_context 'sign in as DfE user'
 
       it "renders successfully" do
         get admin_bulk_batch_path(batch)
@@ -44,6 +53,15 @@ RSpec.describe "Admin Bulk Batches", type: :request do
         get admin_bulk_batch_path(batch)
         expect(response.body).to include(batch.appropriate_body.name)
         expect(response.body).to include("Batch ID")
+      end
+    end
+
+    context "when signed in as a non-DfE user" do
+      include_context 'sign in as non-DfE user'
+
+      it "requires authorisation" do
+        get admin_bulk_batch_path(batch)
+        expect(response.status).to eq(401)
       end
     end
 

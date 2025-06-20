@@ -25,7 +25,6 @@ RSpec.describe BatchHelper, type: :helper do
 
       expect(result).to eq('<table class="govuk-table">table</table>')
       expect(helper).to have_received(:govuk_table).with(
-        caption: 'All bulk upload batches',
         head: [
           'Batch ID',
           'Appropriate Body',
