@@ -35,7 +35,7 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
         [
           {
             trn: '1234567',
-            date_of_birth: '1990-01-01',
+            date_of_birth: '',
             finished_on: '2023-12-31',
             number_of_terms: '2.0',
             outcome: 'pass',
@@ -87,7 +87,7 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
           expect(presenter.to_csv).to eq(
             <<~CSV_DATA
               "TRN","Date of birth","Induction period end date","Number of terms","Outcome","Error message"
-              "1234567","1990-01-01","2023-12-31","2.0","pass","error one, error two, error three, and error four"
+              "1234567","","2023-12-31","2.0","pass","error one, error two, error three, and error four"
             CSV_DATA
           )
         end

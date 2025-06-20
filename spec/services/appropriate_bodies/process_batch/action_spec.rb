@@ -86,7 +86,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
             'Fill in the blanks on this row',
-            'Dates must be in the format YYYY-MM-DD'
+            'Dates must be in the format YYYY-MM-DD',
+            'Date of birth must be a real date and the teacher must be between 18 and 100 years old'
           ]
         end
       end

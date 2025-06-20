@@ -55,14 +55,17 @@ module BatchRows
 
       # @return [Boolean] not between 18-99
       def invalid_age?
+        return true if date_of_birth.blank?
+
         !(Time.zone.today.year - Date.parse(date_of_birth).year).between?(18, 99)
       rescue Date::Error
-        false
+        true
       end
 
+      # @return [Boolean] school-led, provider-led (case-insensitive) new style
+      # @return [Boolean] diy, cip, fip (case-insensitive) old style
       def invalid_training_programme?
         # PROGRAMME_TYPES.values.map(&:downcase).exclude?(induction_programme.downcase.strip)
-
         induction_programme !~ /\A(diy|cip|fip)\z/i
       end
 
