@@ -19,7 +19,7 @@ describe Admin::StatementPresenter do
 
   describe '#status_tag_kwargs' do
     context 'when open' do
-      let(:statement) { FactoryBot.build(:statement, state: 'open') }
+      let(:statement) { FactoryBot.build(:statement, :open) }
 
       it 'is blue and Open' do
         expect(subject.status_tag_kwargs).to eql({ colour: 'blue', text: 'Open' })
@@ -27,7 +27,7 @@ describe Admin::StatementPresenter do
     end
 
     context 'when payable' do
-      let(:statement) { FactoryBot.build(:statement, state: 'payable') }
+      let(:statement) { FactoryBot.build(:statement, :payable) }
 
       it 'is yellow and Payable' do
         expect(subject.status_tag_kwargs).to eql({ colour: 'yellow', text: 'Payable' })
@@ -35,7 +35,7 @@ describe Admin::StatementPresenter do
     end
 
     context 'when paid' do
-      let(:statement) { FactoryBot.build(:statement, state: 'paid') }
+      let(:statement) { FactoryBot.build(:statement, :paid) }
 
       it 'is green and Paid' do
         expect(subject.status_tag_kwargs).to eql({ colour: 'green', text: 'Paid' })
@@ -43,7 +43,7 @@ describe Admin::StatementPresenter do
     end
 
     context 'when unrecognised' do
-      let(:statement) { FactoryBot.build(:statement, state: 'bad_state') }
+      let(:statement) { FactoryBot.build(:statement, status: 'bad_state') }
 
       it 'raises an IndexError' do
         expect { subject.status_tag_kwargs }.to raise_error(IndexError)
