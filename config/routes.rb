@@ -76,6 +76,10 @@ Rails.application.routes.draw do
         end
       end
     end
+
+    namespace :bulk do
+      resources :batches, only: %i[index show]
+    end
   end
 
   resource :appropriate_bodies, only: %i[show], path: 'appropriate-body', as: 'ab_landing', controller: 'appropriate_bodies/landing'
