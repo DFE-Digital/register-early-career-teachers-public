@@ -25,7 +25,6 @@ describe Migrators::LeadProviderDeliveryPartnership do
         instance.migrate!
 
         described_class.provider_relationships.find_each do |provider_relationship|
-
           lead_provider = LeadProvider.find_by!(ecf_id: provider_relationship.lead_provider_id)
           delivery_partner = DeliveryPartner.find_by!(api_id: provider_relationship.delivery_partner_id)
           registration_period = RegistrationPeriod.find(provider_relationship.cohort.start_year)
