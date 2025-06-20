@@ -441,6 +441,7 @@
   - rect_body
   - ecf_time_ms
   - rect_time_ms
+  - page
   - created_at
   - updated_at
   :parity_check_endpoints:

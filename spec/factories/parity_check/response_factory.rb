@@ -7,5 +7,12 @@ FactoryBot.define do
     rect_body { "RECT response body" }
     rect_status_code { 201 }
     rect_time_ms { 150 }
+
+    trait :equal do
+      ecf_status_code { 200 }
+      rect_status_code { 200 }
+      ecf_body { "Same response body" }
+      rect_body { "Same response body" }
+    end
   end
 end

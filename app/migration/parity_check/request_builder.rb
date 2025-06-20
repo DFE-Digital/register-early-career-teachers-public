@@ -10,6 +10,7 @@ module ParityCheck
     class UnrecognizedQueryError < RuntimeError; end
 
     ID_PLACEHOLDER = ":id".freeze
+    PAGINATION_PER_PAGE = 100
 
     attribute :request
 
@@ -39,13 +40,17 @@ module ParityCheck
     end
 
     def query
-      query = options[:query]
+      options_query.merge(pagination_query)
+    end
 
-      return unless query
+    def page
+      return unless pagination_enabled?
 
-      raise UnrecognizedQueryError, "Query must be a Hash: #{query}" unless query.is_a?(Hash)
+      @page ||= 1
+    end
 
-      query
+    def advance_page(previous_response)
+      pages_remain?(previous_response) && @page = page + 1
     end
 
   private
@@ -67,6 +72,36 @@ module ParityCheck
 
     def token_provider
       @token_provider ||= TokenProvider.new
+    end
+
+    def options_query
+      options_query = options[:query]
+
+      return {} unless options_query
+
+      raise UnrecognizedQueryError, "Query must be a Hash: #{options_query}" unless options_query.is_a?(Hash)
+
+      options_query
+    end
+
+    def pagination_query
+      return {} unless pagination_enabled?
+
+      { page: { page:, per_page: PAGINATION_PER_PAGE } }
+    end
+
+    def pages_remain?(previous_response)
+      return nil unless pagination_enabled?
+
+      [previous_response.ecf_body, previous_response.rect_body].any? do |body|
+        JSON.parse(body)["data"]&.size == PAGINATION_PER_PAGE
+      rescue JSON::ParserError
+        false
+      end
+    end
+
+    def pagination_enabled?
+      ActiveRecord::Type::Boolean.new.cast(options[:paginate])
     end
 
     # Path ID methods
