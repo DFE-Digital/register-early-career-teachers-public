@@ -1,12 +1,12 @@
 <%
   page_data(
-    title: "Bulk actions",
+    title: "Overview for recording outcomes using a CSV",
     backlink_href: ab_teachers_path
   )
 %>
 
-<%= govuk_button_link_to("Record outcomes and releases in bulk", new_ab_batch_action_path, secondary: true) %>
+<%= govuk_button_link_to("Upload a CSV", new_ab_batch_action_path, secondary: true) %>
 
 <%= batch_list_table(@pending_induction_submission_batches) %>
 
-<p><%= govuk_link_to("Go to claims", ab_batch_claims_path) %></p>
+<p><%= govuk_link_to("Go back to homepage", ab_teachers_path) %></p>

@@ -82,6 +82,136 @@ RSpec.describe BatchRows do
         expect(dummy_action.rows.first.error).to be_nil
       end
     end
+
+    describe '#invalid_trn?' do
+      it 'returns false for valid TRNs' do
+        allow(dummy_action).to receive(:data).and_return([{ trn: '1234567' }])
+        expect(dummy_action.rows.first).not_to be_invalid_trn
+      end
+
+      it 'returns true for invalid TRNs' do
+        allow(dummy_action).to receive(:data).and_return([{ trn: '12345678' }])
+        expect(dummy_action.rows.first).to be_invalid_trn
+        allow(dummy_action).to receive(:data).and_return([{ trn: '123456' }])
+        expect(dummy_action.rows.first).to be_invalid_trn
+        allow(dummy_action).to receive(:data).and_return([{ trn: 'foo' }])
+        expect(dummy_action.rows.first).to be_invalid_trn
+        allow(dummy_action).to receive(:data).and_return([{ trn: '' }])
+        expect(dummy_action.rows.first).to be_invalid_trn
+      end
+    end
+
+    describe '#blank_cell?' do
+      it 'returns false when no cells except error are blank' do
+        expect(dummy_action.rows.first).not_to be_blank_cell
+      end
+
+      it 'returns true when any cell except error is blank' do
+        allow(dummy_action).to receive(:data).and_return([{ trn: nil, date_of_birth: '1981-06-30', finished_on: '2025-01-30', number_of_terms: '0.5', outcome: 'pass', error: '' }])
+        expect(dummy_action.rows.first).to be_blank_cell
+        allow(dummy_action).to receive(:data).and_return([{ trn: '', date_of_birth: '1981-06-30', finished_on: '2025-01-30', number_of_terms: '0.5', outcome: 'pass', error: '' }])
+        expect(dummy_action.rows.first).to be_blank_cell
+        allow(dummy_action).to receive(:data).and_return([{ date_of_birth: '1981-06-30', finished_on: '2025-01-30', number_of_terms: '0.5', outcome: 'pass', error: '' }])
+        expect(dummy_action.rows.first).to be_blank_cell
+      end
+    end
+
+    describe '#invalid_outcome?' do
+      it 'returns false for valid outcomes' do
+        allow(dummy_action).to receive(:data).and_return([{ outcome: 'pass' }])
+        expect(dummy_action.rows.first).not_to be_invalid_outcome
+        allow(dummy_action).to receive(:data).and_return([{ outcome: 'FAIL' }])
+        expect(dummy_action.rows.first).not_to be_invalid_outcome
+      end
+
+      it 'returns true for invalid outcomes' do
+        allow(dummy_action).to receive(:data).and_return([{ outcome: 'passed' }])
+        expect(dummy_action.rows.first).to be_invalid_outcome
+        allow(dummy_action).to receive(:data).and_return([{ outcome: 'Released' }])
+        expect(dummy_action.rows.first).to be_invalid_outcome
+        allow(dummy_action).to receive(:data).and_return([{ outcome: '' }])
+        expect(dummy_action.rows.first).to be_invalid_outcome
+      end
+    end
+
+    describe '#invalid_terms?' do
+      it 'returns false for valid terms' do
+        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '1.1' }])
+        expect(dummy_action.rows.first).not_to be_invalid_terms
+        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '16.0' }])
+        expect(dummy_action.rows.first).not_to be_invalid_terms
+      end
+
+      it 'returns true for invalid terms' do
+        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '1.11' }])
+        expect(dummy_action.rows.first).to be_invalid_terms
+        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '16.1' }])
+        expect(dummy_action.rows.first).to be_invalid_terms
+        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: 'foo' }])
+        expect(dummy_action.rows.first).to be_invalid_terms
+        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '' }])
+        expect(dummy_action.rows.first).to be_invalid_terms
+      end
+    end
+
+    describe '#invalid_date?' do
+      it 'returns false for valid dates' do
+        allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: '1980-01-01', started_on: '1980-01-01' }])
+        expect(dummy_claim.rows.first).not_to be_invalid_date
+        allow(dummy_action).to receive(:data).and_return([{ date_of_birth: '1980-01-01', finished_on: '1980-01-01' }])
+        expect(dummy_action.rows.first).not_to be_invalid_date
+      end
+
+      it 'returns true for invalid dates' do
+        allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: '01/01/2025', started_on: '2025-01-01' }])
+        expect(dummy_claim.rows.first).to be_invalid_date
+        allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: '2025-01-01', started_on: 'foo' }])
+        expect(dummy_claim.rows.first).to be_invalid_date
+        allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: 'foo' }])
+        expect(dummy_claim.rows.first).to be_invalid_date
+
+        allow(dummy_action).to receive(:data).and_return([{ date_of_birth: '01/01/2025', finished_on: '2025-01-01' }])
+        expect(dummy_action.rows.first).to be_invalid_date
+        allow(dummy_action).to receive(:data).and_return([{ date_of_birth: '2025-01-01', finished_on: 'foo' }])
+        expect(dummy_action.rows.first).to be_invalid_date
+        allow(dummy_action).to receive(:data).and_return([{ date_of_birth: 'foo' }])
+        expect(dummy_action.rows.first).to be_invalid_date
+      end
+    end
+
+    describe '#invalid_age?' do
+      it 'returns false for valid ages' do
+        allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: '1980-01-01' }])
+        expect(dummy_claim.rows.first).not_to be_invalid_age
+      end
+
+      it 'returns true for invalid ages' do
+        allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: '2025-01-01' }])
+        expect(dummy_claim.rows.first).to be_invalid_age
+        allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: '1920-01-01' }])
+        expect(dummy_claim.rows.first).to be_invalid_age
+        allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: 'foo' }])
+        expect(dummy_claim.rows.first).to be_invalid_age
+        allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: '' }])
+        expect(dummy_claim.rows.first).to be_invalid_age
+      end
+    end
+
+    describe '#invalid_training_programme?' do
+      it 'returns false for valid training programmes' do
+        allow(dummy_claim).to receive(:data).and_return([{ induction_programme: 'DiY' }])
+        expect(dummy_claim.rows.first).not_to be_invalid_training_programme
+      end
+
+      it 'returns true for invalid training programmes' do
+        allow(dummy_claim).to receive(:data).and_return([{ induction_programme: 'DIYI' }])
+        expect(dummy_claim.rows.first).to be_invalid_training_programme
+        allow(dummy_claim).to receive(:data).and_return([{ induction_programme: 'foo' }])
+        expect(dummy_claim.rows.first).to be_invalid_training_programme
+        allow(dummy_claim).to receive(:data).and_return([{ induction_programme: '' }])
+        expect(dummy_claim.rows.first).to be_invalid_training_programme
+      end
+    end
   end
 end
 
