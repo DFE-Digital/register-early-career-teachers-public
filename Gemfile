@@ -19,7 +19,7 @@ gem "rack-attack"
 gem "redis"
 gem "tzinfo-data", platforms: %i[windows jruby]
 
-gem "govuk-components"
+gem "govuk-components", "~> 5.10.2b1"
 gem "govuk_design_system_formbuilder"
 gem "govuk_markdown"
 
