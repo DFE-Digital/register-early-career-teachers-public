@@ -17,4 +17,4 @@
   %>
 <% end %>
 
-<%= govuk_pagination(pagy: @pagy) %>
+<%= render PaginationWithCount.new(pagy: @pagy, record_name: "statements") %>
