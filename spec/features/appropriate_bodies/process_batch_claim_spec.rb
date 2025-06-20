@@ -36,7 +36,7 @@ RSpec.describe 'Process bulk claims' do
       perform_enqueued_jobs
       # This job does validation and persistence of the claims all at once
       page.reload
-      expect(page.get_by_text('completed', exact: true)).to be_visible
+      expect(page.get_by_text('Completed', exact: true)).to be_visible
     end
   end
 
@@ -90,7 +90,7 @@ RSpec.describe 'Process bulk claims' do
 
         perform_enqueued_jobs
         page.reload
-        expect(page.get_by_text('completed', exact: true)).to be_visible
+        expect(page.get_by_text('Completed', exact: true)).to be_visible
       end
     end
   end
