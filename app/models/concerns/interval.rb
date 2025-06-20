@@ -2,11 +2,11 @@ module Interval
   extend ActiveSupport::Concern
 
   included do
+    include Queries::RangeQueries
     # Validations
     validate :period_dates_validation
 
     # Scopes
-    scope :overlapping_with, ->(period) { where("range && daterange(?, ?)", period.started_on, period.finished_on) }
     scope :ongoing, -> { where(finished_on: nil) }
     scope :finished, -> { where.not(finished_on: nil) }
     scope :earliest_first, -> { order(started_on: 'asc') }
@@ -15,8 +15,9 @@ module Interval
     scope :started_on_or_after, ->(date) { where(started_on: date..) }
     scope :finished_before, ->(date) { where(finished_on: ...date) }
     scope :finished_on_or_after, ->(date) { where(finished_on: date..) }
-    scope :containing_period, ->(period) { where("range @> daterange(?, ?)", period.started_on, period.finished_on) }
-    scope :ongoing_on, ->(date) { where("range @> ?::date", date) }
+    scope :overlapping_with, ->(period) { where(*overlapping_with_range(period.started_on, period.finished_on)) }
+    scope :containing_period, ->(period) { where(*containing_range(period.started_on, period.finished_on)) }
+    scope :ongoing_on, ->(date) { where(*date_in_range(date)) }
   end
 
   # Validations
