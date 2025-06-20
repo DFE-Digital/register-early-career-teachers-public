@@ -33,7 +33,7 @@ module SandboxSeedData
               deadline_date:
             ) do |statement|
               statement.payment_date = payment_date(deadline_date)
-              statement.state = state(statement.payment_date, deadline_date)
+              statement.status = status(statement.payment_date, deadline_date)
               statement.output_fee = output_fee
             end
           end
@@ -73,7 +73,7 @@ module SandboxSeedData
       Time.zone.local(year, month).end_of_month
     end
 
-    def state(payment_date, deadline_date)
+    def status(payment_date, deadline_date)
       if payment_date < Date.current
         :paid
       elsif Date.current.between?(deadline_date, payment_date)
@@ -98,21 +98,21 @@ module SandboxSeedData
       Date::MONTHNAMES[month].rjust(COL_WIDTHS[:month])
     end
 
-    def shorthand_states(statements_by_year_and_month, month, year)
-      statements_by_year_and_month.dig(year, month)&.map(&:shorthand_state) || []
+    def shorthand_statuses(statements_by_year_and_month, month, year)
+      statements_by_year_and_month.dig(year, month)&.map(&:shorthand_status) || []
     end
 
-    def format_states(shorthand_states)
-      return 'none'.rjust(COL_WIDTHS[:year]) unless shorthand_states
+    def format_statuses(shorthand_statuses)
+      return 'none'.rjust(COL_WIDTHS[:year]) unless shorthand_statuses
 
-      coloured_states = shorthand_states.map { |state| Colourize.text(state, STATE_COLOURS[state.to_sym]) }
+      coloured_statuses = shorthand_statuses.map { |status| Colourize.text(status, STATE_COLOURS[status.to_sym]) }
       # The colourizing characters affect the length so offset the rjust.
-      offset = coloured_states.sum(&:length) - shorthand_states.sum(&:length)
-      coloured_states.join(", ").rjust(COL_WIDTHS[:year] + offset)
+      offset = coloured_statuses.sum(&:length) - shorthand_statuses.sum(&:length)
+      coloured_statuses.join(", ").rjust(COL_WIDTHS[:year] + offset)
     end
 
     def build_month_row(month, years, statements_by_year_and_month)
-      [format_month(month)] + years.map { |year| format_states(shorthand_states(statements_by_year_and_month, month, year)) }
+      [format_month(month)] + years.map { |year| format_statuses(shorthand_statuses(statements_by_year_and_month, month, year)) }
     end
 
     def log_statement_seed_info(lead_provider, statements)

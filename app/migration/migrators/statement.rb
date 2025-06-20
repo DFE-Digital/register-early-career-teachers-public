@@ -37,7 +37,7 @@ module Migrators
           payment_date: ecf_statement.payment_date,
           marked_as_paid_at: ecf_statement.marked_as_paid_at,
           output_fee: ecf_statement.output_fee,
-          state: state(ecf_statement),
+          status: status(ecf_statement),
           created_at: ecf_statement.created_at,
           updated_at: ecf_statement.updated_at
         )
@@ -46,7 +46,7 @@ module Migrators
 
   private
 
-    def state(ecf_statement)
+    def status(ecf_statement)
       case ecf_statement.type
       when "Finance::Statement::ECF::Payable"
         :payable
