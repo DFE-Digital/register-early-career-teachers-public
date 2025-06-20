@@ -117,7 +117,7 @@ RSpec.describe ParityCheck::Client do
     it "raises an UnsupportedRequestMethodError" do
       expect {
         instance.perform_requests {}
-      }.to raise_error(NoMethodError, "undefined method 'fetch' for module HTTParty")
+      }.to raise_error(NoMethodError, "undefined method 'fetch' for an instance of Faraday::Connection")
     end
   end
 end
