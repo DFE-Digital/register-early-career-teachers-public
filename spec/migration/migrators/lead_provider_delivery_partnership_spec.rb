@@ -6,12 +6,13 @@ describe Migrators::LeadProviderDeliveryPartnership do
 
     def create_resource(migration_resource)
       cohort = migration_resource.cohort
-      lead_provider = migration_resource.lead_provider
-      delivery_partner = migration_resource.delivery_partner
+      lp = migration_resource.lead_provider
+      dp = migration_resource.delivery_partner
 
-      FactoryBot.create(:registration_period, year: migration_resource.cohort.start_year)
-      FactoryBot.create(:lead_provider, name: lead_provider.name, ecf_id: lead_provider.id)
-      FactoryBot.create(:delivery_partner, name: delivery_partner.name, api_id: delivery_partner.id)
+      registration_period = FactoryBot.create(:registration_period, year: cohort.start_year)
+      lead_provider = FactoryBot.create(:lead_provider, name: lp.name, ecf_id: lp.id)
+      FactoryBot.create(:delivery_partner, name: dp.name, api_id: dp.id)
+      FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:)
     end
 
     def setup_failure_state
@@ -26,7 +27,7 @@ describe Migrators::LeadProviderDeliveryPartnership do
         described_class.provider_relationships.find_each do |provider_relationship|
 
           lead_provider = LeadProvider.find_by!(ecf_id: provider_relationship.lead_provider_id)
-          delivery_partner = DeliveryPartner.find_by!(ecf_id: provider_relationship.delivery_partner_id)
+          delivery_partner = DeliveryPartner.find_by!(api_id: provider_relationship.delivery_partner_id)
           registration_period = RegistrationPeriod.find(provider_relationship.cohort.start_year)
 
           active_lead_provider = ActiveLeadProvider.find_by!(lead_provider:, registration_period:)
