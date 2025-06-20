@@ -3,22 +3,41 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
   include GovukLinkHelper
   include GovukVisuallyHiddenHelper
 
-  describe "#induction_programme_choices" do
+  describe "#training_programme_choices" do
     it "returns an array of FormChoice" do
-      expect(induction_programme_choices).to be_an(Array)
-      expect(induction_programme_choices).to all(be_a(AppropriateBodyHelper::FormChoice))
+      expect(training_programme_choices).to be_an(Array)
+      expect(training_programme_choices).to all(be_a(AppropriateBodyHelper::FormChoice))
     end
 
-    it "has identifiers for the old (pre-2025) induction choices" do
-      expect(induction_programme_choices.map(&:identifier)).to eql(%w[fip cip diy])
+    context 'when bulk claims is disabled (ENABLE_BULK_UPLOAD=false)' do
+      before { allow(Rails.application.config).to receive(:enable_bulk_upload).and_return(false) }
+
+      it "has identifiers for the old (pre-2025) induction choices" do
+        expect(training_programme_choices.map(&:identifier)).to eql(%w[fip cip diy])
+      end
+
+      it "has names for the old (pre-2025) induction choices" do
+        expect(training_programme_choices.map(&:name)).to eql([
+          'Full induction programme',
+          'Core induction programme',
+          'School-based induction programme'
+        ])
+      end
     end
 
-    it "has names for the old (pre-2025) induction choices" do
-      expect(induction_programme_choices.map(&:name)).to eql([
-        'Full induction programme',
-        'Core induction programme',
-        'School-based induction programme'
-      ])
+    context 'when bulk claims is enabled (ENABLE_BULK_UPLOAD=true)' do
+      before { allow(Rails.application.config).to receive(:enable_bulk_upload).and_return(true) }
+
+      it "has identifiers for the new (post-2025) induction choices" do
+        expect(training_programme_choices.map(&:identifier)).to eql(%w[provider_led school_led])
+      end
+
+      it "has names for the new (post-2025) induction choices" do
+        expect(training_programme_choices.map(&:name)).to eql(%w[
+          Provider-led
+          School-led
+        ])
+      end
     end
   end
 

@@ -39,9 +39,12 @@ class PendingInductionSubmission < ApplicationRecord
             },
             allow_nil: true
 
+  # TODO: retire pre-2025 programme choices (fip, cip, diy)
   validates :induction_programme,
             inclusion: {
-              in: %w[fip cip diy],
+              in: %w[fip cip diy provider_led school_led], # pre-2025 and post-2025
+              # in: INDUCTION_PROGRAMMES.keys.map(&:to_s), # pre-2025
+              # in: TRAINING_PROGRAMME.keys.map(&:to_s), # post-2025
               message: "Choose an induction programme"
             },
             on: :register_ect

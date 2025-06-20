@@ -53,5 +53,11 @@ module Teachers::Details
     def started_on
       current_period.started_on.to_fs(:govuk)
     end
+
+    def training_programme
+      induction_programme_key = current_period.induction_programme.to_sym
+
+      ::TRAINING_PROGRAMME[induction_programme_key] || ::INDUCTION_PROGRAMMES[induction_programme_key] || 'Unknown programme'
+    end
   end
 end
