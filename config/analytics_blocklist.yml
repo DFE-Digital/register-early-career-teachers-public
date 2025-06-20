@@ -207,12 +207,10 @@
   - urn
   :school_partnerships:
   - id
-  - registration_period_id
-  - lead_provider_id
-  - delivery_partner_id
   - created_at
   - updated_at
   - lead_provider_delivery_partnership_id
+  - school_id
   :teachers:
   - corrected_name
   - trs_first_name
@@ -295,7 +293,7 @@
   - email
   :lead_providers:
   - id
-  - api_id
+  - ecf_id
   - name
   - created_at
   - updated_at
@@ -317,6 +315,8 @@
   - school_partnership_id
   - lead_provider_id
   - delivery_partner_id
+  - active_lead_provider_id
+  - lead_provider_delivery_partnership_id
   - user_id
   - author_type
   - author_id
@@ -350,6 +350,7 @@
   - name
   - created_at
   - updated_at
+  - api_id
   :declarations:
   - id
   - training_period_id
@@ -417,6 +418,7 @@
   - delivery_partner_id
   - created_at
   - updated_at
+  - ecf_id
   :parity_check_runs:
   - id
   - started_at
@@ -441,6 +443,7 @@
   - rect_body
   - ecf_time_ms
   - rect_time_ms
+  - page
   - created_at
   - updated_at
   :parity_check_endpoints:

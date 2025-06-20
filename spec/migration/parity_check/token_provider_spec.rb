@@ -23,7 +23,7 @@ RSpec.describe ParityCheck::TokenProvider do
     context "when the tokens are present" do
       let(:tokens) do
         LeadProvider.all.each_with_object({}) do |lead_provider, hash|
-          hash[lead_provider.api_id] = SecureRandom.uuid
+          hash[lead_provider.ecf_id] = SecureRandom.uuid
         end
       end
 
@@ -33,13 +33,13 @@ RSpec.describe ParityCheck::TokenProvider do
         generate
 
         LeadProvider.find_each do |lead_provider|
-          token = tokens[lead_provider.api_id]
+          token = tokens[lead_provider.ecf_id]
           expect(API::TokenManager.find_lead_provider_api_token(token:).lead_provider).to eq(lead_provider)
         end
       end
 
       context "when the tokens don't match the lead providers" do
-        let(:tokens) { { "non_existent_api_id" => SecureRandom.uuid } }
+        let(:tokens) { { "non_existent_ecf_id" => SecureRandom.uuid } }
 
         it { expect { generate }.not_to change(API::Token, :count) }
       end
@@ -65,7 +65,7 @@ RSpec.describe ParityCheck::TokenProvider do
     end
 
     context "when the keys are present" do
-      let(:tokens) { { lead_provider.api_id => "token" } }
+      let(:tokens) { { lead_provider.ecf_id => "token" } }
 
       it { is_expected.to eq("token") }
     end

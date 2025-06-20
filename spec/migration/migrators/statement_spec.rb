@@ -6,7 +6,7 @@ describe Migrators::Statement do
 
     def create_resource(migration_resource)
       # creating dependencies resources
-      lead_provider = FactoryBot.create(:lead_provider, name: migration_resource.lead_provider.name, api_id: migration_resource.lead_provider.id)
+      lead_provider = FactoryBot.create(:lead_provider, name: migration_resource.lead_provider.name, ecf_id: migration_resource.lead_provider.id)
       registration_period = FactoryBot.create(:registration_period, year: migration_resource.cohort.start_year)
       FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:)
 

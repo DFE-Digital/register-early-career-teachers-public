@@ -45,7 +45,7 @@ RSpec.shared_examples "a filter by updated_since endpoint" do
   end
 
   it "returns only resource that have been updated since the provided date" do
-    updated_since = 2.months.ago.iso8601
+    updated_since = 2.months.ago.utc.iso8601
     authenticated_api_get(path, params: { filter: { updated_since: } })
 
     expect(response).to have_http_status(:ok)

@@ -25,7 +25,6 @@ gem "govuk_markdown"
 
 gem "mail-notify"
 
-gem "httparty"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "solid_queue"
@@ -55,6 +54,8 @@ gem 'turbo-rails'
 # JSON Serializer
 gem "blueprinter"
 gem "oj"
+
+gem "async-http-faraday"
 
 group :development do
   gem 'better_errors'

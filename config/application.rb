@@ -34,6 +34,10 @@ module RegisterEarlyCareerTeachers
                        helper_specs: false)
     end
 
+    # Time zones
+    config.time_zone = "London" # Displays times in BST/GMT
+    config.active_record.default_timezone = :utc # Database values stored in UTC (default)
+
     # Active record encryption
     config.active_record.encryption.primary_key = ENV["ENCRYPTION_PRIMARY_KEY"]
     config.active_record.encryption.deterministic_key = ENV["ENCRYPTION_DETERMINISTIC_KEY"]
