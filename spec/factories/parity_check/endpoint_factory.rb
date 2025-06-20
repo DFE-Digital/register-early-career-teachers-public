@@ -14,7 +14,7 @@ FactoryBot.define do
     end
 
     trait :put do
-      add_attribute(:method) { :post }
+      add_attribute(:method) { :put }
       options { { body: :example_statement_body } }
     end
 
