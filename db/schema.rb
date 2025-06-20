@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_17_185849) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_19_092538) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -148,6 +148,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_17_185849) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["api_id"], name: "index_delivery_partners_on_api_id", unique: true
     t.index ["name"], name: "index_delivery_partners_on_name", unique: true
   end
 
@@ -299,9 +301,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_17_185849) do
     t.bigint "delivery_partner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "ecf_id"
     t.index ["active_lead_provider_id", "delivery_partner_id"], name: "idx_on_active_lead_provider_id_delivery_partner_id_3c66d9e812", unique: true
     t.index ["active_lead_provider_id"], name: "idx_on_active_lead_provider_id_2f96b67fbb"
     t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
+    t.index ["ecf_id"], name: "index_lead_provider_delivery_partnerships_on_ecf_id", unique: true
   end
 
   create_table "lead_providers", force: :cascade do |t|
