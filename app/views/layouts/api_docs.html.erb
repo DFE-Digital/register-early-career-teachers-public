@@ -3,7 +3,7 @@
   <%= stylesheet_link_tag "swagger", media: "all" %>
 <% end %>
 <!DOCTYPE html>
-<html lang="en" class="govuk-template">
+<%= govuk_html_element do %>
   <%= render partial: "layouts/shared/head" %>
 
   <body class="govuk-template__body" data-turbo="false">
@@ -35,4 +35,4 @@
 
     <%= render partial: "layouts/shared/footer" %>
   </body>
-</html>
+<% end %>
