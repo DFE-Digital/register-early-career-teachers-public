@@ -401,7 +401,7 @@
   - payment_date
   - marked_as_paid_at
   - output_fee
-  - state
+  - status
   - created_at
   - updated_at
   :api_tokens:
