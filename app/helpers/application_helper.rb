@@ -55,4 +55,8 @@ module ApplicationHelper
   def boolean_to_yes_or_no(value)
     value ? "Yes" : "No"
   end
+
+  def govuk_html_element(&block)
+    tag.html(lang: 'en', class: %w[govuk-template govuk-template--rebranded], &block)
+  end
 end
