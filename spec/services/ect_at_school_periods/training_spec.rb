@@ -1,4 +1,4 @@
-xdescribe ECTAtSchoolPeriods::Training, pending: "written before the EOI model, needs adjustment" do
+describe ECTAtSchoolPeriods::Training do
   describe "#current_training_period" do
     subject { described_class.new(ect_at_school_period).current_training_period }
 
@@ -45,7 +45,7 @@ xdescribe ECTAtSchoolPeriods::Training, pending: "written before the EOI model, 
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
 
-      it { is_expected.to eq(ongoing_training.delivery_partner) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.delivery_partner) }
     end
   end
 
@@ -70,7 +70,7 @@ xdescribe ECTAtSchoolPeriods::Training, pending: "written before the EOI model, 
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
 
-      it { is_expected.to eq(ongoing_training.delivery_partner.name) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.delivery_partner.name) }
     end
   end
 
@@ -95,7 +95,7 @@ xdescribe ECTAtSchoolPeriods::Training, pending: "written before the EOI model, 
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
 
-      it { is_expected.to eq(ongoing_training.lead_provider) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider) }
     end
   end
 
@@ -120,7 +120,7 @@ xdescribe ECTAtSchoolPeriods::Training, pending: "written before the EOI model, 
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
 
-      it { is_expected.to eq(ongoing_training.lead_provider.name) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider.name) }
     end
   end
 
@@ -159,14 +159,14 @@ xdescribe ECTAtSchoolPeriods::Training, pending: "written before the EOI model, 
     context "when the ect has had past training periods" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 2.years.ago) }
 
-      it { is_expected.to eq(old_training.delivery_partner) }
+      it { is_expected.to eq(old_training.school_partnership.lead_provider_delivery_partnership.delivery_partner) }
     end
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
 
-      it { is_expected.to eq(ongoing_training.delivery_partner) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.delivery_partner) }
     end
   end
 
@@ -182,14 +182,14 @@ xdescribe ECTAtSchoolPeriods::Training, pending: "written before the EOI model, 
     context "when the ect has had past training periods" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 2.years.ago) }
 
-      it { is_expected.to eq(old_training.delivery_partner.name) }
+      it { is_expected.to eq(old_training.school_partnership.lead_provider_delivery_partnership.delivery_partner.name) }
     end
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
 
-      it { is_expected.to eq(ongoing_training.delivery_partner.name) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.delivery_partner.name) }
     end
   end
 
@@ -205,14 +205,14 @@ xdescribe ECTAtSchoolPeriods::Training, pending: "written before the EOI model, 
     context "when the ect has had past training periods" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 2.years.ago) }
 
-      it { is_expected.to eq(old_training.lead_provider) }
+      it { is_expected.to eq(old_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider) }
     end
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
 
-      it { is_expected.to eq(ongoing_training.lead_provider) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider) }
     end
   end
 
@@ -228,14 +228,14 @@ xdescribe ECTAtSchoolPeriods::Training, pending: "written before the EOI model, 
     context "when the ect has had past training periods" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 2.years.ago) }
 
-      it { is_expected.to eq(old_training.lead_provider.name) }
+      it { is_expected.to eq(old_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider.name) }
     end
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
       let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
 
-      it { is_expected.to eq(ongoing_training.lead_provider.name) }
+      it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider.name) }
     end
   end
 end

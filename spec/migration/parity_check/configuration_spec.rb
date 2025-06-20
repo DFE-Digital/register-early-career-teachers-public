@@ -1,6 +1,6 @@
 RSpec.describe ParityCheck::Configuration do
   let(:enabled) { true }
-  let(:tokens) { { "lead_provider_api_id" => "test_token" } }
+  let(:tokens) { { "lead_provider_ecf_id" => "test_token" } }
   let(:ecf_url) { "https://ecf.example.com" }
   let(:rect_url) { "https://rect.example.com" }
   let(:instance) { Class.new { include ParityCheck::Configuration }.new }

@@ -97,4 +97,36 @@ describe Statement do
       it { expect { shorthand_state }.to raise_error(ArgumentError, "Unknown state: unknown_state") }
     end
   end
+
+  context ".adjustment_editable?" do
+    context "paid statement" do
+      subject { FactoryBot.build(:statement, :paid) }
+
+      it "returns false" do
+        subject.output_fee = true
+        expect(subject.adjustment_editable?).to be(false)
+
+        subject.output_fee = false
+        expect(subject.adjustment_editable?).to be(false)
+      end
+    end
+
+    context "non-paid statement" do
+      context "output_fee is true" do
+        subject { FactoryBot.build(:statement, :open, output_fee: true) }
+
+        it "returns true" do
+          expect(subject.adjustment_editable?).to be(true)
+        end
+      end
+
+      context "output_fee is false" do
+        subject { FactoryBot.build(:statement, :open, output_fee: false) }
+
+        it "returns false" do
+          expect(subject.adjustment_editable?).to be(false)
+        end
+      end
+    end
+  end
 end

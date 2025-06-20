@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_18_132758) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_19_092538) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -148,6 +148,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_132758) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["api_id"], name: "index_delivery_partners_on_api_id", unique: true
     t.index ["name"], name: "index_delivery_partners_on_name", unique: true
   end
 
@@ -209,6 +211,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_132758) do
     t.datetime "updated_at", null: false
     t.jsonb "metadata"
     t.string "modifications", array: true
+    t.bigint "active_lead_provider_id"
+    t.bigint "lead_provider_delivery_partnership_id"
+    t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"
@@ -216,6 +221,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_132758) do
     t.index ["ect_at_school_period_id"], name: "index_events_on_ect_at_school_period_id"
     t.index ["induction_extension_id"], name: "index_events_on_induction_extension_id"
     t.index ["induction_period_id"], name: "index_events_on_induction_period_id"
+    t.index ["lead_provider_delivery_partnership_id"], name: "index_events_on_lead_provider_delivery_partnership_id"
     t.index ["lead_provider_id"], name: "index_events_on_lead_provider_id"
     t.index ["mentor_at_school_period_id"], name: "index_events_on_mentor_at_school_period_id"
     t.index ["mentorship_period_id"], name: "index_events_on_mentorship_period_id"
@@ -295,17 +301,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_132758) do
     t.bigint "delivery_partner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "ecf_id"
     t.index ["active_lead_provider_id", "delivery_partner_id"], name: "idx_on_active_lead_provider_id_delivery_partner_id_3c66d9e812", unique: true
     t.index ["active_lead_provider_id"], name: "idx_on_active_lead_provider_id_2f96b67fbb"
     t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
+    t.index ["ecf_id"], name: "index_lead_provider_delivery_partnerships_on_ecf_id", unique: true
   end
 
   create_table "lead_providers", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "api_id"
-    t.index ["api_id"], name: "index_lead_providers_on_api_id", unique: true
+    t.uuid "ecf_id"
+    t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
   end
 
@@ -386,6 +394,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_132758) do
     t.integer "rect_time_ms", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "page"
+    t.index ["request_id", "page"], name: "index_parity_check_responses_on_request_id_and_page", unique: true
     t.index ["request_id"], name: "index_parity_check_responses_on_request_id"
   end
 
@@ -454,7 +464,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_132758) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "lead_provider_delivery_partnership_id", null: false
+    t.bigint "school_id", null: false
     t.index ["lead_provider_delivery_partnership_id"], name: "idx_on_lead_provider_delivery_partnership_id_628487f752"
+    t.index ["school_id", "lead_provider_delivery_partnership_id"], name: "idx_on_school_id_lead_provider_delivery_partnership_7b2d6a6684", unique: true
   end
 
   create_table "schools", force: :cascade do |t|
@@ -689,11 +701,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_132758) do
   add_foreign_key "ect_at_school_periods", "lead_providers"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"
+  add_foreign_key "events", "active_lead_providers", on_delete: :nullify
   add_foreign_key "events", "appropriate_bodies", on_delete: :nullify
   add_foreign_key "events", "delivery_partners", on_delete: :nullify
   add_foreign_key "events", "ect_at_school_periods", on_delete: :nullify
   add_foreign_key "events", "induction_extensions", on_delete: :nullify
   add_foreign_key "events", "induction_periods", on_delete: :nullify
+  add_foreign_key "events", "lead_provider_delivery_partnerships", on_delete: :nullify
   add_foreign_key "events", "lead_providers", on_delete: :nullify
   add_foreign_key "events", "mentor_at_school_periods", on_delete: :nullify
   add_foreign_key "events", "mentorship_periods", on_delete: :nullify
@@ -718,6 +732,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_132758) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
+  add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"

@@ -41,4 +41,8 @@ class Statement < ApplicationRecord
       raise ArgumentError, "Unknown state: #{state}"
     end
   end
+
+  def adjustment_editable?
+    output_fee && !paid?
+  end
 end
