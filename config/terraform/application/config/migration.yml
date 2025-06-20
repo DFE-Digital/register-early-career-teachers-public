@@ -9,7 +9,7 @@ ENABLE_BLAZER: true
 ENABLE_FAKE_TRS_API: false
 SENTRY_ENVIRONMENT: migration
 ENABLE_PERSONAS: false
-ENABLE_BULK_UPLOAD: false
+ENABLE_BULK_UPLOAD: true
 ENABLE_BULK_CLAIM: false
 ENABLE_PARITY_CHECK: true
 SERVICE_URL: "https://cpd-ec2-migration-web.teacherservices.cloud"
