@@ -66,9 +66,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
     end
 
     describe 'formatting checks' do
-      before do
-        service.process!
-      end
+      before { service.process! }
 
       context 'when the TRN is missing' do
         let(:trn) { '' }
@@ -88,7 +86,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
             'Fill in the blanks on this row',
-            'Dates must be in the format YYYY-MM-DD'
+            'Dates must be in the format YYYY-MM-DD',
+            'Date of birth must be a real date and the teacher must be between 18 and 100 years old'
           ]
         end
       end
@@ -284,9 +283,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
                           started_on: '2024-1-1')
       end
 
-      before do
-        service.process!
-      end
+      before { service.process! }
 
       it 'captures error message' do
         expect(submission.error_messages).to eq ['Kirk Van Houten is completing their induction with another appropriate body']
@@ -301,9 +298,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
                           started_on: '2024-1-1')
       end
 
-      before do
-        service.process!
-      end
+      before { service.process! }
 
       it 'creates a pending induction submission' do
         expect(service.pending_induction_submission_batch.pending_induction_submissions.count).to eq 1
@@ -364,9 +359,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
                             teacher:)
         end
 
-        before do
-          service.process!
-        end
+        before { service.process! }
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq ['Kirk Van Houten has already completed their induction']
