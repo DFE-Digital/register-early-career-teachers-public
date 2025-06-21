@@ -42,8 +42,8 @@ In the above example, we have `get` and `post` endpoints:
 
 - The `/api/v3/statements` endpoint will be paginated (so all pages are requested in the parity check). 
 - The other request to `/api/v3/statements` will append query parameters, so the request will be to `/api/v3/statements?filter[cohort]=2021`. 
-- The final `get` endpoint has a dynamic path ID; there must be a method `statement_id` in the `RequestBuilder` service that will be called and interpolated into the path as the `:id` parameter.
-- The `post` endpoint defines a dynamic body for the request; there must be a method `example_statement_body` in the `RequestBuilder` that will be called and passed as request body.
+- The final `get` endpoint has a dynamic path ID; there must be a method `statement_id` in the `DynamicRequestContent` that will be called and interpolated into the path as the `:id` parameter.
+- The `post` endpoint defines a dynamic body for the request; there must be a method `example_statement_body` in the `DynamicRequestContent` that will be called and passed as request body.
 
 ### Tokens
 
@@ -134,6 +134,7 @@ At a high-level, the process is as follows:
 
 - The `RequestHandler` asks the `Client` to perform the `Request`.
 - The `Client` calls a `RequestBuilder` to interpolate the `Endpoint` into valid request components (url, method, body, headers etc).
+- The `RequestBuilder` will call `DynamicRequestContent` to build any dynamic content for the request (such as the path ID or the request body).
 - The `RequestBuilder` will also call out to the `TokenProvider` to get a valid token for the authentication header.
 - The `Client` runs the request through `Faraday` using an parallel adapter, so we call RECT and ECF at the same time.
 - The `Client` returns the `Response` to the `RequestHandler`, which then attaches it to the `Request`.
@@ -149,6 +150,7 @@ flowchart TD
   Client["Client"]
   RequestBuilder["RequestBuilder"]
   Endpoint["Endpoint"]
+  DynamicRequestContent["DynamicRequestContent"]
   TokenProvider["TokenProvider"]
   Faraday["Faraday"]
   RECTAPI["RECT API"]
@@ -160,6 +162,7 @@ flowchart TD
   RequestBuilder -->|request details| Client
   Endpoint -->|endpoint details| RequestBuilder
   TokenProvider -->|token| RequestBuilder
+  DynamicRequestContent -->|content| RequestBuilder
 
   Client -->|request| Faraday
   Faraday -->|response| Client
