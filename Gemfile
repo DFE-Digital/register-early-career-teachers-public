@@ -56,6 +56,7 @@ gem "blueprinter"
 gem "oj"
 
 gem "async-http-faraday"
+gem "with_advisory_lock"
 
 group :development do
   gem 'better_errors'
