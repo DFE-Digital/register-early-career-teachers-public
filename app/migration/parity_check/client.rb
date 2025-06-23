@@ -1,39 +1,56 @@
+require "async/http/faraday/default"
+
 module ParityCheck
   class Client
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    attr_accessor :ecf_result, :rect_result
-
-    attribute :request_builder, default: -> { RequestBuilder.new }
-    attribute :ecf_url, default: -> { ENV.fetch('ECF_URL', 'https://ecf.example.com') }
-    attribute :rect_url, default: -> { ENV.fetch('RECT_URL', 'https://rect.example.com') }
-
-    attribute :endpoint
-    attribute :lead_provider
+    attribute :request
 
     def perform_requests
-      ecf_result = timed_response { perform_request(app: :ecf) }
-      rect_result = timed_response { perform_request(app: :rect) }
+      loop do
+        ecf_response, rect_response = nil
 
-      yield(ecf_result, rect_result)
+        connection.in_parallel do
+          ecf_response = perform_request(app: :ecf)
+          rect_response = perform_request(app: :rect)
+        end
+
+        response = Response.new(
+          ecf_body: ecf_response.body,
+          ecf_status_code: ecf_response.status,
+          ecf_time_ms: ecf_response.env[:request_duration_ms],
+          rect_body: rect_response.body,
+          rect_status_code: rect_response.status,
+          rect_time_ms: rect_response.env[:request_duration_ms],
+          page: request_builder.page
+        )
+
+        yield(response)
+
+        break unless request_builder.advance_page(response)
+      end
     end
 
   private
 
-    def timed_response
-      response = nil
-      response_time_ms = Benchmark.realtime { response = yield } * 1_000
-
-      { response:, response_time_ms: }
-    end
-
     def perform_request(app:)
-      HTTParty.send(request_builder.method, request_builder.url(app:), headers: request_builder.headers)
+      connection.send(request_builder.method) do |request|
+        request.url request_builder.url(app:), request_builder.query
+        request.headers = request_builder.headers
+        request.body = request_builder.body if request_builder.body
+      end
     end
 
     def request_builder
-      @request_builder ||= RequestBuilder.new(endpoint:, lead_provider:)
+      @request_builder ||= RequestBuilder.new(request:)
+    end
+
+    def connection
+      @connection ||= Faraday::Connection.new do
+        it.adapter :async_http
+        it.use RequestBenchmark
+      end
     end
   end
 end

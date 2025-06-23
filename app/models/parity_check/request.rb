@@ -6,11 +6,11 @@ module ParityCheck
 
     belongs_to :run
     belongs_to :lead_provider
+    belongs_to :endpoint
     has_many :responses
 
     validates :lead_provider, presence: true
     validates :run, presence: true
-    validates :path, presence: true
-    validates :method, presence: true, inclusion: { in: %w[get post put] }
+    validates :endpoint, presence: true
   end
 end

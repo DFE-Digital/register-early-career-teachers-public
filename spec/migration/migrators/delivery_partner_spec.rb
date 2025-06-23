@@ -1,4 +1,7 @@
 RSpec.describe Migrators::DeliveryPartner do
+  # TODO: would be nice to use the 'it_behaves_like "a migrator"' shared_example but this one is difficult to make fail
+  # so the failure handling specs fail
+
   describe '.record_count' do
     it 'returns the count of delivery partners' do
       FactoryBot.create_list(:migration_delivery_partner, 2)
@@ -52,8 +55,12 @@ RSpec.describe Migrators::DeliveryPartner do
     before { subject.migrate! }
 
     it 'creates a delivery partner for each ecf delivery partner' do
-      expect(DeliveryPartner.count).to eq(2)
-      expect(DeliveryPartner.pluck(:name)).to contain_exactly(delivery_partner1.name, delivery_partner2.name)
+      described_class.delivery_partners.find_each do |delivery_partner|
+        dp = DeliveryPartner.find_by(api_id: delivery_partner.id)
+        expect(dp.name).to eq delivery_partner.name
+        expect(dp.created_at).to eq delivery_partner.created_at
+        expect(dp.updated_at).to eq delivery_partner.updated_at
+      end
     end
   end
 end

@@ -34,6 +34,12 @@ compile '/service-rules/*.md' do
   write(item.identifier.without_ext + '/index.html')
 end
 
+compile '/content-editors/*.md' do
+  filter(:govuk_markdown)
+  layout('/service-rules.*')
+  write(item.identifier.without_ext + '/index.html')
+end
+
 compile '/**/*.md' do
   filter(:govuk_markdown)
   layout('/default.*')

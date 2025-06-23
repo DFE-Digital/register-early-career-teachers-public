@@ -14,6 +14,8 @@ describe Event do
     it { is_expected.to belong_to(:lead_provider).optional }
     it { is_expected.to belong_to(:delivery_partner).optional }
     it { is_expected.to belong_to(:user).optional }
+    it { is_expected.to belong_to(:active_lead_provider).optional }
+    it { is_expected.to belong_to(:lead_provider_delivery_partnership).optional }
 
     it { is_expected.to belong_to(:author).class_name('User').optional }
   end
