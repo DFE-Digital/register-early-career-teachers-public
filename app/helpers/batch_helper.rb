@@ -45,11 +45,12 @@ module BatchHelper
         'Created',
         'CSV Rows',
         'Processed',
-        'Errors'
+        'Errors',
+        'Action'
       ],
       rows: batches.map do |batch|
         [
-          govuk_link_to(batch.id, admin_bulk_batch_path(batch)),
+          batch.id.to_s,
           batch.appropriate_body.name,
           govuk_tag(text: batch.batch_type, colour: batch.batch_type == 'claim' ? 'blue' : 'green'),
           batch_status_tag(batch),
@@ -57,7 +58,8 @@ module BatchHelper
           batch.created_at.to_fs(:govuk),
           (batch.data&.count || 0).to_s,
           batch.pending_induction_submissions.count.to_s,
-          batch.pending_induction_submissions.with_errors.count.to_s
+          batch.pending_induction_submissions.with_errors.count.to_s,
+          govuk_link_to('View', admin_bulk_batch_path(batch))
         ]
       end
     )
