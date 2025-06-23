@@ -1,0 +1,13 @@
+<% page_data(title: "Run a parity check") %>
+
+<p>
+  Select endpoints you would like to run a parity check against.
+</p>
+
+<% if @endpoints.any? %>
+  <%= render partial: "form" %>
+<% else %>
+  <p>
+    No endpoints available for parity checks.
+  </p>
+<% end %>
