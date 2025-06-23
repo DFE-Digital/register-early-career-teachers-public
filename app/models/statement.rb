@@ -13,9 +13,9 @@ class Statement < ApplicationRecord
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another statement" }
 
   scope :with_output_fee, ->(output_fee: true) { where(output_fee:) }
-  scope :with_state, ->(*state) { where(state:) }
+  scope :with_status, ->(*status) { where(status:) }
 
-  state_machine :state, initial: :open do
+  state_machine :status, initial: :open do
     state :open
     state :payable
     state :paid
@@ -29,8 +29,8 @@ class Statement < ApplicationRecord
     end
   end
 
-  def shorthand_state
-    case state
+  def shorthand_status
+    case status
     when "open"
       "OP"
     when "payable"
@@ -38,7 +38,7 @@ class Statement < ApplicationRecord
     when "paid"
       "PD"
     else
-      raise ArgumentError, "Unknown state: #{state}"
+      raise ArgumentError, "Unknown status: #{status}"
     end
   end
 

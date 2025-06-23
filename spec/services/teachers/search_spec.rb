@@ -71,6 +71,108 @@ describe Teachers::Search do
       end
     end
 
+    describe 'status-based filtering with appropriate bodies' do
+      let(:teacher_with_open_induction) { FactoryBot.create(:teacher) }
+      let(:teacher_with_completed_induction) { FactoryBot.create(:teacher) }
+      let(:teacher_with_no_induction) { FactoryBot.create(:teacher) }
+
+      let!(:open_induction_period) { FactoryBot.create(:induction_period, :active, teacher: teacher_with_open_induction, appropriate_body: ab1) }
+      let!(:completed_induction_period) { FactoryBot.create(:induction_period, :pass, teacher: teacher_with_completed_induction, appropriate_body: ab1) }
+
+      context 'when status is "open"' do
+        subject { Teachers::Search.new(appropriate_bodies: ab1, status: 'open') }
+
+        it 'returns only teachers with current/ongoing induction periods' do
+          expect(subject.search).to include(teacher_with_open_induction)
+          expect(subject.search).not_to include(teacher_with_completed_induction)
+          expect(subject.search).not_to include(teacher_with_no_induction)
+        end
+
+        it 'delegates to ects_service.with_status' do
+          ects_service = instance_double(AppropriateBodies::ECTs)
+          allow(AppropriateBodies::ECTs).to receive(:new).with(ab1).and_return(ects_service)
+          allow(ects_service).to receive(:with_status).with('open').and_return(Teacher.none)
+
+          subject.search
+
+          expect(ects_service).to have_received(:with_status).with('open')
+        end
+      end
+
+      context 'when status is "closed"' do
+        subject { Teachers::Search.new(appropriate_bodies: ab1, status: 'closed') }
+
+        it 'returns only teachers with completed induction periods' do
+          expect(subject.search).to include(teacher_with_completed_induction)
+          expect(subject.search).not_to include(teacher_with_open_induction)
+          expect(subject.search).not_to include(teacher_with_no_induction)
+        end
+
+        it 'delegates to ects_service.with_status' do
+          ects_service = instance_double(AppropriateBodies::ECTs)
+          allow(AppropriateBodies::ECTs).to receive(:new).with(ab1).and_return(ects_service)
+          allow(ects_service).to receive(:with_status).with('closed').and_return(Teacher.none)
+
+          subject.search
+
+          expect(ects_service).to have_received(:with_status).with('closed')
+        end
+      end
+
+      context 'when status is nil or any other value' do
+        subject { Teachers::Search.new(appropriate_bodies: ab1, status: nil) }
+
+        it 'returns teachers with both current and completed induction periods' do
+          expect(subject.search).to include(teacher_with_open_induction, teacher_with_completed_induction)
+          expect(subject.search).not_to include(teacher_with_no_induction)
+        end
+
+        it 'delegates to ects_service.with_status' do
+          ects_service = instance_double(AppropriateBodies::ECTs)
+          allow(AppropriateBodies::ECTs).to receive(:new).with(ab1).and_return(ects_service)
+          allow(ects_service).to receive(:with_status).with(nil).and_return(Teacher.none)
+
+          subject.search
+
+          expect(ects_service).to have_received(:with_status).with(nil)
+        end
+      end
+
+      context 'when status is an unknown value' do
+        subject { Teachers::Search.new(appropriate_bodies: ab1, status: 'unknown_status') }
+
+        it 'defaults to returning teachers with both current and completed induction periods' do
+          expect(subject.search).to include(teacher_with_open_induction, teacher_with_completed_induction)
+          expect(subject.search).not_to include(teacher_with_no_induction)
+        end
+
+        it 'delegates to ects_service.with_status for unknown statuses' do
+          ects_service = instance_double(AppropriateBodies::ECTs)
+          allow(AppropriateBodies::ECTs).to receive(:new).with(ab1).and_return(ects_service)
+          allow(ects_service).to receive(:with_status).with('unknown_status').and_return(Teacher.none)
+
+          subject.search
+
+          expect(ects_service).to have_received(:with_status).with('unknown_status')
+        end
+      end
+
+      context 'when appropriate_bodies is :ignore' do
+        subject { Teachers::Search.new(appropriate_bodies: :ignore, status: 'open') }
+
+        it 'does not filter by appropriate bodies regardless of status' do
+          all_teachers = [teacher1, teacher2, teacher3, teacher_with_open_induction, teacher_with_completed_induction, teacher_with_no_induction]
+          expect(subject.search).to include(*all_teachers)
+        end
+
+        it 'does not call AppropriateBodies::ECTs when appropriate_bodies is ignored' do
+          expect(AppropriateBodies::ECTs).not_to receive(:new)
+
+          subject.search
+        end
+      end
+    end
+
     describe 'when a query string is provided' do
       context 'when there are 7 digit numbers in the search string' do
         let(:teacher1) { FactoryBot.create(:teacher, trn: '1234567') }

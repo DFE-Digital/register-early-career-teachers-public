@@ -14,15 +14,15 @@ FactoryBot.define do
     open
 
     trait :open do
-      state { :open }
+      status { :open }
     end
 
     trait :payable do
-      state { :payable }
+      status { :payable }
     end
 
     trait :paid do
-      state { :paid }
+      status { :paid }
     end
   end
 end

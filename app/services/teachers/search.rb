@@ -2,12 +2,12 @@ module Teachers
   class Search
     attr_reader :scope
 
-    def initialize(query_string: :ignore, appropriate_bodies: :ignore, ect_at_school: :ignore, mentor_at_school: :ignore)
+    def initialize(query_string: :ignore, appropriate_bodies: :ignore, ect_at_school: :ignore, mentor_at_school: :ignore, status: nil)
       @scope = Teacher.all
 
       where_ect_at(ect_at_school)
       where_mentor_at(mentor_at_school)
-      where_appropriate_bodies_in(appropriate_bodies)
+      where_appropriate_bodies_in(appropriate_bodies, status)
       matching(query_string)
     end
 
@@ -45,10 +45,11 @@ module Teachers
       (trns.any?) ? with_trns(trns) : where_query_matches(query_string)
     end
 
-    def where_appropriate_bodies_in(appropriate_bodies)
+    def where_appropriate_bodies_in(appropriate_bodies, status)
       return if appropriate_bodies == :ignore
 
-      @scope = AppropriateBodies::ECTs.new(appropriate_bodies).current_or_completed_while_at_appropriate_body
+      ects_service = AppropriateBodies::ECTs.new(appropriate_bodies)
+      @scope = ects_service.with_status(status)
     end
 
     def with_trns(trns)

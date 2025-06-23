@@ -19,12 +19,12 @@ def describe_group_of_statements(lead_provider, statements, month_col_width: 15,
     row = [Date::MONTHNAMES[month].rjust(month_col_width)]
 
     years.each do |year|
-      states = statements_by_year_and_month.dig(year, month)&.map(&:state) || []
-      if states.any?
-        coloured_states = states.map { |state| Colourize.text(state, STATEMENT_STATE_COLOURS[state.to_sym]) }
+      statuses = statements_by_year_and_month.dig(year, month)&.map(&:status) || []
+      if statuses.any?
+        coloured_statuses = statuses.map { |state| Colourize.text(state, STATEMENT_STATE_COLOURS[state.to_sym]) }
         # the colourizing characters affect the length so offset the rjust
-        offset = coloured_states.sum(&:length) - states.sum(&:length)
-        row << coloured_states.join(", ").rjust(year_col_width + offset)
+        offset = coloured_statuses.sum(&:length) - statuses.sum(&:length)
+        row << coloured_statuses.join(", ").rjust(year_col_width + offset)
       else
         row << 'none'.rjust(year_col_width)
       end
@@ -47,13 +47,13 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
     years.product(months).map do |year, month|
       deadline_date = Time.zone.local(year, month).end_of_month
       payment_date = Time.zone.at(rand(deadline_date.to_i..(deadline_date + 2.months).to_i))
-      state = if payment_date < Date.current
-                :paid
-              elsif Date.current.between?(deadline_date, payment_date)
-                :payable
-              else
-                :open
-              end
+      status = if payment_date < Date.current
+                 :paid
+               elsif Date.current.between?(deadline_date, payment_date)
+                 :payable
+               else
+                 :open
+               end
 
       Statement.create!(
         active_lead_provider: alp,
@@ -62,7 +62,7 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
         deadline_date:,
         payment_date:,
         output_fee: [true, false].sample,
-        state:
+        status:
       )
     end
   end

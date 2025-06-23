@@ -74,13 +74,10 @@ RSpec.describe 'Process bulk claims' do
       let(:corrected_file_path) { Rails.root.join("spec/fixtures/#{corrected_file_name}").to_s }
 
       scenario 'should allow uploading the corrected file' do
-        # First upload fails as expected
         given_i_am_on_the_upload_page
-        when_i_upload_a_file
+        when_i_upload_a_file # invalid file
         then_i_should_see_the_error('The selected file must follow the template')
-
-        # Now try to upload a corrected file
-        when_i_upload_a_file(corrected_file_path)
+        when_i_upload_a_file(corrected_file_path) # valid file
 
         perform_enqueued_jobs
         page.reload
