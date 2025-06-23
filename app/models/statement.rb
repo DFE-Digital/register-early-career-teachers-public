@@ -13,7 +13,7 @@ class Statement < ApplicationRecord
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another statement" }
 
   scope :with_output_fee, ->(output_fee: true) { where(output_fee:) }
-  scope :with_state, ->(*status) { where(status:) }
+  scope :with_status, ->(*status) { where(status:) }
 
   state_machine :status, initial: :open do
     state :open
