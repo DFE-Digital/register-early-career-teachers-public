@@ -163,4 +163,30 @@ RSpec.describe AppropriateBodies::ECTs do
       end
     end
   end
+
+  describe "#with_status" do
+    context 'when status is "open"' do
+      it 'returns the same result as calling current method directly' do
+        expect(subject.with_status('open')).to eq(subject.current)
+      end
+    end
+
+    context 'when status is "closed"' do
+      it 'returns the same result as calling completed_while_at_appropriate_body method directly' do
+        expect(subject.with_status('closed')).to eq(subject.completed_while_at_appropriate_body)
+      end
+    end
+
+    context 'when status is nil' do
+      it 'returns the same result as calling current_or_completed_while_at_appropriate_body method directly' do
+        expect(subject.with_status(nil)).to eq(subject.current_or_completed_while_at_appropriate_body)
+      end
+    end
+
+    context 'when status is any other value' do
+      it 'returns the same result as calling current_or_completed_while_at_appropriate_body method directly' do
+        expect(subject.with_status('unknown_status')).to eq(subject.current_or_completed_while_at_appropriate_body)
+      end
+    end
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_19_092538) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_20_092940) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -30,7 +30,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_092538) do
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "request_method_types", ["get", "post", "put"]
-  create_enum "statement_states", ["open", "payable", "paid"]
+  create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
@@ -621,7 +621,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_092538) do
     t.date "payment_date", null: false
     t.datetime "marked_as_paid_at"
     t.boolean "output_fee", default: true, null: false
-    t.enum "state", default: "open", null: false, enum_type: "statement_states"
+    t.enum "status", default: "open", null: false, enum_type: "statement_statuses"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
