@@ -28,7 +28,7 @@ describe Migrators::Statement do
         expect(statement.year).to eq(2025)
         expect(statement.registration_period.year).to eq(migration_resource1.cohort.start_year)
         expect(statement.lead_provider.name).to eq(migration_resource1.cpd_lead_provider.lead_provider.name)
-        expect(statement.state).to eq("open")
+        expect(statement.status).to eq("open")
       end
     end
   end

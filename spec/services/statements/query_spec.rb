@@ -138,17 +138,17 @@ RSpec.describe Statements::Query do
         let!(:paid_statement) { FactoryBot.create(:statement, :paid) }
 
         it "filters by `state`" do
-          expect(described_class.new(state: "open").statements).to eq([open_statement])
-          expect(described_class.new(state: "payable").statements).to eq([payable_statement])
-          expect(described_class.new(state: "paid").statements).to eq([paid_statement])
+          expect(described_class.new(status: "open").statements).to eq([open_statement])
+          expect(described_class.new(status: "payable").statements).to eq([payable_statement])
+          expect(described_class.new(status: "paid").statements).to eq([paid_statement])
         end
 
         it "filters by multiple states with a comma separated list" do
-          expect(described_class.new(state: "open,paid").statements).to contain_exactly(open_statement, paid_statement)
+          expect(described_class.new(status: "open,paid").statements).to contain_exactly(open_statement, paid_statement)
         end
 
         it "filters by multiple states with an array" do
-          expect(described_class.new(state: %w[open paid]).statements).to contain_exactly(open_statement, paid_statement)
+          expect(described_class.new(status: %w[open paid]).statements).to contain_exactly(open_statement, paid_statement)
         end
 
         context "when `state` param is omitted" do
@@ -158,7 +158,7 @@ RSpec.describe Statements::Query do
         end
 
         it "does not filter by `state` if blank" do
-          query = described_class.new(state: " ")
+          query = described_class.new(status: " ")
 
           expect(query.statements).to contain_exactly(open_statement, payable_statement, paid_statement)
         end

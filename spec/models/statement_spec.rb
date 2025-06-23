@@ -18,17 +18,17 @@ describe Statement do
   end
 
   describe "scopes" do
-    describe ".with_state" do
+    describe ".with_status" do
       let!(:statement1) { FactoryBot.create(:statement, :open) }
       let!(:statement2) { FactoryBot.create(:statement, :payable) }
       let!(:statement3) { FactoryBot.create(:statement, :paid) }
 
-      it "selects only statements with states matching the provided name" do
-        expect(described_class.with_state("open")).to contain_exactly(statement1)
+      it "selects only statements with statuses matching the provided name" do
+        expect(described_class.with_status("open")).to contain_exactly(statement1)
       end
 
-      it "selects only multiple statements with states matching the provided names" do
-        expect(described_class.with_state("payable", "paid")).to contain_exactly(statement2, statement3)
+      it "selects only multiple statements with statuses matching the provided names" do
+        expect(described_class.with_status("payable", "paid")).to contain_exactly(statement2, statement3)
       end
     end
 
@@ -52,13 +52,13 @@ describe Statement do
     context "when transitioning from open to payable" do
       let(:statement) { FactoryBot.create(:statement, :open) }
 
-      it { expect { statement.mark_as_payable! }.to change(statement, :state).from("open").to("payable") }
+      it { expect { statement.mark_as_payable! }.to change(statement, :status).from("open").to("payable") }
     end
 
     context "when transitioning from payable to paid" do
       let(:statement) { FactoryBot.create(:statement, :payable) }
 
-      it { expect { statement.mark_as_paid! }.to change(statement, :state).from("payable").to("paid") }
+      it { expect { statement.mark_as_paid! }.to change(statement, :status).from("payable").to("paid") }
     end
 
     context "when transitioning to an invalid state" do
@@ -68,33 +68,33 @@ describe Statement do
     end
   end
 
-  describe "#shorthand_state" do
-    subject(:shorthand_state) { statement.shorthand_state }
+  describe "#shorthand_status" do
+    subject(:shorthand_status) { statement.shorthand_status }
 
-    let(:statement) { FactoryBot.build(:statement, state:) }
+    let(:statement) { FactoryBot.build(:statement, status:) }
 
-    context "when state is open" do
-      let(:state) { :open }
+    context "when status is open" do
+      let(:status) { :open }
 
       it { is_expected.to eq("OP") }
     end
 
-    context "when state is payable" do
-      let(:state) { :payable }
+    context "when status is payable" do
+      let(:status) { :payable }
 
       it { is_expected.to eq("PB") }
     end
 
-    context "when state is paid" do
-      let(:state) { :paid }
+    context "when status is paid" do
+      let(:status) { :paid }
 
       it { is_expected.to eq("PD") }
     end
 
-    context "when state is unknown" do
-      let(:state) { :unknown_state }
+    context "when status is unknown" do
+      let(:status) { :unknown_status }
 
-      it { expect { shorthand_state }.to raise_error(ArgumentError, "Unknown state: unknown_state") }
+      it { expect { shorthand_status }.to raise_error(ArgumentError, "Unknown status: unknown_status") }
     end
   end
 
