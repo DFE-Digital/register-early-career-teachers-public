@@ -8,4 +8,5 @@ class DeliveryPartner < ApplicationRecord
   validates :name,
             presence: true,
             uniqueness: true
+  validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another delivery partner" }
 end

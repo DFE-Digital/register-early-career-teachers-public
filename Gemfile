@@ -10,6 +10,7 @@ gem "cssbundling-rails"
 gem "csv"
 gem "dfe-analytics", github: "DFE-Digital/dfe-analytics", tag: "v1.15.4"
 gem "dfe-wizard", github: "DFE-Digital/dfe-wizard"
+gem "faraday"
 gem "jsbundling-rails"
 gem "pg", "~> 1.5"
 gem "propshaft"
@@ -24,7 +25,6 @@ gem "govuk_markdown"
 
 gem "mail-notify"
 
-gem "httparty"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "solid_queue"
@@ -54,6 +54,8 @@ gem 'turbo-rails'
 # JSON Serializer
 gem "blueprinter"
 gem "oj"
+
+gem "async-http-faraday"
 
 group :development do
   gem 'better_errors'

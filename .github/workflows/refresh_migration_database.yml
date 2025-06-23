@@ -53,3 +53,9 @@ jobs:
         shell: bash
         run: |
           kubectl -n cpd-production exec -ti --tty deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::TokenProvider.new.generate!"
+
+      - name: Seed parity check endpoints
+        shell: bash
+        run: |
+          kubectl -n cpd-production exec -ti --tty deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::SeedEndpoints.new.plant!"
+          

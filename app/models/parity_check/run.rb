@@ -5,5 +5,7 @@ module ParityCheck
     include Completable
 
     has_many :requests
+
+    validates :started_at, presence: true
   end
 end

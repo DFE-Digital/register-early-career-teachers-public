@@ -40,6 +40,8 @@ class Event < ApplicationRecord
   belongs_to :mentorship_period
   belongs_to :school_partnership
   belongs_to :lead_provider
+  belongs_to :active_lead_provider
+  belongs_to :lead_provider_delivery_partnership
   belongs_to :delivery_partner
   belongs_to :user
 
