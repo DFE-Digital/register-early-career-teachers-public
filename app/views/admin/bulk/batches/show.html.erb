@@ -1,0 +1,18 @@
+<%
+  page_data(
+    title: "Checking bulk #{@batch.batch_type.pluralize}",
+    backlink_href: admin_bulk_batches_path
+  )
+%>
+
+<%= batch_progress_card(@batch) %>
+
+<%= batch_raw_data_table(@batch) %>
+
+<%= batch_processed_data_table(@batch) %>
+
+<% if @batch.action? %>
+  <%= batch_actions_induction_periods_table(@batch) %>
+<% else %>
+  <%= batch_claims_induction_periods_table(@batch) %>
+<% end %>
