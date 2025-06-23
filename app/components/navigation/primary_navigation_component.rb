@@ -52,7 +52,7 @@ module Navigation
         api_guidance: [
           { text: "Home", href: '/api/guidance' },
           { text: "Release notes", href: '/api/guidance/release-notes' },
-          { text: "Page 1", href: '/api/guidance/page-1' },
+          { text: "Page 1", href: '/api/guidance/about_the_api' },
           { text: "Page 2", href: '/api/guidance/page-2' },
           { text: "Page 3", href: '/api/guidance/page-3' },
         ]
