@@ -1,0 +1,36 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <% if teachers_present? %>
+      <%= govuk_table(first_cell_is_header: false) do |table| %>
+        <% table.with_head do |head| %>
+          <% head.with_row do |row| %>
+            <% row.with_cell(text: "Name", header: true, scope: "col") %>
+            <% row.with_cell(text: "TRN", header: true, scope: "col") %>
+            <% row.with_cell(text: "Induction start date", header: true, scope: "col") %>
+            <% row.with_cell(text: "Status", header: true, scope: "col") %>
+          <% end %>
+        <% end %>
+        <% table.with_body do |body| %>
+          <% teachers.each do |teacher| %>
+            <% body.with_row do |row| %>
+              <% row.with_cell do %>
+                <%= govuk_link_to(teacher_full_name(teacher), ab_teacher_path(teacher)) %>
+              <% end %>
+              <% row.with_cell(text: teacher.trn) %>
+              <% row.with_cell(text: teacher_induction_start_date(teacher)) %>
+              <% row.with_cell do %>
+                <%= govuk_tag(**teacher_status_tag_kwargs(teacher)) %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= govuk_pagination pagy: pagy %>
+    <% elsif query.blank? %>
+      <p class="govuk-body">
+        <%= empty_state_message %>
+      </p>
+    <% end %>
+  </div>
+</div>
