@@ -5,7 +5,7 @@ module ParityCheck
     belongs_to :run
     belongs_to :lead_provider
     belongs_to :endpoint
-    has_many :responses
+    has_many :responses, dependent: :destroy
 
     validates :lead_provider, presence: true
     validates :run, presence: true
