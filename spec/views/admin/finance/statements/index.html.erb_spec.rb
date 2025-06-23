@@ -1,10 +1,11 @@
 RSpec.describe 'admin/finance/statements/index.html.erb' do
   let(:raw_statements) { FactoryBot.create_list(:statement, 3) }
-  let(:pagy) { pagy_array(raw_statements, items: 10, page: 1) }
+  let(:pagy) { Pagy.new(count: raw_statements.count, limit: 10, page: 1) }
   let(:statements) { Admin::StatementPresenter.wrap(raw_statements) }
 
   before do
     assign(:statements, statements)
+    assign(:pagy, pagy)
   end
 
   it 'has title Statements' do
