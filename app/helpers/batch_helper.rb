@@ -9,24 +9,26 @@ module BatchHelper
       failed: 'red'
     }
 
-    govuk_tag(text: batch.batch_status, colour: colours[batch.batch_status.to_sym])
+    govuk_tag(text: batch.batch_status.titleize, colour: colours[batch.batch_status.to_sym])
+  end
+
+  # @param batch [PendingInductionSubmissionBatch]
+  def batch_link(batch)
+    paths = {
+      claim: ab_batch_claim_path(batch),
+      action: ab_batch_action_path(batch),
+    }
+
+    govuk_link_to('View', paths[batch.batch_type.to_sym])
   end
 
   # @param batches [Array<PendingInductionSubmissionBatches>]
   def batch_list_table(batches)
     govuk_table(
       caption: 'Upload history',
-      head: ['#', 'Type', 'Filename', 'Status'],
+      head: ['Reference', 'File name', 'Status', 'Action'],
       rows: batches.map do |batch|
-        link =
-          case batch.batch_type
-          when 'claim' then govuk_link_to(batch.id, ab_batch_claim_path(batch))
-          when 'action' then govuk_link_to(batch.id, ab_batch_action_path(batch))
-          else
-            batch.id
-          end
-
-        [link, batch.batch_type, batch.filename, batch_status_tag(batch)]
+        [batch.id.to_s, batch.filename, batch_status_tag(batch), batch_link(batch)]
       end
     )
   end
