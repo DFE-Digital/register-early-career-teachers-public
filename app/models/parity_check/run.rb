@@ -2,7 +2,7 @@ module ParityCheck
   class Run < ApplicationRecord
     self.table_name = "parity_check_runs"
 
-    has_many :requests
+    has_many :requests, dependent: :destroy
 
     attribute :mode, default: -> { :concurrent }
 

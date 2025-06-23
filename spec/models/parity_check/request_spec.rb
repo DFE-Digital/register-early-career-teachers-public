@@ -5,7 +5,7 @@ describe ParityCheck::Request do
     it { is_expected.to belong_to(:run) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:endpoint) }
-    it { is_expected.to have_many(:responses) }
+    it { is_expected.to have_many(:responses).dependent(:destroy) }
   end
 
   describe "validations" do
