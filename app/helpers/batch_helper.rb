@@ -33,6 +33,38 @@ module BatchHelper
     )
   end
 
+  # @param batches [Array<PendingInductionSubmissionBatches>]
+  def admin_batch_list_table(batches)
+    govuk_table(
+      head: [
+        'Batch ID',
+        'Appropriate Body',
+        'Type',
+        'Status',
+        'Filename',
+        'Created',
+        'CSV Rows',
+        'Processed',
+        'Errors',
+        'Action'
+      ],
+      rows: batches.map do |batch|
+        [
+          batch.id.to_s,
+          batch.appropriate_body.name,
+          govuk_tag(text: batch.batch_type, colour: batch.batch_type == 'claim' ? 'blue' : 'green'),
+          batch_status_tag(batch),
+          batch.filename || '-',
+          batch.created_at.to_fs(:govuk),
+          (batch.data&.count || 0).to_s,
+          batch.pending_induction_submissions.count.to_s,
+          batch.pending_induction_submissions.with_errors.count.to_s,
+          govuk_link_to('View', admin_bulk_batch_path(batch))
+        ]
+      end
+    )
+  end
+
   # @param batch [PendingInductionSubmissionBatch]
   def batch_summary(batch)
     submissions = batch.pending_induction_submissions.without_errors
@@ -44,7 +76,6 @@ module BatchHelper
     ], type: :bullet)
   end
 
-  # Temporary method helpful for debugging during development
   def batch_progress_card(batch)
     govuk_summary_list(card: { title: 'Progress' }, rows: [
       {
@@ -73,15 +104,15 @@ module BatchHelper
       },
       {
         key: { text: 'Number of processed submission records' },
-        value: { text: batch.processed_rows.count }
+        value: { text: batch.pending_induction_submissions.count }
       },
       {
-        key: { text: 'Number of failures to download' },
-        value: { text: batch.failed_submissions.count }
+        key: { text: 'Number of submissions with errors' },
+        value: { text: batch.pending_induction_submissions.with_errors.count }
       },
       {
-        key: { text: 'Number of ongoing induction periods with this AB' },
-        value: { text: batch.ongoing_induction_periods.count }
+        key: { text: 'Number of submissions without errors' },
+        value: { text: batch.pending_induction_submissions.without_errors.count }
       },
     ])
   end
@@ -95,17 +126,24 @@ module BatchHelper
     )
   end
 
-  # Temporary method helpful for debugging during development
   def batch_processed_data_table(batch)
     govuk_table(
-      caption: "Processed (#{batch.processed_rows.count} submissions)",
-      head: batch.processed_headers,
-      rows: batch.processed_rows
+      caption: "Processed submissions (#{batch.pending_induction_submissions.count} total)",
+      head: ['TRN', 'Date of birth', 'Status', 'Error messages'],
+      rows: batch.pending_induction_submissions.map do |submission|
+        [
+          submission.trn,
+          submission.date_of_birth&.to_fs(:govuk) || '-',
+          submission.error_messages.any? ? 'Error' : 'Valid',
+          submission.error_messages.join(', ').presence || '-'
+        ]
+      end
     )
   end
 
-  # Temporary method helpful for debugging during development
   def batch_download_data_table(batch)
+    # error_submissions = batch.pending_induction_submissions.with_errors
+
     govuk_table(
       caption: "Downloadable bad CSV data (#{batch.failed_submissions.count} rows)",
       head: batch.row_headings.values,
@@ -113,37 +151,36 @@ module BatchHelper
     )
   end
 
-  # Temporary method helpful for debugging during development
   def batch_actions_induction_periods_table(batch)
+    valid_submissions = batch.pending_induction_submissions.without_errors
+
     govuk_table(
-      caption: "Last inductions (#{batch.submissions_with_induction_periods.count} periods)",
-      head: ['TRN', 'First name', 'Last name', 'Induction period end date', 'Number of terms', 'Outcome'],
-      rows: batch.submissions_with_induction_periods.map do |pending_induction_submission, induction_period|
+      caption: "Valid action submissions (#{valid_submissions.count} records)",
+      head: ['TRN', 'Date of birth', 'Finish date', 'Number of terms', 'Outcome'],
+      rows: valid_submissions.map do |submission|
         [
-          pending_induction_submission.trn,
-          pending_induction_submission.trs_first_name,
-          pending_induction_submission.trs_last_name,
-          induction_period&.finished_on&.to_fs(:iso8601) || '-',
-          induction_period&.number_of_terms&.to_s || '-',
-          (induction_period&.outcome || '-')
+          submission.trn,
+          submission.date_of_birth&.to_fs(:govuk) || '-',
+          submission.finished_on&.to_fs(:govuk) || '-',
+          submission.number_of_terms&.to_s || '-',
+          submission.outcome || '-'
         ]
       end
     )
   end
 
-  # Temporary method helpful for debugging during development
   def batch_claims_induction_periods_table(batch)
+    valid_submissions = batch.pending_induction_submissions.without_errors
+
     govuk_table(
-      caption: "Last inductions (#{batch.submissions_with_induction_periods.count} periods)",
-      head: ['TRN', 'First name', 'Last name', 'Induction programme', 'Induction period start date', 'Outcome'],
-      rows: batch.submissions_with_induction_periods.map do |pending_induction_submission, induction_period|
+      caption: "Valid claim submissions (#{valid_submissions.count} records)",
+      head: ['TRN', 'Date of birth', 'Induction programme', 'Start date'],
+      rows: valid_submissions.map do |submission|
         [
-          pending_induction_submission.trn,
-          pending_induction_submission.trs_first_name,
-          pending_induction_submission.trs_last_name,
-          induction_period&.induction_programme&.to_s || '-',
-          induction_period&.started_on&.to_fs(:iso8601) || '-',
-          (induction_period&.outcome || '-')
+          submission.trn,
+          submission.date_of_birth&.to_fs(:govuk) || '-',
+          submission.induction_programme || '-',
+          submission.started_on&.to_fs(:govuk) || '-'
         ]
       end
     )

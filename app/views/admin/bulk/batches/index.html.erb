@@ -1,0 +1,10 @@
+<%
+  page_data(
+    title: "Bulk upload batches",
+    backlink_href: admin_teachers_path
+  )
+%>
+
+<%= admin_batch_list_table(@batches) %>
+
+<%= govuk_pagination pagy: @pagy %>
