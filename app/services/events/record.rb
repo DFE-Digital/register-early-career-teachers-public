@@ -364,6 +364,8 @@ module Events
         author.event_author_params
       when Events::SystemAuthor
         author.system_author_params
+      when Events::AppropriateBodyBackgroundJobAuthor
+        author.author_params
       else
         fail(InvalidAuthor, author.class)
       end
