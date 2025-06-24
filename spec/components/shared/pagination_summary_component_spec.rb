@@ -1,4 +1,4 @@
-RSpec.describe PaginationWithCount, type: :component do
+RSpec.describe Shared::PaginationSummaryComponent, type: :component do
   subject { render_inline(component) }
 
   let(:pagy) { Pagy.new(count: 196, limit: 20, page: 3) }
