@@ -7,7 +7,7 @@ class ProcessBatchClaimJob < ApplicationJob
 
     AppropriateBodies::ProcessBatch::Claim.new(
       pending_induction_submission_batch:,
-      author: author_session(pending_induction_submission_batch, author_email, author_name)
+      author: author(pending_induction_submission_batch, author_email, author_name)
     ).process!
 
     pending_induction_submission_batch.completed!
@@ -22,8 +22,8 @@ class ProcessBatchClaimJob < ApplicationJob
 
 private
 
-  def author_session(pending_induction_submission_batch, author_email, author_name)
-    Sessions::Users::AppropriateBodyPersona.new(
+  def author(pending_induction_submission_batch, author_email, author_name)
+    Events::AppropriateBodyBackgroundJobAuthor.new(
       email: author_email,
       name: author_name,
       appropriate_body_id: pending_induction_submission_batch.appropriate_body.id
