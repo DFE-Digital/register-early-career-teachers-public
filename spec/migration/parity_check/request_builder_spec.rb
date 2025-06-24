@@ -22,11 +22,13 @@ RSpec.describe ParityCheck::RequestBuilder do
   end
 
   describe "instance methods" do
+    let(:dynamic_request_content) { instance_double(ParityCheck::DynamicRequestContent) }
     let(:tokens) { { lead_provider.ecf_id => "test_token" } }
     let(:ecf_url) { "https://ecf.example.com" }
     let(:rect_url) { "https://rect.example.com" }
 
     before do
+      allow(ParityCheck::DynamicRequestContent).to receive(:new).with(lead_provider:) { dynamic_request_content }
       allow(Rails.application.config).to receive(:parity_check) do
         {
           enabled: true,
@@ -44,28 +46,20 @@ RSpec.describe ParityCheck::RequestBuilder do
 
       it { is_expected.to eq("#{ecf_url}#{endpoint.path}") }
 
-      context "when the path contains an ID but the options do not specify which one" do
+      context "when the path contains an ID but the options do not specify an identifier" do
         let(:path) { "/test-path/:id" }
 
         it { expect { url }.to raise_error(described_class::IDOptionMissingError, "Path contains ID, but options[:id] is missing") }
       end
 
-      context "when the path contains an ID but the options[:id] method is missing" do
+      context "when the path contains an ID and the options specify an identifier" do
         let(:path) { "/test-path/:id" }
-        let(:options) { { id: :unrecognized_id } }
+        let(:options) { { id: "example_id" } }
+        let(:id) { SecureRandom.uuid }
 
-        it { expect { url }.to raise_error(described_class::UnrecognizedPathIdError, "Method missing for path ID: unrecognized_id") }
-      end
+        before { allow(dynamic_request_content).to receive(:fetch).with(options[:id]).and_return(id) }
 
-      context "when the path contains a statement_id" do
-        let(:path) { "/test-path/:id" }
-        let(:options) { { id: :statement_id } }
-        let!(:statement) { FactoryBot.create(:statement, lead_provider:) }
-
-        # Statement for different lead provider should not be used.
-        before { FactoryBot.create(:statement) }
-
-        it { is_expected.to eq("#{ecf_url}/test-path/#{statement.api_id}") }
+        it { is_expected.to eq("#{ecf_url}/test-path/#{id}") }
       end
     end
 
@@ -84,18 +78,14 @@ RSpec.describe ParityCheck::RequestBuilder do
     describe "#body" do
       subject(:body) { instance.body }
 
-      context "when the body contains an example_statement_body" do
-        let(:options) { { body: :example_statement_body } }
+      context "when the body contains an identifier" do
+        let(:options) { { body: "example_body" } }
+        let(:example_body) { { data: { type: "example", attributes: { content: "This is an example body." } } } }
 
-        it "returns the example statement body JSON encoded" do
-          expect(body).to eq({
-            data: {
-              type: "statements",
-              attributes: {
-                content: "This is an example request body.",
-              },
-            },
-          }.to_json)
+        before { allow(dynamic_request_content).to receive(:fetch).with(options[:body]).and_return(example_body) }
+
+        it "returns the example body JSON encoded" do
+          expect(body).to eq(example_body.to_json)
         end
       end
 
@@ -103,12 +93,6 @@ RSpec.describe ParityCheck::RequestBuilder do
         let(:options) { {} }
 
         it { expect(body).to be_nil }
-      end
-
-      context "when the options[:body] method is missing" do
-        let(:options) { { body: :unrecognized_body } }
-
-        it { expect { body }.to raise_error(described_class::UnrecognizedRequestBodyError, "Method missing for body: unrecognized_body") }
       end
     end
 
