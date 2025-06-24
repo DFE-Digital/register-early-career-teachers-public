@@ -47,7 +47,7 @@ RSpec.describe "Admin finance statement selector" do
   end
 
   def when_i_select_a_different_statement
-    selector = page.locator(".admin-statements-filter")
+    selector = page.locator(".app-admin-filter")
 
     elem = selector.get_by_label("Lead provider", exact: true)
     elem.select_option(label: @lead_provider2.name)
@@ -62,7 +62,7 @@ RSpec.describe "Admin finance statement selector" do
   end
 
   def when_i_select_a_statement_that_does_not_exist
-    selector = page.locator(".admin-statements-filter")
+    selector = page.locator(".app-admin-filter")
 
     elem = selector.get_by_label("Lead provider", exact: true)
     elem.select_option(label: @lead_provider2.name)
@@ -86,7 +86,7 @@ RSpec.describe "Admin finance statement selector" do
   end
 
   def selector_options
-    page.query_selector_all(".admin-statements-filter .filter-form-group").each_with_object({}) do |group, data|
+    page.query_selector_all(".app-admin-filter .filter-form-group").each_with_object({}) do |group, data|
       label = group.query_selector("label").text_content
       options = group.query_selector_all("option").map do |op|
         {

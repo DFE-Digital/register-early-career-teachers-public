@@ -1,4 +1,4 @@
-RSpec.describe Admin::Statements::Selector, type: :component do
+RSpec.describe Admin::Statements::SelectorComponent, type: :component do
   let(:statement) { FactoryBot.create(:statement) }
   let(:component) { described_class.new statement: }
   let(:statement_lead_provider) { statement.active_lead_provider.lead_provider }

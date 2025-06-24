@@ -62,7 +62,7 @@ RSpec.describe "Admin finance statement filter" do
   end
 
   def when_i_filter_by_lead_provider
-    filter = page.locator(".admin-statements-filter")
+    filter = page.locator(".app-admin-filter")
 
     elem = filter.get_by_label("Lead provider", exact: true)
     elem.select_option(label: @lead_provider1.name)
@@ -78,7 +78,7 @@ RSpec.describe "Admin finance statement filter" do
   end
 
   def when_i_filter_by_registration_period
-    filter = page.locator(".admin-statements-filter")
+    filter = page.locator(".app-admin-filter")
 
     elem = filter.get_by_label("Contract year", exact: true)
     elem.select_option(label: @registration_period2.year.to_s)
@@ -94,7 +94,7 @@ RSpec.describe "Admin finance statement filter" do
   end
 
   def when_i_filter_by_statement_date
-    filter = page.locator(".admin-statements-filter")
+    filter = page.locator(".app-admin-filter")
 
     elem = filter.get_by_label("Statement date", exact: true)
     elem.select_option(label: "May 2022")
@@ -109,7 +109,7 @@ RSpec.describe "Admin finance statement filter" do
   end
 
   def when_i_filter_by_statement_type
-    filter = page.locator(".admin-statements-filter")
+    filter = page.locator(".app-admin-filter")
 
     elem = filter.get_by_label("Statement type", exact: true)
     elem.select_option(label: "All")

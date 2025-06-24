@@ -1,8 +1,10 @@
 module Admin
   module Statements
-    class Selector < ViewComponent::Base
-      def initialize(statement:)
-        @statement = statement
+    class FilterComponent < ViewComponent::Base
+      attr_reader :params
+
+      def initialize(filter_params:)
+        @params = filter_params
       end
 
       def lead_providers
@@ -10,7 +12,7 @@ module Admin
       end
 
       def lead_provider_id
-        @statement.active_lead_provider.lead_provider_id
+        params[:lead_provider_id]
       end
 
       def registration_periods
@@ -18,7 +20,7 @@ module Admin
       end
 
       def registration_period_id
-        @statement.active_lead_provider.registration_period_id
+        params[:registration_period_id]
       end
 
       def statement_dates
@@ -34,7 +36,20 @@ module Admin
       end
 
       def statement_date
-        [@statement.year, @statement.month].join("-")
+        params[:statement_date]
+      end
+
+      def statement_types
+        statement_type = Struct.new(:id, :name, keyword_init: true)
+        [
+          statement_type.new(name: "All", id: "all"),
+          statement_type.new(name: "Output statements", id: "output_fee"),
+          statement_type.new(name: "Service fee statements", id: "service_fee"),
+        ]
+      end
+
+      def statement_type
+        params[:statement_type].presence || "output_fee"
       end
 
     private

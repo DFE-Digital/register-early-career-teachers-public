@@ -1,6 +1,6 @@
 <% page_data(title: "Statements") %>
 
-<%= render Admin::Statements::Filter.new(filter_params:) %>
+<%= render Admin::Statements::FilterComponent.new(filter_params:) %>
 
 <% if @statements.none? %>
   <p class='govuk-body'>No financial statements found</p>
