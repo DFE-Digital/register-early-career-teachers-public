@@ -1,12 +1,20 @@
 RSpec.describe "Run parity check" do
+  let(:ecf_url) { "https://ecf.example.com" }
+  let(:rect_url) { "https://rect.example.com" }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let!(:get_endpoint) { FactoryBot.create(:parity_check_endpoint, :get, path: "/api/v1/statements") }
+  let!(:post_endpoint) { FactoryBot.create(:parity_check_endpoint, :post, path: "/api/v1/statement") }
+  let!(:put_endpoint) { FactoryBot.create(:parity_check_endpoint, :put, path: "/api/v3/users") }
+
   before do
     sign_in_as_dfe_user(role: :admin)
-    allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: true })
+    allow(Rails.application.config).to receive(:parity_check).and_return({
+      enabled: true,
+      ecf_url:,
+      rect_url:,
+      tokens: { lead_provider.ecf_id => "test-token" }
+    })
   end
-
-  let!(:get_endpoint) { FactoryBot.create(:parity_check_endpoint, :get, path: "/api/v1/statements") }
-  let!(:post_endpoint) { FactoryBot.create(:parity_check_endpoint, :post, path: "/api/v1/statement/:id") }
-  let!(:put_endpoint) { FactoryBot.create(:parity_check_endpoint, :put, path: "/api/v3/users/:id") }
 
   scenario "Running a parity check with endpoints selected" do
     page.goto(new_migration_parity_check_path)
@@ -21,9 +29,33 @@ RSpec.describe "Run parity check" do
     expect(page.locator("legend").and(page.get_by_text("Users"))).to be_visible
     page.get_by_label(put_endpoint.description).click
 
+    page.get_by_text("Sequential").click
+
     page.get_by_role("button", name: "Run").click
 
-    expect(page.get_by_text("Parity check has been started.")).to be_visible
+    expect(page.get_by_text("Parity check run has been created")).to be_visible
+
+    created_run = ParityCheck::Run.last
+    expect(created_run).to be_in_progress
+    expect(created_run.mode).to eq("sequential")
+
+    expect(page.get_by_text("In-progress run")).to be_visible
+    expect(page.get_by_text("Run ##{created_run.id}")).to be_visible
+    expect(page.get_by_text("0%")).to be_visible
+    expect(page.locator('progress[value="0"]')).to be_visible
+
+    perform_next_parity_check_request_job(ecf_url:, rect_url:)
+
+    page.reload
+    expect(page.get_by_text("50%")).to be_visible
+    expect(page.locator('progress[value="50"]')).to be_visible
+
+    perform_next_parity_check_request_job(ecf_url:, rect_url:)
+
+    page.reload
+    expect(page.get_by_text("In-progress run")).not_to be_visible
+
+    expect(created_run.reload).to be_completed
   end
 
   scenario "Running a parity check with no endpoints selected" do
