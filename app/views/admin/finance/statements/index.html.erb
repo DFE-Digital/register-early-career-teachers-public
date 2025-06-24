@@ -17,4 +17,4 @@
   %>
 <% end %>
 
-<%= render PaginationWithCount.new(pagy: @pagy, record_name: "statements") %>
+<%= render Shared::PaginationSummaryComponent.new(pagy: @pagy, record_name: "statements") %>
