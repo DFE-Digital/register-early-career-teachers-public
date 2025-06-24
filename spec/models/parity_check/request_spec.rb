@@ -44,6 +44,12 @@ describe ParityCheck::Request do
       it { is_expected.to contain_exactly(pending_get_request) }
     end
 
+    describe ".completed" do
+      subject { described_class.completed }
+
+      it { is_expected.to contain_exactly(completed_put_request) }
+    end
+
     describe ".queued_or_in_progress" do
       subject { described_class.queued_or_in_progress }
 
