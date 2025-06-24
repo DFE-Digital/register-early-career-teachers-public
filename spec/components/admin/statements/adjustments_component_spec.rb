@@ -1,4 +1,4 @@
-RSpec.describe Admin::Statements::Adjustments, type: :component do
+RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
   subject { render_inline(component) }
 
   let(:statement) { FactoryBot.create(:statement) }
