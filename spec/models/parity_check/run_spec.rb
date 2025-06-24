@@ -14,11 +14,13 @@ describe ParityCheck::Run do
     it { is_expected.to validate_inclusion_of(:mode).in_array(%w[concurrent sequential]) }
     it { is_expected.not_to validate_presence_of(:started_at) }
     it { is_expected.not_to validate_presence_of(:completed_at) }
+    it { is_expected.not_to validate_uniqueness_of(:state) }
 
     context "when in_progress" do
       subject { FactoryBot.build(:parity_check_run, :in_progress) }
 
       it { is_expected.to validate_presence_of(:started_at) }
+      it { is_expected.to validate_uniqueness_of(:state) }
     end
 
     context "when completed" do
