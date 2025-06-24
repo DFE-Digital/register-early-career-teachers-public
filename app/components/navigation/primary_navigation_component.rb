@@ -51,9 +51,9 @@ module Navigation
         api_guidance: [
           { text: "Home", href: '/api/guidance' },
           { text: "Release notes", href: '/api/guidance/release-notes' },
-          { text: "Page 1", href: '/api/guidance/api-documentation' },
+          { text: "Page 1", href: '/api/guidance/technical-details' },
           { text: "Page 2", href: '/api/guidance/test-environment' },
-          { text: "Page 3", href: '/api/guidance/guidance' },
+          { text: "Page 3", href: '/api/guidance/how-to-use-api' },
         ]
       }.fetch(navigation_area, [])
     end
