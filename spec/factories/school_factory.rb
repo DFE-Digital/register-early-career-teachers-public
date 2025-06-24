@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory(:school) do
-    urn { Faker::Number.unique.decimal_part(digits: 7).to_s }
+    urn { Faker::Number.unique.number(digits: 6) }
     independent
 
     trait :independent do
