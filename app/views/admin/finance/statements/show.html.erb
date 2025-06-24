@@ -1,6 +1,6 @@
 <% page_data(title: @statement.page_title) %>
 
-<%= render Admin::Statements::Selector.new(statement: @statement) %>
+<%= render Admin::Statements::SelectorComponent.new(statement: @statement) %>
 
 <%=
   govuk_summary_list do |sl|

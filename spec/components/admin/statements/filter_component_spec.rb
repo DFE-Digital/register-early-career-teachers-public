@@ -1,4 +1,4 @@
-RSpec.describe Admin::Statements::Filter, type: :component do
+RSpec.describe Admin::Statements::FilterComponent, type: :component do
   let(:filter_params) { {} }
   let(:component) { described_class.new filter_params: }
 
