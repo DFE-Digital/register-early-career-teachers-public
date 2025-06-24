@@ -12,6 +12,7 @@ module ParityCheck
     validates :endpoint, presence: true
 
     scope :pending, -> { with_state(:pending) }
+    scope :completed, -> { with_state(:completed) }
     scope :queued_or_in_progress, -> { with_states(:queued, :in_progress) }
     scope :with_method, ->(method:) { joins(:endpoint).where(endpoint: { method: }) }
 

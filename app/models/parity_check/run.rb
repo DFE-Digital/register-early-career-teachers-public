@@ -37,5 +37,29 @@ module ParityCheck
         instance.touch(:completed_at)
       end
     end
+
+    def progress
+      @progress ||= calculate_progress
+    end
+
+    def estimated_completion_at
+      return nil unless in_progress? && requests.any? && progress.positive?
+
+      current_runtime = Time.current - started_at
+      estimated_runtime = current_runtime / (progress.to_f / 100)
+      started_at + estimated_runtime
+    end
+
+  private
+
+    def calculate_progress
+      total_request_count = requests.count
+
+      return 0 if total_request_count.zero?
+
+      completed_request_count = requests.completed.count
+
+      (completed_request_count.to_f / total_request_count * 100).round
+    end
   end
 end
