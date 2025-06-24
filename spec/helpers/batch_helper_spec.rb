@@ -61,13 +61,19 @@ RSpec.describe BatchHelper, type: :helper do
 
     describe "#batch_status_tag" do
       it do
-        expect(batch_status_tag(batch)).to have_text('Completed')
+        expect(batch_status_tag(batch)).to have_selector('strong', class: 'govuk-tag--green', text: 'Completed')
+      end
+    end
+
+    describe "#batch_type_tag" do
+      it do
+        expect(batch_type_tag(batch)).to have_selector('strong', class: 'govuk-tag--purple', text: 'Action')
       end
     end
 
     describe "#batch_link" do
       it do
-        expect(batch_link(batch)).to have_text('View')
+        expect(batch_link(batch)).to have_link('View', href: ab_batch_action_path(batch))
       end
     end
 

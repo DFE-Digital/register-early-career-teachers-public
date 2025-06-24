@@ -10,16 +10,17 @@ class ProcessBatchJob < ApplicationJob
   def perform(pending_induction_submission_batch, author_email, author_name)
     return if pending_induction_submission_batch.processing?
 
-    batch = process_batch(pending_induction_submission_batch, author_email, author_name)
+    author = event_author(pending_induction_submission_batch, author_email, author_name)
+    batch_service = self.class.batch_service.new(pending_induction_submission_batch:, author:)
 
     if pending_induction_submission_batch.processed?
       pending_induction_submission_batch.completing!
-      batch.complete!
+      batch_service.complete!
       pending_induction_submission_batch.completed!
 
     elsif pending_induction_submission_batch.pending?
       pending_induction_submission_batch.processing!
-      batch.process!
+      batch_service.process!
       pending_induction_submission_batch.processed!
     end
   rescue StandardError => e
@@ -31,17 +32,14 @@ class ProcessBatchJob < ApplicationJob
 
 private
 
-  def process_batch(pending_induction_submission_batch, author_email, author_name)
-    self.class.batch_service.new(
-      pending_induction_submission_batch:,
-      author: author(pending_induction_submission_batch, author_email, author_name)
-    )
-  end
-
-  def author(pending_induction_submission_batch, author_email, author_name)
+  # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
+  # @param email [String]
+  # @param name [String]
+  # @return [Events::AppropriateBodyBackgroundJobAuthor]
+  def event_author(pending_induction_submission_batch, email, name)
     Events::AppropriateBodyBackgroundJobAuthor.new(
-      email: author_email,
-      name: author_name,
+      email:,
+      name:,
       appropriate_body_id: pending_induction_submission_batch.appropriate_body.id
     )
   end
