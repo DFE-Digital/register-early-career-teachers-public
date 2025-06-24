@@ -410,6 +410,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_24_131716) do
     t.datetime "updated_at", null: false
     t.enum "state", default: "pending", null: false, enum_type: "parity_check_run_states"
     t.enum "mode", default: "concurrent", null: false, enum_type: "parity_check_run_modes"
+    t.index ["state"], name: "index_parity_check_runs_on_state", unique: true, where: "(state = 'in_progress'::parity_check_run_states)"
   end
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|

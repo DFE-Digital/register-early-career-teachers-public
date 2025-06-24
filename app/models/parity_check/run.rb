@@ -7,6 +7,7 @@ module ParityCheck
     attribute :mode, default: -> { :concurrent }
 
     validates :mode, presence: true, inclusion: { in: %w[concurrent sequential] }
+    validates :state, uniqueness: true, if: -> { state == "in_progress" }
 
     scope :in_progress, -> { with_states(:in_progress) }
     scope :pending, -> { with_state(:pending) }
