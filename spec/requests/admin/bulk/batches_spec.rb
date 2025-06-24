@@ -18,7 +18,7 @@ RSpec.describe "Admin Bulk Batches", type: :request do
       it "shows batches in the table" do
         get admin_bulk_batches_path
         expect(response.body).to include(batch.appropriate_body.name)
-        expect(response.body).to include(batch.batch_type)
+        expect(response.body).to include('Action')
       end
     end
 

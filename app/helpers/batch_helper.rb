@@ -38,6 +38,16 @@ module BatchHelper
   end
 
   # @param batch [PendingInductionSubmissionBatch]
+  def batch_type_tag(batch)
+    colours = {
+      claim: 'light-blue',
+      action: 'purple'
+    }
+
+    govuk_tag(text: batch.batch_type.titleize, colour: colours[batch.batch_type.to_sym])
+  end
+
+  # @param batch [PendingInductionSubmissionBatch]
   def batch_link(batch)
     paths = {
       claim: ab_batch_claim_path(batch),
@@ -77,7 +87,7 @@ module BatchHelper
         [
           batch.id.to_s,
           batch.appropriate_body.name,
-          govuk_tag(text: batch.batch_type, colour: batch.batch_type == 'claim' ? 'blue' : 'green'),
+          batch_type_tag(batch),
           batch_status_tag(batch),
           batch.filename || '-',
           batch.created_at.to_fs(:govuk),
@@ -118,7 +128,7 @@ module BatchHelper
       },
       {
         key: { text: 'Batch type' },
-        value: { text: govuk_tag(text: batch.batch_type, colour: 'yellow') }
+        value: { text: batch_type_tag(batch) }
       },
       {
         key: { text: 'Batch error' },
