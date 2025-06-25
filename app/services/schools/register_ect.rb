@@ -13,7 +13,8 @@ module Schools
                 :trs_last_name,
                 :working_pattern,
                 :author,
-                :ect_at_school_period
+                :ect_at_school_period,
+                :training_period
 
     def initialize(school_reported_appropriate_body:,
                    corrected_name:,
@@ -99,7 +100,7 @@ module Schools
     end
 
     def create_training_period!
-      ::TrainingPeriod.create!(
+      @training_period = ::TrainingPeriod.create!(
         ect_at_school_period:,
         started_on: ect_at_school_period.started_on,
         school_partnership:,
@@ -126,7 +127,7 @@ module Schools
     end
 
     def record_event!
-      Events::Record.record_teacher_registered_as_ect_event!(author:, ect_at_school_period:, teacher:, school:)
+      Events::Record.record_teacher_registered_as_ect_event!(author:, ect_at_school_period:, teacher:, school:, training_period:)
     end
   end
 end
