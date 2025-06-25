@@ -23,12 +23,15 @@ describe Migrators::Statement do
         instance.migrate!
 
         statement = Statement.find_by(api_id: migration_resource1.id)
-        expect(statement).to have_attributes(migration_resource1.attributes.slice("deadline_date", "payment_date", "output_fee", "marked_as_paid_at", "created_at", "updated_at"))
-        expect(statement.month).to eq(2)
-        expect(statement.year).to eq(2025)
-        expect(statement.registration_period.year).to eq(migration_resource1.cohort.start_year)
-        expect(statement.lead_provider.name).to eq(migration_resource1.cpd_lead_provider.lead_provider.name)
-        expect(statement.status).to eq("open")
+        aggregate_failures do
+          expect(statement).to have_attributes(migration_resource1.attributes.slice("deadline_date", "payment_date", "fee_type", "marked_as_paid_at", "created_at", "updated_at"))
+          expect(statement.month).to eq(2)
+          expect(statement.year).to eq(2025)
+          expect(statement.registration_period.year).to eq(migration_resource1.cohort.start_year)
+          expect(statement.lead_provider.name).to eq(migration_resource1.cpd_lead_provider.lead_provider.name)
+          expect(statement.status).to eq("open")
+          expect(statement.fee_type).to eq("output")
+        end
       end
     end
   end
