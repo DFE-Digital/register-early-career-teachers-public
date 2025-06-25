@@ -36,7 +36,7 @@ module Migrators
           deadline_date: ecf_statement.deadline_date,
           payment_date: ecf_statement.payment_date,
           marked_as_paid_at: ecf_statement.marked_as_paid_at,
-          output_fee: ecf_statement.output_fee,
+          fee_type: fee_type(ecf_statement),
           status: status(ecf_statement),
           created_at: ecf_statement.created_at,
           updated_at: ecf_statement.updated_at
@@ -55,6 +55,10 @@ module Migrators
       else
         :open
       end
+    end
+
+    def fee_type(ecf_statement)
+      ecf_statement.output_fee ? 'output' : 'service'
     end
   end
 end

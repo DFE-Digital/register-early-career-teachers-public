@@ -401,7 +401,7 @@
   - deadline_date
   - payment_date
   - marked_as_paid_at
-  - output_fee
+  - fee_type
   - status
   - created_at
   - updated_at

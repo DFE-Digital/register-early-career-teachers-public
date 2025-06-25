@@ -164,46 +164,46 @@ RSpec.describe Statements::Query do
         end
       end
 
-      describe "by `output_fee`" do
-        let!(:statement1) { FactoryBot.create(:statement, output_fee: true) }
-        let!(:statement2) { FactoryBot.create(:statement, output_fee: false) }
+      describe "by `fee_type`" do
+        let!(:statement1) { FactoryBot.create(:statement, :output_fee) }
+        let!(:statement2) { FactoryBot.create(:statement, :service_fee) }
 
-        it "return only statements with `output_fee` true by default" do
+        it "return only statements with `fee_type` 'output' by default" do
           expect(described_class.new.statements).to eq([statement1])
         end
 
-        ["false", false].each do |bool|
-          context "when `output_fee``: #{bool.inspect}" do
-            it "return only statements with output fee false" do
-              query = described_class.new(output_fee: bool)
+        context "when `fee_type`: 'output'" do
+          it "return only statements with fee type of service" do
+            query = described_class.new(fee_type: "output")
 
-              expect(query.statements).to eq([statement2])
-            end
+            expect(query.statements).to eq([statement1])
           end
         end
 
-        ["true", true].each do |bool|
-          context "when `output_fee``: #{bool.inspect}" do
-            it "return only statements with output fee true" do
-              query = described_class.new(output_fee: bool)
+        context "when `fee_type`: 'service'" do
+          it "return only statements with fee type of service" do
+            query = described_class.new(fee_type: "service")
 
-              expect(query.statements).to eq([statement1])
-            end
+            expect(query.statements).to eq([statement2])
           end
         end
 
         context "when `output_fee`: :ignore" do
           it "returns all statements" do
-            query = described_class.new(output_fee: :ignore)
+            query = described_class.new(fee_type: :ignore)
 
             expect(query.statements).to contain_exactly(statement1, statement2)
           end
         end
 
         it "does not filter by `output_fee` if blank" do
-          query = described_class.new(output_fee: " ")
+          query = described_class.new(fee_type: " ")
 
           expect(query.statements).to contain_exactly(statement1, statement2)
+        end
+
+        it 'raises an error when searching by an invalid fee type' do
+          expect { described_class.new(fee_type: "something_else") }.to raise_error(Statements::Query::InvalidFeeTypeError)
         end
       end
 

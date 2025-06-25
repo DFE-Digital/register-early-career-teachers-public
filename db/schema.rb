@@ -24,6 +24,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_24_131716) do
   create_enum "batch_type", ["action", "claim"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system"]
+  create_enum "fee_types", ["output", "service"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
@@ -629,10 +630,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_24_131716) do
     t.date "deadline_date", null: false
     t.date "payment_date", null: false
     t.datetime "marked_as_paid_at"
-    t.boolean "output_fee", default: true, null: false
     t.enum "status", default: "open", null: false, enum_type: "statement_statuses"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.enum "fee_type", default: "output", null: false, enum_type: "fee_types"
     t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
   end
 

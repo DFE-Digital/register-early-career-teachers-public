@@ -1,4 +1,6 @@
 class Statement < ApplicationRecord
+  VALID_FEE_TYPES = %w[output service].freeze
+
   belongs_to :active_lead_provider
   has_many :adjustments
   has_one :lead_provider, through: :active_lead_provider
@@ -6,15 +8,19 @@ class Statement < ApplicationRecord
 
   def self.maximum_year = Date.current.year + 5
 
-  validates :output_fee, inclusion: { in: [true, false], message: "Output fee must be true or false" }
+  validates :fee_type,
+            presence: { message: 'Enter a fee type' },
+            inclusion: { in: VALID_FEE_TYPES, message: "Fee type must be output or service" }
   validates :month, numericality: { in: 1..12, only_integer: true, message: "Month must be a number between 1 and 12" }
   validates :year, numericality: { greater_than_or_equal_to: 2020, is_less_than_or_equal_to: :maximum_year, only_integer: true, message: "Year must be on or after 2020 and on or before #{maximum_year}" }
   validates :active_lead_provider_id, uniqueness: { scope: %i[year month], message: "Statement with the same month and year already exists for the lead provider" }
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another statement" }
 
-  scope :with_output_fee, ->(output_fee: true) { where(output_fee:) }
+  scope :with_fee_type, ->(fee_type) { where(fee_type:) }
   scope :with_status, ->(*status) { where(status:) }
   scope :with_statement_date, ->(year:, month:) { where(year:, month:) }
+
+  enum :fee_type, { service: "service", output: "output" }
 
   state_machine :status, initial: :open do
     state :open
@@ -44,6 +50,6 @@ class Statement < ApplicationRecord
   end
 
   def adjustment_editable?
-    output_fee && !paid?
+    output? && !paid?
   end
 end

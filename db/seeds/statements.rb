@@ -61,7 +61,7 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
         year:,
         deadline_date:,
         payment_date:,
-        output_fee: [true, false].sample,
+        fee_type: %w[service output].sample,
         status:
       )
     end
