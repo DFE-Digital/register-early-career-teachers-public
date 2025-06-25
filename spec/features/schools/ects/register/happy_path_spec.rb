@@ -1,13 +1,11 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client'
 
-  let(:school) { FactoryBot.create(:school, :state_funded, :provider_led_last_chosen, :teaching_school_hub_ab_last_chosen) }
-  let(:trn) { '9876543' }
-
   before do
-    FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
-    FactoryBot.create(:appropriate_body, name: 'Umber Teaching Hub')
-    FactoryBot.create(:lead_provider, name: 'Orange Institute')
+    create_registration_period_for_start_date
+    create_lead_provider_and_active_lead_provider
+    create_school_with_previous_choices
+    create_appropriate_bodies
   end
 
   scenario 'happy path' do
@@ -100,8 +98,44 @@ RSpec.describe 'Registering an ECT' do
     and_i_should_see_the_ect_i_registered
   end
 
+  def create_registration_period_for_start_date
+    FactoryBot.create(
+      :registration_period,
+      started_on: Date.new(2024, 6, 1),
+      finished_on: Date.new(2025, 5, 31)
+    )
+  end
+
+  def create_lead_provider_and_active_lead_provider
+    @lead_provider = FactoryBot.create(:lead_provider, name: 'Orange Institute')
+    FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @lead_provider,
+      registration_period: RegistrationPeriod.for_date(Date.new(2024, 9, 1))
+    )
+  end
+
+  def create_school_with_previous_choices
+    @school = FactoryBot.create(
+      :school,
+      :state_funded,
+      :provider_led_last_chosen,
+      :teaching_school_hub_ab_last_chosen,
+      last_chosen_lead_provider: @lead_provider
+    )
+  end
+
+  def create_appropriate_bodies
+    FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
+    FactoryBot.create(:appropriate_body, name: 'Umber Teaching Hub')
+  end
+
+  def trn
+    '9876543'
+  end
+
   def given_i_am_logged_in_as_a_state_funded_school_user
-    sign_in_as_school_user(school:)
+    sign_in_as_school_user(school: @school)
   end
 
   def and_i_am_on_the_schools_landing_page
@@ -195,11 +229,11 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def and_i_should_see_the_previous_programme_choices
-    expect(page.get_by_text(school.last_chosen_appropriate_body.name)).to be_visible
+    expect(page.get_by_text(@school.last_chosen_appropriate_body.name)).to be_visible
     row = page.locator('.govuk-summary-list__row', has: page.locator('text=Training programme'))
     expect(row.text_content).to include('Training programme')
     expect(row.text_content).to include('Provider-led')
-    expect(page.get_by_text(school.last_chosen_lead_provider_name).first).to be_visible
+    expect(page.get_by_text(@school.last_chosen_lead_provider_name).first).to be_visible
   end
 
   def when_i_select_that_i_dont_want_to_use_the_school_previous_choices
