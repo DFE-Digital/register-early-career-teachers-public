@@ -1,19 +1,20 @@
 module Migrators
   class SchoolPartnership < Migrators::Base
     def self.record_count
-      provider_relationships.count
+      partnerships.count
     end
 
     def self.model
       :school_partnership
     end
 
-    def self.provider_relationships
-      ::Migration::ProviderRelationship.all
+    def self.partnerships
+      ::Migration::Partnership.where(challenged_at: nil)
     end
 
     def self.dependencies
-      %i[registration_period lead_provider delivery_partner]
+      # FIXME: add school in here as it might be needed but not currently migrated?
+      %i[lead_provider_delivery_partnership]
     end
 
     def self.reset!
@@ -23,10 +24,17 @@ module Migrators
     end
 
     def migrate!
-      migrate(self.class.provider_relationships.includes(:lead_provider, :delivery_partner, :cohort)) do |provider_relationship|
-        ::SchoolPartnership.create!(lead_provider: ::LeadProvider.find_by!(name: provider_relationship.lead_provider.name),
-                                    delivery_partner: ::DeliveryPartner.find_by!(name: provider_relationship.delivery_partner.name),
-                                    registration_period: ::RegistrationPeriod.find(provider_relationship.cohort.start_year))
+      migrate(self.class.partnerships.includes(:lead_provider, :delivery_partner, :cohort, :school)) do |partnership|
+        lead_provider = ::LeadProvider.find_by!(ecf_id: partnership.lead_provider_id)
+        delivery_partner = ::DeliveryPartner.find_by!(api_id: partnership.delivery_partner_id)
+        registration_period = ::RegistrationPeriod.find(partnership.cohort.start_year)
+        active_lead_provider = ::ActiveLeadProvider.find_by!(lead_provider:, registration_period:)
+        lpdp = ::LeadProviderDeliveryPartnership.find_by!(active_lead_provider:, delivery_partner:)
+        school_partnership = ::SchoolPartnership.find_or_initialize_by(api_id: partnership.id)
+
+        school_partnership.lead_provider_delivery_partnership = lpdp
+        school_partnership.school = ::School.find_by!(urn: partnership.school.urn)
+        school_partnership.save!
       end
     end
   end
