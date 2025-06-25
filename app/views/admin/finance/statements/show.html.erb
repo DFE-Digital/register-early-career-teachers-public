@@ -46,4 +46,5 @@
   end
 %>
 
+<%= render Admin::Statements::PaymentAuthorisationComponent.new(statement: @statement) %>
 <%= render Admin::Statements::AdjustmentsComponent.new(statement: @statement) %>
