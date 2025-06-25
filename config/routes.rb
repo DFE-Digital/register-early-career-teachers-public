@@ -71,7 +71,9 @@ Rails.application.routes.draw do
           collection do
             post :choose
           end
-
+          member do
+            post :authorise_payment
+          end
           resources :adjustments, controller: 'finance/adjustments', only: %i[new create edit update destroy] do
             member do
               get :delete

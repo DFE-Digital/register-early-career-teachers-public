@@ -52,4 +52,9 @@ class Statement < ApplicationRecord
   def adjustment_editable?
     output_fee? && !paid?
   end
+
+  def can_authorise_payment?
+    # TODO: will also need to include: `participant_declarations.any?`
+    output_fee && payable? && !marked_as_paid_at? && deadline_date < Date.current
+  end
 end
