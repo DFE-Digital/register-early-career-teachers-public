@@ -51,7 +51,7 @@ module ECTHelper
       govuk_tag(text: "Failed induction", colour: "pink")
     when "Exempt"
       govuk_tag(text: "Exempt", colour: "grey")
-    when nil, ""
+    else
       if current_mentor_name(ect)
         govuk_tag(text: "Registered", colour: "green")
       else
