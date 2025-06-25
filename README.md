@@ -18,6 +18,7 @@ ECF is a framework of standards to help early career teachers succeed at the sta
 * [Data schema](https://github.com/DFE-Digital/register-early-career-teachers/wiki/Data-schema)
 * [Setup guide](./documentation/setup.md)
 * [State machines](./documentation/state-machines.md)
+* [Parity check](./documentation/parity-check.md)
 
 ## Repository setup
 

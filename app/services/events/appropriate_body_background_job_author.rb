@@ -9,10 +9,10 @@ class Events::AppropriateBodyBackgroundJobAuthor
 
   def author_params
     {
-      email:,
-      name:,
+      author_email: email,
+      author_name: name,
       appropriate_body_id:,
-      author_type: 'appropriate_body_user',
+      author_type: :appropriate_body_user,
     }
   end
 end

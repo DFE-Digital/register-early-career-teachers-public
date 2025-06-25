@@ -421,6 +421,8 @@
   - ecf_id
   :parity_check_runs:
   - id
+  - state
+  - mode
   - started_at
   - completed_at
   - created_at
@@ -430,6 +432,7 @@
   - run_id
   - lead_provider_id
   - endpoint_id
+  - state
   - started_at
   - completed_at
   - created_at
