@@ -4,6 +4,14 @@ FactoryBot.define do
     association(:run, factory: :parity_check_run)
     association(:endpoint, factory: :parity_check_endpoint)
 
+    transient do
+      response_types { [] }
+    end
+
+    after(:build) do |request, evaluator|
+      request.responses = evaluator.response_types.map { build(:parity_check_response, it, request:) } if evaluator.response_types.any?
+    end
+
     trait :get do
       endpoint { association(:parity_check_endpoint, :get) }
     end
@@ -33,6 +41,7 @@ FactoryBot.define do
       state { :completed }
       started_at { Time.current }
       completed_at { Time.current + 3.minutes }
+      response_types { %i[different] }
     end
   end
 end
