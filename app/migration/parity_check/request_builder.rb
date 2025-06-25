@@ -4,9 +4,7 @@ module ParityCheck
     include ActiveModel::Attributes
     include ParityCheck::Configuration
 
-    class UnrecognizedPathIdError < RuntimeError; end
     class IDOptionMissingError < RuntimeError; end
-    class UnrecognizedRequestBodyError < RuntimeError; end
     class UnrecognizedQueryError < RuntimeError; end
 
     ID_PLACEHOLDER = ":id".freeze
@@ -30,13 +28,11 @@ module ParityCheck
     end
 
     def body
-      body_method = options[:body]
+      identifier = options[:body]
 
-      return unless body_method
+      return unless identifier
 
-      raise UnrecognizedRequestBodyError, "Method missing for body: #{body_method}" unless respond_to?(body_method, true)
-
-      send(body_method).to_json
+      dynamic_request_content.fetch(identifier).to_json
     end
 
     def query
@@ -62,12 +58,11 @@ module ParityCheck
     end
 
     def path_id
-      id_method = options[:id]
+      identifier = options[:id]
 
-      raise IDOptionMissingError, "Path contains ID, but options[:id] is missing" unless id_method
-      raise UnrecognizedPathIdError, "Method missing for path ID: #{id_method}" unless respond_to?(id_method, true)
+      raise IDOptionMissingError, "Path contains ID, but options[:id] is missing" unless identifier
 
-      send(id_method)
+      dynamic_request_content.fetch(identifier)
     end
 
     def token_provider
@@ -104,27 +99,8 @@ module ParityCheck
       ActiveRecord::Type::Boolean.new.cast(options[:paginate])
     end
 
-    # Path ID methods
-
-    def statement_id
-      Statement
-        .joins(:active_lead_provider)
-        .where(active_lead_provider: lead_provider.active_lead_providers)
-        .order("RANDOM()")
-        .pick(:api_id)
-    end
-
-    # Request body methods
-
-    def example_statement_body
-      {
-        data: {
-          type: "statements",
-          attributes: {
-            content: "This is an example request body.",
-          },
-        },
-      }
+    def dynamic_request_content
+      @dynamic_request_content ||= DynamicRequestContent.new(lead_provider:)
     end
   end
 end

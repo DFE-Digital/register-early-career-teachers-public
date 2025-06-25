@@ -11,11 +11,12 @@ module ParityCheck
     def run
       ensure_parity_check_enabled!
 
-      Run.create!(started_at: Time.current).tap do |run|
+      Run.create!.tap do |run|
         lead_providers.to_a.product(endpoints).each do |lead_provider, endpoint|
-          request = run.requests.create!(lead_provider:, endpoint:)
-          ParityCheckRequestJob.perform_later(request_id: request.id)
+          run.requests.create!(lead_provider:, endpoint:)
         end
+
+        ParityCheck::RunDispatcher.new.dispatch
       end
     end
 

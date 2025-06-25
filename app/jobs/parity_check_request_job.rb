@@ -1,5 +1,5 @@
 class ParityCheckRequestJob < ApplicationJob
-  queue_as :parity_check
+  queue_as :parity_check_requests
 
   def perform(request_id:)
     request = ParityCheck::Request.find_by(id: request_id)

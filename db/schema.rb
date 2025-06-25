@@ -29,6 +29,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_092940) do
   create_enum "induction_outcomes", ["fail", "pass"]
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
+  create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed"]
+  create_enum "parity_check_run_modes", ["concurrent", "sequential"]
+  create_enum "parity_check_run_states", ["pending", "in_progress", "completed"]
   create_enum "request_method_types", ["get", "post", "put"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]
@@ -379,6 +382,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_092940) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "endpoint_id"
+    t.enum "state", default: "pending", null: false, enum_type: "parity_check_request_states"
     t.index ["endpoint_id"], name: "index_parity_check_requests_on_endpoint_id"
     t.index ["lead_provider_id"], name: "index_parity_check_requests_on_lead_provider_id"
     t.index ["run_id"], name: "index_parity_check_requests_on_run_id"
@@ -400,10 +404,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_092940) do
   end
 
   create_table "parity_check_runs", force: :cascade do |t|
-    t.datetime "started_at", null: false
+    t.datetime "started_at"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.enum "state", default: "pending", null: false, enum_type: "parity_check_run_states"
+    t.enum "mode", default: "concurrent", null: false, enum_type: "parity_check_run_modes"
   end
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|
