@@ -629,16 +629,18 @@ RSpec.describe Events::Record do
 
   describe '.record_teacher_registered_as_ect_event!' do
     let(:school) { FactoryBot.create(:school) }
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+    let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_registered_as_ect_event!(author:, teacher:, ect_at_school_period:, school:)
+        Events::Record.record_teacher_registered_as_ect_event!(author:, teacher:, ect_at_school_period:, school:, training_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
           school:,
           ect_at_school_period:,
+          training_period:,
           heading: "Rhys Ifans was registered as an ECT at #{school.name}",
           event_type: :teacher_registered_as_ect,
           happened_at: Time.zone.now,
