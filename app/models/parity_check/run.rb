@@ -4,13 +4,14 @@ module ParityCheck
 
     has_many :requests, dependent: :destroy
 
-    attribute :mode, default: -> { :concurrent }
+    attribute :mode, default: -> { "concurrent" }
 
     validates :mode, presence: true, inclusion: { in: %w[concurrent sequential] }
     validates :state, uniqueness: true, if: -> { state == "in_progress" }
 
     scope :in_progress, -> { with_states(:in_progress) }
     scope :pending, -> { with_state(:pending) }
+    scope :completed, -> { with_state(:completed).order(started_at: :desc) }
 
     state_machine :state, initial: :pending do
       state :in_progress do
@@ -18,6 +19,7 @@ module ParityCheck
       end
 
       state :completed do
+        validate :all_requests_are_completed
         validates :completed_at, comparison: { greater_than_or_equal_to: :started_at }
       end
 
@@ -38,6 +40,31 @@ module ParityCheck
       end
     end
 
+    def request_group_names
+      requests.map { it.endpoint.group_name }.uniq
+    end
+
+    def rect_performance_gain_ratio
+      ecf_times = requests.map(&:average_ecf_response_time_ms).compact
+      rect_times = requests.map(&:average_rect_response_time_ms).compact
+
+      return if (ecf_times + rect_times).none?
+
+      ecf_average_response_time_ms = ecf_times.sum.fdiv(ecf_times.size)
+      rect_average_response_time_ms = rect_times.sum.fdiv(rect_times.size)
+
+      (ecf_average_response_time_ms.to_f / rect_average_response_time_ms).round(1)
+    end
+
+    def match_rate
+      total_requests_with_all_responses_matching = requests.with_all_responses_matching.count
+      total_requests = requests.count
+
+      return 0 if total_requests.zero?
+
+      (total_requests_with_all_responses_matching.to_f / total_requests * 100).round
+    end
+
     def progress
       @progress ||= calculate_progress
     end
@@ -51,6 +78,10 @@ module ParityCheck
     end
 
   private
+
+    def all_requests_are_completed
+      errors.add(:requests, "Not all requests have been completed.") if requests.incomplete.any?
+    end
 
     def calculate_progress
       total_request_count = requests.count

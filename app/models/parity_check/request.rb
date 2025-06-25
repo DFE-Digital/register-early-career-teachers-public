@@ -13,8 +13,10 @@ module ParityCheck
 
     scope :pending, -> { with_state(:pending) }
     scope :completed, -> { with_state(:completed) }
+    scope :incomplete, -> { without_state(:completed) }
     scope :queued_or_in_progress, -> { with_states(:queued, :in_progress) }
     scope :with_method, ->(method:) { joins(:endpoint).where(endpoint: { method: }) }
+    scope :with_all_responses_matching, -> { joins(:responses).where.not(id: ParityCheck::Response.different.pluck(:request_id)).distinct }
 
     state_machine :state, initial: :pending do
       state :queued
@@ -25,6 +27,7 @@ module ParityCheck
 
       state :completed do
         validates :completed_at, comparison: { greater_than_or_equal_to: :started_at }
+        validates :responses, presence: true
       end
 
       event :queue do
@@ -46,6 +49,18 @@ module ParityCheck
       before_transition any => :completed do |instance|
         instance.touch(:completed_at)
       end
+    end
+
+    def average_ecf_response_time_ms
+      return if responses.empty?
+
+      responses.sum(&:ecf_time_ms).fdiv(responses.size)
+    end
+
+    def average_rect_response_time_ms
+      return if responses.empty?
+
+      responses.sum(&:rect_time_ms).fdiv(responses.size)
     end
   end
 end
