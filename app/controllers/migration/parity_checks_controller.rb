@@ -1,7 +1,8 @@
 class Migration::ParityChecksController < ::AdminController
   layout "full"
 
-  before_action :load_endpoints, :load_runs, only: %i[new create]
+  before_action :load_endpoints, :load_pending_and_in_progress_runs, only: %i[new create]
+  before_action :load_completed_runs, only: %i[new create completed]
 
   def new
     @runner = ParityCheck::Runner.new
@@ -18,15 +19,25 @@ class Migration::ParityChecksController < ::AdminController
     end
   end
 
+  def completed
+    @breadcrumbs = {
+      "Run a parity check" => new_migration_parity_check_path,
+    }
+  end
+
 private
 
   def load_endpoints
     @endpoints = ParityCheck::Endpoint.all
   end
 
-  def load_runs
+  def load_pending_and_in_progress_runs
     @in_progress_run = ParityCheck::Run.in_progress.first
     @pending_runs = ParityCheck::Run.pending
+  end
+
+  def load_completed_runs
+    @pagy, @completed_runs = pagy(ParityCheck::Run.completed)
   end
 
   def runner_params
