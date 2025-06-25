@@ -20,7 +20,7 @@ class Statement < ApplicationRecord
   scope :with_status, ->(*status) { where(status:) }
   scope :with_statement_date, ->(year:, month:) { where(year:, month:) }
 
-  enum :fee_type, { service: "service", output: "output" }
+  enum :fee_type, { service: "service", output: "output" }, suffix: 'fee'
 
   state_machine :status, initial: :open do
     state :open
@@ -50,6 +50,6 @@ class Statement < ApplicationRecord
   end
 
   def adjustment_editable?
-    output? && !paid?
+    output_fee? && !paid?
   end
 end
