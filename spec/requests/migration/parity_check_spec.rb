@@ -80,4 +80,35 @@ RSpec.describe "Parity check", type: :request do
       end
     end
   end
+
+  describe "GET /migration/parity_checks/completed" do
+    context "when signed in as a DfE user" do
+      include_context 'sign in as DfE user'
+
+      it "renders the completed parity checks page" do
+        get completed_migration_parity_checks_path
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Completed parity checks")
+      end
+
+      context "when parity check is disabled" do
+        let(:enabled) { false }
+
+        it "renders 404 not found" do
+          get completed_migration_parity_checks_path
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context "when not signed in as a DfE user" do
+      include_context 'sign in as non-DfE user'
+
+      it "renders the unauthorized page" do
+        get completed_migration_parity_checks_path
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+      end
+    end
+  end
 end

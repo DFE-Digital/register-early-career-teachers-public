@@ -1,0 +1,45 @@
+<% page_data(title: "Completed parity checks", breadcrumbs: @breadcrumbs) %>
+
+<% if @completed_runs.none? %>
+  <p>
+    There are no completed parity checks.
+  </p>
+<% else %>
+  <%= govuk_details(summary_text: "How the run mode affects performance") do %>
+    <p>
+      In concurrent mode we send multiple requests to the same application at once, resulting in varying loads that randomly impact performance.
+    </p>
+    <p>
+      In sequential mode we send one request at a time, ensuring a like-for-like performance comparison.
+    </p>
+  <% end %>
+
+  <%= govuk_table do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Run #")
+        row.with_cell(text: "Endpoints")
+        row.with_cell(text: "Runtime")
+        row.with_cell(text: "Mode")
+        row.with_cell(text: "Match rate")
+        row.with_cell(text: "Performance")
+      end
+    end
+
+    table.with_body do |body|
+      @completed_runs.each do |run|
+        body.with_row do |row|
+          row.with_cell(text: run.id)
+          row.with_cell(text: formatted_endpoint_group_names(run))
+          row.with_cell(text: distance_of_time_in_words(run.started_at, run.completed_at))
+          row.with_cell(text: run.mode.capitalize)
+          row.with_cell(text: match_rate_tag(run))
+          row.with_cell(text: performance_gain(run))
+        end
+      end
+    end
+  end
+  %>
+
+  <%= govuk_pagination(pagy: @pagy) %>
+<% end %>
