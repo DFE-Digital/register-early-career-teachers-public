@@ -1,4 +1,4 @@
-<% page_data(title: @statement.page_title) %>
+<% page_data(title: @statement.page_title, backlink_href: (request.referer || admin_finance_statements_path)) %>
 
 <%= render Admin::Statements::SelectorComponent.new(statement: @statement) %>
 
