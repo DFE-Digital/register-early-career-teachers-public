@@ -367,27 +367,64 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       describe '#complete!' do
-        before do
-          allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
-
-          service.complete!
-
-          induction_period.reload
-        end
-
         it 'closes induction period with a pass' do
+          service.complete!
+          induction_period.reload
           expect(induction_period.finished_on).to eq(Date.parse(finished_on))
           expect(induction_period.number_of_terms).to eq(3.2)
           expect(induction_period.outcome).to eq('pass')
         end
 
-        it 'creates events owned by the author' do
-          expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
-            appropriate_body:,
-            teacher:,
-            induction_period:,
-            author:
-          )
+        context 'when the outcome is pass' do
+          before do
+            allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
+            service.complete!
+          end
+
+          it 'creates events owned by the author' do
+            expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
+              appropriate_body:,
+              teacher:,
+              induction_period:,
+              author:
+            )
+          end
+        end
+
+        context 'when the outcome is fail' do
+          let(:outcome) { 'fail' }
+
+          before do
+            allow(Events::Record).to receive(:record_teacher_fails_induction_event!).and_call_original
+            service.complete!
+          end
+
+          it 'creates events owned by the author' do
+            expect(Events::Record).to have_received(:record_teacher_fails_induction_event!).with(
+              appropriate_body:,
+              teacher:,
+              induction_period:,
+              author:
+            )
+          end
+        end
+
+        context 'when the outcome is release' do
+          let(:outcome) { 'release' }
+
+          before do
+            allow(Events::Record).to receive(:record_induction_period_closed_event!).and_call_original
+            service.complete!
+          end
+
+          it 'creates events owned by the author' do
+            expect(Events::Record).to have_received(:record_induction_period_closed_event!).with(
+              appropriate_body:,
+              teacher:,
+              induction_period:,
+              author:
+            )
+          end
         end
       end
     end
