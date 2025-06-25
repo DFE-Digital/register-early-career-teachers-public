@@ -83,7 +83,8 @@ Rails.application.configure do
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
 
-  # Use a real queuing backend for Active Job (and separate queues per environment).
-  config.active_job.queue_adapter = :solid_queue
+  # Use inline job execution in development to simplify debugging. Jobs run immediately in the same process (no queue required).
+  config.active_job.queue_adapter = :inline
+
   # config.active_job.queue_name_prefix = "ecf2_development"
 end
