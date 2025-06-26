@@ -23,7 +23,7 @@ module Admin
       end
 
       def marked_as_paid_at
-        statement.marked_as_paid_at.in_time_zone("London").strftime("%-I:%M%P on %-e %b %Y")
+        statement.marked_as_paid_at.in_time_zone("London").strftime("%-I:%M%P on %-e %B %Y")
       end
     end
   end
