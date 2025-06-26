@@ -11,8 +11,8 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       it { expect { fetch }.to raise_error(described_class::UnrecognizedIdentifierError, "Identifier not recognized: unrecognized_identifier") }
     end
 
-    context "when fetching statement_id" do
-      let(:identifier) { :statement_id }
+    context "when fetching example_id" do
+      let(:identifier) { :example_id }
       let!(:statement) { FactoryBot.create(:statement, lead_provider:) }
 
       # Statement for different lead provider should not be used.
@@ -21,10 +21,10 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       it { is_expected.to eq(statement.api_id) }
     end
 
-    context "when fetching example_statement_body" do
-      let(:identifier) { :example_statement_body }
+    context "when fetching example_body" do
+      let(:identifier) { :example_body }
 
-      it "returns the example statement body" do
+      it "returns the example body" do
         expect(fetch).to eq({
           data: {
             type: "statements",
