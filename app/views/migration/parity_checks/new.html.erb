@@ -1,0 +1,22 @@
+<% page_data(title: "Run a parity check") %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p>
+      Select endpoints you would like to run a parity check against.
+    </p>
+
+    <% if @endpoints.any? %>
+      <%= render partial: "form" %>
+    <% else %>
+      <p>
+        No endpoints available for parity checks.
+      </p>
+    <% end %>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <%= render partial: "in_progress_run" if @in_progress_run %>
+    <%= render partial: "pending_runs" if @pending_runs.any? %>
+  </div>
+</div>
+

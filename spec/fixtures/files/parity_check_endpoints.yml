@@ -1,7 +1,9 @@
 get:
-  "/a-path":
-    foo: bar
-  "/another-path":
+  - "/a-path":
+      foo: bar
+  - "/another-path":
+  - "/another-path":
+      corge: grault
 post:
-  "/yet-another-path":
-    baz: qux
+  - "/yet-another-path":
+      baz: qux

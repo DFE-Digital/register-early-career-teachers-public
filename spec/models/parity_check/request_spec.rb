@@ -5,7 +5,7 @@ describe ParityCheck::Request do
     it { is_expected.to belong_to(:run) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:endpoint) }
-    it { is_expected.to have_many(:responses) }
+    it { is_expected.to have_many(:responses).dependent(:destroy) }
   end
 
   describe "validations" do
@@ -42,6 +42,12 @@ describe ParityCheck::Request do
       subject { described_class.pending }
 
       it { is_expected.to contain_exactly(pending_get_request) }
+    end
+
+    describe ".completed" do
+      subject { described_class.completed }
+
+      it { is_expected.to contain_exactly(completed_put_request) }
     end
 
     describe ".queued_or_in_progress" do
