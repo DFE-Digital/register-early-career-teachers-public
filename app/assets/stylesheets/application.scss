@@ -12,6 +12,7 @@ $govuk-assets-path: "/";
 @import "timeline";
 @import "bulk_upload";
 @import "search";
+@import "admin/filter";
 
 // library styles
 @import "accessible-autocomplete/src/autocomplete";

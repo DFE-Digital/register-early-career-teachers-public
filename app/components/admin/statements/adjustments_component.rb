@@ -1,6 +1,6 @@
 module Admin
   module Statements
-    class Adjustments < ViewComponent::Base
+    class AdjustmentsComponent < ViewComponent::Base
       delegate :number_to_pounds, to: :helpers
 
       delegate :adjustment_editable?,

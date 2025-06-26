@@ -172,11 +172,23 @@ RSpec.describe Statements::Query do
           expect(described_class.new.statements).to eq([statement1])
         end
 
-        context "when `output_fee``: 'false'" do
-          it "return only statements with output fee false" do
-            query = described_class.new(output_fee: "false")
+        ["false", false].each do |bool|
+          context "when `output_fee``: #{bool.inspect}" do
+            it "return only statements with output fee false" do
+              query = described_class.new(output_fee: bool)
 
-            expect(query.statements).to eq([statement2])
+              expect(query.statements).to eq([statement2])
+            end
+          end
+        end
+
+        ["true", true].each do |bool|
+          context "when `output_fee``: #{bool.inspect}" do
+            it "return only statements with output fee true" do
+              query = described_class.new(output_fee: bool)
+
+              expect(query.statements).to eq([statement1])
+            end
           end
         end
 
@@ -192,6 +204,69 @@ RSpec.describe Statements::Query do
           query = described_class.new(output_fee: " ")
 
           expect(query.statements).to contain_exactly(statement1, statement2)
+        end
+      end
+
+      describe "by `statement_date`" do
+        let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4) }
+        let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8) }
+
+        it "returns statement1 for 2025-04" do
+          query = described_class.new(statement_date: "2025-04")
+          expect(query.statements).to eq([statement1])
+        end
+
+        it "returns statement2 for 2024-04" do
+          query = described_class.new(statement_date: "2024-08")
+          expect(query.statements).to eq([statement2])
+        end
+
+        it "returns empty for 2021-01" do
+          query = described_class.new(statement_date: "2021-01")
+          expect(query.statements).to be_empty
+        end
+
+        context "when filter should be ignored" do
+          it "returns all statements when value is :ignore" do
+            query = described_class.new(statement_date: :ignore)
+            expect(query.statements).to contain_exactly(statement1, statement2)
+          end
+
+          it "returns all statements when value is blank" do
+            query = described_class.new(statement_date: " ")
+            expect(query.statements).to contain_exactly(statement1, statement2)
+          end
+
+          it "returns all statements when value is nil" do
+            query = described_class.new(statement_date: nil)
+            expect(query.statements).to contain_exactly(statement1, statement2)
+          end
+        end
+      end
+    end
+
+    describe "ordering" do
+      let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4, payment_date: "2024-01-01") }
+      let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8, payment_date: "2025-01-01") }
+
+      describe "default order" do
+        it "returns statements in correct order" do
+          query = described_class.new
+          expect(query.statements).to eq([statement1, statement2])
+        end
+      end
+
+      describe "order by :payment_date" do
+        it "returns statements in correct order" do
+          query = described_class.new(order_by: :payment_date)
+          expect(query.statements).to eq([statement1, statement2])
+        end
+      end
+
+      describe "order by :statement_date" do
+        it "returns statements in correct order" do
+          query = described_class.new(order_by: :statement_date)
+          expect(query.statements).to eq([statement2, statement1])
         end
       end
     end
