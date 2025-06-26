@@ -11,7 +11,7 @@ module Admin
       end
 
       def render?
-        statement.output_fee
+        statement.output_fee?
       end
 
       def marked_as_paid?
