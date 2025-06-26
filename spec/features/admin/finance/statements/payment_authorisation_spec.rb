@@ -29,7 +29,7 @@ RSpec.describe "Payment authorisation for statement" do
   end
 
   def and_i_see_payment_authorised_text
-    marked_as_paid_at = @statement.reload.marked_as_paid_at.in_time_zone("London").strftime("%-I:%M%P on %-e %b %Y")
+    marked_as_paid_at = @statement.reload.marked_as_paid_at.in_time_zone("London").strftime("%-I:%M%P on %-e %B %Y")
     expect(page.get_by_text("Authorised for payment at #{marked_as_paid_at}")).to be_visible
   end
 
