@@ -17,6 +17,14 @@ module ApplicationHelper
     end
   end
 
+  def backlink_with_fallback(fallback:)
+    if request.referer.present? && request.referer != request.url
+      request.referer
+    else
+      fallback
+    end
+  end
+
   def page_data_from_front_matter(yaml)
     parsed_yaml = YAML.load(yaml)&.symbolize_keys
 
