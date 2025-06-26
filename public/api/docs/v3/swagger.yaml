@@ -75,10 +75,9 @@ paths:
 components:
   securitySchemes:
     api_key:
+      type: http
+      scheme: bearer
       description: Bearer token
-      type: apiKey
-      name: Authorization
-      in: header
   schemas:
     IDAttribute:
       description: The unique ID of the resource.
