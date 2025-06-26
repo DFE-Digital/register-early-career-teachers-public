@@ -29,7 +29,7 @@ RSpec.describe Admin::Statements::PaymentAuthorisationComponent, type: :componen
 
       it "renders correctly" do
         expect(subject).not_to have_button("Authorise for payment")
-        marked_as_paid_at = statement.marked_as_paid_at.in_time_zone("London").strftime("%-I:%M%P on %-e %b %Y")
+        marked_as_paid_at = statement.marked_as_paid_at.in_time_zone("London").strftime("%-I:%M%P on %-e %B %Y")
         expect(subject).to have_content("Authorised for payment at #{marked_as_paid_at}")
       end
     end
