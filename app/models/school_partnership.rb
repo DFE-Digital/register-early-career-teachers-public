@@ -3,6 +3,8 @@ class SchoolPartnership < ApplicationRecord
   belongs_to :lead_provider_delivery_partnership, inverse_of: :school_partnerships
   belongs_to :school
   has_many :events
+  has_one :active_lead_provider, through: :lead_provider_delivery_partnership
+  has_one :registration_period, through: :active_lead_provider
 
   # Validations
   validates :lead_provider_delivery_partnership_id, presence: true
@@ -12,4 +14,7 @@ class SchoolPartnership < ApplicationRecord
               scope: :lead_provider_delivery_partnership_id,
               message: 'School and lead provider delivery partnership combination must be unique'
             }
+
+  # Scopes
+  scope :for_registration_period, ->(year) { joins(:registration_period).where(registration_periods: { year: }) }
 end
