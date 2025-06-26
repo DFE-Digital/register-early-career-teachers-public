@@ -16,7 +16,7 @@ module ParityCheck
 
     # Path ID methods
 
-    def statement_id
+    def example_id
       Statement
         .joins(:active_lead_provider)
         .where(active_lead_provider: lead_provider.active_lead_providers)
@@ -26,7 +26,7 @@ module ParityCheck
 
     # Request body methods
 
-    def example_statement_body
+    def example_body
       {
         data: {
           type: "statements",
