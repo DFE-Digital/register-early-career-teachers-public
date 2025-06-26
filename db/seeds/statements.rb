@@ -47,7 +47,8 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
     years.product(months).map do |year, month|
       deadline_date = Time.zone.local(year, month).end_of_month
       payment_date = Time.zone.at(rand(deadline_date.to_i..(deadline_date + 2.months).to_i))
-      status = if payment_date < Date.current
+      fee_type = %w[service output].sample
+      status = if payment_date < Date.current && fee_type == 'output'
                  :paid
                elsif Date.current.between?(deadline_date, payment_date)
                  :payable
@@ -61,7 +62,7 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
         year:,
         deadline_date:,
         payment_date:,
-        fee_type: %w[service output].sample,
+        fee_type:,
         status:
       )
     end
