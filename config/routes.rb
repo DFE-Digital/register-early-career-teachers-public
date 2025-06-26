@@ -124,6 +124,10 @@ Rails.application.routes.draw do
     resources :failures, only: %i[index]
     resources :teacher_failures, path: "teacher-failures", only: %i[index]
     resources :teachers, only: %i[index show]
+
+    constraints -> { Rails.application.config.parity_check[:enabled] } do
+      resources :parity_checks, only: %i[new create]
+    end
   end
 
   namespace :schools do
