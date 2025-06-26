@@ -15,9 +15,9 @@
     <% end %>
   </div>
   <div class="govuk-grid-column-one-third">
-    <%= tag.p(link_to("View completed runs", completed_migration_parity_checks_path)) if @completed_runs.any? %>
-    <%= render partial: "in_progress_run" if @in_progress_run %>
-    <%= render partial: "pending_runs" if @pending_runs.any? %>
+    <%= turbo_stream_from :run_states %>
+
+    <%= render partial: "runs_sidebar", locals: { in_progress_run: @in_progress_run, completed_runs: @completed_runs, pending_runs: @pending_runs } %>
   </div>
 </div>
 

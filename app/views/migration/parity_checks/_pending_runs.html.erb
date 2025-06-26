@@ -1,16 +1,16 @@
 <h2 class="govuk-heading-m">
   Pending runs
-  <% if @in_progress_run&.estimated_completion_at %>
+  <% if in_progress_run&.estimated_completion_at %>
   <p>
     <small class="govuk-caption-xs">
-      ⏱️ The next run will start in <%= distance_of_time_in_words(@in_progress_run.started_at, @in_progress_run.estimated_completion_at) %>
+      ⏱️ The next run will start in <%= distance_of_time_in_words(in_progress_run.started_at, in_progress_run.estimated_completion_at) %>
     </small>
   </p>
   <% end %>  
 </h2>
 
 <%= govuk_list do
-  safe_join(@pending_runs.map do |run|
+  safe_join(pending_runs.map do |run|
     tag.li do
       govuk_list do
         tag.li(tag.label(tag.strong("Run ##{run.id}"))) +

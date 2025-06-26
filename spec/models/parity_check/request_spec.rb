@@ -125,6 +125,12 @@ describe ParityCheck::Request do
 
       it { expect { request.complete! }.to change(request, :state).from("in_progress").to("completed") }
       it { expect { request.complete! }.to change(request, :completed_at).from(nil).to(be_within(1.second).of(Time.zone.now)) }
+
+      it "broadcasts the run states" do
+        expect(request.run).to receive(:broadcast_run_states).once
+
+        request.complete!
+      end
     end
 
     context "when attempting an unsupported transition" do
