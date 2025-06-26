@@ -13,7 +13,13 @@ module Admin
     def status_tag_kwargs
       colour = { 'open' => 'blue', 'payable' => 'yellow', 'paid' => 'green' }.fetch(statement.status)
 
-      { text: statement.status.capitalize, colour: }
+      text = if statement.output_fee? && statement.paid?
+               "Authorised for payment"
+             else
+               statement.status.capitalize
+             end
+
+      { text:, colour: }
     end
 
     def page_title

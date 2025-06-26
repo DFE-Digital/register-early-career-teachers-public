@@ -152,4 +152,50 @@ describe Statement do
       end
     end
   end
+
+  context ".can_authorise_payment?" do
+    context "open statement" do
+      subject { FactoryBot.build(:statement, :open) }
+
+      it { expect(subject.can_authorise_payment?).to be(false) }
+    end
+
+    context "paid statement" do
+      subject { FactoryBot.build(:statement, :paid) }
+
+      it { expect(subject.can_authorise_payment?).to be(false) }
+    end
+
+    context "payable statement" do
+      context "service_fee statement" do
+        subject { FactoryBot.build(:statement, :payable, :service_fee) }
+
+        it { expect(subject.can_authorise_payment?).to be(false) }
+      end
+
+      context "output_fee statement" do
+        context "with deadline_date in future" do
+          subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date: 3.days.from_now.to_date) }
+
+          it { expect(subject.can_authorise_payment?).to be(false) }
+        end
+
+        context "with deadline_date in past" do
+          let(:deadline_date) { 3.days.ago.to_date }
+
+          context "marked as payable" do
+            subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: Time.zone.now) }
+
+            it { expect(subject.can_authorise_payment?).to be(false) }
+          end
+
+          context "is not marked as payable" do
+            subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: nil) }
+
+            it { expect(subject.can_authorise_payment?).to be(true) }
+          end
+        end
+      end
+    end
+  end
 end

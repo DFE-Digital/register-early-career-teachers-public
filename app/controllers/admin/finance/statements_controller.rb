@@ -27,6 +27,17 @@ module Admin::Finance
       end
     end
 
+    def authorise_payment
+      @statement = Statement.find(params[:id])
+
+      # TODO: run in a background job
+      if Statements::AuthorisePayment.new(@statement).authorise
+        redirect_to admin_finance_statement_path(@statement), alert: "Statement authorised"
+      else
+        redirect_to admin_finance_statement_path(@statement), alert: "Unable to authorise statement"
+      end
+    end
+
   private
 
     def statements_query

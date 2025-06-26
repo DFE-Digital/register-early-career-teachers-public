@@ -92,6 +92,41 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
+  describe "#backlink_with_fallback" do
+    let(:mock_referer) { "http://example.com/referer" }
+    let(:mock_url) { "http://example.com/url" }
+
+    before do
+      mock_request = instance_double(ActionDispatch::Request, referer: mock_referer, url: mock_url)
+      allow(self).to receive(:request).and_return(mock_request)
+    end
+
+    context "request with referer" do
+      it "returns referer url" do
+        url = backlink_with_fallback(fallback: "/statements")
+        expect(url).to eq(mock_referer)
+      end
+
+      context "when referer url is same as page url" do
+        let(:mock_referer) { mock_url }
+
+        it "returns fallback url" do
+          url = backlink_with_fallback(fallback: "/statements")
+          expect(url).to eq("/statements")
+        end
+      end
+    end
+
+    context "request without referer" do
+      let(:mock_referer) { nil }
+
+      it "returns fallback url" do
+        url = backlink_with_fallback(fallback: "/statements")
+        expect(url).to eq("/statements")
+      end
+    end
+  end
+
   describe "#page_data_from_front_matter" do
     context "with yaml content" do
       let(:front_matter) do

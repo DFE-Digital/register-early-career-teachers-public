@@ -35,10 +35,20 @@ describe Admin::StatementPresenter do
     end
 
     context 'when paid' do
-      let(:statement) { FactoryBot.build(:statement, :paid) }
+      context 'when service fee statement' do
+        let(:statement) { FactoryBot.build(:statement, :paid, :service_fee) }
 
-      it 'is green and Paid' do
-        expect(subject.status_tag_kwargs).to eql({ colour: 'green', text: 'Paid' })
+        it 'is green and Paid' do
+          expect(subject.status_tag_kwargs).to eql({ colour: 'green', text: 'Paid' })
+        end
+      end
+
+      context 'when output fee statement' do
+        let(:statement) { FactoryBot.build(:statement, :paid, :output_fee) }
+
+        it 'is green and Paid' do
+          expect(subject.status_tag_kwargs).to eql({ colour: 'green', text: 'Authorised for payment' })
+        end
       end
     end
 

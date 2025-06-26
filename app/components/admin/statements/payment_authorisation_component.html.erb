@@ -1,0 +1,5 @@
+<% if can_authorise_payment? %>
+  <%= govuk_button_to "Authorise for payment", authorise_payment_admin_finance_statement_path(statement) %>
+<% elsif marked_as_paid? %>
+  <%= tag.p(marked_as_paid_text) %>
+<% end %>
