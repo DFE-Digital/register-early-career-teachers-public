@@ -12,7 +12,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
   belongs_to :school, inverse_of: :ect_at_school_periods
   belongs_to :teacher, inverse_of: :ect_at_school_periods
   belongs_to :school_reported_appropriate_body, class_name: 'AppropriateBody'
-  belongs_to :lead_provider
 
   has_many :mentorship_periods, inverse_of: :mentee
   has_many :mentors, through: :mentorship_periods, source: :mentor
