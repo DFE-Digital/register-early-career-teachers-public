@@ -39,14 +39,14 @@ RSpec.describe "Admin finance statement filter" do
     @active_lead_provider2 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider1, registration_period: @registration_period2)
     @active_lead_provider3 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider2, registration_period: @registration_period2)
 
-    @statement1 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, output_fee: true, year: 2025, month: 5)
-    @statement2 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, output_fee: false, year: 2023, month: 5)
+    @statement1 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, fee_type: 'output', year: 2025, month: 5)
+    @statement2 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, fee_type: 'service', year: 2023, month: 5)
 
-    @statement3 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, output_fee: true, year: 2022, month: 5)
-    @statement4 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, output_fee: false, year: 2024, month: 5)
+    @statement3 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, fee_type: 'output', year: 2022, month: 5)
+    @statement4 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, fee_type: 'service', year: 2024, month: 5)
 
-    @statement5 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider3, output_fee: true, year: 2025, month: 8)
-    @statement6 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider3, output_fee: false, year: 2026, month: 8)
+    @statement5 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider3, fee_type: 'output', year: 2025, month: 8)
+    @statement6 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider3, fee_type: 'service', year: 2026, month: 8)
   end
 
   def when_i_visit_the_statements_page
