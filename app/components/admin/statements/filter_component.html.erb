@@ -1,0 +1,41 @@
+<%= form_with url: admin_finance_statements_path, method: :get do |f| %>
+  <div class="app-admin-filter">
+    <%= f.govuk_collection_select :lead_provider_id,
+      lead_providers,
+      :id,
+      :name,
+      label: { text: "Lead provider" },
+      options: { selected: lead_provider_id, include_blank: "All" },
+      form_group: { class: 'filter-form-group' }
+    %>
+
+    <%= f.govuk_collection_select :registration_period_id,
+      registration_periods,
+      :id,
+      :year,
+      label: { text: "Contract year" },
+      options: { selected: registration_period_id, include_blank: "All" },
+      form_group: { class: 'filter-form-group' }
+    %>
+
+    <%= f.govuk_collection_select :statement_date,
+      statement_dates,
+      :id,
+      :name,
+      label: { text: "Statement date" },
+      options: { selected: statement_date, include_blank: "All" },
+      form_group: { class: 'filter-form-group' }
+    %>
+
+    <%= f.govuk_collection_select :statement_type,
+      statement_types,
+      :id,
+      :name,
+      label: { text: "Statement type" },
+      options: { selected: statement_type, include_blank: false },
+      form_group: { class: 'filter-form-group' }
+    %>
+
+    <%= f.govuk_submit "View", class: "govuk-button govuk-button--secondary filter-button" %>
+  </div>
+<% end %>

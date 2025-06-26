@@ -14,6 +14,7 @@ class Statement < ApplicationRecord
 
   scope :with_output_fee, ->(output_fee: true) { where(output_fee:) }
   scope :with_status, ->(*status) { where(status:) }
+  scope :with_statement_date, ->(year:, month:) { where(year:, month:) }
 
   state_machine :status, initial: :open do
     state :open
