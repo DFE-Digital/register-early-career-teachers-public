@@ -43,7 +43,7 @@ RSpec.describe "List adjustments for statement" do
   end
 
   def given_a_finance_statement_with_false_output_fees_exists
-    @statement = FactoryBot.create(:statement, output_fee: false)
+    @statement = FactoryBot.create(:statement, :service_fee)
   end
 
   def when_i_visit_the_finance_statement_page

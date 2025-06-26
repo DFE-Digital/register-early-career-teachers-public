@@ -9,8 +9,9 @@ describe Statement do
   describe "validations" do
     subject { FactoryBot.create(:statement) }
 
-    it { is_expected.to allow_values(true, false).for(:output_fee).with_message("Output fee must be true or false") }
-    it { is_expected.not_to allow_value(nil).for(:output_fee).with_message("Output fee must be true or false") }
+    it { is_expected.to validate_presence_of(:fee_type).with_message("Enter a fee type") }
+    it { is_expected.to allow_values('output', 'service').for(:fee_type).with_message("Fee type must be output or service") }
+    it { is_expected.not_to allow_value(nil).for(:fee_type).with_message("Fee type must be output or service") }
     it { is_expected.to validate_numericality_of(:month).only_integer.is_greater_than_or_equal_to(1).is_less_than_or_equal_to(12).with_message("Month must be a number between 1 and 12") }
     it { is_expected.to validate_numericality_of(:year).only_integer.is_greater_than_or_equal_to(2020).with_message("Year must be on or after 2020 and on or before #{described_class.maximum_year}") }
     it { is_expected.to validate_uniqueness_of(:active_lead_provider_id).scoped_to(:year, :month).with_message("Statement with the same month and year already exists for the lead provider") }
@@ -32,12 +33,20 @@ describe Statement do
       end
     end
 
-    describe ".with_output_fee" do
-      let!(:statement1) { FactoryBot.create(:statement, output_fee: true) }
-      let!(:statement2) { FactoryBot.create(:statement, output_fee: false) }
+    describe ".with_fee_type" do
+      let!(:statement1) { FactoryBot.create(:statement, :output_fee) }
+      let!(:statement2) { FactoryBot.create(:statement, :service_fee) }
 
-      it "selects only output fee statements" do
-        expect(described_class.with_output_fee).to contain_exactly(statement1)
+      context "when searching with 'output'" do
+        it 'selects only output fee statements' do
+          expect(described_class.with_fee_type('output')).to contain_exactly(statement1)
+        end
+      end
+
+      context "when searching with 'service'" do
+        it 'selects only output fee statements' do
+          expect(described_class.with_fee_type('service')).to contain_exactly(statement2)
+        end
       end
     end
 
@@ -117,25 +126,25 @@ describe Statement do
       subject { FactoryBot.build(:statement, :paid) }
 
       it "returns false" do
-        subject.output_fee = true
+        subject.fee_type = 'output'
         expect(subject.adjustment_editable?).to be(false)
 
-        subject.output_fee = false
+        subject.fee_type = 'service'
         expect(subject.adjustment_editable?).to be(false)
       end
     end
 
     context "non-paid statement" do
-      context "output_fee is true" do
-        subject { FactoryBot.build(:statement, :open, output_fee: true) }
+      context "output fee" do
+        subject { FactoryBot.build(:statement, :open, fee_type: 'output') }
 
         it "returns true" do
           expect(subject.adjustment_editable?).to be(true)
         end
       end
 
-      context "output_fee is false" do
-        subject { FactoryBot.build(:statement, :open, output_fee: false) }
+      context "service fee" do
+        subject { FactoryBot.build(:statement, :open, fee_type: 'service') }
 
         it "returns false" do
           expect(subject.adjustment_editable?).to be(false)

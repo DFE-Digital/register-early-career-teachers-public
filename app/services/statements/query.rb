@@ -1,18 +1,20 @@
 module Statements
   class Query
+    class InvalidFeeTypeError < StandardError; end
+
     include Queries::ConditionFormats
     include FilterIgnorable
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, registration_period_years: :ignore, updated_since: :ignore, status: :ignore, output_fee: true, statement_date: :ignore, order_by: :payment_date)
+    def initialize(lead_provider: :ignore, registration_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, order_by: :payment_date)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider registration_period])
 
       where_lead_provider_is(lead_provider)
       where_registration_period_year_in(registration_period_years)
       where_updated_since(updated_since)
       where_status_is(status)
-      where_output_fee_is(output_fee)
+      where_fee_type_is(fee_type)
       where_statement_date(statement_date)
       set_order_by(order_by)
     end
@@ -59,10 +61,12 @@ module Statements
       scope.merge!(Statement.with_status(extract_conditions(state)))
     end
 
-    def where_output_fee_is(output_fee)
-      return if ignore?(filter: output_fee)
+    def where_fee_type_is(fee_type)
+      return if ignore?(filter: fee_type)
 
-      scope.merge!(Statement.with_output_fee(output_fee:))
+      fail InvalidFeeTypeError unless fee_type.in?(Statement::VALID_FEE_TYPES)
+
+      scope.merge!(Statement.with_fee_type(fee_type))
     end
 
     def where_statement_date(statement_date)
