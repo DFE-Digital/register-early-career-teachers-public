@@ -19,12 +19,12 @@ FactoryBot.define do
 
     trait :provider_led do
       training_programme { 'provider_led' }
-      association :lead_provider
+      # association :lead_provider
     end
 
     trait :school_led do
       training_programme { 'school_led' }
-      lead_provider { nil }
+      # lead_provider { nil }
     end
 
     trait :independent_school do
