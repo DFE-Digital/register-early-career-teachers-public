@@ -31,17 +31,17 @@ describe RegistrationPeriod do
     end
   end
 
-  describe '.for_date' do
+  describe '.containing_date' do
     let!(:period) do
       FactoryBot.create(:registration_period, started_on: Date.new(2024, 9, 1), finished_on: Date.new(2025, 8, 31))
     end
 
     it 'returns the registration period containing the given date' do
-      expect(RegistrationPeriod.for_date(Date.new(2025, 1, 1))).to eq(period)
+      expect(RegistrationPeriod.containing_date(Date.new(2025, 1, 1))).to eq(period)
     end
 
     it 'returns nil when no period contains the date' do
-      expect(RegistrationPeriod.for_date(Date.new(2023, 1, 1))).to be_nil
+      expect(RegistrationPeriod.containing_date(Date.new(2023, 1, 1))).to be_nil
     end
   end
 end

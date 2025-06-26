@@ -21,8 +21,8 @@ class RegistrationPeriod < ApplicationRecord
   validates :started_on, presence: { message: "Enter a start date" }
   validates :finished_on, presence: { message: "Enter an end date" }
 
-  def self.for_date(date)
-    where('range @> ?::date', date).first
+  def self.containing_date(date)
+    find_by(*date_in_range(date))
   end
 
 private

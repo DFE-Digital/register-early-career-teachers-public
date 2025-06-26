@@ -111,7 +111,7 @@ RSpec.describe 'Registering an ECT' do
     FactoryBot.create(
       :active_lead_provider,
       lead_provider: @lead_provider,
-      registration_period: RegistrationPeriod.for_date(Date.new(2024, 9, 1))
+      registration_period: RegistrationPeriod.containing_date(Date.new(2024, 9, 1))
     )
   end
 
