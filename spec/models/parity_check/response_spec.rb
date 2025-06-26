@@ -31,7 +31,79 @@ describe ParityCheck::Response do
     describe ".different" do
       subject { described_class.different }
 
-      it { expect(subject).to contain_exactly(different_response) }
+      it { is_expected.to contain_exactly(different_response) }
+    end
+
+    describe ".matching" do
+      subject { described_class.matching }
+
+      it { is_expected.to contain_exactly(matching_response) }
+    end
+  end
+
+  describe "#rect_performance_gain_ratio" do
+    subject { response.rect_performance_gain_ratio }
+
+    let(:response) { FactoryBot.build(:parity_check_response, ecf_time_ms:, rect_time_ms:) }
+
+    context "when there are no response times" do
+      let(:rect_time_ms) { nil }
+      let(:ecf_time_ms) { nil }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when the response times are equal" do
+      let(:rect_time_ms) { 100 }
+      let(:ecf_time_ms) { rect_time_ms }
+
+      it { is_expected.to eq(1.0) }
+    end
+
+    context "when the RECT response times are faster" do
+      let(:rect_time_ms) { 87 }
+      let(:ecf_time_ms) { 253 }
+
+      it { is_expected.to eq(2.9) }
+    end
+
+    context "when the ECF response times are faster" do
+      let(:rect_time_ms) { 253 }
+      let(:ecf_time_ms) { 87 }
+
+      it { is_expected.to eq(0.3) }
+    end
+  end
+
+  describe "#match_rate" do
+    subject { response.match_rate }
+
+    context "when the response is matching" do
+      let(:response) { FactoryBot.build(:parity_check_response, :matching) }
+
+      it { is_expected.to eq(100) }
+    end
+
+    context "when the response is different" do
+      let(:response) { FactoryBot.build(:parity_check_response, :different) }
+
+      it { is_expected.to eq(0) }
+    end
+  end
+
+  describe ".matching?" do
+    subject { response }
+
+    context "when the response is matching" do
+      let(:response) { FactoryBot.build(:parity_check_response, :matching) }
+
+      it { is_expected.to be_matching }
+    end
+
+    context "when the response is different" do
+      let(:response) { FactoryBot.build(:parity_check_response, :different) }
+
+      it { is_expected.not_to be_matching }
     end
   end
 end

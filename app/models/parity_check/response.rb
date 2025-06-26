@@ -14,6 +14,21 @@ module ParityCheck
     validates :page, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true, uniqueness: { scope: :request_id }
 
     scope :different, -> { where("ecf_status_code != rect_status_code OR ecf_body != rect_body") }
+    scope :matching, -> { where("ecf_status_code = rect_status_code AND ecf_body IS NULL and rect_body IS NULL") }
+
+    def rect_performance_gain_ratio
+      return unless ecf_time_ms && rect_time_ms
+
+      (ecf_time_ms.to_f / rect_time_ms).round(1)
+    end
+
+    def match_rate
+      matching? ? 100 : 0
+    end
+
+    def matching?
+      !different?
+    end
 
   private
 
