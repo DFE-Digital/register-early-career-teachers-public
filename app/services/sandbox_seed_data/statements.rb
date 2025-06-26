@@ -34,7 +34,7 @@ module SandboxSeedData
             ) do |statement|
               statement.payment_date = payment_date(deadline_date)
               statement.status = status(statement.payment_date, deadline_date)
-              statement.output_fee = output_fee
+              statement.fee_type = fee_type
             end
           end
         end
@@ -53,8 +53,8 @@ module SandboxSeedData
       (registration_year...(registration_year + YEARS_TO_CREATE)).to_a
     end
 
-    def output_fee
-      [true, false].sample
+    def fee_type
+      %w[service output].sample
     end
 
     def payment_date(deadline_date)

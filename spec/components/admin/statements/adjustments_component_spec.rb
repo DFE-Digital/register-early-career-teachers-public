@@ -86,8 +86,8 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
       end
     end
 
-    context "statement with output_fee=fase" do
-      let(:statement) { FactoryBot.create :statement, output_fee: false }
+    context "service fee statement" do
+      let(:statement) { FactoryBot.create :statement, :service_fee }
 
       it "does not render links" do
         expect(subject).not_to have_link("Add adjustment")

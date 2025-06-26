@@ -10,8 +10,7 @@ FactoryBot.define do
     end
     deadline_date { Faker::Date.forward(days: 30) }
     payment_date { Faker::Date.forward(days: 30) }
-    output_fee { true }
-    open
+    output_fee
 
     trait :open do
       status { :open }
@@ -23,6 +22,14 @@ FactoryBot.define do
 
     trait :paid do
       status { :paid }
+    end
+
+    trait :output_fee do
+      fee_type { 'output' }
+    end
+
+    trait :service_fee do
+      fee_type { 'service' }
     end
   end
 end
