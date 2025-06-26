@@ -1,6 +1,10 @@
 module ParityCheckHelper
   def grouped_endpoints(endpoints)
-    endpoints.group_by(&:group_name)
+    endpoints.group_by(&:group_name).sort.to_h
+  end
+
+  def grouped_requests(requests)
+    requests.group_by { it.endpoint.group_name }.sort.to_h
   end
 
   def run_mode_options

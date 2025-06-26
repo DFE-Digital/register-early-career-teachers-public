@@ -11,12 +11,33 @@ RSpec.describe ParityCheckHelper, type: :helper do
       ]
     end
 
-    it "groups endpoints by their group name" do
-      expect(grouping).to eq(
-        users: endpoints[0..1],
-        "participant-declarations": [endpoints[2]],
-        miscellaneous: [endpoints[3]]
-      )
+    it "groups endpoints by their group name, in ascending order" do
+      expect(grouping.to_a).to eq([
+        [:miscellaneous, [endpoints[3]]],
+        [:"participant-declarations", [endpoints[2]]],
+        [:users, endpoints[0..1]],
+      ])
+    end
+  end
+
+  describe "#grouped_requests" do
+    subject(:grouping) { helper.grouped_requests(requests) }
+
+    let(:requests) do
+      [
+        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v1/users")),
+        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v3/users/create")),
+        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v2/participant-declarations")),
+        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/login")),
+      ]
+    end
+
+    it "groups requests by their endpoint's group name, in ascending order" do
+      expect(grouping.to_a).to eq([
+        [:miscellaneous, [requests[3]]],
+        [:"participant-declarations", [requests[2]]],
+        [:users, requests[0..1]],
+      ])
     end
   end
 
