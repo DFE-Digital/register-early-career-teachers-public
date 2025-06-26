@@ -10,7 +10,7 @@ RSpec.describe "Appropriate Body teacher extensions new", type: :request do
       get("/appropriate-body/teachers/#{teacher.id}/extensions/new")
 
       expect(response).to be_successful
-      expect(response.body).to include('Enter number of terms')
+      expect(response.body).to include('FTE terms')
     end
   end
 
