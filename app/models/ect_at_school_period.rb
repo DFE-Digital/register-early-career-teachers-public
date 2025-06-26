@@ -32,17 +32,17 @@ class ECTAtSchoolPeriod < ApplicationRecord
             notify_email: true,
             allow_nil: true
 
-  validates :lead_provider_id,
-            absence: {
-              message: "Must be nil",
-              if: -> { school_led_training_programme? }
-            }
+  # validates :lead_provider_id,
+  #           absence: {
+  #             message: "Must be nil",
+  #             if: -> { school_led_training_programme? }
+  #           }
 
-  validates :training_programme,
-            presence: {
-              message: "Must be provider-led",
-              if: -> { lead_provider_id }
-            }
+  # validates :training_programme,
+  #           presence: {
+  #             message: "Must be provider-led",
+  #             if: -> { lead_provider_id }
+  #           }
 
   validates :school_id,
             presence: true
