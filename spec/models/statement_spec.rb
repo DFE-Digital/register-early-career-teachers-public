@@ -166,19 +166,16 @@ describe Statement do
       it { expect(subject.can_authorise_payment?).to be(false) }
     end
 
-    # output_fee && payable? && !marked_as_paid_at? && deadline_date < Date.current
     context "payable statement" do
       context "service_fee statement" do
-        subject { FactoryBot.build(:statement, :payable, output_fee: false) }
+        subject { FactoryBot.build(:statement, :payable, :service_fee) }
 
         it { expect(subject.can_authorise_payment?).to be(false) }
       end
 
       context "output_fee statement" do
-        let(:output_fee) { true }
-
         context "with deadline_date in future" do
-          subject { FactoryBot.build(:statement, :payable, output_fee:, deadline_date: 3.days.from_now.to_date) }
+          subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date: 3.days.from_now.to_date) }
 
           it { expect(subject.can_authorise_payment?).to be(false) }
         end
@@ -187,13 +184,13 @@ describe Statement do
           let(:deadline_date) { 3.days.ago.to_date }
 
           context "marked as payable" do
-            subject { FactoryBot.build(:statement, :payable, output_fee:, deadline_date:, marked_as_paid_at: Time.zone.now) }
+            subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: Time.zone.now) }
 
             it { expect(subject.can_authorise_payment?).to be(false) }
           end
 
           context "is not marked as payable" do
-            subject { FactoryBot.build(:statement, :payable, output_fee:, deadline_date:, marked_as_paid_at: nil) }
+            subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: nil) }
 
             it { expect(subject.can_authorise_payment?).to be(true) }
           end

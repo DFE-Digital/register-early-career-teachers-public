@@ -1,12 +1,12 @@
 RSpec.describe Admin::Statements::PaymentAuthorisationComponent, type: :component do
   subject { render_inline(component) }
 
-  let(:statement) { FactoryBot.create(:statement, :payable, output_fee: true, marked_as_paid_at:) }
+  let(:statement) { FactoryBot.create(:statement, :payable, :output_fee, marked_as_paid_at:) }
   let(:marked_as_paid_at) { nil }
   let(:component) { described_class.new statement: }
 
   context "service_fee statement" do
-    let(:statement) { FactoryBot.create(:statement, :payable, output_fee: false) }
+    let(:statement) { FactoryBot.create(:statement, :payable, :service_fee) }
 
     it "does not render" do
       expect(subject.text).to be_blank
