@@ -30,10 +30,9 @@ RSpec.configure do |config|
       components: {
         securitySchemes: {
           api_key: {
+            type: :http,
+            scheme: :bearer,
             description: "Bearer token",
-            type: :apiKey,
-            name: "Authorization",
-            in: :header,
           },
         },
 
