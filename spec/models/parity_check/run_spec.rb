@@ -9,6 +9,28 @@ describe ParityCheck::Run do
     it { is_expected.to have_attributes(mode: "concurrent") }
   end
 
+  describe "after_commit" do
+    it "broadcasts the run states" do
+      in_progress_run = FactoryBot.create(:parity_check_run, :in_progress)
+      FactoryBot.create_list(:parity_check_run, 3, :completed)
+      FactoryBot.create_list(:parity_check_run, 2, :pending)
+
+      partial = "migration/parity_checks/runs_sidebar"
+      locals = {
+        in_progress_run:,
+        completed_runs: described_class.completed,
+        pending_runs: described_class.pending,
+      }
+      html = "<div>sidebar content</div>"
+      allow(::Migration::ParityChecksController.renderer).to receive(:render).with(partial:, locals:) { html }
+
+      run = FactoryBot.create(:parity_check_run)
+
+      expect(run).to receive(:broadcast_update_to).with(:run_states, html:, target: :run_states).once
+      run.touch
+    end
+  end
+
   describe "validations" do
     it { is_expected.to validate_presence_of(:mode) }
     it { is_expected.to validate_inclusion_of(:mode).in_array(%w[concurrent sequential]) }
