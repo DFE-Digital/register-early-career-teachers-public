@@ -34,7 +34,7 @@ module Admin::Finance
         lead_provider:,
         registration_period_years:,
         statement_date:,
-        output_fee:,
+        fee_type:,
         order_by: :statement_date,
       }
       Statements::Query.new(**opts.compact)
@@ -53,16 +53,16 @@ module Admin::Finance
       filter_params[:statement_date].presence
     end
 
-    def output_fee
+    def fee_type
       case filter_params[:statement_type]
       when "output_fee"
-        true
+        "output"
       when "service_fee"
-        false
+        "service"
       when "all"
         :ignore
       else
-        true
+        "output"
       end
     end
 
