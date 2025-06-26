@@ -49,7 +49,7 @@ module Schools
         update_school_last_choices!
         create_teacher!
         @ect_at_school_period = start_at_school!
-        create_training_period! if lead_provider.present?
+        create_training_period! if provider_led_training_programme?
         record_event!
       end
 
@@ -57,6 +57,10 @@ module Schools
     end
 
   private
+
+    def provider_led_training_programme?
+      lead_provider.present?
+    end
 
     def already_registered_as_an_ect?
       ::Teacher.find_by_trn(trn)&.ect_at_school_periods&.exists?
