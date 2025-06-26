@@ -71,7 +71,7 @@ module Schools
     end
 
     def registration_period
-      @registration_period ||= RegistrationPeriod.for_date(started_on)
+      @registration_period ||= RegistrationPeriod.containing_date(started_on)
     end
 
     def active_lead_provider
