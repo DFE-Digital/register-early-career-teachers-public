@@ -23,6 +23,7 @@
         row.with_cell(text: "Mode")
         row.with_cell(text: "Match rate")
         row.with_cell(text: "Performance")
+        row.with_cell
       end
     end
 
@@ -35,6 +36,7 @@
           row.with_cell(text: run.mode.capitalize)
           row.with_cell(text: match_rate_tag(run.match_rate))
           row.with_cell(text: performance_gain(run.rect_performance_gain_ratio))
+          row.with_cell(text: govuk_link_to("View", migration_parity_check_path(run)))
         end
       end
     end

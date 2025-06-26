@@ -43,5 +43,15 @@ FactoryBot.define do
       completed_at { Time.current + 3.minutes }
       response_types { %i[different] }
     end
+
+    trait :completed_different do
+      completed
+      response_types { %i[different] }
+    end
+
+    trait :completed_matching do
+      completed
+      response_types { %i[matching] }
+    end
   end
 end

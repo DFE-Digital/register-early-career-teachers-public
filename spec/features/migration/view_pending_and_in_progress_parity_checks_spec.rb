@@ -1,4 +1,4 @@
-RSpec.describe "Pending and in-progress parity checks" do
+RSpec.describe "View pending and in-progress parity checks" do
   include ActionView::Helpers::DateHelper
 
   before do
