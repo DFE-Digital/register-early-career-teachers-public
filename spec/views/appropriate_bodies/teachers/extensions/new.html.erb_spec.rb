@@ -9,10 +9,10 @@ RSpec.describe "appropriate_bodies/teachers/extensions/new.html.erb" do
     assign(:extension, extension)
   end
 
-  it "renders a form with a 'Enter number of terms' field" do
+  it "renders a form with a 'FTE terms' field" do
     render
 
-    expect(rendered).to have_css('label', text: 'Enter number of terms')
+    expect(rendered).to have_css('label', text: 'FTE terms')
   end
 
   context 'when the extension has an error' do

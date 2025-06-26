@@ -9,10 +9,10 @@ RSpec.describe "appropriate_bodies/teachers/extensions/edit.html.erb" do
     assign(:extension, extension)
   end
 
-  it "renders a form with a 'How many additional terms of induction' field" do
+  it "renders a form with a 'FTE terms' field" do
     render
 
-    expect(rendered).to have_css('label', text: /How many additional terms of induction do you need to add to .* induction?/)
+    expect(rendered).to have_css('label', text: 'FTE terms')
   end
 
   context 'when the extension has an error' do

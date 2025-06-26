@@ -13,7 +13,7 @@ RSpec.describe "Appropriate Body teacher extensions edit", type: :request do
       get("/appropriate-body/teachers/#{teacher.id}/extensions/#{extension.id}/edit")
 
       expect(response).to be_successful
-      expect(sanitize(response.body)).to include("Add an Extension to an ECT's induction")
+      expect(sanitize(response.body)).to include("Edit #{Teachers::Name.new(teacher).full_name}'s extension")
       expect(response.body).to include('2.0')
     end
   end
