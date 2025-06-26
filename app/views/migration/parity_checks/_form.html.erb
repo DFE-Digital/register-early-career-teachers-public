@@ -1,0 +1,11 @@
+<%= form_for @runner, url: migration_parity_checks_path do |f| %>
+  <%= f.govuk_error_summary %>
+
+  <% grouped_endpoints(@endpoints).each do |group, endpoints| %>
+    <%= f.govuk_collection_check_boxes :endpoint_ids, endpoints, :id, :description, legend: { text: group.capitalize } %>
+  <% end %>
+
+  <%= f.govuk_collection_radio_buttons(:mode, run_mode_options, :value, :name, :description, legend: { text: "Mode" }) %>
+
+  <%= f.govuk_submit "Run" %>
+<% end %>

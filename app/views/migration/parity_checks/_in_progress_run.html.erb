@@ -1,0 +1,11 @@
+<h2 class="govuk-heading-m">In-progress run</h2>
+
+<%= govuk_list classes: "parity-check-in-progress" do
+  tag.li do
+    govuk_list do
+      tag.li(tag.label(tag.strong("Run ##{@in_progress_run.id}")) + " " + govuk_tag(text: "#{@in_progress_run.progress}%", colour: "blue")) +
+      tag.li(tag.progress(value: @in_progress_run.progress, max: 100)) +
+      tag.li(tag.small("Started #{time_ago_in_words(@in_progress_run.started_at)} ago"))
+    end
+  end
+end %>

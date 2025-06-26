@@ -211,6 +211,7 @@
   - updated_at
   - lead_provider_delivery_partnership_id
   - school_id
+  - api_id
   :teachers:
   - corrected_name
   - trs_first_name
