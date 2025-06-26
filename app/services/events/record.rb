@@ -263,12 +263,12 @@ module Events
       new(event_type:, author:, heading:, mentor_at_school_period:, teacher:, school:, happened_at:).record_event!
     end
 
-    def self.record_teacher_registered_as_ect_event!(author:, ect_at_school_period:, teacher:, school:, happened_at: Time.zone.now)
+    def self.record_teacher_registered_as_ect_event!(author:, ect_at_school_period:, teacher:, school:, training_period:, happened_at: Time.zone.now)
       event_type = :teacher_registered_as_ect
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was registered as an ECT at #{school.name}"
 
-      new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, happened_at:).record_event!
+      new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
     end
 
     def self.record_teacher_starts_mentoring_event!(author:, mentor:, mentee:, mentor_at_school_period:, mentorship_period:, school:, happened_at: Time.zone.now)
