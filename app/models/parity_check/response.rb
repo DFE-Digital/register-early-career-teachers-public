@@ -32,11 +32,11 @@ module ParityCheck
       !different?
     end
 
-  private
-
     def different?
       [ecf_status_code, ecf_body] != [rect_status_code, rect_body]
     end
+
+  private
 
     def clear_bodies
       self.ecf_body = self.rect_body = nil
