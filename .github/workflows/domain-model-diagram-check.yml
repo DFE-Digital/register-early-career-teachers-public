@@ -1,0 +1,85 @@
+name: "Domain model diagram check"
+on:
+  workflow_call:
+    inputs:
+      ruby-version:
+        description: Ruby version
+        type: string
+        required: false
+        default: "3.4.4"
+jobs:
+  domain-model-diagram-check:
+    name: Check domain model diagram
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    env:
+      RAILS_ENV: test
+      DB_USERNAME: postgres
+      DB_PASSWORD: ""
+      DB_HOSTNAME: 127.0.0.1
+      DB_PORT: 5432
+      ECF_DB_USERNAME: postgres
+      ECF_DB_PASSWORD: ""
+      ECF_DB_HOSTNAME: 127.0.0.1
+      ECF_DB_PORT: 5432
+      ANALYTICS_DB_USERNAME: postgres
+      ANALYTICS_DB_PASSWORD: ""
+      ANALYTICS_DB_HOSTNAME: 127.0.0.1
+      ANALYTICS_DB_PORT: 5432
+      ENCRYPTION_PRIMARY_KEY: test_primary_key
+      ENCRYPTION_DETERMINISTIC_KEY: test_deterministic_key
+      ENCRYPTION_DERIVATION_SALT: test_derivation_salt
+      CI: true
+
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ""
+          POSTGRES_HOST_AUTH_METHOD: "trust"
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./.github/actions/prepare-app-env
+        id: test
+        with:
+          prepare-test-database: "true"
+          prepare-assets: "true"
+
+      - name: Generate diagram checksum (original)
+        run: |
+          shasum -a 256 documentation/domain-model.png > domain-model-checksum-before.txt
+          cat domain-model-checksum-before.txt
+
+      - name: Install Graphviz
+        run: sudo apt-get update && sudo apt-get install -y graphviz
+        
+      - name: Regenerate domain model diagram
+        run: bundle exec erd
+
+      - name: Generate diagram checksum (after migrating)
+        run: |
+          shasum -a 256 documentation/domain-model.png > domain-model-checksum-after.txt
+          cat domain-model-checksum-after.txt
+
+      - name: Compare checksums
+        run: |
+          if ! diff -q domain-model-checksum-before.txt domain-model-checksum-after.txt; then
+            echo "Domain model diagram has changed! run \"bundle exec erd\" and commit documentation/domain-model.png"
+            exit 1
+          else
+            echo "Domain model diagram has not changed"
+          fi
