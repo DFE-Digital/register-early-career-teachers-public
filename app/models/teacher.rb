@@ -21,12 +21,6 @@ class Teacher < ApplicationRecord
   has_many :teacher_migration_failures
 
   # Validations
-  validates :trs_first_name,
-            presence: true
-
-  validates :trs_last_name,
-            presence: true
-
   validates :trn,
             uniqueness: { message: 'TRN already exists', case_sensitive: false },
             teacher_reference_number: true

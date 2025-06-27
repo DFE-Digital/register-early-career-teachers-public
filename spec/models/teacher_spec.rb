@@ -11,8 +11,6 @@ describe Teacher do
   describe "validations" do
     subject { FactoryBot.build(:teacher) }
 
-    it { is_expected.to validate_presence_of(:trs_first_name) }
-    it { is_expected.to validate_presence_of(:trs_last_name) }
     it { is_expected.to validate_length_of(:trs_induction_status).with_message('TRS induction status must be shorter than 18 characters') }
 
     describe "trn" do
