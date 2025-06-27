@@ -66,7 +66,7 @@ module Events
       @delivery_partner = delivery_partner
       @user = user
       @modifications = DescribeModifications.new(modifications).describe
-      @metadata = metadata || modifications
+      @metadata = metadata&.to_hash || modifications
     end
 
     def record_event!
@@ -276,7 +276,7 @@ module Events
       mentor_name = Teachers::Name.new(mentor).full_name
       mentee_name = Teachers::Name.new(mentee).full_name
       heading = "#{mentor_name} started mentoring #{mentee_name}"
-      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+      metadata = Events::Metadata.new(mentor_id: mentor.id, mentee_id: mentee.id)
 
       new(event_type:, author:, heading:, mentorship_period:, mentor_at_school_period:, teacher: mentor, school:, metadata:, happened_at:).record_event!
     end
@@ -286,7 +286,7 @@ module Events
       mentor_name = Teachers::Name.new(mentor).full_name
       mentee_name = Teachers::Name.new(mentee).full_name
       heading = "#{mentee_name} is being mentored by #{mentor_name}"
-      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+      metadata = Events::Metadata.new(mentor_id: mentor.id, mentee_id: mentee.id)
 
       new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
     end
@@ -296,12 +296,12 @@ module Events
     def self.record_bulk_upload_started_event!(author:, batch:, csv_data:)
       event_type = :bulk_upload_started
       heading = "#{batch.appropriate_body.name} started a bulk #{batch.batch_type}"
-      metadata = {
+      metadata = Events::Metadata.new(
         batch_id: batch.id,
         batch_type: batch.batch_type,
         rows: batch.rows.count,
         **csv_data.metadata
-      }
+      )
 
       new(event_type:, author:, appropriate_body: batch.appropriate_body, heading:, happened_at: Time.zone.now, metadata:).record_event!
     end
@@ -309,7 +309,7 @@ module Events
     def self.record_bulk_upload_completed_event!(author:, batch:)
       event_type = :bulk_upload_completed
       heading = "#{batch.appropriate_body.name} completed a bulk #{batch.batch_type}"
-      metadata = {
+      metadata = Events::Metadata.new(
         batch_id: batch.id,
         batch_type: batch.batch_type,
         batch_status: batch.batch_status,
@@ -317,8 +317,8 @@ module Events
         skipped: batch.pending_induction_submissions.with_errors.count,
         passed: batch.pending_induction_submissions.pass.count,
         failed: batch.pending_induction_submissions.fail.count,
-        released: batch.pending_induction_submissions.release.count,
-      }
+        released: batch.pending_induction_submissions.release.count
+      )
 
       new(event_type:, author:, appropriate_body: batch.appropriate_body, heading:, happened_at: Time.zone.now, metadata:).record_event!
     end
@@ -329,7 +329,7 @@ module Events
       event_type = :lead_provider_api_token_created
       lead_provider = api_token.lead_provider
       heading = "An API token was created for lead provider: #{lead_provider.name}"
-      metadata = { description: api_token.description }
+      metadata = Events::Metadata.new(description: api_token.description)
 
       new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
     end
@@ -338,7 +338,7 @@ module Events
       event_type = :lead_provider_api_token_revoked
       lead_provider = api_token.lead_provider
       heading = "An API token was revoked for lead provider: #{lead_provider.name}"
-      metadata = { description: api_token.description }
+      metadata = Events::Metadata.new(description: api_token.description)
 
       new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
     end
