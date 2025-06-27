@@ -57,7 +57,23 @@ RSpec.describe PendingInductionSubmissionBatch do
     it { is_expected.to allow_value('pending').for(:batch_status) }
     it { is_expected.to allow_value('processing').for(:batch_status) }
     it { is_expected.to allow_value('processed').for(:batch_status) }
+    it { is_expected.to allow_value('completing').for(:batch_status) }
     it { is_expected.to allow_value('completed').for(:batch_status) }
     it { is_expected.to allow_value('failed').for(:batch_status) }
+  end
+
+  xdescribe '#recorded_count' do
+  end
+
+  xdescribe '#no_valid_data?' do
+  end
+
+  xdescribe '#tally' do
+  end
+
+  xdescribe '#tally!' do
+  end
+
+  xdescribe '#redact!' do
   end
 end

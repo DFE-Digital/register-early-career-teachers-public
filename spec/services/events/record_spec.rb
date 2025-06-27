@@ -707,27 +707,16 @@ RSpec.describe Events::Record do
   describe '.record_bulk_upload_started_event!' do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
 
-    let(:csv_data) do
-      AppropriateBodies::ProcessBatchForm.from_uploaded_file(
-        headers: BatchRows::ACTION_CSV_HEADINGS,
-        csv_file: instance_double(ActionDispatch::Http::UploadedFile,
-                                  content_type: 'text/csv',
-                                  size: 100.kilobytes,
-                                  read: double,
-                                  original_filename: 'test.csv')
-      )
-    end
-
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_bulk_upload_started_event!(author:, batch:, csv_data:)
+        Events::Record.record_bulk_upload_started_event!(author:, batch:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "Burns Slant Drilling Co. started a bulk action",
           appropriate_body:,
+          pending_induction_submission_batch: batch,
           event_type: :bulk_upload_started,
           happened_at: Time.zone.now,
-          metadata: { batch_id: batch.id, batch_type: 'action', file_name: 'test.csv', file_size: '102400', file_type: 'text/csv', rows: 1 },
           **author_params
         )
       end
@@ -750,9 +739,9 @@ RSpec.describe Events::Record do
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "Burns Slant Drilling Co. completed a bulk claim",
           appropriate_body:,
+          pending_induction_submission_batch: batch,
           event_type: :bulk_upload_completed,
           happened_at: Time.zone.now,
-          metadata: { batch_id: batch.id, batch_status: 'processed', batch_type: 'claim', failed: 0, passed: 0, released: 0, skipped: 1, total: 1 },
           **author_params
         )
       end
