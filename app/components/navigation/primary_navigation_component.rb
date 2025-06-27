@@ -51,10 +51,10 @@ module Navigation
         ],
         api_guidance: [
           { text: "Home", href: '/api/guidance' },
-          { text: "Release notes", href: '/api/guidance/release-notes' },
-          { text: "Technical details", href: '/api/guidance/technical-details' },
-          { text: "Sandbox (test) environments", href: '/api/guidance/sandbox' },
-          { text: "How to use this API", href: '/api/guidance/how-to-use-api' },
+          { text: "Release notes", href: '/api/guidance/api-technical-documentation' },
+          { text: "Release notes", href: '/api/guidance/api-release-notes' }
+          { text: "Sandbox (test) environments", href: '/api/guidance/api-sandbox' },
+          { text: "How to use this API", href: '/api/guidance/early-career-training-programme-guidance' },
         ]
       }.fetch(navigation_area, [])
     end
