@@ -220,4 +220,22 @@ RSpec.describe ApplicationHelper, type: :helper do
       it { is_expected.to eql('No') }
     end
   end
+
+  describe '#govuk_html_element' do
+    subject { govuk_html_element { content } }
+
+    let(:content) { 'what a nice page' }
+
+    it 'renders the provided content in a HTML element' do
+      expect(subject).to match(%r{<html.*#{content}</html>})
+    end
+
+    it 'includes both the govuk-template and govuk-template--rebranded classes' do
+      expect(subject).to include('govuk-template govuk-template--rebranded')
+    end
+
+    it 'defaults to english' do
+      expect(subject).to include('lang="en"')
+    end
+  end
 end
