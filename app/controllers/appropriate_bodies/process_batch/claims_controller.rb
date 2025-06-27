@@ -18,25 +18,31 @@ module AppropriateBodies
 
           record_bulk_upload_started_event
           process_batch_claim
-          record_bulk_upload_completed_event
 
-          redirect_to ab_batch_claim_path(@pending_induction_submission_batch), alert: 'File processing'
+          redirect_to ab_batch_claim_path(@pending_induction_submission_batch)
         else
           csv_data.errors.each do |error|
             @pending_induction_submission_batch.errors.add(error.attribute, error.message)
           end
+
           render :new, status: :unprocessable_entity
         end
       rescue ActionController::ParameterMissing
-        @pending_induction_submission_batch.errors.add(:csv_file, "Attach a CSV file")
-        render :new, status: :unprocessable_entity
-      rescue StandardError => e
-        @pending_induction_submission_batch.errors.add(:base, e.message)
+        @pending_induction_submission_batch.errors.add(:csv_file, 'Select a file')
         render :new, status: :unprocessable_entity
       end
 
       def edit
-        # no confirmation stage yet
+        redirect_to ab_batch_claim_path(@pending_induction_submission_batch) unless @pending_induction_submission_batch.processed?
+      end
+
+      def update
+        @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+
+        process_batch_claim
+        record_bulk_upload_completed_event
+
+        redirect_to ab_batch_claim_path(@pending_induction_submission_batch)
       end
 
     private

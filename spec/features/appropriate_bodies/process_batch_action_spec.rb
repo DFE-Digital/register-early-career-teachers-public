@@ -36,13 +36,11 @@ RSpec.describe 'Process bulk actions' do
 
     context 'with valid CSV file' do
       scenario 'creates a pending submission for each row' do
-        # This job does validation first, leaving the user to confirm with a CTA
         perform_enqueued_jobs
         page.reload
         expect(page.get_by_text('CSV file summary')).to be_visible
-
-        # NB: these will have failed because we have not factoried the ECTs and their inductions
         expect(page.get_by_text("Your CSV named 'valid_complete_action.csv' has 2 ECTs")).to be_visible
+        expect(page.get_by_role('link', name: 'Download CSV with error messages included')).to be_visible
       end
 
       scenario 'displays progress as batch is processing and submission records are created' do
@@ -62,7 +60,6 @@ RSpec.describe 'Process bulk actions' do
 
         expect(batch.progress).to eq(50.0)
         page.reload
-        # NB: not Hotwire capable
         expect(page.get_by_text('50%')).to be_visible
       end
     end
@@ -114,16 +111,14 @@ RSpec.describe 'Process bulk actions' do
         let(:corrected_file_path) { Rails.root.join("spec/fixtures/#{corrected_file_name}").to_s }
 
         scenario 'should allow uploading the corrected file' do
-          # First upload fails as expected
           then_i_should_see_the_error('The selected file must follow the template')
-
-          # Now try to upload a corrected file
-          when_i_upload_a_corrected_file
+          when_i_upload_a_file(corrected_file_path)
 
           perform_enqueued_jobs
           page.reload
           expect(page.get_by_text('CSV file summary')).to be_visible
           expect(page.get_by_text("Your CSV named 'valid_complete_action.csv' has 2 ECTs")).to be_visible
+          expect(page.get_by_role('link', name: 'Download CSV with error messages included')).to be_visible
         end
       end
     end
@@ -135,13 +130,8 @@ private
     expect(page.url).to end_with('/appropriate-body/bulk/actions/new')
   end
 
-  def when_i_upload_a_file
-    page.locator('input[type="file"]').set_input_files(file_path)
-    page.get_by_role('button', name: 'Continue').click
-  end
-
-  def when_i_upload_a_corrected_file
-    page.locator('input[type="file"]').set_input_files(corrected_file_path)
+  def when_i_upload_a_file(input_file = file_path)
+    page.locator('input[type="file"]').set_input_files(input_file)
     page.get_by_role('button', name: 'Continue').click
   end
 

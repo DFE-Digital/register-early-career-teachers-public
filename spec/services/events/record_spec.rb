@@ -727,7 +727,7 @@ RSpec.describe Events::Record do
           appropriate_body:,
           event_type: :bulk_upload_started,
           happened_at: Time.zone.now,
-          metadata: { batch_id: batch.id, batch_type: "action", file_name: "test.csv", file_size: "102400", file_type: "text/csv", rows: 1 },
+          metadata: { batch_id: batch.id, batch_type: 'action', file_name: 'test.csv', file_size: '102400', file_type: 'text/csv', rows: 1 },
           **author_params
         )
       end
@@ -752,7 +752,7 @@ RSpec.describe Events::Record do
           appropriate_body:,
           event_type: :bulk_upload_completed,
           happened_at: Time.zone.now,
-          metadata: { batch_id: batch.id, batch_status: 'completed', batch_type: "claim", failed: 0, passed: 0, released: 0, skipped: 1, total: 1 },
+          metadata: { batch_id: batch.id, batch_status: 'processed', batch_type: 'claim', failed: 0, passed: 0, released: 0, skipped: 1, total: 1 },
           **author_params
         )
       end

@@ -114,7 +114,9 @@ Rails.application.routes.draw do
 
     constraints -> { Rails.application.config.enable_bulk_upload } do
       namespace :process_batch, path: 'bulk', as: 'batch' do
-        resources :claims, format: %i[html csv]
+        constraints -> { Rails.application.config.enable_bulk_claim } do
+          resources :claims, format: %i[html csv]
+        end
         resources :actions, format: %i[html csv]
       end
     end

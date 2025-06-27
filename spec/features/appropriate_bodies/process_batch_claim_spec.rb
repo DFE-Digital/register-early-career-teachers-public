@@ -25,72 +25,62 @@ RSpec.describe 'Process bulk claims' do
     end
   end
 
-  context 'with valid CSV file' do
-    scenario 'creates a pending submission for each row' do
+  describe 'uploading a file' do
+    before do
       given_i_am_on_the_upload_page
       when_i_upload_a_file
-
-      expect(page.get_by_text('Batch status')).to be_visible
-      expect(page.get_by_text('pending')).to be_visible
-
-      perform_enqueued_jobs
-      # This job does validation and persistence of the claims all at once
-      page.reload
-      expect(page.get_by_text('Completed', exact: true)).to be_visible
-    end
-  end
-
-  describe 'bad data' do
-    context 'when CSV columns are missing' do
-      let(:file_name) { 'invalid_missing_columns.csv' }
-
-      scenario 'fails immediately' do
-        given_i_am_on_the_upload_page
-        when_i_upload_a_file
-        then_i_should_see_the_error('The selected file must follow the template')
-      end
     end
 
-    context 'when a TRN is duplicated' do
-      let(:file_name) { 'invalid_duplicate_trns_claim.csv' }
-
-      scenario 'fails immediately' do
-        given_i_am_on_the_upload_page
-        when_i_upload_a_file
-        then_i_should_see_the_error('The selected file has duplicate ECTs')
-      end
-    end
-
-    context 'when file is not a CSV' do
-      let(:file_name) { 'invalid_not_a_csv_file.txt' }
-
-      scenario 'fails immediately' do
-        given_i_am_on_the_upload_page
-        when_i_upload_a_file
-        then_i_should_see_the_error('The selected file must be a CSV')
-      end
-    end
-
-    context 'when uploading corrected file after invalid file upload' do
-      let(:file_name) { 'invalid_missing_columns.csv' }
-      let(:corrected_file_name) { 'valid_complete_claim.csv' }
-      let(:corrected_file_path) { Rails.root.join("spec/fixtures/#{corrected_file_name}").to_s }
-
-      scenario 'should allow uploading the corrected file' do
-        # First upload fails as expected
-        given_i_am_on_the_upload_page
-        when_i_upload_a_file
-        then_i_should_see_the_error('The selected file must follow the template')
-
-        # Now try to upload a corrected file
-        when_i_upload_a_corrected_file
-
-        expect(page.get_by_text('Batch status')).to be_visible
-        expect(page.get_by_text('pending')).to be_visible
-
+    context 'with valid CSV file' do
+      scenario 'creates a pending submission for each row' do
         perform_enqueued_jobs
         page.reload
-        expect(page.get_by_text('Completed', exact: true)).to be_visible
+        expect(page.get_by_text('CSV file summary')).to be_visible
+        expect(page.get_by_text("Your CSV named 'valid_complete_claim.csv' has 2 ECTs")).to be_visible
+        expect(page.get_by_role('link', name: 'Download CSV with error messages included')).to be_visible
+      end
+    end
+
+    describe 'bad data' do
+      context 'when CSV columns are missing' do
+        let(:file_name) { 'invalid_missing_columns.csv' }
+
+        scenario 'fails immediately' do
+          then_i_should_see_the_error('The selected file must follow the template')
+        end
+      end
+
+      context 'when a TRN is duplicated' do
+        let(:file_name) { 'invalid_duplicate_trns_claim.csv' }
+
+        scenario 'fails immediately' do
+          then_i_should_see_the_error('The selected file has duplicate ECTs')
+        end
+      end
+
+      context 'when file is not a CSV' do
+        let(:file_name) { 'invalid_not_a_csv_file.txt' }
+
+        scenario 'fails immediately' do
+          then_i_should_see_the_error('The selected file must be a CSV')
+        end
+      end
+
+      context 'when uploading corrected file after invalid file upload' do
+        let(:file_name) { 'invalid_missing_columns.csv' }
+        let(:corrected_file_name) { 'valid_complete_claim.csv' }
+        let(:corrected_file_path) { Rails.root.join("spec/fixtures/#{corrected_file_name}").to_s }
+
+        scenario 'should allow uploading the corrected file' do
+          then_i_should_see_the_error('The selected file must follow the template')
+          when_i_upload_a_file(corrected_file_path)
+
+          perform_enqueued_jobs
+          page.reload
+          expect(page.get_by_text('CSV file summary')).to be_visible
+          expect(page.get_by_text("Your CSV named 'valid_complete_claim.csv' has 2 ECTs")).to be_visible
+          expect(page.get_by_role('link', name: 'Download CSV with error messages included')).to be_visible
+        end
       end
     end
   end
@@ -101,14 +91,9 @@ private
     expect(page.url).to end_with('/appropriate-body/bulk/claims/new')
   end
 
-  def when_i_upload_a_file
-    page.locator('input[type="file"]').set_input_files(file_path)
-    page.get_by_role('button', name: "Upload claim CSV").click
-  end
-
-  def when_i_upload_a_corrected_file
-    page.locator('input[type="file"]').set_input_files(corrected_file_path)
-    page.get_by_role('button', name: "Upload claim CSV").click
+  def when_i_upload_a_file(input_file = file_path)
+    page.locator('input[type="file"]').set_input_files(input_file)
+    page.get_by_role('button', name: "Continue").click
   end
 
   def then_i_should_see_the_error(error)
