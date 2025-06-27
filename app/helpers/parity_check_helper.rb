@@ -11,4 +11,37 @@ module ParityCheckHelper
       mode.new(value: :sequential, name: "Sequential", description: "Send requests one at a time for accurate performance benchmarking."),
     ]
   end
+
+  def formatted_endpoint_group_name(group_name)
+    group_name.to_s.tr("-", " ").humanize
+  end
+
+  def formatted_endpoint_group_names(run)
+    formatted_group_names = run.request_group_names.map(&method(:formatted_endpoint_group_name))
+    govuk_list(formatted_group_names)
+  end
+
+  def match_rate_tag(match_rate)
+    colour = case match_rate
+             when 0..49
+               "red"
+             when 50..74
+               "orange"
+             when 75..99
+               "yellow"
+             else
+               "green"
+             end
+
+    govuk_tag(text: "#{match_rate}%", colour:)
+  end
+
+  def performance_gain(ratio)
+    return if ratio.nil?
+
+    return "⚖️ equal" if ratio == 1
+    return "🚀 #{ratio}x faster" if ratio > 1
+
+    "🐌 #{ratio}x slower"
+  end
 end

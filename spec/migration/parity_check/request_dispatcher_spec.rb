@@ -30,9 +30,11 @@ RSpec.describe ParityCheck::RequestDispatcher do
 
       it "dispatches the post requests when all get requests are completed" do
         %i[queue! start! complete!].each do
+          pending_get_request.responses << FactoryBot.create(:parity_check_response, :matching)
           pending_get_request.send(it)
           # We complete the put request as it has the same priority and
           # we want to isolate the post request in this test.
+          pending_put_request.responses << FactoryBot.create(:parity_check_response, :matching)
           pending_put_request.send(it)
         end
 
@@ -43,8 +45,10 @@ RSpec.describe ParityCheck::RequestDispatcher do
       it "dispatches the put requests when all get requests are completed" do
         %i[queue! start! complete!].each do
           pending_get_request.send(it)
+          pending_get_request.responses << FactoryBot.create(:parity_check_response, :matching)
           # We complete the post request as it has the same priority and
           # we want to isolate the put request in this test.
+          pending_post_request.responses << FactoryBot.create(:parity_check_response, :matching)
           pending_post_request.send(it)
         end
 

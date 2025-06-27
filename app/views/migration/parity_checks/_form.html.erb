@@ -2,7 +2,7 @@
   <%= f.govuk_error_summary %>
 
   <% grouped_endpoints(@endpoints).each do |group, endpoints| %>
-    <%= f.govuk_collection_check_boxes :endpoint_ids, endpoints, :id, :description, legend: { text: group.capitalize } %>
+    <%= f.govuk_collection_check_boxes :endpoint_ids, endpoints, :id, :description, legend: { text: formatted_endpoint_group_name(group) } %>
   <% end %>
 
   <%= f.govuk_collection_radio_buttons(:mode, run_mode_options, :value, :name, :description, legend: { text: "Mode" }) %>

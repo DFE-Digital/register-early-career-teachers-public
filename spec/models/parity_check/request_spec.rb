@@ -14,6 +14,7 @@ describe ParityCheck::Request do
     it { is_expected.to validate_presence_of(:run) }
     it { is_expected.not_to validate_presence_of(:started_at) }
     it { is_expected.not_to validate_presence_of(:completed_at) }
+    it { is_expected.not_to validate_presence_of(:responses) }
 
     context "when in_progress" do
       subject { FactoryBot.build(:parity_check_request, :in_progress) }
@@ -29,6 +30,7 @@ describe ParityCheck::Request do
       it { is_expected.to validate_presence_of(:completed_at) }
       it { is_expected.to allow_values(started_at, started_at + 1.second).for(:completed_at) }
       it { is_expected.not_to allow_values(nil, started_at - 1.second).for(:completed_at) }
+      it { is_expected.to validate_presence_of(:responses) }
     end
   end
 
@@ -48,6 +50,12 @@ describe ParityCheck::Request do
       subject { described_class.completed }
 
       it { is_expected.to contain_exactly(completed_put_request) }
+    end
+
+    describe ".incomplete" do
+      subject { described_class.incomplete }
+
+      it { is_expected.to contain_exactly(pending_get_request, queued_get_request, in_progress_post_request) }
     end
 
     describe ".queued_or_in_progress" do
@@ -83,6 +91,17 @@ describe ParityCheck::Request do
         it { is_expected.to contain_exactly(pending_get_request, queued_get_request, completed_put_request) }
       end
     end
+
+    describe ".with_all_responses_matching" do
+      subject { described_class.with_all_responses_matching }
+
+      let!(:request_with_no_responses) { FactoryBot.create(:parity_check_request, :in_progress, response_types: []) }
+      let!(:request_with_matching_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching matching]) }
+      let!(:request_with_different_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[different]) }
+      let!(:request_with_matching_and_different_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching different]) }
+
+      it { expect(subject).to contain_exactly(request_with_matching_responses) }
+    end
   end
 
   describe "state transitions" do
@@ -102,7 +121,7 @@ describe ParityCheck::Request do
     end
 
     context "when transitioning from in_progress to completed" do
-      let(:request) { FactoryBot.create(:parity_check_request, :in_progress) }
+      let(:request) { FactoryBot.create(:parity_check_request, :in_progress, response_types: %i[different]) }
 
       it { expect { request.complete! }.to change(request, :state).from("in_progress").to("completed") }
       it { expect { request.complete! }.to change(request, :completed_at).from(nil).to(be_within(1.second).of(Time.zone.now)) }
@@ -112,6 +131,41 @@ describe ParityCheck::Request do
       let(:request) { FactoryBot.create(:parity_check_request, :completed) }
 
       it { expect { request.queue! }.to raise_error(StateMachines::InvalidTransition) }
+    end
+  end
+
+  describe "average response time methods" do
+    let(:request) { FactoryBot.build(:parity_check_request) }
+
+    before do
+      request.responses = [
+        FactoryBot.build(:parity_check_response, ecf_time_ms: 107, rect_time_ms: 105),
+        FactoryBot.build(:parity_check_response, ecf_time_ms: 150, rect_time_ms: 250)
+      ]
+    end
+
+    describe "#average_ecf_response_time_ms" do
+      subject { request.average_ecf_response_time_ms }
+
+      it { is_expected.to eq(128.5) }
+
+      context "when there are no responses" do
+        before { request.responses = [] }
+
+        it { is_expected.to be_nil }
+      end
+    end
+
+    describe "#average_rect_response_time_ms" do
+      subject { request.average_rect_response_time_ms }
+
+      it { is_expected.to eq(177.5) }
+
+      context "when there are no responses" do
+        before { request.responses = [] }
+
+        it { is_expected.to be_nil }
+      end
     end
   end
 end

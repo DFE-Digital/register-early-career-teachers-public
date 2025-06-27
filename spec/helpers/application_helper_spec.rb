@@ -24,7 +24,20 @@ RSpec.describe ApplicationHelper, type: :helper do
         expect(content_for(:backlink_or_breadcrumb)).to eq(%(<a class="govuk-back-link" href="/retreat">Back</a>))
       end
 
-      it "adds provided breadcrumbs"
+      it "adds provided breadcrumbs" do
+        page_data(title: "Breadcrumb test", breadcrumbs: { "Home" => "/", "Detail" => "/detail" })
+
+        expect(content_for(:backlink_or_breadcrumb)).to eq(
+          <<~HTML.chomp
+            <div class="govuk-breadcrumbs">
+              <ol class="govuk-breadcrumbs__list">
+                  <li class="govuk-breadcrumbs__list-item"><a class="govuk-breadcrumbs__link" href="/">Home</a></li>
+                  <li class="govuk-breadcrumbs__list-item"><a class="govuk-breadcrumbs__link" href="/detail">Detail</a></li>
+              </ol>
+            </div>
+          HTML
+        )
+      end
     end
 
     describe "page_header" do

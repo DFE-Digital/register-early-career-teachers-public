@@ -78,9 +78,9 @@ describe ParityCheck::Endpoint do
     end
 
     context "when the path matches the expected format (with query parameters)" do
-      let(:path) { "/api/v3/users?query=param" }
+      let(:path) { "/api/v3/participant-declarations?query=param" }
 
-      it { is_expected.to eq(:users) }
+      it { is_expected.to eq(:"participant-declarations") }
     end
 
     context "when the path matches the expected format (nested path)" do
