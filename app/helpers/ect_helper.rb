@@ -40,13 +40,23 @@ module ECTHelper
     latest_mentor_name(ect) || link_to_assign_mentor(ect)
   end
 
-  # TODO: "status" is yet to be clarified this is just a simple placeholder.
   # @param ect [ECTAtSchoolPeriod]
   def ect_status(ect)
-    if current_mentor_name(ect)
-      govuk_tag(text: 'Registered', colour: 'green')
+    induction_status = ect.teacher.trs_induction_status
+
+    case induction_status
+    when "Passed"
+      govuk_tag(text: "Completed induction", colour: "blue")
+    when "Failed"
+      govuk_tag(text: "Failed induction", colour: "pink")
+    when "Exempt"
+      govuk_tag(text: "Exempt", colour: "grey")
     else
-      govuk_tag(text: 'Mentor required', colour: 'red')
+      if current_mentor_name(ect)
+        govuk_tag(text: "Registered", colour: "green")
+      else
+        govuk_tag(text: "Mentor required", colour: "red")
+      end
     end
   end
 
