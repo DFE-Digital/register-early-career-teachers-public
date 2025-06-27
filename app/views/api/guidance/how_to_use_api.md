@@ -4,9 +4,9 @@ title: How to use this API
 
 ## What this section is for
 
-Advice on how best to use the API. 
+Advice on how best to use the API.
 
-Includes: 
+Includes:
 
 * info on getting started
 * guidance on what to use the API for
