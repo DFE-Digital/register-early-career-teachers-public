@@ -42,56 +42,59 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   # Callbacks
   after_update_commit :update_batch_progress
 
-  # @return [Boolean]
-  def no_valid_data?
-    pending_induction_submissions.count == pending_induction_submissions.with_errors.count
-  end
-
-  # TODO: refactor and merge with no_valid_data?
-  # @return [Boolean]
-  def errored?
-    errored_count.to_i.positive?
-  end
-
-  # @return [Float]
+  # @return [Float] when processing
   def progress
     pending_induction_submissions.count.to_f / data.count * 100
   end
 
-  # @return [Integer] claim or pass + fail + release count
+  # @return [Boolean] when processed
+  def no_valid_data?
+    pending_induction_submissions.count == pending_induction_submissions.with_errors.count
+  end
+
+  # @return [Boolean] when completed
+  def errored?
+    errored_count.to_i.positive?
+  end
+
+  # @return [Integer] when completed
   def recorded_count
     processed_count.to_i - errored_count.to_i
   end
 
+  # @see BatchHelper#batch_action_summary
   # @return [Hash{Symbol => Integer}]
   def tally
     {
       uploaded_count: completed? ? uploaded_count : rows.count,
       processed_count: completed? ? processed_count : pending_induction_submissions.count,
       errored_count: completed? ? errored_count : pending_induction_submissions.with_errors.count,
-      released_count: completed? ? released_count : pending_induction_submissions.release.count,
-      failed_count: completed? ? failed_count : pending_induction_submissions.fail.count,
-      passed_count: completed? ? passed_count : pending_induction_submissions.pass.count,
-      claimed_count: completed? ? claimed_count : pending_induction_submissions.claim.count
+      released_count: completed? ? released_count : pending_induction_submissions.released.count,
+      failed_count: completed? ? failed_count : pending_induction_submissions.failed.count,
+      passed_count: completed? ? passed_count : pending_induction_submissions.passed.count,
+      claimed_count: completed? ? claimed_count : pending_induction_submissions.claimed.count
     }
   end
 
+  # @see [ProcessBatchJob#perform]
   # @return [Boolean] record metrics before successful submissions are pruned
   def tally!
     update(
       uploaded_count: rows.count,
       processed_count: pending_induction_submissions.count,
       errored_count: pending_induction_submissions.with_errors.count,
-      released_count: pending_induction_submissions.release.count,
-      failed_count: pending_induction_submissions.fail.count,
-      passed_count: pending_induction_submissions.pass.count,
-      claimed_count: pending_induction_submissions.claim.count
+      released_count: pending_induction_submissions.released.count,
+      failed_count: pending_induction_submissions.failed.count,
+      passed_count: pending_induction_submissions.passed.count,
+      claimed_count: pending_induction_submissions.claimed.count
     )
   end
 
   # @return [Boolean] purge PII when all submissions have been successful
   def redact!
-    update(data: []) if pending_induction_submissions.with_errors.count.zero?
+    return false unless completed? && tally! && errored_count.zero?
+
+    update!(data: [])
   end
 
 private
