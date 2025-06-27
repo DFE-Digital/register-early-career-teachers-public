@@ -55,13 +55,13 @@ module Migrators
     end
 
     def compare_fields(gias_school:, ecf_school:)
-      FIELDS_MAPPING.map do |gias_field, ecf_field|
+      FIELDS_MAPPING.map { |gias_field, ecf_field|
         gias_value = gias_school.send(gias_field)
         ecf_value = ecf_school.send(ecf_field)
         next true if gias_value.presence == ecf_value.presence
 
         field_mismatch(gias_school, gias_field, gias_value, ecf_value)
-      end.all?
+      }.all?
     end
 
     def field_mismatch(school, field, gias_value, ecf_value)
