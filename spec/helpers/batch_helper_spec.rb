@@ -32,7 +32,7 @@ RSpec.describe BatchHelper, type: :helper do
   describe "#batch_example_claim" do
     it do
       expect(batch_example_claim).to have_text('Your file needs to look like this example')
-      expect(batch_example_claim).to have_selector('table tr', count: 4)
+      expect(batch_example_claim).to have_selector('table tr', count: 3)
       expect(batch_example_claim).to have_selector('th', text: 'TRN')
       expect(batch_example_claim).to have_selector('th', text: 'Date of birth')
       expect(batch_example_claim).to have_selector('th', text: 'Induction programme')

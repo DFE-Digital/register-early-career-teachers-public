@@ -4,7 +4,7 @@ module BatchRows
   CLAIM_CSV_HEADINGS = {
     trn: 'TRN',
     date_of_birth: 'Date of birth',
-    induction_programme: 'Induction programme',
+    training_programme: 'Induction programme',
     started_on: 'Induction period start date',
     error: 'Error message',
   }.freeze
@@ -60,10 +60,9 @@ module BatchRows
         true
       end
 
-      # @return [Boolean] school-led, provider-led (case-insensitive) new style
-      # @return [Boolean] diy, cip, fip (case-insensitive) old style
+      # @return [Boolean] school-led, provider-led (case-insensitive)
       def invalid_training_programme?
-        induction_programme !~ /\A(diy|cip|fip)\z/i
+        TRAINING_PROGRAMME.keys.map(&:to_s).exclude?(training_programme.downcase.underscore.strip)
       end
 
       # @param errors [Array<String>]

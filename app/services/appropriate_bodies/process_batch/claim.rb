@@ -27,7 +27,8 @@ module AppropriateBodies
             # OPTIMIZE: params effectively passed in twice
             register_ect.register(
               started_on: pending_induction_submission.started_on,
-              induction_programme: pending_induction_submission.induction_programme
+              induction_programme: pending_induction_submission.induction_programme,
+              training_programme: pending_induction_submission.training_programme
             )
           else
             false
@@ -37,9 +38,15 @@ module AppropriateBodies
 
       # @return [nil, Boolean]
       def validate_submission!
+        # coerce new type
+        training_programme = row.training_programme.downcase.underscore
+        # map old type
+        induction_programme = ::PROGRAMME_MAPPER[training_programme]
+
         pending_induction_submission.assign_attributes(
           started_on: row.started_on,
-          induction_programme: row.induction_programme.downcase
+          induction_programme:,
+          training_programme:
         )
 
         find_ect.import_from_trs!
@@ -105,9 +112,7 @@ module AppropriateBodies
       # @return [Boolean]
       def incorrectly_formatted?
         super
-        # TODO: ready for training programme types update
-        # pending_induction_submission.errors.add(:base, 'Induction programme type must be school-led or provider-led') if row.invalid_training_programme?
-        pending_induction_submission.errors.add(:base, 'Induction programme type must be DIY, FIP or CIP') if row.invalid_training_programme?
+        pending_induction_submission.errors.add(:base, 'Induction programme type must be school-led or provider-led') if row.invalid_training_programme?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end
