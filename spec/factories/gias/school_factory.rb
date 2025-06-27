@@ -10,6 +10,7 @@ FactoryBot.define do
     establishment_number { Faker::Number.unique.within(range: 1..9_999) }
     phase_name { "Phase one" }
     urn { Faker::Number.unique.within(range: 10_000..9_999_999) }
+    ukprn { Faker::Number.unique.number(digits: 5) }
 
     # eligibility to be registered in the service
     trait(:eligible_for_registration) do
