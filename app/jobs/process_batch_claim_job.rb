@@ -1,32 +1,6 @@
-class ProcessBatchClaimJob < ApplicationJob
-  # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
-  # @param author_email [String]
-  # @param author_name [String]
-  def perform(pending_induction_submission_batch, author_email, author_name)
-    pending_induction_submission_batch.processing!
-
-    AppropriateBodies::ProcessBatch::Claim.new(
-      pending_induction_submission_batch:,
-      author: author(pending_induction_submission_batch, author_email, author_name)
-    ).process!
-
-    pending_induction_submission_batch.completed!
-  rescue StandardError => e
-    Rails.logger.debug("Attempt #{executions}: #{e.message}")
-
-    pending_induction_submission_batch.update!(error_message: e.message)
-    pending_induction_submission_batch.failed!
-
-    raise
-  end
-
-private
-
-  def author(pending_induction_submission_batch, author_email, author_name)
-    Events::AppropriateBodyBackgroundJobAuthor.new(
-      email: author_email,
-      name: author_name,
-      appropriate_body_id: pending_induction_submission_batch.appropriate_body.id
-    )
+class ProcessBatchClaimJob < ProcessBatchJob
+  # @return [AppropriateBodies::ProcessBatch::Claim]
+  def self.batch_service
+    AppropriateBodies::ProcessBatch::Claim
   end
 end
