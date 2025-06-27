@@ -90,16 +90,16 @@ RSpec.describe ParityCheckHelper, type: :helper do
       it { is_expected.to eq("⚖️ equal") }
     end
 
-    context "when the ratio is greater than 1" do
+    context "when the ratio is greater than 0" do
       let(:ratio) { 2.5 }
 
       it { is_expected.to eq("🚀 2.5x faster") }
     end
 
-    context "when the ratio is less than 1" do
-      let(:ratio) { 0.4 }
+    context "when the ratio is less than 0" do
+      let(:ratio) { -3.0 }
 
-      it { is_expected.to eq("🐌 0.4x slower") }
+      it { is_expected.to eq("🐌 3x slower") }
     end
   end
 

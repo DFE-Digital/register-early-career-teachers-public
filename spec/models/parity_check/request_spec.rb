@@ -186,7 +186,7 @@ describe ParityCheck::Request do
           responses[1].update!(ecf_time_ms: 15, rect_time_ms: 100)
         end
 
-        it { is_expected.to eq(0.4) }
+        it { is_expected.to eq(-4.2) }
       end
     end
   end
