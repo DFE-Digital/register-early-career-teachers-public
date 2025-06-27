@@ -14,17 +14,16 @@ class PendingInductionSubmission < ApplicationRecord
   enum :outcome, { pass: "pass", fail: "fail" }
 
   # Scopes
-  scope :ready_for_deletion, -> { where(delete_at: ..Time.current) }
-  scope :release, -> { where(outcome: nil).where.not(finished_on: nil) }
+  scope :passed, -> { without_errors.pass.where.not(finished_on: nil, delete_at: nil) }
+  scope :failed, -> { without_errors.fail.where.not(finished_on: nil, delete_at: nil) }
 
-  # scope :pass, -> { where(outcome: 'pass') }
-  # scope :fail, -> { where(outcome: 'fail') }
-  scope :claim, -> { where.not(started_on: nil) }
+  scope :released, -> { without_errors.where(outcome: nil, started_on: nil).where.not(finished_on: nil, delete_at: nil) }
 
-  # Scopes for error handling
-  scope :errored, -> { where.not(error_messages: nil) }
+  scope :claimed, -> { without_errors.where(finished_on: nil).where.not(started_on: nil, delete_at: nil) }
+
   scope :with_errors, -> { where.not(error_messages: []) }
   scope :without_errors, -> { where(error_messages: []) }
+  scope :ready_for_deletion, -> { where(delete_at: ..Time.current) }
 
   # Associations
   belongs_to :appropriate_body
