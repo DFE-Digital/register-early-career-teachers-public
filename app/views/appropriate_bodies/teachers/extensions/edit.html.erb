@@ -1,6 +1,6 @@
 <%
   page_data(
-    title: "Add an Extension to an ECT's induction",
+    title: "Edit #{teacher_full_name(@teacher)}'s extension",
     caption: teacher_full_name(@teacher),
     caption_size: 'm',
     backlink_href: ab_teacher_path(@teacher)
@@ -9,13 +9,22 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <p class="govuk-body">
-      Before recording an extension, a final assessment must have been completed by the ECT's School Induction Tutor or Headteacher, which provides a recommendation on the ECT's performance against the Teaching Standards. As an Appropriate Body, you must have made a final decision on whether to extend the induction on the basis of this recommendation.
-    </p>
+    <%= govuk_link_to "Help on extensions", "#", target: "_blank" %>
 
     <p class="govuk-body">
-      You do not need to record an extension when an induction needs to be extended due to a period of extended absence (an "automatic extension")
+      Only tell us about an extension if the ECT has finished their expected induction period and has been assessed by a school induction tutor or headteacher. The ECT can appeal an extension. You'll need to tell them about their right to appeal and the process.
     </p>
+
+    <p class="govuk-body">You do not need to add an extension for things like:</p>
+
+    <%= govuk_list([
+      "extended sick leave",
+      "maternity or paternity pay",
+      "statutory adoption leave",
+      "shared parental leave",
+      "parental bereavement leave",
+      "unpaid carer's leave"
+    ], type: :bullet) %>
 
     <%= form_with(
       model: @extension,
@@ -25,21 +34,21 @@
     ) do |f| %>
       <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
+      <h2 class="govuk-heading-m">How many terms do you want to extend <%= teacher_full_name(@teacher) %>'s induction by in total?</h2>
+
+      <p class="govuk-body">Current extension is <%= @extension.number_of_terms %> terms.</p>
+
       <%= f.govuk_number_field(
         :number_of_terms,
-        label: { text: "How many additional terms of induction do you need to add to #{teacher_full_name(@teacher)}'s induction?", size: "m" },
+        label: { text: "FTE terms", size: "s" },
         width: 5,
         min: 0.1,
         max: 12.0,
         step: 0.1,
-        hint: { text: "You can record the number of terms using up to one decimal place" }
+        hint: { text: "Use up to one decimal place if the term is not a whole number. If the current extension is 1.0 terms and you want to add another 1.5 terms, then enter 2.5" }
       ) %>
 
-      <p class="govuk-body">
-        An ECT may appeal an extension to their induction. You must advise the ECT of their right to appeal and provide them with information about who to appeal to, and the time limit for doing so. More information can be found here
-      </p>
-
-      <%= f.govuk_submit "Update extension" %>
+      <%= f.govuk_submit "Save changes" %>
     <% end %>
   </div>
 </div>
