@@ -7,7 +7,7 @@
 </p>
 
 <p>
-  Overall the run was <%= match_rate_tag(@run.match_rate) %> successful and had 
+  Overall the run was <%= match_rate_tag(@run.match_rate) %> successful and had on average 
   <strong><%= performance_gain(@run.rect_performance_gain_ratio) %></strong> performance when compared to ECF.
 </p>
 
@@ -24,7 +24,7 @@
   </p>
 <% else %>
   <% @run.lead_providers.each do |lead_provider| %>
-    <%= govuk_table(classes: %w[parity-check-table]) do |table|
+    <%= govuk_table(classes: %w[parity-check-requests-table]) do |table|
       table.with_caption(size: "m", text: lead_provider.name)
 
       table.with_head do |head|
@@ -32,6 +32,7 @@
           row.with_cell(text: "Endpoint", width: "one-half")
           row.with_cell(text: "Match rate", width: "one-quater")
           row.with_cell(text: "Performance", width: "one-quater")
+          row.with_cell
         end
       end
 
@@ -42,6 +43,7 @@
               row.with_cell(text: request.endpoint.description)
               row.with_cell(text: match_rate_tag(request.match_rate))
               row.with_cell(text: performance_gain(request.rect_performance_gain_ratio))
+              row.with_cell(text: govuk_link_to("Request details", migration_parity_check_request_path(@run, request)))
             end
           end
         end
