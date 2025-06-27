@@ -2,7 +2,6 @@ describe Migrators::School do
   def create_ecf_school
     FactoryBot.create(:ecf_migration_school,
                       school_status_code: 1,
-                      school_type_code: 10,
                       address_line1: 'Address Line 1',
                       address_line2: 'Address Line 2',
                       address_line3: 'Address Line 3',
@@ -62,7 +61,6 @@ describe Migrators::School do
       end
 
       it "adds an error" do
-        # DataMigration.create!(model: :school, worker: 0) && Migrators::School.new(worker: 0).migrate!
         expect(data_migration.reload.failure_count).to eq(1)
         expect(data_migration.migration_failures.count).to eq(1)
         expect(data_migration.migration_failures.first.failure_message).to eq("School #{ecf_school.urn} (#{ecf_school.name}) missing on RECT!")
@@ -73,7 +71,6 @@ describe Migrators::School do
       let!(:ecf_school) do
         FactoryBot.create(:ecf_migration_school,
                           school_status_code: 1,
-                          school_type_code: 10,
                           address_line1: 'Address Line 1',
                           address_line2: 'Address Line 2',
                           address_line3: 'Address Line 3',
@@ -110,7 +107,7 @@ describe Migrators::School do
                           section_41_approved: true,
                           status: 'proposed_to_close',
                           type_name: 'Academy converter',
-                          ukprn: 54321)
+                          ukprn: 54_321)
       end
 
       before do
@@ -120,23 +117,23 @@ describe Migrators::School do
       it "adds mismatch errors" do
         expect(data_migration.reload.failure_count).to eq(1)
         expect(data_migration.migration_failures.order(:created_at).pluck(:failure_message))
-          .to match_array(["School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'address_line1': Address Line 1 on ECF whilst Another Address Line 1 expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'address_line2': Address Line 2 on ECF whilst Another Address Line 2 expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'address_line3': Address Line 3 on ECF whilst Another Address Line 3 expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'administrative_district_name': AD1 on ECF whilst AAD1 expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'funding_eligibility': ineligible on ECF whilst eligible_for_cip expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'induction_eligibility': false on ECF whilst true expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'in_england': false on ECF whilst true expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'local_authority_code':  on ECF whilst 24 expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'name': School one on ECF whilst Another School one expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'phase_name': Phase one on ECF whilst Another Phase one expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'postcode': E1 111 on ECF whilst E2 222 expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'primary_contact_email': pc@email.com on ECF whilst another_pc@email.com expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'secondary_contact_email': sc@email.com on ECF whilst another_sc@email.com expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'section_41_approved': false on ECF whilst true expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'status': open on ECF whilst proposed_to_close expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'type_name': Type one on ECF whilst Academy converter expected on RECT!",
-                           "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'ukprn': 12345 on ECF whilst 54321 expected on RECT!"])
+          .to contain_exactly("School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'address_line1': Address Line 1 on ECF whilst Another Address Line 1 expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'address_line2': Address Line 2 on ECF whilst Another Address Line 2 expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'address_line3': Address Line 3 on ECF whilst Another Address Line 3 expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'administrative_district_name': AD1 on ECF whilst AAD1 expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'funding_eligibility': ineligible on ECF whilst eligible_for_cip expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'induction_eligibility': false on ECF whilst true expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'in_england': false on ECF whilst true expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'local_authority_code':  on ECF whilst 24 expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'name': School one on ECF whilst Another School one expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'phase_name': Phase one on ECF whilst Another Phase one expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'postcode': E1 111 on ECF whilst E2 222 expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'primary_contact_email': pc@email.com on ECF whilst another_pc@email.com expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'secondary_contact_email': sc@email.com on ECF whilst another_sc@email.com expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'section_41_approved': false on ECF whilst true expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'status': open on ECF whilst proposed_to_close expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'type_name': Type one on ECF whilst Academy converter expected on RECT!",
+                              "School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'ukprn': 12345 on ECF whilst 54321 expected on RECT!")
       end
     end
 
