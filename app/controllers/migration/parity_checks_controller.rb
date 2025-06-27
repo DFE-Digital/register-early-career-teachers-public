@@ -26,7 +26,7 @@ class Migration::ParityChecksController < ::AdminController
   end
 
   def show
-    @run = ParityCheck::Run.completed.find(params[:id])
+    @run = ParityCheck::Run.completed.find(params[:run_id])
     @breadcrumbs = {
       "Run a parity check" => new_migration_parity_check_path,
       "Completed parity checks" => completed_migration_parity_checks_path,

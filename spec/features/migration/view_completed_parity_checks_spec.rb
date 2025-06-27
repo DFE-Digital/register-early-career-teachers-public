@@ -1,6 +1,5 @@
 RSpec.describe "View completed parity checks" do
   before do
-    FactoryBot.create(:lead_provider)
     sign_in_as_dfe_user(role: :admin)
     allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: true })
   end
@@ -31,7 +30,7 @@ RSpec.describe "View completed parity checks" do
     expect(completed_run_details.get_by_text("Concurrent")).to be_visible
     expect(completed_run_details.get_by_text("75%")).to be_visible
     expect(completed_run_details.get_by_text(/faster|slower|equal/)).to be_visible
-    expect(completed_run_details.get_by_role("link", name: "View")).to be_visible
+    expect(completed_run_details.get_by_role("link", name: "Run details")).to be_visible
 
     expect(page.locator(".govuk-pagination")).not_to be_visible
   end
