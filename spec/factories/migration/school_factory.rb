@@ -4,5 +4,6 @@ FactoryBot.define do
     urn { Faker::Number.unique.number(digits: 6) }
     address_line1 { Faker::Address.street_address }
     postcode { Faker::Address.postcode }
+    ukprn { Faker::Number.unique.number(digits: 5).to_s }
   end
 end
