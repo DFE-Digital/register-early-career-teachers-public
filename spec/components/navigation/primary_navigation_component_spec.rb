@@ -41,6 +41,16 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
       end
     end
 
+    context 'when inverse: true' do
+      subject { described_class.new(current_path:, current_user_type:, inverse: true) }
+
+      before { render_inline(subject) }
+
+      it 'adds the inverse class to the nav' do
+        expect(rendered_content).to have_css('section.govuk-service-navigation.govuk-service-navigation--inverse')
+      end
+    end
+
     context "when in school section" do
       let(:current_path) { "/schools" }
       let(:current_user_type) { :school_user }
