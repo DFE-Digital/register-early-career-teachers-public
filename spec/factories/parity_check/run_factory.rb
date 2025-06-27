@@ -1,5 +1,13 @@
 FactoryBot.define do
   factory(:parity_check_run, class: "ParityCheck::Run") do
+    transient do
+      request_states { [] }
+    end
+
+    after(:build) do |run, evaluator|
+      run.requests = evaluator.request_states.map { build(:parity_check_request, it, run:) } if evaluator.request_states.any?
+    end
+
     trait :concurrent do
       mode { :concurrent }
     end

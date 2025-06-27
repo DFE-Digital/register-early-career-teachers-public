@@ -13,6 +13,8 @@ module ParityCheck
     validates :rect_time_ms, numericality: { greater_than: 0 }
     validates :page, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true, uniqueness: { scope: :request_id }
 
+    scope :different, -> { where("ecf_status_code != rect_status_code OR ecf_body != rect_body") }
+
   private
 
     def different?
