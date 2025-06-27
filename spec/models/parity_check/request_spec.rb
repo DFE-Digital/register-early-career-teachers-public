@@ -35,10 +35,11 @@ describe ParityCheck::Request do
   end
 
   describe "scopes" do
-    let!(:pending_get_request) { FactoryBot.create(:parity_check_request, :pending, :get) }
-    let!(:queued_get_request) { FactoryBot.create(:parity_check_request, :queued, :get) }
-    let!(:in_progress_post_request) { FactoryBot.create(:parity_check_request, :in_progress, :post) }
-    let!(:completed_put_request) { FactoryBot.create(:parity_check_request, :completed, :put) }
+    let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+    let!(:pending_get_request) { FactoryBot.create(:parity_check_request, :pending, :get, run:) }
+    let!(:queued_get_request) { FactoryBot.create(:parity_check_request, :queued, :get, run:) }
+    let!(:in_progress_post_request) { FactoryBot.create(:parity_check_request, :in_progress, :post, run:) }
+    let!(:completed_put_request) { FactoryBot.create(:parity_check_request, :completed, :put, run:) }
 
     describe ".pending" do
       subject { described_class.pending }
@@ -103,10 +104,11 @@ describe ParityCheck::Request do
     describe ".with_all_responses_matching" do
       subject { described_class.with_all_responses_matching }
 
-      let!(:request_with_no_responses) { FactoryBot.create(:parity_check_request, :in_progress, response_types: []) }
-      let!(:request_with_matching_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching matching]) }
-      let!(:request_with_different_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[different]) }
-      let!(:request_with_matching_and_different_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching different]) }
+      let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+      let!(:request_with_no_responses) { FactoryBot.create(:parity_check_request, :in_progress, response_types: [], run:) }
+      let!(:request_with_matching_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching matching], run:) }
+      let!(:request_with_different_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[different], run:) }
+      let!(:request_with_matching_and_different_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching different], run:) }
 
       it { expect(subject).to contain_exactly(request_with_matching_responses) }
     end

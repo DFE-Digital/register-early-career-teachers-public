@@ -132,4 +132,20 @@ describe ParityCheck::Response do
       it { is_expected.not_to be_matching }
     end
   end
+
+  describe ".different?" do
+    subject { response }
+
+    context "when the response is different" do
+      let(:response) { FactoryBot.build(:parity_check_response, :different) }
+
+      it { is_expected.to be_different }
+    end
+
+    context "when the response is matching" do
+      let(:response) { FactoryBot.build(:parity_check_response, :matching) }
+
+      it { is_expected.not_to be_different }
+    end
+  end
 end
