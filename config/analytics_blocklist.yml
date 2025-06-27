@@ -135,31 +135,32 @@
   - expires_at
   - created_at
   :gias_school_links:
-  - id
+    - id
   - urn
   - link_urn
   - link_type
   - link_date
-  - created_at
-  - updated_at
+    - created_at
+    - updated_at
   :gias_schools:
-  - urn
-  - name
-  - status
-  - funding_eligibility
-  - address_line1
-  - address_line2
-  - address_line3
-  - postcode
-  - primary_contact_email
-  - secondary_contact_email
-  - opened_on
-  - closed_on
-  - created_at
-  - updated_at
-  - administrative_district_name
-  - local_authority_code
-  - local_authority_name
+    - urn
+    - name
+    - status
+    - funding_eligibility
+    - address_line1
+    - address_line2
+    - address_line3
+    - api_id
+    - postcode
+    - primary_contact_email
+    - secondary_contact_email
+    - opened_on
+    - closed_on
+    - created_at
+    - updated_at
+    - administrative_district_name
+    - local_authority_code
+    - local_authority_name
   - establishment_number
   - phase_name
   - section_41_approved
