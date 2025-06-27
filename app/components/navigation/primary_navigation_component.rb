@@ -53,7 +53,7 @@ module Navigation
           { text: "Home", href: '/api/guidance' },
           { text: "Technical documentation", href: '/api/guidance/technical-documentation' },
           { text: "Release notes", href: '/api/guidance/release-notes' },
-          { text: "Sandbox (test) environments", href: '/api/guidance/sandbox' },
+          { text: "Sandbox", href: '/api/guidance/sandbox' },
           { text: "Programme guidance", href: '/api/guidance/early-career-training-programme-guidance' },
         ]
       }.fetch(navigation_area, [])
