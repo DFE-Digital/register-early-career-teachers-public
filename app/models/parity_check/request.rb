@@ -17,6 +17,7 @@ module ParityCheck
     scope :queued_or_in_progress, -> { with_states(:queued, :in_progress) }
     scope :with_method, ->(method:) { joins(:endpoint).where(endpoint: { method: }) }
     scope :with_all_responses_matching, -> { joins(:responses).where.not(id: ParityCheck::Response.different.pluck(:request_id)).distinct }
+    scope :with_lead_provider, ->(lead_provider) { where(lead_provider:) }
 
     state_machine :state, initial: :pending do
       state :queued
@@ -55,16 +56,20 @@ module ParityCheck
       end
     end
 
-    def average_ecf_response_time_ms
-      return if responses.empty?
+    def rect_performance_gain_ratio
+      ratios = responses.map(&:rect_performance_gain_ratio).compact
 
-      responses.sum(&:ecf_time_ms).fdiv(responses.size)
+      return if ratios.empty?
+
+      ratios.sum.fdiv(ratios.size).round(1)
     end
 
-    def average_rect_response_time_ms
-      return if responses.empty?
+    def match_rate
+      rates = responses.map(&:match_rate).compact
 
-      responses.sum(&:rect_time_ms).fdiv(responses.size)
+      return if rates.empty?
+
+      rates.sum.fdiv(rates.size).round
     end
   end
 end

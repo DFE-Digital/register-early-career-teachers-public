@@ -1,6 +1,10 @@
 module ParityCheckHelper
   def grouped_endpoints(endpoints)
-    endpoints.group_by(&:group_name)
+    endpoints.group_by(&:group_name).sort.to_h
+  end
+
+  def grouped_requests(requests)
+    requests.group_by { it.endpoint.group_name }.sort.to_h
   end
 
   def run_mode_options
@@ -39,9 +43,11 @@ module ParityCheckHelper
   def performance_gain(ratio)
     return if ratio.nil?
 
-    return "⚖️ equal" if ratio == 1
-    return "🚀 #{ratio}x faster" if ratio > 1
+    formatted_ratio = ratio.abs.to_s.chomp(".0")
 
-    "🐌 #{ratio}x slower"
+    return "⚖️ equal" if ratio == 1
+    return "🚀 #{formatted_ratio}x faster" if ratio.positive?
+
+    "🐌 #{formatted_ratio}x slower"
   end
 end
