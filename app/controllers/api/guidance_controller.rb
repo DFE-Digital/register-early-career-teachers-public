@@ -18,9 +18,10 @@ module API
       path = params[:page]
 
       template = {
-        "page-1" => "page_1",
-        "page-2" => "page_2",
-        "page-3" => "page_3",
+        "how-to-use-api" => "how_to_use_api",
+        "technical-documentation" => "technical_documentation",
+        "early-career-training-programme-guidance" => "ect_programme_guidance",
+        "sandbox" => "sandbox",
       }.fetch(path)
 
       render "api/guidance/" + template
