@@ -49,6 +49,10 @@ module ParityCheck
       before_transition any => :completed do |instance|
         instance.touch(:completed_at)
       end
+
+      after_transition any => :completed do |instance|
+        instance.run.broadcast_run_states
+      end
     end
 
     def average_ecf_response_time_ms
