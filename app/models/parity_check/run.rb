@@ -2,6 +2,8 @@ module ParityCheck
   class Run < ApplicationRecord
     self.table_name = "parity_check_runs"
 
+    after_commit -> { broadcast_run_states }
+
     has_many :requests, dependent: :destroy
 
     attribute :mode, default: -> { "concurrent" }
@@ -75,6 +77,21 @@ module ParityCheck
       current_runtime = Time.current - started_at
       estimated_runtime = current_runtime / (progress.to_f / 100)
       started_at + estimated_runtime
+    end
+
+    def broadcast_run_states
+      locals = {
+        in_progress_run: ParityCheck::Run.in_progress.first,
+        completed_runs: ParityCheck::Run.completed,
+        pending_runs: ParityCheck::Run.pending,
+      }
+
+      html = ::Migration::ParityChecksController.renderer.render(
+        partial: "migration/parity_checks/runs_sidebar",
+        locals:
+      )
+
+      broadcast_update_to :run_states, html:, target: :run_states
     end
 
   private
