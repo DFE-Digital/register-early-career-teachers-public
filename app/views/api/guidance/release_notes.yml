@@ -22,9 +22,9 @@
   date: 2025-06-23
   body: |
    Lead providers can now check their financial statements in the ['Register early career teachers’ v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3).
-   
+
    Use the GET `/api/v3/statements` endpoint to retrieve all statements or GET `/api/v3/statements/{id}` endpoint to retrieve a specific statement.
-   
+
    We’ve removed the type field from the responses. We used it to differentiate between NPQ and early career training statements, but it's no longer needed.
-   
+
    We’d welcome feedback on this update before it goes into production. Share any suggestions or concerns via the usual Slack channels.
