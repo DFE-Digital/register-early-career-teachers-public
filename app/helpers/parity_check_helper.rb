@@ -40,6 +40,23 @@ module ParityCheckHelper
     govuk_tag(text: "#{match_rate}%", colour:)
   end
 
+  def status_code_tag(status_code)
+    colour = case status_code
+             when 0...300
+               "green"
+             when 300...400
+               "yellow"
+             else
+               "red"
+             end
+
+    govuk_tag(text: status_code, colour:)
+  end
+
+  def comparison_emoji(matching)
+    matching ? "✅" : "❌"
+  end
+
   def performance_gain(ratio)
     return if ratio.nil?
 
