@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_24_131716) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_25_124419) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -272,6 +272,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_24_131716) do
     t.boolean "induction_eligibility", null: false
     t.boolean "in_england", null: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, ((((COALESCE((name)::text, ''::text) || ' '::text) || COALESCE((postcode)::text, ''::text)) || ' '::text) || COALESCE((urn)::text, ''::text)))", stored: true
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["api_id"], name: "index_gias_schools_on_api_id", unique: true
     t.index ["name"], name: "index_gias_schools_on_name"
     t.index ["search"], name: "index_gias_schools_on_search", using: :gin
     t.index ["ukprn"], name: "index_gias_schools_on_ukprn", unique: true
