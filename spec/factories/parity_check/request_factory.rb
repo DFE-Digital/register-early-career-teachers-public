@@ -29,29 +29,32 @@ FactoryBot.define do
     end
 
     trait :queued do
+      association(:run, factory: %i[parity_check_run in_progress])
       state { :queued }
     end
 
     trait :in_progress do
+      association(:run, factory: %i[parity_check_run in_progress])
       state { :in_progress }
       started_at { Time.current }
     end
 
     trait :completed do
+      association(:run, factory: %i[parity_check_run completed])
       state { :completed }
       started_at { Time.current }
       completed_at { Time.current + 3.minutes }
-      response_types { %i[different] }
+      response_types { responses.any? ? [] : [:different] }
     end
 
     trait :completed_different do
       completed
-      response_types { %i[different] }
+      response_types { responses.any? ? [] : [:different] }
     end
 
     trait :completed_matching do
       completed
-      response_types { %i[matching] }
+      response_types { responses.any? ? [] : [:matching] }
     end
   end
 end
