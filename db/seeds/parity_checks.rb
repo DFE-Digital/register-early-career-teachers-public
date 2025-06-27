@@ -67,7 +67,9 @@ if Rails.application.config.parity_check[:enabled]
       LeadProvider.find_each do |lead_provider|
         in_progress_request = create_in_progress_request(run: in_progress_run, lead_provider:, endpoint:)
 
-        random_response_types.each.with_index(1) do |response_type, page|
+        response_types = random_response_types
+        response_types.each.with_index(1) do |response_type, page|
+          page = nil if response_types.size == 1
           create_response(in_progress_request, response_type, page)
         end
 
