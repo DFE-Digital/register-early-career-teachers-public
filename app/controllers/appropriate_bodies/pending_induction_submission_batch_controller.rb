@@ -10,7 +10,7 @@ module AppropriateBodies
 
         format.csv do
           send_data @pending_induction_submission_batch.to_csv,
-                    filename: "Errors for #{@pending_induction_submission_batch.filename}",
+                    filename: "Errors for #{@pending_induction_submission_batch.file_name}",
                     type: 'text/csv'
         end
       end
@@ -52,8 +52,7 @@ module AppropriateBodies
     def record_bulk_upload_started_event
       Events::Record.record_bulk_upload_started_event!(
         author: current_user,
-        batch: @pending_induction_submission_batch,
-        csv_data:
+        batch: @pending_induction_submission_batch
       )
     end
 

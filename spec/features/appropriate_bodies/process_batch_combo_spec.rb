@@ -19,7 +19,9 @@ RSpec.describe 'Process bulk claims then actions events' do
     expect(PendingInductionSubmissionBatch.last).to be_pending
     expect(perform_enqueued_jobs).to be(2)
     expect(PendingInductionSubmissionBatch.last).to be_processed
-    expect(Event.all.map(&:heading)).to eq(["The Appropriate Body started a bulk claim"])
+    expect(Event.all.map(&:heading)).to eq([
+      "The Appropriate Body started a bulk claim"
+    ])
 
     page.reload
     expect(page.get_by_text('CSV file summary')).to be_visible
@@ -114,6 +116,10 @@ RSpec.describe 'Process bulk claims then actions events' do
     expect(page.get_by_text("0 ECTs with a released outcome")).to be_visible
     page.get_by_role('link', name: 'Go back to your overview').click
     expect(page.get_by_text('valid_complete_action.csv')).to be_visible
+
+    Event.all.map do |event|
+      expect(event.pending_induction_submission_batch.id).to eq(PendingInductionSubmissionBatch.last.id)
+    end
   end
 
 private
