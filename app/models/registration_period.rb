@@ -1,5 +1,6 @@
 class RegistrationPeriod < ApplicationRecord
   include Interval
+  include SequentialInterval
 
   ECF_FIRST_YEAR = 2020
 
