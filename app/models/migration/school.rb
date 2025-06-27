@@ -1,6 +1,5 @@
 module Migration
   class School < Migration::Base
-
     ALL_TYPE_CODES = [1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 14, 15, 18, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 49, 56, 57].freeze
     CIP_ONLY_TYPE_CODES = [10, 11, 30, 37].freeze
     ELIGIBLE_TYPE_CODES = [1, 2, 3, 5, 6, 7, 8, 12, 14, 15, 18, 28, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 44, 45, 46, 57].freeze
