@@ -16,6 +16,13 @@ class PendingInductionSubmission < ApplicationRecord
   # Scopes
   scope :ready_for_deletion, -> { where(delete_at: ..Time.current) }
   scope :release, -> { where(outcome: nil).where.not(finished_on: nil) }
+
+  # scope :pass, -> { where(outcome: 'pass') }
+  # scope :fail, -> { where(outcome: 'fail') }
+  scope :claim, -> { where.not(started_on: nil) }
+
+  # Scopes for error handling
+  scope :errored, -> { where.not(error_messages: nil) }
   scope :with_errors, -> { where.not(error_messages: []) }
   scope :without_errors, -> { where(error_messages: []) }
 
