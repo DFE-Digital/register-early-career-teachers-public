@@ -71,7 +71,7 @@ describe ParityCheck::Response do
       let(:rect_time_ms) { 253 }
       let(:ecf_time_ms) { 87 }
 
-      it { is_expected.to eq(0.3) }
+      it { is_expected.to eq(-2.9) }
     end
   end
 

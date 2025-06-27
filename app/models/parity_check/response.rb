@@ -19,7 +19,9 @@ module ParityCheck
     def rect_performance_gain_ratio
       return unless ecf_time_ms && rect_time_ms
 
-      (ecf_time_ms.to_f / rect_time_ms).round(1)
+      ratio = ecf_time_ms.to_f / rect_time_ms
+
+      (ratio < 1 ? -(1 / ratio) : ratio).round(1)
     end
 
     def match_rate
