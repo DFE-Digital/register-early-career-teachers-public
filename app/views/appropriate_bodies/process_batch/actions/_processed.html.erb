@@ -2,7 +2,7 @@
 
 <% if batch.no_valid_data? %>
   <p class='govuk-body'>
-    Your CSV named '<%= batch.filename %>' has <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors.
+    Your CSV named '<%= batch.file_name %>' has <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors.
   </p>
 
   <p class='govuk-body'>
@@ -16,7 +16,7 @@
 
 <% else %>
   <p class='govuk-body'>
-    Your CSV named '<%= batch.filename %>' has <%= batch.pending_induction_submissions.without_errors.count %> ECT records including:
+    Your CSV named '<%= batch.file_name %>' has <%= batch.pending_induction_submissions.without_errors.count %> ECT records including:
   </p>
 
   <%= batch_action_summary(batch) %>
