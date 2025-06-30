@@ -8,6 +8,10 @@ describe ParityCheck::Request do
     it { is_expected.to have_many(:responses).dependent(:destroy) }
   end
 
+  describe "delegate methods" do
+    it { is_expected.to delegate_method(:description).to(:endpoint) }
+  end
+
   describe "validations" do
     it { is_expected.to validate_presence_of(:lead_provider) }
     it { is_expected.to validate_presence_of(:endpoint) }

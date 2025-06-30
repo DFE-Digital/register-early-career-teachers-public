@@ -1,0 +1,42 @@
+<% page_data(title: @response.description, caption: @request.description, breadcrumbs: @breadcrumbs) %>
+
+<p>
+  The status code from ECF was <strong><%= status_code_tag(@response.ecf_status_code) %></strong>  
+  and the response took <strong><%= number_with_delimiter(@response.ecf_time_ms) %>ms</strong>.
+</p>
+
+<p>
+  The status code from RECT was <strong><%= status_code_tag(@response.rect_status_code) %></strong>  
+  and the response took <strong><%= number_with_delimiter(@response.rect_time_ms) %>ms</strong>.
+</p>
+
+<p>
+  The response bodies were <strong><%= comparison_in_words(@response.bodies_matching?) %></strong> and RECT had 
+  <strong><%= performance_gain(@response.rect_performance_gain_ratio) %></strong> performance when compared to ECF.
+</p>
+
+<% if @response.bodies_different? %>
+  <% content_for(:head) do %>
+    <style type="text/css" nonce="<%= content_security_policy_nonce %>"><%= Diffy::CSS %></style>
+  <% end %>
+
+  <hr class="govuk-section-break govuk-section-break--l">
+
+  <%= govuk_details(summary_text: "Understanding the differences") do %>
+    <p>
+      The diff below highlights what has changed between the ECF and RECT response bodies.
+    </p>
+    
+    <p>
+      Sections <span class="diff green">in green</span> show content that exists 
+      in the RECT response but is missing from the ECF response.
+    </p>
+
+    <p>
+      Sections <span class="diff red">in red</span> show content that exists 
+      in the ECF response but is missing from the RECT response.
+    </p>
+  <% end %>
+
+  <%= sanitize_diff(@response.body_diff.to_s(:html)) %>
+<% end %>

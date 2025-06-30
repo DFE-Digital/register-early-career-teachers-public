@@ -40,7 +40,7 @@
         table.with_body do |body|
           requests.each do |request|  
             body.with_row do |row|
-              row.with_cell(text: request.endpoint.description)
+              row.with_cell(text: request.description)
               row.with_cell(text: match_rate_tag(request.match_rate))
               row.with_cell(text: performance_gain(request.rect_performance_gain_ratio))
               row.with_cell(text: govuk_link_to("Request details", migration_parity_check_request_path(@run, request)))
