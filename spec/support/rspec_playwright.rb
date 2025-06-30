@@ -11,7 +11,7 @@ module RSpecPlaywright
     Playwright.create(playwright_cli_executable_path: PLAYWRIGHT_CLI_EXECUTABLE_PATH)
               .playwright
               .chromium
-              .launch(headless:)
+              .launch(headless:, slowMo:)
   end
 
   def self.close_browser
@@ -28,6 +28,12 @@ module RSpecPlaywright
       fail(ArgumentError, 'Invalid headless option')
     end
   end
+
+  # rubocop:disable Naming/MethodName
+  def self.slowMo
+    ENV.fetch('SLOWMO', 0).to_i
+  end
+  # rubocop:enable Naming/MethodName
 
   def self.check_versions!
     ruby_playwright_version = Gem::Version
