@@ -112,7 +112,7 @@ module Schools
     end
 
     def record_event!
-      Events::Record.record_teacher_registered_as_mentor_event!(author:, mentor_at_school_period:, teacher:, school:)
+      Events::Record.record_teacher_registered_as_mentor_event!(author:, mentor_at_school_period:, teacher:, school:, training_period:)
     end
   end
 end
