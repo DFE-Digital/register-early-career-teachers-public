@@ -10,7 +10,8 @@ module Schools
                 :email,
                 :started_on,
                 :mentor_at_school_period,
-                :lead_provider
+                :lead_provider,
+                :training_period
 
     def initialize(trs_first_name:,
                    trs_last_name:,
@@ -36,6 +37,7 @@ module Schools
       ActiveRecord::Base.transaction do
         create_teacher!
         start_at_school!
+        create_training_period! if provider_led_training_programme?
         record_event!
       end
 
@@ -43,6 +45,48 @@ module Schools
     end
 
   private
+
+    def provider_led_training_programme?
+      lead_provider.present?
+    end
+
+    def registration_period
+      @registration_period ||= RegistrationPeriod.containing_date(started_on)
+    end
+
+    def active_lead_provider
+      @active_lead_provider ||= ActiveLeadProvider.find_by(
+        lead_provider:,
+        registration_period:
+      ) || raise("Missing ActiveLeadProvider for #{lead_provider&.name} in #{registration_period&.year}")
+    end
+
+    def school_partnership
+      provider = active_lead_provider
+      return unless provider
+
+      SchoolPartnership
+        .joins(:lead_provider_delivery_partnership)
+        .find_by(
+          school:,
+          lead_provider_delivery_partnerships: {
+            active_lead_provider_id: provider.id
+          }
+        )
+    end
+
+    def expression_of_interest
+      school_partnership ? nil : active_lead_provider
+    end
+
+    def create_training_period!
+      @training_period = ::TrainingPeriod.create!(
+        mentor_at_school_period:,
+        started_on: mentor_at_school_period.started_on,
+        school_partnership:,
+        expression_of_interest:
+      )
+    end
 
     def already_registered_as_a_mentor?
       ::Teacher.find_by_trn(trn)&.mentor_at_school_periods&.exists?
