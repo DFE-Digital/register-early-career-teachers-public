@@ -129,7 +129,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
             'Fill in the blanks on this row',
-            'Dates must be in the format YYYY-MM-DD'
+            'Dates must be in the format YYYY-MM-DD',
+            'Dates cannot be in the future'
           ]
         end
       end
@@ -213,6 +214,14 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
+      context 'when the end date is in the future' do
+        let(:finished_on) { 1.year.from_now.to_date.to_s }
+
+        it 'captures an error message' do
+          expect(submission.error_messages).to eq ['Dates cannot be in the future']
+        end
+      end
+
       context 'when the outcome is not recognised' do
         let(:outcome) { 'foo' }
 
@@ -264,8 +273,9 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
             'Fill in the blanks on this row',
-            'Dates must be in the format YYYY-MM-DD',
             'Enter a valid TRN using 7 digits',
+            'Dates must be in the format YYYY-MM-DD',
+            'Dates cannot be in the future',
             'Outcome must be either pass, fail or release',
             'Enter number of terms between 0 and 16 using up to one decimal place'
           ]
@@ -340,7 +350,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:finished_on) { 1.year.from_now.to_date.to_s }
 
         it 'captures an error message' do
-          expect(submission.error_messages).to eq ['End date cannot be in the future']
+          expect(submission.error_messages).to eq ['Dates cannot be in the future']
         end
       end
 

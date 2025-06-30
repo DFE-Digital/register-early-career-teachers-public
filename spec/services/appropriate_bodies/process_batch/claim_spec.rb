@@ -114,7 +114,19 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
           it 'captures an error message' do
             expect(submission.error_messages).to eq [
               'Fill in the blanks on this row',
-              'Dates must be in the format YYYY-MM-DD'
+              'Dates must be in the format YYYY-MM-DD',
+              'Dates cannot be in the future',
+              'Induction start date must be after 1 September 2021'
+            ]
+          end
+        end
+
+        context 'when the start date predates the service rollout' do
+          let(:started_on) { 7.years.ago.to_date.to_s }
+
+          it 'captures an error message' do
+            expect(submission.error_messages).to eq [
+              'Induction start date must be after 1 September 2021'
             ]
           end
         end
@@ -191,7 +203,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         end
 
         context 'when the start date is not ISO8601' do
-          let(:started_on) { '30/06/1981' }
+          let(:started_on) { '30/06/2022' }
 
           it 'captures an error message' do
             expect(submission.error_messages).to eq ['Dates must be in the format YYYY-MM-DD']
@@ -224,8 +236,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
           it 'captures an error message' do
             expect(submission.error_messages).to eq [
               'Fill in the blanks on this row',
-              'Dates must be in the format YYYY-MM-DD',
               'Enter a valid TRN using 7 digits',
+              'Dates must be in the format YYYY-MM-DD',
+              'Dates cannot be in the future',
+              'Induction start date must be after 1 September 2021',
               'Induction programme type must be DIY, FIP or CIP'
             ]
           end
@@ -382,8 +396,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     context 'start date before QTS' do
       include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
-      let(:started_on) { 4.years.ago.to_date.to_s }
       let(:qts_date) { 3.years.ago.to_date }
+      let(:started_on) { (qts_date - 1.day).to_s }
 
       before do
         service.process!
@@ -507,7 +521,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        it { is_expected.to eq ['Start date cannot be in the future'] }
+        it { is_expected.to eq ['Dates cannot be in the future'] }
       end
     end
   end
