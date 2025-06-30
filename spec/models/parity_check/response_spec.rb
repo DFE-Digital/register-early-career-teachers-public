@@ -6,8 +6,8 @@ describe ParityCheck::Response do
   end
 
   describe "before_validation" do
-    it "clears bodies if the responses match" do
-      response = FactoryBot.build(:parity_check_response, :matching)
+    it "clears bodies if the response bodies match" do
+      response = FactoryBot.build(:parity_check_response, :different, ecf_body: "same", rect_body: "same")
       expect { response.save! }.to change { response.ecf_body }.to(nil).and change { response.rect_body }.to(nil)
     end
   end
@@ -26,18 +26,44 @@ describe ParityCheck::Response do
 
   describe "scopes" do
     let!(:matching_response) { FactoryBot.create(:parity_check_response, :matching) }
+    let!(:matching_status_codes_response) { FactoryBot.create(:parity_check_response, :matching, ecf_body: "different") }
+    let!(:matching_bodies_response) { FactoryBot.create(:parity_check_response, :matching, ecf_status_code: 404) }
     let!(:different_response) { FactoryBot.create(:parity_check_response, :different) }
 
     describe ".different" do
       subject { described_class.different }
 
-      it { is_expected.to contain_exactly(different_response) }
+      it { is_expected.to contain_exactly(different_response, matching_status_codes_response, matching_bodies_response) }
     end
 
     describe ".matching" do
       subject { described_class.matching }
 
       it { is_expected.to contain_exactly(matching_response) }
+    end
+
+    describe ".status_codes_matching" do
+      subject { described_class.status_codes_matching }
+
+      it { is_expected.to contain_exactly(matching_response, matching_status_codes_response) }
+    end
+
+    describe ".status_codes_different" do
+      subject { described_class.status_codes_different }
+
+      it { is_expected.to contain_exactly(different_response, matching_bodies_response) }
+    end
+
+    describe ".bodies_different" do
+      subject { described_class.bodies_different }
+
+      it { is_expected.to contain_exactly(different_response, matching_status_codes_response) }
+    end
+
+    describe ".bodies_matching" do
+      subject { described_class.bodies_matching }
+
+      it { is_expected.to contain_exactly(matching_response, matching_bodies_response) }
     end
   end
 
