@@ -1,16 +1,17 @@
 module Navigation
   class PrimaryNavigationComponent < ViewComponent::Base
-    attr_accessor :current_path, :current_user_type
+    attr_accessor :current_path, :current_user_type, :inverse
 
-    def initialize(current_path:, current_user_type:)
+    def initialize(current_path:, current_user_type:, inverse: false)
       super
 
       @current_path = current_path
       @current_user_type = current_user_type
+      @inverse = inverse
     end
 
     def call
-      govuk_service_navigation(service_name:, service_url:, current_path:, navigation_id:, navigation_items:)
+      govuk_service_navigation(service_name:, service_url:, current_path:, navigation_id:, navigation_items:, inverse:)
     end
 
   private
