@@ -145,4 +145,36 @@ RSpec.describe ParityCheckHelper, type: :helper do
       )
     end
   end
+
+  describe "#comparison_in_words" do
+    subject { helper.comparison_in_words(matching) }
+
+    context "when matching" do
+      let(:matching) { true }
+
+      it { is_expected.to eq("the same") }
+    end
+
+    context "when different" do
+      let(:matching) { false }
+
+      it { is_expected.to eq("different") }
+    end
+  end
+
+  describe "#sanitize_diff" do
+    subject { helper.sanitize_diff(html) }
+
+    let(:html) { response.body_diff.to_s(:html) }
+    let(:response) { FactoryBot.build(:parity_check_response, :different) }
+
+    it { is_expected.to eq(html.html_safe) }
+
+    context "when the diff contains malicious HTML" do
+      let(:html) { "<script>alert('maliciousness');</script>#{response.body_diff.to_s(:html)}" }
+
+      it { is_expected.not_to eq(html.html_safe) }
+      it { is_expected.not_to include("<script>") }
+    end
+  end
 end

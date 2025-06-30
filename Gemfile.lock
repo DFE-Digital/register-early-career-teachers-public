@@ -188,6 +188,7 @@ GEM
     debug_inspector (1.2.0)
     declarative (0.0.20)
     diff-lcs (1.6.2)
+    diffy (3.4.4)
     drb (2.2.3)
     em-websocket (0.5.3)
       eventmachine (>= 0.12.9)
@@ -821,6 +822,7 @@ DEPENDENCIES
   debug
   dfe-analytics!
   dfe-wizard!
+  diffy
   factory_bot_rails
   faker
   faraday

@@ -5,27 +5,37 @@ describe ParityCheck::Run do
     it { is_expected.to have_many(:requests).dependent(:destroy) }
     it { is_expected.to have_many(:lead_providers).through(:requests) }
     it { is_expected.to have_many(:endpoints).through(:requests) }
+    it { is_expected.to have_many(:responses).through(:requests) }
 
     it "returns distinct lead providers, ordered by name in ascending order" do
-      lead_provider_1 = FactoryBot.create(:lead_provider, name: "A lead provider")
-      lead_provider_2 = FactoryBot.create(:lead_provider, name: "B lead provider")
+      lead_provider_1 = FactoryBot.create(:lead_provider, name: "B lead provider")
+      lead_provider_2 = FactoryBot.create(:lead_provider, name: "A lead provider")
       run = FactoryBot.create(:parity_check_run)
       FactoryBot.create(:parity_check_request, run:, lead_provider: lead_provider_1)
       FactoryBot.create(:parity_check_request, run:, lead_provider: lead_provider_1)
       FactoryBot.create(:parity_check_request, run:, lead_provider: lead_provider_2)
 
-      expect(run.lead_providers).to eq([lead_provider_1, lead_provider_2])
+      expect(run.lead_providers).to eq([lead_provider_2, lead_provider_1])
     end
 
     it "returns distinct endpoints, ordered by path in ascending order" do
-      endpoint_1 = FactoryBot.create(:parity_check_endpoint, path: "/a/path")
-      endpoint_2 = FactoryBot.create(:parity_check_endpoint, path: "/b/path")
+      endpoint_1 = FactoryBot.create(:parity_check_endpoint, path: "/b/path")
+      endpoint_2 = FactoryBot.create(:parity_check_endpoint, path: "/a/path")
       run = FactoryBot.create(:parity_check_run)
       FactoryBot.create(:parity_check_request, run:, endpoint: endpoint_1)
       FactoryBot.create(:parity_check_request, run:, endpoint: endpoint_1)
       FactoryBot.create(:parity_check_request, run:, endpoint: endpoint_2)
 
-      expect(run.endpoints).to eq([endpoint_1, endpoint_2])
+      expect(run.endpoints).to eq([endpoint_2, endpoint_1])
+    end
+
+    it "returns responses, ordered by page in ascending order" do
+      run = FactoryBot.create(:parity_check_run, :in_progress, requests: [])
+      request = FactoryBot.create(:parity_check_request, :in_progress, run:)
+      response_1 = FactoryBot.create(:parity_check_response, request:, page: 2)
+      response_2 = FactoryBot.create(:parity_check_response, request:, page: 1)
+
+      expect(run.responses).to eq([response_2, response_1])
     end
   end
 
