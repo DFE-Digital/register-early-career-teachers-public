@@ -1,3 +1,4 @@
+# TODO: move outcome, terms and programme out into Action service
 module BatchRows
   extend ActiveSupport::Concern
 
@@ -50,6 +51,17 @@ module BatchRows
           !Date.iso8601(public_send(key))
         rescue Date::Error
           true
+        end
+      end
+
+      # @return [Boolean]
+      def future_dates?
+        members.grep(/started_on|finished_on/).any? do |key|
+          Date.parse(public_send(key).to_s).future?
+        rescue Date::Error
+          true
+        rescue NameError
+          false
         end
       end
 

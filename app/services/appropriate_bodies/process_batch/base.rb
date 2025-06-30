@@ -48,9 +48,10 @@ module AppropriateBodies
       # @return [Boolean] common pre-checks for all submissions
       def incorrectly_formatted?
         pending_induction_submission.errors.add(:base, 'Fill in the blanks on this row') if row.blank_cell?
+        pending_induction_submission.errors.add(:base, 'Enter a valid TRN using 7 digits') if row.invalid_trn?
         pending_induction_submission.errors.add(:base, 'Dates must be in the format YYYY-MM-DD') if row.invalid_date?
         pending_induction_submission.errors.add(:base, 'Date of birth must be a real date and the teacher must be between 18 and 100 years old') if row.invalid_age?
-        pending_induction_submission.errors.add(:base, 'Enter a valid TRN using 7 digits') if row.invalid_trn?
+        pending_induction_submission.errors.add(:base, 'Dates cannot be in the future') if row.future_dates?
       end
 
       # @param message [String]
