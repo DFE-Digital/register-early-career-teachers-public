@@ -9,7 +9,8 @@ module Schools
                 :trn,
                 :email,
                 :started_on,
-                :mentor_at_school_period
+                :mentor_at_school_period,
+                :lead_provider
 
     def initialize(trs_first_name:,
                    trs_last_name:,
@@ -18,7 +19,8 @@ module Schools
                    school_urn:,
                    email:,
                    author:,
-                   started_on: Date.current)
+                   started_on: Date.current,
+                   lead_provider: nil)
       @author = author
       @trs_first_name = trs_first_name
       @trs_last_name = trs_last_name
@@ -27,6 +29,7 @@ module Schools
       @email = email
       @started_on = started_on
       @trn = trn
+      @lead_provider = lead_provider
     end
 
     def register!
