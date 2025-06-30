@@ -34,13 +34,12 @@ module Migration
       'ineligible'
     end
 
-    def induction_eligibility = %w[eligible_for_fip eligible_for_cip].include?(funding_eligibility)
-
-    def in_england? = GIAS::Types::IN_ENGLAND_TYPES.include?(school_type_name)
+    def induction_eligibility = funding_eligibility != 'ineligible'
 
     def independent_school_type? = GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(school_type_name)
 
-    # local_authority_code
+    def in_england? = GIAS::Types::IN_ENGLAND_TYPES.include?(school_type_name)
+
     def local_authority_code = local_authority&.code&.to_i
 
     # local_authority_name
