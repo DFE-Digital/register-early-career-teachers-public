@@ -12,6 +12,7 @@ module Admin::Finance
       @adjustment = @statement.adjustments.new(adjustment_params)
 
       if @adjustment.save
+        Events::Record.record_statement_adjustment_added_event!(author: current_user, statement_adjustment: @adjustment)
         redirect_to statement_path, alert: "Adjustment added"
       else
         render :new, status: :unprocessable_entity
@@ -23,6 +24,7 @@ module Admin::Finance
 
     def update
       if @adjustment.update(adjustment_params)
+        Events::Record.record_statement_adjustment_updated_event!(author: current_user, statement_adjustment: @adjustment)
         redirect_to statement_path, alert: "Adjustment changed"
       else
         render :new, status: :unprocessable_entity
@@ -34,6 +36,7 @@ module Admin::Finance
 
     def destroy
       @adjustment.destroy!
+      Events::Record.record_statement_adjustment_deleted_event!(author: current_user, statement_adjustment: @adjustment)
       redirect_to statement_path, alert: "Adjustment removed"
     end
 

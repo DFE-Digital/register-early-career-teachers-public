@@ -227,6 +227,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
     t.string "modifications", array: true
     t.bigint "active_lead_provider_id"
     t.bigint "lead_provider_delivery_partnership_id"
+    t.bigint "statement_id"
+    t.bigint "statement_adjustment_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
@@ -241,6 +243,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
     t.index ["mentorship_period_id"], name: "index_events_on_mentorship_period_id"
     t.index ["school_id"], name: "index_events_on_school_id"
     t.index ["school_partnership_id"], name: "index_events_on_school_partnership_id"
+    t.index ["statement_adjustment_id"], name: "index_events_on_statement_adjustment_id"
+    t.index ["statement_id"], name: "index_events_on_statement_id"
     t.index ["teacher_id"], name: "index_events_on_teacher_id"
     t.index ["training_period_id"], name: "index_events_on_training_period_id"
     t.index ["user_id"], name: "index_events_on_user_id"
@@ -725,6 +729,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
   add_foreign_key "events", "mentorship_periods", on_delete: :nullify
   add_foreign_key "events", "school_partnerships", on_delete: :nullify
   add_foreign_key "events", "schools", on_delete: :nullify
+  add_foreign_key "events", "statement_adjustments", on_delete: :nullify
+  add_foreign_key "events", "statements", on_delete: :nullify
   add_foreign_key "events", "teachers", on_delete: :nullify
   add_foreign_key "events", "training_periods", on_delete: :nullify
   add_foreign_key "events", "users", column: "author_id", on_delete: :nullify

@@ -319,6 +319,8 @@
   - delivery_partner_id
   - active_lead_provider_id
   - lead_provider_delivery_partnership_id
+  - statement_id
+  - statement_adjustment_id
   - user_id
   - author_type
   - author_id

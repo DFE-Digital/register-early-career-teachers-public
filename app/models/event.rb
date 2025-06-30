@@ -26,6 +26,9 @@ class Event < ApplicationRecord
     teacher_trs_induction_status_updated
     lead_provider_api_token_created
     lead_provider_api_token_revoked
+    statement_adjustment_added
+    statement_adjustment_updated
+    statement_adjustment_deleted
   ].freeze
 
   belongs_to :teacher
@@ -44,6 +47,8 @@ class Event < ApplicationRecord
   belongs_to :lead_provider_delivery_partnership
   belongs_to :delivery_partner
   belongs_to :user
+  belongs_to :statement
+  belongs_to :statement_adjustment, class_name: "Statement::Adjustment"
 
   belongs_to :author, class_name: 'User'
 

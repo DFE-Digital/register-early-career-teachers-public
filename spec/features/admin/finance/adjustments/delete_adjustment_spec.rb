@@ -1,4 +1,6 @@
 RSpec.describe "Delete adjustment from statement" do
+  include ActiveJob::TestHelper
+
   before { sign_in_as_dfe_user(role: :admin) }
 
   scenario "Delete adjustment" do
@@ -19,6 +21,7 @@ RSpec.describe "Delete adjustment from statement" do
     and_i_see_new_adjustment_values
     and_i_see_new_adjustment_total
     and_deleted_adjustment_should_not_exist
+    and_an_adjustment_deleted_event_recorded
   end
 
   def given_a_finance_statement_exists
@@ -94,6 +97,13 @@ RSpec.describe "Delete adjustment from statement" do
   end
 
   def and_i_click_button(name)
-    page.get_by_role('button', name:).click
+    perform_enqueued_jobs do
+      page.get_by_role('button', name:).click
+    end
+  end
+
+  def and_an_adjustment_deleted_event_recorded
+    event = Event.find_by(event_type: "statement_adjustment_deleted")
+    expect(event.statement).to eq(@statement)
   end
 end
