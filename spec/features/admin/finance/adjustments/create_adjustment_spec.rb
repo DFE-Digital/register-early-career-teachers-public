@@ -1,4 +1,6 @@
 RSpec.describe "Create adjustment for statement" do
+  include ActiveJob::TestHelper
+
   before { sign_in_as_dfe_user(role: :admin) }
 
   scenario "Add new adjustment" do
@@ -18,6 +20,7 @@ RSpec.describe "Create adjustment for statement" do
     and_i_see_adjustment_values
     and_i_see_adjustment_total
     and_an_adjustment_is_created
+    and_an_adjustment_added_event_recorded
   end
 
   def given_a_finance_statement_exists
@@ -47,7 +50,9 @@ RSpec.describe "Create adjustment for statement" do
   alias_method :and_i_fill_in, :when_i_fill_in
 
   def and_i_click_button(name)
-    page.get_by_role('button', name:).click
+    perform_enqueued_jobs do
+      page.get_by_role('button', name:).click
+    end
   end
 
   def and_i_see_adjustment_values
@@ -72,5 +77,10 @@ RSpec.describe "Create adjustment for statement" do
       page.query_selector_all("#adjustments.govuk-summary-card .govuk-summary-list .govuk-summary-list__row").map do |row|
         row.query_selector_all(".govuk-summary-list__key, .govuk-summary-list__value").map { |v| v.text_content.strip }
       end
+  end
+
+  def and_an_adjustment_added_event_recorded
+    event = Event.find_by(event_type: "statement_adjustment_added")
+    expect(event.statement).to eq(@statement)
   end
 end
