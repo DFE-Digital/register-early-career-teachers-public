@@ -55,7 +55,7 @@ module Schools
 
     def store
       @store ||= SessionRepository.new(session:, form_key: FORM_KEY).tap do |store|
-        store.update(school_urn: @school.urn)
+        store.update!(school_urn: @school.urn, ect_id: session[:register_mentor_for_ect_id])
       end
     end
   end
