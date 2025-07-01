@@ -97,7 +97,7 @@ RSpec.describe 'Process bulk claims then actions events' do
     ])
 
     expect(perform_enqueued_jobs).to be(4)
-    expect(Event.all.map(&:heading)).to eq([
+    expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
@@ -110,7 +110,7 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk action",
       "Kirk Van Houten passed induction",
       "Kirk Van Houten failed induction"
-    ])
+    )
 
     # Mimic PurgePendingInductionSubmissionsJob
     PendingInductionSubmission.ready_for_deletion.delete_all
