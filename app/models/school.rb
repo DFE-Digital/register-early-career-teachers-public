@@ -46,6 +46,8 @@ class School < ApplicationRecord
             presence: true,
             uniqueness: true
 
+  validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another school" }
+
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
 

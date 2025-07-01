@@ -21,10 +21,13 @@ describe School do
   end
 
   describe 'validations' do
-    subject { FactoryBot.build(:school) }
+    subject { FactoryBot.create(:school) }
+
+    before { FactoryBot.create(:school, api_id: subject.api_id) }
 
     it { is_expected.to validate_presence_of(:urn) }
     it { is_expected.to validate_uniqueness_of(:urn) }
+    it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another school") }
 
     context "last_chosen_lead_provider_id" do
       subject { FactoryBot.build(:school) }
