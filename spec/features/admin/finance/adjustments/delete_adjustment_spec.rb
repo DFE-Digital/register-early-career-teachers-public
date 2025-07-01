@@ -21,7 +21,7 @@ RSpec.describe "Delete adjustment from statement" do
     and_i_see_new_adjustment_values
     and_i_see_new_adjustment_total
     and_deleted_adjustment_should_not_exist
-    and_an_adjustment_deleted_event_recorded
+    and_an_adjustment_deleted_event_is_recorded
   end
 
   def given_a_finance_statement_exists
@@ -102,7 +102,7 @@ RSpec.describe "Delete adjustment from statement" do
     end
   end
 
-  def and_an_adjustment_deleted_event_recorded
+  def and_an_adjustment_deleted_event_is_recorded
     event = Event.find_by(event_type: "statement_adjustment_deleted")
     expect(event.statement).to eq(@statement)
   end

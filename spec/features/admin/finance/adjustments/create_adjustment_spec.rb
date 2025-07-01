@@ -20,7 +20,7 @@ RSpec.describe "Create adjustment for statement" do
     and_i_see_adjustment_values
     and_i_see_adjustment_total
     and_an_adjustment_is_created
-    and_an_adjustment_added_event_recorded
+    and_an_adjustment_added_event_is_recorded
   end
 
   def given_a_finance_statement_exists
@@ -79,7 +79,7 @@ RSpec.describe "Create adjustment for statement" do
       end
   end
 
-  def and_an_adjustment_added_event_recorded
+  def and_an_adjustment_added_event_is_recorded
     event = Event.find_by(event_type: "statement_adjustment_added")
     expect(event.statement).to eq(@statement)
   end
