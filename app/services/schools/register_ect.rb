@@ -104,12 +104,12 @@ module Schools
     end
 
     def create_training_period!
-      @training_period = ::TrainingPeriod.create!(
-        ect_at_school_period:,
+      @training_period = ::TrainingPeriods::Create.new(
+        period: ect_at_school_period,
         started_on: ect_at_school_period.started_on,
         school_partnership:,
         expression_of_interest:
-      )
+      ).call
     end
 
     def start_at_school!
