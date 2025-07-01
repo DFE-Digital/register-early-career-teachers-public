@@ -20,11 +20,11 @@ staging:
   purge_pending_induction_submissions:
     class: PurgePendingInductionSubmissionsJob
     queue: default
-    schedule: Every day at Noon
+    schedule: Every day at 12:00
 
 # review =======================================================================
 review:
   purge_pending_induction_submissions:
     class: PurgePendingInductionSubmissionsJob
     queue: default
-    schedule: Every day at Noon
+    schedule: Every day at 12:00
