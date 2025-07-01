@@ -20,10 +20,10 @@ RSpec.describe Events::Record do
   end
 
   describe '#initialize' do
-    context "when the user isn't a Sessions::User" do
+    context 'when the user is not supported' do
       let(:non_session_user) { FactoryBot.build(:user) }
 
-      it 'fails with a AuthorNotASessionsUser error with a non Sessions::User author' do
+      it 'fails when author object does not respond with necessary params' do
         expect {
           Events::Record.new(author: non_session_user, event_type:, heading:, body:, happened_at:).record_event!
         }.to raise_error(Events::InvalidAuthor)
