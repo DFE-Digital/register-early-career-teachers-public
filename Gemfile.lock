@@ -124,7 +124,7 @@ GEM
       protocol-http1 (~> 0.30)
       protocol-http2 (~> 0.22)
       traces (~> 0.10)
-    async-http-faraday (0.21.0)
+    async-http-faraday (0.22.0)
       async-http (~> 0.42)
       faraday
     async-pool (0.10.3)
@@ -302,7 +302,7 @@ GEM
     io-console (0.8.0)
     io-endpoint (0.15.2)
     io-event (1.11.0)
-    io-stream (0.6.1)
+    io-stream (0.10.0)
     irb (1.15.2)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
@@ -487,7 +487,7 @@ GEM
       rack
       railties (>= 7.0.0)
     protocol-hpack (1.5.1)
-    protocol-http (0.50.1)
+    protocol-http (0.51.0)
     protocol-http1 (0.34.0)
       protocol-http (~> 0.22)
     protocol-http2 (0.22.1)
