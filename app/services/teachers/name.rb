@@ -8,7 +8,7 @@ class Teachers::Name
   def full_name
     return if teacher.blank?
 
-    teacher.corrected_name.presence || full_name_in_trs
+    teacher.corrected_name.presence || full_name_in_trs.presence || 'Unknown'
   end
 
   def full_name_in_trs
