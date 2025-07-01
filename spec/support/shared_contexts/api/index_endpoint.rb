@@ -10,8 +10,8 @@ shared_examples "an index endpoint" do
     before do
       # Resource for a different lead provider.
       lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
-      registration_period = active_lead_provider.registration_period
-      create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:))
+      contract_period = active_lead_provider.contract_period
+      create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:))
     end
 
     it "returns the correct resources in a serialized format" do

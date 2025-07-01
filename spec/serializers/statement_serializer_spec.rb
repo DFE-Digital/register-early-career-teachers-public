@@ -22,7 +22,7 @@ describe StatementSerializer, type: :serializer do
     subject(:attributes) { JSON.parse(described_class.render(statement))["attributes"] }
 
     it "serializes `cohort`" do
-      active_lead_provider.registration_period.year = 2025
+      active_lead_provider.contract_period.year = 2025
 
       expect(attributes["cohort"]).to eq("2025")
     end

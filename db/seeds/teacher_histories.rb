@@ -107,33 +107,33 @@ golden_leaf_teaching_school_hub = AppropriateBody.find_by!(name: 'Golden Leaf Te
 umber_teaching_school_hub = AppropriateBody.find_by!(name: 'Umber Teaching School Hub')
 active_appropriate_bodies = [umber_teaching_school_hub, golden_leaf_teaching_school_hub]
 
-def find_school_partnership(delivery_partner:, lead_provider:, registration_period:)
+def find_school_partnership(delivery_partner:, lead_provider:, contract_period:)
   SchoolPartnership
-    .eager_load(lead_provider_delivery_partnership: [:delivery_partner, { active_lead_provider: %i[lead_provider registration_period] }])
+    .eager_load(lead_provider_delivery_partnership: [:delivery_partner, { active_lead_provider: %i[lead_provider contract_period] }])
     .find_by!(
-      lead_provider_delivery_partnership: { delivery_partner:, active_lead_providers: { lead_provider:, registration_period: } }
+      lead_provider_delivery_partnership: { delivery_partner:, active_lead_providers: { lead_provider:, contract_period: } }
     )
 end
 
-rp_2022 = RegistrationPeriod.find_by(year: 2022)
-rp_2023 = RegistrationPeriod.find_by(year: 2023)
+rp_2022 = ContractPeriod.find_by(year: 2022)
+rp_2023 = ContractPeriod.find_by(year: 2023)
 
-ambitious_artisan_2022 = ActiveLeadProvider.find_by!(registration_period: rp_2022, lead_provider: ambitious_institute)
-ambitious_artisan_2023 = ActiveLeadProvider.find_by!(registration_period: rp_2023, lead_provider: ambitious_institute)
-teach_fast_grain_2022 = ActiveLeadProvider.find_by!(registration_period: rp_2022, lead_provider: teach_fast)
+ambitious_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: rp_2022, lead_provider: ambitious_institute)
+ambitious_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: rp_2023, lead_provider: ambitious_institute)
+teach_fast_grain_2022 = ActiveLeadProvider.find_by!(contract_period: rp_2022, lead_provider: teach_fast)
 
 ambitious_artisan_partnership_2022 = find_school_partnership(
   lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group,
-  registration_period: RegistrationPeriod.find_by!(year: 2022)
+  contract_period: ContractPeriod.find_by!(year: 2022)
 )
 ambitious_artisan_partnership_2023 = find_school_partnership(
   lead_provider: ambitious_institute,
   delivery_partner: artisan_education_group,
-  registration_period: RegistrationPeriod.find_by!(year: 2023)
+  contract_period: ContractPeriod.find_by!(year: 2023)
 )
 teach_fast_grain_partnership_2022 = find_school_partnership(
-  registration_period: RegistrationPeriod.find_by!(year: 2022),
+  contract_period: ContractPeriod.find_by!(year: 2022),
   lead_provider: teach_fast,
   delivery_partner: grain_teaching_school_hub
 )

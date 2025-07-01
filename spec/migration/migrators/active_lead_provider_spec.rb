@@ -1,5 +1,5 @@
 describe Migrators::ActiveLeadProvider do
-  it_behaves_like "a migrator", :active_lead_provider, %i[lead_provider registration_period] do
+  it_behaves_like "a migrator", :active_lead_provider, %i[lead_provider contract_period] do
     def create_migration_resource
       FactoryBot.create(:migration_lead_provider, :active)
     end
@@ -7,7 +7,7 @@ describe Migrators::ActiveLeadProvider do
     def create_resource(migration_resource)
       # creating dependencies resources
       FactoryBot.create(:lead_provider, name: migration_resource.name, ecf_id: migration_resource.id)
-      FactoryBot.create(:registration_period, year: migration_resource.cohorts.first.start_year)
+      FactoryBot.create(:contract_period, year: migration_resource.cohorts.first.start_year)
 
       FactoryBot.create(:active_lead_provider)
     end
@@ -25,7 +25,7 @@ describe Migrators::ActiveLeadProvider do
 
         active_lead_provider = ActiveLeadProvider.find_by(
           lead_provider_id: LeadProvider.find_by_ecf_id(migration_resource1.id).id,
-          registration_period_id: migration_resource1.cohorts.first.start_year
+          contract_period_id: migration_resource1.cohorts.first.start_year
         )
         expect(active_lead_provider).to be_present
       end

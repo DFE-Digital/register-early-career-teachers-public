@@ -121,8 +121,8 @@ module Migrators
       lead_provider_ids_by_ecf_id[ecf_id] || raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProvider")
     end
 
-    def find_active_lead_provider_id!(lead_provider_id:, registration_period_id:)
-      active_lead_provider_ids_by_lead_provider_and_registration_period["#{lead_provider_id} #{registration_period_id}"] || raise(ActiveRecord::RecordNotFound, "Couldn't find ActiveLeadProvider")
+    def find_active_lead_provider_id!(lead_provider_id:, contract_period_id:)
+      active_lead_provider_ids_by_lead_provider_and_contract_period["#{lead_provider_id} #{contract_period_id}"] || raise(ActiveRecord::RecordNotFound, "Couldn't find ActiveLeadProvider")
     end
 
   private
@@ -173,8 +173,8 @@ module Migrators
       @lead_provider_ids_by_ecf_id ||= ::LeadProvider.pluck(:ecf_id, :id).to_h
     end
 
-    def active_lead_provider_ids_by_lead_provider_and_registration_period
-      @active_lead_provider_ids_by_lead_provider_and_registration_period ||= ::ActiveLeadProvider.pluck(:lead_provider_id, :registration_period_id, :id).to_h { |s| ["#{s[0]} #{s[1]}", s[2]] }
+    def active_lead_provider_ids_by_lead_provider_and_contract_period
+      @active_lead_provider_ids_by_lead_provider_and_contract_period ||= ::ActiveLeadProvider.pluck(:lead_provider_id, :contract_period_id, :id).to_h { |s| ["#{s[0]} #{s[1]}", s[2]] }
     end
   end
 end

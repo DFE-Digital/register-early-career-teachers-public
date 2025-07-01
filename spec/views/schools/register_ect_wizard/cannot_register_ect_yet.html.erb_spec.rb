@@ -3,7 +3,7 @@ RSpec.describe "schools/register_ect_wizard/cannot_register_ect_yet" do
   let(:ect) { double('ECT', full_name: 'John Doe', start_date: '15 May 2025') }
 
   before do
-    FactoryBot.create(:registration_period, year: 2024, enabled: true)
+    FactoryBot.create(:contract_period, year: 2024, enabled: true)
     assign(:ect, ect)
     render
   end

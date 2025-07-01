@@ -13,12 +13,12 @@ module Admin
         @statement.active_lead_provider.lead_provider_id
       end
 
-      def registration_periods
-        RegistrationPeriod.order(year: :asc)
+      def contract_periods
+        ContractPeriod.order(year: :asc)
       end
 
-      def registration_period_id
-        @statement.active_lead_provider.registration_period_id
+      def contract_period_id
+        @statement.active_lead_provider.contract_period_id
       end
 
       def statement_dates

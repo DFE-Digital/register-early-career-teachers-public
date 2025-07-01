@@ -22,8 +22,8 @@ RSpec.describe Migrators::TrainingPeriod do
 
       lead_provider = FactoryBot.create(:lead_provider, name: partnership.lead_provider.name, ecf_id: partnership.lead_provider_id)
       delivery_partner = FactoryBot.create(:delivery_partner, name: partnership.delivery_partner.name, api_id: partnership.delivery_partner_id)
-      registration_period = FactoryBot.create(:registration_period, year: school_cohort.cohort.start_year)
-      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:)
+      contract_period = FactoryBot.create(:contract_period, year: school_cohort.cohort.start_year)
+      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
       lpdp = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
       FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp)
     end
