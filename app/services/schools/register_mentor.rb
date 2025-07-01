@@ -80,12 +80,12 @@ module Schools
     end
 
     def create_training_period!
-      @training_period = ::TrainingPeriod.create!(
-        mentor_at_school_period:,
+      @training_period = ::TrainingPeriods::Create.new(
+        period: mentor_at_school_period,
         started_on: mentor_at_school_period.started_on,
         school_partnership:,
         expression_of_interest:
-      )
+      ).call
     end
 
     def already_registered_as_a_mentor?
