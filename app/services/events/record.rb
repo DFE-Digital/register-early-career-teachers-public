@@ -360,6 +360,8 @@ module Events
     end
 
     def relationship_attributes
+      fail(InvalidAuthor, author.class) unless author.respond_to?(:relationship_attributes)
+
       {
         school:,
         induction_period:,
@@ -375,6 +377,7 @@ module Events
         delivery_partner:,
         user:,
         pending_induction_submission_batch:,
+        **author.relationship_attributes
       }.compact
     end
 

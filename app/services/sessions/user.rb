@@ -47,5 +47,10 @@ module Sessions
     def record_new_activity(time)
       @last_active_at = time
     end
+
+    # @return [Hash{Symbol => Object}]
+    def relationship_attributes
+      {}
+    end
   end
 end
