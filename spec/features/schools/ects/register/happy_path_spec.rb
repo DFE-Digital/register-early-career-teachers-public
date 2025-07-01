@@ -99,10 +99,10 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def create_registration_period_for_start_date
-    FactoryBot.create(
+    @registration_period = FactoryBot.create(
       :registration_period,
-      started_on: Date.new(2024, 6, 1),
-      finished_on: Date.new(2025, 5, 31)
+      started_on: one_month_ago_today.beginning_of_month - 6.months,
+      finished_on: one_month_ago_today.end_of_month + 6.months
     )
   end
 
@@ -111,7 +111,7 @@ RSpec.describe 'Registering an ECT' do
     FactoryBot.create(
       :active_lead_provider,
       lead_provider: @lead_provider,
-      registration_period: RegistrationPeriod.containing_date(Date.new(2024, 9, 1))
+      registration_period: @registration_period
     )
   end
 
