@@ -9,12 +9,12 @@
       form_group: { class: 'filter-form-group' }
     %>
 
-    <%= f.govuk_collection_select :registration_period_id,
-      registration_periods,
+    <%= f.govuk_collection_select :contract_period_id,
+      contract_periods,
       :id,
       :year,
       label: { text: "Contract year" },
-      options: { selected: registration_period_id, include_blank: false },
+      options: { selected: contract_period_id, include_blank: false },
       form_group: { class: 'filter-form-group' }
     %>
 

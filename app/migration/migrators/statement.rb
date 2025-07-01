@@ -13,7 +13,7 @@ module Migrators
     end
 
     def self.dependencies
-      %i[lead_provider registration_period active_lead_provider]
+      %i[lead_provider contract_period active_lead_provider]
     end
 
     def self.reset!
@@ -27,10 +27,10 @@ module Migrators
         statement = ::Statement.find_or_initialize_by(api_id: ecf_statement.id)
 
         lead_provider_id = find_lead_provider_id!(ecf_id: ecf_statement.lead_provider.id)
-        registration_period_id = ecf_statement.cohort.start_year
+        contract_period_id = ecf_statement.cohort.start_year
 
         statement.update!(
-          active_lead_provider_id: find_active_lead_provider_id!(lead_provider_id:, registration_period_id:),
+          active_lead_provider_id: find_active_lead_provider_id!(lead_provider_id:, contract_period_id:),
           month: Date::MONTHNAMES.find_index(ecf_statement.name.split[0]),
           year: ecf_statement.name.split[1],
           deadline_date: ecf_statement.deadline_date,

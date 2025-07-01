@@ -27,8 +27,8 @@ module Migrators
       migrate(self.class.partnerships.includes(:lead_provider, :delivery_partner, :cohort, :school)) do |partnership|
         lead_provider = ::LeadProvider.find_by!(ecf_id: partnership.lead_provider_id)
         delivery_partner = ::DeliveryPartner.find_by!(api_id: partnership.delivery_partner_id)
-        registration_period = ::RegistrationPeriod.find(partnership.cohort.start_year)
-        active_lead_provider = ::ActiveLeadProvider.find_by!(lead_provider:, registration_period:)
+        contract_period = ::ContractPeriod.find(partnership.cohort.start_year)
+        active_lead_provider = ::ActiveLeadProvider.find_by!(lead_provider:, contract_period:)
         lpdp = ::LeadProviderDeliveryPartnership.find_by!(active_lead_provider:, delivery_partner:)
         school_partnership = ::SchoolPartnership.find_or_initialize_by(api_id: partnership.id)
 

@@ -1,10 +1,10 @@
 module API
-  module RegistrationPeriodFilterable
+  module ContractPeriodFilterable
     extend ActiveSupport::Concern
 
   protected
 
-    def registration_period_years
+    def contract_period_years
       params.dig(:filter, :cohort)
     end
   end

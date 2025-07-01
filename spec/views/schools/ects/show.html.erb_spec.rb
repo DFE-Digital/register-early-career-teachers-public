@@ -1,5 +1,5 @@
 RSpec.describe 'schools/ects/show.html.erb' do
-  let(:registration_period) { FactoryBot.create(:registration_period) }
+  let(:contract_period) { FactoryBot.create(:contract_period) }
   let!(:current_ect_period) do
     FactoryBot.create(:ect_at_school_period,
                       :teaching_school_hub_ab,

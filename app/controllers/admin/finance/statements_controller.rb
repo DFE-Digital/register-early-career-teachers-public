@@ -6,7 +6,7 @@ module Admin::Finance
       @pagy, statements = pagy(
         statements_query.statements.eager_load(active_lead_provider: %i[
           lead_provider
-          registration_period
+          contract_period
         ])
       )
 
@@ -43,7 +43,7 @@ module Admin::Finance
     def statements_query
       opts = {
         lead_provider:,
-        registration_period_years:,
+        contract_period_years:,
         statement_date:,
         fee_type:,
         order_by: :statement_date,
@@ -56,8 +56,8 @@ module Admin::Finance
       LeadProvider.find(id) if id.present?
     end
 
-    def registration_period_years
-      filter_params[:registration_period_id].presence
+    def contract_period_years
+      filter_params[:contract_period_id].presence
     end
 
     def statement_date
@@ -78,7 +78,7 @@ module Admin::Finance
     end
 
     def filter_params
-      params.permit(:lead_provider_id, :registration_period_id, :statement_date, :statement_type)
+      params.permit(:lead_provider_id, :contract_period_id, :statement_date, :statement_type)
     end
 
     helper_method :filter_params

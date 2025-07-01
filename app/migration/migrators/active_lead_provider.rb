@@ -13,7 +13,7 @@ module Migrators
     end
 
     def self.dependencies
-      %i[lead_provider registration_period]
+      %i[lead_provider contract_period]
     end
 
     def self.reset!
@@ -28,7 +28,7 @@ module Migrators
 
         ::ActiveLeadProvider.find_or_create_by!(
           lead_provider_id:,
-          registration_period_id: ecf_active_lead_provider.start_year
+          contract_period_id: ecf_active_lead_provider.start_year
         )
       end
     end
