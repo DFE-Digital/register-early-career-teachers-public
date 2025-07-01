@@ -31,6 +31,15 @@ class MentorAtSchoolPeriod < ApplicationRecord
   # Scopes
   scope :for_school, ->(school_id) { where(school_id:) }
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
+  scope :for_registration_period, ->(year) {
+    joins(training_periods: {
+      school_partnership: {
+        lead_provider_delivery_partnership: {
+          active_lead_provider: :registration_period
+        }
+      }
+    }).where(registration_periods: { year: })
+  }
 
   # Instance methods
   def siblings
