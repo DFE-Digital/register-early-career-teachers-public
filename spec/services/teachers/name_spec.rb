@@ -34,6 +34,30 @@ describe Teachers::Name do
         expect(service.full_name).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
       end
     end
+
+    describe 'when both names are missing names in TRS' do
+      subject { service.full_name }
+
+      let(:teacher) { FactoryBot.build(:teacher, **names) }
+
+      context 'when both names are nil' do
+        let(:names) { { trs_first_name: nil, trs_last_name: nil } }
+
+        it('returns Unknown') { is_expected.to eql('Unknown') }
+      end
+
+      context 'when both names are .' do
+        let(:names) { { trs_first_name: '.', trs_last_name: '.' } }
+
+        it('returns Unknown') { is_expected.to eql('Unknown') }
+      end
+
+      context 'when names are a mix of missing values' do
+        let(:names) { { trs_first_name: nil, trs_last_name: '' } }
+
+        it('returns Unknown') { is_expected.to eql('Unknown') }
+      end
+    end
   end
 
   describe '#full_name_in_trs' do
