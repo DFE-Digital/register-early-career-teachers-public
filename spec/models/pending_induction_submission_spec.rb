@@ -28,7 +28,31 @@ RSpec.describe PendingInductionSubmission do
   end
 
   describe "validation" do
-    it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
+    context "when not admin import" do
+      it "validates presence of appropriate_body_id" do
+        appropriate_body = FactoryBot.create(:appropriate_body)
+        submission = FactoryBot.build(:pending_induction_submission, appropriate_body:)
+
+        # Force appropriate_body_id to nil while keeping appropriate_body to ensure admin_import? returns false
+        submission.appropriate_body_id = nil
+
+        # Stub admin_import? to return false to simulate non-admin context
+        allow(submission).to receive(:admin_import?).and_return(false)
+
+        expect(submission.valid?).to be false
+        expect(submission.errors[:appropriate_body_id]).to include("Select an appropriate body")
+      end
+    end
+
+    context "when admin import" do
+      subject { FactoryBot.build(:pending_induction_submission, appropriate_body: nil) }
+
+      it "does not validate presence of appropriate_body_id" do
+        expect(subject.admin_import?).to be true
+        expect(subject.valid?).to be true
+        expect(subject.errors[:appropriate_body_id]).to be_empty
+      end
+    end
 
     describe "trn" do
       it { is_expected.to validate_presence_of(:trn).on(:find_ect).with_message("Enter a TRN") }

@@ -3,7 +3,7 @@ module AppropriateBodies
     class FindECT
       attr_reader :appropriate_body, :pending_induction_submission
 
-      def initialize(appropriate_body:, pending_induction_submission:)
+      def initialize(pending_induction_submission:, appropriate_body:)
         @appropriate_body = appropriate_body
         @pending_induction_submission = pending_induction_submission
       end
@@ -17,13 +17,11 @@ module AppropriateBodies
         #       below a case and add different errors to the :base
         return unless pending_induction_submission.valid?(:find_ect)
 
-        pending_induction_submission
-          .assign_attributes(
-            appropriate_body:,
-            **trs_teacher.present.except(:trs_national_insurance_number)
-          )
+        pending_induction_submission.assign_attributes(**trs_teacher.present.except(:trs_national_insurance_number))
+        pending_induction_submission.assign_attributes(appropriate_body:)
 
         check_if_teacher_has_ongoing_induction_period_with_appropriate_body!
+
         trs_teacher.check_eligibility!
 
         pending_induction_submission.save(context: :find_ect)

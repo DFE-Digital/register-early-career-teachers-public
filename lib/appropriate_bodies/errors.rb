@@ -19,5 +19,7 @@ module AppropriateBodies
         :induction_with_another_appropriate_body
       end
     end
+
+    class TeacherAlreadyExists < StandardError; end
   end
 end

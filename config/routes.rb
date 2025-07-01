@@ -65,6 +65,16 @@ Rails.application.routes.draw do
       end
     end
 
+    resource :register_ect, only: %i[new create], path: 'register-ect', controller: '/admin/register_ect', as: 'register_ect'
+    resources :check_teacher, only: %i[edit update], path: 'check-teacher', controller: '/admin/check_teacher', as: 'check_teacher'
+
+    namespace :errors do
+      get 'already-exists/:id', to: '/admin/errors#already_exists', as: 'already_exists'
+      get 'induction-status-invalid/:id', to: '/admin/errors#induction_status_invalid', as: 'induction_status_invalid'
+      get 'no-qts/:id', to: '/admin/errors#no_qts', as: 'no_qts'
+      get 'prohibited-from-teaching/:id', to: '/admin/errors#prohibited_from_teaching', as: 'prohibited'
+    end
+
     resource :finance, only: %i[show], controller: 'finance' do
       collection do
         resources :statements, as: 'finance_statements', controller: 'finance/statements', only: %i[index show] do

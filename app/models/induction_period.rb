@@ -41,6 +41,10 @@ class InductionPeriod < ApplicationRecord
     teacher.induction_periods.excluding(self)
   end
 
+  def admin_import?
+    false
+  end
+
 private
 
   # Ensure admin users inserting new induction periods include end dates.

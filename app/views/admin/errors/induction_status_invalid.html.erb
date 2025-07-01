@@ -1,0 +1,22 @@
+<% page_data(
+  title: "Cannot import teacher with this induction status",
+  error: true,
+  backlink_href: new_admin_register_ect_path)
+%>
+
+<h1 class="govuk-heading-l">Cannot import teacher with this induction status</h1>
+
+<p class="govuk-body">
+  <%= @pending_induction_submission.trs_first_name %> <%= @pending_induction_submission.trs_last_name %> (TRN: <%= @pending_induction_submission.trn %>) has an induction status of <strong><%= @pending_induction_submission.trs_induction_status %></strong>.
+</p>
+
+<p class="govuk-body">
+  You cannot import teacher records where the induction status is Passed, Failed, or Exempt.
+</p>
+
+<h2 class="govuk-heading-m">What you can do</h2>
+
+<ul class="govuk-list govuk-list--bullet">
+  <li><%= govuk_link_to("Import a different teacher", new_admin_register_ect_path) %></li>
+  <li><%= govuk_link_to("Return to teacher list", admin_teachers_path) %></li>
+</ul>

@@ -5,5 +5,6 @@ module TRS
     class TeacherDeactivated < StandardError; end
     class QTSNotAwarded < StandardError; end
     class ProhibitedFromTeaching < StandardError; end
+    class InductionStatusInvalid < StandardError; end
   end
 end

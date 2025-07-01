@@ -1,0 +1,23 @@
+<% page_data(
+  title: "Teacher record already exists",
+  error: true,
+  backlink_href: new_admin_register_ect_path)
+%>
+
+<h1 class="govuk-heading-l">Teacher record already exists</h1>
+
+<p class="govuk-body">
+  A teacher with TRN <%= @pending_induction_submission.trn %> already exists in the system.
+</p>
+
+<p class="govuk-body">
+  You cannot import a teacher record that already exists. If you need to update this teacher's information, please use the existing teacher management features.
+</p>
+
+<h2 class="govuk-heading-m">What you can do</h2>
+
+<ul class="govuk-list govuk-list--bullet">
+  <li><%= govuk_link_to("View existing teacher record", admin_teachers_path + "?q=#{@pending_induction_submission.trn}") %></li>
+  <li><%= govuk_link_to("Import a different teacher", new_admin_register_ect_path) %></li>
+  <li><%= govuk_link_to("Return to teacher list", admin_teachers_path) %></li>
+</ul>

@@ -20,7 +20,7 @@ class PendingInductionSubmission < ApplicationRecord
   scope :without_errors, -> { where(error_messages: []) }
 
   # Associations
-  belongs_to :appropriate_body
+  belongs_to :appropriate_body, optional: true
   belongs_to :pending_induction_submission_batch, optional: true, touch: true
 
   # Validations
@@ -97,6 +97,10 @@ class PendingInductionSubmission < ApplicationRecord
   # Instance methods
   def exempt?
     trs_induction_status.eql?('Exempt')
+  end
+
+  def admin_import?
+    appropriate_body_id.nil?
   end
 
   # @return [Boolean] capture multiple error messages and reset before saving

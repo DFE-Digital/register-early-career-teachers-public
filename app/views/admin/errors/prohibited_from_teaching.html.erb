@@ -1,0 +1,26 @@
+<% page_data(
+  title: "Teacher is prohibited from teaching",
+  error: true,
+  backlink_href: new_admin_register_ect_path)
+%>
+
+<h1 class="govuk-heading-l">Teacher is prohibited from teaching</h1>
+
+<p class="govuk-body">
+  <%= @pending_induction_submission.trs_first_name %> <%= @pending_induction_submission.trs_last_name %> (TRN: <%= @pending_induction_submission.trn %>) is prohibited from teaching.
+</p>
+
+<p class="govuk-body">
+  You cannot import teacher records for teachers who are prohibited from teaching.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to("Check a teacher's record service", 'https://www.gov.uk/guidance/check-a-teachers-record') %> has more information about this teacher's status.
+</p>
+
+<h2 class="govuk-heading-m">What you can do</h2>
+
+<ul class="govuk-list govuk-list--bullet">
+  <li><%= govuk_link_to("Import a different teacher", new_admin_register_ect_path) %></li>
+  <li><%= govuk_link_to("Return to teacher list", admin_teachers_path) %></li>
+</ul>

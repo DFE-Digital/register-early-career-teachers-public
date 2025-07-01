@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_25_124419) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_01_092803) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -637,6 +637,28 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_25_124419) do
     t.datetime "updated_at", null: false
     t.enum "fee_type", default: "output", null: false, enum_type: "fee_types"
     t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
+  end
+
+  create_table "teacher_imports", force: :cascade do |t|
+    t.string "trn"
+    t.date "date_of_birth"
+    t.string "trs_first_name"
+    t.string "trs_last_name"
+    t.string "trs_email_address"
+    t.json "trs_alerts"
+    t.date "trs_induction_start_date"
+    t.string "trs_induction_status"
+    t.string "trs_induction_status_description"
+    t.date "trs_qts_awarded_on"
+    t.string "trs_qts_status_description"
+    t.string "trs_initial_teacher_training_provider_name"
+    t.date "trs_initial_teacher_training_end_date"
+    t.string "trs_national_insurance_number"
+    t.boolean "confirmed", default: false
+    t.datetime "confirmed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trn"], name: "index_teacher_imports_on_trn"
   end
 
   create_table "teacher_migration_failures", force: :cascade do |t|
