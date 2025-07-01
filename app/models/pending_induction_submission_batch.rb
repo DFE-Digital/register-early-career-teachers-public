@@ -90,11 +90,14 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     )
   end
 
+  # @return [Boolean]
+  def redactable?
+    completed? && tally! && errored_count.zero?
+  end
+
   # @return [Boolean] purge PII when all submissions have been successful
   def redact!
-    return false unless completed? && tally! && errored_count.zero?
-
-    update!(data: [])
+    redactable? ? update!(data: []) : false
   end
 
 private

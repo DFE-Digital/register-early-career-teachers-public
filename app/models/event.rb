@@ -34,11 +34,9 @@ class Event < ApplicationRecord
   belongs_to :school
   belongs_to :appropriate_body
 
-  # lead providers
+  # providers
   belongs_to :active_lead_provider
   belongs_to :lead_provider
-
-  # partnerships
   belongs_to :delivery_partner
   belongs_to :lead_provider_delivery_partnership
   belongs_to :school_partnership
