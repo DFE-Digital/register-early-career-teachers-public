@@ -131,24 +131,26 @@ In addition, it prevents us sending privacy notes or other communication intende
 
 We also make sure the email follows a correct format.
 
-### Giving the school start date for an ECT and assigning the `registration_period`
+### Giving the school start date for an ECT and assigning the `contract_period`
 
 The school user is asked for the date when the ECT will start or started as an early career teacher.
 
-We ask this question because it helps us assign what registration_period the ECT will begin their training in. This determines:
+We ask this question because it helps us assign what contract_period the ECT will begin their training in. This determines:
 
-* if they can progress with the journey to register the ECT - a registration_period needs to be enabled and ready before an ECT can be registered, and there are often policy changes or contract decisions which require changes before this can be done
-* if they can roll over their partnership when their previous lead provider and delivery partner are still available in the relevant registration_period
-*  what lead provider schools can select for any ECTs, when they're not using an existing partnership 
+* if they can progress with the journey to register the ECT - a contract_period needs to be enabled and ready before an ECT can be registered, and there are often policy changes or contract decisions which require changes before this can be done
+* if they can roll over their partnership when their previous lead provider and delivery partner are still available in the relevant contract_period
+*  what lead provider schools can select for any ECTs, when they're not using an existing partnership
 
-We use the logic below to determine what registration_period to assign to the ECT:
+It is called contract_period because it’s looking at, according to the contracts for ECTE, what lead providers can offer training for those ECTs. It also relates to any relevant funding for those contracts too.
 
-| School_start date given | Assign registration_period |
+We use the logic below to determine what contract_period to assign to the ECT:
+
+| School_start_date given | Assign contract_period |
 | -------- | ------- |
-| Before the current registration_period | The current registration_period - this is because they cannot be trained until this period anyway |
-| During the current registration_period | The current registration_period |
-| After the current registration_period, for a registration_period that is open | Assign the future open registration_period |
-| After the current registration_period, for a registration_period that is closedd | Nothing can be assigned and they cannot progress with registration |
+| Before the current contract_period | The current contract_period - this is because they cannot be trained until this period anyway |
+| During the current contract_period | The current contract_period |
+| After the current contract_period, for a contract_period that is open | Assign the future open contract_period |
+| After the current contract_period, for a contract_period that is closed | Nothing can be assigned and they cannot progress with registration |
 
 The school start date is also helpful for lead providers to start training ECTs at the right time and onboard them efficiently.
 
