@@ -7,7 +7,7 @@ class Teachers::InductionPeriod
 
   # @return [Date, nil]
   def induction_start_date
-    first_induction_period&.started_on
+    teacher.first_induction_period&.started_on
   end
 
   def formatted_induction_start_date
@@ -15,15 +15,15 @@ class Teachers::InductionPeriod
   end
 
   def induction_programme
-    return unless last_induction_period
+    return unless teacher.last_induction_period
 
-    ::INDUCTION_PROGRAMMES[last_induction_period.induction_programme.to_sym]
+    ::INDUCTION_PROGRAMMES[teacher.last_induction_period.induction_programme.to_sym]
   end
 
   def appropriate_body_name
-    return unless last_induction_period
+    return unless teacher.last_induction_period
 
-    last_induction_period.appropriate_body.name
+    teacher.last_induction_period.appropriate_body.name
   end
 
   # FIXME: this works if finished_on cannot be set to a future date
@@ -34,23 +34,9 @@ class Teachers::InductionPeriod
     teacher.induction_periods.ongoing.first
   end
 
-  def last_induction_period
-    induction_periods.last
-  end
-
   # @param date [Date]
   # @return [Boolean]
   def overlapping_with?(date)
-    induction_periods.ongoing_on(date).exists?
-  end
-
-private
-
-  def first_induction_period
-    induction_periods.first
-  end
-
-  def induction_periods
-    @induction_periods ||= teacher.induction_periods.order(:started_on)
+    teacher.induction_periods.ongoing_on(date).exists?
   end
 end
