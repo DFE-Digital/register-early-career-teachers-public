@@ -60,8 +60,17 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   # Instance methods
 
-  # lead_provider_name
-  delegate :name, to: :lead_provider, prefix: true, allow_nil: true
+  def latest_training_period
+    training_periods.latest_first.first
+  end
+
+  def lead_provider
+    latest_training_period&.lead_provider
+  end
+
+  def delivery_partner
+    latest_training_period&.delivery_partner
+  end
 
   def provider_led?
     training_programme == 'provider_led'
