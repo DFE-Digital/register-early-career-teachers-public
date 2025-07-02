@@ -1,6 +1,10 @@
 module ParityCheckHelper
   def grouped_endpoints(endpoints)
-    endpoints.group_by(&:group_name)
+    endpoints.group_by(&:group_name).sort.to_h
+  end
+
+  def grouped_requests(requests)
+    requests.group_by { it.endpoint.group_name }.sort.to_h
   end
 
   def run_mode_options
@@ -36,12 +40,31 @@ module ParityCheckHelper
     govuk_tag(text: "#{match_rate}%", colour:)
   end
 
+  def status_code_tag(status_code)
+    colour = case status_code
+             when 0...300
+               "green"
+             when 300...400
+               "yellow"
+             else
+               "red"
+             end
+
+    govuk_tag(text: status_code, colour:)
+  end
+
+  def comparison_emoji(matching)
+    matching ? "✅" : "❌"
+  end
+
   def performance_gain(ratio)
     return if ratio.nil?
 
-    return "⚖️ equal" if ratio == 1
-    return "🚀 #{ratio}x faster" if ratio > 1
+    formatted_ratio = ratio.abs.to_s.chomp(".0")
 
-    "🐌 #{ratio}x slower"
+    return "⚖️ equal" if ratio == 1
+    return "🚀 #{formatted_ratio}x faster" if ratio.positive?
+
+    "🐌 #{formatted_ratio}x slower"
   end
 end
