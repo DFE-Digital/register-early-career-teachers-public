@@ -35,9 +35,9 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def when_i_enter_a_valid_start_date
-    page.get_by_label('day').fill(one_month_ago_today.day.to_s)
-    page.get_by_label('month').fill(one_month_ago_today.month.to_s)
-    page.get_by_label('year').fill(one_month_ago_today.year.to_s)
+    page.get_by_label('day').fill(1.month.ago.day.to_s)
+    page.get_by_label('month').fill(1.month.ago.month.to_s)
+    page.get_by_label('year').fill(1.month.ago.year.to_s)
     and_i_click_continue
   end
 
@@ -62,9 +62,5 @@ RSpec.describe 'Registering an ECT' do
 
   def and_i_see_the_correct_appropriate_body_on_the_page
     expect(page.get_by_text('ISTIP')).to be_visible
-  end
-
-  def one_month_ago_today
-    @one_month_ago_today ||= Time.zone.today.prev_month
   end
 end
