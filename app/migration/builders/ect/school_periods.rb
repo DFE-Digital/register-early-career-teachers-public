@@ -19,7 +19,6 @@ module Builders
           school_period.ecf_start_induction_record_id = period.start_source_id
           school_period.ecf_end_induction_record_id = period.end_source_id
           school_period.save!
-
         rescue ActiveRecord::ActiveRecordError => e
           ::TeacherMigrationFailure.create!(teacher:, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
           success = false

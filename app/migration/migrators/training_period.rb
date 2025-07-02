@@ -1,45 +1,47 @@
 module Migrators
-  class ECTAtSchoolPeriod < Migrators::Base
+  class TrainingPeriod < Migrators::Base
     def self.record_count
-      ect_teachers.count
+      teachers.count
     end
 
     def self.model
-      :ect_at_school_period
+      :training_period
     end
 
-    def self.ect_teachers
-      ::Migration::TeacherProfile.joins(:participant_profiles).merge(Migration::ParticipantProfile.ect).distinct
+    def self.teachers
+      ::Migration::TeacherProfile.joins(:participant_profiles).merge(Migration::ParticipantProfile.ect_or_mentor).distinct
     end
 
     def self.dependencies
-      %i[teacher school]
+      %i[ect_at_school_period mentor_at_school_period school_partnership]
     end
 
     def self.reset!
       if Rails.application.config.enable_migration_testing
-        ::ECTAtSchoolPeriod.connection.execute("TRUNCATE #{::ECTAtSchoolPeriod.table_name} RESTART IDENTITY CASCADE")
+        ::TrainingPeriod.connection.execute("TRUNCATE #{::TrainingPeriod.table_name} RESTART IDENTITY CASCADE")
       end
     end
 
     def migrate!
-      migrate(self.class.ect_teachers.eager_load(:user)) do |teacher_profile|
+      migrate(self.class.teachers.eager_load(:user)) do |teacher_profile|
         teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
 
         result = true
 
         teacher_profile
           .participant_profiles
-          .ect
+          .ect_or_mentor
           .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
           .find_each do |participant_profile|
           induction_records = InductionRecordSanitizer.new(participant_profile:)
 
           if induction_records.valid?
-            school_periods = SchoolPeriodExtractor.new(induction_records:)
-
-            teacher.update!(ecf_ect_profile_id: participant_profile.id)
-            result = Builders::ECT::SchoolPeriods.new(teacher:, school_periods:).build
+            training_period_data = TrainingPeriodExtractor.new(induction_records:)
+            result = if participant_profile.ect?
+                       Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
+                     else
+                       Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
+                     end
           else
             ::TeacherMigrationFailure.create!(teacher:,
                                               message: induction_records.error,
