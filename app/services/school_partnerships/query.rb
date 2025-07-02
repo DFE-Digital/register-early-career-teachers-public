@@ -1,6 +1,10 @@
 module SchoolPartnerships
   class Query
+    attr_reader :scope
+
     def initialize(school: :ignore, registration_period: :ignore, lead_provider: :ignore, delivery_partner: :ignore)
+      @scope = default_scope
+
       where_lead_provider(lead_provider)
       where_registration_period(registration_period)
       where_school(school)
@@ -8,6 +12,10 @@ module SchoolPartnerships
     end
 
     delegate(:exists?, to: :scope)
+
+    def school_partnerships
+      scope.earliest_first
+    end
 
   private
 
@@ -47,8 +55,8 @@ module SchoolPartnerships
       )
     end
 
-    def scope
-      @scope ||= SchoolPartnership
+    def default_scope
+      SchoolPartnership
         .eager_load(
           lead_provider_delivery_partnership: [
             :delivery_partner,
