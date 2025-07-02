@@ -86,7 +86,7 @@ module ParityCheck
     end
 
     def parse_json_body(body)
-      JSON.parse(body).deep_symbolize_keys if body
+      JSON.parse(body)&.deep_symbolize_keys if body
     rescue JSON::ParserError
       nil
     end
