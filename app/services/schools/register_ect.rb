@@ -60,7 +60,7 @@ module Schools
   private
 
     def provider_led_training_programme?
-      lead_provider.present?
+      @training_programme == 'provider_led'
     end
 
     def already_registered_as_an_ect?
@@ -87,7 +87,6 @@ module Schools
     def start_at_school!
       teacher.ect_at_school_periods.build(school_reported_appropriate_body:,
                                           email:,
-                                          lead_provider:,
                                           training_programme:,
                                           school:,
                                           started_on:,
