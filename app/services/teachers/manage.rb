@@ -26,6 +26,7 @@ class Teachers::Manage
         author: event_metadata[:author],
         teacher:,
         appropriate_body: event_metadata[:appropriate_body]
+        # need to also have access to the batch here
       )
     end
 

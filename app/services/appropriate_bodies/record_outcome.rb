@@ -44,7 +44,8 @@ module AppropriateBodies
         author:,
         teacher:,
         appropriate_body:,
-        induction_period: ongoing_induction_period
+        induction_period: ongoing_induction_period,
+        pending_induction_submission_batch: pending_induction_submission.pending_induction_submission_batch
       )
     end
 
@@ -53,7 +54,8 @@ module AppropriateBodies
         author:,
         teacher:,
         appropriate_body:,
-        induction_period: ongoing_induction_period
+        induction_period: ongoing_induction_period,
+        pending_induction_submission_batch: pending_induction_submission.pending_induction_submission_batch
       )
     end
 

@@ -79,7 +79,7 @@ module Events
 
     # Induction Period Events
 
-    def self.record_induction_period_opened_event!(author:, appropriate_body:, induction_period:, teacher:, modifications:)
+    def self.record_induction_period_opened_event!(author:, appropriate_body:, induction_period:, teacher:, modifications:, pending_induction_submission_batch: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :induction_period_opened
@@ -87,18 +87,19 @@ module Events
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was claimed by #{appropriate_body.name}"
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:, modifications:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:, modifications:, pending_induction_submission_batch:).record_event!
     end
 
-    def self.record_induction_period_closed_event!(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_induction_period_closed_event!(author:, appropriate_body:, induction_period:, teacher:, pending_induction_submission_batch: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :induction_period_closed
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was released by #{appropriate_body.name}"
+      heading += " (via file '#{pending_induction_submission_batch.file_name}')" if pending_induction_submission_batch.present?
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:, pending_induction_submission_batch:).record_event!
     end
 
     def self.record_induction_period_updated_event!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
@@ -117,7 +118,7 @@ module Events
 
     # Teacher Status Events
 
-    def self.record_teacher_passes_induction_event!(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_teacher_passes_induction_event!(author:, appropriate_body:, induction_period:, teacher:, pending_induction_submission_batch: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_passes_induction
@@ -125,10 +126,10 @@ module Events
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} passed induction"
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:, pending_induction_submission_batch:).record_event!
     end
 
-    def self.record_teacher_fails_induction_event!(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_teacher_fails_induction_event!(author:, appropriate_body:, induction_period:, teacher:, pending_induction_submission_batch: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_fails_induction
@@ -136,7 +137,7 @@ module Events
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} failed induction"
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:, pending_induction_submission_batch:).record_event!
     end
 
     def self.record_admin_passes_teacher_event!(author:, appropriate_body:, induction_period:, teacher:)
@@ -175,18 +176,18 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.teacher_induction_status_changed_in_trs_event!(old_induction_status:, new_induction_status:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+    def self.teacher_induction_status_changed_in_trs_event!(old_induction_status:, new_induction_status:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now, pending_induction_submission_batch: nil)
       event_type = :teacher_trs_induction_status_updated
       heading = "Induction status changed from '#{old_induction_status}' to '#{new_induction_status}'"
 
-      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:, pending_induction_submission_batch:).record_event!
     end
 
-    def self.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+    def self.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now, pending_induction_submission_batch: nil)
       event_type = :teacher_imported_from_trs
       heading = "Imported from TRS"
 
-      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:, pending_induction_submission_batch:).record_event!
     end
 
     def self.teacher_trs_attributes_updated_event!(author:, teacher:, modifications:, happened_at: Time.zone.now)
@@ -352,8 +353,8 @@ module Events
         author.event_author_params
       when Events::SystemAuthor
         author.system_author_params
-      when Events::AppropriateBodyBatchAuthor
-        author.event_author_params
+      when Events::AppropriateBodyBackgroundJobAuthor
+        author.author_params
       else
         fail(InvalidAuthor, author.class)
       end

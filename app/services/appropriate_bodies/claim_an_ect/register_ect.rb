@@ -75,6 +75,7 @@ module AppropriateBodies
         @induction_period = InductionPeriods::CreateInductionPeriod.new(
           author:,
           teacher:,
+          pending_induction_submission_batch: pending_induction_submission.pending_induction_submission_batch,
           params: {
             appropriate_body:,
             started_on: pending_induction_submission.started_on,
