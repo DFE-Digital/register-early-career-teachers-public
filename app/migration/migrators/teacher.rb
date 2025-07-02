@@ -12,14 +12,6 @@ module Migrators
       ::Migration::TeacherProfile.joins(:participant_profiles).merge(Migration::ParticipantProfile.ect_or_mentor).distinct
     end
 
-    def self.dependencies
-      %i[school_partnership]
-    end
-
-    def self.records_per_worker
-      1_000
-    end
-
     def self.reset!
       if Rails.application.config.enable_migration_testing
         ::Teacher.connection.execute("TRUNCATE #{::Teacher.table_name} RESTART IDENTITY CASCADE")
@@ -28,55 +20,29 @@ module Migrators
 
     def migrate!
       migrate(self.class.teachers.eager_load(:user)) do |teacher_profile|
-        safe_migrate_teacher(teacher_profile:)
+        teacher = ::Teacher.find_or_initialize_by(trn: teacher_profile.trn)
+        user = teacher_profile.user
+
+        if teacher.persisted? && name_does_not_match?(teacher, user.full_name)
+          teacher.corrected_name = user.full_name
+        else
+          # FIXME: we should look these up in TRS but this will hammer it
+          parser = Teachers::FullNameParser.new(full_name: user.full_name)
+          teacher.trs_first_name = parser.first_name
+          teacher.trs_last_name = parser.last_name
+        end
+
+        teacher.ecf_user_id = user.id
+        teacher.created_at = user.created_at
+        teacher.updated_at = user.updated_at
+        teacher.save!
       end
     end
 
-    def safe_migrate_teacher(teacher_profile:)
-      trn = teacher_profile.trn
-      full_name = teacher_profile.user.full_name
+  private
 
-      builder = Builders::Teacher.new(trn:, full_name:, ecf_user_id: teacher_profile.user_id)
-      teacher = builder.build
-      if teacher.nil?
-        failure_manager.record_failure(teacher_profile, builder.error)
-        return false
-      end
-
-      success = true
-
-      teacher_profile
-        .participant_profiles
-        .ect_or_mentor
-        .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
-        .find_each do |participant_profile|
-          induction_records = InductionRecordSanitizer.new(participant_profile:)
-
-          if induction_records.valid?
-            sp_success = tp_success = false
-            school_periods = SchoolPeriodExtractor.new(induction_records:)
-            training_period_data = TrainingPeriodExtractor.new(induction_records:)
-
-            if participant_profile.ect?
-              teacher.update!(ecf_ect_profile_id: participant_profile.id)
-              sp_success = Builders::ECT::SchoolPeriods.new(teacher:, school_periods:).build
-              tp_success = Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
-            else
-              teacher.update!(ecf_mentor_profile_id: participant_profile.id)
-              sp_success = Builders::Mentor::SchoolPeriods.new(teacher:, school_periods:).build
-              tp_success = Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
-            end
-            success = false unless sp_success && tp_success
-          else
-            ::TeacherMigrationFailure.create!(teacher:,
-                                              message: induction_records.error,
-                                              migration_item_id: participant_profile.id,
-                                              migration_item_type: participant_profile.class.name)
-            success = false
-          end
-        end
-
-      success
+    def name_does_not_match?(teacher, full_name)
+      [teacher.trs_first_name, teacher.trs_last_name].join(" ") != full_name
     end
   end
 end
