@@ -20,8 +20,6 @@
     <style type="text/css" nonce="<%= content_security_policy_nonce %>"><%= Diffy::CSS %></style>
   <% end %>
 
-  <hr class="govuk-section-break govuk-section-break--l">
-
   <%= govuk_details(summary_text: "Understanding the differences") do %>
     <p>
       The diff below highlights what has changed between the ECF and RECT response bodies.
@@ -38,5 +36,14 @@
     </p>
   <% end %>
 
-  <%= sanitize_diff(@response.body_diff.to_s(:html)) %>
+  <hr class="govuk-section-break govuk-section-break--l">
+
+  <div class="govuk-grid-row diff-container">
+    <div class="govuk-grid-column-one-third">
+      <%= render partial: "filter", locals: { filter: @filter } if @filter.filterable? %>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <%= render partial: "diff", locals: { response: @filter.filtered_response } %>
+    </div>
+  </div>
 <% end %>
