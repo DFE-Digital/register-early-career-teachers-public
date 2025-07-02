@@ -17,9 +17,7 @@ def create_in_progress_run
   ParityCheck::Run.create!(state: :in_progress, mode:, started_at:)
 end
 
-def create_in_progress_request(run:)
-  lead_provider = LeadProvider.order("RANDOM()").first
-  endpoint = ParityCheck::Endpoint.order("RANDOM()").first
+def create_in_progress_request(run:, lead_provider:, endpoint:)
   started_at = random_time(run.started_at, 10.minutes)
 
   ParityCheck::Request.create!(state: :in_progress, started_at:, run:, lead_provider:, endpoint:)
@@ -41,6 +39,10 @@ def create_response(request, response_type, page)
   )
 end
 
+def random_endpoint(run:)
+  ParityCheck::Endpoint.where.not(id: run.endpoints.reorder(:id)).order("RANDOM()").first
+end
+
 def random_response_types
   # 20% change of all matching response types, otherwise weight towards most matching.
   response_type_options = rand < 0.8 ? %i[matching matching different] : %i[matching]
@@ -58,15 +60,22 @@ if Rails.application.config.parity_check[:enabled]
   5.times do
     in_progress_run = create_in_progress_run
 
-    rand(3..10).times do
-      in_progress_request = create_in_progress_request(run: in_progress_run)
+    rand(1..10).times do
+      endpoint = random_endpoint(run: in_progress_run)
+      next unless endpoint
 
-      random_response_types.each.with_index(1) do |response_type, page|
-        create_response(in_progress_request, response_type, page)
+      LeadProvider.find_each do |lead_provider|
+        in_progress_request = create_in_progress_request(run: in_progress_run, lead_provider:, endpoint:)
+
+        response_types = random_response_types
+        response_types.each.with_index(1) do |response_type, page|
+          page = nil if response_types.size == 1
+          create_response(in_progress_request, response_type, page)
+        end
+
+        request_completed_at = random_time(in_progress_request.started_at, 10.seconds)
+        in_progress_request.update!(state: :completed, completed_at: request_completed_at)
       end
-
-      request_completed_at = random_time(in_progress_request.started_at, 10.seconds)
-      in_progress_request.update!(state: :completed, completed_at: request_completed_at)
     end
 
     run_completed_at = random_time(in_progress_run.started_at, 2.hours)

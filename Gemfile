@@ -71,7 +71,6 @@ group :test do
   gem "rspec"
   gem "rspec-rails"
   gem "shoulda-matchers"
-  gem "super_diff"
   gem "webmock"
 end
 
