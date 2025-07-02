@@ -1,6 +1,5 @@
 RSpec.describe "View parity check" do
   before do
-    FactoryBot.create(:lead_provider)
     sign_in_as_dfe_user(role: :admin)
     allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: true })
   end
@@ -9,7 +8,7 @@ RSpec.describe "View parity check" do
     run = FactoryBot.create(:parity_check_run, :completed, request_states: %i[completed_different completed_matching])
 
     page.goto(completed_migration_parity_checks_path)
-    page.get_by_role("link", name: "View").click
+    page.get_by_role("link", name: "Run details").click
 
     expect(page.get_by_role("heading", name: "Parity check run ##{run.id}")).to be_visible
 
@@ -31,6 +30,7 @@ RSpec.describe "View parity check" do
         expect(table.get_by_text(request.endpoint.description)).to be_visible
         expect(table.get_by_text("#{request.match_rate}%")).to be_visible
         expect(table.get_by_text(/faster|slower|equal/)).to be_visible
+        expect(table.get_by_role("link", name: "Request details")).to be_visible
       end
     end
   end
