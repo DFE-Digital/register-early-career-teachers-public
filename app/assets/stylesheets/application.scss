@@ -23,10 +23,8 @@ $govuk-assets-path: "/";
 @import "api_guidance";
 
 // Migration classes
-@import "migration";
-
-// Parity check classes
-@import "parity_check";
+@import "migration/migration";
+@import "migration/parity_check";
 
 // Test guidance styles
 @import "test_guidance";

@@ -111,4 +111,46 @@ RSpec.describe "Parity check", type: :request do
       end
     end
   end
+
+  describe "GET /migration/parity_checks/:id" do
+    let(:run) { FactoryBot.create(:parity_check_run, :completed) }
+
+    context "when signed in as a DfE user" do
+      include_context 'sign in as DfE user'
+
+      it "renders the parity check run page" do
+        get migration_parity_check_path(run)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Parity check run ##{run.id}")
+      end
+
+      context "when the parity check is not completed" do
+        let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+
+        it "renders 404 not found" do
+          get migration_parity_check_path(run)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when parity check is disabled" do
+        let(:enabled) { false }
+
+        it "renders 404 not found" do
+          get migration_parity_check_path(run)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context "when not signed in as a DfE user" do
+      include_context 'sign in as non-DfE user'
+
+      it "renders the unauthorized page" do
+        get migration_parity_check_path(run)
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+      end
+    end
+  end
 end

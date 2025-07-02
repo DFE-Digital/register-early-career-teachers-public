@@ -1,0 +1,35 @@
+.parity-check-in-progress {
+  label + .govuk-tag {
+    float: right;
+  }
+
+  progress {
+    width: 100%;
+  }
+}
+
+.parity-check-table {
+  tbody:nth-child(odd) {
+    tr:last-child .govuk-table__cell {
+      border: none;
+    }
+  }
+
+  tbody:last-child {
+    tr:last-child .govuk-table__cell {
+      border-bottom: 1px solid #b1b4b6;
+    }
+  }
+
+  tbody:nth-child(even) { 
+    background: #f8f8f8; 
+
+    tr:first-child td {
+      border-top: 3px solid #b1b4b6; 
+    }
+
+    tr:last-child td {
+      border-bottom: 3px solid #b1b4b6; 
+    }
+  }
+}
