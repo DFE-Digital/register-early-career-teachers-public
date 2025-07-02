@@ -13,8 +13,12 @@ class Teacher < ApplicationRecord
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
   has_many :induction_extensions, inverse_of: :teacher
+
   has_many :induction_periods
+  has_one :first_induction_period, -> { order(started_on: :asc) }, class_name: "InductionPeriod"
+  has_one :last_induction_period, -> { order(started_on: :desc) }, class_name: "InductionPeriod"
   has_many :appropriate_bodies, through: :induction_periods
+
   has_many :events
 
   # TODO: remove after migration complete
