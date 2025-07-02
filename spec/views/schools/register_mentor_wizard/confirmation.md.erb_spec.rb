@@ -5,7 +5,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, teacher:, lead_provider:) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :with_training_period, :active, teacher:, lead_provider:) }
 
   let(:store) do
     double(
