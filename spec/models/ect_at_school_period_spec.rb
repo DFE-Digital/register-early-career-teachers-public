@@ -14,7 +14,6 @@ describe ECTAtSchoolPeriod do
     it { is_expected.to belong_to(:school).inverse_of(:ect_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:ect_at_school_periods) }
     it { is_expected.to belong_to(:school_reported_appropriate_body).class_name('AppropriateBody').optional }
-    it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to have_many(:mentorship_periods).inverse_of(:mentee) }
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:mentors).through(:mentorship_periods).source(:mentor) }
@@ -137,16 +136,6 @@ describe ECTAtSchoolPeriod do
       it { is_expected.not_to allow_value("invalid_email").for(:email) }
     end
 
-    context "lead_provider_id" do
-      subject { FactoryBot.build(:ect_at_school_period) }
-
-      context "when training_programme is 'school_led'" do
-        subject { FactoryBot.build(:ect_at_school_period, :school_led) }
-
-        it { is_expected.to validate_absence_of(:lead_provider_id).with_message('Must be nil') }
-      end
-    end
-
     describe 'overlapping periods' do
       let(:started_on_message) { 'Start date cannot overlap another Teacher ECT period' }
       let(:finished_on_message) { 'End date cannot overlap another Teacher ECT period' }
@@ -200,12 +189,6 @@ describe ECTAtSchoolPeriod do
         is_expected.to validate_inclusion_of(:training_programme)
                          .in_array(%w[provider_led school_led])
                          .with_message("Must be provider-led or school-led")
-      end
-
-      context "when lead_provider has been set" do
-        subject { FactoryBot.create(:ect_at_school_period) }
-
-        it { is_expected.to validate_presence_of(:training_programme).with_message("Must be provider-led") }
       end
     end
   end
