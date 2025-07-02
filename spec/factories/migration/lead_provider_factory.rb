@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :migration_lead_provider, class: "Migration::LeadProvider" do
-    name  { Faker::Company.name }
+    sequence(:name) { |n| "Migration Lead Provider #{n}" }
 
     trait :active do
       after(:create) do |lead_provider|
