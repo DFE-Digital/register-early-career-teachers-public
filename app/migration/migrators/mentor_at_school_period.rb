@@ -33,7 +33,7 @@ module Migrators
           .mentor
           .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
           .find_each do |participant_profile|
-            induction_records = InductionRecordSanitizer.new(participant_profile:)
+          induction_records = InductionRecordSanitizer.new(participant_profile:)
 
           if induction_records.valid?
             school_periods = SchoolPeriodExtractor.new(induction_records:)
