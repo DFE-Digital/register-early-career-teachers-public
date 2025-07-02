@@ -54,8 +54,6 @@ module Migration
 
     def friendly_error_type(error_class)
       case error_class
-      when "InductionRecordSanitizer::MultipleBlankEndDateError"
-        "More than 1 end date is blank in the Induction records"
       when "InductionRecordSanitizer::MultipleActiveStatesError"
         "More that 1 induction record with an active induction status"
       when "InductionRecordSanitizer::StartDateAfterEndDateError"
