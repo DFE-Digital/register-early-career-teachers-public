@@ -177,4 +177,36 @@ RSpec.describe ParityCheckHelper, type: :helper do
       it { is_expected.not_to include("<script>") }
     end
   end
+
+  describe "#render_filterable_key_hash" do
+    let(:key_hash) do
+      {
+        key1: {
+          key2: {}
+        },
+        key3: {}
+      }
+    end
+
+    it "renders a nested list of the key hash, yielding the key name and keypath of each" do
+      rendered_list = helper.render_filterable_key_hash(key_hash) do |key_path|
+        key_path.join(".")
+      end
+
+      # Embedding the nested ul inside the li for the parent key
+      # makes the CSS for rendering the 'tree' connections much simpler.
+      expected_html = <<~HTML
+        <ul class="govuk-list">
+          <li>key1
+            <ul class="govuk-list">
+              <li>key1.key2</li>
+            </ul>
+          </li>
+          <li>key3</li>
+        </ul>
+      HTML
+
+      expect(rendered_list).to eq(expected_html.squish.gsub(/\s+</, "<"))
+    end
+  end
 end
