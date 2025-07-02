@@ -13,9 +13,6 @@ module TrainingPeriodSources
   end
 
   def school_partnership
-    provider = active_lead_provider
-    return unless provider
-
     SchoolPartnership
       .joins(:lead_provider_delivery_partnership)
       .find_by(
