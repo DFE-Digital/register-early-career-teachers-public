@@ -38,13 +38,12 @@ private
   # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
   # @param email [String]
   # @param name [String]
-  # @return [Events::AppropriateBodyBatchAuthor]
+  # @return [Events::AppropriateBodyBackgroundJobAuthor]
   def event_author(pending_induction_submission_batch, email, name)
-    Events::AppropriateBodyBatchAuthor.new(
+    Events::AppropriateBodyBackgroundJobAuthor.new(
       email:,
       name:,
-      appropriate_body_id: pending_induction_submission_batch.appropriate_body.id,
-      batch_id: pending_induction_submission_batch.id
+      appropriate_body_id: pending_induction_submission_batch.appropriate_body.id
     )
   end
 end
