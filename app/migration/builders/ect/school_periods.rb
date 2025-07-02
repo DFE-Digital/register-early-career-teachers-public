@@ -12,14 +12,13 @@ module Builders
         success = true
         school_periods.each do |period|
           school = School.find_by!(urn: period.urn)
-          ::ECTAtSchoolPeriod.create!(teacher:,
-                                      school:,
-                                      training_programme: period.training_programme,
-                                      lead_provider_id: period.lead_provider_id,
-                                      started_on: period.start_date,
-                                      finished_on: period.end_date,
-                                      ecf_start_induction_record_id: period.start_source_id,
-                                      ecf_end_induction_record_id: period.end_source_id)
+          school_period = ::ECTAtSchoolPeriod.find_or_initialize_by(teacher:, school:, started_on: period.start_date)
+          school_period.training_programme = period.training_programme
+          school_period.lead_provider_id = period.lead_provider_id
+          school_period.finished_on = period.end_date
+          school_period.ecf_start_induction_record_id = period.start_source_id
+          school_period.ecf_end_induction_record_id = period.end_source_id
+          school_period.save!
         rescue ActiveRecord::ActiveRecordError => e
           ::TeacherMigrationFailure.create!(teacher:, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
           success = false
