@@ -10,6 +10,23 @@ describe SchoolPartnerships::Query do
 
   let(:query_params) { { lead_provider:, school:, delivery_partner:, registration_period: } }
 
+  describe '.school_partnerships' do
+    subject { SchoolPartnerships::Query.new(**query_params) }
+
+    before do
+      allow(subject.scope).to receive(:earliest_first).and_call_original
+      subject.school_partnerships
+    end
+
+    it 'returns the scope ordered by created_at, earliest first' do
+      expect(subject.scope).to have_received(:earliest_first).once
+    end
+
+    it 'returns the scope contents' do
+      expect(subject.school_partnerships).to match_array(subject.scope)
+    end
+  end
+
   describe '#exists?' do
     it 'returns true when a school partnership matches lead provider, delivery partner and school for the given registration period' do
       expect(SchoolPartnerships::Query.new(lead_provider:, school:, registration_period:)).to exist
