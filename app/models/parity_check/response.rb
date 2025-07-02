@@ -36,14 +36,14 @@ module ParityCheck
       !different?
     end
 
+    def different?
+      [ecf_status_code, ecf_body] != [rect_status_code, rect_body]
+    end
+
   private
 
     def bodies_matching?
       ecf_body == rect_body
-    end
-
-    def different?
-      [ecf_status_code, ecf_body] != [rect_status_code, rect_body]
     end
 
     def clear_bodies
