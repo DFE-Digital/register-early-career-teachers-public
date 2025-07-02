@@ -101,19 +101,19 @@ describe Teachers::Name do
       context 'when the last name is nil' do
         let(:names) { { trs_first_name: 'Diana', trs_last_name: nil } }
 
-        it('returns only the last name') { is_expected.to eql(teacher.trs_first_name) }
+        it('returns only the first name') { is_expected.to eql(teacher.trs_first_name) }
       end
 
       context 'when the last name is blank' do
         let(:names) { { trs_first_name: 'Diana', trs_last_name: '' } }
 
-        it('returns only the last name') { is_expected.to eql(teacher.trs_first_name) }
+        it('returns only the first name') { is_expected.to eql(teacher.trs_first_name) }
       end
 
       context 'when the last name is .' do
         let(:names) { { trs_first_name: 'Diana', trs_last_name: '.' } }
 
-        it('returns only the last name') { is_expected.to eql(teacher.trs_first_name) }
+        it('returns only the first name') { is_expected.to eql(teacher.trs_first_name) }
       end
     end
   end
