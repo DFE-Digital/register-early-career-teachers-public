@@ -154,9 +154,6 @@ GEM
     brakeman (7.0.2)
       racc
     builder (3.3.0)
-    bullet (8.0.8)
-      activesupport (>= 3.0.0)
-      uniform_notifier (~> 1.11)
     capybara (3.40.0)
       addressable
       matrix
@@ -489,6 +486,7 @@ GEM
       activesupport (>= 7.0.0)
       rack
       railties (>= 7.0.0)
+    prosopite (2.1.0)
     protocol-hpack (1.5.1)
     protocol-http (0.50.1)
     protocol-http1 (0.34.0)
@@ -737,7 +735,6 @@ GEM
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
-    uniform_notifier (1.17.0)
     uri (1.0.3)
     useragent (0.16.11)
     validate_url (1.0.15)
@@ -797,7 +794,6 @@ DEPENDENCIES
   blueprinter
   bootsnap
   brakeman
-  bullet
   capybara
   cssbundling-rails
   csv
@@ -822,6 +818,7 @@ DEPENDENCIES
   pg (~> 1.5)
   playwright-ruby-client
   propshaft
+  prosopite
   puma (>= 5.0)
   rack-attack
   rails (~> 8.0.2)
