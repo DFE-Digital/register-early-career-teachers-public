@@ -141,7 +141,7 @@ We ask this question because it helps us assign what contract_period the ECT wil
 * if they can roll over their partnership when their previous lead provider and delivery partner are still available in the relevant contract_period
 *  what lead provider schools can select for any ECTs, when they're not using an existing partnership
 
-It is called contract_period because it's looking at, according to the contracts for ECTE, what lead providers can offer training for those ECTs. It also relates to any relevant funding for those contracts too.
+It is called contract_period because it’s looking at, according to the contracts for ECTE, what lead providers can offer training for those ECTs. It also relates to any relevant funding for those contracts too.
 
 We use the logic below to determine what contract_period to assign to the ECT:
 
