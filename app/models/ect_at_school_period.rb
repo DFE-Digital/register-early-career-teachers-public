@@ -48,16 +48,12 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   # Instance methods
 
-  def latest_training_period
-    training_periods.latest_first.first
-  end
-
   def lead_provider
-    latest_training_period&.lead_provider
+    training_service.latest_lead_provider
   end
 
   def delivery_partner
-    latest_training_period&.delivery_partner
+    training_service.latest_delivery_partner
   end
 
   def provider_led?
@@ -81,6 +77,10 @@ class ECTAtSchoolPeriod < ApplicationRecord
   delegate :trn, to: :teacher
 
 private
+
+  def training_service
+    @training_service ||= ECTAtSchoolPeriods::Training.new(self)
+  end
 
   def appropriate_body_for_independent_school
     return if school_reported_appropriate_body&.national? || school_reported_appropriate_body&.teaching_school_hub?
