@@ -92,6 +92,14 @@ describe ParityCheck::Request do
       end
     end
 
+    describe ".with_lead_provider" do
+      subject { described_class.with_lead_provider(lead_provider) }
+
+      let(:lead_provider) { completed_put_request.lead_provider }
+
+      it { is_expected.to contain_exactly(completed_put_request) }
+    end
+
     describe ".with_all_responses_matching" do
       subject { described_class.with_all_responses_matching }
 
@@ -140,38 +148,61 @@ describe ParityCheck::Request do
     end
   end
 
-  describe "average response time methods" do
-    let(:request) { FactoryBot.build(:parity_check_request) }
+  describe "#rect_performance_gain_ratio" do
+    subject { request.rect_performance_gain_ratio }
 
-    before do
-      request.responses = [
-        FactoryBot.build(:parity_check_response, ecf_time_ms: 107, rect_time_ms: 105),
-        FactoryBot.build(:parity_check_response, ecf_time_ms: 150, rect_time_ms: 250)
-      ]
+    let(:request) { FactoryBot.create(:parity_check_request, responses:) }
+
+    context "when there are no responses" do
+      let(:responses) { [] }
+
+      it { is_expected.to be_nil }
     end
 
-    describe "#average_ecf_response_time_ms" do
-      subject { request.average_ecf_response_time_ms }
+    context "when there are responses" do
+      let(:responses) { FactoryBot.create_list(:parity_check_response, 2) }
 
-      it { is_expected.to eq(128.5) }
+      context "when the response times are equal" do
+        before do
+          responses[0].update!(ecf_time_ms: 100, rect_time_ms: 100)
+          responses[1].update!(ecf_time_ms: 50, rect_time_ms: 50)
+        end
 
-      context "when there are no responses" do
-        before { request.responses = [] }
+        it { is_expected.to eq(1.0) }
+      end
 
-        it { is_expected.to be_nil }
+      context "when the RECT response times are faster" do
+        before do
+          responses[0].update!(ecf_time_ms: 100, rect_time_ms: 80)
+          responses[1].update!(ecf_time_ms: 50, rect_time_ms: 10)
+        end
+
+        it { is_expected.to eq(3.2) }
+      end
+
+      context "when the ECF response times are faster" do
+        before do
+          responses[0].update!(ecf_time_ms: 50, rect_time_ms: 80)
+          responses[1].update!(ecf_time_ms: 15, rect_time_ms: 100)
+        end
+
+        it { is_expected.to eq(-4.2) }
       end
     end
+  end
 
-    describe "#average_rect_response_time_ms" do
-      subject { request.average_rect_response_time_ms }
+  describe "#match_rate" do
+    subject { request.match_rate }
 
-      it { is_expected.to eq(177.5) }
+    let(:response_types) { %i[matching matching different] }
+    let(:request) { FactoryBot.create(:parity_check_request, :completed, response_types:) }
 
-      context "when there are no responses" do
-        before { request.responses = [] }
+    it { is_expected.to eq(67) }
 
-        it { is_expected.to be_nil }
-      end
+    context "when there are no responses" do
+      let(:request) { FactoryBot.create(:parity_check_request, :in_progress, response_types: []) }
+
+      it { is_expected.to be_nil }
     end
   end
 end
