@@ -77,7 +77,7 @@ module ParityCheckHelper
   end
 
   def sanitize_diff(html)
-    sanitize html, tags: %w[div br ul li strong del ins], attributes: %w[class]
+    sanitize html, tags: %w[div ul li strong del ins span], attributes: %w[class]
   end
 
   def render_filterable_key_hash(hash, key_path: [], &block)

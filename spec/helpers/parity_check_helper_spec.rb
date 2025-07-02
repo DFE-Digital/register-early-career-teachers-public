@@ -166,14 +166,15 @@ RSpec.describe ParityCheckHelper, type: :helper do
     subject { helper.sanitize_diff(html) }
 
     let(:html) { response.body_diff.to_s(:html) }
-    let(:response) { FactoryBot.build(:parity_check_response, :different) }
+    let(:ecf_body) { { key1: { subkey: "value1" } }.to_json }
+    let(:rect_body) { { key1: { subkey: "value2" } }.to_json }
+    let(:response) { FactoryBot.build(:parity_check_response, rect_body:, ecf_body:) }
 
-    it { is_expected.to eq(html.html_safe) }
+    it { is_expected.to eq(CGI.unescapeHTML(html.html_safe)) }
 
     context "when the diff contains malicious HTML" do
       let(:html) { "<script>alert('maliciousness');</script>#{response.body_diff.to_s(:html)}" }
 
-      it { is_expected.not_to eq(html.html_safe) }
       it { is_expected.not_to include("<script>") }
     end
   end
