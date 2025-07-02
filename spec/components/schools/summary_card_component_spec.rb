@@ -12,6 +12,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
 
   let(:provider_led_ect) do
     FactoryBot.create(:ect_at_school_period,
+                      :with_training_period,
                       :active,
                       :provider_led,
                       school_reported_appropriate_body:,
@@ -140,7 +141,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
 
   context 'when no training periods exist for a provider-led ECT' do
     let(:provider_led_ect_without_training_periods) do
-      FactoryBot.create(:ect_at_school_period, :active, :provider_led, school_reported_appropriate_body:, lead_provider:)
+      FactoryBot.create(:ect_at_school_period, :with_training_period, :active, :provider_led, school_reported_appropriate_body:, lead_provider:)
     end
 
     before { render_inline(described_class.new(title: 'Reported to us by your lead provider', ect: provider_led_ect_without_training_periods, data_source: :lead_provider)) }
