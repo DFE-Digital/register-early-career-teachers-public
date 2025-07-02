@@ -24,6 +24,8 @@ class InductionPeriod < ApplicationRecord
                          message: "Outcome must be either pass or fail",
                          allow_nil: true }
 
+  validates :appropriate_body_id, presence: { message: "Select an appropriate body" }
+
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
   validate :end_date_admin_only, if: -> { started_on.present? }
@@ -39,10 +41,6 @@ class InductionPeriod < ApplicationRecord
     return InductionPeriod.none unless teacher
 
     teacher.induction_periods.excluding(self)
-  end
-
-  def admin_import?
-    false
   end
 
 private

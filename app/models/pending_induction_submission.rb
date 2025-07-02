@@ -66,6 +66,10 @@ class PendingInductionSubmission < ApplicationRecord
             acceptance: { message: "Confirm if these details are correct or try your search again" },
             on: :check_ect
 
+  validates :appropriate_body_id,
+            presence: { message: "Select an appropriate body" },
+            on: %i[check_ect register_ect release_ect]
+
   validates :outcome,
             inclusion: {
               in: PendingInductionSubmission.outcomes.keys,
@@ -97,10 +101,6 @@ class PendingInductionSubmission < ApplicationRecord
   # Instance methods
   def exempt?
     trs_induction_status.eql?('Exempt')
-  end
-
-  def admin_import?
-    appropriate_body_id.nil?
   end
 
   # @return [Boolean] capture multiple error messages and reset before saving

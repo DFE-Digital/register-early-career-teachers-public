@@ -28,29 +28,44 @@ RSpec.describe PendingInductionSubmission do
   end
 
   describe "validation" do
-    context "when not admin import" do
-      it "validates presence of appropriate_body_id" do
-        appropriate_body = FactoryBot.create(:appropriate_body)
-        submission = FactoryBot.build(:pending_induction_submission, appropriate_body:)
+    describe "appropriate_body_id" do
+      context "for AB-specific contexts" do
+        it "validates presence of appropriate_body_id on check_ect context" do
+          submission = FactoryBot.build(:pending_induction_submission, appropriate_body: nil)
 
-        # Force appropriate_body_id to nil while keeping appropriate_body to ensure admin_import? returns false
-        submission.appropriate_body_id = nil
+          expect(submission.valid?(:check_ect)).to be false
+          expect(submission.errors[:appropriate_body_id]).to include("Select an appropriate body")
+        end
 
-        # Stub admin_import? to return false to simulate non-admin context
-        allow(submission).to receive(:admin_import?).and_return(false)
+        it "validates presence of appropriate_body_id on register_ect context" do
+          submission = FactoryBot.build(:pending_induction_submission, appropriate_body: nil)
 
-        expect(submission.valid?).to be false
-        expect(submission.errors[:appropriate_body_id]).to include("Select an appropriate body")
+          expect(submission.valid?(:register_ect)).to be false
+          expect(submission.errors[:appropriate_body_id]).to include("Select an appropriate body")
+        end
+
+        it "validates presence of appropriate_body_id on release_ect context" do
+          submission = FactoryBot.build(:pending_induction_submission, appropriate_body: nil)
+
+          expect(submission.valid?(:release_ect)).to be false
+          expect(submission.errors[:appropriate_body_id]).to include("Select an appropriate body")
+        end
       end
-    end
 
-    context "when admin import" do
-      subject { FactoryBot.build(:pending_induction_submission, appropriate_body: nil) }
+      context "for admin contexts" do
+        it "does not validate presence of appropriate_body_id on find_ect context" do
+          submission = FactoryBot.build(:pending_induction_submission, appropriate_body: nil)
 
-      it "does not validate presence of appropriate_body_id" do
-        expect(subject.admin_import?).to be true
-        expect(subject.valid?).to be true
-        expect(subject.errors[:appropriate_body_id]).to be_empty
+          expect(submission.valid?(:find_ect)).to be true
+          expect(submission.errors[:appropriate_body_id]).to be_empty
+        end
+
+        it "does not validate presence of appropriate_body_id on general validation" do
+          submission = FactoryBot.build(:pending_induction_submission, appropriate_body: nil)
+
+          expect(submission.valid?).to be true
+          expect(submission.errors[:appropriate_body_id]).to be_empty
+        end
       end
     end
 

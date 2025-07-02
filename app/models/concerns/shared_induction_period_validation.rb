@@ -6,8 +6,6 @@ module SharedInductionPeriodValidation
 
     validate :started_on_from_september_1999_onwards, if: -> { started_on.present? }
 
-    validates :appropriate_body_id, presence: { message: "Select an appropriate body" }, unless: :admin_import?
-
     validate :started_on_not_in_future, if: -> { started_on.present? }
 
     validate :finished_on_not_in_future, if: -> { finished_on.present? }
