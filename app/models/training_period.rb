@@ -63,6 +63,7 @@ private
   end
 
   def enveloped_by_trainee_at_school_period
+    return if finished_on.blank?
     return if (trainee_started_on_at_school..trainee_finished_on_at_school).cover?(started_on..finished_on)
 
     errors.add(:base, "Date range is not contained by the period the trainee is at the school")
