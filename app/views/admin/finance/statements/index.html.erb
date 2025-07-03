@@ -13,7 +13,11 @@
         s.contract_period_year,
         s.month_and_year,
         govuk_tag(**s.status_tag_kwargs),
-        govuk_link_to("View", admin_finance_statement_path(s)),
+        govuk_link_to(
+          "View",
+          admin_finance_statement_path(s),
+          visually_hidden_suffix: "statement for #{s.lead_provider_name} in #{s.month_and_year}"
+        ),
       ] }
     )
   %>
