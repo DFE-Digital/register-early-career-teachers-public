@@ -4,7 +4,7 @@ class Statement < ApplicationRecord
   belongs_to :active_lead_provider
   has_many :adjustments
   has_one :lead_provider, through: :active_lead_provider
-  has_one :registration_period, through: :active_lead_provider
+  has_one :contract_period, through: :active_lead_provider
 
   def self.maximum_year = Date.current.year + 5
 

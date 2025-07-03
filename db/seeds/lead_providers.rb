@@ -19,8 +19,8 @@ lead_providers_data = [
 lead_providers_data.each do |data|
   lead_provider = LeadProvider.create!(name: data[:name])
   data[:years].each do |year|
-    registration_period = RegistrationPeriod.find_by!(year:)
-    ActiveLeadProvider.create!(registration_period:, lead_provider:)
+    contract_period = ContractPeriod.find_by!(year:)
+    ActiveLeadProvider.create!(contract_period:, lead_provider:)
   end
 
   describe_lead_provider(lead_provider, data[:years])

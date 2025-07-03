@@ -1,10 +1,10 @@
-class RegistrationPeriod < ApplicationRecord
+class ContractPeriod < ApplicationRecord
   include Interval
 
   ECF_FIRST_YEAR = 2020
 
   # Associations
-  has_many :active_lead_providers, inverse_of: :registration_period
+  has_many :active_lead_providers, inverse_of: :contract_period
   has_many :lead_provider_delivery_partnerships, through: :active_lead_providers
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
 
@@ -28,10 +28,10 @@ class RegistrationPeriod < ApplicationRecord
 private
 
   def siblings
-    RegistrationPeriod.all.excluding(self)
+    ContractPeriod.all.excluding(self)
   end
 
   def no_overlaps
-    errors.add(:base, "Registration period overlaps with another registration period") if has_overlap_with_siblings?
+    errors.add(:base, "Contract period overlaps with another contract period") if has_overlap_with_siblings?
   end
 end

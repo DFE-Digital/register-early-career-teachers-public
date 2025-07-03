@@ -16,7 +16,7 @@ module Builders
           next unless period.training_programme == "full_induction_programme"
 
           lead_provider = ::LeadProvider.find_by!(name: period.lead_provider)
-          active_lead_provider = ::ActiveLeadProvider.find_by!(lead_provider:, registration_period_id: period.cohort_year)
+          active_lead_provider = ::ActiveLeadProvider.find_by!(lead_provider:, contract_period_id: period.cohort_year)
           delivery_partner = ::DeliveryPartner.find_by!(name: period.delivery_partner)
           lead_provider_delivery_partnership = ::LeadProviderDeliveryPartnership.find_by!(active_lead_provider:, delivery_partner:)
 

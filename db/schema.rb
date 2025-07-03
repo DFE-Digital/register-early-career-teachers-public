@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_25_124419) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -40,12 +40,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_25_124419) do
 
   create_table "active_lead_providers", force: :cascade do |t|
     t.bigint "lead_provider_id", null: false
-    t.bigint "registration_period_id", null: false
+    t.bigint "contract_period_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["lead_provider_id", "registration_period_id"], name: "idx_on_lead_provider_id_registration_period_id_1c10f35875", unique: true
+    t.index ["contract_period_id"], name: "index_active_lead_providers_on_contract_period_id"
+    t.index ["lead_provider_id", "contract_period_id"], name: "idx_on_lead_provider_id_contract_period_id_0083722692", unique: true
     t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
-    t.index ["registration_period_id"], name: "index_active_lead_providers_on_registration_period_id"
   end
 
   create_table "api_tokens", force: :cascade do |t|
@@ -125,6 +125,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_25_124419) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
+  end
+
+  create_table "contract_periods", primary_key: "year", id: :serial, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "started_on"
+    t.date "finished_on"
+    t.boolean "enabled", default: false
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.index ["year"], name: "index_contract_periods_on_year", unique: true
   end
 
   create_table "data_migrations", force: :cascade do |t|
@@ -460,16 +470,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_25_124419) do
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
-  create_table "registration_periods", primary_key: "year", id: :serial, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.date "started_on"
-    t.date "finished_on"
-    t.boolean "enabled", default: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.index ["year"], name: "index_registration_periods_on_year", unique: true
-  end
-
   create_table "school_partnerships", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -706,8 +706,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_25_124419) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "active_lead_providers", "contract_periods", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
-  add_foreign_key "active_lead_providers", "registration_periods", primary_key: "year"
   add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "lead_providers"

@@ -2,7 +2,7 @@ RSpec.describe Admin::Statements::SelectorComponent, type: :component do
   let(:statement) { FactoryBot.create(:statement) }
   let(:component) { described_class.new statement: }
   let(:statement_lead_provider) { statement.active_lead_provider.lead_provider }
-  let(:statement_year) { statement.active_lead_provider.registration_period.year }
+  let(:statement_year) { statement.active_lead_provider.contract_period.year }
 
   context ".lead_providers" do
     let!(:lead_provider1) { FactoryBot.create(:lead_provider, name: "AAAC") }
@@ -20,24 +20,24 @@ RSpec.describe Admin::Statements::SelectorComponent, type: :component do
     end
   end
 
-  context ".registration_periods" do
-    let!(:registration_period1) { FactoryBot.create(:registration_period, year: 2035) }
-    let!(:registration_period2) { FactoryBot.create(:registration_period, year: 2031) }
-    let!(:registration_period3) { FactoryBot.create(:registration_period, year: 2032) }
+  context ".contract_periods" do
+    let!(:contract_period1) { FactoryBot.create(:contract_period, year: 2035) }
+    let!(:contract_period2) { FactoryBot.create(:contract_period, year: 2031) }
+    let!(:contract_period3) { FactoryBot.create(:contract_period, year: 2032) }
 
-    it "returns registration period in year order" do
-      expect(component.registration_periods.map(&:year)).to contain_exactly(
+    it "returns contract_period in year order" do
+      expect(component.contract_periods.map(&:year)).to contain_exactly(
         statement_year,
-        registration_period2.year,
-        registration_period3.year,
-        registration_period1.year
+        contract_period2.year,
+        contract_period3.year,
+        contract_period1.year
       )
     end
   end
 
-  context ".registration_period_id" do
-    it "returns registration_period_id from statement" do
-      expect(component.registration_period_id).to eq(statement.active_lead_provider.registration_period_id)
+  context ".contract_period_id" do
+    it "returns contract_period_id from statement" do
+      expect(component.contract_period_id).to eq(statement.active_lead_provider.contract_period_id)
     end
   end
 

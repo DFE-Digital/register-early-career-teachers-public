@@ -371,7 +371,7 @@
   - worker
   - created_at
   - updated_at
-  :registration_periods:
+  :contract_periods:
   - year
   - created_at
   - updated_at
@@ -382,7 +382,7 @@
   :active_lead_providers:
   - id
   - lead_provider_id
-  - registration_period_id
+  - contract_period_id
   - created_at
   - updated_at
   :statement_adjustments:

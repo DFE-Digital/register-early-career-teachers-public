@@ -2,7 +2,7 @@ RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client'
 
   before do
-    create_registration_period_for_start_date
+    create_contract_period_for_start_date
     create_lead_provider_and_active_lead_provider
     create_school_with_previous_choices
     create_appropriate_bodies
@@ -98,9 +98,9 @@ RSpec.describe 'Registering an ECT' do
     and_i_should_see_the_ect_i_registered
   end
 
-  def create_registration_period_for_start_date
-    @registration_period = FactoryBot.create(
-      :registration_period,
+  def create_contract_period_for_start_date
+    @contract_period = FactoryBot.create(
+      :contract_period,
       started_on: one_month_ago_today.beginning_of_month - 6.months,
       finished_on: one_month_ago_today.end_of_month + 6.months
     )
@@ -111,7 +111,7 @@ RSpec.describe 'Registering an ECT' do
     FactoryBot.create(
       :active_lead_provider,
       lead_provider: @lead_provider,
-      registration_period: @registration_period
+      contract_period: @contract_period
     )
   end
 

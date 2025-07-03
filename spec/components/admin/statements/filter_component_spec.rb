@@ -20,21 +20,21 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
     end
   end
 
-  context ".registration_periods" do
-    let!(:registration_period1) { FactoryBot.create(:registration_period, year: 2025) }
-    let!(:registration_period2) { FactoryBot.create(:registration_period, year: 2021) }
-    let!(:registration_period3) { FactoryBot.create(:registration_period, year: 2022) }
+  context ".contract_periods" do
+    let!(:contract_period1) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:contract_period2) { FactoryBot.create(:contract_period, year: 2021) }
+    let!(:contract_period3) { FactoryBot.create(:contract_period, year: 2022) }
 
-    it "returns registration period in year order" do
-      expect(component.registration_periods).to contain_exactly(registration_period2, registration_period3, registration_period1)
+    it "returns contract_period in year order" do
+      expect(component.contract_periods).to contain_exactly(contract_period2, contract_period3, contract_period1)
     end
   end
 
-  context ".registration_period_id" do
-    let(:filter_params) { { registration_period_id: 2025 } }
+  context ".contract_period_id" do
+    let(:filter_params) { { contract_period_id: 2025 } }
 
-    it "returns filter param registration_period_id" do
-      expect(component.registration_period_id).to eq(2025)
+    it "returns filter param contract_period_id" do
+      expect(component.contract_period_id).to eq(2025)
     end
   end
 

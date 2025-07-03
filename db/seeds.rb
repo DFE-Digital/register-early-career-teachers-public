@@ -9,7 +9,7 @@ def print_seed_info(text, indent: 0, colour: nil, blank_lines_before: 0)
 end
 
 priority_seeds = %w[
-  registration_periods
+  contract_periods
   lead_providers
   appropriate_bodies
   delivery_partners

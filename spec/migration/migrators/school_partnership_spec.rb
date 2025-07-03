@@ -8,9 +8,9 @@ describe Migrators::SchoolPartnership do
       # creating dependencies resources
       lead_provider = FactoryBot.create(:lead_provider, name: migration_resource.lead_provider.name, ecf_id: migration_resource.lead_provider_id)
       delivery_partner = FactoryBot.create(:delivery_partner, name: migration_resource.delivery_partner.name, api_id: migration_resource.delivery_partner.id)
-      registration_period = FactoryBot.create(:registration_period, year: migration_resource.cohort.start_year)
+      contract_period = FactoryBot.create(:contract_period, year: migration_resource.cohort.start_year)
 
-      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:)
+      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
 
       FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
 
@@ -30,7 +30,7 @@ describe Migrators::SchoolPartnership do
           school_partnership = SchoolPartnership.find_by!(api_id: partnership.id)
 
           lead_provider = school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider
-          year = school_partnership.lead_provider_delivery_partnership.active_lead_provider.registration_period_id
+          year = school_partnership.lead_provider_delivery_partnership.active_lead_provider.contract_period_id
           delivery_partner = school_partnership.lead_provider_delivery_partnership.delivery_partner
           school = school_partnership.school
 
