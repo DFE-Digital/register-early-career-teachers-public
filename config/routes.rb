@@ -37,6 +37,9 @@ Rails.application.routes.draw do
       mount Blazer::Engine, at: "blazer"
     end
 
+    # Background jobs dashboard
+    mount MissionControl::Jobs::Engine, at: "jobs"
+
     resources :users, only: %i[index]
 
     resources :organisations, only: %i[index] do
