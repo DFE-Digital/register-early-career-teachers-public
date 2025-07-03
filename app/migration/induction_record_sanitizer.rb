@@ -16,6 +16,7 @@ class InductionRecordSanitizer
 
   def valid?
     @error = nil
+    sanitize!
     validate!
     true
   rescue InductionRecordError => e
@@ -23,10 +24,13 @@ class InductionRecordSanitizer
     false
   end
 
+  def sanitize!
+    interpolate_blank_end_dates!
+  end
+
   def validate!
     # TODO: add more validation checks here as we discover them
     has_induction_records!
-    fix_multiple_blank_end_dates!
     does_not_have_multiple_active_induction_statuses!
     induction_record_dates_are_sequential!
   end
@@ -69,11 +73,11 @@ private
     raise(NoInductionRecordsError) if induction_records.empty?
   end
 
-  def fix_multiple_blank_end_dates!
+  def interpolate_blank_end_dates!
     return unless induction_records.where(end_date: nil).count > 1
 
-    # Set end_date to the next record's start_date for all but the last record
-    # Fixes only the in-memory records, as we don't want to modify the records in the ECF1 database
+    # Interpolate blank end_dates using the next record's start_date
+    # Works only in-memory to avoid modifying the source ECF1 database
     induction_records.each_cons(2) do |current_record, next_record|
       next if current_record.end_date.present?
 
