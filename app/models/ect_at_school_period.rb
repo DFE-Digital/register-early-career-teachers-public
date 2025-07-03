@@ -48,14 +48,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   # Instance methods
 
-  def lead_provider
-    training_service.latest_lead_provider
-  end
-
-  def delivery_partner
-    training_service.latest_delivery_partner
-  end
-
   def provider_led?
     training_programme == 'provider_led'
   end
