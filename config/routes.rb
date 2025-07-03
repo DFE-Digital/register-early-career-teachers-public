@@ -140,6 +140,7 @@ Rails.application.routes.draw do
         end
 
         resources :requests, only: :show, module: :parity_checks
+        resources :responses, only: :show, module: :parity_checks
       end
     end
   end

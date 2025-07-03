@@ -19,6 +19,8 @@ module ParityCheck
     scope :with_all_responses_matching, -> { joins(:responses).where.not(id: ParityCheck::Response.different.pluck(:request_id)).distinct }
     scope :with_lead_provider, ->(lead_provider) { where(lead_provider:) }
 
+    delegate :description, to: :endpoint
+
     state_machine :state, initial: :pending do
       state :queued
 

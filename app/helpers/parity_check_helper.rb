@@ -67,4 +67,16 @@ module ParityCheckHelper
 
     "🐌 #{formatted_ratio}x slower"
   end
+
+  def comparison_in_words(matching)
+    if matching
+      "the same"
+    else
+      "different"
+    end
+  end
+
+  def sanitize_diff(html)
+    sanitize html, tags: %w[div br ul li strong del ins], attributes: %w[class]
+  end
 end

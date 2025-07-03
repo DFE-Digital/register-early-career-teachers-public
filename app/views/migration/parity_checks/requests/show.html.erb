@@ -1,4 +1,4 @@
-<% page_data(title: @request.endpoint.description, caption: @request.lead_provider.name, breadcrumbs: @breadcrumbs) %>
+<% page_data(title: @request.description, caption: @request.lead_provider.name, breadcrumbs: @breadcrumbs) %>
 
 <p>
   The request resulted in <strong><%= number_with_delimiter(@responses.size) %> <%= "response".pluralize(@responses.size) %></strong> 
@@ -61,7 +61,7 @@
         row.with_cell(text: comparison_emoji(response.matching?), html_attributes: { class: "center" })
 
         if response.different?
-          row.with_cell(text: govuk_link_to("Response details", "#"), html_attributes: { class: "center" })     
+          row.with_cell(text: govuk_link_to("Response details", migration_parity_check_response_path(@request.run, response)), html_attributes: { class: "center" })     
         elsif @responses.any?(&:different?)
           row.with_cell
         end

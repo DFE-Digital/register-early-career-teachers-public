@@ -7,6 +7,7 @@ module ParityCheck
     has_many :requests, dependent: :destroy
     has_many :lead_providers, -> { distinct.order(name: :asc) }, through: :requests
     has_many :endpoints, -> { distinct.order(path: :asc) }, through: :requests
+    has_many :responses, -> { distinct.order(page: :asc) }, through: :requests
 
     attribute :mode, default: -> { "concurrent" }
 

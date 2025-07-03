@@ -51,3 +51,15 @@
     text-align: center;
   }
 }
+
+.diff {
+  &.red {
+    background-color: rgb(255, 238, 238);
+    color: #b00000;
+  }
+
+  &.green {
+    background-color:rgb(221, 255, 221);
+    color: #080000;
+  }
+}

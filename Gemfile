@@ -58,6 +58,8 @@ gem "oj"
 gem "async-http-faraday"
 gem "with_advisory_lock"
 
+gem "diffy"
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'

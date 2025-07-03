@@ -4,7 +4,10 @@ module ParityCheck
 
     belongs_to :request
 
+    delegate :run, to: :request
+
     before_validation :clear_bodies, if: :bodies_matching?
+    before_save :format_bodies
 
     validates :request, presence: true
     validates :ecf_status_code, inclusion: { in: 100..599 }
@@ -40,10 +43,40 @@ module ParityCheck
       [ecf_status_code, ecf_body] != [rect_status_code, rect_body]
     end
 
-  private
+    def description
+      if page
+        "Response for page #{page}"
+      else
+        "Response"
+      end
+    end
 
     def bodies_matching?
       ecf_body == rect_body
+    end
+
+    def bodies_different?
+      !bodies_matching?
+    end
+
+    def body_diff
+      Diffy::Diff.new(ecf_body, rect_body, context: 3)
+    end
+
+  private
+
+    def format_bodies
+      ecf_body_hash = parse_json_body(ecf_body)
+      self.ecf_body = JSON.pretty_generate(ecf_body_hash) if ecf_body_hash
+
+      rect_body_hash = parse_json_body(rect_body)
+      self.rect_body = JSON.pretty_generate(rect_body_hash) if rect_body_hash
+    end
+
+    def parse_json_body(body)
+      JSON.parse(body) if body
+    rescue JSON::ParserError
+      nil
     end
 
     def clear_bodies
