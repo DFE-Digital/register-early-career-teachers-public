@@ -57,6 +57,23 @@ describe Schools::LatestRegistrationChoices do
           it { is_expected.to be_nil }
         end
       end
+
+      context 'when the school is partnered with the same lead provider and multiple delivery partners' do
+        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:) }
+
+        let(:earliest_delivery_partner) { FactoryBot.create(:delivery_partner) }
+        let!(:earliest_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner: earliest_delivery_partner) }
+        let!(:earliest_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: earliest_lead_provider_delivery_partnership, school:, created_at: 2.weeks.ago) }
+
+        let(:latest_delivery_partner) { FactoryBot.create(:delivery_partner) }
+        let!(:latest_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner: latest_delivery_partner) }
+        let!(:latest_school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: latest_lead_provider_delivery_partnership, created_at: 1.week.ago) }
+
+        it 'uses the earliest partnership' do
+          expect(subject.lead_provider).to eql(lead_provider)
+          expect(subject.delivery_partner).to eql(earliest_delivery_partner)
+        end
+      end
     end
   end
 
