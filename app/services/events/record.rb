@@ -21,6 +21,9 @@ module Events
                 :school_partnership,
                 :lead_provider,
                 :delivery_partner,
+                :active_lead_provider,
+                :statement,
+                :statement_adjustment,
                 :user,
                 :modifications,
                 :metadata
@@ -43,6 +46,9 @@ module Events
       school_partnership: nil,
       lead_provider: nil,
       delivery_partner: nil,
+      active_lead_provider: nil,
+      statement: nil,
+      statement_adjustment: nil,
       user: nil,
       modifications: nil,
       metadata: nil
@@ -64,6 +70,9 @@ module Events
       @school_partnership = school_partnership
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
+      @active_lead_provider = active_lead_provider
+      @statement = statement
+      @statement_adjustment = statement_adjustment
       @user = user
       @modifications = DescribeModifications.new(modifications).describe
       @metadata = metadata || modifications
@@ -343,6 +352,82 @@ module Events
       new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
     end
 
+    # Statement Adjustment Events
+
+    def self.record_statement_adjustment_added_event!(author:, statement_adjustment:)
+      event_type = :statement_adjustment_added
+      heading = "Statement adjustment added: #{statement_adjustment.payment_type}"
+      metadata = {
+        payment_type: statement_adjustment.payment_type,
+        amount: statement_adjustment.amount,
+      }
+
+      statement = statement_adjustment.statement
+      active_lead_provider = statement.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        statement_adjustment:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
+    def self.record_statement_adjustment_updated_event!(author:, statement_adjustment:)
+      event_type = :statement_adjustment_updated
+      heading = "Statement adjustment updated: #{statement_adjustment.payment_type}"
+      metadata = {
+        payment_type: statement_adjustment.payment_type,
+        amount: statement_adjustment.amount,
+      }
+
+      statement = statement_adjustment.statement
+      active_lead_provider = statement.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        statement_adjustment:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
+    def self.record_statement_adjustment_deleted_event!(author:, statement_adjustment:)
+      event_type = :statement_adjustment_deleted
+      heading = "Statement adjustment deleted: #{statement_adjustment.payment_type}"
+      metadata = {
+        payment_type: statement_adjustment.payment_type,
+        amount: statement_adjustment.amount,
+      }
+
+      statement = statement_adjustment.statement
+      active_lead_provider = statement.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
   private
 
     def attributes
@@ -385,6 +470,9 @@ module Events
         school_partnership:,
         lead_provider:,
         delivery_partner:,
+        active_lead_provider:,
+        statement:,
+        statement_adjustment:,
         user:,
       }.compact
     end
