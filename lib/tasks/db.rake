@@ -1,7 +1,7 @@
 def run_commands_in_database(database)
-  ActiveRecord::Base.establish_connection(database)
+  ActiveRecord::Base.establish_connection(database.to_sym)
   yield
-  ActiveRecord::Base.establish_connection(ENV['RAILS_ENV'])
+  ActiveRecord::Base.establish_connection(ENV.fetch('RAILS_ENV', :development).to_sym)
 end
 
 def create_extension
@@ -47,7 +47,7 @@ namespace :db do
       Rake::Task['db:create'].invoke
     end
 
-    run_commands_in_database(:development) do
+    run_commands_in_database(ENV['RAILS_ENV']) do
       create_extension
       add_configuration
     end
