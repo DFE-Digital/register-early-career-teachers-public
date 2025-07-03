@@ -21,7 +21,7 @@ RSpec.describe Schools::RegisterMentor do
   let(:started_on) { Date.new(2024, 9, 17) }
   let(:teacher) { subject.teacher }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:registration_period) { FactoryBot.create(:registration_period, year: 2024) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
   let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
 
   describe '#register!' do
@@ -32,7 +32,7 @@ RSpec.describe Schools::RegisterMentor do
     end
 
     context 'when provider-led' do
-      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:) }
+      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
       context "when a Teacher record with the same trn doesn't exist" do
         it 'creates a new Teacher record' do
