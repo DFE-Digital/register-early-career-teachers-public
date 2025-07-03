@@ -6,6 +6,10 @@ describe TrainingPeriod do
     it { is_expected.to belong_to(:expression_of_interest).class_name('ActiveLeadProvider') }
     it { is_expected.to have_many(:declarations).inverse_of(:training_period) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_one(:lead_provider_delivery_partnership).through(:school_partnership) }
+    it { is_expected.to have_one(:active_lead_provider).through(:lead_provider_delivery_partnership) }
+    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
+    it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
   end
 
   describe "validations" do
