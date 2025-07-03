@@ -224,15 +224,15 @@ describe ECTAtSchoolPeriod do
       end
     end
 
-    describe ".for_registration_period" do
+    describe ".for_contract_period" do
       let!(:training_period) do
         FactoryBot.create(:training_period, :for_ect, ect_at_school_period: period_2,
                                                       started_on: period_2.started_on,
                                                       finished_on: period_2.finished_on)
       end
 
-      it "returns ect in training periods only for the specified registration period" do
-        expect(described_class.for_registration_period(training_period.school_partnership.registration_period.id)).to match_array([period_2])
+      it "returns ect in training periods only for the specified contract period" do
+        expect(described_class.for_contract_period(training_period.school_partnership.contract_period.id)).to match_array([period_2])
       end
     end
   end

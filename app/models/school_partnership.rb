@@ -4,7 +4,7 @@ class SchoolPartnership < ApplicationRecord
   belongs_to :school
   has_many :events
   has_one :active_lead_provider, through: :lead_provider_delivery_partnership
-  has_one :registration_period, through: :active_lead_provider
+  has_one :contract_period, through: :active_lead_provider
 
   # delegates
   delegate :lead_provider, :delivery_partner, to: :lead_provider_delivery_partnership
@@ -20,5 +20,5 @@ class SchoolPartnership < ApplicationRecord
 
   # Scopes
   scope :earliest_first, -> { order(created_at: 'asc') }
-  scope :for_registration_period, ->(year) { joins(:registration_period).where(registration_periods: { year: }) }
+  scope :for_contract_period, ->(year) { joins(:contract_period).where(contract_periods: { year: }) }
 end

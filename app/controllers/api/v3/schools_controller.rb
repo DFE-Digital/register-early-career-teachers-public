@@ -2,7 +2,7 @@ module API
   module V3
     class SchoolsController < BaseController
       include DateFilterable
-      include RegistrationPeriodFilterable
+      include ContractPeriodFilterable
       include FilterValidatable
 
       filter_validation required_filters: %i[cohort]
@@ -20,7 +20,7 @@ module API
       def schools_query
         conditions = {
           lead_provider: current_lead_provider,
-          registration_period_id: registration_period&.id,
+          contract_period_id: contract_period&.id,
           updated_since:,
           urn:,
         }
@@ -41,7 +41,7 @@ module API
       end
 
       def to_json(obj)
-        SchoolSerializer.render(obj, root: "data", lead_provider_id: current_lead_provider.id, registration_period_id: registration_period&.id)
+        SchoolSerializer.render(obj, root: "data", lead_provider_id: current_lead_provider.id, contract_period_id: contract_period&.id)
       end
     end
   end

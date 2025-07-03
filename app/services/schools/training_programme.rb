@@ -1,8 +1,8 @@
 module Schools
   class TrainingProgramme
-    def initialize(school:, registration_period_id:)
+    def initialize(school:, contract_period_id:)
       @school = school
-      @registration_period_id = registration_period_id.to_i
+      @contract_period_id = contract_period_id.to_i
     end
 
     def training_programme
@@ -14,18 +14,18 @@ module Schools
 
   private
 
-    attr_reader :school, :registration_period_id
+    attr_reader :school, :contract_period_id
 
     def ect_at_school_periods
-      @ect_at_school_periods ||= school.ect_at_school_periods.for_registration_period(registration_period_id)
+      @ect_at_school_periods ||= school.ect_at_school_periods.for_contract_period(contract_period_id)
     end
 
     def mentors_at_school_periods
-      @mentors_at_school_periods ||= school.mentor_at_school_periods.for_registration_period(registration_period_id)
+      @mentors_at_school_periods ||= school.mentor_at_school_periods.for_contract_period(contract_period_id)
     end
 
     def partnership_exists?
-      school.school_partnerships.for_registration_period(registration_period_id).exists?
+      school.school_partnerships.for_contract_period(contract_period_id).exists?
     end
 
     def mentors_at_school?

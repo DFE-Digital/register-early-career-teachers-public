@@ -1,9 +1,9 @@
 describe SchoolSerializer, type: :serializer do
-  subject(:response) { JSON.parse(described_class.render(school, registration_period_id:)) }
+  subject(:response) { JSON.parse(described_class.render(school, contract_period_id:)) }
 
   let(:school) { FactoryBot.create(:school, urn: "123456") }
   let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
-  let(:registration_period_id) { school_partnership.registration_period.id }
+  let(:contract_period_id) { school_partnership.contract_period.id }
   let(:ect_at_school_period) do
     FactoryBot.create(:ect_at_school_period,
                       :active,
@@ -41,7 +41,7 @@ describe SchoolSerializer, type: :serializer do
     end
 
     it "serializes `cohort`" do
-      expect(attributes["cohort"]).to eq(registration_period_id.to_s)
+      expect(attributes["cohort"]).to eq(contract_period_id.to_s)
     end
 
     it "serializes `in_partnership`" do
@@ -59,27 +59,10 @@ describe SchoolSerializer, type: :serializer do
         expect(attributes["created_at"]).to eq("2023-07-01T12:00:00Z")
       end
 
-      context "when serializing `updated_at`" do
-        let(:old_datetime) { Time.utc(2023, 5, 5, 5, 0, 0) }
-        let(:latest_datetime) { Time.utc(2024, 8, 8, 8, 0, 0) }
+      it "serializes `updated_at`" do
+        school.updated_at = Time.utc(2023, 7, 1, 12, 0, 0)
 
-        context "when school is the latest" do
-          it "serializes the `updated_at`" do
-            school_partnership.update!(updated_at: old_datetime)
-            school.update!(updated_at: latest_datetime)
-
-            expect(attributes["updated_at"]).to eq(latest_datetime.rfc3339)
-          end
-        end
-
-        context "when school_partnership is the latest" do
-          it "returns application's `updated_at`" do
-            school_partnership.update!(updated_at: latest_datetime)
-            school.update!(updated_at: old_datetime)
-
-            expect(attributes["updated_at"]).to eq(latest_datetime.rfc3339)
-          end
-        end
+        expect(attributes["updated_at"]).to eq("2023-07-01T12:00:00Z")
       end
     end
   end

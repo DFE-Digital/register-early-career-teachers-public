@@ -113,23 +113,23 @@ class School < ApplicationRecord
 
   def to_param = urn
 
-  def in_partnership_for?(registration_period_id:)
-    return false if registration_period_id.blank?
+  def in_partnership_for?(contract_period_id:)
+    return false if contract_period_id.blank?
     return transient_in_partnership if respond_to?(:transient_in_partnership)
 
-    school_partnerships.for_registration_period(registration_period_id).exists?
+    school_partnerships.for_contract_period(contract_period_id).exists?
   end
 
-  def training_programme_for(registration_period_id:)
+  def training_programme_for(contract_period_id:)
     return transient_training_programme if respond_to?(:transient_training_programme)
 
-    Schools::TrainingProgramme.new(school: self, registration_period_id:).training_programme
+    Schools::TrainingProgramme.new(school: self, contract_period_id:).training_programme
   end
 
-  def expressions_of_interest_for?(lead_provider_id:, registration_period_id:)
+  def expressions_of_interest_for?(lead_provider_id:, contract_period_id:)
     return transient_expression_of_interest if respond_to?(:transient_expression_of_interest)
 
-    ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_registration_period(lead_provider_id, registration_period_id).exists? ||
-      mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_registration_period(lead_provider_id, registration_period_id).exists?
+    ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(lead_provider_id, contract_period_id).exists? ||
+      mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(lead_provider_id, contract_period_id).exists?
   end
 end

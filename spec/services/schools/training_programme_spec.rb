@@ -1,19 +1,19 @@
 describe Schools::TrainingProgramme do
-  subject { described_class.new(school:, registration_period_id:) }
+  subject { described_class.new(school:, contract_period_id:) }
 
   let(:school) { FactoryBot.create(:school, urn: "123456") }
-  let(:registration_period) { FactoryBot.create(:registration_period) }
-  let(:registration_period_id) { registration_period.id }
+  let(:contract_period) { FactoryBot.create(:contract_period) }
+  let(:contract_period_id) { contract_period.id }
 
   describe "#training_programme" do
-    context "when school has no partnerships in place for the given registration period" do
+    context "when school has no partnerships in place for the given contract period" do
       it "returns `not_yet_known`" do
         expect(subject.training_programme).to eq("not_yet_known")
       end
     end
 
-    context "when school has partnerships in place for the given registration period" do
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, registration_period:) }
+    context "when school has partnerships in place for the given contract period" do
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 

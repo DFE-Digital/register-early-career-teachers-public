@@ -5,22 +5,22 @@ class SchoolSerializer < Blueprinter::Base
     field :name
     field(:urn) { |school, _| school.urn.to_s }
     field(:cohort) do |_school, options|
-      options[:registration_period_id]&.to_s
+      options[:contract_period_id]&.to_s
     end
     field(:in_partnership) do |school, options|
       school.in_partnership_for?(
-        registration_period_id: options[:registration_period_id]
+        contract_period_id: options[:contract_period_id]
       )
     end
     field(:induction_programme_choice) do |school, options|
       school.training_programme_for(
-        registration_period_id: options[:registration_period_id]
+        contract_period_id: options[:contract_period_id]
       )
     end
     field(:expression_of_interest) do |school, options|
       school.expressions_of_interest_for?(
         lead_provider_id: options[:lead_provider_id],
-        registration_period_id: options[:registration_period_id]
+        contract_period_id: options[:contract_period_id]
       )
     end
     field :created_at
