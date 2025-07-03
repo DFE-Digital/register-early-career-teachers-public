@@ -67,6 +67,13 @@ class ECTAtSchoolPeriod < ApplicationRecord
       }
     }).where(registration_periods: { year: })
   }
+  scope :with_expressions_of_interest_for_lead_provider_and_registration_period, ->(lead_provider_id, year) {
+    joins(training_periods: {
+      expression_of_interest: %i[registration_period lead_provider]
+    })
+    .where(lead_provider: { id: lead_provider_id })
+    .where(registration_periods: { year: })
+  }
 
   # Instance methods
 

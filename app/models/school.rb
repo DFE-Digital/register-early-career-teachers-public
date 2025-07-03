@@ -1,4 +1,6 @@
 class School < ApplicationRecord
+  include GIASHelpers
+
   # Enums
   enum :last_chosen_training_programme,
        { provider_led: "provider_led",
@@ -78,8 +80,6 @@ class School < ApplicationRecord
            to: :gias_school,
            allow_nil: true
 
-  def independent? = GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(type_name)
-
   # last_chosen_appropriate_body_name
   delegate :name, to: :last_chosen_appropriate_body, prefix: true, allow_nil: true
 
@@ -111,7 +111,25 @@ class School < ApplicationRecord
 
   def last_programme_choices? = last_chosen_appropriate_body_id && last_chosen_training_programme
 
-  def state_funded? = GIAS::Types::STATE_SCHOOL_TYPES.include?(type_name)
-
   def to_param = urn
+
+  def in_partnership_for?(registration_period_id:)
+    return false if registration_period_id.blank?
+    return transient_in_partnership if respond_to?(:transient_in_partnership)
+
+    school_partnerships.for_registration_period(registration_period_id).exists?
+  end
+
+  def training_programme_for(registration_period_id:)
+    return transient_training_programme if respond_to?(:transient_training_programme)
+
+    Schools::TrainingProgramme.new(school: self, registration_period_id:).training_programme
+  end
+
+  def expressions_of_interest_for?(lead_provider_id:, registration_period_id:)
+    return transient_expression_of_interest if respond_to?(:transient_expression_of_interest)
+
+    ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_registration_period(lead_provider_id, registration_period_id).exists? ||
+      mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_registration_period(lead_provider_id, registration_period_id).exists?
+  end
 end
