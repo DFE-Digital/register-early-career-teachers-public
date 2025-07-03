@@ -28,8 +28,8 @@ module Admin
       "#{lead_provider_name} - #{month_and_year}"
     end
 
-    def registration_period_year
-      statement.active_lead_provider.registration_period.year.to_s
+    def contract_period_year
+      statement.active_lead_provider.contract_period.year.to_s
     end
 
     def lead_provider_name

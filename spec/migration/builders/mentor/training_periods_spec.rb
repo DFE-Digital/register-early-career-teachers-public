@@ -1,16 +1,16 @@
 describe Builders::Mentor::TrainingPeriods do
   subject(:service) { described_class.new(teacher:, training_period_data:) }
 
-  let(:registration_period) { FactoryBot.create(:registration_period) }
-  let(:partnership_1) { FactoryBot.create(:school_partnership, registration_period:) }
-  let(:partnership_2) { FactoryBot.create(:school_partnership, registration_period:) }
+  let(:contract_period) { FactoryBot.create(:contract_period) }
+  let(:partnership_1) { FactoryBot.create(:school_partnership, contract_period:) }
+  let(:partnership_2) { FactoryBot.create(:school_partnership, contract_period:) }
   let(:school_1) { FactoryBot.create(:school, urn: "123456") }
   let(:school_2) { FactoryBot.create(:school, urn: "987654") }
   let(:teacher) { FactoryBot.create(:teacher) }
   let!(:school_period_1) { FactoryBot.create(:mentor_at_school_period, started_on: 1.year.ago.to_date, finished_on: 1.month.ago.to_date, teacher:, school: school_1) }
   let!(:school_period_2) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago.to_date, finished_on: nil, teacher:, school: school_2) }
-  let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: registration_period.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
-  let(:training_period_2) { FactoryBot.build(:training_period_data, cohort_year: registration_period.year, lead_provider: partnership_2.lead_provider.name, delivery_partner: partnership_2.delivery_partner.name, start_date: 1.month.ago.to_date, end_date: nil) }
+  let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: contract_period.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
+  let(:training_period_2) { FactoryBot.build(:training_period_data, cohort_year: contract_period.year, lead_provider: partnership_2.lead_provider.name, delivery_partner: partnership_2.delivery_partner.name, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:training_period_data) { [training_period_1, training_period_2] }
 
   describe "#build", pending: "will be reworked once EOI schema is done" do
@@ -38,7 +38,7 @@ describe Builders::Mentor::TrainingPeriods do
     end
 
     context "when there is no MentorAtSchoolPeriod that contains the training dates" do
-      let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: registration_period.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 14.months.ago.to_date, end_date: 1.month.ago.to_date) }
+      let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: contract_period.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 14.months.ago.to_date, end_date: 1.month.ago.to_date) }
 
       it "creates a TeacherMigrationFailure record" do
         expect {

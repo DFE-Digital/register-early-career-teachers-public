@@ -2,7 +2,7 @@ module API
   module V3
     class StatementsController < BaseController
       include DateFilterable
-      include RegistrationPeriodFilterable
+      include ContractPeriodFilterable
 
       def index
         render json: to_json(paginate(statements_query.statements))
@@ -17,7 +17,7 @@ module API
       def statements_query
         conditions = {
           lead_provider: current_lead_provider,
-          registration_period_years:,
+          contract_period_years:,
           updated_since:,
         }
 

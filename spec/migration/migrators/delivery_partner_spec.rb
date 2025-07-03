@@ -31,7 +31,7 @@ RSpec.describe Migrators::DeliveryPartner do
     context 'when migration testing is enabled' do
       let(:enable_migration_testing) { true }
 
-      it 'removes all records from the registration_periods table' do
+      it 'removes all records from the contract_periods table' do
         expect { described_class.reset! }.to change(DeliveryPartner, :count).from(1).to(0)
       end
     end
@@ -39,7 +39,7 @@ RSpec.describe Migrators::DeliveryPartner do
     context 'when migration testing is disabled' do
       let(:enable_migration_testing) { false }
 
-      it 'does not remove records from the registration_periods table' do
+      it 'does not remove records from the contract_periods table' do
         expect { described_class.reset! }.not_to(change(DeliveryPartner, :count))
       end
     end

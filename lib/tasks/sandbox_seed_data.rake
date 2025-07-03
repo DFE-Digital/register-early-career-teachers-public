@@ -2,7 +2,7 @@ namespace :sandbox_seed_data do
   desc "Generate seed data for the sandbox environment"
   task generate: :environment do
     seeds = [
-      SandboxSeedData::RegistrationPeriods,
+      SandboxSeedData::ContractPeriods,
       SandboxSeedData::LeadProviders,
       SandboxSeedData::Statements
     ]

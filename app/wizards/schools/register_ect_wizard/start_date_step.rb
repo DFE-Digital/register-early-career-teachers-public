@@ -10,7 +10,7 @@ module Schools
       end
 
       def next_step
-        return :working_pattern if past_start_date? || start_date_registration_period&.enabled?
+        return :working_pattern if past_start_date? || start_date_contract_period&.enabled?
 
         :cannot_register_ect_yet
       end
@@ -41,8 +41,8 @@ module Schools
         start_date_as_date < Date.current
       end
 
-      def start_date_registration_period
-        @start_date_registration_period ||= RegistrationPeriod.ongoing_on(start_date_as_date).first
+      def start_date_contract_period
+        @start_date_contract_period ||= ContractPeriod.ongoing_on(start_date_as_date).first
       end
 
       def start_date_obj

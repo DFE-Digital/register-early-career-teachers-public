@@ -74,15 +74,15 @@ module Schools
       @teacher = ::Teacher.create_with(trs_first_name:, trs_last_name:, corrected_name:).find_or_create_by!(trn:)
     end
 
-    def registration_period
-      @registration_period ||= RegistrationPeriod.containing_date(started_on)
+    def contract_period
+      @contract_period ||= ContractPeriod.containing_date(started_on)
     end
 
     def active_lead_provider
       @active_lead_provider ||= ActiveLeadProvider.find_by(
         lead_provider:,
-        registration_period:
-      ) || raise("Missing ActiveLeadProvider for #{lead_provider&.name} in #{registration_period&.year}")
+        contract_period:
+      ) || raise("Missing ActiveLeadProvider for #{lead_provider&.name} in #{contract_period&.year}")
     end
 
     def school_partnership

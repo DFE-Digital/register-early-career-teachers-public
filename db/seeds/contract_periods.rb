@@ -1,5 +1,5 @@
-def describe_registration_period(ay)
-  print_seed_info("#{ay.year} (running from #{ay.started_on} until #{ay.finished_on})", indent: 2)
+def describe_contract_period(cp)
+  print_seed_info("#{cp.year} (running from #{cp.started_on} until #{cp.finished_on})", indent: 2)
 end
 
 {
@@ -9,10 +9,10 @@ end
   2024 => true,
   2025 => true
 }.each do |year, enabled|
-  RegistrationPeriod.create!(
+  ContractPeriod.create!(
     year:,
     started_on: Date.new(year, 6, 1),
     finished_on: Date.new(year + 1, 5, 31),
     enabled:
-  ).tap { |rp| describe_registration_period(rp) }
+  ).tap { |rp| describe_contract_period(rp) }
 end

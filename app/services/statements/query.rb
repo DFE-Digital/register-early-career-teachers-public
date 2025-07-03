@@ -7,11 +7,11 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, registration_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, order_by: :payment_date)
-      @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider registration_period])
+    def initialize(lead_provider: :ignore, contract_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, order_by: :payment_date)
+      @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
 
       where_lead_provider_is(lead_provider)
-      where_registration_period_year_in(registration_period_years)
+      where_contract_period_year_in(contract_period_years)
       where_updated_since(updated_since)
       where_status_is(status)
       where_fee_type_is(fee_type)
@@ -43,10 +43,10 @@ module Statements
       scope.merge!(Statement.joins(:lead_provider).where(lead_providers: { id: lead_provider.id }))
     end
 
-    def where_registration_period_year_in(registration_period_years)
-      return if ignore?(filter: registration_period_years)
+    def where_contract_period_year_in(contract_period_years)
+      return if ignore?(filter: contract_period_years)
 
-      scope.merge!(Statement.joins(:registration_period).where(registration_periods: { year: extract_conditions(registration_period_years) }))
+      scope.merge!(Statement.joins(:contract_period).where(contract_periods: { year: extract_conditions(contract_period_years) }))
     end
 
     def where_updated_since(updated_since)
