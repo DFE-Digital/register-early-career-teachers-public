@@ -105,9 +105,15 @@ module BatchRows
     end
   end
 
+  # @param trn [String]
+  # @return [BatchRows::ClaimRow, BatchRows::ActionRow]
+  def row_by(trn:)
+    rows.find { |row| row.trn.eql?(trn) }
+  end
+
 private
 
-  # @return [ActionRow, ClaimRow]
+  # @return [Class]
   def row_class
     return ActionRow if action?
 
