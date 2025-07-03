@@ -19,15 +19,17 @@ module Schools
       end
 
       def first_lead_provider_name
-        assigned_ects
-          .select { |ect| ect.lead_provider.present? }
-          .min_by(&:started_on)
-          &.lead_provider
-          &.name
+        lead_provider&.name
       end
 
       def assigned_ects
         @assigned_ects ||= @mentor.currently_assigned_ects
+      end
+
+    private
+
+      def lead_provider
+        ECTAtSchoolPeriods::Training.new(assigned_ects.select(&:present?).min_by(&:started_on))&.latest_lead_provider
       end
     end
   end
