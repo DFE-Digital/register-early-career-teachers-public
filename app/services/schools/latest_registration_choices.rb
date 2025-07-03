@@ -15,10 +15,16 @@ module Schools
     def appropriate_body = last_chosen_appropriate_body
 
     def lead_provider_and_delivery_partner
-      if last_chosen_lead_provider.present? && matching_partnerships.any?
+      return nil if last_chosen_lead_provider.blank?
+
+      if matching_partnerships.any?
         Choice.new(
-          lead_provider: lead_provider_delivery_partnership.active_lead_provider.lead_provider,
+          lead_provider: last_chosen_lead_provider,
           delivery_partner: lead_provider_delivery_partnership.delivery_partner
+        )
+      elsif LeadProviders::Active.new(last_chosen_lead_provider).active_in_registration_period?(registration_period)
+        Choice.new(
+          lead_provider: last_chosen_lead_provider
         )
       end
     end
