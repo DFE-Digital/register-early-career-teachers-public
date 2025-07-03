@@ -6,10 +6,7 @@ module TrainingPeriodSources
   end
 
   def active_lead_provider
-    @active_lead_provider ||= ActiveLeadProvider.find_by(
-      lead_provider:,
-      contract_period:
-    ) || raise("Missing ActiveLeadProvider for #{lead_provider&.name} in #{contract_period&.year}")
+    @active_lead_provider ||= ActiveLeadProvider.find_by!(lead_provider:, contract_period:)
   end
 
   def school_partnership

@@ -33,8 +33,8 @@ RSpec.describe Schools::RegisterECT do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
     context 'when no ActiveLeadProvider exists for the contract_period' do
-      it 'raises an error explaining the missing ActiveLeadProvider' do
-        expect { service.register! }.to raise_error(RuntimeError, /Missing ActiveLeadProvider/)
+      it 'raises an error' do
+        expect { service.register! }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
