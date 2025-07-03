@@ -17,8 +17,8 @@ RSpec.describe "View parity check request" do
     page.goto(migration_parity_check_path(run))
     page.get_by_role("link", name: "Request details").click
 
-    expect(page.get_by_text(request.lead_provider.name)).to be_visible
-    expect(page.get_by_role("heading", name: request.endpoint.description)).to be_visible
+    expect(page.locator(".govuk-caption-m").get_by_text(request.lead_provider.name)).to be_visible
+    expect(page.get_by_role("heading", name: request.description)).to be_visible
 
     expect(page.get_by_text("The request resulted in 2 responses that took 3 minutes to complete.")).to be_visible
     expect(page.get_by_text("Overall the request was 50% successful")).to be_visible

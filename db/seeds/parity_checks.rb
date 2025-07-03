@@ -24,8 +24,8 @@ def create_in_progress_request(run:, lead_provider:, endpoint:)
 end
 
 def create_response(request, response_type, page)
-  ecf_body = %({ "some": { "random": "json" } })
-  rect_body = response_type == :matching ? ecf_body : %({ "some": { "different": "json" } })
+  ecf_body = Faker::Json.shallow_json(width: 3)
+  rect_body = response_type == :matching ? ecf_body : Faker::Json.shallow_json(width: 3)
 
   ParityCheck::Response.create!(
     request:,
