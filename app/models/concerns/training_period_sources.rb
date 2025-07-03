@@ -18,7 +18,7 @@ module TrainingPeriodSources
       .find_by(
         school:,
         lead_provider_delivery_partnerships: {
-          active_lead_provider_id: provider.id
+          active_lead_provider_id: active_lead_provider.id
         }
       )
   end
