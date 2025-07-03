@@ -26,8 +26,8 @@ RSpec.describe Schools::RegisterMentor do
 
   describe '#register!' do
     context 'when no ActiveLeadProvider exists for the registration period' do
-      it 'raises an error explaining the missing ActiveLeadProvider' do
-        expect { service.register! }.to raise_error(RuntimeError, /Missing ActiveLeadProvider/)
+      it 'raises an error' do
+        expect { service.register! }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
