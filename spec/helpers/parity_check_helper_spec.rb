@@ -166,15 +166,48 @@ RSpec.describe ParityCheckHelper, type: :helper do
     subject { helper.sanitize_diff(html) }
 
     let(:html) { response.body_diff.to_s(:html) }
-    let(:response) { FactoryBot.build(:parity_check_response, :different) }
+    let(:ecf_body) { { key1: { subkey: "value1" } }.to_json }
+    let(:rect_body) { { key1: { subkey: "value2" } }.to_json }
+    let(:response) { FactoryBot.build(:parity_check_response, rect_body:, ecf_body:) }
 
-    it { is_expected.to eq(html.html_safe) }
+    it { is_expected.to eq(CGI.unescapeHTML(html.html_safe)) }
 
     context "when the diff contains malicious HTML" do
       let(:html) { "<script>alert('maliciousness');</script>#{response.body_diff.to_s(:html)}" }
 
-      it { is_expected.not_to eq(html.html_safe) }
       it { is_expected.not_to include("<script>") }
+    end
+  end
+
+  describe "#render_filterable_key_hash" do
+    let(:key_hash) do
+      {
+        key1: {
+          key2: {}
+        },
+        key3: {}
+      }
+    end
+
+    it "renders a nested list of the key hash, yielding the key name and keypath of each" do
+      rendered_list = helper.render_filterable_key_hash(key_hash) do |key_path|
+        key_path.join(".")
+      end
+
+      # Embedding the nested ul inside the li for the parent key
+      # makes the CSS for rendering the 'tree' connections much simpler.
+      expected_html = <<~HTML
+        <ul class="govuk-list">
+          <li>key1
+            <ul class="govuk-list">
+              <li>key1.key2</li>
+            </ul>
+          </li>
+          <li>key3</li>
+        </ul>
+      HTML
+
+      expect(rendered_list).to eq(expected_html.squish.gsub(/\s+</, "<"))
     end
   end
 end

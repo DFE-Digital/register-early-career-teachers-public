@@ -77,6 +77,21 @@ module ParityCheckHelper
   end
 
   def sanitize_diff(html)
-    sanitize html, tags: %w[div br ul li strong del ins], attributes: %w[class]
+    sanitize html, tags: %w[div ul li strong del ins span], attributes: %w[class]
+  end
+
+  def render_filterable_key_hash(hash, key_path: [], &block)
+    govuk_list(
+      hash.map do |key, nested_hash|
+        new_key_path = key_path + [key]
+        nested_keys_exist = nested_hash.is_a?(Hash) && nested_hash.any?
+        nested_list = render_filterable_key_hash(nested_hash, key_path: new_key_path, &block) if nested_keys_exist
+
+        safe_join([
+          yield(new_key_path),
+          nested_list
+        ])
+      end
+    )
   end
 end

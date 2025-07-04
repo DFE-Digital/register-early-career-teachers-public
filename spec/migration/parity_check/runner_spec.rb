@@ -8,6 +8,7 @@ RSpec.describe ParityCheck::Runner, type: :model do
   let(:mode) { "sequential" }
   let(:endpoint_ids) { endpoints.map(&:id) }
   let(:enabled) { true }
+  let!(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:instance) { described_class.new(endpoint_ids:, mode:) }
 
   before { allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: }) }
@@ -34,6 +35,12 @@ RSpec.describe ParityCheck::Runner, type: :model do
       expect(instance).not_to be_valid
       expect(instance.errors[:endpoint_ids]).to include("One or more selected endpoints do not exist.")
     end
+
+    it "validates that there is at least one lead provider" do
+      LeadProvider.destroy_all
+      expect(instance).not_to be_valid
+      expect(instance.errors[:base]).to include("There are no lead providers available; create at least one lead provider to run a parity check.")
+    end
   end
 
   describe "#run!" do
@@ -47,18 +54,17 @@ RSpec.describe ParityCheck::Runner, type: :model do
     end
 
     it "creates a request for each lead provider and endpoint" do
-      lead_provider1 = FactoryBot.create(:lead_provider)
-      lead_provider2 = FactoryBot.create(:lead_provider)
-      lead_providers = [lead_provider1, lead_provider2]
+      other_lead_provider = FactoryBot.create(:lead_provider)
+      lead_providers = [lead_provider, other_lead_provider]
 
       created_run = nil
       expect { created_run = run }.to change(ParityCheck::Request, :count).by(lead_providers.count * endpoints.size)
 
       expect(created_run.requests).to include(
-        have_attributes(lead_provider: lead_provider1, endpoint: endpoints[0]),
-        have_attributes(lead_provider: lead_provider2, endpoint: endpoints[0]),
-        have_attributes(lead_provider: lead_provider1, endpoint: endpoints[1]),
-        have_attributes(lead_provider: lead_provider2, endpoint: endpoints[1])
+        have_attributes(lead_provider:, endpoint: endpoints[0]),
+        have_attributes(lead_provider: other_lead_provider, endpoint: endpoints[0]),
+        have_attributes(lead_provider:, endpoint: endpoints[1]),
+        have_attributes(lead_provider: other_lead_provider, endpoint: endpoints[1])
       )
     end
 

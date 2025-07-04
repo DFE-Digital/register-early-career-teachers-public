@@ -52,6 +52,12 @@
   }
 }
 
+.diff-container {
+  > div:first-child {
+    border-right: 1px solid #b1b4b6;
+  }
+}
+
 .diff {
   &.red {
     background-color: rgb(255, 238, 238);
@@ -62,4 +68,62 @@
     background-color:rgb(221, 255, 221);
     color: #080000;
   }
+}
+
+.diff-filter {
+  overflow-x: scroll;
+
+  ul {
+    padding-left: 20px;
+  }
+
+  .govuk-checkboxes {
+    padding-top: 8px;
+  }
+
+  label {
+    font-size: 0.8em;
+  }
+
+  .govuk-checkboxes > ul {
+    padding-left: 10px;
+    margin-top: 20px;
+
+    li {
+      position: relative;
+      margin-top: -20px;
+      margin-left: -9px;
+      padding-left: 10px;
+      border-left: 1px solid #b1b4b6;
+    }
+
+    li:last-child {
+      border-left-color: transparent;
+    }
+
+    li::before {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 11px;
+      height: 1px;
+      background-color: #b1b4b6;
+    }
+
+    li:last-child::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -1px;
+      width: 1px;
+      height: 20px;
+      background-color: #b1b4b6;
+    }
+  }
+}
+
+.no-differences {
+  margin-top: 100px;
+  text-align: center;
 }

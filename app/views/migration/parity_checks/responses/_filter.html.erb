@@ -1,0 +1,9 @@
+<div class="diff-filter" data-controller="parity-check-response-body-filter">
+  <%= form_for(filter, url: migration_parity_check_response_path(filter.response.run, filter.response), method: :get, html: { data: { "parity-check-response-body-filter-target": "form" } }) do |f| %>
+    <%= f.govuk_check_boxes_fieldset :selected_key_paths, legend: { text: "What do you want to compare?"}, hint: { text: "Only selected attributes will appear in the diff." }, small: true do %>
+      <%= render_filterable_key_hash(filter.filterable_key_hash) do |key_path| %>
+        <% f.govuk_check_box :selected_key_paths, key_path, label: { text: key_path.last }, checked: filter.selected?(key_path), data: { "parity-check-response-body-filter-target": "checkbox", action: "click->parity-check-response-body-filter#clickedCheckbox" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

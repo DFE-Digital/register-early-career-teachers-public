@@ -13,3 +13,5 @@ review: *redis
 staging: *redis
 
 production: *redis
+
+migration: *redis
