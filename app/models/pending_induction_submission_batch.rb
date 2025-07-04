@@ -66,13 +66,13 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   # @return [Hash{Symbol => Integer}]
   def tally
     {
-      uploaded_count: completed? ? uploaded_count : rows.count,
-      processed_count: completed? ? processed_count : pending_induction_submissions.count,
-      errored_count: completed? ? errored_count : pending_induction_submissions.with_errors.count,
-      released_count: completed? ? released_count : pending_induction_submissions.released.count,
-      failed_count: completed? ? failed_count : pending_induction_submissions.failed.count,
-      passed_count: completed? ? passed_count : pending_induction_submissions.passed.count,
-      claimed_count: completed? ? claimed_count : pending_induction_submissions.claimed.count
+      uploaded_count: uploaded_count || rows.count,
+      processed_count: processed_count || pending_induction_submissions.count,
+      errored_count: errored_count || pending_induction_submissions.with_errors.count,
+      released_count: released_count || pending_induction_submissions.released.count,
+      failed_count: failed_count || pending_induction_submissions.failed.count,
+      passed_count: passed_count || pending_induction_submissions.passed.count,
+      claimed_count: claimed_count || pending_induction_submissions.claimed.count
     }
   end
 
@@ -92,12 +92,12 @@ class PendingInductionSubmissionBatch < ApplicationRecord
 
   # @return [Boolean]
   def redactable?
-    completed? && tally! && errored_count.zero?
+    completed? && pending_induction_submissions.with_errors.count.zero?
   end
 
-  # @return [Boolean] purge PII when all submissions have been successful
+  # @return [nil, true] purge PII when all submissions have been successful
   def redact!
-    redactable? ? update!(data: []) : false
+    update!(data: []) if redactable?
   end
 
 private

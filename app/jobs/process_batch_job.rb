@@ -17,6 +17,7 @@ class ProcessBatchJob < ApplicationJob
     if pending_induction_submission_batch.processed?
       pending_induction_submission_batch.completing!
       batch_service.complete!
+      pending_induction_submission_batch.tally!
       pending_induction_submission_batch.completed!
       pending_induction_submission_batch.redact!
 
