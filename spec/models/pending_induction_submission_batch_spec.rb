@@ -78,8 +78,6 @@ RSpec.describe PendingInductionSubmissionBatch do
     it 'tallies row and submission metrics' do
       expect(batch.tally).to eq({ uploaded_count: 1, processed_count: 0, errored_count: 0, released_count: 0, failed_count: 0, passed_count: 0, claimed_count: 0 })
 
-      batch.update!(uploaded_count: 100, processed_count: 99, errored_count: 98, released_count: 97, failed_count: 96, passed_count: 95, claimed_count: 94)
-
       FactoryBot.create_list(:pending_induction_submission, 1, :finishing, pending_induction_submission_batch: batch, error_messages: ['Some error'])
       FactoryBot.create_list(:pending_induction_submission, 2, :claimed, pending_induction_submission_batch: batch)
       FactoryBot.create_list(:pending_induction_submission, 3, :passed, pending_induction_submission_batch: batch)
@@ -87,7 +85,7 @@ RSpec.describe PendingInductionSubmissionBatch do
       FactoryBot.create_list(:pending_induction_submission, 5, :released, pending_induction_submission_batch: batch)
 
       expect(batch.tally).to eq({ uploaded_count: 1, processed_count: 15, errored_count: 1, released_count: 5, failed_count: 4, passed_count: 3, claimed_count: 2 })
-      batch.completed!
+      batch.update!(uploaded_count: 100, processed_count: 99, errored_count: 98, released_count: 97, failed_count: 96, passed_count: 95, claimed_count: 94)
       expect(batch.tally).to eq({ uploaded_count: 100, processed_count: 99, errored_count: 98, released_count: 97, failed_count: 96, passed_count: 95, claimed_count: 94 })
       batch.tally!
       expect(batch.tally).to eq({ uploaded_count: 1, processed_count: 15, errored_count: 1, released_count: 5, failed_count: 4, passed_count: 3, claimed_count: 2 })
@@ -99,7 +97,7 @@ RSpec.describe PendingInductionSubmissionBatch do
   describe '#redact!' do
     context 'when the batch is not completed' do
       it 'does nothing' do
-        expect(batch.redact!).to be false
+        expect(batch.redact!).to be_nil
         expect(batch.data).not_to be_empty
       end
     end
@@ -108,7 +106,7 @@ RSpec.describe PendingInductionSubmissionBatch do
       it 'does nothing' do
         batch.completed!
         FactoryBot.create(:pending_induction_submission, :finishing, pending_induction_submission_batch: batch, error_messages: ['Some error'])
-        expect(batch.redact!).to be false
+        expect(batch.redact!).to be_nil
         expect(batch.data).not_to be_empty
       end
     end
