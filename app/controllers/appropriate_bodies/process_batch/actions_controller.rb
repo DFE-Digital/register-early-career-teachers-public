@@ -46,7 +46,7 @@ module AppropriateBodies
     private
 
       def new_batch_action
-        PendingInductionSubmissionBatch.new_action_for(appropriate_body: @appropriate_body, author: current_user)
+        PendingInductionSubmissionBatch.new_action_for(appropriate_body: @appropriate_body)
       end
 
       def process_batch_action

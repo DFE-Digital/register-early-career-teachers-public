@@ -2,7 +2,6 @@ FactoryBot.define do
   factory(:pending_induction_submission_batch) do
     pending
     association :appropriate_body
-    association :author, factory: :user
     error_message { nil }
     data { nil }
 
