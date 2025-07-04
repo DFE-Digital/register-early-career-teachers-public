@@ -58,9 +58,13 @@ gem "oj"
 gem "async-http-faraday"
 gem "with_advisory_lock"
 
+gem "diffy"
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
+  gem "pg_query"
+  gem 'prosopite'
 end
 
 group :test do
@@ -69,7 +73,6 @@ group :test do
   gem "rspec"
   gem "rspec-rails"
   gem "shoulda-matchers"
-  gem "super_diff"
   gem "webmock"
 end
 

@@ -5,5 +5,6 @@ module Migration
     belongs_to :appropriate_body
     belongs_to :mentor_profile, class_name: "Migration::ParticipantProfile"
     belongs_to :schedule
+    belongs_to :preferred_identity, class_name: "Migration::ParticipantIdentity"
   end
 end

@@ -12,16 +12,14 @@ module Migrators
       name: :name,
       phase_name: :school_phase_name,
       postcode: :postcode,
-      primary_contact_email: :primary_contact_email,
-      secondary_contact_email: :secondary_contact_email,
       section_41_approved: :section_41_approved,
       status: :status,
       type_name: :school_type_name,
       ukprn: :ukprn_to_i
     }.freeze
 
-    MISMATCH_FIELD_MESSAGE = ->(school, field, gias_value, ecf_value) { "School #{school.urn} (#{school.name}) mismatch value on field named '#{field}': '#{ecf_value}' on ECF whilst '#{gias_value}' expected on RECT!" }
-    MISSING_SCHOOL_MESSAGE = ->(urn, name) { "School #{urn} (#{name}) missing on RECT!" }
+    MISMATCH_FIELD_MESSAGE = ->(school, field, gias_value, ecf_value) { ":#{field} - School #{school.urn} (#{school.name}) mismatch value on field named '#{field}': '#{ecf_value}' on ECF whilst '#{gias_value}' expected on RECT!" }
+    MISSING_SCHOOL_MESSAGE = ->(urn, name) { ":school_missing - School #{urn} (#{name}) missing on RECT!" }
 
     def self.dependencies = []
 
@@ -31,7 +29,7 @@ module Migrators
 
     def self.reset! = nil
 
-    def self.schools = ::Migration::School.includes(:local_authority).eligible_or_cip_only
+    def self.schools = ::Migration::School.includes(:local_authority).eligible_or_cip_only_except_welsh
 
     def migrate!
       migrate(self.class.schools) do |ecf_school|

@@ -5,6 +5,9 @@ module ParityCheck
     after_commit -> { broadcast_run_states }
 
     has_many :requests, dependent: :destroy
+    has_many :lead_providers, -> { distinct.order(name: :asc) }, through: :requests
+    has_many :endpoints, -> { distinct.order(path: :asc) }, through: :requests
+    has_many :responses, -> { distinct.order(page: :asc) }, through: :requests
 
     attribute :mode, default: -> { "concurrent" }
 
@@ -43,28 +46,23 @@ module ParityCheck
     end
 
     def request_group_names
-      requests.map { it.endpoint.group_name }.uniq
+      requests.map { it.endpoint.group_name }.uniq.sort
     end
 
     def rect_performance_gain_ratio
-      ecf_times = requests.map(&:average_ecf_response_time_ms).compact
-      rect_times = requests.map(&:average_rect_response_time_ms).compact
+      ratios = requests.map(&:rect_performance_gain_ratio).compact
 
-      return if (ecf_times + rect_times).none?
+      return if ratios.empty?
 
-      ecf_average_response_time_ms = ecf_times.sum.fdiv(ecf_times.size)
-      rect_average_response_time_ms = rect_times.sum.fdiv(rect_times.size)
-
-      (ecf_average_response_time_ms.to_f / rect_average_response_time_ms).round(1)
+      ratios.sum.fdiv(ratios.size).round(1)
     end
 
     def match_rate
-      total_requests_with_all_responses_matching = requests.with_all_responses_matching.count
-      total_requests = requests.count
+      rates = requests.map(&:match_rate).compact
 
-      return 0 if total_requests.zero?
+      return if rates.empty?
 
-      (total_requests_with_all_responses_matching.to_f / total_requests * 100).round
+      rates.sum.fdiv(rates.size).round
     end
 
     def progress
@@ -103,7 +101,7 @@ module ParityCheck
     def calculate_progress
       total_request_count = requests.count
 
-      return 0 if total_request_count.zero?
+      return 100 if total_request_count.zero?
 
       completed_request_count = requests.completed.count
 

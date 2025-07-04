@@ -6,10 +6,20 @@ get:
         filter:
           cohort: 2021
   - "/api/v3/statements/:id":
-      id: statement_id
+      id: example_id
   - "/api/v3/schools":
     paginate: true
+  - "/api/v3/schools/:id":
+      id: example_id
+  - "/api/v3/partnerships/ecf":
+  - "/api/v3/partnerships/ecf/:id":
+    id: example_id
 post:
   - "/api/v3/statements":
-      body: example_statement_body
+      body: example_body
+  - "/api/v3/participant-declarations":
+      body: example_body
+put:
+  - "/api/v3/participant-declarations/:id":
+      body: example_body
 

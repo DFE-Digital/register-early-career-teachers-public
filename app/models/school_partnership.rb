@@ -4,6 +4,9 @@ class SchoolPartnership < ApplicationRecord
   belongs_to :school
   has_many :events
 
+  # delegates
+  delegate :lead_provider, :delivery_partner, to: :lead_provider_delivery_partnership
+
   # Validations
   validates :lead_provider_delivery_partnership_id, presence: true
   validates :school_id,

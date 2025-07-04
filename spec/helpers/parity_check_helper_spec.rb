@@ -11,12 +11,33 @@ RSpec.describe ParityCheckHelper, type: :helper do
       ]
     end
 
-    it "groups endpoints by their group name" do
-      expect(grouping).to eq(
-        users: endpoints[0..1],
-        "participant-declarations": [endpoints[2]],
-        miscellaneous: [endpoints[3]]
-      )
+    it "groups endpoints by their group name, in ascending order" do
+      expect(grouping.to_a).to eq([
+        [:miscellaneous, [endpoints[3]]],
+        [:"participant-declarations", [endpoints[2]]],
+        [:users, endpoints[0..1]],
+      ])
+    end
+  end
+
+  describe "#grouped_requests" do
+    subject(:grouping) { helper.grouped_requests(requests) }
+
+    let(:requests) do
+      [
+        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v1/users")),
+        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v3/users/create")),
+        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v2/participant-declarations")),
+        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/login")),
+      ]
+    end
+
+    it "groups requests by their endpoint's group name, in ascending order" do
+      expect(grouping.to_a).to eq([
+        [:miscellaneous, [requests[3]]],
+        [:"participant-declarations", [requests[2]]],
+        [:users, requests[0..1]],
+      ])
     end
   end
 
@@ -54,6 +75,38 @@ RSpec.describe ParityCheckHelper, type: :helper do
     end
   end
 
+  describe "#status_code_tag" do
+    {
+      0 => "green",
+      299 => "green",
+      300 => "yellow",
+      399 => "yellow",
+      400 => "red",
+    }.each do |status_code, colour|
+      context "when status code is #{status_code}%" do
+        subject { helper.status_code_tag(status_code) }
+
+        it { is_expected.to eq(%(<strong class=\"govuk-tag govuk-tag--#{colour}\">#{status_code}</strong>)) }
+      end
+    end
+  end
+
+  describe "#comparison_emoji" do
+    subject { helper.comparison_emoji(matching) }
+
+    context "when matching" do
+      let(:matching) { true }
+
+      it { is_expected.to eq("✅") }
+    end
+
+    context "when different" do
+      let(:matching) { false }
+
+      it { is_expected.to eq("❌") }
+    end
+  end
+
   describe "#performance_gain" do
     subject { helper.performance_gain(ratio) }
 
@@ -69,16 +122,16 @@ RSpec.describe ParityCheckHelper, type: :helper do
       it { is_expected.to eq("⚖️ equal") }
     end
 
-    context "when the ratio is greater than 1" do
+    context "when the ratio is greater than 0" do
       let(:ratio) { 2.5 }
 
       it { is_expected.to eq("🚀 2.5x faster") }
     end
 
-    context "when the ratio is less than 1" do
-      let(:ratio) { 0.4 }
+    context "when the ratio is less than 0" do
+      let(:ratio) { -3.0 }
 
-      it { is_expected.to eq("🐌 0.4x slower") }
+      it { is_expected.to eq("🐌 3x slower") }
     end
   end
 
@@ -90,6 +143,38 @@ RSpec.describe ParityCheckHelper, type: :helper do
         have_attributes(value: :concurrent, name: "Concurrent", description: "Send requests in parallel for a faster run."),
         have_attributes(value: :sequential, name: "Sequential", description: "Send requests one at a time for accurate performance benchmarking.")
       )
+    end
+  end
+
+  describe "#comparison_in_words" do
+    subject { helper.comparison_in_words(matching) }
+
+    context "when matching" do
+      let(:matching) { true }
+
+      it { is_expected.to eq("the same") }
+    end
+
+    context "when different" do
+      let(:matching) { false }
+
+      it { is_expected.to eq("different") }
+    end
+  end
+
+  describe "#sanitize_diff" do
+    subject { helper.sanitize_diff(html) }
+
+    let(:html) { response.body_diff.to_s(:html) }
+    let(:response) { FactoryBot.build(:parity_check_response, :different) }
+
+    it { is_expected.to eq(html.html_safe) }
+
+    context "when the diff contains malicious HTML" do
+      let(:html) { "<script>alert('maliciousness');</script>#{response.body_diff.to_s(:html)}" }
+
+      it { is_expected.not_to eq(html.html_safe) }
+      it { is_expected.not_to include("<script>") }
     end
   end
 end

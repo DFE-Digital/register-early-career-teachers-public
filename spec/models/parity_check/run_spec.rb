@@ -3,6 +3,40 @@ describe ParityCheck::Run do
 
   describe "associations" do
     it { is_expected.to have_many(:requests).dependent(:destroy) }
+    it { is_expected.to have_many(:lead_providers).through(:requests) }
+    it { is_expected.to have_many(:endpoints).through(:requests) }
+    it { is_expected.to have_many(:responses).through(:requests) }
+
+    it "returns distinct lead providers, ordered by name in ascending order" do
+      lead_provider_1 = FactoryBot.create(:lead_provider, name: "B lead provider")
+      lead_provider_2 = FactoryBot.create(:lead_provider, name: "A lead provider")
+      run = FactoryBot.create(:parity_check_run)
+      FactoryBot.create(:parity_check_request, run:, lead_provider: lead_provider_1)
+      FactoryBot.create(:parity_check_request, run:, lead_provider: lead_provider_1)
+      FactoryBot.create(:parity_check_request, run:, lead_provider: lead_provider_2)
+
+      expect(run.lead_providers).to eq([lead_provider_2, lead_provider_1])
+    end
+
+    it "returns distinct endpoints, ordered by path in ascending order" do
+      endpoint_1 = FactoryBot.create(:parity_check_endpoint, path: "/b/path")
+      endpoint_2 = FactoryBot.create(:parity_check_endpoint, path: "/a/path")
+      run = FactoryBot.create(:parity_check_run)
+      FactoryBot.create(:parity_check_request, run:, endpoint: endpoint_1)
+      FactoryBot.create(:parity_check_request, run:, endpoint: endpoint_1)
+      FactoryBot.create(:parity_check_request, run:, endpoint: endpoint_2)
+
+      expect(run.endpoints).to eq([endpoint_2, endpoint_1])
+    end
+
+    it "returns responses, ordered by page in ascending order" do
+      run = FactoryBot.create(:parity_check_run, :in_progress, requests: [])
+      request = FactoryBot.create(:parity_check_request, :in_progress, run:)
+      response_1 = FactoryBot.create(:parity_check_response, request:, page: 2)
+      response_2 = FactoryBot.create(:parity_check_response, request:, page: 1)
+
+      expect(run.responses).to eq([response_2, response_1])
+    end
   end
 
   describe "defaults" do
@@ -132,7 +166,7 @@ describe ParityCheck::Run do
     end
     let(:run) { FactoryBot.create(:parity_check_run, requests:) }
 
-    it { is_expected.to contain_exactly(:statements, :users, :miscellaneous) }
+    it { is_expected.to eq(%i[miscellaneous statements users]) }
   end
 
   describe "#match_rate" do
@@ -142,12 +176,24 @@ describe ParityCheck::Run do
       [
         FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching]),
         FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching different]),
-        FactoryBot.create(:parity_check_request, :completed, response_types: %i[different]),
+        FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching]),
       ]
     end
     let(:run) { FactoryBot.create(:parity_check_run, :completed, requests:) }
 
-    it { is_expected.to eq(33) }
+    it { is_expected.to eq(83) }
+
+    context "when there are no requests" do
+      let(:requests) { [] }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when there are no responses" do
+      let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+
+      it { is_expected.to be_nil }
+    end
   end
 
   describe "#progress" do
@@ -158,7 +204,7 @@ describe ParityCheck::Run do
     context "when there are no requests" do
       let(:request_states) { [] }
 
-      it { is_expected.to eq(0) }
+      it { is_expected.to eq(100) }
     end
 
     context "when there are no completed requests" do
@@ -226,24 +272,32 @@ describe ParityCheck::Run do
 
     context "when there are requests" do
       let(:requests) { FactoryBot.create_list(:parity_check_request, 2, :completed) }
-      let(:responses) { requests.flat_map(&:responses) }
 
       context "when the response times are equal" do
-        before { responses.each { it.update!(ecf_time_ms: 100, rect_time_ms: 100) } }
+        before do
+          requests[0].responses.update!(ecf_time_ms: 100, rect_time_ms: 100)
+          requests[1].responses.update!(ecf_time_ms: 50, rect_time_ms: 50)
+        end
 
         it { is_expected.to eq(1.0) }
       end
 
       context "when the RECT response times are faster" do
-        before { responses.each { it.update!(ecf_time_ms: 100, rect_time_ms: 50) } }
+        before do
+          requests[0].responses.update!(ecf_time_ms: 100, rect_time_ms: 80)
+          requests[1].responses.update!(ecf_time_ms: 50, rect_time_ms: 10)
+        end
 
-        it { is_expected.to eq(2.0) }
+        it { is_expected.to eq(3.2) }
       end
 
       context "when the ECF response times are faster" do
-        before { responses.each { it.update!(ecf_time_ms: 50, rect_time_ms: 100) } }
+        before do
+          requests[0].responses.update!(ecf_time_ms: 50, rect_time_ms: 80)
+          requests[1].responses.update!(ecf_time_ms: 15, rect_time_ms: 100)
+        end
 
-        it { is_expected.to eq(0.5) }
+        it { is_expected.to eq(-4.2) }
       end
     end
   end

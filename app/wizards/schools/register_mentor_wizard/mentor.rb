@@ -52,7 +52,8 @@ module Schools
                                     trn:,
                                     school_urn:,
                                     email:,
-                                    author:)
+                                    author:,
+                                    lead_provider:)
                                .register!
                                .tap { self.registered = true }
       end
@@ -63,6 +64,14 @@ module Schools
 
       def trs_full_name
         @trs_full_name ||= [trs_first_name, trs_last_name].join(" ")
+      end
+
+      def ect
+        @ect ||= ECTAtSchoolPeriod.find(store["ect_id"]) if store["ect_id"].present?
+      end
+
+      def lead_provider
+        ect&.lead_provider
       end
 
     private

@@ -2,7 +2,7 @@ RSpec.describe 'Registering an ECT' do
   include_context 'fake trs api client'
 
   before do
-    create_registration_period_for_start_date
+    create_contract_period_for_start_date
     create_lead_provider_and_active_lead_provider
     create_school_with_previous_choices
     create_appropriate_bodies
@@ -98,11 +98,11 @@ RSpec.describe 'Registering an ECT' do
     and_i_should_see_the_ect_i_registered
   end
 
-  def create_registration_period_for_start_date
-    @registration_period = FactoryBot.create(
-      :registration_period,
-      started_on: one_month_ago_today.beginning_of_month - 6.months,
-      finished_on: one_month_ago_today.end_of_month + 6.months
+  def create_contract_period_for_start_date
+    @contract_period = FactoryBot.create(
+      :contract_period,
+      started_on: 7.months.ago.beginning_of_month,
+      finished_on: 7.months.from_now.end_of_month
     )
   end
 
@@ -111,7 +111,7 @@ RSpec.describe 'Registering an ECT' do
     FactoryBot.create(
       :active_lead_provider,
       lead_provider: @lead_provider,
-      registration_period: @registration_period
+      contract_period: @contract_period
     )
   end
 
@@ -219,9 +219,9 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def when_i_enter_a_valid_start_date
-    page.get_by_label('day').fill(one_month_ago_today.day.to_s)
-    page.get_by_label('month').fill(one_month_ago_today.month.to_s)
-    page.get_by_label('year').fill(one_month_ago_today.year.to_s)
+    page.get_by_label('day').fill(1.month.ago.day.to_s)
+    page.get_by_label('month').fill(1.month.ago.month.to_s)
+    page.get_by_label('year').fill(1.month.ago.year.to_s)
   end
 
   def then_i_should_be_taken_to_the_use_previous_ect_choices_page
@@ -262,7 +262,7 @@ RSpec.describe 'Registering an ECT' do
     expect(page.get_by_text(trn)).to be_visible
     expect(page.get_by_text("Kirk Van Damme")).to be_visible
     expect(page.get_by_text('example@example.com')).to be_visible
-    expect(page.get_by_text("#{Date::MONTHNAMES[one_month_ago_today.month]} #{one_month_ago_today.year}")).to be_visible
+    expect(page.get_by_text("#{Date::MONTHNAMES[1.month.ago.month]} #{1.month.ago.year}")).to be_visible
     expect(page.get_by_text('Golden Leaf Teaching Hub')).to be_visible
   end
 
@@ -370,9 +370,5 @@ RSpec.describe 'Registering an ECT' do
 
   def then_i_should_be_taken_to_the_ects_page
     expect(page.url).to end_with('/schools/home/ects')
-  end
-
-  def one_month_ago_today
-    @one_month_ago_today ||= Time.zone.today.prev_month
   end
 end

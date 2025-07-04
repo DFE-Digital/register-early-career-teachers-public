@@ -6,6 +6,10 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
   belongs_to :school_partnership
   belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
+  has_one :lead_provider_delivery_partnership, through: :school_partnership
+  has_one :active_lead_provider, through: :lead_provider_delivery_partnership
+  has_one :lead_provider, through: :active_lead_provider
+  has_one :delivery_partner, through: :lead_provider_delivery_partnership
 
   has_many :declarations, inverse_of: :training_period
   has_many :events
@@ -24,9 +28,9 @@ class TrainingPeriod < ApplicationRecord
   scope :for_mentor, ->(mentor_at_school_period_id) { where(mentor_at_school_period_id:) }
   scope :for_school_partnership, ->(school_partnership_id) { where(school_partnership_id:) }
 
-  # Instance methods
-  # delivery_partner_name
-  delegate :name, to: :delivery_partner, prefix: true
+  # Delegations
+  delegate :name, to: :delivery_partner, prefix: true, allow_nil: true
+  delegate :name, to: :lead_provider, prefix: true, allow_nil: true
 
   def for_ect?
     ect_at_school_period_id.present?
@@ -36,9 +40,6 @@ class TrainingPeriod < ApplicationRecord
     mentor_at_school_period_id.present?
   end
 
-  # lead_provider_name
-  delegate :name, to: :lead_provider, prefix: true
-
   def trainee
     ect_at_school_period || mentor_at_school_period
   end
@@ -47,15 +48,6 @@ class TrainingPeriod < ApplicationRecord
     return TrainingPeriod.none unless trainee
 
     trainee.training_periods.excluding(self)
-  end
-
-  # FIXME: temporary
-  def lead_provider
-    school_partnership&.lead_provider_delivery_partnership&.active_lead_provider&.lead_provider
-  end
-
-  def delivery_partner
-    school_partnership&.lead_provider_delivery_partnership&.delivery_partner
   end
 
 private
@@ -71,6 +63,7 @@ private
   end
 
   def enveloped_by_trainee_at_school_period
+    return if finished_on.blank?
     return if (trainee_started_on_at_school..trainee_finished_on_at_school).cover?(started_on..finished_on)
 
     errors.add(:base, "Date range is not contained by the period the trainee is at the school")

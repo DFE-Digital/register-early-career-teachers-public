@@ -21,7 +21,7 @@ module SandboxSeedData
         statements = []
 
         active_lead_providers.each do |active_lead_provider|
-          years = years(active_lead_provider.registration_period.year)
+          years = years(active_lead_provider.contract_period.year)
 
           statements += years.product(MONTHS).map do |year, month|
             deadline_date = deadline_date(year, month)

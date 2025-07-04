@@ -26,20 +26,20 @@ RSpec.describe Schools::RegisterECT do
   let(:working_pattern) { "full_time" }
   let(:teacher) { subject.teacher }
   let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
-  let!(:registration_period) { FactoryBot.create(:registration_period, year: 2024) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
 
   describe '#register!' do
     let(:training_programme) { 'provider_led' }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
-    context 'when no ActiveLeadProvider exists for the registration period' do
-      it 'raises an error explaining the missing ActiveLeadProvider' do
-        expect { service.register! }.to raise_error(RuntimeError, /Missing ActiveLeadProvider/)
+    context 'when no ActiveLeadProvider exists for the contract_period' do
+      it 'raises an error' do
+        expect { service.register! }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
     context 'when provider-led' do
-      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:) }
+      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
       context "when a Teacher record with the same TRN don't exist" do
         let(:teacher) { Teacher.first }

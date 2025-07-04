@@ -329,6 +329,8 @@
   - active_lead_provider_id
   - lead_provider_delivery_partnership_id
   - pending_induction_submission_batch_id  
+  - statement_id
+  - statement_adjustment_id
   - user_id
   - author_type
   - author_id
@@ -381,7 +383,7 @@
   - worker
   - created_at
   - updated_at
-  :registration_periods:
+  :contract_periods:
   - year
   - created_at
   - updated_at
@@ -392,7 +394,7 @@
   :active_lead_providers:
   - id
   - lead_provider_id
-  - registration_period_id
+  - contract_period_id
   - created_at
   - updated_at
   :statement_adjustments:

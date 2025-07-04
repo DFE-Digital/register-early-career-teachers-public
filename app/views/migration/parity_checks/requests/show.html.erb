@@ -1,0 +1,73 @@
+<% page_data(title: @request.description, caption: @request.lead_provider.name, breadcrumbs: @breadcrumbs) %>
+
+<p>
+  The request resulted in <strong><%= number_with_delimiter(@responses.size) %> <%= "response".pluralize(@responses.size) %></strong> 
+  that took <strong><%= distance_of_time_in_words(@request.started_at, @request.completed_at) %></strong> to complete.
+</p>
+
+<p>
+  Overall the request was <%= match_rate_tag(@request.match_rate) %> successful and had on average 
+  <strong><%= performance_gain(@request.rect_performance_gain_ratio) %></strong> performance when compared to ECF.
+</p>
+
+<hr class="govuk-section-break govuk-section-break--l">
+
+<%= govuk_table(classes: %w[parity-check-responses-table]) do |table|
+  table.with_caption(size: "m", text: "Responses")
+
+  table.with_colgroup do |colgroup|
+    colgroup.with_col(span: 1)
+    colgroup.with_col(span: 2, html_attributes: { class: "rect" })
+    colgroup.with_col(span: 2, html_attributes: { class: "ecf" })
+  end
+
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell if @multiple_pages
+
+      row.with_cell(text: "RECT", colspan: 2, scope: "colgroup", html_attributes: { class: @multiple_pages ? "border-left" : "" })
+      row.with_cell(text: "ECF", colspan: 2, scope: "colgroup", html_attributes: { class: "border-left" })
+      row.with_cell(colspan: 2, scope: "colgroup", html_attributes: { class: "border-left" })
+    end
+
+    head.with_row do |row|
+      row.with_cell(text: "Page") if @multiple_pages
+
+      row.with_cell(text: "Status", numeric: true, html_attributes: { class: @multiple_pages ? "border-left" : "" })
+      row.with_cell(text: "Time", numeric: true)
+
+      row.with_cell(text: "Status", numeric: true, html_attributes: { class: "border-left" })
+      row.with_cell(text: "Time", numeric: true)
+
+      row.with_cell(text: "Performance", numeric: true, html_attributes: { class: "border-left" })
+      row.with_cell(text: "Matching", html_attributes: { class: "center" })
+
+      row.with_cell if @responses.any?(&:different?)
+    end
+  end
+
+  table.with_body do |body|
+    @responses.each do |response|
+      body.with_row do |row|
+        row.with_cell(text: response.page) if @multiple_pages
+
+        row.with_cell(text: status_code_tag(response.rect_status_code), numeric: true, html_attributes: { class: @multiple_pages ? "border-left" : "" })
+        row.with_cell(text: "#{number_with_delimiter(response.rect_time_ms)}ms", numeric: true)
+
+        row.with_cell(text: status_code_tag(response.ecf_status_code), numeric: true, html_attributes: { class: "border-left" })
+        row.with_cell(text: "#{number_with_delimiter(response.ecf_time_ms)}ms", numeric: true)
+
+        row.with_cell(text: performance_gain(response.rect_performance_gain_ratio), numeric: true, html_attributes: { class: "border-left" })
+        row.with_cell(text: comparison_emoji(response.matching?), html_attributes: { class: "center" })
+
+        if response.different?
+          row.with_cell(text: govuk_link_to("Response details", migration_parity_check_response_path(@request.run, response)), html_attributes: { class: "center" })     
+        elsif @responses.any?(&:different?)
+          row.with_cell
+        end
+      end
+    end
+  end
+end %>
+
+<%= govuk_pagination(pagy: @pagy) %>
