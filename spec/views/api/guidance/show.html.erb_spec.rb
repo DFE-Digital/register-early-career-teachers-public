@@ -7,7 +7,7 @@ RSpec.describe "api/guidance/show.html.erb" do
   end
 
   it 'shows the correct heading' do
-    header_text = 'Integrate with this API to view, submit and update ECF training data'
+    header_text = 'Lead provider guidance: early career training programme'
     expect(view.content_for(:page_header)).to have_text(header_text)
   end
 end
