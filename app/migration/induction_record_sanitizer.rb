@@ -2,6 +2,7 @@ class InductionRecordSanitizer
   include Enumerable
 
   class InductionRecordError < StandardError; end
+  class MultipleBlankEndDateError < InductionRecordError; end
   class MultipleActiveStatesError < InductionRecordError; end
   class StartDateAfterEndDateError < InductionRecordError; end
   class InvalidDateSequenceError < InductionRecordError; end
@@ -31,6 +32,7 @@ class InductionRecordSanitizer
   def validate!
     # TODO: add more validation checks here as we discover them
     has_induction_records!
+    does_not_have_multiple_blank_end_dates!
     does_not_have_multiple_active_induction_statuses!
     induction_record_dates_are_sequential!
   end
@@ -71,6 +73,10 @@ private
 
   def has_induction_records!
     raise(NoInductionRecordsError) if induction_records.empty?
+  end
+
+  def does_not_have_multiple_blank_end_dates!
+    raise(MultipleBlankEndDateError) if induction_records.count { |ir| ir.end_date.nil? } > 1
   end
 
   def interpolate_blank_end_dates!
