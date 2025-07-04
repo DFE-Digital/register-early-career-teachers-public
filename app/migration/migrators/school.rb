@@ -12,8 +12,6 @@ module Migrators
       name: :name,
       phase_name: :school_phase_name,
       postcode: :postcode,
-      primary_contact_email: :primary_contact_email,
-      secondary_contact_email: :secondary_contact_email,
       section_41_approved: :section_41_approved,
       status: :status,
       type_name: :school_type_name,
