@@ -37,7 +37,7 @@ jobs:
             echo "PULL_REQUEST_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           fi
 
-      - uses: DFE-Digital/github-actions/delete-review-app@master
+      - uses: DFE-Digital/github-actions/delete-review-app@revert-storage-blob-preview-version
         with:
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
