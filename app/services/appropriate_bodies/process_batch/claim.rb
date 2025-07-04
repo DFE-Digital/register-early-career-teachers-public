@@ -7,10 +7,15 @@ module AppropriateBodies
         pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
           @pending_induction_submission = pending_induction_submission
 
-          register!
+          # OPTIMIZE: params effectively passed in twice
+          register_ect.register(
+            started_on: pending_induction_submission.started_on,
+            induction_programme: pending_induction_submission.induction_programme
+          )
+          true
         rescue StandardError => e
           capture_error(e.message)
-          next
+          next(false)
         end
 
         # Batch error reporting
@@ -19,21 +24,6 @@ module AppropriateBodies
       end
 
     private
-
-      # @return [Boolean]
-      def register!
-        PendingInductionSubmissionBatch.transaction do
-          if pending_induction_submission.save(context: :register_ect)
-            # OPTIMIZE: params effectively passed in twice
-            register_ect.register(
-              started_on: pending_induction_submission.started_on,
-              induction_programme: pending_induction_submission.induction_programme
-            )
-          else
-            false
-          end
-        end
-      end
 
       # @return [nil, Boolean]
       def validate_submission!
