@@ -138,15 +138,15 @@ module BatchHelper
       },
       {
         key: { text: 'Number of CSV rows' },
-        value: { text: batch.uploaded_count }
+        value: { text: batch.tally[:uploaded_count] }
       },
       {
         key: { text: 'Number of processed submission records' },
-        value: { text: batch.processed_count }
+        value: { text: batch.tally[:processed_count] }
       },
       {
         key: { text: 'Number of submissions with errors' },
-        value: { text: batch.errored_count }
+        value: { text: batch.tally[:errored_count] }
       },
       {
         key: { text: 'Number of submissions without errors' },
