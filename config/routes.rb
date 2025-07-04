@@ -37,6 +37,11 @@ Rails.application.routes.draw do
       mount Blazer::Engine, at: "blazer"
     end
 
+    # Mission control (background jobs dashboard)
+    constraints -> { Rails.application.config.enable_mission_control } do
+      mount MissionControl::Jobs::Engine, at: "jobs"
+    end
+
     resources :users, only: %i[index]
 
     resources :organisations, only: %i[index] do
