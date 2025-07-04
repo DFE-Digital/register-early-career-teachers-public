@@ -4,10 +4,8 @@ module Admin
       collection.map { |statement| new(statement) }
     end
 
-    def month_and_year
-      month_name = Date::MONTHNAMES.fetch(statement.month)
-
-      "#{month_name} #{statement.year}"
+    def period
+      ::Statements::Period.for(statement)
     end
 
     def status_tag_kwargs
@@ -25,7 +23,7 @@ module Admin
     def page_title
       lead_provider_name = statement.active_lead_provider.lead_provider.name
 
-      "#{lead_provider_name} - #{month_and_year}"
+      "#{lead_provider_name} - #{period}"
     end
 
     def contract_period_year
