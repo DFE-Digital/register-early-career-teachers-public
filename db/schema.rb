@@ -492,6 +492,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
     t.bigint "last_chosen_appropriate_body_id"
     t.bigint "last_chosen_lead_provider_id"
     t.enum "last_chosen_training_programme", enum_type: "training_programme"
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["api_id"], name: "index_schools_on_api_id", unique: true
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true

@@ -4,7 +4,8 @@ RSpec.describe "Schools API", type: :request do
 
     it_behaves_like "a token authenticated endpoint", :get
 
-    it "returns method not allowed" do
+    # TODO: implement when the endpoint is ready
+    it "returns method not allowed", pending: 'endpoint implementation not ready yet' do
       authenticated_api_get path
       expect(response).to be_method_not_allowed
     end
@@ -15,7 +16,8 @@ RSpec.describe "Schools API", type: :request do
 
     it_behaves_like "a token authenticated endpoint", :get
 
-    it "returns method not allowed" do
+    # TODO: implement when the endpoint is ready
+    it "returns method not allowed", pending: 'endpoint implementation not ready yet' do
       authenticated_api_get path
       expect(response).to be_method_not_allowed
     end

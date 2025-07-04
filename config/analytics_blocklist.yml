@@ -206,6 +206,7 @@
   - created_at
   - updated_at
   - urn
+  - api_id
   :school_partnerships:
   - id
   - created_at

@@ -1,4 +1,6 @@
 class School < ApplicationRecord
+  include GIASHelpers
+
   # Enums
   enum :last_chosen_training_programme,
        { provider_led: "provider_led",
@@ -46,6 +48,8 @@ class School < ApplicationRecord
             presence: true,
             uniqueness: true
 
+  validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another school" }
+
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
 
@@ -75,8 +79,6 @@ class School < ApplicationRecord
            :website,
            to: :gias_school,
            allow_nil: true
-
-  def independent? = GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(type_name)
 
   # last_chosen_appropriate_body_name
   delegate :name, to: :last_chosen_appropriate_body, prefix: true, allow_nil: true
@@ -109,7 +111,23 @@ class School < ApplicationRecord
 
   def last_programme_choices? = last_chosen_appropriate_body_id && last_chosen_training_programme
 
-  def state_funded? = GIAS::Types::STATE_SCHOOL_TYPES.include?(type_name)
-
   def to_param = urn
+
+  def in_partnership_for?(contract_period_id:)
+    return false if contract_period_id.blank?
+    return transient_in_partnership if respond_to?(:transient_in_partnership)
+
+    school_partnerships.for_contract_period(contract_period_id).exists?
+  end
+
+  def training_programme_for(contract_period_id:)
+    Schools::TrainingProgramme.new(school: self, contract_period_id:).training_programme
+  end
+
+  def expressions_of_interest_for?(lead_provider_id:, contract_period_id:)
+    return transient_expression_of_interest if respond_to?(:transient_expression_of_interest)
+
+    ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(lead_provider_id, contract_period_id).exists? ||
+      mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(lead_provider_id, contract_period_id).exists?
+  end
 end

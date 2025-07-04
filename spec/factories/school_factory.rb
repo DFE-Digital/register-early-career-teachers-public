@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory(:school) do
     urn { Faker::Number.unique.number(digits: 6) }
+    api_id { SecureRandom.uuid }
     independent
 
     trait :independent do
