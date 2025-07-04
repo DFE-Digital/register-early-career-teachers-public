@@ -13,7 +13,7 @@
 
 <% if batch.errored? %>
   <p class='govuk-body'>
-    You had <%= batch.errored_count %> ECTs with errors.
+    You had <%= pluralize(batch.tally[:errored_count], 'ECT') %> with errors.
   </p>
 
   <p class='govuk-body'>

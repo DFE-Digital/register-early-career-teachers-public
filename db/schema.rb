@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_02_105204) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -242,6 +242,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
     t.index ["lead_provider_id"], name: "index_events_on_lead_provider_id"
     t.index ["mentor_at_school_period_id"], name: "index_events_on_mentor_at_school_period_id"
     t.index ["mentorship_period_id"], name: "index_events_on_mentorship_period_id"
+    t.index ["pending_induction_submission_batch_id"], name: "index_events_on_pending_induction_submission_batch_id"
     t.index ["school_id"], name: "index_events_on_school_id"
     t.index ["school_partnership_id"], name: "index_events_on_school_partnership_id"
     t.index ["statement_adjustment_id"], name: "index_events_on_statement_adjustment_id"
