@@ -56,6 +56,6 @@ end
 # enhance before running the task
 Rake::Task['db:schema:load'].enhance(['db:setup_search_configuration'])
 Rake::Task['db:prepare'].enhance(['db:setup_search_configuration'])
-Rake::Task['db:test:prepare'].enhance(['db:setup_search_configuration'])
 # enhance after running the task
 Rake::Task['db:create'].enhance { Rake::Task['db:setup_search_configuration'].execute }
+Rake::Task['db:test:purge'].enhance { Rake::Task['db:setup_search_configuration'].execute }
