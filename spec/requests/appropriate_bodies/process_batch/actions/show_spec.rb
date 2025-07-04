@@ -5,7 +5,7 @@ RSpec.describe "Appropriate Body bulk actions show page", type: :request do
     FactoryBot.create(:pending_induction_submission_batch, :action,
                       appropriate_body:,
                       data:,
-                      filename:)
+                      file_name:)
   end
 
   include_context '3 valid actions'

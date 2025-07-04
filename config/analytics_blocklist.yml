@@ -257,7 +257,16 @@
   - batch_type
   - batch_status
   - data
-  - filename
+  - file_name
+  - file_size
+  - file_type
+  - uploaded_count
+  - processed_count
+  - errored_count
+  - released_count
+  - passed_count
+  - failed_count
+  - claimed_count  
   - error_message
   - created_at
   - updated_at
@@ -319,6 +328,7 @@
   - delivery_partner_id
   - active_lead_provider_id
   - lead_provider_delivery_partnership_id
+  - pending_induction_submission_batch_id  
   - statement_id
   - statement_adjustment_id
   - user_id

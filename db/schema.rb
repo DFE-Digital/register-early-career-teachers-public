@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_02_105204) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -227,6 +227,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
     t.string "modifications", array: true
     t.bigint "active_lead_provider_id"
     t.bigint "lead_provider_delivery_partnership_id"
+    t.bigint "pending_induction_submission_batch_id"
     t.bigint "statement_id"
     t.bigint "statement_adjustment_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
@@ -241,6 +242,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
     t.index ["lead_provider_id"], name: "index_events_on_lead_provider_id"
     t.index ["mentor_at_school_period_id"], name: "index_events_on_mentor_at_school_period_id"
     t.index ["mentorship_period_id"], name: "index_events_on_mentorship_period_id"
+    t.index ["pending_induction_submission_batch_id"], name: "index_events_on_pending_induction_submission_batch_id"
     t.index ["school_id"], name: "index_events_on_school_id"
     t.index ["school_partnership_id"], name: "index_events_on_school_partnership_id"
     t.index ["statement_adjustment_id"], name: "index_events_on_statement_adjustment_id"
@@ -438,7 +440,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "data"
-    t.string "filename"
+    t.string "file_name"
+    t.integer "uploaded_count"
+    t.integer "processed_count"
+    t.integer "errored_count"
+    t.integer "released_count"
+    t.integer "failed_count"
+    t.integer "passed_count"
+    t.integer "claimed_count"
+    t.integer "file_size"
+    t.string "file_type"
     t.index ["appropriate_body_id"], name: "idx_on_appropriate_body_id_58d86a161e"
   end
 

@@ -1,5 +1,5 @@
 RSpec.shared_context '2 valid claims' do
-  let(:filename) do
+  let(:file_name) do
     '2 valid claims.csv'
   end
 
@@ -12,7 +12,7 @@ RSpec.shared_context '2 valid claims' do
 end
 
 RSpec.shared_context '3 valid actions' do
-  let(:filename) do
+  let(:file_name) do
     '3 valid actions.csv'
   end
 

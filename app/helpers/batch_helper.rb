@@ -63,7 +63,7 @@ module BatchHelper
       caption: 'Upload history',
       head: ['Reference', 'File name', 'Status', 'Action'],
       rows: batches.map do |batch|
-        [batch.id.to_s, batch.filename, batch_status_tag(batch), batch_link(batch)]
+        [batch.id.to_s, batch.file_name, batch_status_tag(batch), batch_link(batch)]
       end
     )
   end
@@ -89,7 +89,7 @@ module BatchHelper
           batch.appropriate_body.name,
           batch_type_tag(batch),
           batch_status_tag(batch),
-          batch.filename || '-',
+          batch.file_name || '-',
           batch.created_at.to_fs(:govuk),
           (batch.data&.count || 0).to_s,
           batch.pending_induction_submissions.count.to_s,
@@ -102,16 +102,14 @@ module BatchHelper
 
   # @param batch [PendingInductionSubmissionBatch]
   def batch_action_summary(batch)
-    submissions = batch.pending_induction_submissions.without_errors
-
     govuk_list([
-      "#{pluralize(submissions.pass.count, 'ECT')} with a passed induction",
-      "#{pluralize(submissions.fail.count, 'ECT')} with a failed induction",
-      "#{pluralize(submissions.release.count, 'ECT')} with a released outcome",
+      "#{pluralize(batch.tally[:passed_count], 'ECT')} with a passed induction",
+      "#{pluralize(batch.tally[:failed_count], 'ECT')} with a failed induction",
+      "#{pluralize(batch.tally[:released_count], 'ECT')} with a released outcome",
     ], type: :bullet)
   end
 
-  # @param batch [PendingInductionSubmissionBatch]
+  # @param batch [PendingInductionSubmissionBatch] metrics of a completed batch
   def batch_progress_card(batch)
     govuk_summary_list(card: { title: 'Progress' }, rows: [
       {
@@ -135,20 +133,24 @@ module BatchHelper
         value: { text: batch.error_message }
       },
       {
+        key: { text: 'File name' },
+        value: { text: batch.file_name }
+      },
+      {
         key: { text: 'Number of CSV rows' },
-        value: { text: batch.rows.count }
+        value: { text: batch.tally[:uploaded_count] }
       },
       {
         key: { text: 'Number of processed submission records' },
-        value: { text: batch.pending_induction_submissions.count }
+        value: { text: batch.tally[:processed_count] }
       },
       {
         key: { text: 'Number of submissions with errors' },
-        value: { text: batch.pending_induction_submissions.with_errors.count }
+        value: { text: batch.tally[:errored_count] }
       },
       {
         key: { text: 'Number of submissions without errors' },
-        value: { text: batch.pending_induction_submissions.without_errors.count }
+        value: { text: batch.recorded_count }
       },
     ])
   end

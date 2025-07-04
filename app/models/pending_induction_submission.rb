@@ -14,10 +14,16 @@ class PendingInductionSubmission < ApplicationRecord
   enum :outcome, { pass: "pass", fail: "fail" }
 
   # Scopes
-  scope :ready_for_deletion, -> { where(delete_at: ..Time.current) }
-  scope :release, -> { where(outcome: nil).where.not(finished_on: nil) }
+  scope :passed, -> { without_errors.pass.where.not(finished_on: nil, delete_at: nil) }
+  scope :failed, -> { without_errors.fail.where.not(finished_on: nil, delete_at: nil) }
+
+  scope :released, -> { without_errors.where(outcome: nil, started_on: nil).where.not(finished_on: nil, delete_at: nil) }
+
+  scope :claimed, -> { without_errors.where(finished_on: nil).where.not(started_on: nil, delete_at: nil) }
+
   scope :with_errors, -> { where.not(error_messages: []) }
   scope :without_errors, -> { where(error_messages: []) }
+  scope :ready_for_deletion, -> { where(delete_at: ..Time.current) }
 
   # Associations
   belongs_to :appropriate_body
@@ -95,8 +101,15 @@ class PendingInductionSubmission < ApplicationRecord
            on: %i[release_ect record_outcome]
 
   # Instance methods
+
+  # @return [Boolean]
   def exempt?
     trs_induction_status.eql?('Exempt')
+  end
+
+  # @return [Boolean]
+  def release?
+    outcome.nil?
   end
 
   # @return [Boolean] capture multiple error messages and reset before saving

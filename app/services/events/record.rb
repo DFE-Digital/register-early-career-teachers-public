@@ -21,6 +21,7 @@ module Events
                 :school_partnership,
                 :lead_provider,
                 :delivery_partner,
+                :pending_induction_submission_batch,
                 :active_lead_provider,
                 :statement,
                 :statement_adjustment,
@@ -46,6 +47,7 @@ module Events
       school_partnership: nil,
       lead_provider: nil,
       delivery_partner: nil,
+      pending_induction_submission_batch: nil,
       active_lead_provider: nil,
       statement: nil,
       statement_adjustment: nil,
@@ -70,6 +72,7 @@ module Events
       @school_partnership = school_partnership
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
+      @pending_induction_submission_batch = pending_induction_submission_batch
       @active_lead_provider = active_lead_provider
       @statement = statement
       @statement_adjustment = statement_adjustment
@@ -302,34 +305,18 @@ module Events
 
     # Bulk Upload Events
 
-    def self.record_bulk_upload_started_event!(author:, batch:, csv_data:)
+    def self.record_bulk_upload_started_event!(author:, batch:)
       event_type = :bulk_upload_started
       heading = "#{batch.appropriate_body.name} started a bulk #{batch.batch_type}"
-      metadata = {
-        batch_id: batch.id,
-        batch_type: batch.batch_type,
-        rows: batch.rows.count,
-        **csv_data.metadata
-      }
 
-      new(event_type:, author:, appropriate_body: batch.appropriate_body, heading:, happened_at: Time.zone.now, metadata:).record_event!
+      new(event_type:, author:, appropriate_body: batch.appropriate_body, pending_induction_submission_batch: batch, heading:, happened_at: Time.zone.now).record_event!
     end
 
     def self.record_bulk_upload_completed_event!(author:, batch:)
       event_type = :bulk_upload_completed
       heading = "#{batch.appropriate_body.name} completed a bulk #{batch.batch_type}"
-      metadata = {
-        batch_id: batch.id,
-        batch_type: batch.batch_type,
-        batch_status: batch.batch_status,
-        total: batch.pending_induction_submissions.count,
-        skipped: batch.pending_induction_submissions.with_errors.count,
-        passed: batch.pending_induction_submissions.pass.count,
-        failed: batch.pending_induction_submissions.fail.count,
-        released: batch.pending_induction_submissions.release.count,
-      }
 
-      new(event_type:, author:, appropriate_body: batch.appropriate_body, heading:, happened_at: Time.zone.now, metadata:).record_event!
+      new(event_type:, author:, appropriate_body: batch.appropriate_body, pending_induction_submission_batch: batch, heading:, happened_at: Time.zone.now).record_event!
     end
 
     # API Token Events
@@ -443,14 +430,15 @@ module Events
       }.compact
     end
 
+    # TODO: refactor to always use event_author_params
     def author_attributes
       case author
       when Sessions::User
         author.event_author_params
       when Events::SystemAuthor
         author.system_author_params
-      when Events::AppropriateBodyBackgroundJobAuthor
-        author.author_params
+      when Events::AppropriateBodyBatchAuthor
+        author.event_author_params
       else
         fail(InvalidAuthor, author.class)
       end
@@ -474,6 +462,7 @@ module Events
         statement:,
         statement_adjustment:,
         user:,
+        pending_induction_submission_batch:,
       }.compact
     end
 

@@ -1,3 +1,4 @@
+# Run batch process services
 class ProcessBatchJob < ApplicationJob
   # @see [AppropriateBodies::ProcessBatch::Claim, AppropriateBodies::ProcessBatch::Action]
   def self.batch_service
@@ -16,7 +17,9 @@ class ProcessBatchJob < ApplicationJob
     if pending_induction_submission_batch.processed?
       pending_induction_submission_batch.completing!
       batch_service.complete!
+      pending_induction_submission_batch.tally!
       pending_induction_submission_batch.completed!
+      pending_induction_submission_batch.redact!
 
     elsif pending_induction_submission_batch.pending?
       pending_induction_submission_batch.processing!
@@ -28,6 +31,7 @@ class ProcessBatchJob < ApplicationJob
 
     pending_induction_submission_batch.update!(error_message: e.message)
     pending_induction_submission_batch.failed!
+    Sentry.capture_exception(e)
   end
 
 private
@@ -35,12 +39,13 @@ private
   # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
   # @param email [String]
   # @param name [String]
-  # @return [Events::AppropriateBodyBackgroundJobAuthor]
+  # @return [Events::AppropriateBodyBatchAuthor]
   def event_author(pending_induction_submission_batch, email, name)
-    Events::AppropriateBodyBackgroundJobAuthor.new(
+    Events::AppropriateBodyBatchAuthor.new(
       email:,
       name:,
-      appropriate_body_id: pending_induction_submission_batch.appropriate_body.id
+      appropriate_body_id: pending_induction_submission_batch.appropriate_body.id,
+      batch_id: pending_induction_submission_batch.id
     )
   end
 end

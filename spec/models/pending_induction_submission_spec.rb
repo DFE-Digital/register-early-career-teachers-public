@@ -10,27 +10,54 @@ RSpec.describe PendingInductionSubmission do
   end
 
   describe "scopes" do
-    let!(:sub1) { FactoryBot.create(:pending_induction_submission) }
-    let!(:sub2) { FactoryBot.create(:pending_induction_submission) }
-    let!(:sub3) { FactoryBot.create(:pending_induction_submission, error_messages: ['something went wrong']) }
+    let!(:claimed) { FactoryBot.create(:pending_induction_submission, :claimed) }
+    let!(:passed) { FactoryBot.create(:pending_induction_submission, :passed) }
+    let!(:failed) { FactoryBot.create(:pending_induction_submission, :failed) }
+    let!(:released) { FactoryBot.create(:pending_induction_submission, :released) }
 
     describe ".with_errors" do
+      let!(:errored) { FactoryBot.create(:pending_induction_submission, error_messages: ['something went wrong']) }
+
       it "returns submissions with errors" do
-        expect(described_class.with_errors).to contain_exactly(sub3)
+        expect(described_class.with_errors).to contain_exactly(errored)
       end
     end
 
     describe ".without_errors" do
       it "returns submissions without errors" do
-        expect(described_class.without_errors).to contain_exactly(sub1, sub2)
+        expect(described_class.without_errors).to contain_exactly(claimed, passed, failed, released)
+      end
+    end
+
+    describe ".released" do
+      it "returns submissions that released an ECT" do
+        expect(described_class.released).to contain_exactly(released)
+      end
+    end
+
+    describe ".passed" do
+      it "returns submissions that passed an ECT" do
+        expect(described_class.passed).to contain_exactly(passed)
+      end
+    end
+
+    describe ".failed" do
+      it "returns submissions that failed an ECT" do
+        expect(described_class.failed).to contain_exactly(failed)
+      end
+    end
+
+    describe ".claimed" do
+      it "returns submissions that claimed an ECT" do
+        expect(described_class.claimed).to contain_exactly(claimed)
       end
     end
   end
 
-  describe "validation" do
+  describe "validations" do
     it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
 
-    describe "trn" do
+    describe "#trn" do
       it { is_expected.to validate_presence_of(:trn).on(:find_ect).with_message("Enter a TRN") }
 
       context "when the string contains 7 numeric digits" do
@@ -46,14 +73,14 @@ RSpec.describe PendingInductionSubmission do
       end
     end
 
-    describe "trs_induction_status" do
+    describe "#trs_induction_status" do
       let(:statuses) { %w[None RequiredToComplete Exempt InProgress Passed Failed FailedInWales] }
 
       it { is_expected.to validate_presence_of(:trs_induction_status).on(:register_ect).with_message("TRS Induction Status is not known") }
       it { is_expected.to allow_values(*statuses).for(:trs_induction_status) }
     end
 
-    describe "date_of_birth" do
+    describe "#date_of_birth" do
       it { is_expected.to validate_presence_of(:date_of_birth).with_message("Enter a date of birth").on(:find_ect) }
 
       it { is_expected.to validate_inclusion_of(:date_of_birth).in_range(100.years.ago.to_date..18.years.ago.to_date).on(:find_ect).with_message("Teacher must be between 18 and 100 years old") }
@@ -75,19 +102,19 @@ RSpec.describe PendingInductionSubmission do
       end
     end
 
-    describe "induction_programme" do
+    describe "#induction_programme" do
       it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy]).with_message("Choose an induction programme").on(:register_ect) }
     end
 
-    describe "started_on" do
+    describe "#started_on" do
       it { is_expected.to validate_presence_of(:started_on).with_message("Enter a start date").on(:register_ect) }
     end
 
-    describe "finished_on" do
+    describe "#finished_on" do
       it { is_expected.to validate_presence_of(:finished_on).with_message("Enter a finish date").on(%i[release_ect record_outcome]) }
     end
 
-    describe "number_of_terms" do
+    describe "#number_of_terms" do
       subject { FactoryBot.build(:pending_induction_submission, finished_on: Date.current) }
 
       it { is_expected.to validate_presence_of(:number_of_terms).with_message('Enter a number of terms').on(%i[release_ect record_outcome]) }
@@ -150,7 +177,7 @@ RSpec.describe PendingInductionSubmission do
       end
     end
 
-    describe "confirmed" do
+    describe "#confirmed" do
       it { is_expected.to validate_acceptance_of(:confirmed).on(:check_ect).with_message("Confirm if these details are correct or try your search again") }
     end
 
@@ -187,7 +214,7 @@ RSpec.describe PendingInductionSubmission do
       end
     end
 
-    describe "finished_on_not_in_future" do
+    describe "#finished_on_not_in_future" do
       let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
 
       context "when finished_on is today" do
