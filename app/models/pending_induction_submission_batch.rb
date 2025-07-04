@@ -52,14 +52,22 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     pending_induction_submissions.count == pending_induction_submissions.with_errors.count
   end
 
-  # @return [Boolean] when completed
+  # @return [Boolean] when completing and completed
   def errored?
-    errored_count.to_i.positive?
+    if errored_count.nil?
+      pending_induction_submissions.with_errors.count.positive?
+    else
+      errored_count.positive?
+    end
   end
 
-  # @return [Integer] when completed
+  # @return [Integer] when completing and completed
   def recorded_count
-    processed_count.to_i - errored_count.to_i
+    if processed_count.nil?
+      pending_induction_submissions.without_errors.count
+    else
+      processed_count - errored_count
+    end
   end
 
   # @see BatchHelper#batch_action_summary
