@@ -9,14 +9,14 @@ describe LeadProviders::Active do
     end
   end
 
-  describe '#active_in_registration_period?' do
-    subject { LeadProviders::Active.new(lead_provider).active_in_registration_period?(registration_period) }
+  describe '#active_in_contract_period?' do
+    subject { LeadProviders::Active.new(lead_provider).active_in_contract_period?(contract_period) }
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
-    let(:registration_period) { FactoryBot.create(:registration_period) }
+    let(:contract_period) { FactoryBot.create(:contract_period) }
 
     context 'when an active_lead_provider record exists for the registration period' do
-      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:) }
+      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
       it { is_expected.to be(true) }
     end
