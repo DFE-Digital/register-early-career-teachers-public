@@ -254,7 +254,6 @@
   :pending_induction_submission_batches:
   - id
   - appropriate_body_id
-  - author_id
   - batch_type
   - batch_status
   - data

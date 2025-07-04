@@ -2,13 +2,13 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   include BatchRows
 
   # @return [PendingInductionSubmissionBatch] type "claim"
-  def self.new_claim_for(appropriate_body:, author:, **)
-    new(appropriate_body:, author_id: author.id, batch_type: 'claim', **)
+  def self.new_claim_for(appropriate_body:, **)
+    new(appropriate_body:, batch_type: 'claim', **)
   end
 
   # @return [PendingInductionSubmissionBatch] type "action"
-  def self.new_action_for(appropriate_body:, author:, **)
-    new(appropriate_body:, author_id: author.id, batch_type: 'action', **)
+  def self.new_action_for(appropriate_body:, **)
+    new(appropriate_body:, batch_type: 'action', **)
   end
 
   # Enums
@@ -27,7 +27,6 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   }
 
   # Associations
-  belongs_to :author, class_name: 'User'
   belongs_to :appropriate_body
   has_many :pending_induction_submissions
 
@@ -35,7 +34,6 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
 
   # Validations
-  validates :author, presence: true
   validates :appropriate_body, presence: true
   validates :batch_status, presence: true
   validates :batch_type, presence: true

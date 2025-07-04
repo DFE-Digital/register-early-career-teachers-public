@@ -46,7 +46,7 @@ module AppropriateBodies
     private
 
       def new_batch_claim
-        PendingInductionSubmissionBatch.new_claim_for(appropriate_body: @appropriate_body, author: current_user)
+        PendingInductionSubmissionBatch.new_claim_for(appropriate_body: @appropriate_body)
       end
 
       def process_batch_claim
