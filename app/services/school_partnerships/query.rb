@@ -2,11 +2,11 @@ module SchoolPartnerships
   class Query
     attr_reader :scope
 
-    def initialize(school: :ignore, registration_period: :ignore, lead_provider: :ignore, delivery_partner: :ignore)
+    def initialize(school: :ignore, contract_period: :ignore, lead_provider: :ignore, delivery_partner: :ignore)
       @scope = default_scope
 
       where_lead_provider(lead_provider)
-      where_registration_period(registration_period)
+      where_contract_period(contract_period)
       where_school(school)
       where_delivery_partner(delivery_partner)
     end
@@ -29,12 +29,12 @@ module SchoolPartnerships
       )
     end
 
-    def where_registration_period(registration_period)
-      return if registration_period == :ignore
+    def where_contract_period(contract_period)
+      return if contract_period == :ignore
 
       scope.merge!(
         scope.where(
-          lead_provider_delivery_partnership: { active_lead_providers: { registration_period: } }
+          lead_provider_delivery_partnership: { active_lead_providers: { contract_period: } }
         )
       )
     end
@@ -60,7 +60,7 @@ module SchoolPartnerships
         .eager_load(
           lead_provider_delivery_partnership: [
             :delivery_partner,
-            { active_lead_provider: %i[lead_provider registration_period] }
+            { active_lead_provider: %i[lead_provider contract_period] }
           ]
         )
     end

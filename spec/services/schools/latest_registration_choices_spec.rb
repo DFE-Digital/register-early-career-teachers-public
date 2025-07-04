@@ -1,7 +1,7 @@
 describe Schools::LatestRegistrationChoices do
-  let(:service) { Schools::LatestRegistrationChoices.new(school:, registration_period:) }
+  let(:service) { Schools::LatestRegistrationChoices.new(school:, contract_period:) }
 
-  let(:registration_period) { FactoryBot.create(:registration_period, year: 2025) }
+  let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
 
   describe '#lead_provider_and_delivery_partner' do
@@ -21,7 +21,7 @@ describe Schools::LatestRegistrationChoices do
       context 'when the last_chosen_lead_provider is in a partnership with the school' do
         let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
         let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
-        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:) }
+        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
         it 'returns a Schools::LatestRegistrationChoices::Choice' do
           expect(subject).to be_a(Schools::LatestRegistrationChoices::Choice)
@@ -37,10 +37,10 @@ describe Schools::LatestRegistrationChoices do
       end
 
       context 'when the last_chosen_lead_provider is not currently in a partnership with the school' do
-        let(:previous_registration_period) { FactoryBot.create(:registration_period, year: 2024) }
+        let(:previous_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
 
         context 'when the last_chosen_lead_provider is active' do
-          let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:) }
+          let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
           it 'is the last chosen lead provider' do
             expect(subject.lead_provider).to eql(lead_provider)
@@ -52,14 +52,14 @@ describe Schools::LatestRegistrationChoices do
         end
 
         context 'when the last_chosen_lead_provider is inactive' do
-          let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, registration_period: previous_registration_period) }
+          let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period) }
 
           it { is_expected.to be_nil }
         end
       end
 
       context 'when the school is partnered with the same lead provider and multiple delivery partners' do
-        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:) }
+        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
         let(:earliest_delivery_partner) { FactoryBot.create(:delivery_partner) }
         let!(:earliest_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner: earliest_delivery_partner) }

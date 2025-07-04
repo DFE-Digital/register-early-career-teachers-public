@@ -1,14 +1,14 @@
 describe SchoolPartnerships::Query do
   let!(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:registration_period) { FactoryBot.create(:registration_period, year: 2027) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2027) }
   let!(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let!(:school) { FactoryBot.create(:school) }
 
-  let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:) }
+  let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
   let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
   let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
-  let(:query_params) { { lead_provider:, school:, delivery_partner:, registration_period: } }
+  let(:query_params) { { lead_provider:, school:, delivery_partner:, contract_period: } }
 
   describe '.school_partnerships' do
     subject { SchoolPartnerships::Query.new(**query_params) }
@@ -29,20 +29,20 @@ describe SchoolPartnerships::Query do
 
   describe '#exists?' do
     it 'returns true when a school partnership matches lead provider, delivery partner and school for the given registration period' do
-      expect(SchoolPartnerships::Query.new(lead_provider:, school:, registration_period:)).to exist
+      expect(SchoolPartnerships::Query.new(lead_provider:, school:, contract_period:)).to exist
     end
 
     describe 'registration periods' do
-      context 'when registration_period differs' do
-        subject { SchoolPartnerships::Query.new(**query_params.merge(registration_period: other_registration_period)) }
+      context 'when contract_period differs' do
+        subject { SchoolPartnerships::Query.new(**query_params.merge(contract_period: other_contract_period)) }
 
-        let(:other_registration_period) { FactoryBot.create(:registration_period, year: 2028) }
+        let(:other_contract_period) { FactoryBot.create(:contract_period, year: 2028) }
 
         it { is_expected.not_to(exist) }
       end
 
-      context 'when registration_period omitted' do
-        subject { SchoolPartnerships::Query.new(**query_params.except(:registration_period)) }
+      context 'when contract_period omitted' do
+        subject { SchoolPartnerships::Query.new(**query_params.except(:contract_period)) }
 
         it { is_expected.to(exist) }
       end

@@ -6,8 +6,8 @@ module LeadProviders
       @lead_provider = lead_provider
     end
 
-    def active_in_registration_period?(registration_period)
-      lead_provider.active_lead_providers.exists?(registration_period:)
+    def active_in_contract_period?(contract_period)
+      lead_provider.active_lead_providers.exists?(contract_period:)
     end
   end
 end

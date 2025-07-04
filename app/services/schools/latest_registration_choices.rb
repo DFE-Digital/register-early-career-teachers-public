@@ -2,11 +2,11 @@ module Schools
   class LatestRegistrationChoices
     Choice = Struct.new(:lead_provider, :delivery_partner)
 
-    attr_reader :school, :registration_period
+    attr_reader :school, :contract_period
 
-    def initialize(school:, registration_period:)
+    def initialize(school:, contract_period:)
       @school = school
-      @registration_period = registration_period
+      @contract_period = contract_period
     end
 
     delegate :last_chosen_appropriate_body, to: :school
@@ -22,7 +22,7 @@ module Schools
           lead_provider: last_chosen_lead_provider,
           delivery_partner: lead_provider_delivery_partnership.delivery_partner
         )
-      elsif LeadProviders::Active.new(last_chosen_lead_provider).active_in_registration_period?(registration_period)
+      elsif LeadProviders::Active.new(last_chosen_lead_provider).active_in_contract_period?(contract_period)
         Choice.new(
           lead_provider: last_chosen_lead_provider
         )
@@ -38,7 +38,7 @@ module Schools
     def matching_partnerships
       @matching_partnerships ||= SchoolPartnerships::Query.new(
         school:,
-        registration_period:,
+        contract_period:,
         lead_provider: last_chosen_lead_provider
       ).school_partnerships
     end
