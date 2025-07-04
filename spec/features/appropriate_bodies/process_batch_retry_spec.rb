@@ -71,7 +71,7 @@ RSpec.describe 'Process bulk claims then actions which have become invalidated' 
     expect(page.get_by_text("1 ECT with a passed induction")).to be_visible
     expect(page.get_by_text("0 ECTs with a failed induction")).to be_visible
     expect(page.get_by_text("0 ECTs with a released outcome")).to be_visible
-    expect(page.get_by_text("You had 1 ECTs with errors")).to be_visible # FIXME: correct pluralisation
+    expect(page.get_by_text("You had 1 ECT with errors")).to be_visible
   end
 
 private
