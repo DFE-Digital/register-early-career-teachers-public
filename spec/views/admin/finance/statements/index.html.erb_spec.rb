@@ -24,10 +24,10 @@ RSpec.describe 'admin/finance/statements/index.html.erb' do
   it 'has a link to each statement' do
     render(locals:)
 
-    presented_statements = Admin::StatementPresenter.wrap(raw_statements)
-    presented_statements.each do |s|
-      link_text = "View statement for #{s.lead_provider_name} in #{s.month_and_year}"
-      expect(rendered).to have_link(link_text, href: admin_finance_statement_path(s))
+    raw_statements.each do |statement|
+      period = Statements::Period.for(statement)
+      link_text = "View statement for #{statement.lead_provider.name} in #{period}"
+      expect(rendered).to have_link(link_text, href: admin_finance_statement_path(statement))
     end
   end
 
