@@ -22,6 +22,9 @@ module Events
                 :lead_provider,
                 :delivery_partner,
                 :pending_induction_submission_batch,
+                :active_lead_provider,
+                :statement,
+                :statement_adjustment,
                 :user,
                 :modifications,
                 :metadata
@@ -45,6 +48,9 @@ module Events
       lead_provider: nil,
       delivery_partner: nil,
       pending_induction_submission_batch: nil,
+      active_lead_provider: nil,
+      statement: nil,
+      statement_adjustment: nil,
       user: nil,
       modifications: nil,
       metadata: nil
@@ -67,6 +73,9 @@ module Events
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
       @pending_induction_submission_batch = pending_induction_submission_batch
+      @active_lead_provider = active_lead_provider
+      @statement = statement
+      @statement_adjustment = statement_adjustment
       @user = user
       @modifications = DescribeModifications.new(modifications).describe
       @metadata = metadata || modifications
@@ -258,12 +267,12 @@ module Events
 
     # ECT and mentor events
 
-    def self.record_teacher_registered_as_mentor_event!(author:, mentor_at_school_period:, teacher:, school:, happened_at: Time.zone.now)
+    def self.record_teacher_registered_as_mentor_event!(author:, mentor_at_school_period:, teacher:, school:, training_period:, happened_at: Time.zone.now)
       event_type = :teacher_registered_as_mentor
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was registered as a mentor at #{school.name}"
 
-      new(event_type:, author:, heading:, mentor_at_school_period:, teacher:, school:, happened_at:).record_event!
+      new(event_type:, author:, heading:, mentor_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
     end
 
     def self.record_teacher_registered_as_ect_event!(author:, ect_at_school_period:, teacher:, school:, training_period:, happened_at: Time.zone.now)
@@ -330,6 +339,82 @@ module Events
       new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
     end
 
+    # Statement Adjustment Events
+
+    def self.record_statement_adjustment_added_event!(author:, statement_adjustment:)
+      event_type = :statement_adjustment_added
+      heading = "Statement adjustment added: #{statement_adjustment.payment_type}"
+      metadata = {
+        payment_type: statement_adjustment.payment_type,
+        amount: statement_adjustment.amount,
+      }
+
+      statement = statement_adjustment.statement
+      active_lead_provider = statement.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        statement_adjustment:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
+    def self.record_statement_adjustment_updated_event!(author:, statement_adjustment:)
+      event_type = :statement_adjustment_updated
+      heading = "Statement adjustment updated: #{statement_adjustment.payment_type}"
+      metadata = {
+        payment_type: statement_adjustment.payment_type,
+        amount: statement_adjustment.amount,
+      }
+
+      statement = statement_adjustment.statement
+      active_lead_provider = statement.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        statement_adjustment:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
+    def self.record_statement_adjustment_deleted_event!(author:, statement_adjustment:)
+      event_type = :statement_adjustment_deleted
+      heading = "Statement adjustment deleted: #{statement_adjustment.payment_type}"
+      metadata = {
+        payment_type: statement_adjustment.payment_type,
+        amount: statement_adjustment.amount,
+      }
+
+      statement = statement_adjustment.statement
+      active_lead_provider = statement.active_lead_provider
+      lead_provider = active_lead_provider.lead_provider
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
   private
 
     def attributes
@@ -373,6 +458,9 @@ module Events
         school_partnership:,
         lead_provider:,
         delivery_partner:,
+        active_lead_provider:,
+        statement:,
+        statement_adjustment:,
         user:,
         pending_induction_submission_batch:,
       }.compact

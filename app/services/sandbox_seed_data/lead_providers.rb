@@ -19,8 +19,8 @@ module SandboxSeedData
         lead_provider = LeadProvider.find_or_create_by!(name:)
 
         active_years.each do |year|
-          registration_period = RegistrationPeriod.find_by!(year:)
-          ActiveLeadProvider.find_or_create_by!(registration_period:, lead_provider:)
+          contract_period = ContractPeriod.find_by!(year:)
+          ActiveLeadProvider.find_or_create_by!(contract_period:, lead_provider:)
         end
 
         log_seed_info("#{Colourize.text(name, colour(index))} (#{active_years.to_a.join(', ')})")

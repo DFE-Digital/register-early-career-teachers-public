@@ -9,13 +9,13 @@ RSpec.describe SandboxSeedData::Statements do
   end
 
   describe "#plant" do
-    let(:registration_period) { FactoryBot.create(:registration_period, year: Time.zone.now.year - 1) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, registration_period:) }
+    let(:contract_period) { FactoryBot.create(:contract_period, year: Time.zone.now.year - 1) }
+    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
     it "creates statements for active lead providers with the correct attributes" do
       instance.plant
 
-      registration_year = registration_period.year
+      registration_year = contract_period.year
       years = (registration_year...(registration_year + described_class::YEARS_TO_CREATE)).to_a
       months = described_class::MONTHS.to_a
 
@@ -48,8 +48,8 @@ RSpec.describe SandboxSeedData::Statements do
 
       expect(logger).to have_received(:info).with(/#{active_lead_provider.lead_provider.name}/).once
 
-      expect(logger).to have_received(:info).with(/#{registration_period.year}/).once
-      expect(logger).to have_received(:info).with(/#{registration_period.year + described_class::YEARS_TO_CREATE - 1}/).once
+      expect(logger).to have_received(:info).with(/#{contract_period.year}/).once
+      expect(logger).to have_received(:info).with(/#{contract_period.year + described_class::YEARS_TO_CREATE - 1}/).once
 
       described_class::MONTHS.each do |month|
         expect(logger).to have_received(:info).with(/#{Date::MONTHNAMES[month]}/).at_least(:once)

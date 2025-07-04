@@ -13,9 +13,9 @@ RSpec.describe "Admin finance statement filter" do
     then_i_see_statements_filtered_by_lead_provider
   end
 
-  scenario "Filter by registration period" do
-    when_i_filter_by_registration_period
-    then_i_see_statements_filtered_by_registration_period
+  scenario "Filter by contract_period" do
+    when_i_filter_by_contract_period
+    then_i_see_statements_filtered_by_contract_period
   end
 
   scenario "Filter by statement date" do
@@ -32,12 +32,12 @@ RSpec.describe "Admin finance statement filter" do
     @lead_provider1 = FactoryBot.create(:lead_provider)
     @lead_provider2 = FactoryBot.create(:lead_provider)
 
-    @registration_period1 = FactoryBot.create(:registration_period)
-    @registration_period2 = FactoryBot.create(:registration_period)
+    @contract_period1 = FactoryBot.create(:contract_period)
+    @contract_period2 = FactoryBot.create(:contract_period)
 
-    @active_lead_provider1 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider1, registration_period: @registration_period1)
-    @active_lead_provider2 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider1, registration_period: @registration_period2)
-    @active_lead_provider3 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider2, registration_period: @registration_period2)
+    @active_lead_provider1 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider1, contract_period: @contract_period1)
+    @active_lead_provider2 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider1, contract_period: @contract_period2)
+    @active_lead_provider3 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider2, contract_period: @contract_period2)
 
     @statement1 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, fee_type: 'output', year: 2025, month: 5)
     @statement2 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, fee_type: 'service', year: 2023, month: 5)
@@ -77,16 +77,16 @@ RSpec.describe "Admin finance statement filter" do
     ])
   end
 
-  def when_i_filter_by_registration_period
+  def when_i_filter_by_contract_period
     filter = page.locator(".app-admin-filter")
 
     elem = filter.get_by_label("Contract year", exact: true)
-    elem.select_option(label: @registration_period2.year.to_s)
+    elem.select_option(label: @contract_period2.year.to_s)
 
     filter.get_by_role('button', name: "View").click
   end
 
-  def then_i_see_statements_filtered_by_registration_period
+  def then_i_see_statements_filtered_by_contract_period
     expect(table_statement_ids).to eq([
       @statement3.id,
       @statement5.id,

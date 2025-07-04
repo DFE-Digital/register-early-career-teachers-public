@@ -1,6 +1,6 @@
 def describe_lead_provider_delivery_partnership(lpdp)
   alp = lpdp.active_lead_provider
-  print_seed_info("#{lpdp.delivery_partner.name} are working with #{alp.lead_provider.name} in #{alp.registration_period.year}")
+  print_seed_info("#{lpdp.delivery_partner.name} are working with #{alp.lead_provider.name} in #{alp.contract_period.year}")
 end
 
 ambitious_institute = LeadProvider.find_by!(name: 'Ambitious Institute')
@@ -8,8 +8,8 @@ teach_fast = LeadProvider.find_by!(name: 'Teach Fast')
 better_practice_network = LeadProvider.find_by!(name: 'Better Practice Network')
 
 active_lead_providers = ActiveLeadProvider
-  .eager_load(:registration_period, :lead_provider)
-  .index_by { |alp| [alp.lead_provider, alp.registration_period.year] }
+  .eager_load(:contract_period, :lead_provider)
+  .index_by { |alp| [alp.lead_provider, alp.contract_period.year] }
 
 ambitious_institute_2022 = active_lead_providers.fetch([ambitious_institute, 2022])
 ambitious_institute_2023 = active_lead_providers.fetch([ambitious_institute, 2023])

@@ -12,6 +12,9 @@ class Event < ApplicationRecord
     induction_period_updated
     lead_provider_api_token_created
     lead_provider_api_token_revoked
+    statement_adjustment_added
+    statement_adjustment_deleted
+    statement_adjustment_updated
     teacher_fails_induction
     teacher_imported_from_trs
     teacher_induction_status_reset
@@ -50,6 +53,10 @@ class Event < ApplicationRecord
   belongs_to :mentor_at_school_period
   belongs_to :mentorship_period
   belongs_to :training_period
+
+  # statements
+  belongs_to :statement
+  belongs_to :statement_adjustment, class_name: "Statement::Adjustment"
 
   # bulk uploads
   belongs_to :pending_induction_submission_batch

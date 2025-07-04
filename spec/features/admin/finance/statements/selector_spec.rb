@@ -19,13 +19,13 @@ RSpec.describe "Admin finance statement selector" do
 
   def given_statement_exist_with_dropdown_options
     @lead_provider1 = FactoryBot.create(:lead_provider)
-    @registration_period1 = FactoryBot.create(:registration_period)
-    @active_lead_provider1 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider1, registration_period: @registration_period1)
+    @contract_period1 = FactoryBot.create(:contract_period)
+    @active_lead_provider1 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider1, contract_period: @contract_period1)
     @statement1 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, year: 2024, month: 7)
 
     @lead_provider2 = FactoryBot.create(:lead_provider)
-    @registration_period2 = FactoryBot.create(:registration_period)
-    @active_lead_provider2 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider2, registration_period: @registration_period2)
+    @contract_period2 = FactoryBot.create(:contract_period)
+    @active_lead_provider2 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider2, contract_period: @contract_period2)
     @statement2 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, year: 2025, month: 5)
   end
 
@@ -39,8 +39,8 @@ RSpec.describe "Admin finance statement selector" do
     lead_provider_selected = data["Lead provider"].detect { |op| op[:selected] }[:value]
     expect(lead_provider_selected.to_i).to eq(@lead_provider1.id)
 
-    registration_period_selected = data["Contract year"].detect { |op| op[:selected] }[:value]
-    expect(registration_period_selected.to_i).to eq(@registration_period1.id)
+    contract_period_selected = data["Contract year"].detect { |op| op[:selected] }[:value]
+    expect(contract_period_selected.to_i).to eq(@contract_period1.id)
 
     statement_date_selected = data["Statement date"].detect { |op| op[:selected] }[:value]
     expect(statement_date_selected).to eq([@statement1.year, @statement1.month].join("-"))
@@ -53,7 +53,7 @@ RSpec.describe "Admin finance statement selector" do
     elem.select_option(label: @lead_provider2.name)
 
     elem = selector.get_by_label("Contract year", exact: true)
-    elem.select_option(label: @registration_period2.year.to_s)
+    elem.select_option(label: @contract_period2.year.to_s)
 
     elem = selector.get_by_label("Statement date", exact: true)
     elem.select_option(label: "May 2025")
@@ -68,7 +68,7 @@ RSpec.describe "Admin finance statement selector" do
     elem.select_option(label: @lead_provider2.name)
 
     elem = selector.get_by_label("Contract year", exact: true)
-    elem.select_option(label: @registration_period1.year.to_s)
+    elem.select_option(label: @contract_period1.year.to_s)
 
     elem = selector.get_by_label("Statement date", exact: true)
     elem.select_option(label: "July 2024")

@@ -18,7 +18,13 @@ module AppropriateBodies
         query_string: params[:q],
         appropriate_bodies: @appropriate_body,
         status: @status
-      ).search
+      )
+      .search
+      .includes(
+        :induction_periods,
+        :first_induction_period,
+        :last_induction_period
+      )
     end
   end
 end

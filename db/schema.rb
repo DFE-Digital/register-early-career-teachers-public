@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_01_083912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -40,12 +40,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
 
   create_table "active_lead_providers", force: :cascade do |t|
     t.bigint "lead_provider_id", null: false
-    t.bigint "registration_period_id", null: false
+    t.bigint "contract_period_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["lead_provider_id", "registration_period_id"], name: "idx_on_lead_provider_id_registration_period_id_1c10f35875", unique: true
+    t.index ["contract_period_id"], name: "index_active_lead_providers_on_contract_period_id"
+    t.index ["lead_provider_id", "contract_period_id"], name: "idx_on_lead_provider_id_contract_period_id_0083722692", unique: true
     t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
-    t.index ["registration_period_id"], name: "index_active_lead_providers_on_registration_period_id"
   end
 
   create_table "api_tokens", force: :cascade do |t|
@@ -125,6 +125,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
+  end
+
+  create_table "contract_periods", primary_key: "year", id: :serial, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "started_on"
+    t.date "finished_on"
+    t.boolean "enabled", default: false
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.index ["year"], name: "index_contract_periods_on_year", unique: true
   end
 
   create_table "data_migrations", force: :cascade do |t|
@@ -218,6 +228,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
     t.bigint "active_lead_provider_id"
     t.bigint "lead_provider_delivery_partnership_id"
     t.bigint "pending_induction_submission_batch_id"
+    t.bigint "statement_id"
+    t.bigint "statement_adjustment_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
@@ -232,6 +244,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
     t.index ["mentorship_period_id"], name: "index_events_on_mentorship_period_id"
     t.index ["school_id"], name: "index_events_on_school_id"
     t.index ["school_partnership_id"], name: "index_events_on_school_partnership_id"
+    t.index ["statement_adjustment_id"], name: "index_events_on_statement_adjustment_id"
+    t.index ["statement_id"], name: "index_events_on_statement_id"
     t.index ["teacher_id"], name: "index_events_on_teacher_id"
     t.index ["training_period_id"], name: "index_events_on_training_period_id"
     t.index ["user_id"], name: "index_events_on_user_id"
@@ -470,16 +484,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
-  create_table "registration_periods", primary_key: "year", id: :serial, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.date "started_on"
-    t.date "finished_on"
-    t.boolean "enabled", default: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.index ["year"], name: "index_registration_periods_on_year", unique: true
-  end
-
   create_table "school_partnerships", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -664,9 +668,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "trn", null: false
-    t.string "trs_first_name", null: false
-    t.string "trs_last_name", null: false
-    t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
+    t.string "trs_first_name"
+    t.string "trs_last_name"
     t.uuid "ecf_user_id"
     t.uuid "ecf_ect_profile_id"
     t.uuid "ecf_mentor_profile_id"
@@ -679,6 +682,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
     t.date "mentor_became_ineligible_for_funding_on"
     t.enum "mentor_became_ineligible_for_funding_reason", enum_type: "mentor_became_ineligible_for_funding_reason"
     t.boolean "trs_deactivated", default: false
+    t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
@@ -716,8 +720,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "active_lead_providers", "contract_periods", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
-  add_foreign_key "active_lead_providers", "registration_periods", primary_key: "year"
   add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "lead_providers"
@@ -735,6 +739,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_072430) do
   add_foreign_key "events", "mentorship_periods", on_delete: :nullify
   add_foreign_key "events", "school_partnerships", on_delete: :nullify
   add_foreign_key "events", "schools", on_delete: :nullify
+  add_foreign_key "events", "statement_adjustments", on_delete: :nullify
+  add_foreign_key "events", "statements", on_delete: :nullify
   add_foreign_key "events", "teachers", on_delete: :nullify
   add_foreign_key "events", "training_periods", on_delete: :nullify
   add_foreign_key "events", "users", column: "author_id", on_delete: :nullify

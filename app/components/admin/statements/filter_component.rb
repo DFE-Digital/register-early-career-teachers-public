@@ -15,12 +15,12 @@ module Admin
         params[:lead_provider_id]
       end
 
-      def registration_periods
-        RegistrationPeriod.order(year: :asc)
+      def contract_periods
+        ContractPeriod.order(year: :asc)
       end
 
-      def registration_period_id
-        params[:registration_period_id]
+      def contract_period_id
+        params[:contract_period_id]
       end
 
       def statement_dates

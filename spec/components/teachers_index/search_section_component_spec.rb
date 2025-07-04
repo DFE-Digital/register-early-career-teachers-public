@@ -22,6 +22,10 @@ RSpec.describe TeachersIndex::SearchSectionComponent, type: :component do
         hidden_input = rendered.css('input[name="status"][type="hidden"]').first
         expect(hidden_input['value']).to eq('open')
       end
+
+      it 'renders reset button with correct path for open status' do
+        expect(rendered).to have_link('Reset', href: '/appropriate-body/teachers')
+      end
     end
 
     context 'with a query' do
@@ -34,6 +38,10 @@ RSpec.describe TeachersIndex::SearchSectionComponent, type: :component do
 
       it 'still renders correct label' do
         expect(rendered.css('label').text).to include('Search for an open induction by name or teacher reference number (TRN)')
+      end
+
+      it 'renders reset button with correct path for open status' do
+        expect(rendered).to have_link('Reset', href: '/appropriate-body/teachers')
       end
     end
   end
@@ -49,6 +57,10 @@ RSpec.describe TeachersIndex::SearchSectionComponent, type: :component do
     it 'renders hidden status field with closed value' do
       hidden_input = rendered.css('input[name="status"][type="hidden"]').first
       expect(hidden_input['value']).to eq('closed')
+    end
+
+    it 'renders reset button with correct path for closed status' do
+      expect(rendered).to have_link('Reset', href: '/appropriate-body/teachers?status=closed')
     end
   end
 
@@ -85,8 +97,15 @@ RSpec.describe TeachersIndex::SearchSectionComponent, type: :component do
     it 'renders submit button with correct styling' do
       button = rendered.css('input[type="submit"]').first
       expect(button['class']).to include('govuk-button')
-      expect(button['class']).to include('govuk-!-margin-left-2')
       expect(button['value']).to eq('Search')
+    end
+
+    it 'renders reset button with correct styling' do
+      expect(rendered).to have_link('Reset', class: ['govuk-button', 'govuk-button--secondary'])
+    end
+
+    it 'renders button group with correct styling' do
+      expect(rendered.css('.govuk-button-group').length).to eq(1)
     end
 
     it 'uses grid layout for input and button' do
@@ -102,22 +121,7 @@ RSpec.describe TeachersIndex::SearchSectionComponent, type: :component do
 
     it 'includes necessary helpers' do
       expect(component.class.included_modules).to include(Rails.application.routes.url_helpers)
-    end
-
-    describe '#search_label_text' do
-      context 'with open status' do
-        it 'returns correct label text' do
-          expect(component.send(:search_label_text)).to eq('Search for an open induction by name or teacher reference number (TRN)')
-        end
-      end
-
-      context 'with closed status' do
-        let(:status) { 'closed' }
-
-        it 'returns correct label text' do
-          expect(component.send(:search_label_text)).to eq('Search for an closed induction by name or teacher reference number (TRN)')
-        end
-      end
+      expect(component.class.included_modules).to include(GovukLinkHelper)
     end
   end
 

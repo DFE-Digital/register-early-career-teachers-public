@@ -1,6 +1,5 @@
 require 'ostruct'
 require 'spec_helper'
-require "super_diff/rspec-rails"
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 

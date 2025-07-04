@@ -1,4 +1,6 @@
 RSpec.describe "Update adjustment for statement" do
+  include ActiveJob::TestHelper
+
   before { sign_in_as_dfe_user(role: :admin) }
 
   scenario "Update adjustment" do
@@ -22,6 +24,7 @@ RSpec.describe "Update adjustment for statement" do
     and_i_see_new_adjustment_values
     and_i_see_new_adjustment_total
     and_adjustment_should_have_been_updated
+    and_an_adjustment_updated_event_is_recorded
   end
 
   def given_a_finance_statement_exists
@@ -107,6 +110,13 @@ RSpec.describe "Update adjustment for statement" do
   alias_method :and_i_fill_in, :when_i_fill_in
 
   def and_i_click_button(name)
-    page.get_by_role('button', name:).click
+    perform_enqueued_jobs do
+      page.get_by_role('button', name:).click
+    end
+  end
+
+  def and_an_adjustment_updated_event_is_recorded
+    event = Event.find_by(event_type: "statement_adjustment_updated")
+    expect(event.statement).to eq(@statement)
   end
 end

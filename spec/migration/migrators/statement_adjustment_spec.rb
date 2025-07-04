@@ -11,9 +11,9 @@ describe Migrators::StatementAdjustment do
       ecf_cohort = migration_resource.statement.cohort
 
       lead_provider = FactoryBot.create(:lead_provider, name: ecf_lp.name, ecf_id: ecf_lp.id)
-      registration_period = FactoryBot.create(:registration_period, year: ecf_cohort.start_year)
-      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, registration_period:)
-      FactoryBot.create(:statement, api_id: migration_resource.statement_id, lead_provider:, registration_period:, active_lead_provider:)
+      contract_period = FactoryBot.create(:contract_period, year: ecf_cohort.start_year)
+      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+      FactoryBot.create(:statement, api_id: migration_resource.statement_id, lead_provider:, contract_period:, active_lead_provider:)
     end
 
     def setup_failure_state

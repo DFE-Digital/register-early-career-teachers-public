@@ -13,7 +13,7 @@ module Migrators
     end
 
     def self.dependencies
-      %i[registration_period active_lead_provider delivery_partner]
+      %i[contract_period active_lead_provider delivery_partner]
     end
 
     def self.reset!
@@ -27,7 +27,7 @@ module Migrators
         partnership = ::LeadProviderDeliveryPartnership.find_or_initialize_by(ecf_id: provider_relationship.id)
         partnership.active_lead_provider = ::ActiveLeadProvider.find_by!(
           lead_provider_id: ::LeadProvider.find_by!(ecf_id: provider_relationship.lead_provider_id),
-          registration_period_id: ::RegistrationPeriod.find(provider_relationship.cohort.start_year)
+          contract_period_id: ::ContractPeriod.find(provider_relationship.cohort.start_year)
         )
         partnership.delivery_partner = ::DeliveryPartner.find_by!(api_id: provider_relationship.delivery_partner_id)
         partnership.created_at = provider_relationship.created_at

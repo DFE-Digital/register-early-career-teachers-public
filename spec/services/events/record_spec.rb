@@ -608,15 +608,26 @@ RSpec.describe Events::Record do
 
   describe '.record_teacher_registered_as_mentor_event!' do
     let(:school) { FactoryBot.create(:school) }
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+    let(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_mentor,
+        :with_school_partnership,
+        mentor_at_school_period:,
+        started_on: mentor_at_school_period.started_on,
+        finished_on: mentor_at_school_period.finished_on
+      )
+    end
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_registered_as_mentor_event!(author:, teacher:, mentor_at_school_period:, school:)
+        Events::Record.record_teacher_registered_as_mentor_event!(author:, teacher:, mentor_at_school_period:, school:, training_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
           school:,
+          training_period:,
           mentor_at_school_period:,
           heading: "Rhys Ifans was registered as a mentor at #{school.name}",
           event_type: :teacher_registered_as_mentor,
@@ -780,6 +791,86 @@ RSpec.describe Events::Record do
           event_type: :lead_provider_api_token_revoked,
           happened_at: Time.zone.now,
           metadata: { description: api_token.description },
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_statement_adjustment_added_event!' do
+    let(:statement) { FactoryBot.create(:statement) }
+    let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_statement_adjustment_added_event!(author:, statement_adjustment:)
+        metadata = {
+          payment_type: statement_adjustment.payment_type,
+          amount: statement_adjustment.amount,
+        }
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "Statement adjustment added: #{statement_adjustment.payment_type}",
+          statement:,
+          statement_adjustment:,
+          active_lead_provider: statement.active_lead_provider,
+          lead_provider: statement.active_lead_provider.lead_provider,
+          event_type: :statement_adjustment_added,
+          happened_at: Time.zone.now,
+          metadata:,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_statement_adjustment_updated_event!' do
+    let(:statement) { FactoryBot.create(:statement) }
+    let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_statement_adjustment_updated_event!(author:, statement_adjustment:)
+        metadata = {
+          payment_type: statement_adjustment.payment_type,
+          amount: statement_adjustment.amount,
+        }
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "Statement adjustment updated: #{statement_adjustment.payment_type}",
+          statement:,
+          statement_adjustment:,
+          active_lead_provider: statement.active_lead_provider,
+          lead_provider: statement.active_lead_provider.lead_provider,
+          event_type: :statement_adjustment_updated,
+          happened_at: Time.zone.now,
+          metadata:,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe '.record_statement_adjustment_deleted_event!' do
+    let(:statement) { FactoryBot.create(:statement) }
+    let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_statement_adjustment_deleted_event!(author:, statement_adjustment:)
+        metadata = {
+          payment_type: statement_adjustment.payment_type,
+          amount: statement_adjustment.amount,
+        }
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "Statement adjustment deleted: #{statement_adjustment.payment_type}",
+          statement:,
+          active_lead_provider: statement.active_lead_provider,
+          lead_provider: statement.active_lead_provider.lead_provider,
+          event_type: :statement_adjustment_deleted,
+          happened_at: Time.zone.now,
+          metadata:,
           **author_params
         )
       end

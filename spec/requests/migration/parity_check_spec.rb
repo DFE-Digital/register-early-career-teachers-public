@@ -111,4 +111,177 @@ RSpec.describe "Parity check", type: :request do
       end
     end
   end
+
+  describe "GET /migration/parity_checks/:id" do
+    let(:run) { FactoryBot.create(:parity_check_run, :completed) }
+
+    context "when signed in as a DfE user" do
+      include_context 'sign in as DfE user'
+
+      it "renders the parity check run page" do
+        get migration_parity_check_path(run)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Parity check run ##{run.id}")
+      end
+
+      context "when the parity check is not completed" do
+        let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+
+        it "renders 404 not found" do
+          get migration_parity_check_path(run)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when the parity check does not exist" do
+        it "renders 404 not found" do
+          get migration_parity_check_path(99)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when parity check is disabled" do
+        let(:enabled) { false }
+
+        it "renders 404 not found" do
+          get migration_parity_check_path(run)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context "when not signed in as a DfE user" do
+      include_context 'sign in as non-DfE user'
+
+      it "renders the unauthorized page" do
+        get migration_parity_check_path(run)
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+      end
+    end
+  end
+
+  describe "GET /migration/parity_checks/:run_id/requests/:id" do
+    let(:run) { FactoryBot.create(:parity_check_run, :completed) }
+    let(:request) { FactoryBot.create(:parity_check_request, :completed, run:) }
+
+    context "when signed in as a DfE user" do
+      include_context 'sign in as DfE user'
+
+      it "renders the parity check request page" do
+        get migration_parity_check_request_path(run, request)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include(request.description)
+      end
+
+      context "when the parity check is not completed" do
+        let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+
+        it "renders 404 not found" do
+          get migration_parity_check_request_path(run, request)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when the request does not exist" do
+        it "renders 404 not found" do
+          get migration_parity_check_request_path(run, 99)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when the run does not exist" do
+        it "renders 404 not found" do
+          get migration_parity_check_request_path(99, request)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when parity check is disabled" do
+        let(:enabled) { false }
+
+        it "renders 404 not found" do
+          get migration_parity_check_request_path(run, request)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context "when not signed in as a DfE user" do
+      include_context 'sign in as non-DfE user'
+
+      it "renders the unauthorized page" do
+        get migration_parity_check_request_path(run, request)
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+      end
+    end
+  end
+
+  describe "GET /migration/parity_checks/:run_id/responses/:id" do
+    let(:run) { FactoryBot.create(:parity_check_run, :completed) }
+    let(:request) { FactoryBot.create(:parity_check_request, :completed, run:) }
+    let(:parity_check_response) { FactoryBot.create(:parity_check_response, :different, request:) }
+
+    context "when signed in as a DfE user" do
+      include_context 'sign in as DfE user'
+
+      it "renders the parity check response page" do
+        get migration_parity_check_response_path(run, parity_check_response)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include(parity_check_response.description)
+      end
+
+      context "when the parity check is not completed" do
+        let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+
+        it "renders 404 not found" do
+          get migration_parity_check_response_path(run, request)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when the response does not exist" do
+        it "renders 404 not found" do
+          get migration_parity_check_response_path(run, 99)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when the response is matching" do
+        let(:parity_check_response) { FactoryBot.create(:parity_check_response, :matching, request:) }
+
+        it "renders 404 not found" do
+          get migration_parity_check_response_path(run, 99)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when the run does not exist" do
+        it "renders 404 not found" do
+          get migration_parity_check_response_path(99, request)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "when parity check is disabled" do
+        let(:enabled) { false }
+
+        it "renders 404 not found" do
+          get migration_parity_check_response_path(run, request)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    context "when not signed in as a DfE user" do
+      include_context 'sign in as non-DfE user'
+
+      it "renders the unauthorized page" do
+        get migration_parity_check_response_path(run, request)
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+      end
+    end
+  end
 end

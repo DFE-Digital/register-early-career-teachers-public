@@ -35,12 +35,12 @@ def describe_group_of_statements(lead_provider, statements, month_col_width: 15,
 end
 
 grouped_active_lead_providers = ActiveLeadProvider
-  .joins(:registration_period)
+  .joins(:contract_period)
   .group_by(&:lead_provider)
 
 grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
   statements = active_lead_providers.flat_map do |alp|
-    registration_year = alp.registration_period.year
+    registration_year = alp.contract_period.year
     months = (1..12).to_a
     years = [registration_year, registration_year + 1]
 

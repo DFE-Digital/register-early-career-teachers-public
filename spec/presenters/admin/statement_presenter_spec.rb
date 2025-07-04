@@ -81,13 +81,13 @@ describe Admin::StatementPresenter do
     end
   end
 
-  describe '#registration_period_year' do
-    let(:registration_period) { FactoryBot.build(:registration_period, year: 2022) }
-    let(:active_lead_provider) { FactoryBot.build(:active_lead_provider, registration_period:) }
+  describe '#contract_period_year' do
+    let(:contract_period) { FactoryBot.build(:contract_period, year: 2022) }
+    let(:active_lead_provider) { FactoryBot.build(:active_lead_provider, contract_period:) }
     let(:statement) { FactoryBot.build(:statement, active_lead_provider:) }
 
     it 'returns the lead provider name' do
-      expect(subject.registration_period_year).to eql('2022')
+      expect(subject.contract_period_year).to eql('2022')
     end
   end
 
