@@ -13,7 +13,10 @@
                   class: "govuk-input") %>
           </div>
           <div class="govuk-grid-column-one-third">
-            <%= f.submit("Search", class: "govuk-button govuk-!-margin-left-2") %>
+            <div class="govuk-button-group">
+              <%= f.submit("Search", class: "govuk-button govuk-!-margin-left-2") %>
+              <%= govuk_button_link_to("Reset", reset_path, secondary: true) %>
+            </div>
           </div>
         </div>
       </div>
