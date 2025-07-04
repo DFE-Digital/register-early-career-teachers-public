@@ -101,8 +101,15 @@ class PendingInductionSubmission < ApplicationRecord
            on: %i[release_ect record_outcome]
 
   # Instance methods
+
+  # @return [Boolean]
   def exempt?
     trs_induction_status.eql?('Exempt')
+  end
+
+  # @return [Boolean]
+  def release?
+    outcome.nil?
   end
 
   # @return [Boolean] capture multiple error messages and reset before saving

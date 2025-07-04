@@ -7,10 +7,14 @@ module AppropriateBodies
         pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
           @pending_induction_submission = pending_induction_submission
 
-          record_or_release!
+          record_outcome.pass! if pending_induction_submission.pass?
+          record_outcome.fail! if pending_induction_submission.fail?
+          release_ect.release! if pending_induction_submission.release?
+
+          true
         rescue StandardError => e
           capture_error(e.message)
-          next
+          next(false)
         end
 
         # Batch error reporting
@@ -19,22 +23,6 @@ module AppropriateBodies
       end
 
     private
-
-      # @return [Boolean]
-      def record_or_release!
-        PendingInductionSubmissionBatch.transaction do
-          if pending_induction_submission.save(context: :record_outcome)
-            record_outcome.pass! if pending_induction_submission.pass?
-            record_outcome.fail! if pending_induction_submission.fail?
-            true
-          elsif pending_induction_submission.save(context: :release_ect)
-            release_ect.release! if pending_induction_submission.outcome.nil?
-            true
-          else
-            false
-          end
-        end
-      end
 
       # @return [nil, Boolean]
       def validate_submission!
