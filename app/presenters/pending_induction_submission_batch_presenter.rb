@@ -6,9 +6,11 @@ class PendingInductionSubmissionBatchPresenter < SimpleDelegator
   def failed_submissions
     raise MissingCSVDataError, "No persisted CSV data found" if data.blank?
 
+    failed_submissions = pending_induction_submissions.with_errors.pluck(:trn, :error_messages).to_h
+
     rows.filter_map do |row|
-      failed_submission = pending_induction_submissions.with_errors.find_by(trn: row.sanitised_trn)
-      row.with_errors(failed_submission.error_messages) if failed_submission.present?
+      errors = failed_submissions[row.sanitised_trn]
+      row.with_errors(errors) if errors.present?
     end
   end
 
