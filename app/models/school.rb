@@ -121,8 +121,6 @@ class School < ApplicationRecord
   end
 
   def training_programme_for(contract_period_id:)
-    return transient_training_programme if respond_to?(:transient_training_programme)
-
     Schools::TrainingProgramme.new(school: self, contract_period_id:).training_programme
   end
 

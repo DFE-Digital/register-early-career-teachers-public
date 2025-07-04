@@ -25,14 +25,20 @@ module Schools
     end
 
     def partnership_exists?
+      return school.transient_in_partnership if school.respond_to?(:transient_in_partnership)
+
       school.school_partnerships.for_contract_period(contract_period_id).exists?
     end
 
     def mentors_at_school?
+      return school.transient_mentors_at_school if school.respond_to?(:transient_mentors_at_school)
+
       mentors_at_school_periods.exists?
     end
 
     def ect_training_programme
+      return school.transient_ects_at_school_training_programme if school.respond_to?(:transient_ects_at_school_training_programme)
+
       ect_at_school_periods.order(training_programme: :asc).pick(:training_programme)
     end
 
