@@ -19,14 +19,7 @@ RSpec.describe Events::AppropriateBodyBatchAuthor do
         author_email: 'test@test.org',
         author_type: :appropriate_body_user,
         appropriate_body_id: batch.appropriate_body.id,
-      })
-    end
-  end
-
-  describe '#relationship_attributes' do
-    it 'returns associated batch' do
-      expect(author.relationship_attributes).to eql({
-        pending_induction_submission_batch: batch,
+        pending_induction_submission_batch_id: batch.id,
       })
     end
   end
