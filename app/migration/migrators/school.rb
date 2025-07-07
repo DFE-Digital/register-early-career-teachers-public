@@ -25,7 +25,10 @@ module Migrators
 
     def self.reset! = nil
 
-    def self.schools = ::Migration::School.includes(:local_authority).eligible_or_cip_only_except_welsh
+    def self.schools = ::Migration::School
+                         .includes(:local_authority)
+                         .eligible_or_cip_only_except_welsh
+                         .not_explictly_excluded
 
     def migrate!
       migrate(self.class.schools) do |ecf_school|

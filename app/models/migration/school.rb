@@ -1,11 +1,16 @@
 module Migration
   class School < Migration::Base
     ALL_TYPE_CODES = [1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 14, 15, 18, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 49, 56, 57].freeze
+
     CIP_ONLY_TYPE_CODES = [10, 11, 30, 37].freeze
     CIP_ONLY_EXCEPT_WELSH_TYPE_CODES = [10, 11, 37].freeze
+
     ELIGIBLE_TYPE_CODES = [1, 2, 3, 5, 6, 7, 8, 12, 14, 15, 18, 28, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 44, 45, 46, 57].freeze
     NON_ELIGIBLE_TYPE_CODES = [10, 11, 24, 25, 26, 27, 29, 30, 37, 49, 56].freeze
+
     OPEN_STATUS_CODES = [1, 3].freeze
+
+    URNS_EXPLICITLY_EXCLUDED = %w[141310 145151 148048 148196 148197 149463 149464 149465].freeze
 
     has_many :school_cohorts
     has_many :partnerships
@@ -24,6 +29,7 @@ module Migration
     scope :cip_only_except_welsh, -> { currently_open.where(school_type_code: CIP_ONLY_EXCEPT_WELSH_TYPE_CODES) }
     scope :eligible_or_cip_only_except_welsh, -> { eligible.or(cip_only_except_welsh) }
     scope :not_cip_only, -> { where.not(id: cip_only) }
+    scope :not_explictly_excluded, -> { where.not(urn: URNS_EXPLICITLY_EXCLUDED) }
 
     def cip_only_type? = GIAS::Types::CIP_ONLY_EXCEPT_WELSH.include?(school_type_name)
 
