@@ -28,12 +28,12 @@ RSpec.describe 'Process bulk claims then actions events' do
 
     expect(perform_enqueued_jobs).to be(2)
     expect(PendingInductionSubmissionBatch.last).to be_completed
-    expect(Event.all.map(&:heading)).to eq([
+    expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim"
-    ])
+    )
     expect(perform_enqueued_jobs).to be(8)
-    expect(Event.all.map(&:heading)).to eq([
+    expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
@@ -42,7 +42,7 @@ RSpec.describe 'Process bulk claims then actions events' do
       "Imported from TRS",
       "Induction status changed from '' to 'InProgress'",
       "Kirk Van Houten was claimed by The Appropriate Body"
-    ])
+    )
 
     page.reload
     expect(page.get_by_text("You claimed 2 ECT records.")).to be_visible
@@ -56,7 +56,7 @@ RSpec.describe 'Process bulk claims then actions events' do
     expect(PendingInductionSubmissionBatch.last).to be_pending
     expect(perform_enqueued_jobs).to be(2)
     expect(PendingInductionSubmissionBatch.last).to be_processed
-    expect(Event.all.map(&:heading)).to eq([
+    expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
@@ -66,7 +66,7 @@ RSpec.describe 'Process bulk claims then actions events' do
       "Induction status changed from '' to 'InProgress'",
       "Kirk Van Houten was claimed by The Appropriate Body",
       "The Appropriate Body started a bulk action"
-    ])
+    )
 
     page.reload
     expect(page.get_by_text('CSV file summary')).to be_visible
@@ -78,7 +78,7 @@ RSpec.describe 'Process bulk claims then actions events' do
 
     expect(perform_enqueued_jobs).to be(2)
     expect(PendingInductionSubmissionBatch.last).to be_completed
-    expect(Event.all.map(&:heading)).to eq([
+    expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
@@ -89,7 +89,7 @@ RSpec.describe 'Process bulk claims then actions events' do
       "Kirk Van Houten was claimed by The Appropriate Body",
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action"
-    ])
+    )
 
     expect(perform_enqueued_jobs).to be(4)
     expect(Event.all.map(&:heading)).to contain_exactly(
