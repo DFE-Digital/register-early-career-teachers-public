@@ -15,17 +15,17 @@ production:
     queue: default
     schedule: Every hour
 
-# # staging ======================================================================
-# staging:
-#   purge_pending_induction_submissions:
-#     class: PurgePendingInductionSubmissionsJob
-#     queue: default
-#     schedule: Every hour
+# staging ======================================================================
+staging:
+  purge_pending_induction_submissions:
+    class: PurgePendingInductionSubmissionsJob
+    queue: default
+    schedule: Every hour
 
-# # review =======================================================================
-# review:
-#   purge_pending_induction_submissions:
-#     class: PurgePendingInductionSubmissionsJob
-#     queue: default
-#     schedule: Every hour
+# review =======================================================================
+review:
+  purge_pending_induction_submissions:
+    class: PurgePendingInductionSubmissionsJob
+    queue: default
+    schedule: Every hour
     

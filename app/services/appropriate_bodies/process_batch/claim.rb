@@ -4,18 +4,20 @@ module AppropriateBodies
     class Claim < Base
       # @return [Array<Boolean>] convert the valid submissions into permanent records
       def complete!
-        pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
-          @pending_induction_submission = pending_induction_submission
+        PendingInductionSubmissionBatch.transaction do
+          pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
+            @pending_induction_submission = pending_induction_submission
 
-          # OPTIMIZE: params effectively passed in twice
-          register_ect.register(
-            started_on: pending_induction_submission.started_on,
-            induction_programme: pending_induction_submission.induction_programme
-          )
-          true
-        rescue StandardError => e
-          capture_error(e.message)
-          next(false)
+            # OPTIMIZE: params effectively passed in twice
+            register_ect.register(
+              started_on: pending_induction_submission.started_on,
+              induction_programme: pending_induction_submission.induction_programme
+            )
+            true
+          rescue StandardError => e
+            capture_error(e.message)
+            next(false)
+          end
         end
 
         # Batch error reporting
