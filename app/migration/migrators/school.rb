@@ -1,9 +1,6 @@
 module Migrators
   class School < Migrators::Base
     FIELDS_MAPPING = {
-      address_line1: :address_line1,
-      address_line2: :address_line2,
-      address_line3: :address_line3,
       administrative_district_name: :administrative_district_name,
       funding_eligibility: :funding_eligibility,
       induction_eligibility: :induction_eligibility,
@@ -11,7 +8,6 @@ module Migrators
       local_authority_code: :local_authority_code,
       name: :name,
       phase_name: :school_phase_name,
-      postcode: :postcode,
       section_41_approved: :section_41_approved,
       status: :status,
       type_name: :school_type_name,

@@ -36,21 +36,8 @@ end
 namespace :db do
   desc 'Add search config'
   task setup_search_configuration: :environment do
-    database_exists = ::ActiveRecord::Base.connection_pool.with_connection do |connection|
-      connection.active?
-    rescue ActiveRecord::ConnectionNotEstablished
-      false
-    end
-
-    unless database_exists
-      Rails.logger.info("Database does not exist, creating it...")
-      Rake::Task['db:create'].invoke
-    end
-
-    run_commands_in_database(Rails.env) do
-      create_extension
-      add_configuration
-    end
+    create_extension
+    add_configuration
 
     # NOTE: when we run this in the development env Rails automatically
     #       creates the test database too, but not via `db:create` so
@@ -69,6 +56,6 @@ end
 # enhance before running the task
 Rake::Task['db:schema:load'].enhance(['db:setup_search_configuration'])
 Rake::Task['db:prepare'].enhance(['db:setup_search_configuration'])
-Rake::Task['db:test:prepare'].enhance(['db:setup_search_configuration'])
 # enhance after running the task
 Rake::Task['db:create'].enhance { Rake::Task['db:setup_search_configuration'].execute }
+Rake::Task['db:test:purge'].enhance { Rake::Task['db:setup_search_configuration'].execute }
