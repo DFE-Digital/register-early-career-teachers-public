@@ -4,19 +4,19 @@ module AppropriateBodies
     class Action < Base
       # @return [Array<Boolean>] convert the valid submissions into permanent records
       def complete!
-        PendingInductionSubmissionBatch.transaction do
-          pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
-            @pending_induction_submission = pending_induction_submission
+        pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
+          @pending_induction_submission = pending_induction_submission
 
-            record_outcome.pass! if pending_induction_submission.pass?
-            record_outcome.fail! if pending_induction_submission.fail?
-            release_ect.release! if pending_induction_submission.release?
-
-            true
-          rescue StandardError => e
-            capture_error(e.message)
-            next(false)
+          PendingInductionSubmissionBatch.transaction do
+            record_outcome.pass! if pending_induction_submission.pass? && pending_induction_submission.valid?(context: :record_outcome)
+            record_outcome.fail! if pending_induction_submission.fail? && pending_induction_submission.valid?(context: :record_outcome)
+            release_ect.release! if pending_induction_submission.release? && pending_induction_submission.valid?(context: :release_ect)
           end
+
+          true
+        rescue StandardError => e
+          capture_error(e.message)
+          next(false)
         end
 
         # Batch error reporting
