@@ -58,7 +58,7 @@ module Schools
         { key: { text: 'Appropriate body' }, value: { text: @ect.school_reported_appropriate_body_name } },
         { key: { text: 'Training programme' }, value: { text: training_programme_name(@ect.training_programme) } }
       ].tap do |rows|
-        rows << { key: { text: 'Lead provider' }, value: { text: training.latest_lead_provider&.name } } if @ect.provider_led?
+        rows << { key: { text: 'Lead provider' }, value: { text: training.latest_lead_provider_name } } if @ect.provider_led?
       end
     end
 
@@ -66,8 +66,8 @@ module Schools
       return NO_INFORMATION_REPORTED[:lead_provider] unless @ect.provider_led?
 
       [
-        { key: { text: 'Lead provider' }, value: { text: training.latest_lead_provider&.name || 'Not available' } },
-        { key: { text: 'Delivery partner' }, value: { text: training.latest_delivery_partner&.name || 'Not available' } }
+        { key: { text: 'Lead provider' }, value: { text: training.latest_lead_provider_name || 'Not available' } },
+        { key: { text: 'Delivery partner' }, value: { text: training.latest_delivery_partner_name || 'Not available' } }
       ]
     end
 

@@ -70,10 +70,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
 private
 
-  def training_service
-    @training_service ||= ECTAtSchoolPeriods::Training.new(self)
-  end
-
   def appropriate_body_for_independent_school
     return if school_reported_appropriate_body&.national? || school_reported_appropriate_body&.teaching_school_hub?
 
