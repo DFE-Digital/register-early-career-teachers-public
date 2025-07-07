@@ -3,9 +3,9 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
 
   let(:change_name) { "yes" }
   let(:corrected_name) { "Jane Smith" }
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:store) { FactoryBot.build(:session_repository, change_name:, corrected_name:, trn: teacher.trn) }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :review_ect_details, store:) }
+  let(:teacher) { create(:teacher) }
+  let(:store) { build(:session_repository, change_name:, corrected_name:, trn: teacher.trn) }
+  let(:wizard) { build(:register_ect_wizard, current_step: :review_ect_details, store:) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }
@@ -62,7 +62,7 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
 
   describe '#next_step' do
     context 'when the teacher has been registered before' do
-      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+      let!(:ect_at_school_period) { create(:ect_at_school_period, teacher:) }
 
       it 'returns the previous ect details page' do
         expect(subject.next_step).to eq(:registered_before)
@@ -93,7 +93,7 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
         }
       )
     end
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :review_ect_details, step_params:) }
+    let(:wizard) { build(:register_ect_wizard, current_step: :review_ect_details, step_params:) }
 
     context 'when the step is not valid' do
       before do

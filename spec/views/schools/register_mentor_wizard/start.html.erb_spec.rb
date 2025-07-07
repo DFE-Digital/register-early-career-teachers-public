@@ -1,6 +1,6 @@
 RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
   let(:continue_path) { schools_register_mentor_wizard_find_mentor_path }
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :school_led) }
+  let(:ect) { create(:ect_at_school_period, :active, :school_led) }
   let(:ect_name) { Teachers::Name.new(ect.teacher).full_name }
 
   before do
@@ -29,7 +29,7 @@ RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
       let(:back_path) { new_schools_ect_mentorship_path(ect) }
 
       before do
-        FactoryBot.create(:mentor_at_school_period, :active, school: ect.school)
+        create(:mentor_at_school_period, :active, school: ect.school)
         render
       end
 
@@ -46,7 +46,7 @@ RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
   end
 
   context 'when the ect has chosen a provider led training programme' do
-    let(:ect) { FactoryBot.build(:ect_at_school_period, :provider_led) }
+    let(:ect) { build(:ect_at_school_period, :provider_led) }
 
     it 'informs the user about the mentor training programme requirements' do
       render
@@ -56,7 +56,7 @@ RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
   end
 
   context 'when the ect has chosen a school led training programme' do
-    let(:ect) { FactoryBot.build(:ect_at_school_period, :school_led) }
+    let(:ect) { build(:ect_at_school_period, :school_led) }
 
     it 'does not inform the user about the mentor training programme requirements' do
       render

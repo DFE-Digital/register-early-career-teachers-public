@@ -1,8 +1,8 @@
 FakePeriod = Struct.new(:started_on, :finished_on)
 
 describe Interval do
-  let(:school_id) { FactoryBot.create(:school, urn: "1234567").id }
-  let(:teacher_id) { FactoryBot.create(:teacher, trs_first_name: "Teacher", trs_last_name: "One").id }
+  let(:school_id) { create(:school, urn: "1234567").id }
+  let(:teacher_id) { create(:teacher, trs_first_name: "Teacher", trs_last_name: "One").id }
 
   describe "validations" do
     context "period dates" do
@@ -29,7 +29,7 @@ describe Interval do
   end
 
   describe "scopes" do
-    let!(:teacher_2_id) { FactoryBot.create(:teacher, trs_first_name: "Teacher", trs_last_name: "Two").id }
+    let!(:teacher_2_id) { create(:teacher, trs_first_name: "Teacher", trs_last_name: "Two").id }
     let!(:period_1) { DummyMentor.create(teacher_id:, school_id:, started_on: '2023-01-01', finished_on: '2023-06-01') }
     let!(:period_2) { DummyMentor.create(teacher_id:, school_id:, started_on: '2023-07-01', finished_on: '2023-12-01') }
     let!(:period_3) { DummyMentor.create(teacher_id:, school_id:, started_on: '2024-01-01', finished_on: nil) }

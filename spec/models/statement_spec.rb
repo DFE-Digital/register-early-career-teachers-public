@@ -7,7 +7,7 @@ describe Statement do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:statement) }
+    subject { create(:statement) }
 
     it { is_expected.to validate_presence_of(:fee_type).with_message("Enter a fee type") }
     it { is_expected.to allow_values('output', 'service').for(:fee_type).with_message("Fee type must be output or service") }
@@ -20,9 +20,9 @@ describe Statement do
 
   describe "scopes" do
     describe ".with_status" do
-      let!(:statement1) { FactoryBot.create(:statement, :open) }
-      let!(:statement2) { FactoryBot.create(:statement, :payable) }
-      let!(:statement3) { FactoryBot.create(:statement, :paid) }
+      let!(:statement1) { create(:statement, :open) }
+      let!(:statement2) { create(:statement, :payable) }
+      let!(:statement3) { create(:statement, :paid) }
 
       it "selects only statements with statuses matching the provided name" do
         expect(described_class.with_status("open")).to contain_exactly(statement1)
@@ -34,8 +34,8 @@ describe Statement do
     end
 
     describe ".with_fee_type" do
-      let!(:statement1) { FactoryBot.create(:statement, :output_fee) }
-      let!(:statement2) { FactoryBot.create(:statement, :service_fee) }
+      let!(:statement1) { create(:statement, :output_fee) }
+      let!(:statement2) { create(:statement, :service_fee) }
 
       context "when searching with 'output'" do
         it 'selects only output fee statements' do
@@ -51,8 +51,8 @@ describe Statement do
     end
 
     describe ".with_statement_date" do
-      let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 5) }
-      let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 6) }
+      let!(:statement1) { create(:statement, year: 2025, month: 5) }
+      let!(:statement2) { create(:statement, year: 2024, month: 6) }
 
       it "returns only matching statements" do
         expect(described_class.with_statement_date(year: 2024, month: 6)).to contain_exactly(statement2)
@@ -73,19 +73,19 @@ describe Statement do
 
   describe "state transitions" do
     context "when transitioning from open to payable" do
-      let(:statement) { FactoryBot.create(:statement, :open) }
+      let(:statement) { create(:statement, :open) }
 
       it { expect { statement.mark_as_payable! }.to change(statement, :status).from("open").to("payable") }
     end
 
     context "when transitioning from payable to paid" do
-      let(:statement) { FactoryBot.create(:statement, :payable) }
+      let(:statement) { create(:statement, :payable) }
 
       it { expect { statement.mark_as_paid! }.to change(statement, :status).from("payable").to("paid") }
     end
 
     context "when transitioning to an invalid state" do
-      let(:statement) { FactoryBot.create(:statement, :paid) }
+      let(:statement) { create(:statement, :paid) }
 
       it { expect { statement.mark_as_payable! }.to raise_error(StateMachines::InvalidTransition) }
     end
@@ -94,7 +94,7 @@ describe Statement do
   describe "#shorthand_status" do
     subject(:shorthand_status) { statement.shorthand_status }
 
-    let(:statement) { FactoryBot.build(:statement, status:) }
+    let(:statement) { build(:statement, status:) }
 
     context "when status is open" do
       let(:status) { :open }
@@ -123,7 +123,7 @@ describe Statement do
 
   context ".adjustment_editable?" do
     context "paid statement" do
-      subject { FactoryBot.build(:statement, :paid) }
+      subject { build(:statement, :paid) }
 
       it "returns false" do
         subject.fee_type = 'output'
@@ -136,7 +136,7 @@ describe Statement do
 
     context "non-paid statement" do
       context "output fee" do
-        subject { FactoryBot.build(:statement, :open, fee_type: 'output') }
+        subject { build(:statement, :open, fee_type: 'output') }
 
         it "returns true" do
           expect(subject.adjustment_editable?).to be(true)
@@ -144,7 +144,7 @@ describe Statement do
       end
 
       context "service fee" do
-        subject { FactoryBot.build(:statement, :open, fee_type: 'service') }
+        subject { build(:statement, :open, fee_type: 'service') }
 
         it "returns false" do
           expect(subject.adjustment_editable?).to be(false)
@@ -155,27 +155,27 @@ describe Statement do
 
   context ".can_authorise_payment?" do
     context "open statement" do
-      subject { FactoryBot.build(:statement, :open) }
+      subject { build(:statement, :open) }
 
       it { expect(subject.can_authorise_payment?).to be(false) }
     end
 
     context "paid statement" do
-      subject { FactoryBot.build(:statement, :paid) }
+      subject { build(:statement, :paid) }
 
       it { expect(subject.can_authorise_payment?).to be(false) }
     end
 
     context "payable statement" do
       context "service_fee statement" do
-        subject { FactoryBot.build(:statement, :payable, :service_fee) }
+        subject { build(:statement, :payable, :service_fee) }
 
         it { expect(subject.can_authorise_payment?).to be(false) }
       end
 
       context "output_fee statement" do
         context "with deadline_date in future" do
-          subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date: 3.days.from_now.to_date) }
+          subject { build(:statement, :payable, :output_fee, deadline_date: 3.days.from_now.to_date) }
 
           it { expect(subject.can_authorise_payment?).to be(false) }
         end
@@ -184,13 +184,13 @@ describe Statement do
           let(:deadline_date) { 3.days.ago.to_date }
 
           context "marked as payable" do
-            subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: Time.zone.now) }
+            subject { build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: Time.zone.now) }
 
             it { expect(subject.can_authorise_payment?).to be(false) }
           end
 
           context "is not marked as payable" do
-            subject { FactoryBot.build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: nil) }
+            subject { build(:statement, :payable, :output_fee, deadline_date:, marked_as_paid_at: nil) }
 
             it { expect(subject.can_authorise_payment?).to be(true) }
           end

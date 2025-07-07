@@ -1,8 +1,8 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:appropriate_body) { build(:appropriate_body) }
 
   describe "#initialize" do
-    let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+    let(:pending_induction_submission) { create(:pending_induction_submission) }
 
     it "assigns the provided appropriate body and pending induction submission params" do
       find_ect = AppropriateBodies::ClaimAnECT::FindECT.new(appropriate_body:, pending_induction_submission:)
@@ -14,7 +14,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
 
   describe "#import_from_trs!" do
     context "when the pending_induction_submission is invalid" do
-      let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, date_of_birth: nil) }
+      let(:pending_induction_submission) { create(:pending_induction_submission, date_of_birth: nil) }
 
       it "returns nil" do
         find_ect = AppropriateBodies::ClaimAnECT::FindECT.new(appropriate_body:, pending_induction_submission:)
@@ -29,19 +29,19 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
     end
 
     context "when there is a match and the teacher has an active induction period" do
-      let(:teacher) { FactoryBot.create(:teacher) }
-      let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
+      let(:teacher) { create(:teacher) }
+      let!(:pending_induction_submission) { create(:pending_induction_submission, trn: teacher.trn) }
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :active, appropriate_body:, teacher:, started_on: Date.parse("2 October 2022"))
+        create(:induction_period, :active, appropriate_body:, teacher:, started_on: Date.parse("2 October 2022"))
       end
 
       context "when the induction period is with another AB" do
         include_context "fake trs api client"
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body) { create(:appropriate_body) }
 
         it "returns true" do
           find_ect = AppropriateBodies::ClaimAnECT::FindECT.new(
-            appropriate_body: FactoryBot.create(:appropriate_body), pending_induction_submission:
+            appropriate_body: create(:appropriate_body), pending_induction_submission:
           )
 
           expect(find_ect.import_from_trs!).to be(true)
@@ -64,7 +64,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
       include_context "fake trs api client that finds nothing"
 
       it "raises teacher not found error" do
-        pending_induction_submission = FactoryBot.create(:pending_induction_submission)
+        pending_induction_submission = create(:pending_induction_submission)
         find_ect = AppropriateBodies::ClaimAnECT::FindECT.new(appropriate_body:, pending_induction_submission:)
 
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::TeacherNotFound)

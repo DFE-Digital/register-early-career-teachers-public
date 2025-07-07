@@ -3,8 +3,8 @@ RSpec.describe Sessions::Users::Builder do
     subject { described_class.new(omniauth_payload:).session_user }
 
     let(:email) { Faker::Internet.email }
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-    let(:school) { FactoryBot.create(:school) }
+    let(:appropriate_body) { create(:appropriate_body) }
+    let(:school) { create(:school) }
 
     let(:omniauth_payload) do
       OmniAuth::AuthHash.new(
@@ -85,7 +85,7 @@ RSpec.describe Sessions::Users::Builder do
         let(:dfe_staff) { 'true' }
         let(:organisation_id) { nil }
         let(:organisation_urn) { nil }
-        let!(:user) { FactoryBot.create(:user, email:) }
+        let!(:user) { create(:user, email:) }
 
         before do
           allow(Rails.application.config).to receive(:enable_personas).and_return(false)
@@ -108,7 +108,7 @@ RSpec.describe Sessions::Users::Builder do
           let(:dfe_staff) { 'true' }
           let(:organisation_id) { nil }
           let(:organisation_urn) { nil }
-          let!(:user) { FactoryBot.create(:user, email:) }
+          let!(:user) { create(:user, email:) }
 
           it 'returns a dfe persona' do
             expect(subject).to be_a(Sessions::Users::DfEPersona)
@@ -164,7 +164,7 @@ RSpec.describe Sessions::Users::Builder do
       let(:dfe_staff) { 'true' }
       let(:organisation_id) { nil }
       let(:organisation_urn) { nil }
-      let!(:user) { FactoryBot.create(:user, email:) }
+      let!(:user) { create(:user, email:) }
 
       it 'raises an UnknownProvider error' do
         expect { subject }.to raise_error(described_class::UnknownProvider, provider)

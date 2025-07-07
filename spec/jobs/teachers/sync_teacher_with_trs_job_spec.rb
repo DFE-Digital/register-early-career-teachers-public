@@ -1,6 +1,6 @@
 RSpec.describe Teachers::SyncTeacherWithTRSJob, type: :job do
   describe "#perform" do
-    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:teacher) { create(:teacher) }
     let(:refresh_service) { instance_double(Teachers::RefreshTRSAttributes) }
 
     it "calls the RefreshTRSAttributes service with the correct teacher" do

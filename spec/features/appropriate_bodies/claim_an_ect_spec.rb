@@ -1,13 +1,13 @@
 RSpec.describe 'Claiming an ECT' do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
-  let(:other_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:teacher) { create(:teacher, trn: '1234567') }
+  let(:other_body) { create(:appropriate_body) }
 
   before { sign_in_as_appropriate_body_user(appropriate_body:) }
 
   describe "when the ECT has not passed the induction" do
     let!(:induction_period) do
-      FactoryBot.create(:induction_period, teacher:, started_on: 14.months.ago, finished_on: 13.months.ago, appropriate_body: other_body)
+      create(:induction_period, teacher:, started_on: 14.months.ago, finished_on: 13.months.ago, appropriate_body: other_body)
     end
 
     include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
@@ -34,7 +34,7 @@ RSpec.describe 'Claiming an ECT' do
     include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
     before do
-      FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_body)
+      create(:induction_period, :active, teacher:, appropriate_body: other_body)
     end
 
     scenario 'Button is hidden when induction is ongoing' do

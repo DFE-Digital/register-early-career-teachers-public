@@ -1,10 +1,10 @@
 RSpec.describe Teachers::Manage do
   subject(:service) { described_class.new(author:, teacher:, appropriate_body:) }
 
-  let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
+  let(:user) { create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
-  let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Barry', trs_last_name: 'Allen', trs_induction_status: 'InProgress') }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:teacher) { create(:teacher, trs_first_name: 'Barry', trs_last_name: 'Allen', trs_induction_status: 'InProgress') }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   describe '#update_name!' do
     before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
@@ -206,7 +206,7 @@ RSpec.describe Teachers::Manage do
     let(:trs_data_last_refreshed_at) { 2.minutes.ago }
 
     context 'when the teacher is already deactivated' do
-      let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs) }
+      let(:teacher) { create(:teacher, :deactivated_in_trs) }
 
       it 'fails with a Teachers::Manage::AlreadyDeactivated error' do
         expect { service.mark_teacher_as_deactivated!(trs_data_last_refreshed_at:) }.to raise_error(Teachers::Manage::AlreadyDeactivated)

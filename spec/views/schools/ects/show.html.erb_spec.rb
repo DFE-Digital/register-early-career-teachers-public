@@ -1,38 +1,38 @@
 RSpec.describe 'schools/ects/show.html.erb' do
-  let(:contract_period) { FactoryBot.create(:contract_period) }
+  let(:contract_period) { create(:contract_period) }
   let!(:current_ect_period) do
-    FactoryBot.create(:ect_at_school_period,
-                      :teaching_school_hub_ab,
-                      teacher:,
-                      started_on: '2025-01-11',
-                      finished_on: nil,
-                      lead_provider: requested_lead_provider,
-                      school_reported_appropriate_body: requested_appropriate_body,
-                      school: current_school,
-                      working_pattern: 'full_time',
-                      training_programme:,
-                      email: 'love@whale.com')
+    create(:ect_at_school_period,
+           :teaching_school_hub_ab,
+           teacher:,
+           started_on: '2025-01-11',
+           finished_on: nil,
+           lead_provider: requested_lead_provider,
+           school_reported_appropriate_body: requested_appropriate_body,
+           school: current_school,
+           working_pattern: 'full_time',
+           training_programme:,
+           email: 'love@whale.com')
   end
-  let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-  let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Alpha Teaching School Hub') }
-  let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Barry', trs_last_name: 'White', corrected_name: 'Baz White') }
-  let(:previous_school) { FactoryBot.create(:school, urn: '123456') }
-  let(:current_school) { FactoryBot.create(:school, :state_funded, urn: '987654') }
-  let(:requested_lead_provider) { FactoryBot.create(:lead_provider, name: 'Requested LP') }
-  let(:requested_appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Requested AB') }
+  let(:lead_provider) { create(:lead_provider, name: 'Ambition institute') }
+  let(:active_lead_provider) { create(:active_lead_provider, lead_provider:) }
+  let(:delivery_partner) { create(:delivery_partner) }
+  let(:lead_provider_delivery_partnership) { create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:school_partnership) { create(:school_partnership, lead_provider_delivery_partnership:) }
+  let(:appropriate_body) { create(:appropriate_body, name: 'Alpha Teaching School Hub') }
+  let(:teacher) { create(:teacher, trs_first_name: 'Barry', trs_last_name: 'White', corrected_name: 'Baz White') }
+  let(:previous_school) { create(:school, urn: '123456') }
+  let(:current_school) { create(:school, :state_funded, urn: '987654') }
+  let(:requested_lead_provider) { create(:lead_provider, name: 'Requested LP') }
+  let(:requested_appropriate_body) { create(:appropriate_body, name: 'Requested AB') }
   let(:training_programme) { 'provider_led' }
 
   before do
-    FactoryBot.create(:ect_at_school_period, :state_funded_school,
-                      teacher:,
-                      started_on: '2024-01-11',
-                      finished_on: '2025-01-11',
-                      school: previous_school,
-                      email: 'previous-address@whale.com')
+    create(:ect_at_school_period, :state_funded_school,
+           teacher:,
+           started_on: '2024-01-11',
+           finished_on: '2025-01-11',
+           school: previous_school,
+           email: 'previous-address@whale.com')
     assign(:ect, current_ect_period)
     render
   end
@@ -63,13 +63,13 @@ RSpec.describe 'schools/ects/show.html.erb' do
     describe 'mentor' do
       context 'when assigned' do
         before do
-          mentor = FactoryBot.create(:teacher, trs_first_name: 'Moby', trs_last_name: 'Dick')
-          mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school: current_school, teacher: mentor)
+          mentor = create(:teacher, trs_first_name: 'Moby', trs_last_name: 'Dick')
+          mentor_at_school_period = create(:mentor_at_school_period, :active, school: current_school, teacher: mentor)
 
-          FactoryBot.create(:mentorship_period, :active,
-                            started_on: current_ect_period.started_on,
-                            mentee: current_ect_period,
-                            mentor: mentor_at_school_period)
+          create(:mentorship_period, :active,
+                 started_on: current_ect_period.started_on,
+                 mentee: current_ect_period,
+                 mentor: mentor_at_school_period)
 
           render
         end
@@ -101,11 +101,11 @@ RSpec.describe 'schools/ects/show.html.erb' do
 
   describe 'ECTE training details' do
     before do
-      FactoryBot.create(:training_period, :active, :for_ect, school_partnership:,
-                                                             ect_at_school_period: current_ect_period,
-                                                             started_on: current_ect_period.started_on)
+      create(:training_period, :active, :for_ect, school_partnership:,
+                                                  ect_at_school_period: current_ect_period,
+                                                  started_on: current_ect_period.started_on)
 
-      FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
+      create(:induction_period, :active, teacher:, appropriate_body:)
 
       render
     end

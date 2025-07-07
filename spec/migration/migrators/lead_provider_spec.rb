@@ -1,15 +1,15 @@
 RSpec.describe Migrators::LeadProvider do
   it_behaves_like "a migrator", :lead_provider, [] do
     def create_migration_resource
-      FactoryBot.create(:migration_lead_provider)
+      create(:migration_lead_provider)
     end
 
     def create_resource(migration_resource)
     end
 
     def setup_failure_state
-      lp = FactoryBot.create(:migration_lead_provider)
-      FactoryBot.create(:lead_provider, name: lp.name, ecf_id: SecureRandom.uuid)
+      lp = create(:migration_lead_provider)
+      create(:lead_provider, name: lp.name, ecf_id: SecureRandom.uuid)
     end
 
     describe "#migrate!" do

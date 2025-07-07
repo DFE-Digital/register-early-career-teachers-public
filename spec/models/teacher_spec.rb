@@ -9,7 +9,7 @@ describe Teacher do
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:teacher) }
+    subject { build(:teacher) }
 
     it { is_expected.to validate_length_of(:trs_induction_status).with_message('TRS induction status must be shorter than 18 characters') }
 
@@ -31,19 +31,19 @@ describe Teacher do
 
     describe 'mentor ineligibility' do
       context 'when both the ineligibility date and reason are present' do
-        subject { FactoryBot.build(:teacher) }
+        subject { build(:teacher) }
 
         it { is_expected.to be_valid }
       end
 
       context 'when both the ineligibility date and reason are blank' do
-        subject { FactoryBot.build(:teacher, :ineligible_for_mentor_funding) }
+        subject { build(:teacher, :ineligible_for_mentor_funding) }
 
         it { is_expected.to be_valid }
       end
 
       context 'when the ineligibility date is present but the reason is missing' do
-        subject { FactoryBot.build(:teacher, mentor_became_ineligible_for_funding_reason: 'started_not_completed') }
+        subject { build(:teacher, mentor_became_ineligible_for_funding_reason: 'started_not_completed') }
 
         it { is_expected.to be_invalid }
 
@@ -56,7 +56,7 @@ describe Teacher do
       end
 
       context 'when the ineligibility reason is present but the date is missing' do
-        subject { FactoryBot.build(:teacher, mentor_became_ineligible_for_funding_on: 3.days.ago) }
+        subject { build(:teacher, mentor_became_ineligible_for_funding_on: 3.days.ago) }
 
         it { is_expected.to be_invalid }
 
@@ -77,8 +77,8 @@ describe Teacher do
       end
 
       describe 'basic matching' do
-        let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Malcolm", trs_last_name: "Wilkerson", corrected_name: nil) }
-        let!(:other) { FactoryBot.create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
+        let!(:target) { create(:teacher, trs_first_name: "Malcolm", trs_last_name: "Wilkerson", corrected_name: nil) }
+        let!(:other) { create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
 
         it "returns only the expected result" do
           results = Teacher.search('Malcolm')
@@ -89,7 +89,7 @@ describe Teacher do
       end
 
       describe 'matching with accents' do
-        let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Stëvìê", trs_last_name: "Kènårbän", corrected_name: nil) }
+        let!(:target) { create(:teacher, trs_first_name: "Stëvìê", trs_last_name: "Kènårbän", corrected_name: nil) }
 
         it 'matches when names have accents but search terms do not' do
           results = Teacher.search('Stevie Kenarban')
@@ -105,8 +105,8 @@ describe Teacher do
       end
 
       describe 'matching a prefix' do
-        let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Dewey", trs_last_name: "Wilkerson", corrected_name: nil) }
-        let!(:other) { FactoryBot.create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
+        let!(:target) { create(:teacher, trs_first_name: "Dewey", trs_last_name: "Wilkerson", corrected_name: nil) }
+        let!(:other) { create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
 
         it 'matches on the start of a word' do
           results = Teacher.search('Dew')

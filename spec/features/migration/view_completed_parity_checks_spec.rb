@@ -5,13 +5,13 @@ RSpec.describe "View completed parity checks" do
   end
 
   scenario "Viewing completed parity checks" do
-    completed_run = FactoryBot.create(:parity_check_run, :completed)
+    completed_run = create(:parity_check_run, :completed)
 
-    statements_endpoint = FactoryBot.create(:parity_check_endpoint, path: "/api/v1/statements")
-    user_endpoint = FactoryBot.create(:parity_check_endpoint, path: "/api/v1/users/:id")
+    statements_endpoint = create(:parity_check_endpoint, path: "/api/v1/statements")
+    user_endpoint = create(:parity_check_endpoint, path: "/api/v1/users/:id")
 
-    FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching different], run: completed_run, endpoint: statements_endpoint)
-    FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching matching], run: completed_run, endpoint: user_endpoint)
+    create(:parity_check_request, :completed, response_types: %i[matching different], run: completed_run, endpoint: statements_endpoint)
+    create(:parity_check_request, :completed, response_types: %i[matching matching], run: completed_run, endpoint: user_endpoint)
 
     page.goto(new_migration_parity_check_path)
     page.get_by_role("link", name: "View completed runs").click
@@ -36,7 +36,7 @@ RSpec.describe "View completed parity checks" do
   end
 
   scenario "Paginating the completed parity checks when there are many" do
-    FactoryBot.create_list(:parity_check_run, Pagy::DEFAULT[:limit] + 1, :completed)
+    create_list(:parity_check_run, Pagy::DEFAULT[:limit] + 1, :completed)
 
     page.goto(completed_migration_parity_checks_path)
 

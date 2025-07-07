@@ -5,7 +5,7 @@ RSpec.describe "View parity check" do
   end
 
   scenario "Viewing a parity check" do
-    run = FactoryBot.create(:parity_check_run, :completed, request_states: %i[completed_different completed_matching])
+    run = create(:parity_check_run, :completed, request_states: %i[completed_different completed_matching])
 
     page.goto(completed_migration_parity_checks_path)
     page.get_by_role("link", name: "Run details").click
@@ -36,7 +36,7 @@ RSpec.describe "View parity check" do
   end
 
   scenario "Navigating back to completed parity checks" do
-    run = FactoryBot.create(:parity_check_run, :completed)
+    run = create(:parity_check_run, :completed)
 
     page.goto(migration_parity_check_path(run))
 
@@ -46,7 +46,7 @@ RSpec.describe "View parity check" do
   end
 
   scenario "Navigating back to run a parity check" do
-    run = FactoryBot.create(:parity_check_run, :completed)
+    run = create(:parity_check_run, :completed)
 
     page.goto(migration_parity_check_path(run))
 
@@ -56,7 +56,7 @@ RSpec.describe "View parity check" do
   end
 
   scenario "Viewing a parity check with no requests" do
-    run = FactoryBot.create(:parity_check_run, :completed)
+    run = create(:parity_check_run, :completed)
 
     page.goto(migration_parity_check_path(run))
 

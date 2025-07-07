@@ -19,8 +19,8 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
       context "when the mentor is not registered at the ect's school" do
         subject { described_class.new(ect:, mentor_id: mentor.id) }
 
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
-        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active) }
+        let(:ect) { create(:ect_at_school_period, :active) }
+        let(:mentor) { create(:mentor_at_school_period, :active) }
 
         before do
           subject.valid?
@@ -36,8 +36,8 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
       context "when the mentor is not eligible for the ect" do
         subject { described_class.new(ect:, mentor_id: mentor.id) }
 
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
-        let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, school: ect.school, teacher: ect.teacher) }
+        let(:ect) { create(:ect_at_school_period, :active) }
+        let(:mentor) { create(:mentor_at_school_period, :active, school: ect.school, teacher: ect.teacher) }
 
         before do
           subject.valid?
@@ -54,9 +54,9 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
     context "when the mentor is eligible to mentor the ect at the same school" do
       subject { described_class.new(ect:, mentor_id: mentor.id) }
 
-      let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
-      let(:author) { FactoryBot.create(:school_user, school_urn: ect.school.urn) }
-      let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, school: ect.school) }
+      let(:ect) { create(:ect_at_school_period, :active) }
+      let(:author) { create(:school_user, school_urn: ect.school.urn) }
+      let(:mentor) { create(:mentor_at_school_period, :active, school: ect.school) }
 
       it 'adds a new mentorship for the ect and the mentor starting today' do
         expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to be_nil

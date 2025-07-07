@@ -6,7 +6,7 @@ RSpec.describe "DfE Analytics", type: :request do
   end
 
   context "when disabled" do
-    before { FactoryBot.create(:teacher) }
+    before { create(:teacher) }
 
     context "implicitly" do
       let(:env_var_value) { nil }
@@ -33,7 +33,7 @@ RSpec.describe "DfE Analytics", type: :request do
     end
 
     it "sends DFE Analytics entity events" do
-      FactoryBot.create(:teacher)
+      create(:teacher)
       expect(:create_entity).to have_been_enqueued_as_analytics_events
     end
 

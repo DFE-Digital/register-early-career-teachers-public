@@ -1,16 +1,16 @@
 describe Migrators::ContractPeriod do
   it_behaves_like "a migrator", :contract_period, [] do
     def create_migration_resource
-      FactoryBot.create(:migration_cohort, :with_sequential_start_year)
+      create(:migration_cohort, :with_sequential_start_year)
     end
 
     def create_resource(migration_resource)
-      FactoryBot.create(:contract_period, year: migration_resource.start_year)
+      create(:contract_period, year: migration_resource.start_year)
     end
 
     def setup_failure_state
       # Record to be migrated with invalid start year
-      FactoryBot.create(:migration_cohort, start_year: 2010)
+      create(:migration_cohort, start_year: 2010)
     end
 
     describe "#migrate!" do

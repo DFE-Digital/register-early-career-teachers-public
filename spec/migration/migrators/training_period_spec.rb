@@ -1,31 +1,31 @@
 RSpec.describe Migrators::TrainingPeriod do
   it_behaves_like "a migrator", :training_period, %i[ect_at_school_period mentor_at_school_period school_partnership] do
     def create_migration_resource
-      ect = FactoryBot.create(:migration_participant_profile, :ect)
-      FactoryBot.create(:migration_induction_record, participant_profile: ect)
+      ect = create(:migration_participant_profile, :ect)
+      create(:migration_induction_record, participant_profile: ect)
       school = ect.school_cohort.school
       cohort = ect.school_cohort.cohort
       induction_programme = ect.school_cohort.default_induction_programme
 
-      induction_programme.update!(partnership: FactoryBot.create(:migration_partnership, school:, cohort:))
+      induction_programme.update!(partnership: create(:migration_partnership, school:, cohort:))
       ect.teacher_profile
     end
 
     def create_resource(migration_resource)
-      teacher = FactoryBot.create(:teacher, trn: migration_resource.trn)
+      teacher = create(:teacher, trn: migration_resource.trn)
       ect = migration_resource.participant_profiles.first
       school_cohort = ect.school_cohort
       partnership = school_cohort.school.partnerships.first
 
-      school = FactoryBot.create(:school, urn: school_cohort.school.urn)
-      FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: school_cohort.default_induction_programme.induction_records.first.start_date, finished_on: nil)
+      school = create(:school, urn: school_cohort.school.urn)
+      create(:ect_at_school_period, teacher:, school:, started_on: school_cohort.default_induction_programme.induction_records.first.start_date, finished_on: nil)
 
-      lead_provider = FactoryBot.create(:lead_provider, name: partnership.lead_provider.name, ecf_id: partnership.lead_provider_id)
-      delivery_partner = FactoryBot.create(:delivery_partner, name: partnership.delivery_partner.name, api_id: partnership.delivery_partner_id)
-      contract_period = FactoryBot.create(:contract_period, year: school_cohort.cohort.start_year)
-      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
-      lpdp = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
-      FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp)
+      lead_provider = create(:lead_provider, name: partnership.lead_provider.name, ecf_id: partnership.lead_provider_id)
+      delivery_partner = create(:delivery_partner, name: partnership.delivery_partner.name, api_id: partnership.delivery_partner_id)
+      contract_period = create(:contract_period, year: school_cohort.cohort.start_year)
+      active_lead_provider = create(:active_lead_provider, lead_provider:, contract_period:)
+      lpdp = create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+      create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp)
     end
 
     def setup_failure_state

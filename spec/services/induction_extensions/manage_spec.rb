@@ -11,9 +11,9 @@ RSpec.describe InductionExtensions::Manage do
     )
   end
 
-  let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
-  let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Andy', trs_last_name: 'Zaltzman') }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:user) { create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
+  let(:teacher) { create(:teacher, trs_first_name: 'Andy', trs_last_name: 'Zaltzman') }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   describe '#create_or_update!' do
     before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
@@ -44,7 +44,7 @@ RSpec.describe InductionExtensions::Manage do
     end
 
     context 'when editing an extension' do
-      let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:) }
+      let!(:induction_extension) { create(:induction_extension, teacher:) }
 
       it 'records an update event' do
         freeze_time do
@@ -74,7 +74,7 @@ RSpec.describe InductionExtensions::Manage do
     before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
 
     context 'when deleting an extension' do
-      let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 2.5) }
+      let!(:induction_extension) { create(:induction_extension, teacher:, number_of_terms: 2.5) }
 
       it 'deletes the extension and records a delete event' do
         freeze_time do

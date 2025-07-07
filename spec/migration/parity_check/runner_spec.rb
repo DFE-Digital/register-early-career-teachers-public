@@ -1,8 +1,8 @@
 RSpec.describe ParityCheck::Runner, type: :model do
   let(:endpoints) do
     [
-      FactoryBot.create(:parity_check_endpoint, method: :get, path: "/test-path"),
-      FactoryBot.create(:parity_check_endpoint, method: :post, path: "/test-other-path"),
+      create(:parity_check_endpoint, method: :get, path: "/test-path"),
+      create(:parity_check_endpoint, method: :post, path: "/test-other-path"),
     ]
   end
   let(:mode) { "sequential" }
@@ -47,8 +47,8 @@ RSpec.describe ParityCheck::Runner, type: :model do
     end
 
     it "creates a request for each lead provider and endpoint" do
-      lead_provider1 = FactoryBot.create(:lead_provider)
-      lead_provider2 = FactoryBot.create(:lead_provider)
+      lead_provider1 = create(:lead_provider)
+      lead_provider2 = create(:lead_provider)
       lead_providers = [lead_provider1, lead_provider2]
 
       created_run = nil

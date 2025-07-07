@@ -1,7 +1,7 @@
 RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model do
-  let(:school) { FactoryBot.build(:school) }
-  let(:store) { FactoryBot.build(:session_repository, training_programme: 'prepopulated_training_programme') }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :training_programme, school:, store:) }
+  let(:school) { build(:school) }
+  let(:store) { build(:session_repository, training_programme: 'prepopulated_training_programme') }
+  let(:wizard) { build(:register_ect_wizard, current_step: :training_programme, school:, store:) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }
@@ -76,7 +76,7 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
 
     describe '#previous_step' do
       context 'when the school is independent' do
-        let(:school) { FactoryBot.create(:school, :independent) }
+        let(:school) { create(:school, :independent) }
 
         it 'returns :independent_school_appropriate_body' do
           expect(subject.previous_step).to eq(:independent_school_appropriate_body)
@@ -84,7 +84,7 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
       end
 
       context 'when the school is state-funded' do
-        let(:school) { FactoryBot.create(:school, :state_funded) }
+        let(:school) { create(:school, :state_funded) }
 
         it 'returns :state_school_appropriate_body' do
           expect(subject.previous_step).to eq(:state_school_appropriate_body)
@@ -96,7 +96,7 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
   context '#save!' do
     subject { wizard.current_step }
 
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :training_programme, step_params:) }
+    let(:wizard) { build(:register_ect_wizard, current_step: :training_programme, step_params:) }
 
     context 'when the step is not valid' do
       let(:step_params) { ActionController::Parameters.new("training_programme" => {}) }

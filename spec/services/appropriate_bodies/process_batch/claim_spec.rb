@@ -17,14 +17,14 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   let(:induction_programme) { 'FIP' }
   let(:error) { '' }
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   let(:pending_induction_submission_batch) do
-    FactoryBot.create(:pending_induction_submission_batch, :claim,
-                      appropriate_body:,
-                      data: [
-                        { trn:, date_of_birth:, started_on:, induction_programme:, error: }
-                      ])
+    create(:pending_induction_submission_batch, :claim,
+           appropriate_body:,
+           data: [
+             { trn:, date_of_birth:, started_on:, induction_programme:, error: }
+           ])
   end
 
   let(:submissions) do
@@ -334,13 +334,13 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       let(:started_on) { 1.day.ago.to_date.to_s }
 
-      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:teacher) { create(:teacher, trn:) }
 
       before do
-        FactoryBot.create(:induction_period, teacher:,
-                                             appropriate_body:,
-                                             started_on: 30.days.ago.to_date,
-                                             finished_on: 15.days.ago.to_date)
+        create(:induction_period, teacher:,
+                                  appropriate_body:,
+                                  started_on: 30.days.ago.to_date,
+                                  finished_on: 15.days.ago.to_date)
         service.process!
       end
 
@@ -362,13 +362,13 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       let(:started_on) { 15.days.ago.to_date.to_s }
 
-      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:teacher) { create(:teacher, trn:) }
 
       before do
-        FactoryBot.create(:induction_period, teacher:,
-                                             appropriate_body:,
-                                             started_on: 30.days.ago.to_date,
-                                             finished_on: 1.day.ago.to_date)
+        create(:induction_period, teacher:,
+                                  appropriate_body:,
+                                  started_on: 30.days.ago.to_date,
+                                  finished_on: 1.day.ago.to_date)
         service.process!
       end
 
@@ -399,10 +399,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     context 'when the ECT has already passed' do
       include_context 'fake trs api client that finds teacher that has passed their induction'
 
-      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:teacher) { create(:teacher, trn:) }
 
       before do
-        FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:)
+        create(:induction_period, :pass, teacher:, appropriate_body:)
         service.process!
       end
 
@@ -422,10 +422,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     context 'when the ECT has already failed' do
       include_context 'fake trs api client that finds teacher that has failed their induction'
 
-      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:teacher) { create(:teacher, trn:) }
 
       before do
-        FactoryBot.create(:induction_period, :fail, teacher:, appropriate_body:)
+        create(:induction_period, :fail, teacher:, appropriate_body:)
         service.process!
       end
 
@@ -445,11 +445,11 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     context 'when the ECT is already claimed by another body' do
       include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
 
-      let(:other_body) { FactoryBot.create(:appropriate_body) }
-      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:other_body) { create(:appropriate_body) }
+      let(:teacher) { create(:teacher, trn:) }
 
       before do
-        FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_body)
+        create(:induction_period, :active, teacher:, appropriate_body: other_body)
         service.process!
       end
 

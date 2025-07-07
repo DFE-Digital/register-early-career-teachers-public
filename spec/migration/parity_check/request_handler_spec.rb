@@ -1,6 +1,6 @@
 RSpec.describe ParityCheck::RequestHandler do
-  let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
-  let(:request) { FactoryBot.create(:parity_check_request, :queued, run:) }
+  let(:run) { create(:parity_check_run, :in_progress) }
+  let(:request) { create(:parity_check_request, :queued, run:) }
   let(:instance) { described_class.new(request) }
   let(:enabled) { true }
 
@@ -19,7 +19,7 @@ RSpec.describe ParityCheck::RequestHandler do
   describe "#process_request" do
     subject(:process_request) { instance.process_request }
 
-    let(:response) { FactoryBot.build(:parity_check_response, request: nil) }
+    let(:response) { build(:parity_check_response, request: nil) }
 
     before do
       client = instance_double(ParityCheck::Client)

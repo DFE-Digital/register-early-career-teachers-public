@@ -1,10 +1,10 @@
 RSpec.describe PurgePendingInductionSubmissionsJob, type: :job do
   describe "#perform" do
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body) { create(:appropriate_body) }
 
     it "deletes pending induction submissions with delete_at in the past" do
       # submissions that should be deleted
-      past_submissions = FactoryBot.create_list(
+      past_submissions = create_list(
         :pending_induction_submission,
         3,
         appropriate_body:,
@@ -12,7 +12,7 @@ RSpec.describe PurgePendingInductionSubmissionsJob, type: :job do
       )
 
       # submissions with delete_at in the future
-      FactoryBot.create_list(
+      create_list(
         :pending_induction_submission,
         2,
         appropriate_body:,
@@ -20,7 +20,7 @@ RSpec.describe PurgePendingInductionSubmissionsJob, type: :job do
       )
 
       # submissions with no delete_at
-      FactoryBot.create_list(
+      create_list(
         :pending_induction_submission,
         2,
         appropriate_body:,

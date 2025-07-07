@@ -2,15 +2,15 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
   subject { described_class.new(wizard:) }
 
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: "1234567",
-                     trs_first_name: "John",
-                     trs_last_name: "Wayne",
-                     change_name: "yes",
-                     corrected_name: "Jim Wayne",
-                     date_of_birth: "01/01/1990")
+    build(:session_repository,
+          trn: "1234567",
+          trs_first_name: "John",
+          trs_last_name: "Wayne",
+          change_name: "yes",
+          corrected_name: "Jim Wayne",
+          date_of_birth: "01/01/1990")
   end
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect, store:) }
+  let(:wizard) { build(:register_ect_wizard, current_step: :find_ect, store:) }
 
   describe 'validations' do
     ['12345', 'RP99/12345', 'RP / 1234567', '  R P 99 / 1234', 'ZZ-123445 '].each do |trn|
@@ -39,8 +39,8 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
   describe '#next_step' do
     subject { wizard.current_step }
 
-    let(:school) { FactoryBot.create(:school, :state_funded) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect, step_params:, school:) }
+    let(:school) { create(:school, :state_funded) }
+    let(:wizard) { build(:register_ect_wizard, current_step: :find_ect, step_params:, school:) }
     let(:step_params) do
       ActionController::Parameters.new(
         "find_ect" => {
@@ -86,8 +86,8 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
     end
 
     context 'when the ect is already active at the school' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:active_ect_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, :active, teacher:, school:) }
+      let(:teacher) { create(:teacher, trn: '1234568') }
+      let(:active_ect_period) { create(:ect_at_school_period, :teaching_school_hub_ab, :active, teacher:, school:) }
 
       before do
         wizard.store.update!(school_urn: active_ect_period.school.urn)
@@ -101,7 +101,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
     end
 
     context 'when the teacher completed induction' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+      let(:teacher) { create(:teacher, trn: '1234568') }
 
       before do
         fake_client = TRS::FakeAPIClient.new
@@ -127,7 +127,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
     end
 
     context 'when the teacher is exempt from induction' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+      let(:teacher) { create(:teacher, trn: '1234568') }
 
       before do
         fake_client = TRS::FakeAPIClient.new
@@ -153,7 +153,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
     end
 
     context 'when the teacher failed induction' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+      let(:teacher) { create(:teacher, trn: '1234568') }
 
       before do
         fake_client = TRS::FakeAPIClient.new
@@ -179,7 +179,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
     end
 
     context 'when the teacher is prohibited from teaching' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+      let(:teacher) { create(:teacher, trn: '1234568') }
 
       before do
         fake_client = TRS::FakeAPIClient.new
@@ -211,7 +211,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
     end
 
     context 'otherwise' do
-      let(:school) { FactoryBot.create(:school) }
+      let(:school) { create(:school) }
 
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
@@ -229,7 +229,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
     context 'when the step is not valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect) }
+      let(:wizard) { build(:register_ect_wizard, current_step: :find_ect) }
 
       it 'does not update any data in the wizard ect' do
         expect { subject.save! }.not_to change(subject.ect, :trn)
@@ -243,7 +243,7 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
     context 'when the step is valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :find_ect, step_params:) }
+      let(:wizard) { build(:register_ect_wizard, current_step: :find_ect, step_params:) }
       let(:step_params) do
         ActionController::Parameters.new(
           "find_ect" => {

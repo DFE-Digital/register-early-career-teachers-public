@@ -38,7 +38,7 @@ RSpec.describe LegacyDataImporter do
     end
 
     it "destroys any DataMigration records" do
-      FactoryBot.create_list(:data_migration, 2)
+      create_list(:data_migration, 2)
       [migrator1, migrator2].each { |migrator| allow(migrator).to receive(:reset!) }
 
       expect {

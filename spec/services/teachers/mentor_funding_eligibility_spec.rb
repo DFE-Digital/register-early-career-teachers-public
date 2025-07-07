@@ -5,7 +5,7 @@ describe Teachers::MentorFundingEligibility do
 
   describe 'initialisation with a TRN' do
     context 'when the teacher is present' do
-      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let!(:teacher) { create(:teacher, trn:) }
 
       it 'finds the teacher' do
         expect(subject.teacher).to eql(teacher)
@@ -25,13 +25,13 @@ describe Teachers::MentorFundingEligibility do
     end
 
     context 'when the teacher has an ineligibility reason and date set' do
-      let!(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding, trn:) }
+      let!(:teacher) { create(:teacher, :ineligible_for_mentor_funding, trn:) }
 
       it { is_expected.not_to be_eligible }
     end
 
     context 'when the teacher has no ineligibility reason or date set' do
-      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let!(:teacher) { create(:teacher, trn:) }
 
       it { is_expected.to be_eligible }
     end

@@ -1,11 +1,11 @@
 describe Builders::Mentor::SchoolPeriods do
   subject(:service) { described_class.new(teacher:, school_periods:) }
 
-  let(:school_1) { FactoryBot.create(:school, urn: "123456") }
-  let(:school_2) { FactoryBot.create(:school, urn: "987654") }
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:period_1) { FactoryBot.build(:school_period, urn: school_1.urn, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
-  let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 1.month.ago.to_date, end_date: nil) }
+  let(:school_1) { create(:school, urn: "123456") }
+  let(:school_2) { create(:school, urn: "987654") }
+  let(:teacher) { create(:teacher) }
+  let(:period_1) { build(:school_period, urn: school_1.urn, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
+  let(:period_2) { build(:school_period, urn: school_2.urn, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:school_periods) { [period_1, period_2] }
 
   describe "#build" do
@@ -33,7 +33,7 @@ describe Builders::Mentor::SchoolPeriods do
     end
 
     context "when the school does not exist" do
-      let(:period_1) { FactoryBot.build(:school_period, urn: "12121", start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
+      let(:period_1) { build(:school_period, urn: "12121", start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
 
       it "creates a TeacherMigrationFailure record" do
         expect {
@@ -43,7 +43,7 @@ describe Builders::Mentor::SchoolPeriods do
     end
 
     context "when the school period dates overlap" do
-      let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 2.months.ago.to_date, end_date: nil) }
+      let(:period_2) { build(:school_period, urn: school_2.urn, start_date: 2.months.ago.to_date, end_date: nil) }
 
       it "does not create a TeacherMigrationFailure record" do
         expect {

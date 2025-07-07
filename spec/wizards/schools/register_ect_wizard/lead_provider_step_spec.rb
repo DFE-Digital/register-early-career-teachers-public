@@ -22,7 +22,7 @@ RSpec.describe Schools::RegisterECTWizard::LeadProviderStep, type: :model do
 
     context 'when the lead_provider_id is present and the lead provider exists' do
       let(:lead_provider_id) { lead_provider.id }
-      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:lead_provider) { create(:lead_provider) }
 
       it { expect(subject).to be_valid }
     end
@@ -32,7 +32,7 @@ RSpec.describe Schools::RegisterECTWizard::LeadProviderStep, type: :model do
     subject { wizard.current_step }
 
     let(:wizard) do
-      FactoryBot.build(:register_ect_wizard, current_step: :lead_provider)
+      build(:register_ect_wizard, current_step: :lead_provider)
     end
 
     describe '#next_step' do
@@ -60,7 +60,7 @@ RSpec.describe Schools::RegisterECTWizard::LeadProviderStep, type: :model do
     end
 
     let(:wizard) do
-      FactoryBot.build(:register_ect_wizard, current_step: :lead_provider, step_params:)
+      build(:register_ect_wizard, current_step: :lead_provider, step_params:)
     end
 
     context 'when the step is not valid' do

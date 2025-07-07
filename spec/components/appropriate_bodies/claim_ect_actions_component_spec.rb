@@ -10,9 +10,9 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
   end
 
   let(:teacher) { nil }
-  let(:current_appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:current_appropriate_body) { create(:appropriate_body) }
   let(:pending_induction_submission) do
-    FactoryBot.create(
+    create(
       :pending_induction_submission,
       trs_first_name: "John",
       trs_last_name: "Doe"
@@ -20,12 +20,12 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
   end
 
   context "with teacher" do
-    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:teacher) { create(:teacher) }
 
     context "when teacher is registered with another appropriate body" do
-      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:other_appropriate_body) { create(:appropriate_body) }
       let!(:induction_period) do
-        FactoryBot.create(
+        create(
           :induction_period,
           :active,
           teacher:,
@@ -44,7 +44,7 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
 
     context "when teacher is exempt" do
       let(:pending_induction_submission) do
-        FactoryBot.create(
+        create(
           :pending_induction_submission,
           trs_first_name: "John",
           trs_last_name: "Doe",

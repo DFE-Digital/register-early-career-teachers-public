@@ -18,7 +18,7 @@ describe TrainingPeriod do
     context "exactly one id of trainee present" do
       context "when ect_at_school_period_id and mentor_at_school_period_id are all nil" do
         subject do
-          FactoryBot.build(:training_period, ect_at_school_period_id: nil, mentor_at_school_period_id: nil)
+          build(:training_period, ect_at_school_period_id: nil, mentor_at_school_period_id: nil)
         end
 
         it "add an error" do
@@ -29,7 +29,7 @@ describe TrainingPeriod do
 
       context "when ect_at_school_period_id and mentor_at_school_period_id are all set" do
         subject do
-          FactoryBot.build(:training_period, ect_at_school_period_id: 200, mentor_at_school_period_id: 300)
+          build(:training_period, ect_at_school_period_id: 200, mentor_at_school_period_id: 300)
         end
 
         it "add an error" do
@@ -41,10 +41,10 @@ describe TrainingPeriod do
 
     describe 'presence of expression of interest or school partnership' do
       let(:dates) { { started_on: 3.years.ago.to_date, finished_on: nil } }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **dates) }
+      let(:ect_at_school_period) { create(:ect_at_school_period, **dates) }
 
       context 'when neither the expression of interest or school partnership is present' do
-        subject { FactoryBot.build(:training_period, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
+        subject { build(:training_period, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
 
         it 'has a base error stating either expression of interest or school partnership required' do
           subject.valid?
@@ -53,19 +53,19 @@ describe TrainingPeriod do
       end
 
       context 'when just the expression of interest is present' do
-        subject { FactoryBot.create(:training_period, :with_expression_of_interest, ect_at_school_period:, **dates) }
+        subject { create(:training_period, :with_expression_of_interest, ect_at_school_period:, **dates) }
 
         it { is_expected.to(be_valid) }
       end
 
       context 'when just the school partnership is present' do
-        subject { FactoryBot.create(:training_period, :with_school_partnership, ect_at_school_period:, **dates) }
+        subject { create(:training_period, :with_school_partnership, ect_at_school_period:, **dates) }
 
         it { is_expected.to(be_valid) }
       end
 
       context 'when both the expression of interest and school partnership are present' do
-        subject { FactoryBot.create(:training_period, :with_school_partnership, :with_expression_of_interest, ect_at_school_period:, **dates) }
+        subject { create(:training_period, :with_school_partnership, :with_expression_of_interest, ect_at_school_period:, **dates) }
 
         it { is_expected.to(be_valid) }
       end
@@ -79,21 +79,21 @@ describe TrainingPeriod do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             let(:ect_at_school_period) do
-              FactoryBot.create(:ect_at_school_period,
-                                started_on: 5.years.ago,
-                                finished_on: nil)
+              create(:ect_at_school_period,
+                     started_on: 5.years.ago,
+                     finished_on: nil)
             end
             let(:period) do
-              FactoryBot.build(:training_period, ect_at_school_period:,
-                                                 started_on: test.new_period_range.first,
-                                                 finished_on: test.new_period_range.last)
+              build(:training_period, ect_at_school_period:,
+                                      started_on: test.new_period_range.first,
+                                      finished_on: test.new_period_range.last)
             end
             let(:messages) { period.errors.messages }
 
             before do
-              FactoryBot.create(:training_period, ect_at_school_period:,
-                                                  started_on: test.existing_period_range.first,
-                                                  finished_on: test.existing_period_range.last)
+              create(:training_period, ect_at_school_period:,
+                                       started_on: test.existing_period_range.first,
+                                       finished_on: test.existing_period_range.last)
               period.valid?
             end
 
@@ -123,21 +123,21 @@ describe TrainingPeriod do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             let(:mentor_at_school_period) do
-              FactoryBot.create(:mentor_at_school_period,
-                                started_on: 5.years.ago,
-                                finished_on: nil)
+              create(:mentor_at_school_period,
+                     started_on: 5.years.ago,
+                     finished_on: nil)
             end
             let(:period) do
-              FactoryBot.build(:training_period, :for_mentor, mentor_at_school_period:,
-                                                              started_on: test.new_period_range.first,
-                                                              finished_on: test.new_period_range.last)
+              build(:training_period, :for_mentor, mentor_at_school_period:,
+                                                   started_on: test.new_period_range.first,
+                                                   finished_on: test.new_period_range.last)
             end
             let(:messages) { period.errors.messages }
 
             before do
-              FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:,
-                                                               started_on: test.existing_period_range.first,
-                                                               finished_on: test.existing_period_range.last)
+              create(:training_period, :for_mentor, mentor_at_school_period:,
+                                                    started_on: test.existing_period_range.first,
+                                                    finished_on: test.existing_period_range.last)
               period.valid?
             end
 
@@ -182,16 +182,16 @@ describe TrainingPeriod do
   describe "#siblings" do
     subject { training_period_1.siblings }
 
-    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01') }
-    let!(:training_period_1) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: '2022-01-01', finished_on: '2022-06-01') }
-    let!(:training_period_2) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: '2022-06-01', finished_on: '2023-01-01') }
+    let!(:ect_at_school_period) { create(:ect_at_school_period, :active, started_on: '2021-01-01') }
+    let!(:training_period_1) { create(:training_period, ect_at_school_period:, started_on: '2022-01-01', finished_on: '2022-06-01') }
+    let!(:training_period_2) { create(:training_period, ect_at_school_period:, started_on: '2022-06-01', finished_on: '2023-01-01') }
 
     let!(:unrelated_ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01')
+      create(:ect_at_school_period, :active, started_on: '2021-01-01')
     end
 
     let!(:unrelated_training_period) do
-      FactoryBot.create(:training_period, ect_at_school_period: unrelated_ect_at_school_period, started_on: '2022-06-01', finished_on: '2023-01-01')
+      create(:training_period, ect_at_school_period: unrelated_ect_at_school_period, started_on: '2022-06-01', finished_on: '2023-01-01')
     end
 
     it "only returns records that belong to the same trainee" do

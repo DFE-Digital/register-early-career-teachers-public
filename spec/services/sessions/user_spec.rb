@@ -17,7 +17,7 @@ RSpec.describe Sessions::User do
     context 'when user session stores an appropriate body user' do
       let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
       let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
-      let!(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
+      let!(:appropriate_body) { create(:appropriate_body, dfe_sign_in_organisation_id:) }
       let(:fake_user_session) do
         {
           'type' => 'Sessions::Users::AppropriateBodyUser',
@@ -39,7 +39,7 @@ RSpec.describe Sessions::User do
     end
 
     context 'when user session stores an appropriate body persona' do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body) { create(:appropriate_body) }
       let(:fake_user_session) do
         {
           'type' => 'Sessions::Users::AppropriateBodyPersona',
@@ -60,7 +60,7 @@ RSpec.describe Sessions::User do
     end
 
     context 'when user session stores an existing db dfe user' do
-      let!(:dfe_user) { FactoryBot.create(:user, :admin, name: 'Christopher Lee', email: 'dfe_user@example.com') }
+      let!(:dfe_user) { create(:user, :admin, name: 'Christopher Lee', email: 'dfe_user@example.com') }
       let(:fake_user_session) do
         {
           'type' => 'Sessions::Users::DfEUser',
@@ -78,7 +78,7 @@ RSpec.describe Sessions::User do
     end
 
     context 'when user session stores a dfe persona' do
-      let!(:dfe_user) { FactoryBot.create(:user, :admin, name: 'Christopher Lee', email: 'dfe_persona@example.com') }
+      let!(:dfe_user) { create(:user, :admin, name: 'Christopher Lee', email: 'dfe_persona@example.com') }
       let(:fake_user_session) do
         {
           'type' => 'Sessions::Users::DfEPersona',
@@ -98,7 +98,7 @@ RSpec.describe Sessions::User do
     context 'when user session stores a school user' do
       let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
       let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
-      let(:school_urn) { FactoryBot.create(:school).urn }
+      let(:school_urn) { create(:school).urn }
       let(:fake_user_session) do
         {
           'type' => 'Sessions::Users::SchoolUser',

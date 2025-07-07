@@ -4,7 +4,7 @@ RSpec.describe 'Process bulk claims then actions events' do
   include_context 'fake trs api returns a teacher and then a teacher that is exempt from induction'
 
   let(:appropriate_body) do
-    FactoryBot.create(:appropriate_body, name: 'The Appropriate Body')
+    create(:appropriate_body, name: 'The Appropriate Body')
   end
 
   before do

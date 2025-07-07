@@ -1,9 +1,9 @@
 RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
   subject { described_class.new(wizard:) }
 
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:store) { FactoryBot.build(:session_repository, email: 'prepopulated@example.com', trn: teacher.trn) }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :email_address, store:) }
+  let(:teacher) { create(:teacher) }
+  let(:store) { build(:session_repository, email: 'prepopulated@example.com', trn: teacher.trn) }
+  let(:wizard) { build(:register_ect_wizard, current_step: :email_address, store:) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }
@@ -64,7 +64,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
 
   describe '#previous_step' do
     context 'when the teacher has been registered before' do
-      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+      let!(:ect_at_school_period) { create(:ect_at_school_period, teacher:) }
 
       it 'returns the previous ect details page' do
         expect(subject.previous_step).to eq(:registered_before)
@@ -88,7 +88,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
         }
       )
     end
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :email_address, step_params:) }
+    let(:wizard) { build(:register_ect_wizard, current_step: :email_address, step_params:) }
 
     context 'when the step is not valid' do
       before do

@@ -30,19 +30,19 @@ describe ECTAtSchoolPeriod do
       context ":register_ect context" do
         context "when the school is independent" do
           context "when national ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :independent_school, :national_ab) }
+            subject { create(:ect_at_school_period, :independent_school, :national_ab) }
 
             it { is_expected.to be_valid(:register_ect) }
           end
 
           context "when teaching school hub ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :independent_school, :teaching_school_hub_ab) }
+            subject { create(:ect_at_school_period, :independent_school, :teaching_school_hub_ab) }
 
             it { is_expected.to be_valid(:register_ect) }
           end
 
           context "when local authority ab chosen" do
-            subject { FactoryBot.build(:ect_at_school_period, :independent_school, :local_authority_ab) }
+            subject { build(:ect_at_school_period, :independent_school, :local_authority_ab) }
 
             before { subject.valid?(:register_ect) }
 
@@ -54,10 +54,10 @@ describe ECTAtSchoolPeriod do
         end
 
         context "when the school is state_funded" do
-          subject { FactoryBot.build(:ect_at_school_period, :state_funded_school) }
+          subject { build(:ect_at_school_period, :state_funded_school) }
 
           context "when national ab chosen" do
-            subject { FactoryBot.build(:ect_at_school_period, :state_funded_school, :national_ab) }
+            subject { build(:ect_at_school_period, :state_funded_school, :national_ab) }
 
             before { subject.valid?(:register_ect) }
 
@@ -68,13 +68,13 @@ describe ECTAtSchoolPeriod do
           end
 
           context "when teaching school hub ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :state_funded_school, :teaching_school_hub_ab) }
+            subject { create(:ect_at_school_period, :state_funded_school, :teaching_school_hub_ab) }
 
             it { is_expected.to be_valid(:register_ect) }
           end
 
           context "when local authority ab chosen" do
-            subject { FactoryBot.build(:ect_at_school_period, :state_funded_school, :local_authority_ab) }
+            subject { build(:ect_at_school_period, :state_funded_school, :local_authority_ab) }
 
             before { subject.valid?(:register_ect) }
 
@@ -89,41 +89,41 @@ describe ECTAtSchoolPeriod do
       context "no context" do
         context "when the school is independent" do
           context "when national ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :independent_school, :national_ab) }
+            subject { create(:ect_at_school_period, :independent_school, :national_ab) }
 
             it { is_expected.to be_valid }
           end
 
           context "when teaching school hub ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :independent_school, :teaching_school_hub_ab) }
+            subject { create(:ect_at_school_period, :independent_school, :teaching_school_hub_ab) }
 
             it { is_expected.to be_valid }
           end
 
           context "when local authority ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :independent_school, :local_authority_ab) }
+            subject { create(:ect_at_school_period, :independent_school, :local_authority_ab) }
 
             it { is_expected.to be_valid }
           end
         end
 
         context "when the school is state_funded" do
-          subject { FactoryBot.build(:ect_at_school_period, :state_funded_school) }
+          subject { build(:ect_at_school_period, :state_funded_school) }
 
           context "when national ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :state_funded_school, :national_ab) }
+            subject { create(:ect_at_school_period, :state_funded_school, :national_ab) }
 
             it { is_expected.to be_valid }
           end
 
           context "when teaching school hub ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :state_funded_school, :teaching_school_hub_ab) }
+            subject { create(:ect_at_school_period, :state_funded_school, :teaching_school_hub_ab) }
 
             it { is_expected.to be_valid }
           end
 
           context "when local authority ab chosen" do
-            subject { FactoryBot.create(:ect_at_school_period, :state_funded_school, :local_authority_ab) }
+            subject { create(:ect_at_school_period, :state_funded_school, :local_authority_ab) }
 
             it { is_expected.to be_valid }
           end
@@ -138,10 +138,10 @@ describe ECTAtSchoolPeriod do
     end
 
     context "lead_provider_id" do
-      subject { FactoryBot.build(:ect_at_school_period) }
+      subject { build(:ect_at_school_period) }
 
       context "when training_programme is 'school_led'" do
-        subject { FactoryBot.build(:ect_at_school_period, :school_led) }
+        subject { build(:ect_at_school_period, :school_led) }
 
         it { is_expected.to validate_absence_of(:lead_provider_id).with_message('Must be nil') }
       end
@@ -150,22 +150,22 @@ describe ECTAtSchoolPeriod do
     describe 'overlapping periods' do
       let(:started_on_message) { 'Start date cannot overlap another Teacher ECT period' }
       let(:finished_on_message) { 'End date cannot overlap another Teacher ECT period' }
-      let(:teacher) { FactoryBot.create(:teacher) }
+      let(:teacher) { create(:teacher) }
 
       context '#teacher_distinct_period' do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             before do
-              FactoryBot.create(:ect_at_school_period, teacher:,
-                                                       started_on: test.existing_period_range.first,
-                                                       finished_on: test.existing_period_range.last)
+              create(:ect_at_school_period, teacher:,
+                                            started_on: test.existing_period_range.first,
+                                            finished_on: test.existing_period_range.last)
               period.valid?
             end
 
             let(:period) do
-              FactoryBot.build(:ect_at_school_period, teacher:,
-                                                      started_on: test.new_period_range.first,
-                                                      finished_on: test.new_period_range.last)
+              build(:ect_at_school_period, teacher:,
+                                           started_on: test.new_period_range.first,
+                                           finished_on: test.new_period_range.last)
             end
 
             let(:messages) { period.errors.messages }
@@ -194,7 +194,7 @@ describe ECTAtSchoolPeriod do
     end
 
     context "training_programme" do
-      subject { FactoryBot.build(:ect_at_school_period) }
+      subject { build(:ect_at_school_period) }
 
       it do
         is_expected.to validate_inclusion_of(:training_programme)
@@ -203,7 +203,7 @@ describe ECTAtSchoolPeriod do
       end
 
       context "when lead_provider has been set" do
-        subject { FactoryBot.create(:ect_at_school_period) }
+        subject { create(:ect_at_school_period) }
 
         it { is_expected.to validate_presence_of(:training_programme).with_message("Must be provider-led") }
       end
@@ -211,12 +211,12 @@ describe ECTAtSchoolPeriod do
   end
 
   describe "scopes" do
-    let!(:teacher) { FactoryBot.create(:teacher) }
+    let!(:teacher) { create(:teacher) }
     let!(:school) { period_1.school }
-    let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: '2023-01-01', finished_on: '2023-06-01') }
-    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2023-12-11") }
-    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
-    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
+    let!(:period_1) { create(:ect_at_school_period, :state_funded_school, teacher:, started_on: '2023-01-01', finished_on: '2023-06-01') }
+    let!(:period_2) { create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2023-12-11") }
+    let!(:period_3) { create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
+    let!(:teacher_2_period) { create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
 
     describe ".for_teacher" do
       it "returns ect periods only for the specified teacher" do
@@ -226,13 +226,13 @@ describe ECTAtSchoolPeriod do
   end
 
   describe "#siblings" do
-    let!(:teacher) { FactoryBot.create(:teacher) }
+    let!(:teacher) { create(:teacher) }
     let!(:school) { period_1.school }
-    let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: '2022-12-01', finished_on: '2023-06-01') }
-    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: '2024-01-01') }
-    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
-    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: '2022-01-01', finished_on: period_1.started_on) }
+    let!(:period_1) { create(:ect_at_school_period, :state_funded_school, teacher:, started_on: '2022-12-01', finished_on: '2023-06-01') }
+    let!(:period_2) { create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: '2024-01-01') }
+    let!(:period_3) { create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
+    let!(:teacher_2_period) { create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
+    let(:ect_at_school_period) { create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: '2022-01-01', finished_on: period_1.started_on) }
 
     it "returns ect periods only for the specified instance's teacher excluding the instance" do
       expect(ect_at_school_period.siblings).to match_array([period_1, period_2, period_3])

@@ -1,6 +1,6 @@
 RSpec.describe 'ECT summary' do
-  let(:ect) { FactoryBot.create(:ect_at_school_period) }
-  let(:school) { FactoryBot.create(:school) }
+  let(:ect) { create(:ect_at_school_period) }
+  let(:school) { create(:school) }
 
   context 'when signed in as school user' do
     before do

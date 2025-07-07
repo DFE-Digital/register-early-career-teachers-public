@@ -11,17 +11,17 @@ RSpec.describe Schools::RegisterMentor do
                         author:)
   end
 
-  let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
+  let(:author) { create(:school_user, school_urn: school.urn) }
   let(:trs_first_name) { "Dusty" }
   let(:trs_last_name) { "Rhodes" }
   let(:corrected_name) { "Randy Marsh" }
   let(:trn) { "3002586" }
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { create(:school) }
   let(:email) { "randy@tegridyfarms.com" }
   let(:started_on) { Date.new(2024, 9, 17) }
   let(:teacher) { subject.teacher }
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+  let(:lead_provider) { create(:lead_provider) }
+  let!(:contract_period) { create(:contract_period, year: 2024) }
   let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
 
   describe '#register!' do
@@ -32,7 +32,7 @@ RSpec.describe Schools::RegisterMentor do
     end
 
     context 'when provider-led' do
-      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+      let!(:active_lead_provider) { create(:active_lead_provider, lead_provider:, contract_period:) }
 
       context "when a Teacher record with the same trn doesn't exist" do
         it 'creates a new Teacher record' do
@@ -52,14 +52,14 @@ RSpec.describe Schools::RegisterMentor do
       end
 
       context "when a Teacher record with the same trn exists" do
-        let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+        let!(:teacher) { create(:teacher, trn:) }
 
         context "without MentorATSchoolPeriod records" do
           it { expect { service.register! }.not_to change(Teacher, :count) }
         end
 
         context "with MentorATSchoolPeriod records" do
-          before { FactoryBot.create(:mentor_at_school_period, teacher:) }
+          before { create(:mentor_at_school_period, teacher:) }
 
           it { expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid) }
         end
@@ -80,9 +80,9 @@ RSpec.describe Schools::RegisterMentor do
       end
 
       context 'when a SchoolPartnership exists' do
-        let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
-        let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
+        let(:delivery_partner) { create(:delivery_partner) }
+        let(:lead_provider_delivery_partnership) { create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+        let!(:school_partnership) { create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
         it 'creates a TrainingPeriod with a school_partnership and no expression_of_interest' do
           expect { service.register! }.to change(TrainingPeriod, :count).by(1)

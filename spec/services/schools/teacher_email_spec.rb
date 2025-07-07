@@ -1,11 +1,11 @@
 describe Schools::TeacherEmail do
   subject { described_class.new(email:, trn:) }
 
-  let(:finished_ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
-  let(:ongoing_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active) }
+  let(:finished_ect_at_school_period) { create(:ect_at_school_period) }
+  let(:ongoing_ect_at_school_period) { create(:ect_at_school_period, :active) }
 
-  let(:finished_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period) }
-  let(:ongoing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active) }
+  let(:finished_mentor_at_school_period) { create(:mentor_at_school_period) }
+  let(:ongoing_mentor_at_school_period) { create(:mentor_at_school_period, :active) }
 
   let(:trn) { '123456' }
 
@@ -38,7 +38,7 @@ describe Schools::TeacherEmail do
     context "when the email has been used by the same teacher in the past" do
       let(:teacher) { ongoing_ect_at_school_period.teacher }
       let(:trn) { teacher.trn }
-      let(:email) { FactoryBot.create(:ect_at_school_period, teacher:).email }
+      let(:email) { create(:ect_at_school_period, teacher:).email }
 
       it "returns false" do
         expect(subject.is_currently_used?).to be false

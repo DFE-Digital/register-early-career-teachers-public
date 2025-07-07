@@ -9,7 +9,7 @@ describe MentorAtSchoolPeriod do
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:mentor_at_school_period) }
+    subject { build(:mentor_at_school_period) }
 
     it { is_expected.to validate_presence_of(:started_on) }
     it { is_expected.to validate_presence_of(:school_id) }
@@ -24,23 +24,23 @@ describe MentorAtSchoolPeriod do
     describe 'overlapping periods' do
       let(:started_on_message) { 'Start date cannot overlap another Teacher School Mentor period' }
       let(:finished_on_message) { 'End date cannot overlap another Teacher School Mentor period' }
-      let(:teacher) { FactoryBot.create(:teacher) }
-      let(:school) { FactoryBot.create(:school) }
+      let(:teacher) { create(:teacher) }
+      let(:school) { create(:school) }
 
       context '#teacher_distinct_period' do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             before do
-              FactoryBot.create(:mentor_at_school_period, teacher:, school:,
-                                                          started_on: test.existing_period_range.first,
-                                                          finished_on: test.existing_period_range.last)
+              create(:mentor_at_school_period, teacher:, school:,
+                                               started_on: test.existing_period_range.first,
+                                               finished_on: test.existing_period_range.last)
               period.valid?
             end
 
             let(:period) do
-              FactoryBot.build(:mentor_at_school_period, teacher:, school:,
-                                                         started_on: test.new_period_range.first,
-                                                         finished_on: test.new_period_range.last)
+              build(:mentor_at_school_period, teacher:, school:,
+                                              started_on: test.new_period_range.first,
+                                              finished_on: test.new_period_range.last)
             end
 
             let(:messages) { period.errors.messages }
@@ -70,13 +70,13 @@ describe MentorAtSchoolPeriod do
   end
 
   describe "scopes" do
-    let!(:teacher) { FactoryBot.create(:teacher) }
-    let!(:school) { FactoryBot.create(:school) }
-    let!(:school_2) { FactoryBot.create(:school) }
-    let!(:period_1) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: '2023-01-01', finished_on: '2023-06-01') }
-    let!(:period_2) { FactoryBot.create(:mentor_at_school_period, teacher:, school: school_2, started_on: "2023-06-01", finished_on: "2024-01-01") }
-    let!(:period_3) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: '2024-01-01', finished_on: nil) }
-    let!(:teacher_2_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
+    let!(:teacher) { create(:teacher) }
+    let!(:school) { create(:school) }
+    let!(:school_2) { create(:school) }
+    let!(:period_1) { create(:mentor_at_school_period, teacher:, school:, started_on: '2023-01-01', finished_on: '2023-06-01') }
+    let!(:period_2) { create(:mentor_at_school_period, teacher:, school: school_2, started_on: "2023-06-01", finished_on: "2024-01-01") }
+    let!(:period_3) { create(:mentor_at_school_period, teacher:, school:, started_on: '2024-01-01', finished_on: nil) }
+    let!(:teacher_2_period) { create(:mentor_at_school_period, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
 
     describe ".for_school" do
       it "returns mentor periods only for the specified school" do
@@ -92,12 +92,12 @@ describe MentorAtSchoolPeriod do
   end
 
   describe "#siblings" do
-    let!(:teacher) { FactoryBot.create(:teacher) }
-    let!(:school) { FactoryBot.create(:school) }
-    let!(:school_2) { FactoryBot.create(:school) }
-    let!(:period_1) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: '2023-01-01', finished_on: '2023-06-01') }
-    let!(:period_2) { FactoryBot.create(:mentor_at_school_period, teacher:, school: school_2, started_on: "2023-06-01", finished_on: "2024-01-01") }
-    let!(:mentor_at_school_period) { FactoryBot.build(:mentor_at_school_period, teacher:, school: school_2, started_on: "2022-01-01", finished_on: "2023-01-01") }
+    let!(:teacher) { create(:teacher) }
+    let!(:school) { create(:school) }
+    let!(:school_2) { create(:school) }
+    let!(:period_1) { create(:mentor_at_school_period, teacher:, school:, started_on: '2023-01-01', finished_on: '2023-06-01') }
+    let!(:period_2) { create(:mentor_at_school_period, teacher:, school: school_2, started_on: "2023-06-01", finished_on: "2024-01-01") }
+    let!(:mentor_at_school_period) { build(:mentor_at_school_period, teacher:, school: school_2, started_on: "2022-01-01", finished_on: "2023-01-01") }
 
     it "returns mentor periods for the specified instance's teacher and school excluding the instance" do
       expect(mentor_at_school_period.siblings).to match_array([period_2])

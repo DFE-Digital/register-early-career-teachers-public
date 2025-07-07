@@ -1,10 +1,10 @@
 RSpec.describe "Run parity check" do
   let(:ecf_url) { "https://ecf.example.com" }
   let(:rect_url) { "https://rect.example.com" }
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:get_endpoint) { FactoryBot.create(:parity_check_endpoint, :get, path: "/api/v1/statements") }
-  let!(:post_endpoint) { FactoryBot.create(:parity_check_endpoint, :post, path: "/api/v1/statement") }
-  let!(:put_endpoint) { FactoryBot.create(:parity_check_endpoint, :put, path: "/api/v3/users") }
+  let(:lead_provider) { create(:lead_provider) }
+  let!(:get_endpoint) { create(:parity_check_endpoint, :get, path: "/api/v1/statements") }
+  let!(:post_endpoint) { create(:parity_check_endpoint, :post, path: "/api/v1/statement") }
+  let!(:put_endpoint) { create(:parity_check_endpoint, :put, path: "/api/v3/users") }
 
   before do
     sign_in_as_dfe_user(role: :admin)

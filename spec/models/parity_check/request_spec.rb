@@ -21,13 +21,13 @@ describe ParityCheck::Request do
     it { is_expected.not_to validate_presence_of(:responses) }
 
     context "when in_progress" do
-      subject { FactoryBot.build(:parity_check_request, :in_progress) }
+      subject { build(:parity_check_request, :in_progress) }
 
       it { is_expected.to validate_presence_of(:started_at) }
     end
 
     context "when completed" do
-      subject { FactoryBot.build(:parity_check_request, :completed, started_at:) }
+      subject { build(:parity_check_request, :completed, started_at:) }
 
       let(:started_at) { Time.current }
 
@@ -39,11 +39,11 @@ describe ParityCheck::Request do
   end
 
   describe "scopes" do
-    let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
-    let!(:pending_get_request) { FactoryBot.create(:parity_check_request, :pending, :get, run:) }
-    let!(:queued_get_request) { FactoryBot.create(:parity_check_request, :queued, :get, run:) }
-    let!(:in_progress_post_request) { FactoryBot.create(:parity_check_request, :in_progress, :post, run:) }
-    let!(:completed_put_request) { FactoryBot.create(:parity_check_request, :completed, :put, run:) }
+    let(:run) { create(:parity_check_run, :in_progress) }
+    let!(:pending_get_request) { create(:parity_check_request, :pending, :get, run:) }
+    let!(:queued_get_request) { create(:parity_check_request, :queued, :get, run:) }
+    let!(:in_progress_post_request) { create(:parity_check_request, :in_progress, :post, run:) }
+    let!(:completed_put_request) { create(:parity_check_request, :completed, :put, run:) }
 
     describe ".pending" do
       subject { described_class.pending }
@@ -108,11 +108,11 @@ describe ParityCheck::Request do
     describe ".with_all_responses_matching" do
       subject { described_class.with_all_responses_matching }
 
-      let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
-      let!(:request_with_no_responses) { FactoryBot.create(:parity_check_request, :in_progress, response_types: [], run:) }
-      let!(:request_with_matching_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching matching], run:) }
-      let!(:request_with_different_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[different], run:) }
-      let!(:request_with_matching_and_different_responses) { FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching different], run:) }
+      let(:run) { create(:parity_check_run, :in_progress) }
+      let!(:request_with_no_responses) { create(:parity_check_request, :in_progress, response_types: [], run:) }
+      let!(:request_with_matching_responses) { create(:parity_check_request, :completed, response_types: %i[matching matching], run:) }
+      let!(:request_with_different_responses) { create(:parity_check_request, :completed, response_types: %i[different], run:) }
+      let!(:request_with_matching_and_different_responses) { create(:parity_check_request, :completed, response_types: %i[matching different], run:) }
 
       it { expect(subject).to contain_exactly(request_with_matching_responses) }
     end
@@ -122,20 +122,20 @@ describe ParityCheck::Request do
     it { is_expected.to be_pending }
 
     context "when transitioning from pending to queued" do
-      let(:request) { FactoryBot.create(:parity_check_request, :pending) }
+      let(:request) { create(:parity_check_request, :pending) }
 
       it { expect { request.queue! }.to change(request, :state).from("pending").to("queued") }
     end
 
     context "when transitioning from queued to in_progress" do
-      let(:request) { FactoryBot.create(:parity_check_request, :queued) }
+      let(:request) { create(:parity_check_request, :queued) }
 
       it { expect { request.start! }.to change(request, :state).from("queued").to("in_progress") }
       it { expect { request.start! }.to change(request, :started_at).from(nil).to(be_within(1.second).of(Time.zone.now)) }
     end
 
     context "when transitioning from in_progress to completed" do
-      let(:request) { FactoryBot.create(:parity_check_request, :in_progress, response_types: %i[different]) }
+      let(:request) { create(:parity_check_request, :in_progress, response_types: %i[different]) }
 
       it { expect { request.complete! }.to change(request, :state).from("in_progress").to("completed") }
       it { expect { request.complete! }.to change(request, :completed_at).from(nil).to(be_within(1.second).of(Time.zone.now)) }
@@ -148,7 +148,7 @@ describe ParityCheck::Request do
     end
 
     context "when attempting an unsupported transition" do
-      let(:request) { FactoryBot.create(:parity_check_request, :completed) }
+      let(:request) { create(:parity_check_request, :completed) }
 
       it { expect { request.queue! }.to raise_error(StateMachines::InvalidTransition) }
     end
@@ -157,7 +157,7 @@ describe ParityCheck::Request do
   describe "#rect_performance_gain_ratio" do
     subject { request.rect_performance_gain_ratio }
 
-    let(:request) { FactoryBot.create(:parity_check_request, responses:) }
+    let(:request) { create(:parity_check_request, responses:) }
 
     context "when there are no responses" do
       let(:responses) { [] }
@@ -166,7 +166,7 @@ describe ParityCheck::Request do
     end
 
     context "when there are responses" do
-      let(:responses) { FactoryBot.create_list(:parity_check_response, 2) }
+      let(:responses) { create_list(:parity_check_response, 2) }
 
       context "when the response times are equal" do
         before do
@@ -201,12 +201,12 @@ describe ParityCheck::Request do
     subject { request.match_rate }
 
     let(:response_types) { %i[matching matching different] }
-    let(:request) { FactoryBot.create(:parity_check_request, :completed, response_types:) }
+    let(:request) { create(:parity_check_request, :completed, response_types:) }
 
     it { is_expected.to eq(67) }
 
     context "when there are no responses" do
-      let(:request) { FactoryBot.create(:parity_check_request, :in_progress, response_types: []) }
+      let(:request) { create(:parity_check_request, :in_progress, response_types: []) }
 
       it { is_expected.to be_nil }
     end

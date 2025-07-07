@@ -1,31 +1,31 @@
 RSpec.describe Schools::RegisterECTWizard::ECT do
   subject(:ect) { described_class.new(store) }
 
-  let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body, :national) }
-  let(:school) { FactoryBot.create(:school, :independent) }
+  let(:author) { create(:school_user, school_urn: school.urn) }
+  let(:appropriate_body) { create(:appropriate_body, :national) }
+  let(:school) { create(:school, :independent) }
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     change_name: 'no',
-                     corrected_name: nil,
-                     date_of_birth: "11-10-1945",
-                     email: "dusty@rhodes.com",
-                     appropriate_body_id: appropriate_body.id,
-                     training_programme: "school_led",
-                     start_date: 'January 2025',
-                     trn: "3002586",
-                     trs_first_name: "Dusty",
-                     trs_last_name: "Rhodes",
-                     trs_date_of_birth: "1945-10-11",
-                     trs_national_insurance_number: "OWAD23455",
-                     working_pattern: "full_time")
+    build(:session_repository,
+          change_name: 'no',
+          corrected_name: nil,
+          date_of_birth: "11-10-1945",
+          email: "dusty@rhodes.com",
+          appropriate_body_id: appropriate_body.id,
+          training_programme: "school_led",
+          start_date: 'January 2025',
+          trn: "3002586",
+          trs_first_name: "Dusty",
+          trs_last_name: "Rhodes",
+          trs_date_of_birth: "1945-10-11",
+          trs_national_insurance_number: "OWAD23455",
+          working_pattern: "full_time")
   end
 
   describe '#active_record_at_school' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: '3002586') }
+    let(:teacher) { create(:teacher, trn: '3002586') }
 
     context 'when the ECT has an ongoing ECT record at the school' do
-      let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, :active, school:, teacher:) }
+      let!(:existing_ect_record) { create(:ect_at_school_period, :active, school:, teacher:) }
 
       it 'returns the ECT record' do
         expect(ect.active_record_at_school(school.urn)).to eq(existing_ect_record)
@@ -33,7 +33,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
 
     context 'when the ECT has no ongoing ECT record at the school' do
-      let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, school:, teacher:) }
+      let!(:existing_ect_record) { create(:ect_at_school_period, school:, teacher:) }
 
       it 'returns nil' do
         expect(ect.active_record_at_school(school.urn)).to be_nil
@@ -42,16 +42,16 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
   end
 
   describe '#active_at_school?' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: ect.trn) }
+    let(:teacher) { create(:teacher, trn: ect.trn) }
 
     it 'returns true if the ECT is active at the given school' do
-      FactoryBot.create(:ect_at_school_period, :active, teacher:, school:)
+      create(:ect_at_school_period, :active, teacher:, school:)
 
       expect(ect.active_at_school?(school.urn)).to be_truthy
     end
 
     it 'returns false if the ECT is not at the given school' do
-      FactoryBot.create(:ect_at_school_period, teacher:)
+      create(:ect_at_school_period, teacher:)
 
       expect(ect.active_at_school?(school.urn)).to be_falsey
     end
@@ -324,9 +324,9 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
   end
 
   describe 'previous registration' do
-    let(:teacher) { FactoryBot.create(:teacher) }
-    let(:school) { FactoryBot.create(:school) }
-    let(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: Date.new(2023, 12, 25), finished_on: Date.new(2024, 12, 25)) }
+    let(:teacher) { create(:teacher) }
+    let(:school) { create(:school) }
+    let(:ect_period) { create(:ect_at_school_period, teacher:, school:, started_on: Date.new(2023, 12, 25), finished_on: Date.new(2024, 12, 25)) }
 
     before do
       store.trn = teacher.trn
@@ -335,9 +335,9 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     describe '#induction_start_date' do
       context 'when the teacher has induction periods' do
         before do
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30))
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30))
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2024, 5, 1), finished_on: Date.new(2024, 6, 30))
+          create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30))
+          create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30))
+          create(:induction_period, teacher:, started_on: Date.new(2024, 5, 1), finished_on: Date.new(2024, 6, 30))
         end
 
         it 'returns the earliest started_on date' do
@@ -354,12 +354,12 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     describe '#previous_appropriate_body_name' do
       context 'when the teacher has induction periods' do
-        let!(:older_body) { FactoryBot.create(:appropriate_body, name: 'Older Body') }
-        let!(:more_recent_body) { FactoryBot.create(:appropriate_body, name: 'More Recent Body') }
+        let!(:older_body) { create(:appropriate_body, name: 'Older Body') }
+        let!(:more_recent_body) { create(:appropriate_body, name: 'More Recent Body') }
 
         before do
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30), appropriate_body: older_body)
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30), appropriate_body: more_recent_body)
+          create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30), appropriate_body: older_body)
+          create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30), appropriate_body: more_recent_body)
         end
 
         it 'returns the name of the latest appropriate body by started_on' do
@@ -377,8 +377,8 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     describe '#previous_training_programme' do
       context 'when the teacher has ECTAtSchoolPeriods' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :school_led, lead_provider_id: nil, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          create(:ect_at_school_period, teacher:, training_programme: :school_led, lead_provider_id: nil, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+          create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns the training programme from the latest ECTAtSchoolPeriod by started_on' do
@@ -396,7 +396,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     describe '#previous_provider_led?' do
       context 'when the latest ECTAtSchoolPeriod is provider-led' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns true' do
@@ -406,7 +406,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
       context 'when the latest ECTAtSchoolPeriod is school-led' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :school_led, lead_provider_id: nil, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          create(:ect_at_school_period, teacher:, training_programme: :school_led, lead_provider_id: nil, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns false' do
@@ -422,16 +422,16 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
 
     describe '#previous_lead_provider_name' do
-      let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Confirmed LP') }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:lead_provider) { create(:lead_provider, name: 'Confirmed LP') }
+      let(:active_lead_provider) { create(:active_lead_provider, lead_provider:) }
+      let(:lead_provider_delivery_partnership) { create(:lead_provider_delivery_partnership, active_lead_provider:) }
 
       before do
-        FactoryBot.create(:training_period,
-                          ect_at_school_period: ect_period,
-                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:),
-                          started_on: Date.new(2024, 1, 1),
-                          finished_on: Date.new(2024, 6, 1))
+        create(:training_period,
+               ect_at_school_period: ect_period,
+               school_partnership: create(:school_partnership, lead_provider_delivery_partnership:),
+               started_on: Date.new(2024, 1, 1),
+               finished_on: Date.new(2024, 6, 1))
       end
 
       it 'returns the name of the lead provider from the latest training period' do
@@ -440,15 +440,15 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
 
     describe '#previous_delivery_partner_name' do
-      let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: 'DP') }
-      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:) }
+      let(:delivery_partner) { create(:delivery_partner, name: 'DP') }
+      let(:lead_provider_delivery_partnership) { create(:lead_provider_delivery_partnership, delivery_partner:) }
 
       before do
-        FactoryBot.create(:training_period,
-                          ect_at_school_period: ect_period,
-                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:),
-                          started_on: Date.new(2024, 1, 1),
-                          finished_on: Date.new(2024, 6, 1))
+        create(:training_period,
+               ect_at_school_period: ect_period,
+               school_partnership: create(:school_partnership, lead_provider_delivery_partnership:),
+               started_on: Date.new(2024, 1, 1),
+               finished_on: Date.new(2024, 6, 1))
       end
 
       it 'returns the name of the delivery partner from the latest training period' do
@@ -458,15 +458,15 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     describe '#previous_school_name' do
       context 'when ECTAtSchoolPeriods exist' do
-        let(:school_1) { FactoryBot.create(:school) }
-        let(:school_2) { FactoryBot.create(:school) }
+        let(:school_1) { create(:school) }
+        let(:school_2) { create(:school) }
 
         before do
-          FactoryBot.create(:gias_school, school: school_1, name: 'Old School')
-          FactoryBot.create(:gias_school, school: school_2, name: 'Recent School')
+          create(:gias_school, school: school_1, name: 'Old School')
+          create(:gias_school, school: school_2, name: 'Recent School')
 
-          FactoryBot.create(:ect_at_school_period, teacher:, school: school_1, started_on: Date.new(2023, 1, 1), finished_on: Date.new(2023, 6, 30))
-          FactoryBot.create(:ect_at_school_period, teacher:, school: school_2, started_on: Date.new(2023, 9, 1), finished_on: nil)
+          create(:ect_at_school_period, teacher:, school: school_1, started_on: Date.new(2023, 1, 1), finished_on: Date.new(2023, 6, 30))
+          create(:ect_at_school_period, teacher:, school: school_2, started_on: Date.new(2023, 9, 1), finished_on: nil)
         end
 
         it 'returns the name of the most recent school by started_on' do

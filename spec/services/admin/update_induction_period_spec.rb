@@ -1,12 +1,12 @@
 RSpec.describe Admin::UpdateInductionPeriod do
   subject(:service) { described_class.new(author:, induction_period:, params:) }
 
-  let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
+  let(:admin) { create(:user, email: 'admin-user@education.gov.uk') }
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
+  let(:appropriate_body) { create(:appropriate_body) }
   let(:induction_period) do
-    FactoryBot.create(
+    create(
       :induction_period,
       teacher:,
       appropriate_body:,
@@ -37,13 +37,13 @@ RSpec.describe Admin::UpdateInductionPeriod do
 
     context "when induction period has an outcome" do
       let(:induction_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          appropriate_body:,
-                          started_on: "2023-01-01",
-                          finished_on: "2023-12-31",
-                          outcome: "pass",
-                          number_of_terms: 3)
+        create(:induction_period,
+               teacher:,
+               appropriate_body:,
+               started_on: "2023-01-01",
+               finished_on: "2023-12-31",
+               outcome: "pass",
+               number_of_terms: 3)
       end
 
       context "when updating dates" do
@@ -117,13 +117,13 @@ RSpec.describe Admin::UpdateInductionPeriod do
 
     context "when induction period has a fail outcome" do
       let(:induction_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          appropriate_body:,
-                          started_on: "2023-01-01",
-                          finished_on: "2023-12-31",
-                          outcome: "fail",
-                          number_of_terms: 3)
+        create(:induction_period,
+               teacher:,
+               appropriate_body:,
+               started_on: "2023-01-01",
+               finished_on: "2023-12-31",
+               outcome: "fail",
+               number_of_terms: 3)
       end
 
       context "when updating end date" do
@@ -164,7 +164,7 @@ RSpec.describe Admin::UpdateInductionPeriod do
       end
 
       context "when start date is before QTS award date" do
-        let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: Date.parse("2023-01-01")) }
+        let(:teacher) { create(:teacher, trs_qts_awarded_on: Date.parse("2023-01-01")) }
         let(:params) { { started_on: "2022-12-31" } }
 
         it "raises an error" do
@@ -178,11 +178,11 @@ RSpec.describe Admin::UpdateInductionPeriod do
       context "with overlapping periods" do
         context "when overlapping with previous period" do
           let!(:previous_period) do
-            FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: "2023-01-01",
-                              finished_on: "2023-07-01",
-                              induction_programme: "cip")
+            create(:induction_period,
+                   teacher:,
+                   started_on: "2023-01-01",
+                   finished_on: "2023-07-01",
+                   induction_programme: "cip")
           end
 
           let(:params) { { started_on: "2023-05-01" } }
@@ -197,11 +197,11 @@ RSpec.describe Admin::UpdateInductionPeriod do
 
         context "when overlapping with next period" do
           let!(:next_period) do
-            FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: "2023-11-01",
-                              finished_on: "2024-05-01",
-                              induction_programme: "cip")
+            create(:induction_period,
+                   teacher:,
+                   started_on: "2023-11-01",
+                   finished_on: "2024-05-01",
+                   induction_programme: "cip")
           end
 
           let(:params) { { finished_on: "2023-12-01" } }
@@ -226,7 +226,7 @@ RSpec.describe Admin::UpdateInductionPeriod do
 
       context "when induction period has no outcome and no end date" do
         let(:induction_period) do
-          FactoryBot.create(
+          create(
             :induction_period,
             teacher:,
             appropriate_body:,
@@ -256,7 +256,7 @@ RSpec.describe Admin::UpdateInductionPeriod do
 
       context "when induction period has an outcome" do
         let(:induction_period) do
-          FactoryBot.create(
+          create(
             :induction_period,
             teacher:,
             appropriate_body:,
@@ -308,7 +308,7 @@ RSpec.describe Admin::UpdateInductionPeriod do
 
     context "when updating end date for induction with outcome" do
       let(:induction_period) do
-        FactoryBot.create(
+        create(
           :induction_period,
           teacher:,
           appropriate_body:,

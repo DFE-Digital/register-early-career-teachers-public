@@ -7,9 +7,9 @@ RSpec.describe "View parity check response" do
   end
 
   scenario "Viewing a parity check response" do
-    run = FactoryBot.create(:parity_check_run, :completed)
-    response = FactoryBot.create(:parity_check_response, :different)
-    request = FactoryBot.create(:parity_check_request, :completed, run:, responses: [response])
+    run = create(:parity_check_run, :completed)
+    response = create(:parity_check_response, :different)
+    request = create(:parity_check_request, :completed, run:, responses: [response])
 
     page.goto(migration_parity_check_request_path(run, request))
     page.get_by_role("link", name: "Response details").click
@@ -32,7 +32,7 @@ RSpec.describe "View parity check response" do
   end
 
   scenario "Viewing a parity check response where the bodies match" do
-    response = FactoryBot.create(:parity_check_response, :different_status_code_matching_body)
+    response = create(:parity_check_response, :different_status_code_matching_body)
 
     page.goto(migration_parity_check_response_path(response.run, response))
 
@@ -44,7 +44,7 @@ RSpec.describe "View parity check response" do
   end
 
   scenario "Navigating back to the parity check request" do
-    response = FactoryBot.create(:parity_check_response, :different)
+    response = create(:parity_check_response, :different)
 
     page.goto(migration_parity_check_response_path(response.run, response))
 
@@ -54,7 +54,7 @@ RSpec.describe "View parity check response" do
   end
 
   scenario "Navigating back to the parity check run" do
-    response = FactoryBot.create(:parity_check_response, :different)
+    response = create(:parity_check_response, :different)
 
     page.goto(migration_parity_check_response_path(response.run, response))
 
@@ -64,7 +64,7 @@ RSpec.describe "View parity check response" do
   end
 
   scenario "Navigating back to completed parity checks" do
-    response = FactoryBot.create(:parity_check_response, :different)
+    response = create(:parity_check_response, :different)
 
     page.goto(migration_parity_check_response_path(response.run, response))
 
@@ -74,7 +74,7 @@ RSpec.describe "View parity check response" do
   end
 
   scenario "Navigating back to run a parity check" do
-    response = FactoryBot.create(:parity_check_response, :different)
+    response = create(:parity_check_response, :different)
 
     page.goto(migration_parity_check_response_path(response.run, response))
 

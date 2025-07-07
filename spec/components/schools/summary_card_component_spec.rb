@@ -1,25 +1,25 @@
 RSpec.describe Schools::SummaryCardComponent, type: :component do
-  let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body, name: 'an org that assures the quality of statutory teacher induction') }
-  let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'An org that designs the training') }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-  let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: 'An org that delivers the training') }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+  let(:school_reported_appropriate_body) { create(:appropriate_body, name: 'an org that assures the quality of statutory teacher induction') }
+  let(:lead_provider) { create(:lead_provider, name: 'An org that designs the training') }
+  let(:active_lead_provider) { create(:active_lead_provider, lead_provider:) }
+  let(:delivery_partner) { create(:delivery_partner, name: 'An org that delivers the training') }
+  let(:lead_provider_delivery_partnership) { create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:school_partnership) { create(:school_partnership, lead_provider_delivery_partnership:) }
 
   let(:school_led_ect) do
-    FactoryBot.create(:ect_at_school_period, :active, :school_led, school_reported_appropriate_body:)
+    create(:ect_at_school_period, :active, :school_led, school_reported_appropriate_body:)
   end
 
   let(:provider_led_ect) do
-    FactoryBot.create(:ect_at_school_period,
-                      :active,
-                      :provider_led,
-                      school_reported_appropriate_body:,
-                      lead_provider:,
-                      started_on: '2021-01-01')
+    create(:ect_at_school_period,
+           :active,
+           :provider_led,
+           school_reported_appropriate_body:,
+           lead_provider:,
+           started_on: '2021-01-01')
   end
 
-  let!(:training_period) { FactoryBot.create(:training_period, ect_at_school_period: provider_led_ect, school_partnership:, started_on: '2022-01-01', finished_on: '2022-06-01') }
+  let!(:training_period) { create(:training_period, ect_at_school_period: provider_led_ect, school_partnership:, started_on: '2022-01-01', finished_on: '2022-06-01') }
 
   context 'when data is reported by the school' do
     before { render_inline(described_class.new(title: 'Reported to us by your school', ect: school_led_ect, data_source: :school)) }
@@ -86,10 +86,10 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
   end
 
   context 'when data is reported by the appropriate body' do
-    let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :school_led, school_reported_appropriate_body:) }
+    let(:ect) { create(:ect_at_school_period, :active, :school_led, school_reported_appropriate_body:) }
 
     before do
-      FactoryBot.create(:induction_period, teacher: ect.teacher, started_on: '2023-01-01')
+      create(:induction_period, teacher: ect.teacher, started_on: '2023-01-01')
       render_inline(described_class.new(title: 'Reported to us by your appropriate body',
                                         ect:,
                                         data_source: :appropriate_body))
@@ -140,7 +140,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
 
   context 'when no training periods exist for a provider-led ECT' do
     let(:provider_led_ect_without_training_periods) do
-      FactoryBot.create(:ect_at_school_period, :active, :provider_led, school_reported_appropriate_body:, lead_provider:)
+      create(:ect_at_school_period, :active, :provider_led, school_reported_appropriate_body:, lead_provider:)
     end
 
     before { render_inline(described_class.new(title: 'Reported to us by your lead provider', ect: provider_led_ect_without_training_periods, data_source: :lead_provider)) }

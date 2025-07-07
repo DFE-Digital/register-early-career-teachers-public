@@ -14,7 +14,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def school
-    @school ||= FactoryBot.create(:school)
+    @school ||= create(:school)
   end
 
   def given_i_am_logged_in_as_a_school_user
@@ -22,8 +22,8 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def and_an_ect_has_already_registered_at_my_school
-    teacher = FactoryBot.create(:teacher, trn: '9876543')
-    FactoryBot.create(:ect_at_school_period, :active, teacher:, school:)
+    teacher = create(:teacher, trn: '9876543')
+    create(:ect_at_school_period, :active, teacher:, school:)
   end
 
   def when_i_click_continue

@@ -16,16 +16,16 @@ describe Teachers::Search do
   end
 
   describe '#search' do
-    let(:ab1) { FactoryBot.create(:appropriate_body) }
-    let(:ab2) { FactoryBot.create(:appropriate_body) }
-    let(:ab3) { FactoryBot.create(:appropriate_body) }
+    let(:ab1) { create(:appropriate_body) }
+    let(:ab2) { create(:appropriate_body) }
+    let(:ab3) { create(:appropriate_body) }
 
-    let(:teacher1) { FactoryBot.create(:teacher) }
-    let(:teacher2) { FactoryBot.create(:teacher) }
-    let(:teacher3) { FactoryBot.create(:teacher) }
+    let(:teacher1) { create(:teacher) }
+    let(:teacher2) { create(:teacher) }
+    let(:teacher3) { create(:teacher) }
 
-    let!(:induction_period1) { FactoryBot.create(:induction_period, :active, teacher: teacher1, appropriate_body: ab1) }
-    let!(:induction_period2) { FactoryBot.create(:induction_period, :active, teacher: teacher2, appropriate_body: ab2) }
+    let!(:induction_period1) { create(:induction_period, :active, teacher: teacher1, appropriate_body: ab1) }
+    let!(:induction_period2) { create(:induction_period, :active, teacher: teacher2, appropriate_body: ab2) }
 
     describe 'belonging to appropriate bodies' do
       context 'when one appropriate body is provided' do
@@ -43,7 +43,7 @@ describe Teachers::Search do
       context 'when multiple appropriate bodies are provided' do
         subject { Teachers::Search.new(appropriate_bodies: [ab1, ab3]) }
 
-        let!(:induction_period3) { FactoryBot.create(:induction_period, :active, teacher: teacher3, appropriate_body: ab3) }
+        let!(:induction_period3) { create(:induction_period, :active, teacher: teacher3, appropriate_body: ab3) }
 
         it 'includes teachers with ongoing induction periods with the specified appropriate bodies' do
           expect(subject.search).to include(teacher1, teacher3)
@@ -72,12 +72,12 @@ describe Teachers::Search do
     end
 
     describe 'status-based filtering with appropriate bodies' do
-      let(:teacher_with_open_induction) { FactoryBot.create(:teacher) }
-      let(:teacher_with_completed_induction) { FactoryBot.create(:teacher) }
-      let(:teacher_with_no_induction) { FactoryBot.create(:teacher) }
+      let(:teacher_with_open_induction) { create(:teacher) }
+      let(:teacher_with_completed_induction) { create(:teacher) }
+      let(:teacher_with_no_induction) { create(:teacher) }
 
-      let!(:open_induction_period) { FactoryBot.create(:induction_period, :active, teacher: teacher_with_open_induction, appropriate_body: ab1) }
-      let!(:completed_induction_period) { FactoryBot.create(:induction_period, :pass, teacher: teacher_with_completed_induction, appropriate_body: ab1) }
+      let!(:open_induction_period) { create(:induction_period, :active, teacher: teacher_with_open_induction, appropriate_body: ab1) }
+      let!(:completed_induction_period) { create(:induction_period, :pass, teacher: teacher_with_completed_induction, appropriate_body: ab1) }
 
       context 'when status is "open"' do
         subject { Teachers::Search.new(appropriate_bodies: ab1, status: 'open') }
@@ -175,8 +175,8 @@ describe Teachers::Search do
 
     describe 'when a query string is provided' do
       context 'when there are 7 digit numbers in the search string' do
-        let(:teacher1) { FactoryBot.create(:teacher, trn: '1234567') }
-        let(:teacher2) { FactoryBot.create(:teacher, trn: '2345678') }
+        let(:teacher1) { create(:teacher, trn: '1234567') }
+        let(:teacher2) { create(:teacher, trn: '2345678') }
 
         it 'searches for all present 7 digit numbers (TRNs)' do
           result = described_class.new(query_string: 'the quick brown 1234567 jumped over the lazy 2345678').search
@@ -186,7 +186,7 @@ describe Teachers::Search do
       end
 
       context 'when the search string contains some text' do
-        let(:teacher1) { FactoryBot.create(:teacher, trs_first_name: 'Captain', trs_last_name: 'Scrummy') }
+        let(:teacher1) { create(:teacher, trs_first_name: 'Captain', trs_last_name: 'Scrummy') }
 
         it 'initiates a full text search with the given search string' do
           result = described_class.new(query_string: 'Captain Scrummy').search
@@ -197,8 +197,8 @@ describe Teachers::Search do
     end
 
     describe 'when both an appropriate body and query string are provided' do
-      let(:teacher1) { FactoryBot.create(:teacher, trs_first_name: 'Joey') }
-      let(:teacher2) { FactoryBot.create(:teacher, trs_first_name: 'Joey') }
+      let(:teacher1) { create(:teacher, trs_first_name: 'Joey') }
+      let(:teacher2) { create(:teacher, trs_first_name: 'Joey') }
 
       it 'scopes the query to the selected appropriate body' do
         result = described_class.new(query_string: 'Joey', appropriate_bodies: ab1).search
@@ -250,21 +250,21 @@ describe Teachers::Search do
       describe 'ordering the results' do
         let(:started_on) { 2.years.ago }
 
-        let(:school1) { FactoryBot.create(:school) }
-        let(:mentored_teacher1) { FactoryBot.create(:teacher) }
-        let(:mentored_teacher2) { FactoryBot.create(:teacher) }
+        let(:school1) { create(:school) }
+        let(:mentored_teacher1) { create(:teacher) }
+        let(:mentored_teacher2) { create(:teacher) }
 
         # unmentored
-        let!(:ect_at_school_period1) { FactoryBot.create(:ect_at_school_period, :active, teacher: teacher1, school: school1, started_on:, created_at: 2.days.ago) }
-        let!(:ect_at_school_period2) { FactoryBot.create(:ect_at_school_period, :active, teacher: teacher2, school: school1, started_on:, created_at: 1.day.ago) }
+        let!(:ect_at_school_period1) { create(:ect_at_school_period, :active, teacher: teacher1, school: school1, started_on:, created_at: 2.days.ago) }
+        let!(:ect_at_school_period2) { create(:ect_at_school_period, :active, teacher: teacher2, school: school1, started_on:, created_at: 1.day.ago) }
 
         # mentored
-        let!(:mentor_at_school_period1) { FactoryBot.create(:mentor_at_school_period, :active, teacher: teacher3, school: school1, started_on:) }
-        let!(:ect_at_school_period3) { FactoryBot.create(:ect_at_school_period, :active, teacher: mentored_teacher1, school: school1, started_on:, created_at: 2.days.ago) }
-        let!(:ect_at_school_period4) { FactoryBot.create(:ect_at_school_period, :active, teacher: mentored_teacher2, school: school1, started_on:, created_at: 1.day.ago) }
+        let!(:mentor_at_school_period1) { create(:mentor_at_school_period, :active, teacher: teacher3, school: school1, started_on:) }
+        let!(:ect_at_school_period3) { create(:ect_at_school_period, :active, teacher: mentored_teacher1, school: school1, started_on:, created_at: 2.days.ago) }
+        let!(:ect_at_school_period4) { create(:ect_at_school_period, :active, teacher: mentored_teacher2, school: school1, started_on:, created_at: 1.day.ago) }
 
-        let!(:mentorship_period1) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on:) }
-        let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on:) }
+        let!(:mentorship_period1) { create(:mentorship_period, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on:) }
+        let!(:mentorship_period2) { create(:mentorship_period, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on:) }
 
         it 'orders with unmentored teachers first, then by registration date' do
           results = Teachers::Search.new(ect_at_school: school1).search

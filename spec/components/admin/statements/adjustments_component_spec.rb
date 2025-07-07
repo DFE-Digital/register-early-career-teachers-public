@@ -1,7 +1,7 @@
 RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
   subject { render_inline(component) }
 
-  let(:statement) { FactoryBot.create(:statement) }
+  let(:statement) { create(:statement) }
   let(:component) { described_class.new statement: }
 
   let(:summary_list_values) do
@@ -22,7 +22,7 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
   end
 
   context "one adjustment" do
-    let!(:adjustment) { FactoryBot.create :statement_adjustment, statement:, payment_type: "Big amount", amount: 999.99 }
+    let!(:adjustment) { create :statement_adjustment, statement:, payment_type: "Big amount", amount: 999.99 }
 
     it "renders correctly" do
       expect(statement.adjustments.count).to eq(1)
@@ -42,9 +42,9 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
   end
 
   context "multiple adjustments" do
-    let!(:adjustment1) { FactoryBot.create :statement_adjustment, statement:, payment_type: "Big amount", amount: 999.99 }
-    let!(:adjustment2) { FactoryBot.create :statement_adjustment, statement:, payment_type: "Negative amount", amount: -500.0 }
-    let!(:adjustment3) { FactoryBot.create :statement_adjustment, statement:, payment_type: "Another amount", amount: 300.0 }
+    let!(:adjustment1) { create :statement_adjustment, statement:, payment_type: "Big amount", amount: 999.99 }
+    let!(:adjustment2) { create :statement_adjustment, statement:, payment_type: "Negative amount", amount: -500.0 }
+    let!(:adjustment3) { create :statement_adjustment, statement:, payment_type: "Another amount", amount: 300.0 }
 
     it "renders correctly" do
       expect(statement.adjustments.count).to eq(3)
@@ -70,7 +70,7 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
   end
 
   context ".adjustment_editable?" do
-    let!(:adjustment1) { FactoryBot.create :statement_adjustment, statement:, payment_type: "Big amount", amount: 999.99 }
+    let!(:adjustment1) { create :statement_adjustment, statement:, payment_type: "Big amount", amount: 999.99 }
 
     context "non-paid statement" do
       it "renders links" do
@@ -79,7 +79,7 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
     end
 
     context "paid statement" do
-      let(:statement) { FactoryBot.create :statement, :paid }
+      let(:statement) { create :statement, :paid }
 
       it "does not render links" do
         expect(subject).not_to have_link("Add adjustment")
@@ -87,7 +87,7 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
     end
 
     context "service fee statement" do
-      let(:statement) { FactoryBot.create :statement, :service_fee }
+      let(:statement) { create :statement, :service_fee }
 
       it "does not render links" do
         expect(subject).not_to have_link("Add adjustment")

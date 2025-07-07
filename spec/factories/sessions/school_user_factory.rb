@@ -12,6 +12,6 @@ FactoryBot.define do
     # NOTE: school_urn is required, either pass one in or use :at_random_school or this
     #       will fail
     school_urn { nil }
-    trait(:at_random_school) { school_urn { FactoryBot.create(:school).urn } }
+    trait(:at_random_school) { school_urn { create(:school).urn } }
   end
 end

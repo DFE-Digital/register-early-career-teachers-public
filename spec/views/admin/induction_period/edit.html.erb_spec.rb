@@ -1,7 +1,7 @@
 RSpec.describe 'admin/induction_periods/edit.html.erb' do
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
+  let(:ect) { create(:ect_at_school_period, :active) }
   let(:back_path) { admin_teacher_path(ect.teacher) }
-  let(:induction_period) { FactoryBot.create(:induction_period, teacher: ect.teacher) }
+  let(:induction_period) { create(:induction_period, teacher: ect.teacher) }
 
   before do
     assign(:induction_period, induction_period)

@@ -43,7 +43,7 @@ describe Event do
 
     describe '#check_author_present' do
       context 'when author_id and author_email are missing' do
-        subject { FactoryBot.build(:event, author_email: nil, author_name: nil, author_id: nil) }
+        subject { build(:event, author_email: nil, author_name: nil, author_id: nil) }
 
         it { is_expected.to be_invalid }
 
@@ -59,7 +59,7 @@ describe Event do
     it { is_expected.to validate_presence_of(:happened_at) }
 
     describe '#event_happened_in_the_past' do
-      subject { FactoryBot.build(:event, happened_at:) }
+      subject { build(:event, happened_at:) }
 
       before { subject.valid? }
 

@@ -1,7 +1,7 @@
 RSpec.describe Statements::AuthorisePayment do
   subject { described_class.new(statement) }
 
-  let(:statement) { FactoryBot.create(:statement, :payable, marked_as_paid_at: nil) }
+  let(:statement) { create(:statement, :payable, marked_as_paid_at: nil) }
 
   describe "#authorise" do
     context "can authorise payment" do

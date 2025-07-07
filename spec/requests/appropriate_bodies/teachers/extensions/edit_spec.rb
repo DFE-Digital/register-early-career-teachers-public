@@ -2,11 +2,11 @@ RSpec.describe "Appropriate Body teacher extensions edit", type: :request do
   include AuthHelper
   include ActionView::Helpers::SanitizeHelper
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
+  let!(:induction_period) { create(:induction_period, :active, teacher:, appropriate_body:) }
   let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
-  let(:extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 2) }
+  let(:extension) { create(:induction_extension, teacher:, number_of_terms: 2) }
 
   describe 'GET /appropriate-body/teachers/:teacher_id/extensions/:id/edit' do
     it 'displays the edit extension form' do

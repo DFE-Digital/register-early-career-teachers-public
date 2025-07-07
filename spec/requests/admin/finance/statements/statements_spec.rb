@@ -49,7 +49,7 @@ RSpec.describe "Admin finance statements index", type: :request do
     end
 
     context 'when signed in as a DfE user' do
-      let!(:statement) { FactoryBot.create(:statement) }
+      let!(:statement) { create(:statement) }
 
       include_context 'sign in as DfE user'
 

@@ -1,9 +1,9 @@
 RSpec.describe 'admin/appropriate_bodies/current_ects/index.html.erb' do
   include Pagy::Backend
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
   let(:number_of_teachers) { 2 }
-  let!(:teachers) { FactoryBot.create_list(:teacher, number_of_teachers) }
+  let!(:teachers) { create_list(:teacher, number_of_teachers) }
 
   before do
     pagy, teachers = pagy(Teacher.all)

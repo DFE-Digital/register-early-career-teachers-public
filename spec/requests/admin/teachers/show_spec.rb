@@ -1,8 +1,8 @@
 RSpec.describe "Admin::Teachers#show", type: :request do
   include ActionView::Helpers::SanitizeHelper
 
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
+  let(:teacher) { create(:teacher) }
+  let!(:induction_period) { create(:induction_period, :active, teacher:) }
 
   describe "GET /admin/teachers/:id" do
     it "redirects to sign in path" do

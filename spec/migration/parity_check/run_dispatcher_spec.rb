@@ -10,7 +10,7 @@ RSpec.describe ParityCheck::RunDispatcher do
     end
 
     context "when there are pending runs" do
-      let!(:pending_runs) { FactoryBot.create_list(:parity_check_run, 3, :pending) }
+      let!(:pending_runs) { create_list(:parity_check_run, 3, :pending) }
       let(:next_run) { pending_runs.first }
 
       it "dispatches the next run" do
@@ -23,7 +23,7 @@ RSpec.describe ParityCheck::RunDispatcher do
       end
 
       context "when there are in-progress runs" do
-        before { FactoryBot.create(:parity_check_request, :in_progress) }
+        before { create(:parity_check_request, :in_progress) }
 
         it "does not call the request dispatcher" do
           expect { dispatch }.not_to have_enqueued_job(ParityCheckRequestJob)
@@ -32,7 +32,7 @@ RSpec.describe ParityCheck::RunDispatcher do
     end
 
     context "when there are in-progress/pending runs" do
-      before { FactoryBot.create(:parity_check_run, :completed) }
+      before { create(:parity_check_run, :completed) }
 
       it "does not call the request dispatcher" do
         expect { dispatch }.not_to have_enqueued_job(ParityCheckRequestJob)

@@ -1,25 +1,25 @@
 describe Schools::RegisterMentorWizard::Mentor do
   subject(:mentor) { described_class.new(store) }
 
-  let(:school) { FactoryBot.create(:school) }
-  let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
+  let(:school) { create(:school) }
+  let(:author) { create(:school_user, school_urn: school.urn) }
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: '3002586',
-                     date_of_birth: '11-10-1945',
-                     trs_first_name: 'Dusty',
-                     trs_last_name: 'Rhodes',
-                     trs_date_of_birth: '1945-10-11',
-                     corrected_name: nil,
-                     email: 'dusty@rhodes.com',
-                     school_urn: school.urn)
+    build(:session_repository,
+          trn: '3002586',
+          date_of_birth: '11-10-1945',
+          trs_first_name: 'Dusty',
+          trs_last_name: 'Rhodes',
+          trs_date_of_birth: '1945-10-11',
+          corrected_name: nil,
+          email: 'dusty@rhodes.com',
+          school_urn: school.urn)
   end
 
   describe '#active_at_school?' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: '3002586') }
+    let(:teacher) { create(:teacher, trn: '3002586') }
 
     context 'when the mentor has an ongoing mentor record at the school' do
-      let!(:existing_mentor_record) { FactoryBot.create(:mentor_at_school_period, :active, school:, teacher:) }
+      let!(:existing_mentor_record) { create(:mentor_at_school_period, :active, school:, teacher:) }
 
       it 'returns true' do
         expect(mentor.active_at_school?).to be(true)
@@ -27,7 +27,7 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
 
     context 'when the mentor has no ongoing mentor record at the school' do
-      let!(:existing_mentor_record) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
+      let!(:existing_mentor_record) { create(:mentor_at_school_period, school:, teacher:) }
 
       it 'returns false' do
         expect(mentor.active_at_school?).to be(false)
@@ -36,10 +36,10 @@ describe Schools::RegisterMentorWizard::Mentor do
   end
 
   describe '#active_record_at_school' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: '3002586') }
+    let(:teacher) { create(:teacher, trn: '3002586') }
 
     context 'when the mentor has an ongoing mentor record at the school' do
-      let!(:existing_mentor_record) { FactoryBot.create(:mentor_at_school_period, :active, school:, teacher:) }
+      let!(:existing_mentor_record) { create(:mentor_at_school_period, :active, school:, teacher:) }
 
       it 'returns the mentor record' do
         expect(mentor.active_record_at_school).to eq(existing_mentor_record)
@@ -47,7 +47,7 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
 
     context 'when the mentor has no ongoing mentor record at the school' do
-      let!(:existing_mentor_record) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
+      let!(:existing_mentor_record) { create(:mentor_at_school_period, school:, teacher:) }
 
       it 'returns nil' do
         expect(mentor.active_record_at_school).to be_nil

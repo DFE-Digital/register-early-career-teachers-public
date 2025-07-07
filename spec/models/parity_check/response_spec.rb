@@ -11,7 +11,7 @@ describe ParityCheck::Response do
 
   describe "before_validation" do
     it "clears bodies if the response bodies match" do
-      response = FactoryBot.build(:parity_check_response, :different, ecf_body: "same", rect_body: "same")
+      response = build(:parity_check_response, :different, ecf_body: "same", rect_body: "same")
       expect { response.save! }.to change { response.ecf_body }.to(nil).and change { response.rect_body }.to(nil)
     end
   end
@@ -20,7 +20,7 @@ describe ParityCheck::Response do
     it "formats bodies as pretty JSON if they are valid JSON" do
       ecf_body = { ecf_key: "ecf_value" }
       rect_body = { rect_key: "rect_value" }
-      response = FactoryBot.build(:parity_check_response, ecf_body: ecf_body.to_json, rect_body: rect_body.to_json)
+      response = build(:parity_check_response, ecf_body: ecf_body.to_json, rect_body: rect_body.to_json)
 
       response.save!
 
@@ -29,7 +29,7 @@ describe ParityCheck::Response do
     end
 
     it "does not format bodies if they are not valid JSON" do
-      response = FactoryBot.build(:parity_check_response, ecf_body: "not json", rect_body: "also not json")
+      response = build(:parity_check_response, ecf_body: "not json", rect_body: "also not json")
 
       response.save!
 
@@ -39,7 +39,7 @@ describe ParityCheck::Response do
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:parity_check_response) }
+    subject { build(:parity_check_response) }
 
     it { is_expected.to validate_presence_of(:request) }
     it { is_expected.to validate_inclusion_of(:ecf_status_code).in_range(100..599) }
@@ -51,11 +51,11 @@ describe ParityCheck::Response do
   end
 
   describe "scopes" do
-    let(:request) { FactoryBot.create(:parity_check_request) }
-    let!(:matching_response) { FactoryBot.create(:parity_check_response, :matching, request:) }
-    let!(:matching_status_codes_response) { FactoryBot.create(:parity_check_response, :matching, ecf_body: "different", request:) }
-    let!(:matching_bodies_response) { FactoryBot.create(:parity_check_response, :matching, ecf_status_code: 404, request:) }
-    let!(:different_response) { FactoryBot.create(:parity_check_response, :different, request:) }
+    let(:request) { create(:parity_check_request) }
+    let!(:matching_response) { create(:parity_check_response, :matching, request:) }
+    let!(:matching_status_codes_response) { create(:parity_check_response, :matching, ecf_body: "different", request:) }
+    let!(:matching_bodies_response) { create(:parity_check_response, :matching, ecf_status_code: 404, request:) }
+    let!(:different_response) { create(:parity_check_response, :different, request:) }
 
     describe ".different" do
       subject { described_class.different }
@@ -97,7 +97,7 @@ describe ParityCheck::Response do
   describe "#rect_performance_gain_ratio" do
     subject { response.rect_performance_gain_ratio }
 
-    let(:response) { FactoryBot.build(:parity_check_response, ecf_time_ms:, rect_time_ms:) }
+    let(:response) { build(:parity_check_response, ecf_time_ms:, rect_time_ms:) }
 
     context "when there are no response times" do
       let(:rect_time_ms) { nil }
@@ -132,13 +132,13 @@ describe ParityCheck::Response do
     subject { response.match_rate }
 
     context "when the response is matching" do
-      let(:response) { FactoryBot.build(:parity_check_response, :matching) }
+      let(:response) { build(:parity_check_response, :matching) }
 
       it { is_expected.to eq(100) }
     end
 
     context "when the response is different" do
-      let(:response) { FactoryBot.build(:parity_check_response, :different) }
+      let(:response) { build(:parity_check_response, :different) }
 
       it { is_expected.to eq(0) }
     end
@@ -148,13 +148,13 @@ describe ParityCheck::Response do
     subject { response.description }
 
     context "when the response has a page" do
-      let(:response) { FactoryBot.build(:parity_check_response, page: 1) }
+      let(:response) { build(:parity_check_response, page: 1) }
 
       it { is_expected.to eq("Response for page 1") }
     end
 
     context "when the response does not have a page" do
-      let(:response) { FactoryBot.build(:parity_check_response, page: nil) }
+      let(:response) { build(:parity_check_response, page: nil) }
 
       it { is_expected.to eq("Response") }
     end
@@ -164,13 +164,13 @@ describe ParityCheck::Response do
     subject { response }
 
     context "when the response is matching" do
-      let(:response) { FactoryBot.build(:parity_check_response, :matching) }
+      let(:response) { build(:parity_check_response, :matching) }
 
       it { is_expected.to be_matching }
     end
 
     context "when the response is different" do
-      let(:response) { FactoryBot.build(:parity_check_response, :different) }
+      let(:response) { build(:parity_check_response, :different) }
 
       it { is_expected.not_to be_matching }
     end
@@ -180,13 +180,13 @@ describe ParityCheck::Response do
     subject { response }
 
     context "when the response is different" do
-      let(:response) { FactoryBot.build(:parity_check_response, :different) }
+      let(:response) { build(:parity_check_response, :different) }
 
       it { is_expected.to be_different }
     end
 
     context "when the response is matching" do
-      let(:response) { FactoryBot.build(:parity_check_response, :matching) }
+      let(:response) { build(:parity_check_response, :matching) }
 
       it { is_expected.not_to be_different }
     end
@@ -196,13 +196,13 @@ describe ParityCheck::Response do
     subject { response }
 
     context "when the ECF and RECT bodies are the same" do
-      let(:response) { FactoryBot.build(:parity_check_response, ecf_body: "body", rect_body: "body") }
+      let(:response) { build(:parity_check_response, ecf_body: "body", rect_body: "body") }
 
       it { is_expected.to be_bodies_matching }
     end
 
     context "when the ECF and RECT bodies are different" do
-      let(:response) { FactoryBot.build(:parity_check_response, ecf_body: "ecf body", rect_body: "rect body") }
+      let(:response) { build(:parity_check_response, ecf_body: "ecf body", rect_body: "rect body") }
 
       it { is_expected.not_to be_bodies_matching }
     end
@@ -212,13 +212,13 @@ describe ParityCheck::Response do
     subject { response }
 
     context "when the ECF and RECT bodies are the same" do
-      let(:response) { FactoryBot.build(:parity_check_response, ecf_body: "body", rect_body: "body") }
+      let(:response) { build(:parity_check_response, ecf_body: "body", rect_body: "body") }
 
       it { is_expected.not_to be_bodies_different }
     end
 
     context "when the ECF and RECT bodies are different" do
-      let(:response) { FactoryBot.build(:parity_check_response, ecf_body: "ecf body", rect_body: "rect body") }
+      let(:response) { build(:parity_check_response, ecf_body: "ecf body", rect_body: "rect body") }
 
       it { is_expected.to be_bodies_different }
     end
@@ -227,7 +227,7 @@ describe ParityCheck::Response do
   describe "#body_diff" do
     subject(:diff) { response.body_diff }
 
-    let(:response) { FactoryBot.create(:parity_check_response, :different) }
+    let(:response) { create(:parity_check_response, :different) }
 
     it { is_expected.to be_a(Diffy::Diff) }
 

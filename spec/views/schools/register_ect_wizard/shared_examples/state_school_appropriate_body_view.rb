@@ -2,8 +2,8 @@ RSpec.shared_examples "a state school appropriate body view" do |current_step:, 
   let(:ect) { wizard.ect }
   let(:title) { "Which appropriate body will be supporting #{ect.full_name}'s induction?" }
   let(:appropriate_body_name) { nil }
-  let(:store) { FactoryBot.build(:session_repository, appropriate_body_name:, trs_first_name: 'John', trs_last_name: 'Smith') }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, store:) }
+  let(:store) { build(:session_repository, appropriate_body_name:, trs_first_name: 'John', trs_last_name: 'Smith') }
+  let(:wizard) { build(:register_ect_wizard, current_step:, store:) }
 
   before do
     assign(:wizard, wizard)

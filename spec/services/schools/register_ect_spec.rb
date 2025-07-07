@@ -14,11 +14,11 @@ RSpec.describe Schools::RegisterECT do
                         author:)
   end
 
-  let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
-  let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:author) { create(:school_user, school_urn: school.urn) }
+  let(:school_reported_appropriate_body) { create(:appropriate_body) }
   let(:corrected_name) { "Randy Marsh" }
   let(:email) { "randy@tegridyfarms.com" }
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { create(:school) }
   let(:started_on) { Date.new(2024, 9, 17) }
   let(:trn) { "3002586" }
   let(:trs_first_name) { "Dusty" }
@@ -26,11 +26,11 @@ RSpec.describe Schools::RegisterECT do
   let(:working_pattern) { "full_time" }
   let(:teacher) { subject.teacher }
   let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
-  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+  let!(:contract_period) { create(:contract_period, year: 2024) }
 
   describe '#register!' do
     let(:training_programme) { 'provider_led' }
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:lead_provider) { create(:lead_provider) }
 
     context 'when no ActiveLeadProvider exists for the contract_period' do
       it 'raises an error' do
@@ -39,7 +39,7 @@ RSpec.describe Schools::RegisterECT do
     end
 
     context 'when provider-led' do
-      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+      let!(:active_lead_provider) { create(:active_lead_provider, lead_provider:, contract_period:) }
 
       context "when a Teacher record with the same TRN don't exist" do
         let(:teacher) { Teacher.first }
@@ -54,7 +54,7 @@ RSpec.describe Schools::RegisterECT do
       end
 
       context "when a Teacher record with the same TRN exists but has no ect records" do
-        let!(:another_teacher) { FactoryBot.create(:teacher, trn:) }
+        let!(:another_teacher) { create(:teacher, trn:) }
 
         it "doesn't create a new Teacher record" do
           expect { service.register! }.not_to change(Teacher, :count)
@@ -62,9 +62,9 @@ RSpec.describe Schools::RegisterECT do
       end
 
       context "when a Teacher record with the same TRN exists and has ect records" do
-        let(:teacher) { FactoryBot.create(:teacher, trn:) }
+        let(:teacher) { create(:teacher, trn:) }
 
-        before { FactoryBot.create(:ect_at_school_period, teacher:) }
+        before { create(:ect_at_school_period, teacher:) }
 
         it "raise an exception" do
           expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
@@ -118,9 +118,9 @@ RSpec.describe Schools::RegisterECT do
       end
 
       context 'when a SchoolPartnership exists' do
-        let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
-        let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
+        let(:delivery_partner) { create(:delivery_partner) }
+        let(:lead_provider_delivery_partnership) { create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+        let!(:school_partnership) { create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
         it 'creates a TrainingPeriod with a school_partnership and no expression_of_interest' do
           expect { service.register! }.to change(TrainingPeriod, :count).by(1)

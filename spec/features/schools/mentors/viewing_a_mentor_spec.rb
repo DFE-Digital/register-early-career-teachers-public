@@ -20,12 +20,12 @@ private
   def given_that_i_have_an_active_mentor_with_an_ect
     start_date = Date.new(2023, 9, 1)
 
-    @school = FactoryBot.create(:school, urn: '1234567')
-    @mentor_teacher = FactoryBot.create(:teacher, trs_first_name: 'Naruto', trs_last_name: 'Uzumaki')
-    @mentor = FactoryBot.create(:mentor_at_school_period, teacher: @mentor_teacher, school: @school, started_on: start_date, finished_on: nil, id: 1)
+    @school = create(:school, urn: '1234567')
+    @mentor_teacher = create(:teacher, trs_first_name: 'Naruto', trs_last_name: 'Uzumaki')
+    @mentor = create(:mentor_at_school_period, teacher: @mentor_teacher, school: @school, started_on: start_date, finished_on: nil, id: 1)
 
-    @ect_teacher = FactoryBot.create(:teacher, trs_first_name: 'Boruto', trs_last_name: 'Uzumaki')
-    @ect = FactoryBot.create(
+    @ect_teacher = create(:teacher, trs_first_name: 'Boruto', trs_last_name: 'Uzumaki')
+    @ect = create(
       :ect_at_school_period,
       :provider_led,
       teacher: @ect_teacher,
@@ -34,7 +34,7 @@ private
       finished_on: nil
     )
 
-    FactoryBot.create(:mentorship_period, mentor: @mentor, mentee: @ect, started_on: start_date, finished_on: nil)
+    create(:mentorship_period, mentor: @mentor, mentee: @ect, started_on: start_date, finished_on: nil)
   end
 
   def given_i_click_on_an_assigned_ect

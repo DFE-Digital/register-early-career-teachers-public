@@ -1,7 +1,7 @@
 RSpec.describe 'Process bulk claims' do
   include_context 'fake trs api client'
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   let(:file_name) { 'valid_complete_claim.csv' }
   let(:file_path) { Rails.root.join("spec/fixtures/#{file_name}").to_s }
@@ -14,8 +14,8 @@ RSpec.describe 'Process bulk claims' do
   end
 
   context 'when batch is owned by another appropriate body' do
-    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
-    let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body: other_appropriate_body) }
+    let(:other_appropriate_body) { create(:appropriate_body) }
+    let(:batch) { create(:pending_induction_submission_batch, :claim, appropriate_body: other_appropriate_body) }
 
     before { page.goto(ab_batch_claim_path(batch.id)) }
 

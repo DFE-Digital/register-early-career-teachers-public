@@ -13,7 +13,7 @@ RSpec.describe 'Sessions', type: :request do
 
     context 'when signed in' do
       before do
-        school = FactoryBot.create(:school, urn: '123456')
+        school = create(:school, urn: '123456')
         sign_in_as(:school_user, school:)
       end
 
@@ -37,7 +37,7 @@ RSpec.describe 'Sessions', type: :request do
 
     context 'sign in an appropriate body user' do
       let(:params) { { email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }
-      let!(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
+      let!(:appropriate_body) { create(:appropriate_body, dfe_sign_in_organisation_id:) }
 
       before do
         allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
@@ -64,7 +64,7 @@ RSpec.describe 'Sessions', type: :request do
 
     context 'sign in a school user' do
       let(:params) { { email:, name:, school_urn:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }
-      let!(:school) { FactoryBot.create(:school, urn: school_urn) }
+      let!(:school) { create(:school, urn: school_urn) }
 
       before do
         allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
@@ -91,7 +91,7 @@ RSpec.describe 'Sessions', type: :request do
     end
 
     context 'sign in an appropriate body persona' do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body).id.to_s }
+      let(:appropriate_body_id) { create(:appropriate_body).id.to_s }
       let(:params) { { email:, name:, appropriate_body_id: } }
 
       it 'signs the user and take them to their home page' do
@@ -105,7 +105,7 @@ RSpec.describe 'Sessions', type: :request do
     end
 
     context 'sign in a school persona' do
-      let(:school_urn) { FactoryBot.create(:school).urn.to_s }
+      let(:school_urn) { create(:school).urn.to_s }
       let(:params) { { email:, name:, school_urn: } }
 
       it 'signs the user and take them to their home page' do
@@ -120,7 +120,7 @@ RSpec.describe 'Sessions', type: :request do
 
     context 'sign in a dfe_persona' do
       before do
-        FactoryBot.create(:user, email:, name:).dfe_roles.create!
+        create(:user, email:, name:).dfe_roles.create!
       end
 
       it 'signs the user and take them to their home page' do

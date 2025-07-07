@@ -4,7 +4,7 @@ describe Statement::Adjustment do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:statement_adjustment) }
+    subject { create(:statement_adjustment) }
 
     it { is_expected.to validate_presence_of(:payment_type).with_message("Payment type is required") }
     it { is_expected.to validate_presence_of(:amount).with_message("Amount is required") }

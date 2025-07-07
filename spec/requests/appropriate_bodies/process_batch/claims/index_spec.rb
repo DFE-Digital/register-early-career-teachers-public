@@ -1,6 +1,6 @@
 RSpec.describe "Appropriate Body bulk claims index page", type: :request do
   include AuthHelper
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   describe 'GET /appropriate-body/bulk/claims' do
     context 'when bulk upload is disabled (ENABLE_BULK_UPLOAD=false)' do

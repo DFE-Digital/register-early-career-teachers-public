@@ -35,8 +35,8 @@ RSpec.describe "Parity check", type: :request do
   end
 
   describe "POST /migration/parity_checks" do
-    let!(:lead_provider) { FactoryBot.create(:lead_provider) }
-    let!(:endpoints) { FactoryBot.create_list(:parity_check_endpoint, 2) }
+    let!(:lead_provider) { create(:lead_provider) }
+    let!(:endpoints) { create_list(:parity_check_endpoint, 2) }
     let(:endpoint_ids) { endpoints.map(&:id) }
     let(:mode) { "sequential" }
 
@@ -113,7 +113,7 @@ RSpec.describe "Parity check", type: :request do
   end
 
   describe "GET /migration/parity_checks/:id" do
-    let(:run) { FactoryBot.create(:parity_check_run, :completed) }
+    let(:run) { create(:parity_check_run, :completed) }
 
     context "when signed in as a DfE user" do
       include_context 'sign in as DfE user'
@@ -125,7 +125,7 @@ RSpec.describe "Parity check", type: :request do
       end
 
       context "when the parity check is not completed" do
-        let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+        let(:run) { create(:parity_check_run, :in_progress) }
 
         it "renders 404 not found" do
           get migration_parity_check_path(run)
@@ -162,8 +162,8 @@ RSpec.describe "Parity check", type: :request do
   end
 
   describe "GET /migration/parity_checks/:run_id/requests/:id" do
-    let(:run) { FactoryBot.create(:parity_check_run, :completed) }
-    let(:request) { FactoryBot.create(:parity_check_request, :completed, run:) }
+    let(:run) { create(:parity_check_run, :completed) }
+    let(:request) { create(:parity_check_request, :completed, run:) }
 
     context "when signed in as a DfE user" do
       include_context 'sign in as DfE user'
@@ -175,7 +175,7 @@ RSpec.describe "Parity check", type: :request do
       end
 
       context "when the parity check is not completed" do
-        let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+        let(:run) { create(:parity_check_run, :in_progress) }
 
         it "renders 404 not found" do
           get migration_parity_check_request_path(run, request)
@@ -219,9 +219,9 @@ RSpec.describe "Parity check", type: :request do
   end
 
   describe "GET /migration/parity_checks/:run_id/responses/:id" do
-    let(:run) { FactoryBot.create(:parity_check_run, :completed) }
-    let(:request) { FactoryBot.create(:parity_check_request, :completed, run:) }
-    let(:parity_check_response) { FactoryBot.create(:parity_check_response, :different, request:) }
+    let(:run) { create(:parity_check_run, :completed) }
+    let(:request) { create(:parity_check_request, :completed, run:) }
+    let(:parity_check_response) { create(:parity_check_response, :different, request:) }
 
     context "when signed in as a DfE user" do
       include_context 'sign in as DfE user'
@@ -233,7 +233,7 @@ RSpec.describe "Parity check", type: :request do
       end
 
       context "when the parity check is not completed" do
-        let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+        let(:run) { create(:parity_check_run, :in_progress) }
 
         it "renders 404 not found" do
           get migration_parity_check_response_path(run, request)
@@ -249,7 +249,7 @@ RSpec.describe "Parity check", type: :request do
       end
 
       context "when the response is matching" do
-        let(:parity_check_response) { FactoryBot.create(:parity_check_response, :matching, request:) }
+        let(:parity_check_response) { create(:parity_check_response, :matching, request:) }
 
         it "renders 404 not found" do
           get migration_parity_check_response_path(run, 99)

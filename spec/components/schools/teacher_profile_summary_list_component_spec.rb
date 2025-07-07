@@ -1,16 +1,16 @@
 RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
-  let(:mentee_teacher) { FactoryBot.create(:teacher, trn: '9876543', trs_first_name: 'Kakarot', trs_last_name: 'SSJ') }
-  let(:mentor_teacher) { FactoryBot.create(:teacher, trn: '987654', trs_first_name: 'Naruto', trs_last_name: 'Ninetails') }
-  let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
-  let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor_teacher, started_on: 3.years.ago) }
+  let(:mentee_teacher) { create(:teacher, trn: '9876543', trs_first_name: 'Kakarot', trs_last_name: 'SSJ') }
+  let(:mentor_teacher) { create(:teacher, trn: '987654', trs_first_name: 'Naruto', trs_last_name: 'Ninetails') }
+  let(:previous_mentor) { create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
+  let(:current_mentor) { create(:mentor_at_school_period, :active, teacher: mentor_teacher, started_on: 3.years.ago) }
   let(:mentee) do
-    FactoryBot.create(:ect_at_school_period, :active, teacher: mentee_teacher, started_on: Date.new(2021, 9, 1),
-                                                      email: 'foobarect@madeup.com', working_pattern: 'full_time')
+    create(:ect_at_school_period, :active, teacher: mentee_teacher, started_on: Date.new(2021, 9, 1),
+                                           email: 'foobarect@madeup.com', working_pattern: 'full_time')
   end
 
   before do
-    FactoryBot.create(:mentorship_period, :active, mentee:, mentor: previous_mentor, started_on: 3.years.ago, finished_on: 2.years.ago)
-    FactoryBot.create(:mentorship_period, :active, mentee:, mentor: current_mentor, started_on: 2.years.ago)
+    create(:mentorship_period, :active, mentee:, mentor: previous_mentor, started_on: 3.years.ago, finished_on: 2.years.ago)
+    create(:mentorship_period, :active, mentee:, mentor: current_mentor, started_on: 2.years.ago)
     render_inline(described_class.new(mentee))
   end
 

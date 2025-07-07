@@ -11,9 +11,9 @@ RSpec.describe InductionPeriod do
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:induction_period) }
+    subject { build(:induction_period) }
 
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body) { create(:appropriate_body) }
 
     it { is_expected.to validate_presence_of(:started_on).with_message("Enter a start date") }
     it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
@@ -21,22 +21,22 @@ RSpec.describe InductionPeriod do
     describe 'overlapping periods' do
       let(:started_on_message) { 'Start date cannot overlap another induction period' }
       let(:finished_on_message) { 'End date cannot overlap another induction period' }
-      let(:teacher) { FactoryBot.create(:teacher) }
+      let(:teacher) { create(:teacher) }
 
       context '#teacher_distinct_period' do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             before do
-              FactoryBot.create(:induction_period, teacher:,
-                                                   started_on: test.existing_period_range.first,
-                                                   finished_on: test.existing_period_range.last)
+              create(:induction_period, teacher:,
+                                        started_on: test.existing_period_range.first,
+                                        finished_on: test.existing_period_range.last)
               period.valid?
             end
 
             let(:period) do
-              FactoryBot.build(:induction_period, teacher:,
-                                                  started_on: test.new_period_range.first,
-                                                  finished_on: test.new_period_range.last)
+              build(:induction_period, teacher:,
+                                       started_on: test.new_period_range.first,
+                                       finished_on: test.new_period_range.last)
             end
 
             let(:messages) { period.errors.messages }
@@ -67,7 +67,7 @@ RSpec.describe InductionPeriod do
     it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy unknown pre_september_2021]).with_message("Choose an induction programme") }
 
     describe "outcome validation" do
-      subject { FactoryBot.build(:induction_period) }
+      subject { build(:induction_period) }
 
       it { is_expected.to allow_value('pass').for(:outcome) }
       it { is_expected.to allow_value('fail').for(:outcome) }
@@ -85,7 +85,7 @@ RSpec.describe InductionPeriod do
     end
 
     describe "started_on_not_in_future" do
-      subject { FactoryBot.build(:induction_period, :active, appropriate_body:, started_on:) }
+      subject { build(:induction_period, :active, appropriate_body:, started_on:) }
 
       context "when started_on is today" do
         let(:started_on) { Date.current }
@@ -110,7 +110,7 @@ RSpec.describe InductionPeriod do
     end
 
     describe "finished_on_not_in_future" do
-      subject { FactoryBot.build(:induction_period, appropriate_body:, finished_on:) }
+      subject { build(:induction_period, appropriate_body:, finished_on:) }
 
       context "when finished_on is today" do
         let(:finished_on) { Date.current }
@@ -136,25 +136,25 @@ RSpec.describe InductionPeriod do
 
     describe "number_of_terms" do
       context "when finished_on is empty" do
-        subject { FactoryBot.build(:induction_period, :active, appropriate_body:) }
+        subject { build(:induction_period, :active, appropriate_body:) }
 
         it { is_expected.not_to validate_presence_of(:number_of_terms) }
       end
 
       context "when finished_on is present" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:) }
+        subject { build(:induction_period, appropriate_body:) }
 
         it { is_expected.to validate_presence_of(:number_of_terms).with_message("Enter a number of terms") }
       end
 
       context "when finished on is empty and number of terms is present" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: 3, finished_on: nil) }
+        subject { build(:induction_period, appropriate_body:, number_of_terms: 3, finished_on: nil) }
 
         it { is_expected.to validate_absence_of(:number_of_terms).with_message("Delete the number of terms if the induction has no end date") }
       end
 
       context "when number_of_terms contains non-numeric characters" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: "4.r5", finished_on: Date.current) }
+        subject { build(:induction_period, appropriate_body:, number_of_terms: "4.r5", finished_on: Date.current) }
 
         it do
           expect(subject).not_to be_valid
@@ -163,7 +163,7 @@ RSpec.describe InductionPeriod do
       end
 
       context "when number_of_terms has more than 1 decimal place" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: 3.45, finished_on: Date.current) }
+        subject { build(:induction_period, appropriate_body:, number_of_terms: 3.45, finished_on: Date.current) }
 
         it do
           expect(subject).not_to be_valid
@@ -172,13 +172,13 @@ RSpec.describe InductionPeriod do
       end
 
       context "when number_of_terms has 1 decimal place" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: 3.5, finished_on: Date.current) }
+        subject { build(:induction_period, appropriate_body:, number_of_terms: 3.5, finished_on: Date.current) }
 
         it { is_expected.to be_valid }
       end
 
       context "when number_of_terms is an integer" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: 3, finished_on: Date.current) }
+        subject { build(:induction_period, appropriate_body:, number_of_terms: 3, finished_on: Date.current) }
 
         it { is_expected.to be_valid }
       end
@@ -202,10 +202,10 @@ RSpec.describe InductionPeriod do
   describe "#siblings" do
     subject { induction_period_1.siblings }
 
-    let!(:teacher) { FactoryBot.create(:teacher) }
-    let!(:induction_period_1) { FactoryBot.create(:induction_period, teacher:, started_on: '2022-01-01', finished_on: '2022-06-01') }
-    let!(:induction_period_2) { FactoryBot.create(:induction_period, teacher:, started_on: '2022-06-01', finished_on: '2023-01-01') }
-    let!(:unrelated_induction_period) { FactoryBot.create(:induction_period, started_on: '2022-06-01', finished_on: '2023-01-01') }
+    let!(:teacher) { create(:teacher) }
+    let!(:induction_period_1) { create(:induction_period, teacher:, started_on: '2022-01-01', finished_on: '2022-06-01') }
+    let!(:induction_period_2) { create(:induction_period, teacher:, started_on: '2022-06-01', finished_on: '2023-01-01') }
+    let!(:unrelated_induction_period) { create(:induction_period, started_on: '2022-06-01', finished_on: '2023-01-01') }
 
     it "only returns records that belong to the same mentee" do
       expect(subject).to include(induction_period_2)
@@ -220,30 +220,30 @@ RSpec.describe InductionPeriod do
     end
 
     context "with completed siblings and nil finished_on and inserting after them" do
-      let(:teacher) { FactoryBot.create(:teacher) }
+      let(:teacher) { create(:teacher) }
       let!(:previous_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: "2017-09-11",
-                          finished_on: "2018-03-23",
-                          induction_programme: "pre_september_2021")
+        create(:induction_period,
+               teacher:,
+               started_on: "2017-09-11",
+               finished_on: "2018-03-23",
+               induction_programme: "pre_september_2021")
       end
 
       let!(:next_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: "2019-01-07",
-                          finished_on: "2019-07-16",
-                          induction_programme: "pre_september_2021")
+        create(:induction_period,
+               teacher:,
+               started_on: "2019-01-07",
+               finished_on: "2019-07-16",
+               induction_programme: "pre_september_2021")
       end
 
       let!(:induction_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: "2025-01-01",
-                          finished_on: nil,
-                          number_of_terms: nil,
-                          induction_programme: "fip")
+        create(:induction_period,
+               teacher:,
+               started_on: "2025-01-01",
+               finished_on: nil,
+               number_of_terms: nil,
+               induction_programme: "fip")
       end
 
       let(:params) { { started_on: "2025-02-24" } }
@@ -255,30 +255,30 @@ RSpec.describe InductionPeriod do
     end
 
     context "with completed siblings and nil finished_on and inserting between them" do
-      let(:teacher) { FactoryBot.create(:teacher) }
+      let(:teacher) { create(:teacher) }
       let!(:previous_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: "2017-09-01",
-                          finished_on: "2018-03-01",
-                          induction_programme: "pre_september_2021")
+        create(:induction_period,
+               teacher:,
+               started_on: "2017-09-01",
+               finished_on: "2018-03-01",
+               induction_programme: "pre_september_2021")
       end
 
       let!(:next_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: "2019-01-01",
-                          finished_on: "2019-07-01",
-                          induction_programme: "pre_september_2021")
+        create(:induction_period,
+               teacher:,
+               started_on: "2019-01-01",
+               finished_on: "2019-07-01",
+               induction_programme: "pre_september_2021")
       end
 
       let!(:induction_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: "2025-01-01",
-                          finished_on: nil,
-                          number_of_terms: nil,
-                          induction_programme: "fip")
+        create(:induction_period,
+               teacher:,
+               started_on: "2025-01-01",
+               finished_on: nil,
+               number_of_terms: nil,
+               induction_programme: "fip")
       end
 
       let(:params) { { started_on: "2019-04-24" } }

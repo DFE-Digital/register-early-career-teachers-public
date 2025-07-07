@@ -2,8 +2,8 @@ RSpec.describe "Admin Bulk Batches", type: :request do
   include AuthHelper
 
   let(:admin_user) { sign_in_as(:dfe_staff_user) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let!(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let!(:batch) { create(:pending_induction_submission_batch, :action, appropriate_body:) }
 
   describe "GET /admin/bulk/batches" do
     context "when signed in as admin" do

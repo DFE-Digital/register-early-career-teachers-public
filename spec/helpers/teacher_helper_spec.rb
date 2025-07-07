@@ -1,9 +1,9 @@
 RSpec.describe TeacherHelper, type: :helper do
   let(:teacher) do
-    FactoryBot.create(:teacher,
-                      trn: '1234567',
-                      trs_first_name: 'Barry',
-                      trs_last_name: 'White')
+    create(:teacher,
+           trn: '1234567',
+           trs_first_name: 'Barry',
+           trs_last_name: 'White')
   end
 
   describe '#teacher_full_name' do
@@ -26,7 +26,7 @@ RSpec.describe TeacherHelper, type: :helper do
 
   describe '#teacher_induction_start_date' do
     context 'when training' do
-      before { FactoryBot.create(:induction_period, teacher:) }
+      before { create(:induction_period, teacher:) }
 
       it { expect(teacher_induction_start_date(teacher)).to eq(1.year.ago.to_date.to_fs(:govuk)) }
     end
@@ -38,7 +38,7 @@ RSpec.describe TeacherHelper, type: :helper do
 
   describe '#teacher_induction_programme' do
     context 'when training' do
-      before { FactoryBot.create(:induction_period, teacher:) }
+      before { create(:induction_period, teacher:) }
 
       it { expect(teacher_induction_programme(teacher)).to eq('Full induction programme') }
     end
@@ -50,7 +50,7 @@ RSpec.describe TeacherHelper, type: :helper do
 
   describe '#teacher_induction_ab_name' do
     context 'when training' do
-      before { FactoryBot.create(:induction_period, teacher:) }
+      before { create(:induction_period, teacher:) }
 
       it { expect(teacher_induction_ab_name(teacher)).to match(/Appropriate Body \d/) }
     end

@@ -1,8 +1,8 @@
 RSpec.shared_examples "a start date view" do |current_step:, back_path:, back_step_name:, continue_path:, continue_step_name:|
   let(:ect) { wizard.ect }
   let(:start_date) { nil }
-  let(:store) { FactoryBot.build(:session_repository, start_date:, trs_first_name: 'John', trs_last_name: 'Smith') }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, store:) }
+  let(:store) { build(:session_repository, start_date:, trs_first_name: 'John', trs_last_name: 'Smith') }
+  let(:wizard) { build(:register_ect_wizard, current_step:, store:) }
 
   before do
     assign(:wizard, wizard)

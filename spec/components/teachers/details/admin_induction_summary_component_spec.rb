@@ -1,7 +1,7 @@
 RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :component do
   include Rails.application.routes.url_helpers
 
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { create(:teacher) }
   let(:component) { described_class.new(teacher:) }
 
   context "when teacher has no induction periods" do
@@ -11,7 +11,7 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
   end
 
   context "when teacher has induction periods" do
-    let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: 1.year.ago) }
+    let!(:induction_period) { create(:induction_period, teacher:, started_on: 1.year.ago) }
 
     it "renders" do
       expect(component.render?).to be true
@@ -29,7 +29,7 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
 
     context "QTS awarded" do
       context "when the teacher has a QTS award date" do
-        let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+        let(:teacher) { create(:teacher, trs_qts_awarded_on: 1.year.ago) }
 
         it "renders QTS awarded" do
           render_inline(component)
@@ -48,7 +48,7 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
 
     context "Initial Teacher Training" do
       context "when teacher has ITT provider name" do
-        let(:teacher) { FactoryBot.create(:teacher, trs_initial_teacher_training_provider_name: "Test University") }
+        let(:teacher) { create(:teacher, trs_initial_teacher_training_provider_name: "Test University") }
 
         it "renders ITT section with provider name" do
           render_inline(component)
@@ -58,7 +58,7 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
       end
 
       context "when teacher has no ITT provider name" do
-        let(:teacher) { FactoryBot.create(:teacher, trs_initial_teacher_training_provider_name: nil) }
+        let(:teacher) { create(:teacher, trs_initial_teacher_training_provider_name: nil) }
 
         it "does not render ITT section" do
           render_inline(component)
@@ -68,7 +68,7 @@ RSpec.describe Teachers::Details::AdminInductionSummaryComponent, type: :compone
     end
 
     context "with extensions" do
-      let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
+      let!(:extension) { create(:induction_extension, teacher:) }
 
       it "displays extension information and link to admin extensions path" do
         render_inline(component)

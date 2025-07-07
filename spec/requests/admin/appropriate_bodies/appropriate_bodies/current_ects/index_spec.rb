@@ -1,6 +1,6 @@
 RSpec.describe 'Listing and searching ECTs belonging to an appropriate body' do
   describe 'GET /admin/organisations/appropriate-bodies/current-ects' do
-    let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let!(:appropriate_body) { create(:appropriate_body) }
 
     context 'when not logged in' do
       it "redirects to sign in path" do
@@ -22,11 +22,11 @@ RSpec.describe 'Listing and searching ECTs belonging to an appropriate body' do
     context "with an authenticated DfE user" do
       include_context 'sign in as DfE user'
 
-      let!(:teacher_1) { FactoryBot.create(:teacher, trs_first_name: "Pam", trs_last_name: "Ferris") }
-      let!(:teacher_2) { FactoryBot.create(:teacher, trs_first_name: "Felicity", trs_last_name: "Kendall") }
+      let!(:teacher_1) { create(:teacher, trs_first_name: "Pam", trs_last_name: "Ferris") }
+      let!(:teacher_2) { create(:teacher, trs_first_name: "Felicity", trs_last_name: "Kendall") }
 
-      let!(:induction_period_1) { FactoryBot.create(:induction_period, :active, teacher: teacher_1, appropriate_body:) }
-      let!(:induction_period_2) { FactoryBot.create(:induction_period, :active, teacher: teacher_2, appropriate_body:) }
+      let!(:induction_period_1) { create(:induction_period, :active, teacher: teacher_1, appropriate_body:) }
+      let!(:induction_period_2) { create(:induction_period, :active, teacher: teacher_2, appropriate_body:) }
 
       it 'shows lists current ECTs' do
         get "/admin/organisations/appropriate-bodies/#{appropriate_body.id}/current-ects"

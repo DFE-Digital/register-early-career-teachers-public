@@ -1,6 +1,6 @@
 RSpec.describe ParityCheck::RequestDispatcher do
   let(:mode) { :concurrent }
-  let(:run) { FactoryBot.create(:parity_check_run, :in_progress, mode) }
+  let(:run) { create(:parity_check_run, :in_progress, mode) }
   let(:instance) { described_class.new(run:) }
   let(:run_dispatcher) { instance_double(ParityCheck::RunDispatcher, dispatch: nil) }
 
@@ -19,9 +19,9 @@ RSpec.describe ParityCheck::RequestDispatcher do
     end
 
     describe "request dispatch order" do
-      let!(:pending_get_request) { FactoryBot.create(:parity_check_request, :pending, :get, run:) }
-      let!(:pending_post_request) { FactoryBot.create(:parity_check_request, :pending, :post, run:) }
-      let!(:pending_put_request) { FactoryBot.create(:parity_check_request, :pending, :put, run:) }
+      let!(:pending_get_request) { create(:parity_check_request, :pending, :get, run:) }
+      let!(:pending_post_request) { create(:parity_check_request, :pending, :post, run:) }
+      let!(:pending_put_request) { create(:parity_check_request, :pending, :put, run:) }
 
       it "dispatches the get requests first" do
         expect { dispatch }.to change { pending_get_request.reload.state }.from("pending").to("queued")
@@ -30,11 +30,11 @@ RSpec.describe ParityCheck::RequestDispatcher do
 
       it "dispatches the post requests when all get requests are completed" do
         %i[queue! start! complete!].each do
-          pending_get_request.responses << FactoryBot.create(:parity_check_response, :matching)
+          pending_get_request.responses << create(:parity_check_response, :matching)
           pending_get_request.send(it)
           # We complete the put request as it has the same priority and
           # we want to isolate the post request in this test.
-          pending_put_request.responses << FactoryBot.create(:parity_check_response, :matching)
+          pending_put_request.responses << create(:parity_check_response, :matching)
           pending_put_request.send(it)
         end
 
@@ -45,10 +45,10 @@ RSpec.describe ParityCheck::RequestDispatcher do
       it "dispatches the put requests when all get requests are completed" do
         %i[queue! start! complete!].each do
           pending_get_request.send(it)
-          pending_get_request.responses << FactoryBot.create(:parity_check_response, :matching)
+          pending_get_request.responses << create(:parity_check_response, :matching)
           # We complete the post request as it has the same priority and
           # we want to isolate the put request in this test.
-          pending_post_request.responses << FactoryBot.create(:parity_check_response, :matching)
+          pending_post_request.responses << create(:parity_check_response, :matching)
           pending_post_request.send(it)
         end
 
@@ -69,7 +69,7 @@ RSpec.describe ParityCheck::RequestDispatcher do
       let(:post_put_concurrency) { 1 }
 
       it "dispatches the correct number of get requests" do
-        get_requests = FactoryBot.create_list(:parity_check_request, get_concurrency + 1, :pending, :get, run:)
+        get_requests = create_list(:parity_check_request, get_concurrency + 1, :pending, :get, run:)
 
         expect { dispatch }.to have_enqueued_job(ParityCheckRequestJob).exactly(get_concurrency).times
 
@@ -78,8 +78,8 @@ RSpec.describe ParityCheck::RequestDispatcher do
       end
 
       it "dispatches the correct number of post/put requests" do
-        post_requests = FactoryBot.create_list(:parity_check_request, post_put_concurrency, :pending, :post, run:)
-        put_requests = FactoryBot.create_list(:parity_check_request, post_put_concurrency, :pending, :put, run:)
+        post_requests = create_list(:parity_check_request, post_put_concurrency, :pending, :post, run:)
+        put_requests = create_list(:parity_check_request, post_put_concurrency, :pending, :put, run:)
         post_put_requests = post_requests + put_requests
 
         expect { dispatch }.to have_enqueued_job(ParityCheckRequestJob).exactly(post_put_concurrency).times
@@ -90,7 +90,7 @@ RSpec.describe ParityCheck::RequestDispatcher do
     end
 
     describe "run mode handling" do
-      before { FactoryBot.create_list(:parity_check_request, 3, :pending, :get, run:) }
+      before { create_list(:parity_check_request, 3, :pending, :get, run:) }
 
       context "when concurrent" do
         let(:mode) { :concurrent }
@@ -112,7 +112,7 @@ RSpec.describe ParityCheck::RequestDispatcher do
     end
 
     context "when there are pending requests" do
-      before { FactoryBot.create(:parity_check_request, :pending, run:) }
+      before { create(:parity_check_request, :pending, run:) }
 
       it "does not complete the run" do
         expect { dispatch }.not_to(change { run.reload.state })
@@ -125,7 +125,7 @@ RSpec.describe ParityCheck::RequestDispatcher do
 
       %i[queued in_progress].each do |state|
         context "when there are #{state} requests" do
-          before { FactoryBot.create(:parity_check_request, state, run:) }
+          before { create(:parity_check_request, state, run:) }
 
           it "does not dispatch any requests" do
             expect { dispatch }.not_to have_enqueued_job(ParityCheckRequestJob)
@@ -139,7 +139,7 @@ RSpec.describe ParityCheck::RequestDispatcher do
     end
 
     context "when there are no pending/queued/in-progress requests" do
-      before { FactoryBot.create(:parity_check_request, :completed, run:) }
+      before { create(:parity_check_request, :completed, run:) }
 
       it "completes the run" do
         expect { dispatch }.to change { run.reload.state }.from("in_progress").to("completed")

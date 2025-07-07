@@ -1,6 +1,6 @@
 RSpec.describe Teachers::OutcomeFormComponent, type: :component do
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
+  let(:appropriate_body) { build(:appropriate_body) }
   let(:form) { double("form", govuk_error_summary: "", govuk_date_field: "", govuk_number_field: "") }
 
   context "when in admin mode" do

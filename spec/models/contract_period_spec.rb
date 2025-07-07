@@ -6,7 +6,7 @@ describe ContractPeriod do
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:contract_period) }
+    subject { build(:contract_period) }
 
     it { is_expected.to validate_presence_of(:year) }
     it { is_expected.to validate_uniqueness_of(:year) }
@@ -16,15 +16,15 @@ describe ContractPeriod do
     it { is_expected.to validate_presence_of(:finished_on).with_message('Enter an end date') }
 
     describe '#no_overlaps' do
-      before { FactoryBot.create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 2, 2)) }
+      before { create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 2, 2)) }
 
       it 'allows new records that do not overlap' do
-        non_overlapping = FactoryBot.build(:contract_period, started_on: Date.new(2024, 2, 2), finished_on: Date.new(2024, 3, 3))
+        non_overlapping = build(:contract_period, started_on: Date.new(2024, 2, 2), finished_on: Date.new(2024, 3, 3))
         expect(non_overlapping).to be_valid
       end
 
       it 'does not allow overlapping records' do
-        overlapping = FactoryBot.build(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 3, 3))
+        overlapping = build(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 3, 3))
         expect(overlapping).not_to be_valid
         expect(overlapping.errors.messages[:base]).to include(/Contract period overlaps/)
       end
@@ -33,7 +33,7 @@ describe ContractPeriod do
 
   describe '.containing_date' do
     let!(:period) do
-      FactoryBot.create(:contract_period, started_on: Date.new(2024, 9, 1), finished_on: Date.new(2025, 8, 31))
+      create(:contract_period, started_on: Date.new(2024, 9, 1), finished_on: Date.new(2025, 8, 31))
     end
 
     it 'returns the contract_period containing the given date' do

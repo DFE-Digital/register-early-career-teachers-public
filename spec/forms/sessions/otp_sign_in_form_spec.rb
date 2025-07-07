@@ -8,7 +8,7 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
     let(:email) { "bob@example.com" }
     let(:code) { "123456" }
     let(:result) { 987_654 }
-    let!(:user) { FactoryBot.create(:user, email:) }
+    let!(:user) { create(:user, email:) }
 
     let(:mock_otp_service) { instance_double(Sessions::OneTimePassword, user: User.new(email:)) }
 

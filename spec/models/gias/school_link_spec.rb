@@ -24,7 +24,7 @@ describe GIAS::SchoolLink do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:gias_school_link) }
+    subject { create(:gias_school_link) }
 
     it { is_expected.to validate_inclusion_of(:link_type).in_array(GIAS::SchoolLink::LINK_TYPES) }
     it { is_expected.to validate_presence_of(:link_urn) }

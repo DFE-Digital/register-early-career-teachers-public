@@ -1,7 +1,7 @@
 RSpec.describe "schools/register_ect_wizard/find_ect.html.erb" do
-  let(:store) { FactoryBot.build(:session_repository, trn: "1234567") }
+  let(:store) { build(:session_repository, trn: "1234567") }
   let(:wizard) do
-    FactoryBot.build(:register_ect_wizard, current_step: :find_ect, store:)
+    build(:register_ect_wizard, current_step: :find_ect, store:)
   end
 
   before do

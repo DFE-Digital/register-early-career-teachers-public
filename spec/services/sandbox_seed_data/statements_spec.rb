@@ -9,8 +9,8 @@ RSpec.describe SandboxSeedData::Statements do
   end
 
   describe "#plant" do
-    let(:contract_period) { FactoryBot.create(:contract_period, year: Time.zone.now.year - 1) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+    let(:contract_period) { create(:contract_period, year: Time.zone.now.year - 1) }
+    let!(:active_lead_provider) { create(:active_lead_provider, contract_period:) }
 
     it "creates statements for active lead providers with the correct attributes" do
       instance.plant

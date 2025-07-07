@@ -1,18 +1,18 @@
 RSpec.describe Teachers::Induction do
   subject(:service) { described_class.new(teacher) }
 
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { create(:teacher) }
 
   let(:induction_period_unfinished) do
-    FactoryBot.create(:induction_period, :active, teacher:, started_on: 6.months.ago)
+    create(:induction_period, :active, teacher:, started_on: 6.months.ago)
   end
 
   let(:induction_period_finished_one_year_ago) do
-    FactoryBot.create(:induction_period, teacher:, started_on: 2.years.ago, finished_on: 1.year.ago)
+    create(:induction_period, teacher:, started_on: 2.years.ago, finished_on: 1.year.ago)
   end
 
   let(:induction_period_finished_two_years_ago) do
-    FactoryBot.create(:induction_period, teacher:, started_on: 3.years.ago, finished_on: 2.years.ago)
+    create(:induction_period, teacher:, started_on: 3.years.ago, finished_on: 2.years.ago)
   end
 
   describe "#current_induction_period" do
@@ -80,7 +80,7 @@ RSpec.describe Teachers::Induction do
 
   describe "#has_extensions?" do
     context "with induction extensions" do
-      before { FactoryBot.create(:induction_extension, teacher:) }
+      before { create(:induction_extension, teacher:) }
 
       it { is_expected.to have_extensions }
     end
@@ -91,8 +91,8 @@ RSpec.describe Teachers::Induction do
   end
 
   describe "#with_appropriate_body?" do
-    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
-    let(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
+    let(:other_appropriate_body) { create(:appropriate_body) }
+    let(:induction_period) { create(:induction_period, :active, teacher:) }
 
     it "returns true when the current induction is with the body" do
       expect(service.with_appropriate_body?(induction_period.appropriate_body)).to be true

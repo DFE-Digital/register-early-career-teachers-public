@@ -32,7 +32,7 @@ RSpec.describe 'Registering an ECT', :js do
   end
 
   def given_there_is_a_school_in_the_service
-    @school = FactoryBot.create(:school, urn: "1234567")
+    @school = create(:school, urn: "1234567")
   end
 
   def and_i_sign_in_as_that_school_user
@@ -40,7 +40,7 @@ RSpec.describe 'Registering an ECT', :js do
   end
 
   def and_an_ongoing_ect_is_assigned_to_the_school
-    @ect = FactoryBot.create(:ect_at_school_period, :active, school: @school)
+    @ect = create(:ect_at_school_period, :active, school: @school)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
@@ -83,7 +83,7 @@ RSpec.describe 'Registering an ECT', :js do
   end
 
   def when_i_enter_an_email_address_of_a_teacher_from_their_finished_school_periods
-    finished_ect = FactoryBot.create(:ect_at_school_period)
+    finished_ect = create(:ect_at_school_period)
     page.get_by_label('email').fill(finished_ect.email)
   end
 

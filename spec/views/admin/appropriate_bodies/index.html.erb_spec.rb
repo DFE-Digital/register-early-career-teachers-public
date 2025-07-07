@@ -2,7 +2,7 @@ RSpec.describe 'admin/appropriate_bodies/index.html.erb' do
   include Pagy::Backend
 
   let(:number_of_appropriate_bodies) { 2 }
-  let(:appropriate_bodies) { FactoryBot.create_list(:appropriate_body, number_of_appropriate_bodies) }
+  let(:appropriate_bodies) { create_list(:appropriate_body, number_of_appropriate_bodies) }
   let(:pagy) { pagy_array(appropriate_bodies, items: 5, page: 1) }
 
   before do

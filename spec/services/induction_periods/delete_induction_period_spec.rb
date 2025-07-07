@@ -9,9 +9,9 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
   include_context 'fake trs api client'
   include ActiveJob::TestHelper
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:user) { FactoryBot.create(:user) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
+  let(:user) { create(:user) }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:trs_client) { instance_double(TRS::APIClient) }
 
@@ -20,7 +20,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
   end
 
   context "when it is the only induction period" do
-    let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
+    let!(:induction_period) { create(:induction_period, :active, teacher:, appropriate_body:) }
 
     before do
       allow(trs_client).to receive(:reset_teacher_induction)
@@ -79,8 +79,8 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
   end
 
   context "when there are other induction periods" do
-    let!(:earliest_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 3) }
-    let!(:later_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 3) }
+    let!(:earliest_period) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 3) }
+    let!(:later_period) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 3) }
 
     before do
       allow(trs_client).to receive(:reset_teacher_induction)

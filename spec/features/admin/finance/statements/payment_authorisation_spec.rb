@@ -13,7 +13,7 @@ RSpec.describe "Payment authorisation for statement" do
   end
 
   def given_a_payable_finance_statement_exists
-    @statement = FactoryBot.create(:statement, :payable, :output_fee, marked_as_paid_at: nil, deadline_date: 3.days.ago.to_date)
+    @statement = create(:statement, :payable, :output_fee, marked_as_paid_at: nil, deadline_date: 3.days.ago.to_date)
   end
 
   def when_i_visit_the_finance_statement_page

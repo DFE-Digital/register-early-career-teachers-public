@@ -1,15 +1,15 @@
 RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   let(:pending_induction_submission) do
-    FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_first_name: 'Anna', trs_last_name: 'Chancellor')
+    create(:pending_induction_submission, appropriate_body:, trs_first_name: 'Anna', trs_last_name: 'Chancellor')
   end
 
   let(:teacher) do
-    FactoryBot.create(:teacher,
-                      trs_first_name: pending_induction_submission.trs_first_name,
-                      trs_last_name: pending_induction_submission.trs_last_name,
-                      trn: pending_induction_submission.trn)
+    create(:teacher,
+           trs_first_name: pending_induction_submission.trs_first_name,
+           trs_last_name: pending_induction_submission.trs_last_name,
+           trn: pending_induction_submission.trn)
   end
 
   before do
@@ -37,7 +37,7 @@ RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
     end
 
     context 'when the ECT has an ongoing induction period with another appropriate body' do
-      let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
+      let!(:induction_period) { create(:induction_period, :active, teacher:) }
 
       before { assign(:current_appropriate_body, appropriate_body) }
 
@@ -52,7 +52,7 @@ RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
 
   describe 'induction status' do
     let(:teacher) { nil }
-    let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trs_induction_status: 'FailedInWales') }
+    let(:pending_induction_submission) { create(:pending_induction_submission, trs_induction_status: 'FailedInWales') }
 
     it 'displays the status tag that corresponds to the TRS induction status on the pending induction submission' do
       render
@@ -62,7 +62,7 @@ RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
 
   describe 'induction periods' do
     context 'when the ECT has past induction periods' do
-      let!(:current_induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
+      let!(:current_induction_period) { create(:induction_period, :active, teacher:) }
 
       it 'shows the current induction period' do
         render
@@ -76,7 +76,7 @@ RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
     end
 
     context 'when the ECT has past induction periods' do
-      let!(:past_induction_period) { FactoryBot.create(:induction_period, teacher:) }
+      let!(:past_induction_period) { create(:induction_period, teacher:) }
 
       it 'shows a list of past induction periods' do
         render
@@ -105,7 +105,7 @@ RSpec.describe 'appropriate_bodies/claim_an_ect/check_ect/edit.html.erb' do
     end
 
     context 'with extensions and teacher' do
-      let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
+      let!(:extension) { create(:induction_extension, teacher:) }
 
       it 'displays the row' do
         render

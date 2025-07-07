@@ -9,16 +9,16 @@ describe Schools::RegisterMentorWizard::ChangeMentorDetailsStep, type: :model do
     subject { wizard.current_step }
 
     let(:store) do
-      FactoryBot.build(:session_repository,
-                       trn: '1234567',
-                       trs_first_name: 'John',
-                       trs_last_name: 'Wayne',
-                       change_name: 'yes',
-                       corrected_name: 'Jim Wayne',
-                       date_of_birth: '01/01/1990',
-                       email: 'initial@email.com')
+      build(:session_repository,
+            trn: '1234567',
+            trs_first_name: 'John',
+            trs_last_name: 'Wayne',
+            change_name: 'yes',
+            corrected_name: 'Jim Wayne',
+            date_of_birth: '01/01/1990',
+            email: 'initial@email.com')
     end
-    let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :change_mentor_details, store:) }
+    let(:wizard) { build(:register_mentor_wizard, current_step: :change_mentor_details, store:) }
 
     it { expect(subject.previous_step).to eq(:check_answers) }
   end

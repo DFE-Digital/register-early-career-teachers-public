@@ -3,10 +3,10 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
   let(:prepopulated_start_date) { { 1 => "2025", 2 => "01", 3 => '01' } }
   let(:provided_start_date) { { 1 => "2024", 2 => "12", 3 => '01' } }
-  let(:school) { FactoryBot.build(:school) }
+  let(:school) { build(:school) }
   let(:step_params) { {} }
-  let(:store) { FactoryBot.build(:session_repository, start_date: prepopulated_start_date) }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, school:, store:, step_params:) }
+  let(:store) { build(:session_repository, start_date: prepopulated_start_date) }
+  let(:wizard) { build(:register_ect_wizard, current_step: :start_date, school:, store:, step_params:) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }
@@ -57,13 +57,13 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
 
     let(:today) { Date.new(2024, 4, 15) }
-    let(:period_2023) { FactoryBot.create(:contract_period, year: 2023, enabled: enabled_2023) }
+    let(:period_2023) { create(:contract_period, year: 2023, enabled: enabled_2023) }
     let(:enabled_2023) { true }
 
-    let(:period_2024) { FactoryBot.create(:contract_period, year: 2024, enabled: enabled_2024) }
+    let(:period_2024) { create(:contract_period, year: 2024, enabled: enabled_2024) }
     let(:enabled_2024) { true }
 
-    let(:period_2025) { FactoryBot.create(:contract_period, year: 2025, enabled: enabled_2025) }
+    let(:period_2025) { create(:contract_period, year: 2025, enabled: enabled_2025) }
     let(:enabled_2025) { true }
 
     before do

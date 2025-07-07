@@ -8,32 +8,32 @@ describe ParityCheck::Run do
     it { is_expected.to have_many(:responses).through(:requests) }
 
     it "returns distinct lead providers, ordered by name in ascending order" do
-      lead_provider_1 = FactoryBot.create(:lead_provider, name: "B lead provider")
-      lead_provider_2 = FactoryBot.create(:lead_provider, name: "A lead provider")
-      run = FactoryBot.create(:parity_check_run)
-      FactoryBot.create(:parity_check_request, run:, lead_provider: lead_provider_1)
-      FactoryBot.create(:parity_check_request, run:, lead_provider: lead_provider_1)
-      FactoryBot.create(:parity_check_request, run:, lead_provider: lead_provider_2)
+      lead_provider_1 = create(:lead_provider, name: "B lead provider")
+      lead_provider_2 = create(:lead_provider, name: "A lead provider")
+      run = create(:parity_check_run)
+      create(:parity_check_request, run:, lead_provider: lead_provider_1)
+      create(:parity_check_request, run:, lead_provider: lead_provider_1)
+      create(:parity_check_request, run:, lead_provider: lead_provider_2)
 
       expect(run.lead_providers).to eq([lead_provider_2, lead_provider_1])
     end
 
     it "returns distinct endpoints, ordered by path in ascending order" do
-      endpoint_1 = FactoryBot.create(:parity_check_endpoint, path: "/b/path")
-      endpoint_2 = FactoryBot.create(:parity_check_endpoint, path: "/a/path")
-      run = FactoryBot.create(:parity_check_run)
-      FactoryBot.create(:parity_check_request, run:, endpoint: endpoint_1)
-      FactoryBot.create(:parity_check_request, run:, endpoint: endpoint_1)
-      FactoryBot.create(:parity_check_request, run:, endpoint: endpoint_2)
+      endpoint_1 = create(:parity_check_endpoint, path: "/b/path")
+      endpoint_2 = create(:parity_check_endpoint, path: "/a/path")
+      run = create(:parity_check_run)
+      create(:parity_check_request, run:, endpoint: endpoint_1)
+      create(:parity_check_request, run:, endpoint: endpoint_1)
+      create(:parity_check_request, run:, endpoint: endpoint_2)
 
       expect(run.endpoints).to eq([endpoint_2, endpoint_1])
     end
 
     it "returns responses, ordered by page in ascending order" do
-      run = FactoryBot.create(:parity_check_run, :in_progress, requests: [])
-      request = FactoryBot.create(:parity_check_request, :in_progress, run:)
-      response_1 = FactoryBot.create(:parity_check_response, request:, page: 2)
-      response_2 = FactoryBot.create(:parity_check_response, request:, page: 1)
+      run = create(:parity_check_run, :in_progress, requests: [])
+      request = create(:parity_check_request, :in_progress, run:)
+      response_1 = create(:parity_check_response, request:, page: 2)
+      response_2 = create(:parity_check_response, request:, page: 1)
 
       expect(run.responses).to eq([response_2, response_1])
     end
@@ -45,9 +45,9 @@ describe ParityCheck::Run do
 
   describe "after_commit" do
     it "broadcasts the run states" do
-      in_progress_run = FactoryBot.create(:parity_check_run, :in_progress)
-      FactoryBot.create_list(:parity_check_run, 3, :completed)
-      FactoryBot.create_list(:parity_check_run, 2, :pending)
+      in_progress_run = create(:parity_check_run, :in_progress)
+      create_list(:parity_check_run, 3, :completed)
+      create_list(:parity_check_run, 2, :pending)
 
       partial = "migration/parity_checks/runs_sidebar"
       locals = {
@@ -58,7 +58,7 @@ describe ParityCheck::Run do
       html = "<div>sidebar content</div>"
       allow(::Migration::ParityChecksController.renderer).to receive(:render).with(partial:, locals:) { html }
 
-      run = FactoryBot.create(:parity_check_run)
+      run = create(:parity_check_run)
 
       expect(run).to receive(:broadcast_update_to).with(:run_states, html:, target: :run_states).once
       run.touch
@@ -73,14 +73,14 @@ describe ParityCheck::Run do
     it { is_expected.not_to validate_uniqueness_of(:state) }
 
     context "when in_progress" do
-      subject { FactoryBot.build(:parity_check_run, :in_progress) }
+      subject { build(:parity_check_run, :in_progress) }
 
       it { is_expected.to validate_presence_of(:started_at) }
       it { is_expected.to validate_uniqueness_of(:state) }
     end
 
     context "when completed" do
-      subject(:run) { FactoryBot.build(:parity_check_run, :completed, started_at:) }
+      subject(:run) { build(:parity_check_run, :completed, started_at:) }
 
       let(:started_at) { Time.current }
 
@@ -91,9 +91,9 @@ describe ParityCheck::Run do
   end
 
   describe "scopes" do
-    let!(:pending_run) { FactoryBot.create(:parity_check_run, :pending) }
-    let!(:in_progress_run) { FactoryBot.create(:parity_check_run, :in_progress) }
-    let!(:completed_run) { FactoryBot.create(:parity_check_run, :completed) }
+    let!(:pending_run) { create(:parity_check_run, :pending) }
+    let!(:in_progress_run) { create(:parity_check_run, :in_progress) }
+    let!(:completed_run) { create(:parity_check_run, :completed) }
 
     describe ".pending" do
       subject { described_class.pending }
@@ -107,8 +107,8 @@ describe ParityCheck::Run do
       it { is_expected.to contain_exactly(completed_run) }
 
       context "when there are multiple completed runs" do
-        let!(:completed_run_oldest) { FactoryBot.create(:parity_check_run, :completed, started_at: completed_run.started_at - 1.day) }
-        let!(:completed_run_latest) { FactoryBot.create(:parity_check_run, :completed, started_at: completed_run.started_at + 1.day, completed_at: completed_run.started_at + 2.days) }
+        let!(:completed_run_oldest) { create(:parity_check_run, :completed, started_at: completed_run.started_at - 1.day) }
+        let!(:completed_run_latest) { create(:parity_check_run, :completed, started_at: completed_run.started_at + 1.day, completed_at: completed_run.started_at + 2.days) }
 
         it { is_expected.to eq([completed_run_latest, completed_run, completed_run_oldest]) }
       end
@@ -125,26 +125,26 @@ describe ParityCheck::Run do
     it { is_expected.to be_pending }
 
     context "when transitioning from pending to in_progress" do
-      let(:run) { FactoryBot.create(:parity_check_run, :pending) }
+      let(:run) { create(:parity_check_run, :pending) }
 
       it { expect { run.in_progress! }.to change(run, :state).from("pending").to("in_progress") }
       it { expect { run.in_progress! }.to change(run, :started_at).from(nil).to(be_within(1.second).of(Time.zone.now)) }
     end
 
     context "when transitioning from in_progress to completed" do
-      let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+      let(:run) { create(:parity_check_run, :in_progress) }
 
       it { expect { run.complete! }.to change(run, :state).from("in_progress").to("completed") }
       it { expect { run.complete! }.to change(run, :completed_at).from(nil).to(be_within(1.second).of(Time.zone.now)) }
 
       context "when not all requests have been completed" do
-        before { FactoryBot.create(:parity_check_request, :in_progress, run:) }
+        before { create(:parity_check_request, :in_progress, run:) }
 
         it { expect { run.complete! }.to raise_error(StateMachines::InvalidTransition, /Not all requests have been completed/) }
       end
 
       context "when all requests have been completed" do
-        before { FactoryBot.create(:parity_check_request, :completed, run:) }
+        before { create(:parity_check_request, :completed, run:) }
 
         it { expect { run.complete! }.to change(run, :state).from("in_progress").to("completed") }
       end
@@ -161,10 +161,10 @@ describe ParityCheck::Run do
         "/api/v2/statements/:id",
         "/other"
       ].map do |path|
-        FactoryBot.create(:parity_check_request, endpoint: FactoryBot.create(:parity_check_endpoint, path:))
+        create(:parity_check_request, endpoint: create(:parity_check_endpoint, path:))
       end
     end
-    let(:run) { FactoryBot.create(:parity_check_run, requests:) }
+    let(:run) { create(:parity_check_run, requests:) }
 
     it { is_expected.to eq(%i[miscellaneous statements users]) }
   end
@@ -174,12 +174,12 @@ describe ParityCheck::Run do
 
     let(:requests) do
       [
-        FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching]),
-        FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching different]),
-        FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching]),
+        create(:parity_check_request, :completed, response_types: %i[matching]),
+        create(:parity_check_request, :completed, response_types: %i[matching different]),
+        create(:parity_check_request, :completed, response_types: %i[matching]),
       ]
     end
-    let(:run) { FactoryBot.create(:parity_check_run, :completed, requests:) }
+    let(:run) { create(:parity_check_run, :completed, requests:) }
 
     it { is_expected.to eq(83) }
 
@@ -190,7 +190,7 @@ describe ParityCheck::Run do
     end
 
     context "when there are no responses" do
-      let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+      let(:run) { create(:parity_check_run, :in_progress) }
 
       it { is_expected.to be_nil }
     end
@@ -199,7 +199,7 @@ describe ParityCheck::Run do
   describe "#progress" do
     subject { run.progress }
 
-    let(:run) { FactoryBot.create(:parity_check_run, request_states:) }
+    let(:run) { create(:parity_check_run, request_states:) }
 
     context "when there are no requests" do
       let(:request_states) { [] }
@@ -230,7 +230,7 @@ describe ParityCheck::Run do
     subject { run.estimated_completion_at }
 
     let(:started_at) { 1.hour.ago }
-    let(:run) { FactoryBot.create(:parity_check_run, state, request_states:, started_at:) }
+    let(:run) { create(:parity_check_run, state, request_states:, started_at:) }
 
     context "when the run is in progress" do
       let(:state) { :in_progress }
@@ -262,7 +262,7 @@ describe ParityCheck::Run do
   describe "#rect_performance_gain_ratio" do
     subject { run.rect_performance_gain_ratio }
 
-    let(:run) { FactoryBot.create(:parity_check_run, requests:) }
+    let(:run) { create(:parity_check_run, requests:) }
 
     context "when there are no requests" do
       let(:requests) { [] }
@@ -271,7 +271,7 @@ describe ParityCheck::Run do
     end
 
     context "when there are requests" do
-      let(:requests) { FactoryBot.create_list(:parity_check_request, 2, :completed) }
+      let(:requests) { create_list(:parity_check_request, 2, :completed) }
 
       context "when the response times are equal" do
         before do

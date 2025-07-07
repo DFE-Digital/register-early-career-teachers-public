@@ -10,7 +10,7 @@ describe ActiveLeadProvider do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:active_lead_provider) }
+    subject { create(:active_lead_provider) }
 
     it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Choose a lead provider") }
     it { is_expected.to validate_presence_of(:contract_period_id).with_message("Choose a contract period") }
@@ -18,14 +18,14 @@ describe ActiveLeadProvider do
   end
 
   describe "scopes" do
-    let!(:rp_1) { FactoryBot.create(:contract_period) }
-    let!(:rp_2) { FactoryBot.create(:contract_period) }
-    let!(:lp_1) { FactoryBot.create(:lead_provider) }
-    let!(:lp_2) { FactoryBot.create(:lead_provider) }
-    let!(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, contract_period: rp_1, lead_provider: lp_1) }
-    let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, contract_period: rp_1, lead_provider: lp_2) }
-    let!(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, contract_period: rp_2, lead_provider: lp_1) }
-    let!(:active_lead_provider_4) { FactoryBot.create(:active_lead_provider, contract_period: rp_2, lead_provider: lp_2) }
+    let!(:rp_1) { create(:contract_period) }
+    let!(:rp_2) { create(:contract_period) }
+    let!(:lp_1) { create(:lead_provider) }
+    let!(:lp_2) { create(:lead_provider) }
+    let!(:active_lead_provider_1) { create(:active_lead_provider, contract_period: rp_1, lead_provider: lp_1) }
+    let!(:active_lead_provider_2) { create(:active_lead_provider, contract_period: rp_1, lead_provider: lp_2) }
+    let!(:active_lead_provider_3) { create(:active_lead_provider, contract_period: rp_2, lead_provider: lp_1) }
+    let!(:active_lead_provider_4) { create(:active_lead_provider, contract_period: rp_2, lead_provider: lp_2) }
 
     describe ".for_contract_period" do
       it "returns provider partnerships only for the specified academic year" do

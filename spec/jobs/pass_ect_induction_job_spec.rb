@@ -1,9 +1,9 @@
 RSpec.describe PassECTInductionJob, type: :job do
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { create(:teacher) }
   let(:trn) { teacher.trn }
   let(:start_date) { "2023-11-13" }
   let(:completed_date) { "2024-01-13" }
-  let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+  let(:pending_induction_submission) { create(:pending_induction_submission) }
   let!(:pending_induction_submission_id) { pending_induction_submission.id }
   let(:api_client) { instance_double(TRS::APIClient) }
   let(:refresh_service) { instance_double(Teachers::RefreshTRSAttributes) }

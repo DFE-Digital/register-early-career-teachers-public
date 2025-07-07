@@ -13,7 +13,7 @@ describe ParityCheck::Endpoint do
     it { is_expected.not_to allow_values([], [{ foo: :bar }]).for(:options).with_message("Options must be a hash") }
 
     it "validates that the path does not contain query parameters" do
-      instance = FactoryBot.build(:parity_check_endpoint, path: "/a/path?with=query")
+      instance = build(:parity_check_endpoint, path: "/a/path?with=query")
       expect(instance).not_to be_valid
       expect(instance.errors[:path]).to include("Path should not contain query parameters; use options[:query] instead.")
     end
@@ -45,7 +45,7 @@ describe ParityCheck::Endpoint do
     subject { instance.description }
 
     let(:options) { {} }
-    let(:instance) { FactoryBot.build(:parity_check_endpoint, method: :get, path: "/a/path", options:) }
+    let(:instance) { build(:parity_check_endpoint, method: :get, path: "/a/path", options:) }
 
     it { is_expected.to eq("GET /a/path") }
 

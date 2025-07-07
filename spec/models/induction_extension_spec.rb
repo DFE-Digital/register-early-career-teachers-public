@@ -9,8 +9,8 @@ describe InductionExtension do
       it 'allows valid values to be saved' do
         # NOTE: we're actually saving them here to ensure PostgreSQL's column accepts the necessary
         #       precision and scale
-        expect(FactoryBot.create(:induction_extension, number_of_terms: 0.1)).to be_valid
-        expect(FactoryBot.create(:induction_extension, number_of_terms: 15.9)).to be_valid
+        expect(create(:induction_extension, number_of_terms: 0.1)).to be_valid
+        expect(create(:induction_extension, number_of_terms: 15.9)).to be_valid
       end
 
       it 'prohibits numbers outside the range 1..16' do
@@ -19,7 +19,7 @@ describe InductionExtension do
       end
 
       context "when number_of_terms has more than 1 decimal place" do
-        subject { FactoryBot.build(:induction_extension, number_of_terms: 3.45) }
+        subject { build(:induction_extension, number_of_terms: 3.45) }
 
         it "is invalid" do
           expect(subject).not_to be_valid
@@ -28,7 +28,7 @@ describe InductionExtension do
       end
 
       context "when number_of_terms has 1 decimal place" do
-        subject { FactoryBot.build(:induction_extension, number_of_terms: 3.5) }
+        subject { build(:induction_extension, number_of_terms: 3.5) }
 
         it "is valid" do
           expect(subject).to be_valid
@@ -36,7 +36,7 @@ describe InductionExtension do
       end
 
       context "when number_of_terms is an integer" do
-        subject { FactoryBot.build(:induction_extension, number_of_terms: 3) }
+        subject { build(:induction_extension, number_of_terms: 3) }
 
         it "is valid" do
           expect(subject).to be_valid

@@ -1,7 +1,7 @@
 RSpec.describe Sessions::OneTimePassword do
   subject(:service) { Sessions::OneTimePassword.new(user:) }
 
-  let(:user) { FactoryBot.create(:user) }
+  let(:user) { create(:user) }
 
   describe "#generate" do
     it "returns a OTP code" do

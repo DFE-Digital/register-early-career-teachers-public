@@ -1,15 +1,15 @@
 RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
-  let(:school) { FactoryBot.create(:school) }
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Confirmed LP") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+  let(:school) { create(:school) }
+  let(:teacher) { create(:teacher) }
+  let(:delivery_partner) { create(:delivery_partner) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:lead_provider) { create(:lead_provider, name: "Confirmed LP") }
+  let(:active_lead_provider) { create(:active_lead_provider, lead_provider:) }
+  let(:lead_provider_delivery_partnership) { create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:) }
+  let(:school_partnership) { create(:school_partnership, lead_provider_delivery_partnership:) }
 
   let(:ect_at_school_period) do
-    FactoryBot.create(
+    create(
       :ect_at_school_period,
       finished_on: nil,
       school:,
@@ -20,7 +20,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
   end
 
   let(:store) do
-    FactoryBot.build(
+    build(
       :session_repository,
       trs_first_name: 'Konohamaru',
       trs_last_name: 'Sarutobi',
@@ -30,7 +30,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
   end
 
   let(:wizard) do
-    FactoryBot.build(
+    build(
       :register_ect_wizard,
       current_step: :registered_before,
       school:,
@@ -41,7 +41,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
   let(:wizard_ect) { Schools::RegisterECTWizard::ECT.new(store) }
 
   before do
-    FactoryBot.create(
+    create(
       :training_period,
       ect_at_school_period:,
       started_on: Date.new(2023, 9, 1),
@@ -49,7 +49,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
       school_partnership:
     )
 
-    FactoryBot.create(
+    create(
       :induction_period,
       teacher:,
       appropriate_body:,
@@ -57,7 +57,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
       finished_on: Date.new(2024, 7, 31)
     )
 
-    FactoryBot.create(:gias_school, school:, name: "Really cool school")
+    create(:gias_school, school:, name: "Really cool school")
 
     assign(:school, school)
     assign(:ect, wizard_ect)
@@ -103,7 +103,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
 
   context 'School-led' do
     let(:ect_at_school_period) do
-      FactoryBot.create(
+      create(
         :ect_at_school_period,
         started_on: Date.new(2023, 9, 1),
         finished_on: nil,

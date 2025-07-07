@@ -1,7 +1,7 @@
 RSpec.shared_examples "a migrator" do |model, dependencies|
   let(:worker) { 0 }
   let(:instance) { described_class.new(worker:) }
-  let(:data_migration) { FactoryBot.create(:data_migration, model:, worker: 0) }
+  let(:data_migration) { create(:data_migration, model:, worker: 0) }
   let(:failure_manager) { instance_double(FailureManager, record_failure: nil) }
   let(:migration_resource1) { create_migration_resource }
   let(:migration_resource2) { create_migration_resource }
@@ -84,13 +84,13 @@ RSpec.shared_examples "a migrator" do |model, dependencies|
       end
     else
       context "when the dependencies are not complete" do
-        before { FactoryBot.create(:data_migration, model: dependencies.sample) }
+        before { create(:data_migration, model: dependencies.sample) }
 
         it { is_expected.not_to be_runnable }
       end
 
       context "when the dependencies are all complete" do
-        before { FactoryBot.create(:data_migration, :completed, model: dependencies.sample) }
+        before { create(:data_migration, :completed, model: dependencies.sample) }
 
         it { is_expected.to be_runnable }
 
@@ -123,7 +123,7 @@ RSpec.shared_examples "a migrator" do |model, dependencies|
     context "when there are models across multiple workers" do
       let(:records_per_worker) { 1 }
 
-      before { FactoryBot.create(:data_migration, model:, worker: 1) }
+      before { create(:data_migration, model:, worker: 1) }
 
       it "queues a job for each worker" do
         expect { queue }.to have_enqueued_job(MigratorJob).with(migrator: described_class, worker: 0)
@@ -185,7 +185,7 @@ RSpec.shared_examples "a migrator" do |model, dependencies|
     context "when there are models across multiple workers" do
       let(:records_per_worker) { 1 }
 
-      before { FactoryBot.create(:data_migration, model:, worker: 1) }
+      before { create(:data_migration, model:, worker: 1) }
 
       it "only processes a portion of the models" do
         expect { migrate! }.to change { data_migration.reload.processed_count }.by(1)

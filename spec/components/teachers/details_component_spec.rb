@@ -1,6 +1,6 @@
 RSpec.describe Teachers::DetailsComponent, type: :component do
   include ActionView::Helpers::TagHelper
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { create(:teacher) }
   let(:mode) { :appropriate_body }
   let(:component) { described_class.new(teacher:, mode:) }
 

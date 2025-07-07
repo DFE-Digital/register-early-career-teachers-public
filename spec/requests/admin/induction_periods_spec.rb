@@ -2,8 +2,8 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
   include ActionView::Helpers::SanitizeHelper
   include_context 'sign in as DfE user'
 
-  let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:teacher) { create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   describe "POST /admin/teachers/:teacher_id/induction-periods" do
     let(:valid_params) do
@@ -90,10 +90,10 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
     context "with overlapping dates" do
       let!(:existing_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 6.months.ago,
-                          finished_on: 3.months.ago)
+        create(:induction_period,
+               teacher:,
+               started_on: 6.months.ago,
+               finished_on: 3.months.ago)
       end
 
       let(:overlapping_params) do
@@ -207,11 +207,11 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
     context "with multiple induction periods" do
       before do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 9.months.ago,
-                          finished_on: 6.months.ago,
-                          induction_programme: "fip")
+        create(:induction_period,
+               teacher:,
+               started_on: 9.months.ago,
+               finished_on: 6.months.ago,
+               induction_programme: "fip")
       end
 
       it "creates a new induction period" do
@@ -248,7 +248,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
   end
 
   describe "GET /admin/teachers/:teacher_id/induction-periods/:id/edit" do
-    let(:induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: 9.months.ago, finished_on: 6.months.ago) }
+    let(:induction_period) { create(:induction_period, teacher:, started_on: 9.months.ago, finished_on: 6.months.ago) }
 
     it "returns success" do
       get edit_admin_teacher_induction_period_path(induction_period.teacher, induction_period)
@@ -258,7 +258,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
   describe "PATCH /admin/teachers/:teacher_id/induction-periods/:id" do
     context "when induction period has no outcome" do
-      let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: 9.months.ago, finished_on: 6.months.ago) }
+      let!(:induction_period) { create(:induction_period, teacher:, started_on: 9.months.ago, finished_on: 6.months.ago) }
 
       context "with valid params" do
         let(:valid_params) do
@@ -310,18 +310,18 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
         context "when dates would cause overlap" do
           let!(:first_period) do
-            FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: 1.year.ago,
-                              finished_on: 8.months.ago,
-                              induction_programme: "cip")
+            create(:induction_period,
+                   teacher:,
+                   started_on: 1.year.ago,
+                   finished_on: 8.months.ago,
+                   induction_programme: "cip")
           end
 
           let(:induction_period) do
-            FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: 6.months.ago,
-                              finished_on: 3.months.ago)
+            create(:induction_period,
+                   teacher:,
+                   started_on: 6.months.ago,
+                   finished_on: 3.months.ago)
           end
 
           let(:params) do
@@ -348,11 +348,11 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
           end
 
           let!(:earliest_period) do
-            FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: 12.months.ago,
-                              finished_on: nil,
-                              number_of_terms: nil)
+            create(:induction_period,
+                   teacher:,
+                   started_on: 12.months.ago,
+                   finished_on: nil,
+                   number_of_terms: nil)
           end
 
           let(:params) do
@@ -393,8 +393,8 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
         end
 
         context "when start date is before QTS date" do
-          let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
-          let(:induction_period) { FactoryBot.create(:induction_period, teacher:, started_on: 9.months.ago, finished_on: 6.months.ago) }
+          let(:teacher) { create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+          let(:induction_period) { create(:induction_period, teacher:, started_on: 9.months.ago, finished_on: 6.months.ago) }
 
           it "returns error" do
             patch admin_teacher_induction_period_path(induction_period.teacher, induction_period), params: {
@@ -409,12 +409,12 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
     context "when induction period has an outcome" do
       let!(:induction_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 9.months.ago,
-                          finished_on: 6.months.ago,
-                          outcome: "pass",
-                          number_of_terms: 3)
+        create(:induction_period,
+               teacher:,
+               started_on: 9.months.ago,
+               finished_on: 6.months.ago,
+               outcome: "pass",
+               number_of_terms: 3)
       end
 
       context "when updating dates" do
@@ -501,12 +501,12 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
     context "when induction period has a fail outcome" do
       let!(:induction_period) do
-        FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 9.months.ago,
-                          finished_on: 6.months.ago,
-                          outcome: "fail",
-                          number_of_terms: 3)
+        create(:induction_period,
+               teacher:,
+               started_on: 9.months.ago,
+               finished_on: 6.months.ago,
+               outcome: "fail",
+               number_of_terms: 3)
       end
 
       context "when updating end date" do
@@ -548,7 +548,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
   describe "DELETE /admin/induction_periods/:id" do
     context "when it is the only induction period" do
-      let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
+      let!(:induction_period) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
       let(:trs_api_client) { instance_double(TRS::APIClient) }
 
       before do
@@ -580,8 +580,8 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
     end
 
     context "when there are multiple induction periods" do
-      let!(:induction_period1) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 9.months.ago, number_of_terms: 2) }
-      let!(:induction_period2) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 3.months.ago, number_of_terms: 2) }
+      let!(:induction_period1) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 9.months.ago, number_of_terms: 2) }
+      let!(:induction_period2) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 3.months.ago, number_of_terms: 2) }
       let(:trs_api_client) { instance_double(TRS::APIClient) }
 
       before do
@@ -605,7 +605,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
     end
 
     context "when deletion fails" do
-      let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
+      let!(:induction_period) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
 
       before do
         service = instance_double(InductionPeriods::DeleteInductionPeriod)

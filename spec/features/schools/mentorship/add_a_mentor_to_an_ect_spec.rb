@@ -17,7 +17,7 @@ RSpec.describe 'Add a mentor to an ECT' do
   end
 
   def given_there_is_a_school_in_the_service
-    @school = FactoryBot.create(:school, urn: "1234567")
+    @school = create(:school, urn: "1234567")
   end
 
   def and_i_sign_in_as_that_school_user
@@ -25,12 +25,12 @@ RSpec.describe 'Add a mentor to an ECT' do
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    @ect = FactoryBot.create(:ect_at_school_period, :active, school: @school)
+    @ect = create(:ect_at_school_period, :active, school: @school)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
   def and_there_is_a_mentor_registered_at_the_school_eligible_to_mentor_the_ect
-    @mentor = FactoryBot.create(:mentor_at_school_period, :active, school: @school, started_on: @ect.started_on)
+    @mentor = create(:mentor_at_school_period, :active, school: @school, started_on: @ect.started_on)
     @mentor_name = Teachers::Name.new(@mentor.teacher).full_name
   end
 

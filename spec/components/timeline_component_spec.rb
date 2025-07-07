@@ -1,9 +1,9 @@
 RSpec.describe TimelineComponent, type: :component do
   let(:component) { TimelineComponent.new(events) }
 
-  let(:one_day_ago) { FactoryBot.build(:event, :with_body, created_at: 1.day.ago) }
-  let(:two_days_ago) { FactoryBot.build(:event, :with_body, created_at: 2.days.ago) }
-  let(:three_days_ago) { FactoryBot.build(:event, :with_body, created_at: 3.days.ago) }
+  let(:one_day_ago) { build(:event, :with_body, created_at: 1.day.ago) }
+  let(:two_days_ago) { build(:event, :with_body, created_at: 2.days.ago) }
+  let(:three_days_ago) { build(:event, :with_body, created_at: 3.days.ago) }
   let(:events) { [two_days_ago, one_day_ago, three_days_ago] }
 
   before { render_inline(component) }
@@ -34,7 +34,7 @@ RSpec.describe TimelineComponent, type: :component do
 
   describe 'modifications' do
     context 'when modifications are present' do
-      let(:one_day_ago) { FactoryBot.build(:event, :with_body, :with_modifications, created_at: 3.days.ago) }
+      let(:one_day_ago) { build(:event, :with_body, :with_modifications, created_at: 3.days.ago) }
 
       it "renders a 'Changes' heading" do
         expect(rendered_content).to have_css('h3', text: 'Changes')

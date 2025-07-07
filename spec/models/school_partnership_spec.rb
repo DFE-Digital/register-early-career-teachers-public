@@ -6,7 +6,7 @@ describe SchoolPartnership do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:school_partnership) }
+    subject { create(:school_partnership) }
 
     it { is_expected.to validate_presence_of(:lead_provider_delivery_partnership_id) }
     it { is_expected.to validate_presence_of(:school_id) }
@@ -15,9 +15,9 @@ describe SchoolPartnership do
 
   describe 'scopes' do
     describe '.earliest_first' do
-      let!(:school_partnership_first) { FactoryBot.create(:school_partnership, created_at: 3.weeks.ago) }
-      let!(:school_partnership_second) { FactoryBot.create(:school_partnership, created_at: 2.weeks.ago) }
-      let!(:school_partnership_third) { FactoryBot.create(:school_partnership, created_at: 1.week.ago) }
+      let!(:school_partnership_first) { create(:school_partnership, created_at: 3.weeks.ago) }
+      let!(:school_partnership_second) { create(:school_partnership, created_at: 2.weeks.ago) }
+      let!(:school_partnership_third) { create(:school_partnership, created_at: 1.week.ago) }
 
       it 'orders with earliest created records first' do
         expect(SchoolPartnership.earliest_first).to eq([

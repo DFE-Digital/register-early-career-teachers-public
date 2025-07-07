@@ -1,7 +1,7 @@
 RSpec.describe Schools::RegisterECTWizard::AppropriateBodyStep, type: :model do
-  let(:school) { FactoryBot.create(:school, :state_funded) }
-  let(:store) { FactoryBot.build(:session_repository, appropriate_body_id: '123') }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body, store:, school:) }
+  let(:school) { create(:school, :state_funded) }
+  let(:store) { build(:session_repository, appropriate_body_id: '123') }
+  let(:wizard) { build(:register_ect_wizard, current_step: :state_school_appropriate_body, store:, school:) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }
@@ -47,7 +47,7 @@ RSpec.describe Schools::RegisterECTWizard::AppropriateBodyStep, type: :model do
     end
 
     context 'when the appropriate_body is a local authority' do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :local_authority) }
+      let(:appropriate_body_id) { create(:appropriate_body, :local_authority) }
 
       it 'adds an error' do
         expect(subject).not_to be_valid
@@ -60,7 +60,7 @@ RSpec.describe Schools::RegisterECTWizard::AppropriateBodyStep, type: :model do
     subject { wizard.current_step }
 
     let(:wizard) do
-      FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body, store:, school:)
+      build(:register_ect_wizard, current_step: :state_school_appropriate_body, store:, school:)
     end
 
     describe '#next_step' do
@@ -77,7 +77,7 @@ RSpec.describe Schools::RegisterECTWizard::AppropriateBodyStep, type: :model do
       end
 
       context 'when the school has last programme choices' do
-        let(:school) { FactoryBot.create(:school, :independent, :national_ab_last_chosen, :school_led_last_chosen) }
+        let(:school) { create(:school, :independent, :national_ab_last_chosen, :school_led_last_chosen) }
 
         it 'returns the previous step' do
           expect(subject.previous_step).to eq(:use_previous_ect_choices)
@@ -98,7 +98,7 @@ RSpec.describe Schools::RegisterECTWizard::AppropriateBodyStep, type: :model do
     end
 
     let(:wizard) do
-      FactoryBot.build(:register_ect_wizard, current_step: :state_school_appropriate_body, step_params:)
+      build(:register_ect_wizard, current_step: :state_school_appropriate_body, step_params:)
     end
 
     context 'when the step is not valid' do

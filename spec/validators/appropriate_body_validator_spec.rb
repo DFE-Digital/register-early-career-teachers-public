@@ -35,7 +35,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
   end
 
   context 'when the appropriate_body is a local authority' do
-    let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :local_authority) }
+    let(:appropriate_body_id) { create(:appropriate_body, :local_authority) }
 
     it 'adds an error' do
       expect(subject).not_to be_valid
@@ -47,7 +47,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
     let(:school) { double(state_funded?: true) }
 
     context 'when the appropriate_body is a national' do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :national) }
+      let(:appropriate_body_id) { create(:appropriate_body, :national) }
 
       it 'add an error' do
         expect(subject).not_to be_valid
@@ -56,7 +56,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
     end
 
     context 'when the appropriate_body is a teaching school hub' do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+      let(:appropriate_body_id) { create(:appropriate_body, :teaching_school_hub) }
 
       it 'adds no error' do
         expect(subject).to be_valid
@@ -68,7 +68,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
     let(:school) { double(state_funded?: false) }
 
     context 'when the appropriate_body is a national' do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :national) }
+      let(:appropriate_body_id) { create(:appropriate_body, :national) }
 
       it 'adds no error' do
         expect(subject).to be_valid
@@ -76,7 +76,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
     end
 
     context 'when the appropriate_body is a teaching school hub' do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+      let(:appropriate_body_id) { create(:appropriate_body, :teaching_school_hub) }
 
       it 'adds no error' do
         expect(subject).to be_valid

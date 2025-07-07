@@ -1,6 +1,6 @@
 RSpec.describe ParityCheck::TokenProvider do
   before do
-    FactoryBot.create_list(:lead_provider, 3)
+    create_list(:lead_provider, 3)
 
     allow(Rails.application.config).to receive(:parity_check).and_return({
       enabled:,
@@ -56,7 +56,7 @@ RSpec.describe ParityCheck::TokenProvider do
   describe "#token" do
     subject(:token) { instance.token(lead_provider:) }
 
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:lead_provider) { create(:lead_provider) }
 
     context "when the keys are not present" do
       let(:tokens) { nil }

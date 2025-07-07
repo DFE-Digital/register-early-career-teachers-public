@@ -1,5 +1,5 @@
 RSpec.describe "appropriate_bodies/process_batch/actions/new.html.erb" do
-  let(:pending_induction_submission_batch) { FactoryBot.build(:pending_induction_submission_batch) }
+  let(:pending_induction_submission_batch) { build(:pending_induction_submission_batch) }
 
   before do
     assign(:pending_induction_submission_batch, pending_induction_submission_batch)

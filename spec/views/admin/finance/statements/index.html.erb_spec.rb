@@ -1,5 +1,5 @@
 RSpec.describe 'admin/finance/statements/index.html.erb' do
-  let(:raw_statements) { FactoryBot.create_list(:statement, 3) }
+  let(:raw_statements) { create_list(:statement, 3) }
   let(:pagy) { Pagy.new(count: raw_statements.count, limit: 10, page: 1) }
   let(:statements) { Admin::StatementPresenter.wrap(raw_statements) }
   let(:locals) { { filter_params: {} } }

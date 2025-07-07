@@ -1,5 +1,5 @@
 RSpec.describe "appropriate_bodies/process_batch/actions/_processed.html.erb" do
-  let(:pending_induction_submission_batch) { FactoryBot.create(:pending_induction_submission_batch, :action, :processed) }
+  let(:pending_induction_submission_batch) { create(:pending_induction_submission_batch, :action, :processed) }
 
   before do
     render locals: { batch: pending_induction_submission_batch }

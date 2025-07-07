@@ -1,6 +1,6 @@
 describe StatementSerializer, type: :serializer do
-  let(:active_lead_provider) { FactoryBot.build(:active_lead_provider) }
-  let(:statement) { FactoryBot.build(:statement, active_lead_provider:) }
+  let(:active_lead_provider) { build(:active_lead_provider) }
+  let(:statement) { build(:statement, active_lead_provider:) }
 
   describe "core attributes" do
     subject(:response) { JSON.parse(described_class.render(statement)) }

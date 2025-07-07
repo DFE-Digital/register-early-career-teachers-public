@@ -1,21 +1,21 @@
 describe Migrators::ActiveLeadProvider do
   it_behaves_like "a migrator", :active_lead_provider, %i[lead_provider contract_period] do
     def create_migration_resource
-      FactoryBot.create(:migration_lead_provider, :active)
+      create(:migration_lead_provider, :active)
     end
 
     def create_resource(migration_resource)
       # creating dependencies resources
-      FactoryBot.create(:lead_provider, name: migration_resource.name, ecf_id: migration_resource.id)
-      FactoryBot.create(:contract_period, year: migration_resource.cohorts.first.start_year)
+      create(:lead_provider, name: migration_resource.name, ecf_id: migration_resource.id)
+      create(:contract_period, year: migration_resource.cohorts.first.start_year)
 
-      FactoryBot.create(:active_lead_provider)
+      create(:active_lead_provider)
     end
 
     def setup_failure_state
       # Record to be migrated with unmet dependencies in the destination db
-      lead_provider = FactoryBot.create(:migration_lead_provider)
-      lead_provider.cohorts << FactoryBot.create(:migration_cohort)
+      lead_provider = create(:migration_lead_provider)
+      lead_provider.cohorts << create(:migration_cohort)
       lead_provider
     end
 

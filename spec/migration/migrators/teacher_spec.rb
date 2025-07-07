@@ -1,7 +1,7 @@
 RSpec.describe Migrators::Teacher do
   it_behaves_like "a migrator", :teacher, [] do
     def create_migration_resource
-      ect = FactoryBot.create(:migration_participant_profile, :ect)
+      ect = create(:migration_participant_profile, :ect)
       ect.teacher_profile
     end
 
@@ -9,8 +9,8 @@ RSpec.describe Migrators::Teacher do
     end
 
     def setup_failure_state
-      teacher_profile = FactoryBot.create(:migration_teacher_profile, trn: nil)
-      FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
+      teacher_profile = create(:migration_teacher_profile, trn: nil)
+      create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
     end
 
     describe "#migrate!" do

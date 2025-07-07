@@ -1,7 +1,7 @@
 RSpec.describe "appropriate_bodies/teachers/extensions/edit.html.erb" do
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:extension) { FactoryBot.create(:induction_extension) }
+  let(:appropriate_body) { build(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
+  let(:extension) { create(:induction_extension) }
 
   before do
     assign(:appropriate_body, appropriate_body)
@@ -16,7 +16,7 @@ RSpec.describe "appropriate_bodies/teachers/extensions/edit.html.erb" do
   end
 
   context 'when the extension has an error' do
-    let(:extension) { FactoryBot.create(:induction_extension, number_of_terms: 10) }
+    let(:extension) { create(:induction_extension, number_of_terms: 10) }
 
     before do
       extension.number_of_terms = 17

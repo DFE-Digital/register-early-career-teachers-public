@@ -1,7 +1,7 @@
 RSpec.feature "Admin manages ECT extensions", type: :feature do
-  let(:admin_user) { FactoryBot.create(:user, :admin) }
-  let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Sarah", trs_last_name: "Connor", trs_qts_awarded_on: 2.years.ago) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, teacher:) }
+  let(:admin_user) { create(:user, :admin) }
+  let!(:teacher) { create(:teacher, trs_first_name: "Sarah", trs_last_name: "Connor", trs_qts_awarded_on: 2.years.ago) }
+  let!(:induction_period) { create(:induction_period, teacher:) }
 
   before do
     sign_in_as_dfe_user(role: :admin, user: admin_user)
@@ -37,7 +37,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
   end
 
   context "when an extension exists" do
-    let!(:existing_extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 1.0) }
+    let!(:existing_extension) { create(:induction_extension, teacher:, number_of_terms: 1.0) }
 
     before do
       page.goto admin_teacher_path(teacher)

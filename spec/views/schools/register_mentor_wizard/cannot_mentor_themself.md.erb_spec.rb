@@ -1,7 +1,7 @@
 RSpec.describe "schools/register_mentor_wizard/cannot_mentor_themself.md.erb" do
   let(:back_path) { schools_register_mentor_wizard_find_mentor_path }
   let(:store) { double(trs_first_name: "John", trs_last_name: "Waters") }
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :cannot_mentor_themself, store:) }
+  let(:wizard) { build(:register_mentor_wizard, current_step: :cannot_mentor_themself, store:) }
 
   before do
     assign(:wizard, wizard)

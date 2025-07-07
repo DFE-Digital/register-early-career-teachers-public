@@ -10,7 +10,7 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
   let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
   let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
   let(:last_active_at) { 4.minutes.ago }
-  let!(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
+  let!(:appropriate_body) { create(:appropriate_body, dfe_sign_in_organisation_id:) }
 
   it_behaves_like 'a session user' do
     let(:user_props) { { email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }

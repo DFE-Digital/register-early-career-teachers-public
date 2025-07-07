@@ -14,7 +14,7 @@ describe API::AddAPITokenToLeadProvider do
       let(:lead_provider_name_or_id) { nil }
 
       before do
-        FactoryBot.create_list(:lead_provider, 4)
+        create_list(:lead_provider, 4)
       end
 
       it "creates new API Tokens for all Lead providers" do
@@ -23,7 +23,7 @@ describe API::AddAPITokenToLeadProvider do
     end
 
     describe "using lead provider id in the params" do
-      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:lead_provider) { create(:lead_provider) }
       let(:api_tokens) { API::Token.where(lead_provider_id: lead_provider.id) }
 
       context "with known lead provider id" do
@@ -55,7 +55,7 @@ describe API::AddAPITokenToLeadProvider do
     end
 
     describe "using lead provider name in the params" do
-      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:lead_provider) { create(:lead_provider) }
       let(:api_tokens) { API::Token.where(lead_provider_id: lead_provider.id) }
 
       context "with known lead provider name" do

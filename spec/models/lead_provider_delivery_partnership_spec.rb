@@ -7,7 +7,7 @@ describe LeadProviderDeliveryPartnership do
   end
 
   describe 'validation' do
-    subject { FactoryBot.create(:lead_provider_delivery_partnership) }
+    subject { create(:lead_provider_delivery_partnership) }
 
     it { is_expected.to validate_presence_of(:active_lead_provider_id).with_message('Select an active lead provider') }
     it { is_expected.to validate_presence_of(:delivery_partner_id).with_message('Select a delivery partner') }
@@ -15,12 +15,12 @@ describe LeadProviderDeliveryPartnership do
   end
 
   describe 'scopes' do
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-    let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:) }
+    let(:active_lead_provider) { create(:active_lead_provider) }
+    let(:delivery_partner) { create(:delivery_partner) }
+    let(:lead_provider_delivery_partnership) { create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:) }
 
     describe '.with_delivery_partner' do
-      let(:other_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
+      let(:other_lead_provider_delivery_partnership) { create(:lead_provider_delivery_partnership) }
 
       it 'returns the lead provider delivery partnership belonging to the delivery partner' do
         expect(LeadProviderDeliveryPartnership.with_delivery_partner(delivery_partner)).to include(lead_provider_delivery_partnership)
@@ -32,7 +32,7 @@ describe LeadProviderDeliveryPartnership do
     end
 
     describe '.with_active_lead_provider' do
-      let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+      let(:other_active_lead_provider) { create(:active_lead_provider) }
 
       it 'returns the lead provider delivery partnership belonging to the delivery partner' do
         expect(LeadProviderDeliveryPartnership.with_active_lead_provider(active_lead_provider)).to include(lead_provider_delivery_partnership)

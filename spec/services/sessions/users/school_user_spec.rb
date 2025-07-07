@@ -10,7 +10,7 @@ RSpec.describe Sessions::Users::SchoolUser do
   let(:name) { 'Christopher Lee' }
   let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
   let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { create(:school) }
 
   it_behaves_like 'a session user' do
     let(:user_props) { { email:, name:, school_urn: school.urn, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }

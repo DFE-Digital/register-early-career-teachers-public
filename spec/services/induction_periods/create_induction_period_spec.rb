@@ -4,8 +4,8 @@ describe 'InductionPeriods::CreateInductionPeriod' do
   describe '#initialize' do
     subject { InductionPeriods::CreateInductionPeriod.new(author:, teacher:, params:) }
 
-    let(:teacher) { FactoryBot.create(:teacher) }
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:teacher) { create(:teacher) }
+    let(:appropriate_body) { create(:appropriate_body) }
     let(:started_on) { 3.weeks.ago.to_date }
     let(:induction_programme) { 'cip' }
     let(:params) do
@@ -85,7 +85,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
 
       context 'with existing periods' do
         before do
-          FactoryBot.create(
+          create(
             :induction_period,
             teacher:,
             appropriate_body:,
@@ -141,7 +141,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
 
       context 'when the teacher has passed induction' do
         before do
-          FactoryBot.create(
+          create(
             :induction_period,
             teacher:,
             appropriate_body:,

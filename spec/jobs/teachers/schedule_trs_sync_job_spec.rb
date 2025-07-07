@@ -1,12 +1,12 @@
 RSpec.describe Teachers::ScheduleTRSSyncJob, type: :job do
   describe "#perform" do
-    let!(:teacher0) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: nil) }
-    let!(:teacher1) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 5.days.ago) }
-    let!(:teacher2) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 4.days.ago) }
-    let!(:teacher3) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 3.days.ago) }
-    let!(:teacher4) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 2.days.ago) }
-    let!(:teacher5) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 1.day.ago) }
-    let!(:teacher6) { FactoryBot.create(:teacher, :deactivated_in_trs, trs_data_last_refreshed_at: 0.days.ago) }
+    let!(:teacher0) { create(:teacher, trs_data_last_refreshed_at: nil) }
+    let!(:teacher1) { create(:teacher, trs_data_last_refreshed_at: 5.days.ago) }
+    let!(:teacher2) { create(:teacher, trs_data_last_refreshed_at: 4.days.ago) }
+    let!(:teacher3) { create(:teacher, trs_data_last_refreshed_at: 3.days.ago) }
+    let!(:teacher4) { create(:teacher, trs_data_last_refreshed_at: 2.days.ago) }
+    let!(:teacher5) { create(:teacher, trs_data_last_refreshed_at: 1.day.ago) }
+    let!(:teacher6) { create(:teacher, :deactivated_in_trs, trs_data_last_refreshed_at: 0.days.ago) }
 
     it "schedules sync jobs for teachers ordered by trs_data_last_refreshed_at" do
       [

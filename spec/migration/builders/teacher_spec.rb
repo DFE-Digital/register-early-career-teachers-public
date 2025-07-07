@@ -40,7 +40,7 @@ describe Builders::Teacher do
     end
 
     context "when a teacher with the same TRN already exists" do
-      let!(:existing_record) { FactoryBot.create(:teacher, trn:, trs_first_name: "Tucker", trs_last_name: "Jenkins") }
+      let!(:existing_record) { create(:teacher, trn:, trs_first_name: "Tucker", trs_last_name: "Jenkins") }
 
       it "returns the matched teacher record" do
         expect(subject.build.id).to eq existing_record.id
@@ -62,7 +62,7 @@ describe Builders::Teacher do
 
       context "when the corrected_name is already set" do
         let!(:existing_record) do
-          FactoryBot.create(:teacher, trn:, trs_first_name: "Tucker", trs_last_name: "Jenkins", corrected_name: "Bert Ward")
+          create(:teacher, trn:, trs_first_name: "Tucker", trs_last_name: "Jenkins", corrected_name: "Bert Ward")
         end
 
         it "does not change the corrected_name" do

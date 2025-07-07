@@ -7,7 +7,7 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
 
   let(:email) { 'appropriate_body_persona@email.com' }
   let(:name) { 'Christopher Lee' }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
   let(:appropriate_body_id) { appropriate_body.id }
   let(:last_active_at) { 4.minutes.ago }
 

@@ -10,16 +10,16 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
   end
 
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: "1234567",
-                     trs_first_name: "John",
-                     trs_last_name: "Wayne",
-                     change_name: "yes",
-                     corrected_name: "Jim Wayne",
-                     date_of_birth: "01/01/1990",
-                     national_insurance_number: "JL056123D")
+    build(:session_repository,
+          trn: "1234567",
+          trs_first_name: "John",
+          trs_last_name: "Wayne",
+          change_name: "yes",
+          corrected_name: "Jim Wayne",
+          date_of_birth: "01/01/1990",
+          national_insurance_number: "JL056123D")
   end
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number, store:) }
+  let(:wizard) { build(:register_ect_wizard, current_step: :national_insurance_number, store:) }
 
   describe 'validations' do
     [
@@ -56,8 +56,8 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
       )
     end
     let(:induction_status) {}
-    let(:school) { FactoryBot.create(:school, :state_funded) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number, step_params:, school:) }
+    let(:school) { create(:school, :state_funded) }
+    let(:wizard) { build(:register_ect_wizard, current_step: :national_insurance_number, step_params:, school:) }
 
     context 'when the ect is not found in TRS' do
       before do
@@ -71,7 +71,7 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
     end
 
     context 'blocking registration' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+      let(:teacher) { create(:teacher, trn: '1234568') }
 
       before do
         allow(fake_trs_client).to receive(:find_teacher).and_return(fake_trs_teacher)
@@ -105,7 +105,7 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
     end
 
     context 'otherwise' do
-      let(:school) { FactoryBot.create(:school) }
+      let(:school) { create(:school) }
 
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
@@ -122,8 +122,8 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
   describe '#previous_step' do
     subject { wizard.current_step }
 
-    let(:school) { FactoryBot.create(:school, :state_funded) }
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number, step_params:, school:) }
+    let(:school) { create(:school, :state_funded) }
+    let(:wizard) { build(:register_ect_wizard, current_step: :national_insurance_number, step_params:, school:) }
 
     it 'returns :find_ect' do
       expect(subject.previous_step).to eq(:find_ect)
@@ -134,7 +134,7 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
     context 'when the step is not valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number) }
+      let(:wizard) { build(:register_ect_wizard, current_step: :national_insurance_number) }
 
       it 'does not update any data in the wizard ect' do
         expect { subject.save! }.not_to change(subject.ect, :national_insurance_number)
@@ -149,7 +149,7 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
     context 'when the step is valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number, step_params:) }
+      let(:wizard) { build(:register_ect_wizard, current_step: :national_insurance_number, step_params:) }
 
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)

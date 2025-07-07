@@ -1,7 +1,7 @@
 RSpec.describe Teachers::Details::PersonalDetailsComponent, type: :component do
   include TeacherHelper
 
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { create(:teacher) }
   let(:component) { described_class.new(teacher:) }
 
   it "renders the personal details" do

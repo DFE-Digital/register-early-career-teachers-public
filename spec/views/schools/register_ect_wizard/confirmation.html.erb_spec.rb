@@ -1,5 +1,5 @@
 RSpec.describe "schools/register_ect_wizard/confirmation.html.erb" do
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, id: 1) }
+  let(:ect_at_school_period) { create(:ect_at_school_period, id: 1) }
 
   let(:ect) do
     double('ECT',

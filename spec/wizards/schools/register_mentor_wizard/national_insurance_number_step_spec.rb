@@ -2,17 +2,17 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
   subject { described_class.new(wizard:) }
 
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: '1234567',
-                     trs_first_name: 'John',
-                     trs_last_name: 'Wayne',
-                     change_name: 'yes',
-                     corrected_name: 'Jim Wayne',
-                     date_of_birth: '01/01/1990',
-                     email: 'initial@email.com',
-                     national_insurance_number: 'Ab123456A')
+    build(:session_repository,
+          trn: '1234567',
+          trs_first_name: 'John',
+          trs_last_name: 'Wayne',
+          change_name: 'yes',
+          corrected_name: 'Jim Wayne',
+          date_of_birth: '01/01/1990',
+          email: 'initial@email.com',
+          national_insurance_number: 'Ab123456A')
   end
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number, store:) }
+  let(:wizard) { build(:register_mentor_wizard, current_step: :national_insurance_number, store:) }
 
   describe '#initialisation' do
     subject { described_class.new(wizard:, **params) }
@@ -60,7 +60,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
   describe '#next_step' do
     subject { wizard.current_step }
 
-    let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number, step_params:) }
+    let(:wizard) { build(:register_mentor_wizard, current_step: :national_insurance_number, step_params:) }
     let(:step_params) do
       ActionController::Parameters.new(
         "national_insurance_number" => {
@@ -81,8 +81,8 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
     end
 
     context 'when the mentor is already active at the school' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:) }
+      let(:teacher) { create(:teacher, trn: '1234568') }
+      let(:active_mentor_period) { create(:mentor_at_school_period, :active, teacher:) }
 
       before do
         wizard.store.update!(trn: '1234568', school_urn: active_mentor_period.school.urn)
@@ -96,8 +96,8 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
     end
 
     context 'when the mentor is already active at the school' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:) }
+      let(:teacher) { create(:teacher, trn: '1234568') }
+      let(:active_mentor_period) { create(:mentor_at_school_period, :active, teacher:) }
 
       before do
         wizard.store.update!(trn: '1234568', school_urn: active_mentor_period.school.urn)
@@ -111,7 +111,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
     end
 
     context 'when the mentor is prohibited from teaching' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+      let(:teacher) { create(:teacher, trn: '1234568') }
 
       before do
         fake_client = TRS::FakeAPIClient.new
@@ -143,7 +143,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
     end
 
     context 'otherwise' do
-      let(:school) { FactoryBot.create(:school) }
+      let(:school) { create(:school) }
 
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
@@ -169,7 +169,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
     context 'when the step is not valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number) }
+      let(:wizard) { build(:register_mentor_wizard, current_step: :national_insurance_number) }
 
       it 'does not update any data in the wizard mentor' do
         expect { subject.save! }.not_to change(subject.mentor, :national_insurance_number)
@@ -181,7 +181,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
     context 'when the step is valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number, step_params:) }
+      let(:wizard) { build(:register_mentor_wizard, current_step: :national_insurance_number, step_params:) }
       let(:step_params) do
         ActionController::Parameters.new(
           "national_insurance_number" => {

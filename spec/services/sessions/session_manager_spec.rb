@@ -5,7 +5,7 @@ RSpec.describe Sessions::Manager do
   let(:cookies) { HashWithIndifferentAccess.new }
   let(:email) { 'school_persona@email.com' }
   let(:name) { 'Christopher Lee' }
-  let(:school_urn) { FactoryBot.create(:school).urn }
+  let(:school_urn) { create(:school).urn }
   let(:last_active_at) { 4.minutes.ago }
   let(:user) do
     Sessions::Users::SchoolUser.new(email:,

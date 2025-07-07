@@ -1,6 +1,6 @@
 RSpec.describe "appropriate_bodies/teachers/record_failed_outcome/new.html.erb" do
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
+  let(:appropriate_body) { build(:appropriate_body) }
   let(:pending_induction_submission) { PendingInductionSubmission.new }
 
   before do

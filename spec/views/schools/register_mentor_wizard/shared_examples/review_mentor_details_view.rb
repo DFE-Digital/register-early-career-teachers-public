@@ -9,18 +9,18 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
   let(:national_insurance_number) { "AD12345ED" }
   let(:email) { nil }
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: "1234567",
-                     trs_first_name: "John",
-                     trs_last_name: "Wayne",
-                     trs_date_of_birth: "1950-01-01",
-                     change_name: "no",
-                     corrected_name: nil,
-                     date_of_birth:,
-                     national_insurance_number:,
-                     email:)
+    build(:session_repository,
+          trn: "1234567",
+          trs_first_name: "John",
+          trs_last_name: "Wayne",
+          trs_date_of_birth: "1950-01-01",
+          change_name: "no",
+          corrected_name: nil,
+          date_of_birth:,
+          national_insurance_number:,
+          email:)
   end
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:) }
+  let(:wizard) { build(:register_mentor_wizard, current_step:, store:) }
   let(:mentor) { wizard.mentor }
 
   before do

@@ -3,7 +3,7 @@ RSpec.describe "schools/register_mentor_wizard/not_found.md.erb" do
   let(:review_teacher_record_path) { "https://www.gov.uk/guidance/check-a-teachers-record" }
   let(:try_again_path) { schools_register_mentor_wizard_find_mentor_path }
   let(:store) { double(trs_first_name: "John", trs_last_name: "Waters") }
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :not_found, store:) }
+  let(:wizard) { build(:register_mentor_wizard, current_step: :not_found, store:) }
 
   before do
     assign(:wizard, wizard)

@@ -1,11 +1,11 @@
 RSpec.describe "Appropriate Body bulk actions show page", type: :request do
   include AuthHelper
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
   let(:batch) do
-    FactoryBot.create(:pending_induction_submission_batch, :action,
-                      appropriate_body:,
-                      data:,
-                      filename:)
+    create(:pending_induction_submission_batch, :action,
+           appropriate_body:,
+           data:,
+           filename:)
   end
 
   include_context '3 valid actions'

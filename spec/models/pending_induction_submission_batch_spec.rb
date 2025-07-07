@@ -1,5 +1,5 @@
 RSpec.describe PendingInductionSubmissionBatch do
-  subject(:batch) { FactoryBot.build(:pending_induction_submission_batch, :claim) }
+  subject(:batch) { build(:pending_induction_submission_batch, :claim) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:appropriate_body) }
@@ -8,11 +8,11 @@ RSpec.describe PendingInductionSubmissionBatch do
 
   describe "scopes" do
     describe ".for_appropriate_body" do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body) { create(:appropriate_body) }
 
-      let!(:batch1) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:) }
-      let!(:batch2) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
-      let!(:batch3) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:) }
+      let!(:batch1) { create(:pending_induction_submission_batch, :claim, appropriate_body:) }
+      let!(:batch2) { create(:pending_induction_submission_batch, :action, appropriate_body:) }
+      let!(:batch3) { create(:pending_induction_submission_batch, :claim, appropriate_body:) }
 
       it "returns batched submissions for the specified appropriate body" do
         expect(described_class.for_appropriate_body(appropriate_body)).to contain_exactly(batch1, batch2, batch3)
@@ -21,7 +21,7 @@ RSpec.describe PendingInductionSubmissionBatch do
   end
 
   describe 'class methods' do
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body) { create(:appropriate_body) }
 
     describe '.new_claim_for' do
       subject(:claim) { described_class.new_claim_for(appropriate_body:) }

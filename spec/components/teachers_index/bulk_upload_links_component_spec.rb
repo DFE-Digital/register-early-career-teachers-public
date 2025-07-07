@@ -1,5 +1,5 @@
 RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
   let(:component) { described_class.new(appropriate_body:) }
 
   describe 'rendered content' do
@@ -54,7 +54,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
 
       context 'when existing bulk uploads exist' do
         before do
-          FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
+          create(:pending_induction_submission_batch, :action, appropriate_body:)
         end
 
         it 'links to batch actions index page' do
@@ -102,7 +102,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
 
       context 'when existing bulk uploads exist' do
         before do
-          FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
+          create(:pending_induction_submission_batch, :action, appropriate_body:)
         end
 
         it 'bulk actions link goes to index page' do
@@ -122,7 +122,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
 
     context 'when bulk uploads exist for this appropriate body' do
       before do
-        FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
+        create(:pending_induction_submission_batch, :action, appropriate_body:)
       end
 
       it 'returns true' do
@@ -131,10 +131,10 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
     end
 
     context 'when bulk uploads exist for other appropriate bodies only' do
-      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:other_appropriate_body) { create(:appropriate_body) }
 
       before do
-        FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body: other_appropriate_body)
+        create(:pending_induction_submission_batch, :action, appropriate_body: other_appropriate_body)
       end
 
       it 'returns false' do
@@ -144,7 +144,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
 
     context 'when bulk claims exist but no bulk actions' do
       before do
-        FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:)
+        create(:pending_induction_submission_batch, :claim, appropriate_body:)
       end
 
       it 'returns false' do
@@ -168,7 +168,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
 
     context 'when existing bulk uploads exist' do
       before do
-        FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
+        create(:pending_induction_submission_batch, :action, appropriate_body:)
       end
 
       it 'routes to batch actions index page' do

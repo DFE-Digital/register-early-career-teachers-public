@@ -1,12 +1,12 @@
 describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
   subject { wizard.current_step }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :provider_led) }
+  let(:ect) { create(:ect_at_school_period, :active, :provider_led) }
   let(:training_programme) { 'provider_led' }
   let(:use_previous_ect_choices) { true }
-  let(:store) { FactoryBot.build(:session_repository) }
-  let(:author) { FactoryBot.create(:school_user, school_urn: ect.school.urn) }
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :check_answers, store:, author:, ect_id: ect.id) }
+  let(:store) { build(:session_repository) }
+  let(:author) { create(:school_user, school_urn: ect.school.urn) }
+  let(:wizard) { build(:register_mentor_wizard, current_step: :check_answers, store:, author:, ect_id: ect.id) }
 
   describe 'steps' do
     describe '#next_step' do
@@ -24,7 +24,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
         end
 
         context 'when the ect is not provider led' do
-          let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :school_led) }
+          let(:ect) { create(:ect_at_school_period, :active, :school_led) }
 
           it { expect(subject.previous_step).to eq(:email_address) }
         end
@@ -41,7 +41,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
   end
 
   context '#save!' do
-    let(:ect) { FactoryBot.create(:ect_at_school_period) }
+    let(:ect) { create(:ect_at_school_period) }
     let(:ect_id) { ect.id }
 
     context 'when the step is not valid' do

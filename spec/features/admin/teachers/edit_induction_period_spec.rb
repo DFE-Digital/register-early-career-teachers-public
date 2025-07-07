@@ -1,9 +1,9 @@
 RSpec.describe "Admin amending number of terms of an induction period" do
   include ActiveJob::TestHelper
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, number_of_terms: nil) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
+  let!(:induction_period) { create(:induction_period, :active, teacher:, appropriate_body:, number_of_terms: nil) }
 
   before { sign_in_as_dfe_user(role: :admin) }
 

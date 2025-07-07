@@ -1,5 +1,5 @@
 RSpec.describe 'schools/mentors/index.html.erb' do
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { create(:school) }
 
   before do
     assign(:school, school)
@@ -27,8 +27,8 @@ RSpec.describe 'schools/mentors/index.html.erb' do
   end
 
   context 'when there are mentors' do
-    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Johnnie', trs_last_name: 'Walker') }
-    let(:mentor_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:) }
+    let(:teacher) { create(:teacher, trs_first_name: 'Johnnie', trs_last_name: 'Walker') }
+    let(:mentor_period) { create(:mentor_at_school_period, teacher:, school:) }
 
     before do
       assign(:school, school)

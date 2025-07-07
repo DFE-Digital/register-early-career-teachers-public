@@ -1,9 +1,9 @@
 RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
 
   let!(:induction_period) do
-    FactoryBot.create(
+    create(
       :induction_period,
       :active,
       teacher:,
@@ -154,7 +154,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
 
   describe 'GET /appropriate-body/teachers/:id/record-failed-outcome' do
     let!(:induction_period) do
-      FactoryBot.create(
+      create(
         :induction_period,
         :fail,
         teacher:,

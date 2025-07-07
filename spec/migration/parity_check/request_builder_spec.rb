@@ -4,7 +4,7 @@ RSpec.describe ParityCheck::RequestBuilder do
   let(:method) { :get }
   let(:options) { { foo: :bar } }
   let(:endpoint) { ParityCheck::Endpoint.new(method:, path:, options:) }
-  let(:request) { FactoryBot.create(:parity_check_request, endpoint:) }
+  let(:request) { create(:parity_check_request, endpoint:) }
   let(:per_page) { described_class::PAGINATION_PER_PAGE }
   let(:instance) { described_class.new(request:) }
 
@@ -143,7 +143,7 @@ RSpec.describe ParityCheck::RequestBuilder do
     describe "#advance_page" do
       subject(:advance_page) { instance.advance_page(previous_response) }
 
-      let(:previous_response) { FactoryBot.build(:parity_check_response) }
+      let(:previous_response) { build(:parity_check_response) }
       let(:partial_page_of_data) { { data: Array.new(per_page / 2, { key: :value }) }.to_json }
       let(:full_page_of_data) { { data: Array.new(per_page, { key: :value }) }.to_json }
 
@@ -151,7 +151,7 @@ RSpec.describe ParityCheck::RequestBuilder do
         let(:options) { { paginate: true } }
 
         context "when there is another page (both APIs return full sets of data)" do
-          let(:previous_response) { FactoryBot.build(:parity_check_response, ecf_body: full_page_of_data, rect_body: full_page_of_data) }
+          let(:previous_response) { build(:parity_check_response, ecf_body: full_page_of_data, rect_body: full_page_of_data) }
 
           it "returns true and increments the page number" do
             expect(advance_page).to be_truthy
@@ -160,7 +160,7 @@ RSpec.describe ParityCheck::RequestBuilder do
         end
 
         context "when there is another page (only one API returns a full set of data)" do
-          let(:previous_response) { FactoryBot.build(:parity_check_response, ecf_body: partial_page_of_data, rect_body: full_page_of_data) }
+          let(:previous_response) { build(:parity_check_response, ecf_body: partial_page_of_data, rect_body: full_page_of_data) }
 
           it "returns true and increments the page number" do
             expect(advance_page).to be_truthy
@@ -169,7 +169,7 @@ RSpec.describe ParityCheck::RequestBuilder do
         end
 
         context "when there are no more pages" do
-          let(:previous_response) { FactoryBot.build(:parity_check_response, ecf_body: partial_page_of_data, rect_body: partial_page_of_data) }
+          let(:previous_response) { build(:parity_check_response, ecf_body: partial_page_of_data, rect_body: partial_page_of_data) }
 
           it "returns false and does not increment the page number" do
             expect(advance_page).to be_falsy

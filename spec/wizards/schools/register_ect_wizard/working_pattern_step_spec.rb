@@ -1,7 +1,7 @@
 RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
-  let(:school) { FactoryBot.build(:school) }
-  let(:store) { FactoryBot.build(:session_repository, working_pattern: 'prepopulated_value') }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :working_pattern, school:, store:) }
+  let(:school) { build(:school) }
+  let(:store) { build(:session_repository, working_pattern: 'prepopulated_value') }
+  let(:wizard) { build(:register_ect_wizard, current_step: :working_pattern, school:, store:) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }
@@ -97,7 +97,7 @@ RSpec.describe Schools::RegisterECTWizard::WorkingPatternStep, type: :model do
         }
       )
     end
-    let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :working_pattern, step_params:) }
+    let(:wizard) { build(:register_ect_wizard, current_step: :working_pattern, step_params:) }
 
     context 'when the step is not valid' do
       before do

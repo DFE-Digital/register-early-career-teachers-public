@@ -2,14 +2,14 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
   subject { described_class.new(wizard:) }
 
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: "1234567",
-                     trs_first_name: "John",
-                     trs_last_name: "Wayne",
-                     corrected_name: "Jim Wayne",
-                     date_of_birth: "01/01/1990")
+    build(:session_repository,
+          trn: "1234567",
+          trs_first_name: "John",
+          trs_last_name: "Wayne",
+          corrected_name: "Jim Wayne",
+          date_of_birth: "01/01/1990")
   end
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, store:) }
+  let(:wizard) { build(:register_mentor_wizard, current_step: :find_mentor, store:) }
 
   describe '#initialize' do
     subject(:instance) { described_class.new(wizard:, **params) }
@@ -61,8 +61,8 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
   describe '#next_step' do
     subject { wizard.current_step }
 
-    let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
-    let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, step_params:, ect_id: ect.id) }
+    let(:ect) { create(:ect_at_school_period, :active) }
+    let(:wizard) { build(:register_mentor_wizard, current_step: :find_mentor, step_params:, ect_id: ect.id) }
     let(:step_params) do
       ActionController::Parameters.new(
         "find_mentor" => {
@@ -86,8 +86,8 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     end
 
     context 'when the mentor trn matches that of the ECT' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:ect) { FactoryBot.create(:ect_at_school_period, :active, teacher:) }
+      let(:teacher) { create(:teacher, trn: '1234568') }
+      let(:ect) { create(:ect_at_school_period, :active, teacher:) }
 
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
@@ -122,8 +122,8 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     end
 
     context 'when the mentor is already active at the school' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:) }
+      let(:teacher) { create(:teacher, trn: '1234568') }
+      let(:active_mentor_period) { create(:mentor_at_school_period, :active, teacher:) }
 
       before do
         wizard.store.update!(school_urn: active_mentor_period.school.urn)
@@ -137,7 +137,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     end
 
     context 'when the mentor is prohibited from teaching' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+      let(:teacher) { create(:teacher, trn: '1234568') }
 
       before do
         fake_client = TRS::FakeAPIClient.new
@@ -169,7 +169,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     end
 
     context 'otherwise' do
-      let(:school) { FactoryBot.create(:school) }
+      let(:school) { create(:school) }
 
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
@@ -187,7 +187,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     context 'when the step is not valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor) }
+      let(:wizard) { build(:register_mentor_wizard, current_step: :find_mentor) }
 
       it 'does not update any data in the wizard mentor' do
         expect { subject.save! }.not_to change(subject.mentor, :trn)
@@ -201,7 +201,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     context 'when the step is valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, step_params:) }
+      let(:wizard) { build(:register_mentor_wizard, current_step: :find_mentor, step_params:) }
       let(:step_params) do
         ActionController::Parameters.new(
           "find_mentor" => {

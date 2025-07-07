@@ -1,5 +1,5 @@
 describe User do
-  subject(:user) { FactoryBot.build(:user) }
+  subject(:user) { build(:user) }
 
   describe 'validation' do
     it { is_expected.to validate_presence_of(:email) }

@@ -1,9 +1,9 @@
 RSpec.describe "appropriate_bodies/process_batch/claims/index.html.erb" do
   let(:pending_induction_submission_batches) do
     [
-      FactoryBot.create(:pending_induction_submission_batch, :claim, :completed),
-      FactoryBot.create(:pending_induction_submission_batch, :claim, :processed),
-      FactoryBot.create(:pending_induction_submission_batch, :claim, :processing)
+      create(:pending_induction_submission_batch, :claim, :completed),
+      create(:pending_induction_submission_batch, :claim, :processed),
+      create(:pending_induction_submission_batch, :claim, :processing)
     ]
   end
 

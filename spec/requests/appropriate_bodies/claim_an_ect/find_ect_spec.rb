@@ -1,6 +1,6 @@
 RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
   include_context 'fake trs api client'
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   let(:page_heading) { "Find an early career teacher" }
 
@@ -99,12 +99,12 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
       end
 
       context "when the submission is valid but ECT has an active induction period with another AB" do
-        let(:teacher) { FactoryBot.create(:teacher, trn:) }
+        let(:teacher) { create(:teacher, trn:) }
         let!(:induction_period) do
-          FactoryBot.create(
+          create(
             :induction_period,
             :active,
-            appropriate_body: FactoryBot.create(:appropriate_body),
+            appropriate_body: create(:appropriate_body),
             teacher:,
             started_on: Date.parse("2 October 2022")
           )
@@ -123,10 +123,10 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
       end
 
       context "when the submission is valid but ECT has an active induction period with the current AB" do
-        let(:teacher) { FactoryBot.create(:teacher, trn:) }
-        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
+        let(:teacher) { create(:teacher, trn:) }
+        let!(:pending_induction_submission) { create(:pending_induction_submission, trn: teacher.trn) }
         let!(:induction_period) do
-          FactoryBot.create(
+          create(
             :induction_period,
             :active,
             appropriate_body:,

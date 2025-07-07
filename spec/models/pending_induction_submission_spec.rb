@@ -10,9 +10,9 @@ RSpec.describe PendingInductionSubmission do
   end
 
   describe "scopes" do
-    let!(:sub1) { FactoryBot.create(:pending_induction_submission) }
-    let!(:sub2) { FactoryBot.create(:pending_induction_submission) }
-    let!(:sub3) { FactoryBot.create(:pending_induction_submission, error_messages: ['something went wrong']) }
+    let!(:sub1) { create(:pending_induction_submission) }
+    let!(:sub2) { create(:pending_induction_submission) }
+    let!(:sub3) { create(:pending_induction_submission, error_messages: ['something went wrong']) }
 
     describe ".with_errors" do
       it "returns submissions with errors" do
@@ -88,13 +88,13 @@ RSpec.describe PendingInductionSubmission do
     end
 
     describe "number_of_terms" do
-      subject { FactoryBot.build(:pending_induction_submission, finished_on: Date.current) }
+      subject { build(:pending_induction_submission, finished_on: Date.current) }
 
       it { is_expected.to validate_presence_of(:number_of_terms).with_message('Enter a number of terms').on(%i[release_ect record_outcome]) }
       it { is_expected.to validate_inclusion_of(:number_of_terms).in_range(0..16).with_message("Number of terms must be between 0 and 16").on(%i[release_ect record_outcome]) }
 
       context "when finished_on is blank" do
-        subject { FactoryBot.build(:pending_induction_submission, finished_on: nil) }
+        subject { build(:pending_induction_submission, finished_on: nil) }
 
         it "validates absence of number_of_terms" do
           subject.number_of_terms = 5
@@ -104,9 +104,9 @@ RSpec.describe PendingInductionSubmission do
       end
 
       context "when number_of_terms has more than 1 decimal place" do
-        subject { FactoryBot.build(:pending_induction_submission, appropriate_body:, number_of_terms: 3.45, finished_on: Date.current) }
+        subject { build(:pending_induction_submission, appropriate_body:, number_of_terms: 3.45, finished_on: Date.current) }
 
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body) { create(:appropriate_body) }
 
         it "is invalid on release_ect" do
           expect(subject.valid?(:release_ect)).to be false
@@ -120,9 +120,9 @@ RSpec.describe PendingInductionSubmission do
       end
 
       context "when number_of_terms has 1 decimal place" do
-        subject { FactoryBot.build(:pending_induction_submission, appropriate_body:, number_of_terms: 3.5, finished_on: Date.current) }
+        subject { build(:pending_induction_submission, appropriate_body:, number_of_terms: 3.5, finished_on: Date.current) }
 
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body) { create(:appropriate_body) }
 
         it "is valid on release_ect" do
           expect(subject.valid?(:release_ect)).to be true
@@ -135,9 +135,9 @@ RSpec.describe PendingInductionSubmission do
       end
 
       context "when number_of_terms is an integer" do
-        subject { FactoryBot.build(:pending_induction_submission, appropriate_body:, number_of_terms: 3, finished_on: Date.current) }
+        subject { build(:pending_induction_submission, appropriate_body:, number_of_terms: 3, finished_on: Date.current) }
 
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body) { create(:appropriate_body) }
 
         it "is valid on release_ect" do
           expect(subject.valid?(:release_ect)).to be true
@@ -155,7 +155,7 @@ RSpec.describe PendingInductionSubmission do
     end
 
     describe "started_on_not_in_future" do
-      let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+      let(:pending_induction_submission) { create(:pending_induction_submission) }
 
       context "when started_on is today" do
         before { pending_induction_submission.started_on = Date.current }
@@ -188,7 +188,7 @@ RSpec.describe PendingInductionSubmission do
     end
 
     describe "finished_on_not_in_future" do
-      let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+      let(:pending_induction_submission) { create(:pending_induction_submission) }
 
       context "when finished_on is today" do
         before do
@@ -227,7 +227,7 @@ RSpec.describe PendingInductionSubmission do
     end
 
     describe "start_date_after_qts_date" do
-      let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, started_on:, trs_qts_awarded_on: Date.new(2023, 5, 1)) }
+      let(:pending_induction_submission) { build(:pending_induction_submission, started_on:, trs_qts_awarded_on: Date.new(2023, 5, 1)) }
 
       context "when trs_qts_awarded_on is before started_on" do
         let(:started_on) { Date.new(2023, 5, 2) }
@@ -252,26 +252,26 @@ RSpec.describe PendingInductionSubmission do
   end
 
   describe '#fail?' do
-    subject { FactoryBot.build(:pending_induction_submission, outcome: 'fail') }
+    subject { build(:pending_induction_submission, outcome: 'fail') }
 
     it { is_expected.to be_fail }
   end
 
   describe '#pass?' do
-    subject { FactoryBot.build(:pending_induction_submission, outcome: 'pass') }
+    subject { build(:pending_induction_submission, outcome: 'pass') }
 
     it { is_expected.to be_pass }
   end
 
   describe '#exempt?' do
-    subject { FactoryBot.build(:pending_induction_submission, trs_induction_status: 'Exempt') }
+    subject { build(:pending_induction_submission, trs_induction_status: 'Exempt') }
 
     it { is_expected.to be_exempt }
   end
 
   describe '#teacher' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
-    let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
+    let(:teacher) { create(:teacher, trn: '1234567') }
+    let(:pending_induction_submission) { create(:pending_induction_submission, trn: teacher.trn) }
 
     it 'returns the teacher associated with the trn' do
       expect(pending_induction_submission.teacher).to eq(teacher)
@@ -279,8 +279,8 @@ RSpec.describe PendingInductionSubmission do
   end
 
   describe '#playback_errors' do
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-    let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, appropriate_body:, finished_on: 1.day.ago) }
+    let(:appropriate_body) { create(:appropriate_body) }
+    let(:pending_induction_submission) { build(:pending_induction_submission, appropriate_body:, finished_on: 1.day.ago) }
 
     before do
       pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)

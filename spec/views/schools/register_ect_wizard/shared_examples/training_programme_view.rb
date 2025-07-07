@@ -1,14 +1,14 @@
 RSpec.shared_examples "a training programme view" do |current_step:, back_path:, back_step_name:, continue_path:, continue_step_name:|
   let(:ect) { wizard.ect }
-  let(:school) { FactoryBot.create(:school, :independent) }
+  let(:school) { create(:school, :independent) }
   let(:training_programme) { nil }
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     training_programme:,
-                     trs_first_name: 'John',
-                     trs_last_name: 'Smith')
+    build(:session_repository,
+          training_programme:,
+          trs_first_name: 'John',
+          trs_last_name: 'Smith')
   end
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, school:, store:) }
+  let(:wizard) { build(:register_ect_wizard, current_step:, school:, store:) }
 
   before do
     assign(:wizard, wizard)

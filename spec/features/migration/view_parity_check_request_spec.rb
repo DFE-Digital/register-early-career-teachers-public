@@ -7,12 +7,12 @@ RSpec.describe "View parity check request" do
   end
 
   scenario "Viewing a parity check request" do
-    run = FactoryBot.create(:parity_check_run, :completed)
+    run = create(:parity_check_run, :completed)
     responses = [
-      FactoryBot.create(:parity_check_response, :matching, page: 1),
-      FactoryBot.create(:parity_check_response, :different, page: 2),
+      create(:parity_check_response, :matching, page: 1),
+      create(:parity_check_response, :different, page: 2),
     ]
-    request = FactoryBot.create(:parity_check_request, :completed, run:, responses:)
+    request = create(:parity_check_request, :completed, run:, responses:)
 
     page.goto(migration_parity_check_path(run))
     page.get_by_role("link", name: "Request details").click
@@ -48,9 +48,9 @@ RSpec.describe "View parity check request" do
   end
 
   scenario "Paginating the parity check responses when there are many" do
-    run = FactoryBot.create(:parity_check_run, :completed)
-    responses = FactoryBot.create_list(:parity_check_response, Pagy::DEFAULT[:limit] + 1, :matching)
-    request = FactoryBot.create(:parity_check_request, :completed, run:, responses:)
+    run = create(:parity_check_run, :completed)
+    responses = create_list(:parity_check_response, Pagy::DEFAULT[:limit] + 1, :matching)
+    request = create(:parity_check_request, :completed, run:, responses:)
 
     page.goto(migration_parity_check_request_path(run, request))
 
@@ -67,7 +67,7 @@ RSpec.describe "View parity check request" do
   end
 
   scenario "Navigating back to the parity check run" do
-    request = FactoryBot.create(:parity_check_request, :completed)
+    request = create(:parity_check_request, :completed)
 
     page.goto(migration_parity_check_request_path(request.run, request))
 
@@ -77,7 +77,7 @@ RSpec.describe "View parity check request" do
   end
 
   scenario "Navigating back to completed parity checks" do
-    request = FactoryBot.create(:parity_check_request, :completed)
+    request = create(:parity_check_request, :completed)
 
     page.goto(migration_parity_check_request_path(request.run, request))
 
@@ -87,7 +87,7 @@ RSpec.describe "View parity check request" do
   end
 
   scenario "Navigating back to run a parity check" do
-    request = FactoryBot.create(:parity_check_request, :completed)
+    request = create(:parity_check_request, :completed)
 
     page.goto(migration_parity_check_request_path(request.run, request))
 

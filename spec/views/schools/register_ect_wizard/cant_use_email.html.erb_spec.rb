@@ -1,7 +1,7 @@
 RSpec.describe 'schools/register_ect_wizard/cant_use_email.html.erb' do
   let(:back_path) { schools_register_ect_wizard_email_address_path }
-  let(:store) { FactoryBot.build(:session_repository, trs_first_name: "John", trs_last_name: "Waters", email: 'a@email.com') }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :cant_use_email, store:) }
+  let(:store) { build(:session_repository, trs_first_name: "John", trs_last_name: "Waters", email: 'a@email.com') }
+  let(:wizard) { build(:register_ect_wizard, current_step: :cant_use_email, store:) }
 
   before do
     assign(:wizard, wizard)

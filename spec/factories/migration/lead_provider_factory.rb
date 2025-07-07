@@ -4,7 +4,7 @@ FactoryBot.define do
 
     trait :active do
       after(:create) do |lead_provider|
-        lead_provider.cohorts << FactoryBot.create(:migration_cohort)
+        lead_provider.cohorts << create(:migration_cohort)
       end
     end
   end

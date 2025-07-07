@@ -1,5 +1,5 @@
 RSpec.describe "Viewing the appropriate bodies index", type: :request do
-  let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let!(:appropriate_body) { create(:appropriate_body) }
 
   describe "GET /admin/appropriate-bodies/:id" do
     it "redirects to sign in path" do

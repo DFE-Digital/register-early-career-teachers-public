@@ -1,17 +1,17 @@
 RSpec.shared_examples "an email step" do |current_step:, previous_step:, next_step:|
   subject { described_class.new(wizard:) }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :provider_led) }
+  let(:ect) { create(:ect_at_school_period, :active, :provider_led) }
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: "1234567",
-                     trs_first_name: "John",
-                     trs_last_name: "Wayne",
-                     corrected_name: "Jim Wayne",
-                     date_of_birth: "01/01/1990",
-                     email: 'initial@email.com')
+    build(:session_repository,
+          trn: "1234567",
+          trs_first_name: "John",
+          trs_last_name: "Wayne",
+          corrected_name: "Jim Wayne",
+          date_of_birth: "01/01/1990",
+          email: 'initial@email.com')
   end
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:, ect_id: ect.id) }
+  let(:wizard) { build(:register_mentor_wizard, current_step:, store:, ect_id: ect.id) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }
@@ -46,14 +46,14 @@ RSpec.shared_examples "an email step" do |current_step:, previous_step:, next_st
     end
 
     let(:wizard) do
-      FactoryBot.build(:register_mentor_wizard, current_step:, store:, step_params:, ect_id: ect.id)
+      build(:register_mentor_wizard, current_step:, store:, step_params:, ect_id: ect.id)
     end
 
     it { expect(wizard.next_step).to eq(next_step) }
   end
 
   describe '#previous_step' do
-    subject { FactoryBot.build(:register_mentor_wizard, current_step:, step_params:, ect_id: ect.id).current_step }
+    subject { build(:register_mentor_wizard, current_step:, step_params:, ect_id: ect.id).current_step }
 
     let(:step_params) do
       ActionController::Parameters.new("email_address" => { "email" => 'valid@email.com' })

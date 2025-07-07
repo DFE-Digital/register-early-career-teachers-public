@@ -1,7 +1,7 @@
 describe Migrators::ReconcileAdjustment do
   it_behaves_like "a migrator", :reconcile_adjustment, %i[statement] do
     def create_migration_resource
-      FactoryBot.create(:migration_statement, reconcile_amount: 100.77)
+      create(:migration_statement, reconcile_amount: 100.77)
     end
 
     def create_resource(migration_resource)
@@ -10,10 +10,10 @@ describe Migrators::ReconcileAdjustment do
       ecf_lp = migration_resource.lead_provider
       ecf_cohort = migration_resource.cohort
 
-      lead_provider = FactoryBot.create(:lead_provider, name: ecf_lp.name, ecf_id: ecf_lp.id)
-      contract_period = FactoryBot.create(:contract_period, year: ecf_cohort.start_year)
-      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
-      FactoryBot.create(:statement, api_id: migration_resource.id, lead_provider:, contract_period:, active_lead_provider:)
+      lead_provider = create(:lead_provider, name: ecf_lp.name, ecf_id: ecf_lp.id)
+      contract_period = create(:contract_period, year: ecf_cohort.start_year)
+      active_lead_provider = create(:active_lead_provider, lead_provider:, contract_period:)
+      create(:statement, api_id: migration_resource.id, lead_provider:, contract_period:, active_lead_provider:)
     end
 
     def setup_failure_state

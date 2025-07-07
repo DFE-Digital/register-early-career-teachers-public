@@ -24,7 +24,7 @@ RSpec.describe "Create adjustment for statement" do
   end
 
   def given_a_finance_statement_exists
-    @statement = FactoryBot.create(:statement)
+    @statement = create(:statement)
   end
 
   def when_i_visit_the_finance_statement_page

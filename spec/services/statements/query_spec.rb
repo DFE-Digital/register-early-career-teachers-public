@@ -1,18 +1,18 @@
 RSpec.describe Statements::Query do
   describe "#statements" do
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:lead_provider) { create(:lead_provider) }
 
     it "returns all statements" do
-      statement = FactoryBot.create(:statement)
+      statement = create(:statement)
       query = described_class.new
 
       expect(query.statements).to eq([statement])
     end
 
     it "orders statements by payment date in ascending order" do
-      statement1 = FactoryBot.create(:statement, payment_date: 2.days.ago)
-      statement2 = FactoryBot.create(:statement, payment_date: 1.day.ago)
-      statement3 = FactoryBot.create(:statement, payment_date: Time.zone.now)
+      statement1 = create(:statement, payment_date: 2.days.ago)
+      statement2 = create(:statement, payment_date: 1.day.ago)
+      statement3 = create(:statement, payment_date: Time.zone.now)
 
       query = described_class.new
 
@@ -21,9 +21,9 @@ RSpec.describe Statements::Query do
 
     describe "filtering" do
       describe "by `lead_provider`" do
-        let!(:statement1) { FactoryBot.create(:statement, lead_provider:) }
-        let!(:statement2) { FactoryBot.create(:statement) }
-        let!(:statement3) { FactoryBot.create(:statement) }
+        let!(:statement1) { create(:statement, lead_provider:) }
+        let!(:statement2) { create(:statement) }
+        let!(:statement3) { create(:statement) }
 
         context "when `lead_provider` param is omitted" do
           it "returns all statements" do
@@ -38,7 +38,7 @@ RSpec.describe Statements::Query do
         end
 
         it "returns no statements if no statements are found for the given `lead_provider`" do
-          query = described_class.new(lead_provider: FactoryBot.create(:lead_provider))
+          query = described_class.new(lead_provider: create(:lead_provider))
 
           expect(query.statements).to be_empty
         end
@@ -51,32 +51,32 @@ RSpec.describe Statements::Query do
       end
 
       describe "by `contract_period_years`" do
-        let!(:contract_period1) { FactoryBot.create(:contract_period) }
-        let!(:contract_period2) { FactoryBot.create(:contract_period) }
-        let!(:contract_period3) { FactoryBot.create(:contract_period) }
+        let!(:contract_period1) { create(:contract_period) }
+        let!(:contract_period2) { create(:contract_period) }
+        let!(:contract_period3) { create(:contract_period) }
 
         context "when `contract_period_years` param is omitted" do
           it "returns all statements" do
-            statement1 = FactoryBot.create(:statement, contract_period: contract_period1)
-            statement2 = FactoryBot.create(:statement, contract_period: contract_period2)
-            statement3 = FactoryBot.create(:statement, contract_period: contract_period3)
+            statement1 = create(:statement, contract_period: contract_period1)
+            statement2 = create(:statement, contract_period: contract_period2)
+            statement3 = create(:statement, contract_period: contract_period3)
 
             expect(described_class.new.statements).to contain_exactly(statement1, statement2, statement3)
           end
         end
 
         it "filters by `contract_period_years`" do
-          _statement = FactoryBot.create(:statement, contract_period: contract_period1)
-          statement = FactoryBot.create(:statement, contract_period: contract_period2)
+          _statement = create(:statement, contract_period: contract_period1)
+          statement = create(:statement, contract_period: contract_period2)
           query = described_class.new(contract_period_years: contract_period2.year)
 
           expect(query.statements).to eq([statement])
         end
 
         it "filters by multiple `contract_period_years`" do
-          statement1 = FactoryBot.create(:statement, contract_period: contract_period1)
-          statement2 = FactoryBot.create(:statement, contract_period: contract_period2)
-          statement3 = FactoryBot.create(:statement, contract_period: contract_period3)
+          statement1 = create(:statement, contract_period: contract_period1)
+          statement2 = create(:statement, contract_period: contract_period2)
+          statement3 = create(:statement, contract_period: contract_period3)
 
           query1 = described_class.new(contract_period_years: "#{contract_period1.year},#{contract_period2.year}")
           expect(query1.statements).to contain_exactly(statement1, statement2)
@@ -92,8 +92,8 @@ RSpec.describe Statements::Query do
         end
 
         it "does not filter by `contract_period_years` if blank" do
-          statement1 = FactoryBot.create(:statement, contract_period: contract_period1)
-          statement2 = FactoryBot.create(:statement, contract_period: contract_period2)
+          statement1 = create(:statement, contract_period: contract_period1)
+          statement2 = create(:statement, contract_period: contract_period2)
 
           query = described_class.new(contract_period_years: " ")
 
@@ -105,8 +105,8 @@ RSpec.describe Statements::Query do
         let(:updated_since) { 1.day.ago }
 
         it "filters by `updated_since`" do
-          FactoryBot.create(:statement, lead_provider:, updated_at: 2.days.ago)
-          statement2 = FactoryBot.create(:statement, lead_provider:, updated_at: Time.zone.now)
+          create(:statement, lead_provider:, updated_at: 2.days.ago)
+          statement2 = create(:statement, lead_provider:, updated_at: Time.zone.now)
 
           query = described_class.new(lead_provider:, updated_since:)
 
@@ -115,16 +115,16 @@ RSpec.describe Statements::Query do
 
         context "when `updated_since` param is omitted" do
           it "returns all statements" do
-            statement1 = FactoryBot.create(:statement, updated_at: 1.week.ago)
-            statement2 = FactoryBot.create(:statement, updated_at: 2.weeks.ago)
+            statement1 = create(:statement, updated_at: 1.week.ago)
+            statement2 = create(:statement, updated_at: 2.weeks.ago)
 
             expect(described_class.new.statements).to contain_exactly(statement1, statement2)
           end
         end
 
         it "does not filter by `updated_since` if blank" do
-          statement1 = FactoryBot.create(:statement, updated_at: 1.week.ago)
-          statement2 = FactoryBot.create(:statement, updated_at: 2.weeks.ago)
+          statement1 = create(:statement, updated_at: 1.week.ago)
+          statement2 = create(:statement, updated_at: 2.weeks.ago)
 
           query = described_class.new(updated_since: " ")
 
@@ -133,9 +133,9 @@ RSpec.describe Statements::Query do
       end
 
       describe "by `state`" do
-        let!(:open_statement) { FactoryBot.create(:statement, :open) }
-        let!(:payable_statement) { FactoryBot.create(:statement, :payable) }
-        let!(:paid_statement) { FactoryBot.create(:statement, :paid) }
+        let!(:open_statement) { create(:statement, :open) }
+        let!(:payable_statement) { create(:statement, :payable) }
+        let!(:paid_statement) { create(:statement, :paid) }
 
         it "filters by `state`" do
           expect(described_class.new(status: "open").statements).to eq([open_statement])
@@ -165,8 +165,8 @@ RSpec.describe Statements::Query do
       end
 
       describe "by `fee_type`" do
-        let!(:statement1) { FactoryBot.create(:statement, :output_fee) }
-        let!(:statement2) { FactoryBot.create(:statement, :service_fee) }
+        let!(:statement1) { create(:statement, :output_fee) }
+        let!(:statement2) { create(:statement, :service_fee) }
 
         it "return only statements with `fee_type` 'output' by default" do
           expect(described_class.new.statements).to eq([statement1])
@@ -208,8 +208,8 @@ RSpec.describe Statements::Query do
       end
 
       describe "by `statement_date`" do
-        let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4) }
-        let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8) }
+        let!(:statement1) { create(:statement, year: 2025, month: 4) }
+        let!(:statement2) { create(:statement, year: 2024, month: 8) }
 
         it "returns statement1 for 2025-04" do
           query = described_class.new(statement_date: "2025-04")
@@ -246,8 +246,8 @@ RSpec.describe Statements::Query do
     end
 
     describe "ordering" do
-      let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4, payment_date: "2024-01-01") }
-      let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8, payment_date: "2025-01-01") }
+      let!(:statement1) { create(:statement, year: 2025, month: 4, payment_date: "2024-01-01") }
+      let!(:statement2) { create(:statement, year: 2024, month: 8, payment_date: "2025-01-01") }
 
       describe "default order" do
         it "returns statements in correct order" do
@@ -273,10 +273,10 @@ RSpec.describe Statements::Query do
   end
 
   describe "#statement_by_api_id" do
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:lead_provider) { create(:lead_provider) }
 
     it "returns the statement for a Lead Provider" do
-      statement = FactoryBot.create(:statement, lead_provider:)
+      statement = create(:statement, lead_provider:)
       query = described_class.new
 
       expect(query.statement_by_api_id(statement.api_id)).to eq(statement)
@@ -289,8 +289,8 @@ RSpec.describe Statements::Query do
     end
 
     it "raises an error if the statement is not in the filtered query" do
-      other_lead_provider = FactoryBot.create(:lead_provider)
-      other_statement = FactoryBot.create(:statement, lead_provider: other_lead_provider)
+      other_lead_provider = create(:lead_provider)
+      other_statement = create(:statement, lead_provider: other_lead_provider)
 
       query = described_class.new(lead_provider:)
 
@@ -303,10 +303,10 @@ RSpec.describe Statements::Query do
   end
 
   describe "#statement" do
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:lead_provider) { create(:lead_provider) }
 
     it "returns the statement for a Lead Provider" do
-      statement = FactoryBot.create(:statement, lead_provider:)
+      statement = create(:statement, lead_provider:)
       query = described_class.new
 
       expect(query.statement(statement.id)).to eq(statement)
@@ -319,8 +319,8 @@ RSpec.describe Statements::Query do
     end
 
     it "raises an error if the statement is not in the filtered query" do
-      other_lead_provider = FactoryBot.create(:lead_provider)
-      other_statement = FactoryBot.create(:statement, lead_provider: other_lead_provider)
+      other_lead_provider = create(:lead_provider)
+      other_statement = create(:statement, lead_provider: other_lead_provider)
 
       query = described_class.new(lead_provider:)
 

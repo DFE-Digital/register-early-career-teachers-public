@@ -3,9 +3,9 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
   let(:component) { described_class.new filter_params: }
 
   context ".lead_providers" do
-    let!(:lead_provider1) { FactoryBot.create(:lead_provider, name: "C") }
-    let!(:lead_provider2) { FactoryBot.create(:lead_provider, name: "A") }
-    let!(:lead_provider3) { FactoryBot.create(:lead_provider, name: "B") }
+    let!(:lead_provider1) { create(:lead_provider, name: "C") }
+    let!(:lead_provider2) { create(:lead_provider, name: "A") }
+    let!(:lead_provider3) { create(:lead_provider, name: "B") }
 
     it "returns lead providers in alphabetical order" do
       expect(component.lead_providers).to contain_exactly(lead_provider2, lead_provider3, lead_provider1)
@@ -21,9 +21,9 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
   end
 
   context ".contract_periods" do
-    let!(:contract_period1) { FactoryBot.create(:contract_period, year: 2025) }
-    let!(:contract_period2) { FactoryBot.create(:contract_period, year: 2021) }
-    let!(:contract_period3) { FactoryBot.create(:contract_period, year: 2022) }
+    let!(:contract_period1) { create(:contract_period, year: 2025) }
+    let!(:contract_period2) { create(:contract_period, year: 2021) }
+    let!(:contract_period3) { create(:contract_period, year: 2022) }
 
     it "returns contract_period in year order" do
       expect(component.contract_periods).to contain_exactly(contract_period2, contract_period3, contract_period1)
@@ -39,9 +39,9 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
   end
 
   context ".statement_dates" do
-    let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 5) }
-    let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 5) }
-    let!(:statement3) { FactoryBot.create(:statement, year: 2023, month: 5) }
+    let!(:statement1) { create(:statement, year: 2025, month: 5) }
+    let!(:statement2) { create(:statement, year: 2024, month: 5) }
+    let!(:statement3) { create(:statement, year: 2023, month: 5) }
 
     it "returns statement dates in ascending order" do
       dates = component.statement_dates

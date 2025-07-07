@@ -1,20 +1,20 @@
 describe Migrators::SchoolPartnership do
   it_behaves_like "a migrator", :school_partnership, %i[lead_provider_delivery_partnership] do
     def create_migration_resource
-      FactoryBot.create(:migration_partnership)
+      create(:migration_partnership)
     end
 
     def create_resource(migration_resource)
       # creating dependencies resources
-      lead_provider = FactoryBot.create(:lead_provider, name: migration_resource.lead_provider.name, ecf_id: migration_resource.lead_provider_id)
-      delivery_partner = FactoryBot.create(:delivery_partner, name: migration_resource.delivery_partner.name, api_id: migration_resource.delivery_partner.id)
-      contract_period = FactoryBot.create(:contract_period, year: migration_resource.cohort.start_year)
+      lead_provider = create(:lead_provider, name: migration_resource.lead_provider.name, ecf_id: migration_resource.lead_provider_id)
+      delivery_partner = create(:delivery_partner, name: migration_resource.delivery_partner.name, api_id: migration_resource.delivery_partner.id)
+      contract_period = create(:contract_period, year: migration_resource.cohort.start_year)
 
-      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+      active_lead_provider = create(:active_lead_provider, lead_provider:, contract_period:)
 
-      FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+      create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
 
-      FactoryBot.create(:school, urn: migration_resource.school.urn)
+      create(:school, urn: migration_resource.school.urn)
     end
 
     def setup_failure_state

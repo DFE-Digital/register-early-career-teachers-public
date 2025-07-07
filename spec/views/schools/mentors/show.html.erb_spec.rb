@@ -1,26 +1,26 @@
 RSpec.describe 'schools/mentors/show.html.erb' do
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { create(:school) }
   let(:start_date) { Date.new(2023, 9, 1) }
 
   let(:mentor_teacher) do
-    FactoryBot.create(:teacher, trs_first_name: 'Naruto', trs_last_name: 'Uzumaki', mentor_became_ineligible_for_funding_on:, mentor_became_ineligible_for_funding_reason:)
+    create(:teacher, trs_first_name: 'Naruto', trs_last_name: 'Uzumaki', mentor_became_ineligible_for_funding_on:, mentor_became_ineligible_for_funding_reason:)
   end
 
   let(:mentor_became_ineligible_for_funding_on) { nil }
   let(:mentor_became_ineligible_for_funding_reason) { nil }
 
   let(:mentor_period) do
-    FactoryBot.create(:mentor_at_school_period, teacher: mentor_teacher, school:, started_on: start_date, finished_on: nil)
+    create(:mentor_at_school_period, teacher: mentor_teacher, school:, started_on: start_date, finished_on: nil)
   end
 
-  let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Hidden leaf village') }
+  let(:lead_provider) { create(:lead_provider, name: 'Hidden leaf village') }
 
   let(:ect_teacher) do
-    FactoryBot.create(:teacher, trs_first_name: 'Konohamaru', trs_last_name: 'Sarutobi')
+    create(:teacher, trs_first_name: 'Konohamaru', trs_last_name: 'Sarutobi')
   end
 
   let(:ect_period) do
-    FactoryBot.create(
+    create(
       :ect_at_school_period,
       teacher: ect_teacher,
       school:,
@@ -32,7 +32,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
   end
 
   let!(:mentorship_period) do
-    FactoryBot.create(:mentorship_period, mentor: mentor_period, mentee: ect_period, started_on: start_date, finished_on: nil)
+    create(:mentorship_period, mentor: mentor_period, mentee: ect_period, started_on: start_date, finished_on: nil)
   end
 
   before do
@@ -99,7 +99,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
 
   context 'when all ECTs are school-led' do
     let(:ect_period) do
-      FactoryBot.create(:ect_at_school_period, :school_led, teacher: ect_teacher, school:, started_on: start_date, finished_on: nil)
+      create(:ect_at_school_period, :school_led, teacher: ect_teacher, school:, started_on: start_date, finished_on: nil)
     end
 
     before do

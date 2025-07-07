@@ -6,7 +6,7 @@ RSpec.describe Sessions::Users::SchoolPersona do
   let(:email) { 'school_persona@email.com' }
   let(:last_active_at) { 4.minutes.ago }
   let(:name) { 'Christopher Lee' }
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { create(:school) }
 
   it_behaves_like 'a session user' do
     let(:user_props) { { email:, name:, school_urn: school.urn } }

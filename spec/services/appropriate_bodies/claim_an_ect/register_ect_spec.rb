@@ -10,8 +10,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
     allow(author).to receive(:is_a?).with(any_args).and_call_original
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:pending_induction_submission) { create(:pending_induction_submission) }
   let(:author) do
     Sessions::Users::AppropriateBodyUser.new(
       name: 'A user',
@@ -130,7 +130,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
     context 'when registering an existing teacher' do
       context "when the teacher has no induction period" do
-        let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567") }
+        let!(:existing_teacher) { create(:teacher, trn: "1234567") }
 
         it "updates the existing teacher and creates a new induction period" do
           expect {
@@ -169,8 +169,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       end
 
       context 'when the teacher has an existing induction period' do
-        let!(:existing_teacher) { FactoryBot.create(:teacher, trn:) }
-        let!(:induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher, finished_on: Date.new(2025, 4, 21)) }
+        let!(:existing_teacher) { create(:teacher, trn:) }
+        let!(:induction_period) { create(:induction_period, teacher: existing_teacher, finished_on: Date.new(2025, 4, 21)) }
         let(:pending_induction_submission_params) do
           {
             induction_programme: "fip",
@@ -199,7 +199,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       end
 
       context "when the teacher's name changes" do
-        let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567", trs_first_name: "Jonathan", trs_last_name: "Dole") }
+        let!(:existing_teacher) { create(:teacher, trn: "1234567", trs_first_name: "Jonathan", trs_last_name: "Dole") }
 
         before do
           subject.register(pending_induction_submission_params)
@@ -235,9 +235,9 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
     end
 
     context "when trying to register a teacher with a start_date before future IPs" do
-      let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567") }
+      let!(:existing_teacher) { create(:teacher, trn: "1234567") }
       let(:started_on) { 2.days.ago }
-      let!(:existing_induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher, started_on:, finished_on: 1.day.ago) }
+      let!(:existing_induction_period) { create(:induction_period, teacher: existing_teacher, started_on:, finished_on: 1.day.ago) }
 
       let(:pending_induction_submission_params) do
         {

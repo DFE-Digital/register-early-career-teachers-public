@@ -1,10 +1,10 @@
 RSpec.describe ProcessBatchJob, type: :job do
-  let(:author) { FactoryBot.build(:user, name: 'Barry Cryer', email: 'barry@not-a-clue.co.uk') }
+  let(:author) { build(:user, name: 'Barry Cryer', email: 'barry@not-a-clue.co.uk') }
 
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:appropriate_body) { build(:appropriate_body) }
 
   let(:pending_induction_submission_batch) do
-    FactoryBot.build(:pending_induction_submission_batch, appropriate_body:)
+    build(:pending_induction_submission_batch, appropriate_body:)
   end
 
   describe '#perform' do

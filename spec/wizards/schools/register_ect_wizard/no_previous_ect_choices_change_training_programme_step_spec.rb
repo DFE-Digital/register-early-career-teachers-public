@@ -1,14 +1,14 @@
 RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeTrainingProgrammeStep, type: :model do
   subject { described_class.new(wizard:, training_programme: new_training_programme) }
 
-  let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
+  let(:lead_provider_id) { create(:lead_provider).id }
   let(:training_programme) { 'school_led' }
   let(:new_training_programme) { 'provider_led' }
-  let(:independent_school) { FactoryBot.create(:school, :independent) }
-  let(:state_funded_school) { FactoryBot.create(:school, :state_funded) }
+  let(:independent_school) { create(:school, :independent) }
+  let(:state_funded_school) { create(:school, :state_funded) }
   let(:school) { independent_school }
-  let(:store) { FactoryBot.build(:session_repository, training_programme:, lead_provider_id:) }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :change_training_programme, store:, school:) }
+  let(:store) { build(:session_repository, training_programme:, lead_provider_id:) }
+  let(:wizard) { build(:register_ect_wizard, current_step: :change_training_programme, store:, school:) }
 
   describe "inheritance" do
     it "inherits from TrainingProgrammeStep" do

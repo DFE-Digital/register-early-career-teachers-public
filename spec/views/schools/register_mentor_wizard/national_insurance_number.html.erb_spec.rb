@@ -2,9 +2,9 @@ RSpec.describe "schools/register_mentor_wizard/national_insurance_number.html.er
   let(:back_path) { schools_register_mentor_wizard_find_mentor_path }
   let(:continue_path) { schools_register_mentor_wizard_national_insurance_number_path }
   let(:wizard) do
-    FactoryBot.build(:register_mentor_wizard,
-                     current_step: :national_insurance_number,
-                     store: FactoryBot.build(:session_repository))
+    build(:register_mentor_wizard,
+          current_step: :national_insurance_number,
+          store: build(:session_repository))
   end
 
   before do

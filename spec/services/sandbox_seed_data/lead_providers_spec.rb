@@ -11,7 +11,7 @@ RSpec.describe SandboxSeedData::LeadProviders do
 
   describe "#plant" do
     before do
-      all_registration_years.uniq.each { |year| FactoryBot.create(:contract_period, year:) }
+      all_registration_years.uniq.each { |year| create(:contract_period, year:) }
     end
 
     it "creates lead providers and active lead providers with correct attributes" do

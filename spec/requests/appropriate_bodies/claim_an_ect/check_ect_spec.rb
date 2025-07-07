@@ -1,8 +1,8 @@
 RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT' do
   include AuthHelper
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
   let(:page_heading) { "Check details for" }
-  let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:) }
+  let!(:pending_induction_submission) { create(:pending_induction_submission, appropriate_body:) }
   let(:pending_induction_submission_id_param) { pending_induction_submission.id.to_s }
 
   describe 'GET /appropriate-body/claim-an-ect/check-ect/:id/edit' do
@@ -28,7 +28,7 @@ RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT
       end
 
       context 'when alerts are present' do
-        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_alerts: %w[some alerts]) }
+        let!(:pending_induction_submission) { create(:pending_induction_submission, appropriate_body:, trs_alerts: %w[some alerts]) }
 
         it 'includes info about the check a teachers record service' do
           get("/appropriate-body/claim-an-ect/check-ect/#{pending_induction_submission.id}/edit")
@@ -38,7 +38,7 @@ RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT
       end
 
       context 'when alerts are absent' do
-        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_alerts: %w[]) }
+        let!(:pending_induction_submission) { create(:pending_induction_submission, appropriate_body:, trs_alerts: %w[]) }
 
         it 'does not include info about the check a teachers record service' do
           get("/appropriate-body/claim-an-ect/check-ect/#{pending_induction_submission.id}/edit")
@@ -84,8 +84,8 @@ RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT
       end
 
       context "when the ECT has an ongoing induction period with another appropriate body" do
-        let!(:preexisting_teacher) { FactoryBot.create(:teacher, trn: pending_induction_submission.trn) }
-        let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher: preexisting_teacher) }
+        let!(:preexisting_teacher) { create(:teacher, trn: pending_induction_submission.trn) }
+        let!(:induction_period) { create(:induction_period, :active, teacher: preexisting_teacher) }
 
         it 'redirects to the ECT already claimed by another AB early exit page' do
           patch(

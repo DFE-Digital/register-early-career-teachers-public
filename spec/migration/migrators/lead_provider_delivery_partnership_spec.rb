@@ -1,7 +1,7 @@
 describe Migrators::LeadProviderDeliveryPartnership do
   it_behaves_like "a migrator", :lead_provider_delivery_partnership, %i[contract_period active_lead_provider delivery_partner] do
     def create_migration_resource
-      FactoryBot.create(:migration_provider_relationship)
+      create(:migration_provider_relationship)
     end
 
     def create_resource(migration_resource)
@@ -9,10 +9,10 @@ describe Migrators::LeadProviderDeliveryPartnership do
       lp = migration_resource.lead_provider
       dp = migration_resource.delivery_partner
 
-      contract_period = FactoryBot.create(:contract_period, year: cohort.start_year)
-      lead_provider = FactoryBot.create(:lead_provider, name: lp.name, ecf_id: lp.id)
-      FactoryBot.create(:delivery_partner, name: dp.name, api_id: dp.id)
-      FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+      contract_period = create(:contract_period, year: cohort.start_year)
+      lead_provider = create(:lead_provider, name: lp.name, ecf_id: lp.id)
+      create(:delivery_partner, name: dp.name, api_id: dp.id)
+      create(:active_lead_provider, lead_provider:, contract_period:)
     end
 
     def setup_failure_state

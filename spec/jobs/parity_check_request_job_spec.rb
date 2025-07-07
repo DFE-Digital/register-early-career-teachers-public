@@ -1,7 +1,7 @@
 RSpec.describe ParityCheckRequestJob, type: :job do
   describe "#perform" do
     it "calls the ParityCheck::RequestHandler service with the request" do
-      request = FactoryBot.create(:parity_check_request)
+      request = create(:parity_check_request)
       request_handler = instance_double(ParityCheck::RequestHandler)
 
       allow(ParityCheck::RequestHandler).to receive(:new).with(request).and_return(request_handler)

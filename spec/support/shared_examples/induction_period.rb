@@ -4,7 +4,7 @@ RSpec.shared_examples 'an induction period' do
 
     describe '#started_on_from_september_2021_onwards' do
       context 'when start date is before September 2021' do
-        subject { FactoryBot.build(factory, started_on: '2021-8-31') }
+        subject { build(factory, started_on: '2021-8-31') }
 
         before { subject.valid?(:register_ect) }
 
@@ -17,7 +17,7 @@ RSpec.shared_examples 'an induction period' do
 
     describe '#started_on_from_september_1999_onwards' do
       context 'when start date is before September 1999' do
-        subject { FactoryBot.build(factory, started_on: '1999-8-31') }
+        subject { build(factory, started_on: '1999-8-31') }
 
         before { subject.valid? }
 

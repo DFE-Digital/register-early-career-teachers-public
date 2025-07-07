@@ -3,7 +3,7 @@ describe PendingInductionSubmissions::Name do
 
   let(:started_on) { 2.months.ago.to_date }
   let(:finished_on) { 2.weeks.ago.to_date }
-  let(:induction_period) { FactoryBot.create(:induction_period, started_on:) }
+  let(:induction_period) { create(:induction_period, started_on:) }
 
   it { is_expected.to respond_to(:pending_induction_submission) }
 

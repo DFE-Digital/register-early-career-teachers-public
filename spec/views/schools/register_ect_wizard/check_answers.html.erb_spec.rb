@@ -1,9 +1,9 @@
 RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
   let(:use_previous_ect_choices) { nil }
-  let(:store) { FactoryBot.build(:session_repository, working_pattern: 'Full time', use_previous_ect_choices:, training_programme: 'provider_led') }
+  let(:store) { build(:session_repository, working_pattern: 'Full time', use_previous_ect_choices:, training_programme: 'provider_led') }
 
   let(:wizard) do
-    FactoryBot.build(:register_ect_wizard, current_step: :check_answers, store:)
+    build(:register_ect_wizard, current_step: :check_answers, store:)
   end
 
   before do

@@ -1,9 +1,9 @@
 RSpec.describe ProcessBatchActionJob, type: :job do
   include_context 'fake trs api client'
 
-  let(:author) { FactoryBot.create(:user, name: 'Barry Cryer', email: 'barry@not-a-clue.co.uk') }
+  let(:author) { create(:user, name: 'Barry Cryer', email: 'barry@not-a-clue.co.uk') }
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   describe '#perform' do
     let(:submissions) do
@@ -12,9 +12,9 @@ RSpec.describe ProcessBatchActionJob, type: :job do
 
     context 'with valid complete data' do
       let(:pending_induction_submission_batch) do
-        FactoryBot.create(:pending_induction_submission_batch, :action,
-                          appropriate_body:,
-                          data:)
+        create(:pending_induction_submission_batch, :action,
+               appropriate_body:,
+               data:)
       end
 
       include_context '3 valid actions'

@@ -11,7 +11,7 @@ describe Teachers::Name do
     end
 
     context 'when a corrected_name is set' do
-      let(:teacher) { FactoryBot.build(:teacher, :with_corrected_name) }
+      let(:teacher) { build(:teacher, :with_corrected_name) }
 
       it 'returns the corrected name' do
         expect(teacher.corrected_name).to be_present
@@ -20,7 +20,7 @@ describe Teachers::Name do
     end
 
     context 'when no corrected_name is set' do
-      let(:teacher) { FactoryBot.build(:teacher, corrected_name: nil) }
+      let(:teacher) { build(:teacher, corrected_name: nil) }
 
       it 'returns the first name followed by the last name' do
         expect(service.full_name).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
@@ -28,7 +28,7 @@ describe Teachers::Name do
     end
 
     context 'when the corrected_name is an empty string' do
-      let(:teacher) { FactoryBot.build(:teacher, corrected_name: "") }
+      let(:teacher) { build(:teacher, corrected_name: "") }
 
       it 'returns the first name followed by the last name' do
         expect(service.full_name).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
@@ -38,7 +38,7 @@ describe Teachers::Name do
     describe 'when both names are missing names in TRS' do
       subject { service.full_name }
 
-      let(:teacher) { FactoryBot.build(:teacher, **names) }
+      let(:teacher) { build(:teacher, **names) }
 
       context 'when both names are nil' do
         let(:names) { { trs_first_name: nil, trs_last_name: nil } }
@@ -61,14 +61,14 @@ describe Teachers::Name do
   end
 
   describe '#full_name_in_trs' do
-    let(:teacher) { FactoryBot.build(:teacher, trs_first_name: 'Diana', trs_last_name: 'Rigg') }
+    let(:teacher) { build(:teacher, trs_first_name: 'Diana', trs_last_name: 'Rigg') }
 
     it 'returns the first name followed by the last name' do
       expect(service.full_name_in_trs).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
     end
 
     context 'when the corrected_name is present' do
-      let(:teacher) { FactoryBot.build(:teacher, trs_first_name: 'Diana', trs_last_name: 'Rigg', corrected_name: 'Diana Elizabeth Rigg') }
+      let(:teacher) { build(:teacher, trs_first_name: 'Diana', trs_last_name: 'Rigg', corrected_name: 'Diana Elizabeth Rigg') }
 
       it 'is ignored' do
         expect(service.full_name_in_trs).to eql(%(#{teacher.trs_first_name} #{teacher.trs_last_name}))
@@ -78,7 +78,7 @@ describe Teachers::Name do
     describe 'partial names in TRS' do
       subject { service.full_name_in_trs }
 
-      let(:teacher) { FactoryBot.build(:teacher, **names) }
+      let(:teacher) { build(:teacher, **names) }
 
       context 'when the first name is nil' do
         let(:names) { { trs_first_name: nil, trs_last_name: 'Rigg' } }

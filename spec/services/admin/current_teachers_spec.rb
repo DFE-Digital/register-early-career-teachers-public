@@ -1,14 +1,14 @@
 describe Admin::CurrentTeachers do
   describe '#current' do
-    let(:teacher_1) { FactoryBot.create(:teacher) }
-    let(:teacher_2) { FactoryBot.create(:teacher) }
-    let(:teacher_3) { FactoryBot.create(:teacher) }
-    let(:appropriate_body_1) { FactoryBot.create(:appropriate_body) }
-    let(:appropriate_body_2) { FactoryBot.create(:appropriate_body) }
+    let(:teacher_1) { create(:teacher) }
+    let(:teacher_2) { create(:teacher) }
+    let(:teacher_3) { create(:teacher) }
+    let(:appropriate_body_1) { create(:appropriate_body) }
+    let(:appropriate_body_2) { create(:appropriate_body) }
 
     context 'with an appropriate body' do
       before do
-        FactoryBot.create(
+        create(
           :induction_period,
           :active,
           teacher: teacher_1,
@@ -16,7 +16,7 @@ describe Admin::CurrentTeachers do
           started_on: 1.month.ago.to_date,
           induction_programme: 'fip'
         )
-        FactoryBot.create(
+        create(
           :induction_period,
           :active,
           teacher: teacher_2,
@@ -24,7 +24,7 @@ describe Admin::CurrentTeachers do
           started_on: 1.month.ago.to_date,
           induction_programme: 'fip'
         )
-        FactoryBot.create(
+        create(
           :induction_period,
           teacher: teacher_3,
           appropriate_body: appropriate_body_1,
@@ -45,14 +45,14 @@ describe Admin::CurrentTeachers do
 
     context 'without an appropriate body' do
       before do
-        FactoryBot.create(
+        create(
           :induction_period,
           :active,
           teacher: teacher_1,
           started_on: 1.month.ago.to_date,
           induction_programme: 'fip'
         )
-        FactoryBot.create(
+        create(
           :induction_period,
           teacher: teacher_2,
           started_on: 2.months.ago.to_date,
@@ -71,7 +71,7 @@ describe Admin::CurrentTeachers do
 
     context 'with multiple periods' do
       before do
-        FactoryBot.create(
+        create(
           :induction_period,
           :active,
           teacher: teacher_1,
@@ -80,7 +80,7 @@ describe Admin::CurrentTeachers do
           induction_programme: 'fip'
         )
 
-        FactoryBot.create(
+        create(
           :induction_period,
           teacher: teacher_1,
           appropriate_body: appropriate_body_1,

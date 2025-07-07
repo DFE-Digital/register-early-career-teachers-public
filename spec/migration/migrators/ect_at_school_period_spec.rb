@@ -1,14 +1,14 @@
 RSpec.describe Migrators::ECTAtSchoolPeriod do
   it_behaves_like "a migrator", :ect_at_school_period, %i[teacher school] do
     def create_migration_resource
-      ect = FactoryBot.create(:migration_participant_profile, :ect)
-      FactoryBot.create(:migration_induction_record, participant_profile: ect)
+      ect = create(:migration_participant_profile, :ect)
+      create(:migration_induction_record, participant_profile: ect)
       ect.teacher_profile
     end
 
     def create_resource(migration_resource)
-      FactoryBot.create(:teacher, trn: migration_resource.trn)
-      FactoryBot.create(:school, urn: migration_resource.participant_profiles.first.school_cohort.school.urn)
+      create(:teacher, trn: migration_resource.trn)
+      create(:school, urn: migration_resource.participant_profiles.first.school_cohort.school.urn)
     end
 
     def setup_failure_state

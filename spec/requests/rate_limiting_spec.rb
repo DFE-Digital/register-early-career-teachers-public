@@ -1,5 +1,5 @@
 RSpec.describe "Rack::Attack" do
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:lead_provider) { create(:lead_provider) }
   let(:ip) { "1.2.3.4" }
   let(:other_ip) { "9.8.7.6" }
 

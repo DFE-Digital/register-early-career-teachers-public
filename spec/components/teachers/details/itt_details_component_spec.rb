@@ -1,10 +1,10 @@
 RSpec.describe Teachers::Details::ITTDetailsComponent, type: :component do
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { create(:teacher) }
   let(:component) { described_class.new(teacher:) }
 
   context "when teacher has QTS award date and ITT provider" do
     let(:teacher) do
-      FactoryBot.create(
+      create(
         :teacher,
         trs_qts_awarded_on: 1.year.ago,
         trs_initial_teacher_training_provider_name: "Test University"
@@ -24,7 +24,7 @@ RSpec.describe Teachers::Details::ITTDetailsComponent, type: :component do
 
   context "when teacher has no QTS award date" do
     let(:teacher) do
-      FactoryBot.create(
+      create(
         :teacher,
         trs_qts_awarded_on: nil,
         trs_initial_teacher_training_provider_name: "Test University"
@@ -43,7 +43,7 @@ RSpec.describe Teachers::Details::ITTDetailsComponent, type: :component do
 
   context "when teacher has no ITT provider" do
     let(:teacher) do
-      FactoryBot.create(
+      create(
         :teacher,
         trs_qts_awarded_on: 1.year.ago,
         trs_initial_teacher_training_provider_name: nil
@@ -62,7 +62,7 @@ RSpec.describe Teachers::Details::ITTDetailsComponent, type: :component do
 
   context "when teacher has neither QTS award date nor ITT provider" do
     let(:teacher) do
-      FactoryBot.create(
+      create(
         :teacher,
         trs_qts_awarded_on: nil,
         trs_initial_teacher_training_provider_name: nil

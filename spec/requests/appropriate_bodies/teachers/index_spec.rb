@@ -1,6 +1,6 @@
 RSpec.describe "Appropriate Body teacher index page", type: :request do
   include AuthHelper
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   describe 'GET /appropriate-body/teachers' do
     context 'when not signed in' do
@@ -17,9 +17,9 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
 
       context "when there are more than 50 teachers" do
         let!(:additional_teachers) do
-          FactoryBot.create_list(:teacher, 51, trs_first_name: "John", trs_last_name: "Smith").tap do |teachers|
+          create_list(:teacher, 51, trs_first_name: "John", trs_last_name: "Smith").tap do |teachers|
             teachers.each do |teacher|
-              FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
+              create(:induction_period, :active, teacher:, appropriate_body:)
             end
           end
         end
@@ -35,38 +35,38 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
 
       context "with open and closed induction filtering" do
         let!(:alice_johnson) do
-          FactoryBot.create(:teacher, trs_first_name: 'Alice', trs_last_name: 'Johnson', trn: '1000001', trs_induction_status: 'InProgress').tap do |teacher|
-            FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 3.months.ago)
+          create(:teacher, trs_first_name: 'Alice', trs_last_name: 'Johnson', trn: '1000001', trs_induction_status: 'InProgress').tap do |teacher|
+            create(:induction_period, :active, teacher:, appropriate_body:, started_on: 3.months.ago)
           end
         end
 
         let!(:bob_williams) do
-          FactoryBot.create(:teacher, trs_first_name: 'Bob', trs_last_name: 'Williams', trn: '1000002', trs_induction_status: 'RequiredToComplete').tap do |teacher|
-            FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 2.months.ago)
+          create(:teacher, trs_first_name: 'Bob', trs_last_name: 'Williams', trn: '1000002', trs_induction_status: 'RequiredToComplete').tap do |teacher|
+            create(:induction_period, :active, teacher:, appropriate_body:, started_on: 2.months.ago)
           end
         end
 
         let!(:charlie_brown) do
-          FactoryBot.create(:teacher, trs_first_name: 'Charlie', trs_last_name: 'Brown', trn: '1000003', trs_induction_status: 'InProgress').tap do |teacher|
-            FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 1.month.ago)
+          create(:teacher, trs_first_name: 'Charlie', trs_last_name: 'Brown', trn: '1000003', trs_induction_status: 'InProgress').tap do |teacher|
+            create(:induction_period, :active, teacher:, appropriate_body:, started_on: 1.month.ago)
           end
         end
 
         let!(:david_davis) do
-          FactoryBot.create(:teacher, trs_first_name: 'David', trs_last_name: 'Davis', trn: '2000001', trs_induction_status: 'Passed').tap do |teacher|
-            FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 2.months.ago, number_of_terms: 6)
+          create(:teacher, trs_first_name: 'David', trs_last_name: 'Davis', trn: '2000001', trs_induction_status: 'Passed').tap do |teacher|
+            create(:induction_period, :pass, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 2.months.ago, number_of_terms: 6)
           end
         end
 
         let!(:emma_wilson) do
-          FactoryBot.create(:teacher, trs_first_name: 'Emma', trs_last_name: 'Wilson', trn: '2000002', trs_induction_status: 'Failed').tap do |teacher|
-            FactoryBot.create(:induction_period, :fail, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 1.month.ago, number_of_terms: 6)
+          create(:teacher, trs_first_name: 'Emma', trs_last_name: 'Wilson', trn: '2000002', trs_induction_status: 'Failed').tap do |teacher|
+            create(:induction_period, :fail, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 1.month.ago, number_of_terms: 6)
           end
         end
 
         let!(:frank_miller) do
-          FactoryBot.create(:teacher, trs_first_name: 'Frank', trs_last_name: 'Miller', trn: '2000003', trs_induction_status: 'Exempt').tap do |teacher|
-            FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 3.months.ago, number_of_terms: 6)
+          create(:teacher, trs_first_name: 'Frank', trs_last_name: 'Miller', trn: '2000003', trs_induction_status: 'Exempt').tap do |teacher|
+            create(:induction_period, :pass, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 3.months.ago, number_of_terms: 6)
           end
         end
 
@@ -228,14 +228,14 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
         context 'edge cases' do
           context 'teacher with finished induction period but no outcome' do
             let!(:edge_case_teacher) do
-              teacher = FactoryBot.create(:teacher,
-                                          trs_first_name: 'Grace',
-                                          trs_last_name: 'NoOutcome',
-                                          trn: '3000001',
-                                          trs_induction_status: 'InProgress')
+              teacher = create(:teacher,
+                               trs_first_name: 'Grace',
+                               trs_last_name: 'NoOutcome',
+                               trn: '3000001',
+                               trs_induction_status: 'InProgress')
               # Create finished period with no outcome - should not appear in either list
-              FactoryBot.create(:induction_period, teacher:, appropriate_body:,
-                                                   started_on: 1.year.ago, finished_on: 1.month.ago, outcome: nil, number_of_terms: 6)
+              create(:induction_period, teacher:, appropriate_body:,
+                                        started_on: 1.year.ago, finished_on: 1.month.ago, outcome: nil, number_of_terms: 6)
               teacher
             end
 

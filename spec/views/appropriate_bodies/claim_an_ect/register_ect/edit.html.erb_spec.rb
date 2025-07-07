@@ -1,5 +1,5 @@
 RSpec.describe "appropriate_bodies/claim_an_ect/register_ect/edit.html.erb" do
-  let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trs_first_name: 'Benjamin', trs_last_name: 'Whiterow') }
+  let(:pending_induction_submission) { create(:pending_induction_submission, trs_first_name: 'Benjamin', trs_last_name: 'Whiterow') }
 
   it "sets the page title to 'Tell us about <name>'" do
     assign(:pending_induction_submission, pending_induction_submission)

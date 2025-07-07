@@ -67,7 +67,7 @@ describe GIAS::School do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:gias_school) }
+    subject { create(:gias_school) }
 
     it { is_expected.to validate_numericality_of(:local_authority_code).only_integer }
     it { is_expected.to validate_presence_of(:name) }
@@ -88,19 +88,19 @@ describe GIAS::School do
   describe "instance methods" do
     describe "#open?" do
       context "when the status is :open" do
-        subject { FactoryBot.create(:gias_school, status: :open) }
+        subject { create(:gias_school, status: :open) }
 
         it { is_expected.to be_open }
       end
 
       context "when the status is :proposed_to_close" do
-        subject { FactoryBot.create(:gias_school, status: :proposed_to_close) }
+        subject { create(:gias_school, status: :proposed_to_close) }
 
         it { is_expected.to be_open }
       end
 
       context "when the status is not :open or :proposed_to_close" do
-        subject { FactoryBot.create(:gias_school, :not_open) }
+        subject { create(:gias_school, :not_open) }
 
         it { is_expected.not_to be_open }
       end
@@ -108,19 +108,19 @@ describe GIAS::School do
 
     describe "#closed?" do
       context "when the status is :closed" do
-        subject { FactoryBot.create(:gias_school, status: :closed) }
+        subject { create(:gias_school, status: :closed) }
 
         it { is_expected.to be_closed }
       end
 
       context "when the status is :proposed_to_open" do
-        subject { FactoryBot.create(:gias_school, status: :proposed_to_open) }
+        subject { create(:gias_school, status: :proposed_to_open) }
 
         it { is_expected.to be_closed }
       end
 
       context "when the status is not :closed or :proposed_to_open" do
-        subject { FactoryBot.create(:gias_school, :open) }
+        subject { create(:gias_school, :open) }
 
         it { is_expected.not_to be_closed }
       end

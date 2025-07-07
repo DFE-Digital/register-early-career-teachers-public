@@ -1,5 +1,5 @@
 RSpec.describe "schools/mentorships/new.html.erb" do
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
+  let(:ect) { create(:ect_at_school_period, :active) }
   let(:ect_name) { Teachers::Name.new(ect.teacher).full_name }
   let(:mentor) { double("mentor_at_school_period", full_name: 'Peter Times', id: 7) }
   let(:mentor_id) { mentor.id }

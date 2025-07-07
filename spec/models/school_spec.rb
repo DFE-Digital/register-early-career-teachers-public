@@ -21,23 +21,23 @@ describe School do
   end
 
   describe 'validations' do
-    subject { FactoryBot.build(:school) }
+    subject { build(:school) }
 
     it { is_expected.to validate_presence_of(:urn) }
     it { is_expected.to validate_uniqueness_of(:urn) }
 
     context "last_chosen_lead_provider_id" do
-      subject { FactoryBot.build(:school) }
+      subject { build(:school) }
 
       context "when last_chosen_training_programme is 'school_led'" do
-        subject { FactoryBot.build(:school, :school_led_last_chosen) }
+        subject { build(:school, :school_led_last_chosen) }
 
         it { is_expected.to validate_absence_of(:last_chosen_lead_provider_id).with_message('Must be nil') }
       end
     end
 
     context "last_chosen_training_programme" do
-      subject { FactoryBot.build(:school) }
+      subject { build(:school) }
 
       it do
         is_expected.to validate_inclusion_of(:last_chosen_training_programme)
@@ -47,7 +47,7 @@ describe School do
       end
 
       context "when last_chosen_lead_provider has been set" do
-        subject { FactoryBot.build(:school, last_chosen_lead_provider_id: 123) }
+        subject { build(:school, last_chosen_lead_provider_id: 123) }
 
         it { is_expected.to validate_presence_of(:last_chosen_training_programme).with_message("Must be provider-led") }
       end
@@ -55,26 +55,26 @@ describe School do
 
     context "last_chosen_appropriate_body_id" do
       context "when the school is independent" do
-        subject { FactoryBot.build(:school, :independent) }
+        subject { build(:school, :independent) }
 
         context "when it is nil" do
           it { is_expected.to be_valid }
         end
 
         context "when national ab chosen" do
-          subject { FactoryBot.build(:school, :independent, :national_ab_last_chosen) }
+          subject { build(:school, :independent, :national_ab_last_chosen) }
 
           it { is_expected.to be_valid }
         end
 
         context "when teaching school hub ab chosen" do
-          subject { FactoryBot.build(:school, :independent, :teaching_school_hub_ab_last_chosen) }
+          subject { build(:school, :independent, :teaching_school_hub_ab_last_chosen) }
 
           it { is_expected.to be_valid }
         end
 
         context "when local authority ab chosen" do
-          subject { FactoryBot.build(:school, :independent, :local_authority_ab_last_chosen) }
+          subject { build(:school, :independent, :local_authority_ab_last_chosen) }
 
           before { subject.valid? }
 
@@ -86,14 +86,14 @@ describe School do
       end
 
       context "when the school is state-funded" do
-        subject { FactoryBot.build(:school, :state_funded) }
+        subject { build(:school, :state_funded) }
 
         context "when it is nil" do
           it { is_expected.to be_valid }
         end
 
         context "when national ab chosen" do
-          subject { FactoryBot.build(:school, :state_funded, :national_ab_last_chosen) }
+          subject { build(:school, :state_funded, :national_ab_last_chosen) }
 
           before { subject.valid? }
 
@@ -104,13 +104,13 @@ describe School do
         end
 
         context "when teaching school hub ab chosen" do
-          subject { FactoryBot.build(:school, :state_funded, :teaching_school_hub_ab_last_chosen) }
+          subject { build(:school, :state_funded, :teaching_school_hub_ab_last_chosen) }
 
           it { is_expected.to be_valid }
         end
 
         context "when local authority ab chosen" do
-          subject { FactoryBot.build(:school, :state_funded, :local_authority_ab_last_chosen) }
+          subject { build(:school, :state_funded, :local_authority_ab_last_chosen) }
 
           before { subject.valid? }
 

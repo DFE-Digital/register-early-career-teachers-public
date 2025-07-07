@@ -17,7 +17,7 @@ describe AppropriateBody do
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:appropriate_body) }
+    subject { build(:appropriate_body) }
 
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name) }
@@ -30,8 +30,8 @@ describe AppropriateBody do
 
     it "ensures local_authority_code and establishment_number are unique in combination" do
       ab_args = { local_authority_code: 123, establishment_number: 4567 }
-      FactoryBot.create(:appropriate_body, name: "AB1", **ab_args)
-      FactoryBot.build(:appropriate_body, name: "AB2", **ab_args).tap do |duplicate_ab|
+      create(:appropriate_body, name: "AB1", **ab_args)
+      build(:appropriate_body, name: "AB2", **ab_args).tap do |duplicate_ab|
         expect(duplicate_ab).to be_invalid
         expect(duplicate_ab.errors.messages.fetch(:local_authority_code)).to include(/local authority code and establishment number already exists/)
       end

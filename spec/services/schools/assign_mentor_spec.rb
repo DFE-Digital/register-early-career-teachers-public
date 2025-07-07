@@ -3,12 +3,12 @@ RSpec.describe Schools::AssignMentor do
     described_class.new(author:, ect: mentee, mentor: new_mentor, started_on:)
   end
 
-  let(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
-  let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
-  let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :active, mentee:, mentor: current_mentor) }
-  let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
+  let(:mentee) { create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+  let(:current_mentor) { create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
+  let!(:current_mentorship) { create(:mentorship_period, :active, mentee:, mentor: current_mentor) }
+  let(:new_mentor) { create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
   let(:started_on) { Date.yesterday }
-  let(:author) { FactoryBot.create(:school_user, school_urn: mentee.school.urn) }
+  let(:author) { create(:school_user, school_urn: mentee.school.urn) }
 
   describe '#assign!' do
     it 'ends current mentorship of the ect' do

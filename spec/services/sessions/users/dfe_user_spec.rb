@@ -6,7 +6,7 @@ RSpec.describe Sessions::Users::DfEUser do
   let(:email) { 'dfe_user@email.com' }
   let(:name) { 'Christopher Lee' }
   let(:last_active_at) { 4.minutes.ago }
-  let!(:user) { FactoryBot.create(:user, :admin, email:, name:) }
+  let!(:user) { create(:user, :admin, email:, name:) }
 
   it_behaves_like 'a session user' do
     let(:user_props) { { email: } }

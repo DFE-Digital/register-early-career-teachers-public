@@ -1,6 +1,6 @@
 RSpec.describe 'admin/appropriate_bodies/show.html.erb' do
   let(:current_ect_count) { 5 }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   before do
     assign(:appropriate_body, appropriate_body)

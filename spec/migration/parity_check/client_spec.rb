@@ -1,8 +1,8 @@
 RSpec.describe ParityCheck::Client do
   let(:ecf_url) { "https://ecf.example.com" }
   let(:rect_url) { "https://rect.example.com" }
-  let(:endpoint) { FactoryBot.build(:parity_check_endpoint) }
-  let(:request) { FactoryBot.build(:parity_check_request, endpoint:) }
+  let(:endpoint) { build(:parity_check_endpoint) }
+  let(:request) { build(:parity_check_request, endpoint:) }
   let(:token) { "test_token" }
   let(:per_page) { ParityCheck::RequestBuilder::PAGINATION_PER_PAGE }
   let(:instance) { described_class.new(request:) }
@@ -22,13 +22,13 @@ RSpec.describe ParityCheck::Client do
 
   describe "#perform_requests" do
     context "when performing a GET request" do
-      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :get) }
+      let(:endpoint) { build(:parity_check_endpoint, :get) }
 
       include_examples "client performs requests"
     end
 
     context "when performing a request with query parameters" do
-      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :with_query_parameters) }
+      let(:endpoint) { build(:parity_check_endpoint, :with_query_parameters) }
 
       include_examples "client performs requests"
 
@@ -42,7 +42,7 @@ RSpec.describe ParityCheck::Client do
     end
 
     context "when the path and options contain query parameters and pagination is enabled" do
-      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :with_query_parameters_and_pagination, path: "/test-path?path=parameter") }
+      let(:endpoint) { build(:parity_check_endpoint, :with_query_parameters_and_pagination, path: "/test-path?path=parameter") }
 
       include_examples "client performs requests"
 
@@ -60,7 +60,7 @@ RSpec.describe ParityCheck::Client do
     end
 
     context "when performing a request with pagination" do
-      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :with_pagination) }
+      let(:endpoint) { build(:parity_check_endpoint, :with_pagination) }
 
       include_examples "client performs requests"
 
@@ -97,14 +97,14 @@ RSpec.describe ParityCheck::Client do
     end
 
     context "when performing a POST request" do
-      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :post) }
+      let(:endpoint) { build(:parity_check_endpoint, :post) }
 
       include_examples "client performs requests"
       include_examples "client performs requests with body"
     end
 
     context "when performing a PUT request" do
-      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :put) }
+      let(:endpoint) { build(:parity_check_endpoint, :put) }
 
       include_examples "client performs requests"
       include_examples "client performs requests with body"
@@ -112,7 +112,7 @@ RSpec.describe ParityCheck::Client do
   end
 
   context "when an unsupported request method is used" do
-    let(:endpoint) { FactoryBot.build(:parity_check_endpoint, method: :fetch) }
+    let(:endpoint) { build(:parity_check_endpoint, method: :fetch) }
 
     it "raises an UnsupportedRequestMethodError" do
       expect {

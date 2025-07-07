@@ -1,15 +1,15 @@
 RSpec.describe Admin::ReopenInductionPeriod do
   subject(:service) { described_class.new(author:, induction_period:) }
 
-  let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
+  let(:admin) { create(:user, email: 'admin-user@education.gov.uk') }
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { create(:teacher) }
   let(:outcome) { nil }
   let(:number_of_terms) { 4.5 }
   let(:finished_on) { "2023-12-31" }
 
   let(:induction_period) do
-    FactoryBot.create(
+    create(
       :induction_period,
       teacher:,
       outcome:,
@@ -66,7 +66,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
 
     context "when the induction period is not the last" do
       let!(:newer_period) do
-        FactoryBot.create(
+        create(
           :induction_period,
           teacher:,
           outcome:,

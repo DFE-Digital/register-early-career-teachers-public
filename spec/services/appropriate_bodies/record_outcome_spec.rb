@@ -20,21 +20,21 @@ RSpec.describe AppropriateBodies::RecordOutcome do
     )
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
 
   let(:induction_period) do
-    FactoryBot.create(:induction_period, :active,
-                      appropriate_body:,
-                      teacher:,
-                      started_on: '2024-1-1')
+    create(:induction_period, :active,
+           appropriate_body:,
+           teacher:,
+           started_on: '2024-1-1')
   end
 
   let(:pending_induction_submission) do
-    FactoryBot.create(:pending_induction_submission,
-                      trn: teacher.trn,
-                      finished_on: 1.day.ago.to_date,
-                      number_of_terms: 6)
+    create(:pending_induction_submission,
+           trn: teacher.trn,
+           finished_on: 1.day.ago.to_date,
+           number_of_terms: 6)
   end
 
   describe "#pass!" do
@@ -80,7 +80,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
       end
 
       context "when the author is a DfE user" do
-        let(:dfe_user) { FactoryBot.create(:user, email: 'dfe_user@education.gov.uk') }
+        let(:dfe_user) { create(:user, email: 'dfe_user@education.gov.uk') }
         let(:author) do
           Sessions::Users::DfEUser.new(
             email: dfe_user.email
@@ -112,10 +112,10 @@ RSpec.describe AppropriateBodies::RecordOutcome do
 
     context "when validation fails on induction period update" do
       let(:pending_induction_submission) do
-        FactoryBot.create(:pending_induction_submission,
-                          trn: teacher.trn,
-                          finished_on: 1.day.ago.to_date,
-                          number_of_terms: 6)
+        create(:pending_induction_submission,
+               trn: teacher.trn,
+               finished_on: 1.day.ago.to_date,
+               number_of_terms: 6)
       end
 
       before do
@@ -206,7 +206,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
       end
 
       context "when the author is a DfE user" do
-        let(:dfe_user) { FactoryBot.create(:user, email: 'dfe_user@education.gov.uk') }
+        let(:dfe_user) { create(:user, email: 'dfe_user@education.gov.uk') }
         let(:author) do
           Sessions::Users::DfEUser.new(
             email: dfe_user.email

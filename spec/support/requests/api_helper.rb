@@ -22,7 +22,7 @@ module APIHelper
   end
 
   def lead_provider_to_authenticate_with
-    return FactoryBot.create(:lead_provider) unless defined?(active_lead_provider)
+    return create(:lead_provider) unless defined?(active_lead_provider)
 
     active_lead_provider.lead_provider
   end

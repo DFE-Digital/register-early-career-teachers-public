@@ -1,9 +1,9 @@
 RSpec.describe "appropriate_bodies/process_batch/actions/index.html.erb" do
   let(:pending_induction_submission_batches) do
     [
-      FactoryBot.create(:pending_induction_submission_batch, :action, :completed),
-      FactoryBot.create(:pending_induction_submission_batch, :action, :processed),
-      FactoryBot.create(:pending_induction_submission_batch, :action, :processing)
+      create(:pending_induction_submission_batch, :action, :completed),
+      create(:pending_induction_submission_batch, :action, :processed),
+      create(:pending_induction_submission_batch, :action, :processing)
     ]
   end
 

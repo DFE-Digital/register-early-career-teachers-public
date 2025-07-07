@@ -2,7 +2,7 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
   include AppropriateBodyHelper
   include Rails.application.routes.url_helpers
 
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { create(:teacher) }
   let(:component) { described_class.new(teacher:) }
 
   context "when teacher has no current induction period" do
@@ -12,13 +12,13 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
   end
 
   context "when teacher has a current induction period" do
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Test AB") }
+    let(:appropriate_body) { create(:appropriate_body, name: "Test AB") }
     let!(:current_period) do
-      FactoryBot.create(:induction_period, :active,
-                        teacher:,
-                        appropriate_body:,
-                        started_on: 6.months.ago,
-                        induction_programme: "cip")
+      create(:induction_period, :active,
+             teacher:,
+             appropriate_body:,
+             started_on: 6.months.ago,
+             induction_programme: "cip")
     end
 
     it "renders" do
@@ -73,12 +73,12 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
 
     context "when the induction period has an outcome" do
       let!(:current_period) do
-        FactoryBot.create(:induction_period, :active,
-                          teacher:,
-                          appropriate_body:,
-                          started_on: 6.months.ago,
-                          outcome: "pass",
-                          induction_programme: "cip")
+        create(:induction_period, :active,
+               teacher:,
+               appropriate_body:,
+               started_on: 6.months.ago,
+               outcome: "pass",
+               induction_programme: "cip")
       end
 
       it "includes an edit link when enable_edit is true" do

@@ -2,13 +2,13 @@ RSpec.describe "Appropriate Body bulk actions confirmation", type: :request do
   include AuthHelper
   include ActiveJob::TestHelper
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
   let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
   let(:batch) do
-    FactoryBot.create(:pending_induction_submission_batch, :action,
-                      appropriate_body:,
-                      data:,
-                      filename: 'test-file.csv')
+    create(:pending_induction_submission_batch, :action,
+           appropriate_body:,
+           data:,
+           filename: 'test-file.csv')
   end
 
   include_context 'fake trs api client'

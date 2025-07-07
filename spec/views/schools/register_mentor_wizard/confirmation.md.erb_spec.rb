@@ -1,11 +1,11 @@
 RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
   let(:already_active_at_school) { false }
 
-  let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'FraggleRock') }
+  let(:lead_provider) { create(:lead_provider, name: 'FraggleRock') }
 
-  let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+  let(:teacher) { create(:teacher, trn: '1234568') }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, teacher:, lead_provider:) }
+  let(:ect) { create(:ect_at_school_period, :active, teacher:, lead_provider:) }
 
   let(:store) do
     double(
@@ -20,7 +20,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
   end
 
   let(:wizard) do
-    FactoryBot.build(:register_mentor_wizard, current_step: :confirmation, ect_id: ect.id, store:)
+    build(:register_mentor_wizard, current_step: :confirmation, ect_id: ect.id, store:)
   end
 
   let(:mentor) { wizard.mentor }
@@ -54,7 +54,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
       end
 
       context 'when the ect is not provider_led' do
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :school_led, teacher:) }
+        let(:ect) { create(:ect_at_school_period, :active, :school_led, teacher:) }
 
         it { expect(rendered).not_to have_content("We’ll pass on their details to FraggleRock") }
       end
@@ -62,7 +62,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
     context 'when ineligible' do
       before do
-        FactoryBot.create(:teacher, :ineligible_for_mentor_funding, trn: '0000007')
+        create(:teacher, :ineligible_for_mentor_funding, trn: '0000007')
         render
       end
 
@@ -71,7 +71,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
       end
 
       context 'when the ect is not provider_led' do
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :school_led, teacher:) }
+        let(:ect) { create(:ect_at_school_period, :active, :school_led, teacher:) }
 
         it { expect(rendered).not_to have_content('They cannot do mentor training according to our records.') }
       end

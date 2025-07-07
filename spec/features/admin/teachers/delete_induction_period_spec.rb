@@ -2,15 +2,15 @@ RSpec.describe "Admin deletes an induction period" do
   include ActiveJob::TestHelper
   include_context "fake trs api client"
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
 
   before do
     sign_in_as_dfe_user(role: :admin)
   end
 
   context "when it is the only induction period" do
-    let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
+    let!(:induction_period) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
 
     scenario "TRS status is reset" do
       given_i_am_on_the_ect_page(teacher)
@@ -27,8 +27,8 @@ RSpec.describe "Admin deletes an induction period" do
   end
 
   context "when there are multiple induction periods" do
-    let!(:induction_period1) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
-    let!(:induction_period2) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
+    let!(:induction_period1) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
+    let!(:induction_period2) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
 
     scenario "TRS start date is updated to next earliest period" do
       given_i_am_on_the_ect_page(teacher)
@@ -45,8 +45,8 @@ RSpec.describe "Admin deletes an induction period" do
   end
 
   context "when deleting the later induction period" do
-    let!(:induction_period1) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
-    let!(:induction_period2) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
+    let!(:induction_period1) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
+    let!(:induction_period2) { create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
 
     scenario "TRS start date remains unchanged" do
       given_i_am_on_the_ect_page(teacher)

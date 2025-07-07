@@ -9,10 +9,10 @@ describe AppropriateBodies::ReleaseECT do
     )
   end
 
-  let(:induction_period) { FactoryBot.create(:induction_period, :active) }
+  let(:induction_period) { create(:induction_period, :active) }
   let(:appropriate_body) { induction_period.appropriate_body }
   let(:pending_induction_submission) do
-    FactoryBot.create(
+    create(
       :pending_induction_submission,
       :finishing,
       appropriate_body:,

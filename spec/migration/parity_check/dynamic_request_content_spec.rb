@@ -1,5 +1,5 @@
 RSpec.describe ParityCheck::DynamicRequestContent do
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:lead_provider) { create(:lead_provider) }
   let(:instance) { described_class.new(lead_provider:) }
 
   describe "#fetch" do
@@ -13,10 +13,10 @@ RSpec.describe ParityCheck::DynamicRequestContent do
 
     context "when fetching example_id" do
       let(:identifier) { :example_id }
-      let!(:statement) { FactoryBot.create(:statement, lead_provider:) }
+      let!(:statement) { create(:statement, lead_provider:) }
 
       # Statement for different lead provider should not be used.
-      before { FactoryBot.create(:statement) }
+      before { create(:statement) }
 
       it { is_expected.to eq(statement.api_id) }
     end

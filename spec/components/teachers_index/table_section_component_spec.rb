@@ -21,17 +21,17 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
       end
     end
 
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body) { create(:appropriate_body) }
 
     let!(:teacher_1) do
-      teacher = FactoryBot.create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")
-      FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2024, 3, 15))
+      teacher = create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")
+      create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2024, 3, 15))
       teacher
     end
 
     let!(:teacher_2) do
-      teacher = FactoryBot.create(:teacher, trs_first_name: "Bob", trs_last_name: "Jones", trn: "2345678")
-      FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2024, 4, 1))
+      teacher = create(:teacher, trs_first_name: "Bob", trs_last_name: "Jones", trn: "2345678")
+      create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2024, 4, 1))
       teacher
     end
 
@@ -248,11 +248,11 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
       end
     end
 
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body) { create(:appropriate_body) }
 
     let!(:integration_teacher) do
-      teacher = FactoryBot.create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")
-      FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2024, 3, 15))
+      teacher = create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")
+      create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2024, 3, 15))
       teacher
     end
 

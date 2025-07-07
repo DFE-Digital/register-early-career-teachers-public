@@ -3,9 +3,9 @@ describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
 
   let(:training_programme) { 'provider_led' }
   let(:use_previous_ect_choices) { true }
-  let(:school) { FactoryBot.build(:school, :independent) }
-  let(:store) { FactoryBot.build(:session_repository, use_previous_ect_choices:, training_programme:) }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :check_answers, store:, school:) }
+  let(:school) { build(:school, :independent) }
+  let(:store) { build(:session_repository, use_previous_ect_choices:, training_programme:) }
+  let(:wizard) { build(:register_ect_wizard, current_step: :check_answers, store:, school:) }
 
   describe 'steps' do
     describe '#next_step' do

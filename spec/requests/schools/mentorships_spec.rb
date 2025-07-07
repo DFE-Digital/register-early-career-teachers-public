@@ -1,9 +1,9 @@
 RSpec.describe 'Create mentorship of an ECT to a mentor' do
   include ActionView::Helpers::SanitizeHelper
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, school:) }
-  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :active, school:) }
-  let(:school) { FactoryBot.create(:school, :independent) }
+  let(:ect) { create(:ect_at_school_period, :active, school:) }
+  let(:mentor) { create(:mentor_at_school_period, :active, school:) }
+  let(:school) { create(:school, :independent) }
 
   describe 'GET /school/ects/:id/mentorship/new' do
     context 'when not signed in' do
@@ -99,7 +99,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
     end
 
     context 'when signed in as school user' do
-      let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
+      let(:author) { create(:school_user, school_urn: school.urn) }
 
       before do
         sign_in_as(:school_user, school:)

@@ -1,7 +1,7 @@
 RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
   let(:trs_qts_awarded_on) { 3.years.ago.to_date }
-  let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_qts_awarded_on:) }
+  let!(:appropriate_body) { create(:appropriate_body) }
+  let!(:pending_induction_submission) { create(:pending_induction_submission, appropriate_body:, trs_qts_awarded_on:) }
   let(:page_heading) { "Tell us about" }
   let(:pending_induction_submission_id_param) { pending_induction_submission.id.to_s }
 

@@ -1,9 +1,9 @@
 RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeStateSchoolAppropriateBodyStep, type: :model do
   subject { described_class.new(wizard:, appropriate_body_id: '123') }
 
-  let(:school) { FactoryBot.create(:school, :independent) }
+  let(:school) { create(:school, :independent) }
   let(:wizard) do
-    FactoryBot.build(:register_ect_wizard, current_step: :change_independent_school_appropriate_body, school:)
+    build(:register_ect_wizard, current_step: :change_independent_school_appropriate_body, school:)
   end
 
   describe "inheritance" do

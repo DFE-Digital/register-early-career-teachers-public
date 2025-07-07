@@ -9,30 +9,30 @@ RSpec.describe TeachersIndexComponent, type: :component do
     )
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:other_appropriate_body) { create(:appropriate_body) }
 
   let!(:teacher_1) do
-    teacher = FactoryBot.create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")
-    FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 3.months.ago)
+    teacher = create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")
+    create(:induction_period, :active, teacher:, appropriate_body:, started_on: 3.months.ago)
     teacher
   end
 
   let!(:teacher_2) do
-    teacher = FactoryBot.create(:teacher, trs_first_name: "Bob", trs_last_name: "Jones", trn: "2345678")
-    FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 2.months.ago)
+    teacher = create(:teacher, trs_first_name: "Bob", trs_last_name: "Jones", trn: "2345678")
+    create(:induction_period, :active, teacher:, appropriate_body:, started_on: 2.months.ago)
     teacher
   end
 
   let!(:teacher_3_closed) do
-    teacher = FactoryBot.create(:teacher, trs_first_name: "Carol", trs_last_name: "Brown", trn: "3456789")
-    FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 6)
+    teacher = create(:teacher, trs_first_name: "Carol", trs_last_name: "Brown", trn: "3456789")
+    create(:induction_period, :pass, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 6)
     teacher
   end
 
   let!(:teacher_4_other_ab) do
-    teacher = FactoryBot.create(:teacher, trs_first_name: "David", trs_last_name: "Wilson", trn: "4567890")
-    FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_appropriate_body, started_on: 1.month.ago)
+    teacher = create(:teacher, trs_first_name: "David", trs_last_name: "Wilson", trn: "4567890")
+    create(:induction_period, :active, teacher:, appropriate_body: other_appropriate_body, started_on: 1.month.ago)
     teacher
   end
 

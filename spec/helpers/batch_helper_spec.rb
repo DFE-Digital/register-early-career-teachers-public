@@ -9,9 +9,9 @@ RSpec.describe BatchHelper, type: :helper do
 
     let(:batches) do
       [
-        FactoryBot.create(:pending_induction_submission_batch, :claim, :completed),
-        FactoryBot.create(:pending_induction_submission_batch, :claim, :processed),
-        FactoryBot.create(:pending_induction_submission_batch, :claim, :processing)
+        create(:pending_induction_submission_batch, :claim, :completed),
+        create(:pending_induction_submission_batch, :claim, :processed),
+        create(:pending_induction_submission_batch, :claim, :processing)
       ]
     end
 
@@ -57,7 +57,7 @@ RSpec.describe BatchHelper, type: :helper do
   end
 
   context "with a single batch" do
-    let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, :completed) }
+    let(:batch) { create(:pending_induction_submission_batch, :action, :completed) }
 
     describe "#batch_status_tag" do
       it do

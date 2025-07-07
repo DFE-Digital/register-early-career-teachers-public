@@ -1,8 +1,8 @@
 RSpec.describe "Appropriate Body teacher show page", type: :request do
   include AuthHelper
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
+  let!(:induction_period) { create(:induction_period, :active, teacher:, appropriate_body:) }
 
   describe 'GET /appropriate-body/teachers/:id' do
     context 'when not signed in' do
@@ -33,18 +33,18 @@ RSpec.describe "Appropriate Body teacher show page", type: :request do
       end
 
       context 'when the teacher is not associated with the appropriate body' do
-        let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
-        let(:other_teacher) { FactoryBot.create(:teacher) }
+        let(:other_appropriate_body) { create(:appropriate_body) }
+        let(:other_teacher) { create(:teacher) }
 
         # Create an induction period that is finished and has no outcome
         # This won't be included in current_or_completed_while_at_appropriate_body
         let!(:other_induction_period) do
-          FactoryBot.create(:induction_period,
-                            teacher: other_teacher,
-                            appropriate_body:,
-                            started_on: 6.months.ago,
-                            finished_on: 1.month.ago,
-                            outcome: nil)
+          create(:induction_period,
+                 teacher: other_teacher,
+                 appropriate_body:,
+                 started_on: 6.months.ago,
+                 finished_on: 1.month.ago,
+                 outcome: nil)
         end
 
         it 'returns a 404 error' do

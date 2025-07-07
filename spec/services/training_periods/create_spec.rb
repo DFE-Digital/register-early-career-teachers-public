@@ -9,13 +9,13 @@ RSpec.describe TrainingPeriods::Create do
   end
 
   let(:started_on) { Time.zone.today - 1.month }
-  let(:school_partnership) { FactoryBot.create(:school_partnership) }
+  let(:school_partnership) { create(:school_partnership) }
   let(:expression_of_interest) { nil }
 
   context 'with an ECTAtSchoolPeriod' do
-    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:teacher) { create(:teacher) }
     let(:period) do
-      FactoryBot.create(
+      create(
         :ect_at_school_period,
         teacher:,
         started_on: started_on - 2.weeks,
@@ -36,9 +36,9 @@ RSpec.describe TrainingPeriods::Create do
   end
 
   context 'with a MentorAtSchoolPeriod' do
-    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:teacher) { create(:teacher) }
     let(:period) do
-      FactoryBot.create(
+      create(
         :mentor_at_school_period,
         teacher:,
         started_on: started_on - 1.month,

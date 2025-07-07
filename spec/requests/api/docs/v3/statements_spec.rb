@@ -3,7 +3,7 @@ require "swagger_helper"
 RSpec.describe "Statements endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
+  let(:statement) { create(:statement, active_lead_provider:) }
 
   path "/api/v3/statements" do
     get "Retrieve financial statements" do

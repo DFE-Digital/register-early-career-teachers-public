@@ -1,7 +1,7 @@
 describe Teachers::TermsCompleted do
   subject(:service) { described_class.new(teacher) }
 
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { create(:teacher) }
 
   describe '#formatted_terms_completed' do
     context 'when the teacher does not have induction periods' do
@@ -15,8 +15,8 @@ describe Teachers::TermsCompleted do
 
       context "with extensions" do
         before do
-          FactoryBot.create(:induction_extension, teacher:, number_of_terms: 2)
-          FactoryBot.create(:induction_extension, teacher:, number_of_terms: 1.1)
+          create(:induction_extension, teacher:, number_of_terms: 2)
+          create(:induction_extension, teacher:, number_of_terms: 1.1)
         end
 
         it 'returns the default number of terms plus the extensions' do
@@ -26,7 +26,7 @@ describe Teachers::TermsCompleted do
     end
 
     context 'when the teacher has induction periods' do
-      let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, number_of_terms: 2) }
+      let!(:induction_period) { create(:induction_period, teacher:, number_of_terms: 2) }
 
       context 'without extensions' do
         it 'returns the default number of terms' do
@@ -35,8 +35,8 @@ describe Teachers::TermsCompleted do
 
         context "with extensions" do
           before do
-            FactoryBot.create(:induction_extension, teacher:, number_of_terms: 2)
-            FactoryBot.create(:induction_extension, teacher:, number_of_terms: 1.1)
+            create(:induction_extension, teacher:, number_of_terms: 2)
+            create(:induction_extension, teacher:, number_of_terms: 1.1)
           end
 
           it 'returns the default number of terms plus the extensions' do

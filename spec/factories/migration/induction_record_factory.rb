@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :migration_induction_record, class: "Migration::InductionRecord" do
-    participant_profile { FactoryBot.create(:migration_participant_profile, :ect) }
+    participant_profile { create(:migration_participant_profile, :ect) }
     preferred_identity { participant_profile.participant_identity }
     induction_programme { participant_profile.school_cohort.default_induction_programme }
     schedule { participant_profile.schedule }

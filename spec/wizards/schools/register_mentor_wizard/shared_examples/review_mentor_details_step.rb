@@ -2,16 +2,16 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
   subject { described_class.new(wizard:) }
 
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: '1234567',
-                     trs_first_name: 'John',
-                     trs_last_name: 'Wayne',
-                     change_name: 'yes',
-                     corrected_name: 'Jim Wayne',
-                     date_of_birth: '01/01/1990',
-                     email: 'initial@email.com')
+    build(:session_repository,
+          trn: '1234567',
+          trs_first_name: 'John',
+          trs_last_name: 'Wayne',
+          change_name: 'yes',
+          corrected_name: 'Jim Wayne',
+          date_of_birth: '01/01/1990',
+          email: 'initial@email.com')
   end
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:) }
+  let(:wizard) { build(:register_mentor_wizard, current_step:, store:) }
 
   describe '#initialisation' do
     subject { described_class.new(wizard:, **params) }
@@ -70,7 +70,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
     end
 
     let(:wizard) do
-      FactoryBot.build(:register_mentor_wizard, current_step:, step_params:)
+      build(:register_mentor_wizard, current_step:, step_params:)
     end
 
     it { expect(subject.next_step).to eq(next_step) }
@@ -80,7 +80,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
     context 'when the step is not valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:) }
+      let(:wizard) { build(:register_mentor_wizard, current_step:) }
 
       it 'does not update any data in the wizard mentor' do
         expect { subject.save! }.not_to change(subject.mentor, :corrected_name)
@@ -90,7 +90,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
     context 'when the step is valid' do
       subject { wizard.current_step }
 
-      let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, step_params:) }
+      let(:wizard) { build(:register_mentor_wizard, current_step:, step_params:) }
       let(:step_params) do
         ActionController::Parameters.new(
           current_step.to_s => {

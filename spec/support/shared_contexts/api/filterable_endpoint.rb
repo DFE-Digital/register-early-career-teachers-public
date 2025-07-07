@@ -1,10 +1,10 @@
 RSpec.shared_examples "a filter by cohort (contract_period year) endpoint" do
   it "returns only resources for the specified cohorts" do
-    previous_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year - 1)
-    next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+    previous_contract_period = create(:contract_period, year: active_lead_provider.contract_period.year - 1)
+    next_contract_period = create(:contract_period, year: active_lead_provider.contract_period.year + 1)
 
-    previous_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period)
-    next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
+    previous_active_lead_provider = create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period)
+    next_active_lead_provider = create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
 
     previous_contract_period_resource = create_resource(active_lead_provider: previous_active_lead_provider)
     next_contract_period_resource = create_resource(active_lead_provider: next_active_lead_provider)
@@ -23,8 +23,8 @@ RSpec.shared_examples "a filter by cohort (contract_period year) endpoint" do
     resource = create_resource(active_lead_provider:)
 
     # Resource for the next contract_period should not be included.
-    next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
-    next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
+    next_contract_period = create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+    next_active_lead_provider = create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
     create_resource(active_lead_provider: next_active_lead_provider)
 
     authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort" } })

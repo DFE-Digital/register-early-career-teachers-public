@@ -25,11 +25,11 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user_who_has_previously_registered_an_ect
-    @teacher = FactoryBot.create(:teacher)
-    school = FactoryBot.create(:school)
+    @teacher = create(:teacher)
+    school = create(:school)
 
     ect_at_school_period =
-      FactoryBot.create(
+      create(
         :ect_at_school_period,
         school:,
         teacher: @teacher,
@@ -37,14 +37,14 @@ RSpec.describe 'Registering an ECT' do
         finished_on: Date.new(2024, 7, 31)
       )
 
-    FactoryBot.create(
+    create(
       :training_period,
       ect_at_school_period:,
       started_on: Date.new(2023, 9, 1),
       finished_on: Date.new(2024, 7, 31)
     )
 
-    FactoryBot.create(:induction_period, teacher: @teacher, started_on: Date.new(2023, 9, 1))
+    create(:induction_period, teacher: @teacher, started_on: Date.new(2023, 9, 1))
 
     sign_in_as_school_user(school:)
   end

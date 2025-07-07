@@ -31,7 +31,7 @@ module UserHelper
     stop_mocking_dfe_sign_in_provider!
   end
 
-  def sign_in_as_dfe_user(role:, user: FactoryBot.create(:user, role, email: Faker::Internet.email, name: Faker::Name.name))
+  def sign_in_as_dfe_user(role:, user: create(:user, role, email: Faker::Internet.email, name: Faker::Name.name))
     page.goto(otp_sign_in_path)
     page.get_by_label('Email address').type(user.email)
     page.get_by_role("button", name: 'Request code to sign in').click

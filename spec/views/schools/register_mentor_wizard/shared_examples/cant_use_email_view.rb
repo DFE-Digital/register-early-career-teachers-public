@@ -1,15 +1,15 @@
 RSpec.shared_examples "a can't use email step view" do |current_step:, back_path:|
   let(:mentor) { wizard.mentor }
   let(:email) { nil }
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:) }
+  let(:wizard) { build(:register_mentor_wizard, current_step:, store:) }
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: "1234567",
-                     trs_first_name: "John",
-                     trs_last_name: "Waters",
-                     trs_date_of_birth: "1950-01-01",
-                     change_name: "no",
-                     email: 'a@email.com')
+    build(:session_repository,
+          trn: "1234567",
+          trs_first_name: "John",
+          trs_last_name: "Waters",
+          trs_date_of_birth: "1950-01-01",
+          change_name: "no",
+          email: 'a@email.com')
   end
 
   before do

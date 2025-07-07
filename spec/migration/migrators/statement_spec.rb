@@ -1,21 +1,21 @@
 describe Migrators::Statement do
   it_behaves_like "a migrator", :statement, %i[lead_provider contract_period active_lead_provider] do
     def create_migration_resource
-      FactoryBot.create(:migration_statement, name: "February 2025")
+      create(:migration_statement, name: "February 2025")
     end
 
     def create_resource(migration_resource)
       # creating dependencies resources
-      lead_provider = FactoryBot.create(:lead_provider, name: migration_resource.lead_provider.name, ecf_id: migration_resource.lead_provider.id)
-      contract_period = FactoryBot.create(:contract_period, year: migration_resource.cohort.start_year)
-      FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+      lead_provider = create(:lead_provider, name: migration_resource.lead_provider.name, ecf_id: migration_resource.lead_provider.id)
+      contract_period = create(:contract_period, year: migration_resource.cohort.start_year)
+      create(:active_lead_provider, lead_provider:, contract_period:)
 
-      FactoryBot.create(:statement)
+      create(:statement)
     end
 
     def setup_failure_state
       # Record to be migrated with unmet dependencies in the destination db
-      FactoryBot.create(:migration_statement)
+      create(:migration_statement)
     end
 
     describe "#migrate!" do

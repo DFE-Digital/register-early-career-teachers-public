@@ -4,10 +4,10 @@ RSpec.describe ParityCheckHelper, type: :helper do
 
     let(:endpoints) do
       [
-        FactoryBot.build(:parity_check_endpoint, path: "/api/v1/users"),
-        FactoryBot.build(:parity_check_endpoint, path: "/api/v3/users/create"),
-        FactoryBot.build(:parity_check_endpoint, path: "/api/v2/participant-declarations"),
-        FactoryBot.build(:parity_check_endpoint, path: "/login"),
+        build(:parity_check_endpoint, path: "/api/v1/users"),
+        build(:parity_check_endpoint, path: "/api/v3/users/create"),
+        build(:parity_check_endpoint, path: "/api/v2/participant-declarations"),
+        build(:parity_check_endpoint, path: "/login"),
       ]
     end
 
@@ -25,10 +25,10 @@ RSpec.describe ParityCheckHelper, type: :helper do
 
     let(:requests) do
       [
-        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v1/users")),
-        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v3/users/create")),
-        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v2/participant-declarations")),
-        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/login")),
+        build(:parity_check_request, endpoint: build(:parity_check_endpoint, path: "/api/v1/users")),
+        build(:parity_check_request, endpoint: build(:parity_check_endpoint, path: "/api/v3/users/create")),
+        build(:parity_check_request, endpoint: build(:parity_check_endpoint, path: "/api/v2/participant-declarations")),
+        build(:parity_check_request, endpoint: build(:parity_check_endpoint, path: "/login")),
       ]
     end
 
@@ -50,7 +50,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
   describe "#formatted_endpoint_group_names" do
     subject { helper.formatted_endpoint_group_names(run) }
 
-    let(:run) { FactoryBot.build(:parity_check_run) }
+    let(:run) { build(:parity_check_run) }
 
     before { allow(run).to receive(:request_group_names).and_return(%i[participant-declarations users]) }
 
@@ -166,7 +166,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
     subject { helper.sanitize_diff(html) }
 
     let(:html) { response.body_diff.to_s(:html) }
-    let(:response) { FactoryBot.build(:parity_check_response, :different) }
+    let(:response) { build(:parity_check_response, :different) }
 
     it { is_expected.to eq(html.html_safe) }
 

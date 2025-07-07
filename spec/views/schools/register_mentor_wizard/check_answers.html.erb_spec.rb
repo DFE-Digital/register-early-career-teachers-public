@@ -1,26 +1,26 @@
 RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
-  let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'FraggleRock') }
+  let(:lead_provider) { create(:lead_provider, name: 'FraggleRock') }
 
   let(:teacher) do
-    FactoryBot.create(:teacher, trn: '1234568')
+    create(:teacher, trn: '1234568')
   end
 
   let(:ect) do
-    FactoryBot.create(:ect_at_school_period, :active, teacher:, lead_provider:)
+    create(:ect_at_school_period, :active, teacher:, lead_provider:)
   end
 
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: "1234567",
-                     trs_first_name: "John",
-                     trs_last_name: "Wayne",
-                     change_name: 'yes',
-                     corrected_name: "Jim Wayne",
-                     email: "john.wayne@example.com")
+    build(:session_repository,
+          trn: "1234567",
+          trs_first_name: "John",
+          trs_last_name: "Wayne",
+          change_name: 'yes',
+          corrected_name: "Jim Wayne",
+          email: "john.wayne@example.com")
   end
 
   let(:wizard) do
-    FactoryBot.build(:register_mentor_wizard, current_step: :check_answers, ect_id: ect.id, store:)
+    build(:register_mentor_wizard, current_step: :check_answers, ect_id: ect.id, store:)
   end
 
   let(:mentor) { wizard.mentor }
@@ -50,7 +50,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'with legacy exemption' do
       before do
-        FactoryBot.create(:teacher, :early_roll_out_mentor, trn: mentor.trn)
+        create(:teacher, :early_roll_out_mentor, trn: mentor.trn)
         render
       end
 
@@ -59,10 +59,10 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'with existing training exemption' do
       before do
-        FactoryBot.create(:teacher,
-                          trn: mentor.trn,
-                          mentor_became_ineligible_for_funding_on: Time.zone.today,
-                          mentor_became_ineligible_for_funding_reason: 'completed_declaration_received')
+        create(:teacher,
+               trn: mentor.trn,
+               mentor_became_ineligible_for_funding_on: Time.zone.today,
+               mentor_became_ineligible_for_funding_reason: 'completed_declaration_received')
 
         render
       end
@@ -74,7 +74,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   describe 'summary' do
     context 'with school led ect' do
       let(:ect) do
-        FactoryBot.create(:ect_at_school_period, :active, :school_led, teacher:)
+        create(:ect_at_school_period, :active, :school_led, teacher:)
       end
 
       it 'hides lead provider' do
@@ -99,7 +99,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'with legacy exemption' do
       before do
-        FactoryBot.create(:teacher, :early_roll_out_mentor, trn: mentor.trn)
+        create(:teacher, :early_roll_out_mentor, trn: mentor.trn)
         render
       end
 
@@ -111,10 +111,10 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'with existing training exemption' do
       before do
-        FactoryBot.create(:teacher,
-                          trn: mentor.trn,
-                          mentor_became_ineligible_for_funding_on: Time.zone.today,
-                          mentor_became_ineligible_for_funding_reason: 'completed_declaration_received')
+        create(:teacher,
+               trn: mentor.trn,
+               mentor_became_ineligible_for_funding_on: Time.zone.today,
+               mentor_became_ineligible_for_funding_reason: 'completed_declaration_received')
 
         render
       end

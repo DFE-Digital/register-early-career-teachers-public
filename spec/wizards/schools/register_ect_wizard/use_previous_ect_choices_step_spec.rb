@@ -3,10 +3,10 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
 
   let(:use_previous_ect_choices) { true }
   let(:step_params) { {} }
-  let(:school) { FactoryBot.create(:school) }
-  let(:store) { FactoryBot.build(:session_repository, use_previous_ect_choices:) }
+  let(:school) { create(:school) }
+  let(:store) { build(:session_repository, use_previous_ect_choices:) }
   let(:wizard) do
-    FactoryBot.build(:register_ect_wizard, current_step: :use_previous_ect_choices, school:, store:, step_params:)
+    build(:register_ect_wizard, current_step: :use_previous_ect_choices, school:, store:, step_params:)
   end
 
   describe '#initialize' do
@@ -40,13 +40,13 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       let(:use_previous_ect_choices) { false }
 
       context 'for independent schools' do
-        let(:school) { FactoryBot.create(:school, :independent) }
+        let(:school) { create(:school, :independent) }
 
         it { expect(subject.next_step).to eq(:independent_school_appropriate_body) }
       end
 
       context 'for state-funded schools' do
-        let(:school) { FactoryBot.create(:school, :state_funded) }
+        let(:school) { create(:school, :state_funded) }
 
         it { expect(subject.next_step).to eq(:state_school_appropriate_body) }
       end

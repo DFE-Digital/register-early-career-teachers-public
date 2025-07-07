@@ -22,21 +22,21 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   let(:outcome) { 'pass' }
   let(:error) { '' }
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body) { create(:appropriate_body) }
 
   let(:teacher) do
-    FactoryBot.create(:teacher, :with_corrected_name,
-                      trn:,
-                      trs_first_name: first_name,
-                      trs_last_name: last_name)
+    create(:teacher, :with_corrected_name,
+           trn:,
+           trs_first_name: first_name,
+           trs_last_name: last_name)
   end
 
   let(:pending_induction_submission_batch) do
-    FactoryBot.create(:pending_induction_submission_batch, :action,
-                      appropriate_body:,
-                      data: [
-                        { trn:, date_of_birth:, finished_on:, number_of_terms:, outcome:, error: }
-                      ])
+    create(:pending_induction_submission_batch, :action,
+           appropriate_body:,
+           data: [
+             { trn:, date_of_birth:, finished_on:, number_of_terms:, outcome:, error: }
+           ])
   end
 
   let(:submission) do
@@ -274,13 +274,13 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
     end
 
     context 'with an ongoing induction at another Appropriate Body' do
-      let(:other_body) { FactoryBot.create(:appropriate_body) }
+      let(:other_body) { create(:appropriate_body) }
 
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :active,
-                          appropriate_body: other_body,
-                          teacher:,
-                          started_on: '2024-1-1')
+        create(:induction_period, :active,
+               appropriate_body: other_body,
+               teacher:,
+               started_on: '2024-1-1')
       end
 
       before { service.process! }
@@ -292,10 +292,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
     context 'with an ongoing induction' do
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :active,
-                          appropriate_body:,
-                          teacher:,
-                          started_on: '2024-1-1')
+        create(:induction_period, :active,
+               appropriate_body:,
+               teacher:,
+               started_on: '2024-1-1')
       end
 
       before { service.process! }
@@ -354,9 +354,9 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
       context 'with a completed induction' do
         let!(:induction_period) do
-          FactoryBot.create(:induction_period, :pass,
-                            appropriate_body:,
-                            teacher:)
+          create(:induction_period, :pass,
+                 appropriate_body:,
+                 teacher:)
         end
 
         before { service.process! }

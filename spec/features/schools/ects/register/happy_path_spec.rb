@@ -99,7 +99,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def create_contract_period_for_start_date
-    @contract_period = FactoryBot.create(
+    @contract_period = create(
       :contract_period,
       started_on: 7.months.ago.beginning_of_month,
       finished_on: 7.months.from_now.end_of_month
@@ -107,8 +107,8 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def create_lead_provider_and_active_lead_provider
-    @lead_provider = FactoryBot.create(:lead_provider, name: 'Orange Institute')
-    FactoryBot.create(
+    @lead_provider = create(:lead_provider, name: 'Orange Institute')
+    create(
       :active_lead_provider,
       lead_provider: @lead_provider,
       contract_period: @contract_period
@@ -116,7 +116,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def create_school_with_previous_choices
-    @school = FactoryBot.create(
+    @school = create(
       :school,
       :state_funded,
       :provider_led_last_chosen,
@@ -126,8 +126,8 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def create_appropriate_bodies
-    FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
-    FactoryBot.create(:appropriate_body, name: 'Umber Teaching Hub')
+    create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
+    create(:appropriate_body, name: 'Umber Teaching Hub')
   end
 
   def trn

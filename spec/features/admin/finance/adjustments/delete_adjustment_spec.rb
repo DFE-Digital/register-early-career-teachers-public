@@ -25,7 +25,7 @@ RSpec.describe "Delete adjustment from statement" do
   end
 
   def given_a_finance_statement_exists
-    @statement = FactoryBot.create(:statement)
+    @statement = create(:statement)
   end
 
   def when_i_visit_the_finance_statement_page
@@ -33,9 +33,9 @@ RSpec.describe "Delete adjustment from statement" do
   end
 
   def and_the_statement_has_adjustments
-    FactoryBot.create(:statement_adjustment, statement: @statement, payment_type: "Amount 1", amount: 100.0)
-    @deleted_adjustment = FactoryBot.create(:statement_adjustment, statement: @statement, payment_type: "Amount 2", amount: -150.0)
-    FactoryBot.create(:statement_adjustment, statement: @statement, payment_type: "Amount 3", amount: 500.0)
+    create(:statement_adjustment, statement: @statement, payment_type: "Amount 1", amount: 100.0)
+    @deleted_adjustment = create(:statement_adjustment, statement: @statement, payment_type: "Amount 2", amount: -150.0)
+    create(:statement_adjustment, statement: @statement, payment_type: "Amount 3", amount: 500.0)
   end
 
   def and_i_see_adjustment_values

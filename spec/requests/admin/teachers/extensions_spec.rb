@@ -1,8 +1,8 @@
 RSpec.describe "Admin::Teachers::Extensions", type: :request do
   include AuthHelper
 
-  let(:admin_user) { FactoryBot.create(:user, :admin) }
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:admin_user) { create(:user, :admin) }
+  let(:teacher) { create(:teacher) }
 
   before do
     sign_in_as :dfe_user, user: admin_user
@@ -38,7 +38,7 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
   end
 
   describe "GET /admin/teachers/:teacher_id/extensions/:id/edit" do
-    let(:extension) { FactoryBot.create(:induction_extension, teacher:) }
+    let(:extension) { create(:induction_extension, teacher:) }
 
     it "renders the edit template successfully" do
       get edit_admin_teacher_extension_path(teacher, extension)
@@ -47,7 +47,7 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
   end
 
   describe "PATCH /admin/teachers/:teacher_id/extensions/:id" do
-    let!(:extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 1.0) }
+    let!(:extension) { create(:induction_extension, teacher:, number_of_terms: 1.0) }
 
     context "with valid parameters" do
       let(:valid_params) { { induction_extension: { number_of_terms: 2.5 } } }
@@ -63,7 +63,7 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
   end
 
   describe "GET /admin/teachers/:teacher_id/extensions/:id/confirm_delete" do
-    let(:extension) { FactoryBot.create(:induction_extension, teacher:) }
+    let(:extension) { create(:induction_extension, teacher:) }
 
     it "renders the confirm_delete template successfully" do
       get confirm_delete_admin_teacher_extension_path(teacher, extension)
@@ -72,7 +72,7 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
   end
 
   describe "DELETE /admin/teachers/:teacher_id/extensions/:id" do
-    let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
+    let!(:extension) { create(:induction_extension, teacher:) }
 
     it "uses the manage service to delete the extension and redirects to the teacher's page" do
       manage_service = instance_double(InductionExtensions::Manage, delete!: true)

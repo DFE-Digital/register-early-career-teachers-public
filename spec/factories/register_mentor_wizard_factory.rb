@@ -6,6 +6,6 @@ FactoryBot.define do
     current_step { :find_mentor }
     ect_id { Faker::Number.within(range: 5400..6000) }
     step_params { {} }
-    store { FactoryBot.create(:session_repository) }
+    store { create(:session_repository) }
   end
 end

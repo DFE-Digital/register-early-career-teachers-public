@@ -11,7 +11,7 @@ describe PendingInductionSubmissions::Name do
     end
 
     context 'when a corrected_name is set' do
-      let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission) }
+      let(:pending_induction_submission) { build(:pending_induction_submission) }
 
       it 'returns the corrected name' do
         expect(subject.full_name).to eql("#{pending_induction_submission.trs_first_name} #{pending_induction_submission.trs_last_name}")

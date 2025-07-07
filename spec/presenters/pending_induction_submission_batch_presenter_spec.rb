@@ -1,7 +1,7 @@
 RSpec.describe PendingInductionSubmissionBatchPresenter do
   subject(:presenter) { described_class.new(batch) }
 
-  let(:batch) { FactoryBot.build(:pending_induction_submission_batch, :action) }
+  let(:batch) { build(:pending_induction_submission_batch, :action) }
 
   describe 'decorated model methods' do
     it '#batch_type' do
@@ -15,7 +15,7 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
 
   describe '#to_csv' do
     context 'when there is no persisted CSV data' do
-      let(:batch) { FactoryBot.build(:pending_induction_submission_batch, :action, data:) }
+      let(:batch) { build(:pending_induction_submission_batch, :action, data:) }
       let(:data) { nil }
 
       it 'raises an error' do
@@ -24,11 +24,11 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
     end
 
     context 'when there is persisted CSV data' do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body) { create(:appropriate_body) }
       let(:batch) do
-        FactoryBot.create(:pending_induction_submission_batch, :action,
-                          appropriate_body:,
-                          data:)
+        create(:pending_induction_submission_batch, :action,
+               appropriate_body:,
+               data:)
       end
 
       let(:data) do
@@ -66,21 +66,21 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
 
       context 'and there are failed_submissions' do
         before do
-          FactoryBot.create(:pending_induction_submission,
-                            appropriate_body:,
-                            pending_induction_submission_batch: batch,
-                            trn: '1234567',
-                            error_messages: [
-                              'error one',
-                              'error two',
-                              'error three',
-                              'error four'
-                            ])
+          create(:pending_induction_submission,
+                 appropriate_body:,
+                 pending_induction_submission_batch: batch,
+                 trn: '1234567',
+                 error_messages: [
+                   'error one',
+                   'error two',
+                   'error three',
+                   'error four'
+                 ])
 
-          FactoryBot.create(:pending_induction_submission,
-                            appropriate_body:,
-                            pending_induction_submission_batch: batch,
-                            trn: '7654321')
+          create(:pending_induction_submission,
+                 appropriate_body:,
+                 pending_induction_submission_batch: batch,
+                 trn: '7654321')
         end
 
         it 'returns only failed submissions with their errors as a sentence' do

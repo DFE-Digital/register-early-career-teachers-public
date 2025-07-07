@@ -1,6 +1,6 @@
 RSpec.describe 'Appropriate body releasing an ECT' do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:appropriate_body) { create(:appropriate_body) }
+  let(:teacher) { create(:teacher) }
 
   describe 'GET /appropriate-body/teachers/:id/release/new' do
     context 'when not signed in' do
@@ -17,7 +17,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
 
       context 'and a teacher actively training' do
         before do
-          FactoryBot.create(:induction_period, :active, appropriate_body:, teacher:)
+          create(:induction_period, :active, appropriate_body:, teacher:)
         end
 
         it 'instantiates a new PendingInductionSubmission and renders the page' do
@@ -55,7 +55,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
         end
 
         let!(:induction_period) do
-          FactoryBot.create(:induction_period, :active, appropriate_body:, teacher:, started_on: "2022-09-01")
+          create(:induction_period, :active, appropriate_body:, teacher:, started_on: "2022-09-01")
         end
 
         let(:release_params) do
