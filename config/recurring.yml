@@ -1,4 +1,3 @@
-# production ===================================================================
 production:
   send_entity_table_checks_to_bigquery:
     class: DfE::Analytics::EntityTableCheckJob
@@ -15,17 +14,14 @@ production:
     queue: default
     schedule: Every hour
 
-# staging ======================================================================
 staging:
   purge_pending_induction_submissions:
     class: PurgePendingInductionSubmissionsJob
     queue: default
     schedule: Every hour
 
-# review =======================================================================
 review:
   purge_pending_induction_submissions:
     class: PurgePendingInductionSubmissionsJob
     queue: default
     schedule: Every hour
-    

@@ -5,27 +5,21 @@ class ProcessBatchJob < ApplicationJob
     raise NotImplementedError, "You must implement the #{name}#batch_service method"
   end
 
+  queue_as :process_batch
+
+  retry_on ::RuntimeError, wait: 1.second, attempts: 2
+
   # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
   # @param author_email [String]
   # @param author_name [String]
   def perform(pending_induction_submission_batch, author_email, author_name)
-    return if pending_induction_submission_batch.processing?
+    return if pending_induction_submission_batch.failed?
 
     author = event_author(pending_induction_submission_batch, author_email, author_name)
     batch_service = self.class.batch_service.new(pending_induction_submission_batch:, author:)
 
-    if pending_induction_submission_batch.processed?
-      pending_induction_submission_batch.completing!
-      batch_service.complete!
-      pending_induction_submission_batch.tally!
-      pending_induction_submission_batch.completed!
-      pending_induction_submission_batch.redact!
-
-    elsif pending_induction_submission_batch.pending?
-      pending_induction_submission_batch.processing!
-      batch_service.process!
-      pending_induction_submission_batch.processed!
-    end
+    batch_service.complete! if pending_induction_submission_batch.processed? || pending_induction_submission_batch.completing?
+    batch_service.process! if pending_induction_submission_batch.pending? || pending_induction_submission_batch.processing?
   rescue StandardError => e
     Rails.logger.debug("Attempt #{executions}: #{e.message}")
 
