@@ -5,14 +5,14 @@ describe Admin::StatementPresenter do
     let(:statement) { FactoryBot.build(:statement, month: 6, year: 2023) }
 
     it 'returns the month name and year in a string' do
-      expect(subject.month_and_year).to eql('June 2023')
+      expect(subject.period).to eql('June 2023')
     end
 
     context 'when the month is invalid' do
       let(:statement) { FactoryBot.build(:statement, month: 13, year: 2023) }
 
       it 'raises an IndexError' do
-        expect { subject.month_and_year }.to raise_error(IndexError)
+        expect { subject.period }.to raise_error(IndexError)
       end
     end
   end
