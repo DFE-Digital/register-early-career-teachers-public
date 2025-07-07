@@ -15,4 +15,6 @@ class SchoolPartnership < ApplicationRecord
               scope: :lead_provider_delivery_partnership_id,
               message: 'School and lead provider delivery partnership combination must be unique'
             }
+
+  scope :earliest_first, -> { order(created_at: 'asc') }
 end
