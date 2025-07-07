@@ -17,6 +17,10 @@ module SchoolPartnerships
       scope.earliest_first
     end
 
+    def earliest_school_partnership
+      school_partnerships.first
+    end
+
   private
 
     def where_lead_provider(lead_provider)
