@@ -1,5 +1,5 @@
 ---
-title: ECT programme guidance
+title: ECT guidance
 ---
 
 Hi
