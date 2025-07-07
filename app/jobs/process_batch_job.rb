@@ -15,11 +15,18 @@ class ProcessBatchJob < ApplicationJob
     batch_service = self.class.batch_service.new(pending_induction_submission_batch:, author:)
 
     if pending_induction_submission_batch.processed?
-      pending_induction_submission_batch.completing!
-      batch_service.complete!
-      pending_induction_submission_batch.tally!
-      pending_induction_submission_batch.completed!
-      pending_induction_submission_batch.redact!
+
+      if batch_service.revalidated? # still valid
+        pending_induction_submission_batch.completing!
+        batch_service.complete!
+        pending_induction_submission_batch.tally!
+        pending_induction_submission_batch.completed!
+        pending_induction_submission_batch.redact!
+      else # reset / retry
+        pending_induction_submission_batch.pending_induction_submissions.delete_all
+        pending_induction_submission_batch.pending!
+        self.class.perform_later(pending_induction_submission_batch, author_email, author_name)
+      end
 
     elsif pending_induction_submission_batch.pending?
       pending_induction_submission_batch.processing!
