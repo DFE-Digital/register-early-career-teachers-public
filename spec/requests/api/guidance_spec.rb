@@ -15,8 +15,24 @@ RSpec.describe "API Guidance pages" do
     end
   end
 
-  describe "GET /api/page-1" do
-    before { get(api_guidance_page_path('page-1')) }
+  describe "GET /api/early-career-training-programme-guidance" do
+    before { get(api_guidance_page_path('early-career-training-programme-guidance')) }
+
+    it "returns http success" do
+      expect(response).to be_successful
+    end
+  end
+
+  describe "GET /api/how-to-use-api" do
+    before { get(api_guidance_page_path('how-to-use-api')) }
+
+    it "returns http success" do
+      expect(response).to be_successful
+    end
+  end
+
+  describe "GET /api/technical-documentation" do
+    before { get(api_guidance_page_path('technical-documentation')) }
 
     it "returns http success" do
       expect(response).to be_successful

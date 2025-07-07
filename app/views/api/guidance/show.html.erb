@@ -1,33 +1,47 @@
 <%
   page_data(
     title: "API guidance",
-    header: "Integrate with this API to view, submit and update ECF training data",
+    header: "Lead provider guidance: early career training programme",
     header_classes: %w(x-govuk-masthead__title)
   )
 %>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Nunc condimentum</h2>
-
+    <h2 class="govuk-heading-m">Release notes</h2>
     <p>
-      Praesent convallis ultrices pharetra. Ut id nulla at risus mollis vulputate quis at dui. Donec imperdiet lacinia porttitor. Curabitur quis rutrum sapien.
+      We publish release notes whenever we make updates to the API such as new features, fixes, or improvements. This so lead providers know how the update might affect their use of the API.
     </p>
+    <p><%= govuk_link_to("Browse all release notes", api_guidance_release_notes_path) %></p>
 
+    <h3 class="govuk-caption-xl">23 June 2025</h3>
+    <h3 class="govuk-heading-s">View financial statements in test environment</h3>
+    <p><%= govuk_link_to("Lead providers can now check their financial statements in the API sandbox", "https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3") %></p>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">Technical documentation</h2>
     <p>
-      Nam efficitur velit nec est ultrices mollis. Sed mauris odio, tincidunt a quam ut, imperdiet gravida lacus.
-
-      Sed magna nulla, tristique sagittis sem quis, malesuada venenatis elit.
+      These instructions and reference materials explain how to use our API, including its endpoints, data formats, and authentication.
     </p>
+    <p><%= govuk_link_to("View our API technical documentation", api_guidance_page_path("technical-documentation")) %></p>
+  </div>
 
-    <h2 class="govuk-heading-m">Pulvinar vehicula</h2>
-
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">Sandbox</h2>
     <p>
-      Curabitur rutrum nibh non lacus eleifend, quis posuere urna mollis. Nunc condimentum orci id eros vulputate ultrices. Aliquam erat volutpat.
+      The sandbox environment is where lead providers can test API integrations without affecting real data.
     </p>
+    <p><%= govuk_link_to("Use the lead provider sandbox", api_guidance_page_path("sandbox")) %></p>
+  </div>
 
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">Guidance</h2>
     <p>
-      Maecenas porttitor justo consectetur pulvinar vehicula. Nullam rhoncus quis quam et ornare.
+      Find out what data lead providers need to submit to DfE, how to keep it up to date, and when to report changes about early career teachers and their mentors.
     </p>
+    <p><%= govuk_link_to("View our programme guidance", api_guidance_page_path("early-career-training-programme-guidance")) %></p>
   </div>
 </div>
