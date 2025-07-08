@@ -21,6 +21,17 @@ module Schools
       def date_missing?
         super || date_as_hash.values_at(1, 2, 3).all?(&:nil?)
       end
+
+      def extra_validation_error_message
+        return unless earliest_permitted_date
+        return unless value_as_date < earliest_permitted_date
+
+        "Enter a date later than #{earliest_permitted_date.strftime('%-d %B %Y')}"
+      end
+
+      def earliest_permitted_date
+        ContractPeriod.earliest_permitted_start_date
+      end
     end
   end
 end
