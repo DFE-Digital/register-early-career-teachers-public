@@ -2,7 +2,7 @@ module AppropriateBodies
   module ProcessBatch
     # Management of closing induction periods in bulk via CSV upload
     class Action < Base
-      # @return [Array<Boolean>] convert the valid submissions into permanent records
+      # @return [nil, true] convert the valid submissions into permanent records
       def complete!
         pending_induction_submission_batch.completing!
 

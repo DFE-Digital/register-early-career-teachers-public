@@ -13,7 +13,7 @@ module AppropriateBodies
         @appropriate_body = pending_induction_submission_batch.appropriate_body
       end
 
-      # @return [nil] validate each row and create a submission capturing the errors
+      # @return [true] validate each row and create a submission capturing the errors
       def process!
         pending_induction_submission_batch.processing!
 
