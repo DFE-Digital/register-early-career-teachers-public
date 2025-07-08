@@ -3,7 +3,7 @@ default: &default
     - polling_interval: 1
       batch_size: 500
   workers:
-    - queues: [process_batch, mailers, events, migration, parity_check_requests, trs_sync, dfe_analytics, "*"]
+    - queues: [mailers, process_batch, events, migration, parity_check_requests, trs_sync, dfe_analytics, "*"]
       threads: 3
       processes: 3
       polling_interval: 0.1
