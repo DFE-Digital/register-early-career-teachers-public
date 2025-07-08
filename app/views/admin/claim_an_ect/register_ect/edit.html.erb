@@ -1,0 +1,58 @@
+<% page_data(
+  title: "Add induction period for #{pending_induction_submission_full_name(@pending_induction_submission)}",
+  error: @pending_induction_submission.errors.present?,
+  backlink_href: edit_admin_appropriate_body_claim_an_ect_check_path(@appropriate_body, @pending_induction_submission))
+%>
+
+<%= form_with(model: @pending_induction_submission, url: admin_appropriate_body_claim_an_ect_register_path(@appropriate_body, @pending_induction_submission, method: 'patch')) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <div class="govuk-form-group">
+    <label class="govuk-label govuk-label--m">Appropriate body</label>
+    <p class="govuk-body"><%= @appropriate_body.name %></p>
+    <%= f.hidden_field :appropriate_body_id, value: @appropriate_body.id %>
+  </div>
+
+  <%=
+    f.govuk_date_field :started_on,
+      legend: { text: "When did #{pending_induction_submission_full_name(@pending_induction_submission)} start their induction?" },
+      hint: { text: teacher_induction_date_hint_text }
+  %>
+
+  <%=
+    f.govuk_date_field :finished_on,
+      legend: { text: "When did #{pending_induction_submission_full_name(@pending_induction_submission)} finish their induction?" },
+      hint: { text: "Leave blank if induction is ongoing" }
+  %>
+
+  <%=
+    f.govuk_text_field :number_of_terms,
+      width: 10,
+      label: { text: "Number of terms" },
+      hint: { text: "Enter the number of terms completed (e.g. 6)" }
+  %>
+
+  <%=
+    f.govuk_collection_radio_buttons :induction_programme,
+      induction_programme_choices,
+      :identifier,
+      :name,
+      legend: { text: "Which ECF based induction training programme is #{pending_induction_submission_full_name(@pending_induction_submission)} doing?" }
+  %>
+
+  <%=
+    f.govuk_collection_radio_buttons :trs_induction_status,
+      [
+        OpenStruct.new(identifier: 'InProgress', name: 'In progress'),
+        OpenStruct.new(identifier: 'Passed', name: 'Passed'),
+        OpenStruct.new(identifier: 'Failed', name: 'Failed'),
+        OpenStruct.new(identifier: 'NotYetCompleted', name: 'Not yet completed')
+      ],
+      :identifier,
+      :name,
+      legend: { text: "What is the induction status?" },
+      hint: { text: "Select the current status of the induction" }
+  %>
+
+  <%= f.govuk_submit %>
+<% end %>

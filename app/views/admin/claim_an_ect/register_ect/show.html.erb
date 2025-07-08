@@ -1,0 +1,28 @@
+<% page_data(
+  title: "#{pending_induction_submission_full_name(@pending_induction_submission)} is imported",
+  header: false)
+%>
+
+<%= govuk_panel(title_text: "You've successfully imported #{PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name}'s record from TRS") %>
+
+<p>
+  You've successfully imported <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> into the system. Their record is now available for management and their induction period has been created.
+</p>
+
+<h2 class="govuk-heading-m">What happens next</h2>
+
+<p>
+  You can now manage <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %>'s induction using this service. For example, you can:
+</p>
+
+<ul class="govuk-list govuk-list--bullet">
+  <li>view and edit their induction periods</li>
+  <li>add extensions if needed</li>
+  <li>record induction outcomes</li>
+  <li>view their complete history</li>
+</ul>
+
+<ul class="govuk-list">
+  <li><%= govuk_link_to("Import another ECT", new_admin_appropriate_body_claim_an_ect_find_path(@appropriate_body), no_visited_state: true) %></li>
+  <li><%= govuk_link_to("Back to teachers", admin_teachers_path, no_visited_state: true) %></li>
+</ul>

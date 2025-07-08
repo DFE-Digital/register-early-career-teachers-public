@@ -1,0 +1,9 @@
+<% if registration_blocked? %>
+  <%= govuk_inset_text do %>
+    <%= blocked_registration_message %>
+  <% end %>
+<% elsif show_claim_form? %>
+  <%= form_with(model: @pending_induction_submission, url: admin_appropriate_body_claim_an_ect_check_path(@appropriate_body, @pending_induction_submission, method: 'patch')) do |f| %>
+    <%= f.govuk_submit("Import ECT") %>
+  <% end %>
+<% end %>

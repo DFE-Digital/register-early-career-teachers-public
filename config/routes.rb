@@ -65,6 +65,21 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :appropriate_bodies, only: %i[index show] do
+      namespace :claim_an_ect, path: 'claim-an-ect' do
+        resource :find_ect, only: %i[new create], path: 'find-ect', controller: '/admin/claim_an_ect/find_ect', as: 'find'
+        resources :check_ect, only: %i[edit update], path: 'check-ect', controller: '/admin/claim_an_ect/check_ect', as: 'check'
+        resources :register_ect, only: %i[edit update show], path: 'register-ect', controller: '/admin/claim_an_ect/register_ect', as: 'register'
+
+        namespace :errors do
+          get 'induction-already-completed/:id', to: '/admin/claim_an_ect/errors#induction_already_completed', as: 'already_complete'
+          get 'induction-with-another-appropriate-body/:id', to: '/admin/claim_an_ect/errors#induction_with_another_appropriate_body', as: 'another_ab'
+          get 'no-qts/:id', to: '/admin/claim_an_ect/errors#no_qts', as: 'no_qts'
+          get 'prohibited-from-teaching/:id', to: '/admin/claim_an_ect/errors#prohibited_from_teaching', as: 'prohibited'
+        end
+      end
+    end
+
     resource :finance, only: %i[show], controller: 'finance' do
       collection do
         resources :statements, as: 'finance_statements', controller: 'finance/statements', only: %i[index show] do

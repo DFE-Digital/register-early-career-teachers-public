@@ -1,0 +1,49 @@
+<% page_data(
+  title: "Find an early career teacher's (ECT) record",
+  error: @pending_induction_submission.errors.present?,
+  backlink_href: admin_appropriate_body_path(@appropriate_body))
+%>
+
+<%= form_with(model: @pending_induction_submission, url: admin_appropriate_body_claim_an_ect_find_path(@appropriate_body)) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%=
+    f.govuk_text_field(
+      :trn,
+      width: 10,
+      label: { text: "Teacher reference number (TRN)", size: "m" },
+      hint: { text: "Must be 7 digits long" },
+      extra_letter_spacing: true
+    )
+  %>
+
+  <%=
+    f.govuk_date_field(
+      :date_of_birth,
+      legend: { text: "Date of birth" },
+      hint: { text: teacher_date_of_birth_hint_text },
+    )
+  %>
+
+  <%= f.govuk_submit %>
+<% end %>
+
+<%= render TestGuidanceComponent.new do |component| %>
+  <% if Rails.application.config.enable_fake_trs_api %>
+    <% component.with_trs_fake_api_instructions %>
+  <% else %>
+    <% component.with_trs_example_teacher_details %>
+
+    <% if @pending_induction_submission.persisted? %>
+      <h2 class="govuk-heading-m">Error preview</h2>
+      <%=
+        govuk_list([
+          govuk_link_to('Induction already completed', admin_appropriate_body_claim_an_ect_errors_already_complete_path(@appropriate_body, @pending_induction_submission), no_visited_state: true),
+          govuk_link_to('Induction with another appropriate body', admin_appropriate_body_claim_an_ect_errors_another_ab_path(@appropriate_body, @pending_induction_submission), no_visited_state: true),
+          govuk_link_to('No QTS', admin_appropriate_body_claim_an_ect_errors_no_qts_path(@appropriate_body, @pending_induction_submission), no_visited_state: true),
+          govuk_link_to('Prohibited from teaching', admin_appropriate_body_claim_an_ect_errors_prohibited_path(@appropriate_body, @pending_induction_submission), no_visited_state: true),
+        ])
+      %>
+    <% end %>
+  <% end %>
+<% end %>
