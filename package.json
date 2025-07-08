@@ -10,7 +10,7 @@
     "swagger-ui-dist": "^5.26.2"
   },
   "devDependencies": {
-    "playwright": "^1.52.0",
+    "playwright": "^1.53.2",
     "standard": "^17.1.2",
     "stylelint": "^16.21.1",
     "stylelint-config-gds": "^2.0.0"
