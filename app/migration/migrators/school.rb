@@ -5,7 +5,6 @@ module Migrators
       funding_eligibility: :funding_eligibility,
       induction_eligibility: :induction_eligibility,
       in_england: :in_england?,
-      local_authority_code: :local_authority_code,
       name: :name,
       phase_name: :school_phase_name,
       section_41_approved: :section_41_approved,
