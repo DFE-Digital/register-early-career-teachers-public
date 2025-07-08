@@ -7,10 +7,6 @@ default: &default
       threads: 3
       processes: 3
       polling_interval: 0.1
-    - queues: [parity_check_requests]
-      threads: 3
-      processes: 3
-      polling_interval: 0.1
 
 development:
   <<: *default
