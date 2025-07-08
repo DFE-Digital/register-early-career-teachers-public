@@ -179,14 +179,14 @@ module Events
 
     def self.teacher_name_changed_in_trs_event!(old_name:, new_name:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
       event_type = :teacher_name_updated_by_trs
-      heading = "Name changed from '#{old_name}' to '#{new_name}'"
+      heading = TransitionDescription.for("name", from: old_name, to: new_name)
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
     def self.teacher_induction_status_changed_in_trs_event!(old_induction_status:, new_induction_status:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_status_updated
-      heading = "Induction status changed from '#{old_induction_status}' to '#{new_induction_status}'"
+      heading = TransitionDescription.for("induction_status", from: old_induction_status, to: new_induction_status)
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
