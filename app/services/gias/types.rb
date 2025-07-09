@@ -1,5 +1,5 @@
 module GIAS
-  class Types
+  module Types
     ALL_TYPES = [
       "Academy 16 to 19 sponsor led",
       "Academy 16-19 converter",
@@ -86,5 +86,7 @@ module GIAS
     ].freeze
 
     IN_ENGLAND_TYPES = (ALL_TYPES - NOT_IN_ENGLAND_TYPES).freeze
+
+    OPEN_STATUSES = GIAS::School.statuses.values_at("open", "proposed_to_close").freeze
   end
 end
