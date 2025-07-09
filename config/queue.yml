@@ -8,6 +8,29 @@ default: &default
       processes: 3
       polling_interval: 0.1
 
+migration:
+  dispatchers:
+    - polling_interval: 1
+      batch_size: 500
+  workers:
+    - queues: [mailers, events, migration, parity_check_requests, trs_sync, dfe_analytics, "*"]
+      threads: 3
+      processes: 3
+      polling_interval: 0.1
+    - queues: [parity_check_requests]
+      threads: 3
+      processes: 3
+      polling_interval: 0.1
+
+review:
+  <<: *default
+
+staging:
+  <<: *default
+
+sandbox:
+  <<: *default
+
 development:
   <<: *default
 
