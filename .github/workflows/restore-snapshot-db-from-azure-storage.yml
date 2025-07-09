@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: Environment to backup
+        description: Environment to restore
         required: true
         default: production
         type: choice
@@ -32,7 +32,7 @@ on:
         required: true
     inputs:
       environment:
-        description: Environment to backup
+        description: Environment to restore
         required: true
         default: production
         type: string
@@ -52,8 +52,8 @@ permissions:
   id-token: write
 
 jobs:
-  backup:
-    name: Backup database
+  restore:
+    name: Restore database
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment || 'production' }}
