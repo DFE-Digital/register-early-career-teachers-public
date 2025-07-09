@@ -31,5 +31,9 @@ FactoryBot.define do
     trait :teaching_school_hub_ab_last_chosen do
       association :last_chosen_appropriate_body, :teaching_school_hub, factory: :appropriate_body
     end
+
+    trait :eligible do
+      gias_school { association :gias_school, :eligible_type, urn: }
+    end
   end
 end

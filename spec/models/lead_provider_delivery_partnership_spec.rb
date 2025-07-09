@@ -43,4 +43,9 @@ describe LeadProviderDeliveryPartnership do
       end
     end
   end
+
+  describe "delegate methods" do
+    it { is_expected.to delegate_method(:lead_provider).to(:active_lead_provider) }
+    it { is_expected.to delegate_method(:contract_period).to(:active_lead_provider) }
+  end
 end

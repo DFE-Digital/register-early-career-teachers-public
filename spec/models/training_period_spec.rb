@@ -10,6 +10,7 @@ describe TrainingPeriod do
     it { is_expected.to have_one(:active_lead_provider).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
+    it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
   end
 
   describe "validations" do
