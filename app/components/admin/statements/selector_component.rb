@@ -27,7 +27,7 @@ module Admin
 
         dates.map do |date|
           statement_date.new(
-            name: "#{month_name(date[1])} #{date[0]}", # January 2025
+            name: ::Statements::Period.from_year_and_month(date.first, date.second), # January 2025
             id: date.join("-") # 2025-01
           )
         end
@@ -35,12 +35,6 @@ module Admin
 
       def statement_date
         [@statement.year, @statement.month].join("-")
-      end
-
-    private
-
-      def month_name(month)
-        Date::MONTHNAMES.fetch(month)
       end
     end
   end
