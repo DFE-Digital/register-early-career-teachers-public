@@ -13,3 +13,15 @@ production:
     class: Teachers::ScheduleTRSSyncJob
     queue: default
     schedule: Every hour
+
+staging:
+  purge_pending_induction_submissions:
+    class: PurgePendingInductionSubmissionsJob
+    queue: default
+    schedule: Every hour
+
+review:
+  purge_pending_induction_submissions:
+    class: PurgePendingInductionSubmissionsJob
+    queue: default
+    schedule: Every hour

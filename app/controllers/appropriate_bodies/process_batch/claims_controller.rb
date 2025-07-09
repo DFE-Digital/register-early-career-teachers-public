@@ -12,9 +12,7 @@ module AppropriateBodies
         @pending_induction_submission_batch = new_batch_claim
 
         if csv_data.valid?
-          @pending_induction_submission_batch.data = csv_data.to_a
-          @pending_induction_submission_batch.filename = csv_data.file_name
-          @pending_induction_submission_batch.save!
+          @pending_induction_submission_batch.update!(data: csv_data.to_a, **csv_data.metadata)
 
           record_bulk_upload_started_event
           process_batch_claim

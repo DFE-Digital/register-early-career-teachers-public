@@ -37,19 +37,75 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   validates :appropriate_body, presence: true
   validates :batch_status, presence: true
   validates :batch_type, presence: true
-  validates :data, presence: true
+  validates :data, presence: true, if: :processed? # redact!
 
   # Callbacks
   after_update_commit :update_batch_progress
 
-  # @return [Boolean]
+  # @return [Float] when processing
+  def progress
+    pending_induction_submissions.count.to_f / data.count * 100
+  end
+
+  # @return [Boolean] when processed
   def no_valid_data?
     pending_induction_submissions.count == pending_induction_submissions.with_errors.count
   end
 
-  # @return [Float]
-  def progress
-    pending_induction_submissions.count.to_f / data.count * 100
+  # @return [Boolean] when completing and completed
+  def errored?
+    if errored_count.nil?
+      pending_induction_submissions.with_errors.count.positive?
+    else
+      errored_count.positive?
+    end
+  end
+
+  # @return [Integer] when completing and completed
+  def recorded_count
+    if processed_count.nil?
+      pending_induction_submissions.without_errors.count
+    else
+      processed_count - errored_count
+    end
+  end
+
+  # @see BatchHelper#batch_action_summary
+  # @return [Hash{Symbol => Integer}]
+  def tally
+    {
+      uploaded_count: uploaded_count || rows.count,
+      processed_count: processed_count || pending_induction_submissions.count,
+      errored_count: errored_count || pending_induction_submissions.with_errors.count,
+      released_count: released_count || pending_induction_submissions.released.count,
+      failed_count: failed_count || pending_induction_submissions.failed.count,
+      passed_count: passed_count || pending_induction_submissions.passed.count,
+      claimed_count: claimed_count || pending_induction_submissions.claimed.count
+    }
+  end
+
+  # @see [ProcessBatchJob#perform]
+  # @return [Boolean] record metrics before successful submissions are pruned
+  def tally!
+    update(
+      uploaded_count: rows.count,
+      processed_count: pending_induction_submissions.count,
+      errored_count: pending_induction_submissions.with_errors.count,
+      released_count: pending_induction_submissions.released.count,
+      failed_count: pending_induction_submissions.failed.count,
+      passed_count: pending_induction_submissions.passed.count,
+      claimed_count: pending_induction_submissions.claimed.count
+    )
+  end
+
+  # @return [Boolean]
+  def redactable?
+    completed? && pending_induction_submissions.with_errors.count.zero?
+  end
+
+  # @return [nil, true] purge PII when all submissions have been successful
+  def redact!
+    update!(data: []) if redactable?
   end
 
 private

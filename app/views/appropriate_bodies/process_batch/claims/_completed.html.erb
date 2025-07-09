@@ -8,12 +8,12 @@
 <%= govuk_panel(title_text: "ECTs successfully claimed") %>
 
 <p class='govuk-body'>
-  You claimed <%= batch.pending_induction_submissions.without_errors.count %> ECT records.
+  You claimed <%= batch.recorded_count %> ECT records.
 </p>
 
-<% if batch.pending_induction_submissions.with_errors.any? %>
+<% if batch.errored? %>
   <p class='govuk-body'>
-    You had <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors.
+    You had <%= pluralize(batch.tally[:errored_count], 'ECT') %> with errors.
   </p>
 
   <p class='govuk-body'>
