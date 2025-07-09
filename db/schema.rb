@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_02_105204) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_08_153449) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -661,6 +661,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_02_105204) do
     t.string "migration_item_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "model", null: false
+    t.index ["model"], name: "index_teacher_migration_failures_on_model"
     t.index ["teacher_id"], name: "index_teacher_migration_failures_on_teacher_id"
   end
 

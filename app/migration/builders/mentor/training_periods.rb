@@ -33,7 +33,7 @@ module Builders
           training_period.ecf_end_induction_record_id = period.end_source_id
           training_period.save!
         rescue ActiveRecord::ActiveRecordError => e
-          ::TeacherMigrationFailure.create!(teacher:, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
+          ::TeacherMigrationFailure.create!(teacher:, model: :training_period, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
           success = false
         end
 
