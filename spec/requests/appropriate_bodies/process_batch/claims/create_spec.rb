@@ -1,4 +1,4 @@
-RSpec.describe "Appropriate Body bulk actions upload", type: :request do
+RSpec.describe "Appropriate Body bulk claims upload", type: :request do
   include AuthHelper
   include ActionDispatch::TestProcess
 
@@ -7,7 +7,7 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
   let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
   let(:csv_file) do
-    fixture_file_upload('spec/fixtures/valid_complete_action.csv', 'text/csv')
+    fixture_file_upload('spec/fixtures/valid_complete_claim.csv', 'text/csv')
   end
 
   let(:batch) do
@@ -16,19 +16,19 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
 
   include_context 'fake trs api client'
 
-  describe 'POST /appropriate-body/bulk/actions' do
+  describe 'POST /appropriate-body/bulk/claims' do
     it "enqueues a job" do
       expect {
-        post ab_batch_actions_path, params: {
+        post ab_batch_claims_path, params: {
           pending_induction_submission_batch: { csv_file: }
         }
-      }.to have_enqueued_job(ProcessBatchActionJob)
+      }.to have_enqueued_job(ProcessBatchClaimJob)
     end
 
     it "records an upload started event" do
       allow(Events::Record).to receive(:record_bulk_upload_started_event!).and_call_original
 
-      post ab_batch_actions_path, params: {
+      post ab_batch_claims_path, params: {
         pending_induction_submission_batch: { csv_file: }
       }
 
@@ -44,11 +44,11 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
     end
 
     it "redirects" do
-      post ab_batch_actions_path, params: {
+      post ab_batch_claims_path, params: {
         pending_induction_submission_batch: { csv_file: }
       }
 
-      expect(response).to redirect_to(ab_batch_action_path(batch))
+      expect(response).to redirect_to(ab_batch_claim_path(batch))
       follow_redirect!
       expect(response.body).to include("We're processing your CSV file, it could take up to 5 minutes.")
     end
@@ -59,7 +59,7 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
       end
 
       it "shows error message" do
-        post ab_batch_actions_path, params: {
+        post ab_batch_claims_path, params: {
           pending_induction_submission_batch: { csv_file: }
         }
         expect(response).to have_http_status(:unprocessable_entity)
