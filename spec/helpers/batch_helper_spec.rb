@@ -84,5 +84,38 @@ RSpec.describe BatchHelper, type: :helper do
         expect(batch_action_summary(batch)).to have_text('0 ECTs with a released outcome')
       end
     end
+
+    describe '#admin_batch_list_table' do
+      subject(:table) { admin_batch_list_table(batches) }
+
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: 'The Appropriate Body') }
+
+      let(:batches) do
+        [
+          FactoryBot.create(:pending_induction_submission_batch, :action, :completed, appropriate_body:),
+          FactoryBot.create(:pending_induction_submission_batch, :claim, :processing, appropriate_body:)
+        ]
+      end
+
+      it do
+        expect(table).to have_selector('table tr', count: 3)
+        expect(table).to have_selector('th', text: 'Batch ID')
+        expect(table).to have_selector('th', text: 'Appropriate Body')
+        expect(table).to have_selector('th', text: 'Type')
+        expect(table).to have_selector('th', text: 'Status')
+        expect(table).to have_selector('th', text: 'Filename')
+        expect(table).to have_selector('th', text: 'Created')
+        expect(table).to have_selector('th', text: 'CSV Rows')
+        expect(table).to have_selector('th', text: 'Processed')
+        expect(table).to have_selector('th', text: 'Errors')
+        expect(table).to have_selector('th', text: 'Action')
+
+        expect(table).to have_selector('td', text: 'The Appropriate Body')
+        expect(table).to have_selector('td', text: 'Action')
+        expect(table).to have_selector('td', text: 'Completed')
+        expect(table).to have_selector('td', text: 'Claim')
+        expect(table).to have_selector('td', text: 'Processing')
+      end
+    end
   end
 end
