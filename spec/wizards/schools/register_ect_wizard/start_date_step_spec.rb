@@ -29,7 +29,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
   end
 
   describe 'validations' do
-    subject { described_class.new(start_date:) }
+    subject { described_class.new(start_date:, wizard:) }
 
     context 'when the start_date is not present' do
       let(:start_date) { nil }
@@ -45,6 +45,81 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
       it 'is valid' do
         expect(subject).to be_valid
+      end
+    end
+
+    describe 'start date must be after previous ECTAtSchoolPeriod started_on date' do
+      let(:previous_school) do
+        FactoryBot.create(:school, :independent).tap do |school|
+          school.gias_school.update!(name: 'Springfield Primary')
+        end
+      end
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      let!(:previous_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          teacher:,
+                          school: previous_school,
+                          started_on: Date.new(2024, 9, 1),
+                          finished_on: Date.new(2025, 3, 31))
+      end
+
+      let(:wizard) do
+        FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:, school:).tap do |instance|
+          allow(instance).to receive(:ect).and_return(Schools::RegisterECTWizard::ECT.new(teacher))
+        end
+      end
+
+      let(:start_date) { { 1 => '2024', 2 => '10', 3 => '01' } }
+
+      context 'when the start_date is before the previous ECTAtSchoolPeriod started_on date' do
+        let(:start_date) { { 1 => '2024', 2 => '08', 3 => '01' } }
+
+        it 'is not valid' do
+          expect(subject).not_to be_valid
+          expect(subject.errors[:start_date]).to include(
+            "This ECT was previously registered at Springfield Primary (1 September 2024). Enter a later date."
+          )
+        end
+      end
+
+      context 'when the start_date is on the previous ECTAtSchoolPeriod started_on date' do
+        let(:start_date) { { 1 => '2024', 2 => '09', 3 => '01' } }
+
+        it 'is valid' do
+          expect(subject).to be_valid
+          expect(subject.errors[:start_date]).to be_blank
+        end
+      end
+
+      context 'when the start_date is after the previous ECTAtSchoolPeriod started_on date' do
+        let(:start_date) { { 1 => '2024', 2 => '10', 3 => '01' } }
+
+        it 'is valid' do
+          expect(subject).to be_valid
+          expect(subject.errors[:start_date]).to be_blank
+        end
+      end
+
+      context 'when the start_date is blank' do
+        let(:start_date) { nil }
+
+        it 'is not valid' do
+          expect(subject).not_to be_valid
+          expect(subject.errors[:start_date]).not_to include(
+            "This ECT was previously registered at Springfield Primary (1 September 2024). Enter a later date."
+          )
+        end
+      end
+
+      context 'when there is no previous period' do
+        let(:previous_period) { nil }
+
+        it 'is valid' do
+          expect(subject).to be_valid
+          expect(subject.errors[:start_date]).to be_blank
+        end
       end
     end
   end

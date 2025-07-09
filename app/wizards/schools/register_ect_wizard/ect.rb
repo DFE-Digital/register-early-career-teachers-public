@@ -134,6 +134,13 @@ module Schools
         Teachers::Name.new(self).full_name_in_trs
       end
 
+      def previous_ect_at_school_period
+        @previous_ect_at_school_period ||= ECTAtSchoolPeriods::Search
+          .new(order: :started_on)
+          .ect_periods(trn:)
+          .last
+      end
+
     private
 
       def first_induction_period
@@ -152,13 +159,6 @@ module Schools
 
       def previous_delivery_partner
         previous_training_period&.delivery_partner
-      end
-
-      def previous_ect_at_school_period
-        @previous_ect_at_school_period ||= ECTAtSchoolPeriods::Search
-          .new(order: :started_on)
-          .ect_periods(trn:)
-          .last
       end
 
       def previous_induction_period

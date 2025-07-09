@@ -4,6 +4,7 @@ module Schools
       attr_accessor :start_date
 
       validates :start_date, ect_start_date: true
+      validate :start_date_not_before_previous_school
 
       def self.permitted_params
         %i[start_date]
@@ -20,6 +21,20 @@ module Schools
       end
 
     private
+
+      def start_date_not_before_previous_school
+        return if start_date.blank? || errors[:start_date].any?
+
+        previous_period = ect.previous_ect_at_school_period
+        return if previous_period.blank? || previous_period.started_on.blank?
+
+        if start_date_as_date < previous_period.started_on
+          errors.add(
+            :start_date,
+            "This ECT was previously registered at #{previous_period.school&.name} (#{previous_period.started_on.to_formatted_s(:govuk)}). Enter a later date."
+          )
+        end
+      end
 
       def persist
         ect.update!(start_date: start_date_formatted)
