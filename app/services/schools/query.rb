@@ -164,7 +164,9 @@ module Schools
     def default_scope(contract_period_id)
       return School.none if ignore?(filter: contract_period_id) || contract_period_id.blank?
 
-      School.eligible
+      School
+        .eligible
+        .not_cip_only
         .eager_load(:gias_school)
     end
 
