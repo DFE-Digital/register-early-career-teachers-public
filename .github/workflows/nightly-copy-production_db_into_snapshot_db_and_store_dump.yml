@@ -9,21 +9,21 @@ permissions:
   id-token: write
 
 jobs:
-  generate-day_of_week:
+  generate-date:
     runs-on: ubuntu-latest
     outputs:
-      today_day: ${{ steps.get-day.outputs.today_day }}
+      today: ${{ steps.get-date.outputs.today }}
     steps:
-      - name: Get today's day of the week
-        id: get-day
-        run: echo "today_day=$(date +'%A')" >> $GITHUB_OUTPUT
+      - name: Get today's date
+        id: get-date
+        run: echo "today=$(date +'%F')" >> $GITHUB_OUTPUT
 
   backup-production-and-store-in-azure-storage:
     uses: ./.github/workflows/backup-db.yml
-    needs: generate-day_of_week
+    needs: generate-date
     with:
       environment: production
-      backup-file: cpdec2_production_nightly_copy_${{ needs.generate-day_of_week.outputs.today_day }}
+      backup-file: cpdec2_production_nightly_copy_${{ needs.generate-date.outputs.today }}
     secrets:
       azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
       azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -31,12 +31,12 @@ jobs:
 
   restore-snapshot-from-azure-storage:
     needs:
-      - generate-day_of_week
+      - generate-date
       - backup-production-and-store-in-azure-storage
     uses: ./.github/workflows/restore-snapshot-db-from-azure-storage.yml
     with:
       environment: production
-      backup-file: cpdec2_production_nightly_copy_${{ needs.generate-day_of_week.outputs.today_day }}
+      backup-file: cpdec2_production_nightly_copy_${{ needs.generate-date.outputs.today }}
     secrets:
       azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
       azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
