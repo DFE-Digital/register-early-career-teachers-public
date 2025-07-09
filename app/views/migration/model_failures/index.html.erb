@@ -1,0 +1,47 @@
+<% page_data(title: "Migration failures for #{@model.to_s.humanize}", backlink_href: migration_migrations_path) %>
+
+<% if @failures[:linked_failures].failure_count.positive? %>
+  <h3 class="govuk-heading-m">Teacher related failures (<%= @failures[:linked_failures].failure_count %> items in <%= @failures[:linked_failures].failures.count %> groups)</h3>
+  <%= govuk_table(html_attributes: { class: "govuk-!-font-size-14" }) do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Error")
+        row.with_cell(text: "Count")
+      end
+    end
+    table.with_body do |body|
+      @failures[:linked_failures].failures.each do |err, count|
+        body.with_row do |row|
+          row.with_cell(text: err)
+          row.with_cell do
+            govuk_link_to(count.to_s, migration_teacher_failures_path(err: err))
+          end
+        end
+      end
+    end
+  end %>
+<% end %>
+
+<% failure_group = @failures[:model_failures] %>
+<% if failure_group.failure_count.positive? %>
+  <h3 class="govuk-heading-m">
+    <%= failure_group.model.to_s.humanize %> un-linked failures
+    (<%= failure_group.failure_count %> items in <%= failure_group.failures.count %> groups)
+  </h3>
+  <%= govuk_table(html_attributes: { class: "govuk-!-font-size-14" }) do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Error")
+        row.with_cell(text: "Count")
+      end
+    end
+    table.with_body do |body|
+      failure_group.failures.each do |err, count|
+        body.with_row do |row|
+          row.with_cell(text: err)
+          row.with_cell(text: count)
+        end
+      end
+    end
+  end %>
+<% end %>
