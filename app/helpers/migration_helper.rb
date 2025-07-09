@@ -59,7 +59,7 @@ module MigrationHelper
     return unless failure_count.positive?
 
     model = data_migrations.sample.model
-    govuk_link_to "Failures", migration_failures_path(model:)
+    govuk_link_to "Failures", migration_model_failures_path(model:)
   end
 
   def data_migration_download_failures_report_link(data_migrations)

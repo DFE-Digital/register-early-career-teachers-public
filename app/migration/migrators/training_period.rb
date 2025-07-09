@@ -44,6 +44,7 @@ module Migrators
                      end
           else
             ::TeacherMigrationFailure.create!(teacher:,
+                                              model: :training_period,
                                               message: induction_records.error,
                                               migration_item_id: participant_profile.id,
                                               migration_item_type: participant_profile.class.name)
