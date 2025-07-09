@@ -45,6 +45,21 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   # Scopes
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
+  scope :for_contract_period, ->(year) {
+    joins(training_periods: {
+      active_lead_provider: :contract_period
+    }).where(contract_periods: { year: })
+  }
+  scope :with_expressions_of_interest_for_contract_period, ->(year) {
+    joins(training_periods: {
+      expression_of_interest: :contract_period
+    })
+    .where(contract_periods: { year: })
+  }
+  scope :with_expressions_of_interest_for_lead_provider_and_contract_period, ->(year, lead_provider_id) {
+    with_expressions_of_interest_for_contract_period(year)
+    .where(expression_of_interest: { lead_provider_id: })
+  }
 
   # Instance methods
 
