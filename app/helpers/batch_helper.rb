@@ -91,9 +91,9 @@ module BatchHelper
           batch_status_tag(batch),
           batch.file_name || '-',
           batch.created_at.to_fs(:govuk),
-          (batch.data&.count || 0).to_s,
-          batch.pending_induction_submissions.count.to_s,
-          batch.pending_induction_submissions.with_errors.count.to_s,
+          batch.tally[:uploaded_count].to_s,
+          batch.tally[:processed_count].to_s,
+          batch.tally[:errored_count].to_s,
           govuk_link_to('View', admin_bulk_batch_path(batch))
         ]
       end
