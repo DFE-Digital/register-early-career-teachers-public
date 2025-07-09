@@ -27,9 +27,12 @@ gem "mail-notify"
 
 gem "sentry-rails"
 gem "sentry-ruby"
-gem "solid_queue"
 gem "stackprof"
 gem "state_machines-activerecord"
+
+# Background jobs
+gem "mission_control-jobs"
+gem "solid_queue"
 
 # DfE Sign-In
 gem "omniauth"

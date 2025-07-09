@@ -21,7 +21,7 @@ private
   end
 
   def when_i_click_release_notes
-    page.get_by_role('link', name: 'Release notes').click
+    page.get_by_role('link', name: 'Release notes', exact: true).click
     expect(page.url).to end_with('/api/guidance/release-notes')
   end
 
