@@ -42,6 +42,7 @@ module Migrators
             result = Builders::Mentor::SchoolPeriods.new(teacher:, school_periods:).build
           else
             ::TeacherMigrationFailure.create!(teacher:,
+                                              model: :mentor_at_school_period,
                                               message: induction_records.error,
                                               migration_item_id: participant_profile.id,
                                               migration_item_type: participant_profile.class.name)
