@@ -53,6 +53,8 @@ module Schools
                                     school_urn:,
                                     email:,
                                     author:,
+                                    started_on:,
+                                    finish_existing_at_school_periods:,
                                     lead_provider:)
                                .register!
                                .tap { self.registered = true }
@@ -72,6 +74,10 @@ module Schools
 
       def lead_provider
         ECTAtSchoolPeriods::Training.new(ect).latest_lead_provider if ect
+      end
+
+      def finish_existing_at_school_periods
+        mentoring_at_new_school_only == "yes"
       end
 
     private
