@@ -34,20 +34,19 @@ module BatchRows
         members[0..-2].any? { |key| public_send(key).blank? }
       end
 
-      # @return [Boolean] pass, FAIL, Release (case-insensitive)
-      def invalid_outcome?
-        outcome !~ /\A(pass|fail|release)\z/i
-      end
-
-      # @return [Boolean] 0-16 upto one decimal place
-      def invalid_terms?
-        number_of_terms !~ /\A\d+(\.\d{1})?\z/ || !number_of_terms.to_f.between?(0, 16)
-      end
-
       # @return [Boolean] formatted as YYYY-MM-DD
       def invalid_date?
         members.grep(/date_of_birth|started_on|finished_on/).any? do |key|
           !Date.iso8601(public_send(key))
+        rescue Date::Error
+          true
+        end
+      end
+
+      # @return [Boolean] induction dates must be in the past
+      def future_dates?
+        members.grep(/started_on|finished_on/).any? do |key|
+          Date.parse(public_send(key).to_s).future?
         rescue Date::Error
           true
         end
@@ -58,12 +57,6 @@ module BatchRows
         !(Time.zone.today.year - Date.parse(date_of_birth.to_s).year).between?(18, 99)
       rescue Date::Error
         true
-      end
-
-      # @return [Boolean] school-led, provider-led (case-insensitive) new style
-      # @return [Boolean] diy, cip, fip (case-insensitive) old style
-      def invalid_training_programme?
-        induction_programme !~ /\A(diy|cip|fip)\z/i
       end
 
       # @param errors [Array<String>]
