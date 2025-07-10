@@ -1,0 +1,26 @@
+<% page_data(
+  title: "Will #{@mentor.full_name} be mentoring ECTs at your school only?",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: @wizard.previous_step_path,
+) %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_radio_buttons_fieldset :mentoring_at_new_school_only, legend: { text: "Our records show that #{@mentor.full_name} is already registered as a mentor at a different school" } do %>
+    <%= f.govuk_radio_button :mentoring_at_new_school_only,
+                         :yes,
+                         label: {
+                           text: "Yes, they will be mentoring at our school only",
+                         },
+                         link_errors: true %>
+    <%= f.govuk_radio_button :mentoring_at_new_school_only,
+                         :no,
+                         label: {
+                           text:
+                             "No, they will also be mentoring at another school",
+                         } %>
+  <% end %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>
