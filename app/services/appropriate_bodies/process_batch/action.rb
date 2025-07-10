@@ -75,10 +75,20 @@ module AppropriateBodies
       def incorrectly_formatted?
         super
 
-        pending_induction_submission.errors.add(:base, 'Outcome must be either pass, fail or release') if row.invalid_outcome?
-        pending_induction_submission.errors.add(:base, 'Enter number of terms between 0 and 16 using up to one decimal place') if row.invalid_terms?
+        pending_induction_submission.errors.add(:base, 'Outcome must be either pass, fail or release') if invalid_outcome?
+        pending_induction_submission.errors.add(:base, 'Enter number of terms between 0 and 16 using up to one decimal place') if invalid_terms?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
+      end
+
+      # @return [Boolean] pass, FAIL, Release (case-insensitive)
+      def invalid_outcome?
+        row.outcome !~ /\A(pass|fail|release)\z/i
+      end
+
+      # @return [Boolean] 0-16 upto one decimal place
+      def invalid_terms?
+        row.number_of_terms !~ /\A\d+(\.\d{1})?\z/ || !row.number_of_terms.to_f.between?(0, 16)
       end
 
       # @return [Boolean]
