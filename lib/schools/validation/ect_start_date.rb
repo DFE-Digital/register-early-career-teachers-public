@@ -26,7 +26,7 @@ module Schools
         return unless earliest_permitted_date
         return unless value_as_date < earliest_permitted_date
 
-        "Enter a date later than #{earliest_permitted_date.to_formatted_s(:govuk)}"
+        "Start date cannot be earlier than the last 2 registration periods. Enter a date later than #{earliest_permitted_date.to_formatted_s(:govuk)}"
       end
 
       def earliest_permitted_date
