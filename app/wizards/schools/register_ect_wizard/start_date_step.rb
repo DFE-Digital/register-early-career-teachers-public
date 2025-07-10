@@ -40,7 +40,7 @@ module Schools
       def add_start_date_too_early_error(period)
         errors.add(
           :start_date,
-          "This ECT was previously registered at #{period.school&.name} (#{period.started_on.to_formatted_s(:govuk)}). Enter a later date."
+          "Our records show that #{wizard.ect.full_name} started teaching at #{period.school&.name} on #{period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
         )
       end
 
