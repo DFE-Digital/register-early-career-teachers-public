@@ -58,7 +58,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: DFE-Digital/github-actions/build-docker-image@master
+      - uses: DFE-Digital/github-actions/build-docker-image@build-docker-image-override-tags
         id: build-docker-image
         with:
           docker-repository: ghcr.io/dfe-digital/register-early-career-teachers-public
