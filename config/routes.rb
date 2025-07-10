@@ -317,6 +317,12 @@ Rails.application.routes.draw do
       get "review-mentor-eligibility", action: :new
       post "review-mentor-eligibility", action: :create
 
+      get "mentoring-at-new-school-only", action: :new
+      post "mentoring-at-new-school-only", action: :create
+
+      get "started-on", action: :new
+      post "started-on", action: :create
+
       get "check-answers", action: :new
       post "check-answers", action: :create
 

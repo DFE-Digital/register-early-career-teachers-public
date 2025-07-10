@@ -23,6 +23,8 @@ module Schools
             review_mentor_details: ReviewMentorDetailsStep,
             review_mentor_eligibility: ReviewMentorEligibilityStep,
             trn_not_found: TRNNotFoundStep,
+            mentoring_at_new_school_only: MentoringAtNewSchoolOnlyStep,
+            started_on: StartedOnStep,
           }
         ]
       end
@@ -65,6 +67,9 @@ module Schools
             steps << :email_address
             return steps unless mentor.email
             return steps + %i[change_email_address cant_use_changed_email cant_use_email] if mentor.cant_use_email?
+
+            steps << :mentoring_at_new_school_only
+            steps << :started_on
 
             steps << :review_mentor_eligibility if mentor.funding_available?
             steps += %i[change_mentor_details change_email_address check_answers]

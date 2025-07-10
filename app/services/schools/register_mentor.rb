@@ -13,7 +13,8 @@ module Schools
                 :started_on,
                 :mentor_at_school_period,
                 :lead_provider,
-                :training_period
+                :training_period,
+                :finish_existing_at_school_periods
 
     def initialize(trs_first_name:,
                    trs_last_name:,
@@ -22,7 +23,8 @@ module Schools
                    school_urn:,
                    email:,
                    author:,
-                   started_on: Date.current,
+                   finish_existing_at_school_periods:,
+                   started_on: nil,
                    lead_provider: nil)
       @author = author
       @trs_first_name = trs_first_name
@@ -30,14 +32,16 @@ module Schools
       @corrected_name = corrected_name
       @school_urn = school_urn
       @email = email
-      @started_on = started_on
+      @started_on = started_on || Date.current
       @trn = trn
       @lead_provider = lead_provider
+      @finish_existing_at_school_periods = finish_existing_at_school_periods
     end
 
     def register!
       ActiveRecord::Base.transaction do
         create_teacher!
+        finish_existing_at_school_periods! if finish_existing_at_school_periods
         start_at_school!
         create_training_period!
         record_event!
@@ -65,14 +69,7 @@ module Schools
       earliest_matching_school_partnership if lead_provider.present?
     end
 
-    def already_registered_as_a_mentor?
-      ::Teacher.find_by_trn(trn)&.mentor_at_school_periods&.exists?
-    end
-
-    # FIXME: UX needs graceful redirect at this point
     def create_teacher!
-      raise ActiveRecord::RecordInvalid if already_registered_as_a_mentor?
-
       @teacher = ::Teacher.create_with(
         trs_first_name:,
         trs_last_name:,
@@ -82,6 +79,10 @@ module Schools
 
     def school
       @school ||= School.find_by(urn: school_urn)
+    end
+
+    def finish_existing_at_school_periods!
+      teacher.mentor_at_school_periods.ongoing_on(started_on).update!(finished_on: started_on.prev_day)
     end
 
     def start_at_school!
