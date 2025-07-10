@@ -74,6 +74,7 @@ describe ContractPeriod do
       it 'returns nil' do
         freeze_time do
           expect(ContractPeriod.earliest_permitted_start_date).to be_nil
+          expect(ContractPeriod.count).to eq(0)
         end
       end
     end
