@@ -26,14 +26,22 @@ module Schools
         return if start_date.blank? || errors[:start_date].any?
 
         previous_period = ect.previous_ect_at_school_period
-        return if previous_period.blank? || previous_period.started_on.blank?
+        return unless valid_previous_period?(previous_period)
 
         if start_date_as_date < previous_period.started_on
-          errors.add(
-            :start_date,
-            "This ECT was previously registered at #{previous_period.school&.name} (#{previous_period.started_on.to_formatted_s(:govuk)}). Enter a later date."
-          )
+          add_start_date_too_early_error(previous_period)
         end
+      end
+
+      def valid_previous_period?(period)
+        period&.started_on.present?
+      end
+
+      def add_start_date_too_early_error(period)
+        errors.add(
+          :start_date,
+          "This ECT was previously registered at #{period.school&.name} (#{period.started_on.to_formatted_s(:govuk)}). Enter a later date."
+        )
       end
 
       def persist
