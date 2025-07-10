@@ -109,10 +109,16 @@ module AppropriateBodies
 
         pending_induction_submission.errors.add(:base, 'Induction start date must be after 1 September 2021') if predates_ecf_rollout?
         # TODO: ready for training programme types update
-        # pending_induction_submission.errors.add(:base, 'Induction programme type must be school-led or provider-led') if row.invalid_training_programme?
-        pending_induction_submission.errors.add(:base, 'Induction programme type must be DIY, FIP or CIP') if row.invalid_training_programme?
+        # pending_induction_submission.errors.add(:base, 'Induction programme type must be school-led or provider-led') if invalid_training_programme?
+        pending_induction_submission.errors.add(:base, 'Induction programme type must be DIY, FIP or CIP') if invalid_training_programme?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
+      end
+
+      # @return [Boolean] school-led, provider-led (case-insensitive) new style
+      # @return [Boolean] diy, cip, fip (case-insensitive) old style
+      def invalid_training_programme?
+        row.induction_programme !~ /\A(diy|cip|fip)\z/i
       end
 
       # @return [AppropriateBodies::ClaimAnECT::FindECT]
