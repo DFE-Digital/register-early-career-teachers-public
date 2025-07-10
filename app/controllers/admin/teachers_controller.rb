@@ -7,7 +7,12 @@ module Admin
       @pagy, @teachers = pagy(
         ::Teachers::Search.new(
           query_string: params[:q]
-        ).search
+        )
+        .search
+        .includes(
+          :induction_periods,
+          :current_appropriate_body
+        )
       )
     end
 
