@@ -1,0 +1,14 @@
+<%
+  page_data(
+    title: smart_quotes(@appropriate_body.name + "'s timeline"),
+    caption_size: 'm',
+    error: false,
+    backlink_href: admin_appropriate_body_path(@appropriate_body)
+  )
+%>
+
+<% if @events.any? %>
+  <%= render(TimelineComponent.new(@events)) %>
+<% else %>
+  <p class='govuk-body'>No timeline of events for this appropriate body.</p>
+<% end %>
