@@ -116,41 +116,27 @@ RSpec.describe BatchRows do
       end
     end
 
-    describe '#invalid_outcome?' do
-      it 'returns false for valid outcomes' do
-        allow(dummy_action).to receive(:data).and_return([{ outcome: 'pass' }])
-        expect(dummy_action.rows.first).not_to be_invalid_outcome
-        allow(dummy_action).to receive(:data).and_return([{ outcome: 'FAIL' }])
-        expect(dummy_action.rows.first).not_to be_invalid_outcome
+    describe '#future_dates?' do
+      let(:future_date) { 1.week.from_now.to_date.to_s }
+
+      it 'returns false for past induction dates' do
+        allow(dummy_claim).to receive(:data).and_return([{ started_on: '2020-09-01' }])
+        expect(dummy_claim.rows.first).not_to be_future_dates
+
+        allow(dummy_action).to receive(:data).and_return([{ finished_on: '2020-09-01' }])
+        expect(dummy_action.rows.first).not_to be_future_dates
       end
 
-      it 'returns true for invalid outcomes' do
-        allow(dummy_action).to receive(:data).and_return([{ outcome: 'passed' }])
-        expect(dummy_action.rows.first).to be_invalid_outcome
-        allow(dummy_action).to receive(:data).and_return([{ outcome: 'Released' }])
-        expect(dummy_action.rows.first).to be_invalid_outcome
-        allow(dummy_action).to receive(:data).and_return([{ outcome: '' }])
-        expect(dummy_action.rows.first).to be_invalid_outcome
-      end
-    end
+      it 'returns true for invalid or future induction dates' do
+        allow(dummy_claim).to receive(:data).and_return([{ started_on: nil }])
+        expect(dummy_claim.rows.first).to be_future_dates
+        allow(dummy_claim).to receive(:data).and_return([{ started_on: future_date }])
+        expect(dummy_claim.rows.first).to be_future_dates
 
-    describe '#invalid_terms?' do
-      it 'returns false for valid terms' do
-        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '1.1' }])
-        expect(dummy_action.rows.first).not_to be_invalid_terms
-        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '16.0' }])
-        expect(dummy_action.rows.first).not_to be_invalid_terms
-      end
-
-      it 'returns true for invalid terms' do
-        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '1.11' }])
-        expect(dummy_action.rows.first).to be_invalid_terms
-        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '16.1' }])
-        expect(dummy_action.rows.first).to be_invalid_terms
-        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: 'foo' }])
-        expect(dummy_action.rows.first).to be_invalid_terms
-        allow(dummy_action).to receive(:data).and_return([{ number_of_terms: '' }])
-        expect(dummy_action.rows.first).to be_invalid_terms
+        allow(dummy_action).to receive(:data).and_return([{ finished_on: 'foo' }])
+        expect(dummy_action.rows.first).to be_future_dates
+        allow(dummy_action).to receive(:data).and_return([{ finished_on: future_date }])
+        expect(dummy_action.rows.first).to be_future_dates
       end
     end
 
@@ -194,22 +180,6 @@ RSpec.describe BatchRows do
         expect(dummy_claim.rows.first).to be_invalid_age
         allow(dummy_claim).to receive(:data).and_return([{ date_of_birth: '' }])
         expect(dummy_claim.rows.first).to be_invalid_age
-      end
-    end
-
-    describe '#invalid_training_programme?' do
-      it 'returns false for valid training programmes' do
-        allow(dummy_claim).to receive(:data).and_return([{ induction_programme: 'DiY' }])
-        expect(dummy_claim.rows.first).not_to be_invalid_training_programme
-      end
-
-      it 'returns true for invalid training programmes' do
-        allow(dummy_claim).to receive(:data).and_return([{ induction_programme: 'DIYI' }])
-        expect(dummy_claim.rows.first).to be_invalid_training_programme
-        allow(dummy_claim).to receive(:data).and_return([{ induction_programme: 'foo' }])
-        expect(dummy_claim.rows.first).to be_invalid_training_programme
-        allow(dummy_claim).to receive(:data).and_return([{ induction_programme: '' }])
-        expect(dummy_claim.rows.first).to be_invalid_training_programme
       end
     end
   end
