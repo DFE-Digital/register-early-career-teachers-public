@@ -1,0 +1,92 @@
+<% page_data(
+  title: "Check details for #{@pending_induction_submission.trs_first_name} #{@pending_induction_submission.trs_last_name}",
+  caption: "TRN: #{@pending_induction_submission.trn}",
+  header: "View #{@pending_induction_submission.trs_first_name} #{@pending_induction_submission.trs_last_name}'s details",
+  backlink_href: new_admin_import_ect_find_path)
+%>
+
+<h2 class="govuk-heading-m">Personal details</h2>
+
+<%=
+  govuk_summary_list do |sl|
+    sl.with_row do |r|
+      r.with_key(text: "First name")
+      r.with_value(text: @pending_induction_submission.trs_first_name)
+    end
+
+    sl.with_row do |r|
+      r.with_key(text: "Last name")
+      r.with_value(text: @pending_induction_submission.trs_last_name)
+    end
+
+    sl.with_row do |r|
+      r.with_key(text: "Date of birth")
+      r.with_value(text: @pending_induction_submission.date_of_birth.to_fs(:govuk))
+    end
+
+    sl.with_row do |r|
+      r.with_key(text: "Has alerts")
+      r.with_value(text: trs_alerts_text(@pending_induction_submission.trs_alerts.present?))
+    end
+  end
+%>
+
+<h2 class="govuk-heading-m">Initial teacher training details</h2>
+
+<%=
+  govuk_summary_list do |sl|
+    sl.with_row do |r|
+      r.with_key(text: "QTS awarded")
+      r.with_value(text: @pending_induction_submission.trs_qts_awarded_on.to_fs(:govuk))
+    end if @pending_induction_submission.trs_qts_awarded_on.present?
+
+    sl.with_row do |r|
+      r.with_key(text: "QTS status description")
+      r.with_value(text: @pending_induction_submission.trs_qts_status_description)
+    end if @pending_induction_submission.trs_qts_status_description.present?
+
+    sl.with_row do |r|
+      r.with_key(text: "Initial teacher training provider")
+      r.with_value(text: @pending_induction_submission.trs_initial_teacher_training_provider_name)
+    end if @pending_induction_submission.trs_initial_teacher_training_provider_name.present?
+
+    sl.with_row do |r|
+      r.with_key(text: "Initial teacher training end date")
+      r.with_value(text: @pending_induction_submission.trs_initial_teacher_training_end_date&.to_fs(:govuk))
+    end if @pending_induction_submission.trs_initial_teacher_training_end_date.present?
+  end
+%>
+
+<h2 class="govuk-heading-m">Induction details</h2>
+
+<%=
+  govuk_summary_list do |sl|
+    sl.with_row do |r|
+      r.with_key(text: "Induction start date")
+      r.with_value(text: @pending_induction_submission.trs_induction_start_date&.to_fs(:govuk))
+    end if @pending_induction_submission.trs_induction_start_date.present?
+
+    sl.with_row do |r|
+      r.with_key(text: "Induction status")
+      r.with_value(text: @pending_induction_submission.trs_induction_status)
+    end if @pending_induction_submission.trs_induction_status.present?
+  end
+%>
+
+<%= form_with(model: @pending_induction_submission, url: admin_import_ect_check_path(@pending_induction_submission)) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_check_boxes_fieldset(
+    :confirmed,
+    legend: { text: "Confirm if these details are correct or try your search again" }
+  ) do %>
+    <%= f.govuk_check_box(
+      :confirmed,
+      "1",
+      0,
+      label: { text: "Yes, these details are correct" }
+    ) %>
+  <% end %>
+
+  <%= f.govuk_submit %>
+<% end %>
