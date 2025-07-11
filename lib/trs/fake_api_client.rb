@@ -123,15 +123,15 @@ module TRS
       TRS::Teacher.new(
         teacher_params(trn:, date_of_birth:, national_insurance_number:).tap do |tp|
           tp.merge!(qts_data)
-          tp.merge!(itt)
+          tp.merge!(itt_data)
 
           if @is_prohibited_from_teaching
-            tp.merge!(prohibited_from_teaching)
+            tp.merge!(prohibited_from_teaching_data)
           elsif @has_alerts_but_not_prohibited
-            tp.merge!(other_alerts)
+            tp.merge!(other_alert_data)
           end
 
-          tp.merge!(induction_status(trn))
+          tp.merge!(induction_data(trn))
         end
       )
     end
@@ -189,7 +189,7 @@ module TRS
       end
     end
 
-    def prohibited_from_teaching
+    def prohibited_from_teaching_data
       if @is_prohibited_from_teaching
         {
           'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID } } }]
@@ -201,7 +201,7 @@ module TRS
       end
     end
 
-    def other_alerts
+    def other_alert_data
       if @has_alerts_but_not_prohibited
         {
           # Conditional Registration Order - unacceptable professional conduct
@@ -214,7 +214,7 @@ module TRS
       end
     end
 
-    def induction_status(trn)
+    def induction_data(trn)
       return { 'induction' => { 'status' => @induction_status } } if @induction_status
 
       induction_status = retrieve_induction_status(trn)
@@ -238,7 +238,7 @@ module TRS
       end
     end
 
-    def itt
+    def itt_data
       if @has_itt
         {
           "initialTeacherTraining" => [
