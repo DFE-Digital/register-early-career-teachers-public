@@ -44,4 +44,39 @@ describe ContractPeriod do
       expect(ContractPeriod.containing_date(Date.new(2023, 1, 1))).to be_nil
     end
   end
+
+  describe '.earliest_permitted_start_date' do
+    context 'when there are contract periods' do
+      let!(:oldest) do
+        FactoryBot.create(:contract_period, year: 2022)
+      end
+
+      let!(:third_oldest) do
+        FactoryBot.create(:contract_period, year: 2023)
+      end
+
+      let!(:second_oldest) do
+        FactoryBot.create(:contract_period, year: 2024)
+      end
+
+      let!(:current) do
+        FactoryBot.create(:contract_period, year: 2025)
+      end
+
+      it 'returns the start date of the contract period two periods before the current one' do
+        freeze_time do
+          expect(ContractPeriod.earliest_permitted_start_date).to eq(third_oldest.started_on)
+        end
+      end
+    end
+
+    context 'when there are no current contract periods' do
+      it 'returns nil' do
+        freeze_time do
+          expect(ContractPeriod.earliest_permitted_start_date).to be_nil
+          expect(ContractPeriod.count).to eq(0)
+        end
+      end
+    end
+  end
 end
