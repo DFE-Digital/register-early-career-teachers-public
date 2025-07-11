@@ -10,6 +10,7 @@ class TrainingPeriod < ApplicationRecord
   has_one :active_lead_provider, through: :lead_provider_delivery_partnership
   has_one :lead_provider, through: :active_lead_provider
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
+  has_one :contract_period, through: :active_lead_provider
 
   has_many :declarations, inverse_of: :training_period
   has_many :events

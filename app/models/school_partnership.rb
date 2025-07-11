@@ -5,7 +5,7 @@ class SchoolPartnership < ApplicationRecord
   has_many :events
 
   # delegates
-  delegate :lead_provider, :delivery_partner, to: :lead_provider_delivery_partnership
+  delegate :lead_provider, :delivery_partner, :contract_period, to: :lead_provider_delivery_partnership
 
   # Validations
   validates :lead_provider_delivery_partnership_id, presence: true
