@@ -27,13 +27,13 @@ end
 
 RSpec.shared_context 'fake trs api client that finds teacher without QTS' do
   before do
-    allow(TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(include_qts: false))
+    allow(TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(has_qts: false))
   end
 end
 
 RSpec.shared_context 'fake trs api client that finds teacher prohibited from teaching' do
   before do
-    allow(TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(prohibited_from_teaching: true))
+    allow(TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(is_prohibited_from_teaching: true))
   end
 end
 
@@ -91,8 +91,8 @@ end
 RSpec.shared_context 'fake trs api returns 2 random teachers' do
   before do
     allow(TRS::APIClient).to receive(:new).and_return(
-      TRS::FakeAPIClient.new(random_names: true),
-      TRS::FakeAPIClient.new(random_names: true)
+      TRS::FakeAPIClient.new(app_mode: true),
+      TRS::FakeAPIClient.new(app_mode: true)
     )
   end
 end
