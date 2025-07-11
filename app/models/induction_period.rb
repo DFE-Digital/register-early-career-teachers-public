@@ -12,6 +12,8 @@ class InductionPeriod < ApplicationRecord
   has_many :events
 
   # Validations
+  validates :appropriate_body_id, presence: { message: "Select an appropriate body" }
+
   validates :started_on,
             presence: { message: "Enter a start date" }
 

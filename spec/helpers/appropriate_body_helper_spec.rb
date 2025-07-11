@@ -102,24 +102,4 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
       end
     end
   end
-
-  describe '#trs_alerts_text' do
-    context 'when alerts are present' do
-      it 'displays yes with a link to teacher record service' do
-        result = trs_alerts_text(true)
-
-        expect(result).to have_text("Use the Check a teacher's record service to get more information")
-        expect(result).to have_link("Check a teacher's record service", href: "https://www.gov.uk/guidance/check-a-teachers-record")
-      end
-    end
-
-    context 'when alerts are absent' do
-      it 'displays no without any links' do
-        result = trs_alerts_text(false)
-
-        expect(result).to have_text('No')
-        expect(result).not_to have_selector('a')
-      end
-    end
-  end
 end
