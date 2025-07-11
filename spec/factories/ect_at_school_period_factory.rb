@@ -19,12 +19,10 @@ FactoryBot.define do
 
     trait :provider_led do
       training_programme { 'provider_led' }
-      association :lead_provider
     end
 
     trait :school_led do
       training_programme { 'school_led' }
-      lead_provider { nil }
     end
 
     trait :independent_school do
@@ -47,6 +45,34 @@ FactoryBot.define do
 
     trait :teaching_school_hub_ab do
       association :school_reported_appropriate_body, :teaching_school_hub, factory: :appropriate_body
+    end
+
+    trait :with_training_period do
+      transient do
+        lead_provider { nil }
+        delivery_partner { nil }
+      end
+
+      after(:create) do |ect, evaluator|
+        next unless ect.provider_led_training_programme?
+
+        selected_lead_provider = evaluator.lead_provider || FactoryBot.create(:lead_provider)
+        selected_delivery_partner = evaluator.delivery_partner || FactoryBot.create(:delivery_partner)
+
+        active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider: selected_lead_provider)
+        lpdp = FactoryBot.create(:lead_provider_delivery_partnership,
+                                 active_lead_provider:,
+                                 delivery_partner: selected_delivery_partner)
+
+        partnership = FactoryBot.create(:school_partnership,
+                                        school: ect.school,
+                                        lead_provider_delivery_partnership: lpdp)
+
+        FactoryBot.create(:training_period,
+                          ect_at_school_period: ect,
+                          school_partnership: partnership,
+                          started_on: ect.started_on)
+      end
     end
   end
 end

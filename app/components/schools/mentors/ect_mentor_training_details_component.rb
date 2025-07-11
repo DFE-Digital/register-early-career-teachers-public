@@ -20,10 +20,11 @@ module Schools
 
       def first_lead_provider_name
         assigned_ects
-          .select { |ect| ect.lead_provider.present? }
-          .min_by(&:started_on)
-          &.lead_provider
-          &.name
+          .order(:started_on)
+          .detect do |ect|
+            name = ECTAtSchoolPeriods::Training.new(ect).latest_lead_provider_name
+            return name if name
+          end
       end
 
       def assigned_ects
