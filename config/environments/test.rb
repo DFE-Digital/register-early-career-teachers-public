@@ -68,6 +68,7 @@ Rails.application.configure do
   config.enable_fake_trs_api = false
   config.dfe_sign_in_enabled = true
   config.enable_api = true
+  config.enable_migration_testing = false
 
   config.active_job.queue_adapter = :test
 end
