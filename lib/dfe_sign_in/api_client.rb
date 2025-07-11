@@ -13,7 +13,6 @@ module DfESignIn
         faraday.request(:authorization, 'Bearer', jwt)
         faraday.request(:json)
         faraday.response(:json)
-        faraday.adapter(Faraday.default_adapter)
       end
     end
 
