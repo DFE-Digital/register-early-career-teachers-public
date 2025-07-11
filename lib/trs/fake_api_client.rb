@@ -49,19 +49,75 @@ module TRS
       build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
     end
 
-    def pass_induction!(...)
+    def begin_induction!(trn:, start_date:, modified_at: Time.zone.now)
+      Rails.logger.info("TRSFakeAPIClient pretending to begin teacher with TRN=#{trn}'s induction")
+
+      update_induction_status(
+        trn:,
+        status: 'InProgress',
+        start_date: start_date.iso8601,
+        modified_at: modified_at.utc.iso8601(3)
+      )
     end
 
-    def fail_induction!(...)
+    def pass_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
+      Rails.logger.info("TRSFakeAPIClient pretending to pass teacher with TRN=#{trn}'s induction")
+
+      update_induction_status(
+        trn:,
+        status: 'Passed',
+        start_date: start_date.iso8601,
+        completed_date: completed_date.iso8601,
+        modified_at: modified_at.utc.iso8601(3)
+      )
     end
 
-    def begin_induction!(...)
+    def fail_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
+      update_induction_status(
+        trn:,
+        status: 'Failed',
+        start_date: start_date.iso8601,
+        completed_date: completed_date.iso8601,
+        modified_at: modified_at.utc.iso8601(3)
+      )
     end
 
-    def reset_teacher_induction(...)
+    def reset_teacher_induction(trn:, modified_at: Time.zone.now)
+      update_induction_status(
+        trn:,
+        status: 'RequiredToComplete',
+        start_date: nil,
+        completed_date: nil,
+        modified_at: modified_at.utc.iso8601(3)
+      )
     end
 
   private
+
+    def redis_client
+      @redis_client ||= Redis.new
+    end
+
+    def redis_induction_key(trn)
+      "#{trn}:induction"
+    end
+
+    def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
+      payload = { 'status' => status,
+                  'startDate' => start_date,
+                  'completedDate' => completed_date,
+                  'modifiedOn' => modified_at }.transform_values { |v| (v.present?) ? v : '' }
+
+      redis_client.mapped_hmset(redis_induction_key(trn), payload)
+    end
+
+    # FIXME: Named for consistency with update_induction_status in the real client, but it's doing more
+    #        than just the status, both should probably end with _induction_details
+    def retrieve_induction_status(trn)
+      redis_client
+        .hgetall(redis_induction_key(trn))
+        .transform_values { |v| (v.present?) ? v : nil }
+    end
 
     def build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
       TRS::Teacher.new(
@@ -75,7 +131,7 @@ module TRS
             tp.merge!(other_alerts)
           end
 
-          tp.merge!(induction_status)
+          tp.merge!(induction_status(trn))
         end
       )
     end
@@ -92,7 +148,19 @@ module TRS
     end
 
     def teacher_params(trn:, date_of_birth:, national_insurance_number:, first_name: 'Kirk', last_name: 'Van Houten')
-      first_name, last_name = *random_name if @random_mode
+      if @random_mode
+        if (teacher = ::Teacher.find_by(trn:))
+          return {
+            'trn' => teacher.trn,
+            'firstName' => teacher.trs_first_name,
+            'lastName' => teacher.trs_last_name,
+            'dateOfBirth' => date_of_birth,
+            'nationalInsuranceNumber' => national_insurance_number,
+          }
+        else
+          first_name, last_name = *random_name
+        end
+      end
 
       {
         'trn' => trn,
@@ -146,11 +214,27 @@ module TRS
       end
     end
 
-    def induction_status
-      if @induction_status
-        { 'induction' => { 'status' => @induction_status } }
+    def induction_status(trn)
+      return { 'induction' => { 'status' => @induction_status } } if @induction_status
+
+      induction_status = retrieve_induction_status(trn)
+
+      if @random_mode && induction_status.present?
+        {
+          'induction' => {
+            'status' => induction_status['status'],
+            'startDate' => induction_status['startDate'],
+            'completedDate' => induction_status['completedDate']
+          }
+        }
       else
-        {}
+        {
+          'induction' => {
+            'status' => 'InProgress',
+            'startDate' => 2.years.ago.to_date.to_s,
+            'completedDate' => 1.year.ago.to_date.to_s
+          }
+        }
       end
     end
 

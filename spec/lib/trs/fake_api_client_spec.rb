@@ -5,7 +5,9 @@ describe TRS::FakeAPIClient do
 
       expect { TRS::FakeAPIClient.new }.to raise_error(TRS::FakeAPIClient::FakeAPIClientUsedInProduction)
     end
+  end
 
+  describe '#find_teacher' do
     context 'when random_mode: false (default)' do
       subject { TRS::FakeAPIClient.new(**kwargs) }
 
@@ -187,6 +189,103 @@ describe TRS::FakeAPIClient do
             expect(subject.find_teacher(trn:)).to be_present
           end
         end
+      end
+    end
+  end
+
+  describe 'Redis data storing functionality' do
+    subject { TRS::FakeAPIClient.new(random_mode: true) }
+
+    let(:teacher) { FactoryBot.build(:teacher) }
+    let(:trn) { teacher.trn }
+    let(:key) { trn + ':induction' }
+    let(:start_date) { 3.months.ago.to_date }
+    let(:redis_client) { Redis.new }
+
+    before { redis_client.del(key) }
+
+    describe '#begin_induction!' do
+      before { subject.begin_induction!(trn: teacher.trn, start_date:) }
+
+      it 'writes the in progress status to Redis' do
+        expect(redis_client.hgetall(key)).to match(
+          include(
+            'status' => 'InProgress',
+            'startDate' => start_date.to_s
+          )
+        )
+      end
+
+      it 'retrieves the teacher record with the updated info' do
+        trs_teacher = subject.find_teacher(trn:)
+
+        expect(trs_teacher.induction_status).to eql('InProgress')
+      end
+    end
+
+    describe '#pass_induction!' do
+      let(:completed_date) { 1.day.ago.to_date }
+
+      before { subject.pass_induction!(trn: teacher.trn, start_date:, completed_date:) }
+
+      it 'writes the passed status to Redis' do
+        expect(redis_client.hgetall(key)).to match(
+          include(
+            'status' => 'Passed',
+            'startDate' => start_date.to_s,
+            'completedDate' => completed_date.to_s
+          )
+        )
+      end
+
+      it 'retrieves the teacher record with the updated info' do
+        trs_teacher = subject.find_teacher(trn:)
+
+        expect(trs_teacher.induction_status).to eql('Passed')
+      end
+    end
+
+    describe '#fail_induction!' do
+      let(:completed_date) { 1.day.ago.to_date }
+
+      before { subject.fail_induction!(trn: teacher.trn, start_date:, completed_date:) }
+
+      it 'writes the failed status to Redis' do
+        expect(redis_client.hgetall(key)).to match(
+          include(
+            'status' => 'Failed',
+            'startDate' => start_date.to_s,
+            'completedDate' => completed_date.to_s
+          )
+        )
+      end
+
+      it 'retrieves the teacher record with the updated info' do
+        trs_teacher = subject.find_teacher(trn:)
+
+        expect(trs_teacher.induction_status).to eql('Failed')
+      end
+    end
+
+    describe '#reset_teacher_induction' do
+      let(:completed_date) { 1.day.ago.to_date }
+
+      before { subject.reset_teacher_induction(trn: teacher.trn) }
+
+      it 'clears the start date and completed date in Redis, and sets status back to required to complete' do
+        expect(redis_client.hgetall(key)).to match(
+          include(
+            'status' => 'RequiredToComplete',
+            'startDate' => '',
+            'completedDate' => ''
+          )
+        )
+      end
+
+      it 'retrieves the teacher record with the updated info' do
+        trs_teacher = subject.find_teacher(trn:)
+
+        expect(trs_teacher.induction_status).to eql('RequiredToComplete')
       end
     end
   end

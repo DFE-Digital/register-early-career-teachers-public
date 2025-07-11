@@ -91,8 +91,8 @@ end
 RSpec.shared_context 'fake trs api returns 2 random teachers' do
   before do
     allow(TRS::APIClient).to receive(:new).and_return(
-      TRS::FakeAPIClient.new(random_names: true),
-      TRS::FakeAPIClient.new(random_names: true)
+      TRS::FakeAPIClient.new(random_mode: true),
+      TRS::FakeAPIClient.new(random_mode: true)
     )
   end
 end
