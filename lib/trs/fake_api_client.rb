@@ -194,28 +194,16 @@ module TRS
     end
 
     def prohibited_from_teaching_data
-      if @is_prohibited_from_teaching
-        {
-          'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID } } }]
-        }
-      else
-        {
-          'alerts' => []
-        }
-      end
+      {
+        'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID } } }]
+      }
     end
 
     def other_alert_data
-      if @has_alerts_but_not_prohibited
-        {
-          # Conditional Registration Order - unacceptable professional conduct
-          'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => '5562a5b7-3e32-eb11-a814-000d3a23980a' } } }]
-        }
-      else
-        {
-          'alerts' => []
-        }
-      end
+      {
+        # Conditional Registration Order - unacceptable professional conduct
+        'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => '5562a5b7-3e32-eb11-a814-000d3a23980a' } } }]
+      }
     end
 
     def induction_data(trn)
