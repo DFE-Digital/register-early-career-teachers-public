@@ -1,0 +1,7 @@
+---
+title: You cannot register <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %>
+---
+
+Our records show that <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> is prohibited from teaching. You can use the <a href="https://www.gov.uk/guidance/check-a-teachers-record" class="govuk-link">Check a teacher's record service</a> to get more information.
+
+[Import another ECT](<%= new_admin_import_ect_find_path %>)
