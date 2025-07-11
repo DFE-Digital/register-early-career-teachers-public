@@ -1,5 +1,3 @@
-require "async/http/faraday/default"
-
 module ParityCheck
   class Client
     include ActiveModel::Model
