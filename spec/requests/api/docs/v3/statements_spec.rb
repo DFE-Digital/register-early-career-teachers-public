@@ -16,7 +16,8 @@ RSpec.describe "Statements endpoint", openapi_spec: "v3/swagger.yaml", type: :re
                 required: false,
                 schema: {
                   "$ref": "#/components/schemas/StatementsFilter",
-                }
+                },
+                style: "deepObject"
 
       parameter name: :page,
                 in: :query,
