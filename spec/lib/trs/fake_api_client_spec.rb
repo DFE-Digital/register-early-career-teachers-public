@@ -14,7 +14,7 @@ describe TRS::FakeAPIClient do
       let(:trn) { '1234567' }
 
       it 'disables app_mode by default' do
-        expect(TRS::FakeAPIClient.new.app_mode).to be(false)
+        expect(TRS::FakeAPIClient.new.app_mode?).to be(false)
       end
 
       context 'when initialized with raise_not_found' do
@@ -116,7 +116,7 @@ describe TRS::FakeAPIClient do
       it 'enables app_mode mode' do
         client = TRS::FakeAPIClient.new(app_mode: true)
 
-        expect(client.app_mode).to be(true)
+        expect(client.app_mode?).to be(true)
       end
 
       describe '#find_teacher' do

@@ -14,7 +14,6 @@ module TRS
   # lib/trs/fake_api_names.yml
   class FakeAPIClient
     class FakeAPIClientUsedInProduction < StandardError; end
-    attr_reader :app_mode
 
     def initialize(
       app_mode: false,
@@ -45,7 +44,8 @@ module TRS
 
       Rails.logger.info("TRSFakeAPIClient pretending to find teacher with TRN=#{trn} and Date of birth=#{date_of_birth} and National Insurance Number=#{national_insurance_number}")
 
-      override_data_for_special_trns(trn) if app_mode
+      override_data_for_special_trns(trn) if app_mode?
+
       build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
     end
 
@@ -90,6 +90,10 @@ module TRS
         completed_date: nil,
         modified_at: modified_at.utc.iso8601(3)
       )
+    end
+
+    def app_mode?
+      @app_mode
     end
 
   private
@@ -148,7 +152,7 @@ module TRS
     end
 
     def teacher_params(trn:, date_of_birth:, national_insurance_number:, first_name: 'Kirk', last_name: 'Van Houten')
-      if @app_mode
+      if app_mode?
         if (teacher = ::Teacher.find_by(trn:))
           return {
             'trn' => teacher.trn,
@@ -219,7 +223,7 @@ module TRS
 
       induction_status = retrieve_induction_status(trn)
 
-      if @app_mode && induction_status.present?
+      if app_mode? && induction_status.present?
         {
           'induction' => {
             'status' => induction_status['status'],
