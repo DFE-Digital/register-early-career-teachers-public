@@ -10,6 +10,9 @@ FactoryBot.define do
     trs_qts_awarded_on { 2.years.ago }
     delete_at { nil }
 
+    induction_programme { 'fip' }
+    training_programme { 'provider_led' }
+
     trait :starting do
       started_on { 1.year.ago }
       induction_programme { "fip" }

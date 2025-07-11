@@ -130,8 +130,13 @@ private
     page.get_by_label('Year').fill(@new_start_date.year.to_s)
   end
 
+  # Feature release of bulk claims controls change of programme type to school-led and provider-led
   def and_choose_an_induction_programme
-    page.get_by_label("Full induction programme").check
+    if Rails.application.config.enable_bulk_claim
+      page.get_by_label("School-led").check
+    else
+      page.get_by_label("Full induction programme").check
+    end
   end
 
   def now_i_should_be_on_the_confirmation_page

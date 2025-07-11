@@ -7,7 +7,7 @@ FactoryBot.define do
 
     trait :claim do
       batch_type { 'claim' }
-      data { [{ trn: '1234567', date_of_birth: '1981-06-30', induction_programme: 'fip', started_on: '2025-01-30' }] }
+      data { [{ trn: '1234567', date_of_birth: '1981-06-30', training_programme: 'provider-led', started_on: '2025-01-30' }] }
     end
 
     trait :action do

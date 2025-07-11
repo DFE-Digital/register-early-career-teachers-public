@@ -22,6 +22,24 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
     end
   end
 
+  describe "#training_programme_choices" do
+    it "returns an array of FormChoice" do
+      expect(training_programme_choices).to be_an(Array)
+      expect(training_programme_choices).to all(be_a(AppropriateBodyHelper::FormChoice))
+    end
+
+    it "has identifiers for the new (post-2025) induction choices" do
+      expect(training_programme_choices.map(&:identifier)).to eql(%w[provider_led school_led])
+    end
+
+    it "has names for the new (post-2025) induction choices" do
+      expect(training_programme_choices.map(&:name)).to eql(%w[
+        Provider-led
+        School-led
+      ])
+    end
+  end
+
   describe "#induction_outcome_choices" do
     it "returns an array of FormChoice" do
       expect(induction_outcome_choices).to be_an(Array)
