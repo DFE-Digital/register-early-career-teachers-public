@@ -8,13 +8,13 @@ describe TRS::FakeAPIClient do
   end
 
   describe '#find_teacher' do
-    context 'when random_mode: false (default)' do
+    context 'when app_mode: false (default)' do
       subject { TRS::FakeAPIClient.new(**kwargs) }
 
       let(:trn) { '1234567' }
 
-      it 'disables random_mode by default' do
-        expect(TRS::FakeAPIClient.new.random_mode).to be(false)
+      it 'disables app_mode by default' do
+        expect(TRS::FakeAPIClient.new.app_mode).to be(false)
       end
 
       context 'when initialized with raise_not_found' do
@@ -112,15 +112,15 @@ describe TRS::FakeAPIClient do
       end
     end
 
-    context 'when random_mode: true' do
-      it 'enables random_mode mode' do
-        client = TRS::FakeAPIClient.new(random_mode: true)
+    context 'when app_mode: true' do
+      it 'enables app_mode mode' do
+        client = TRS::FakeAPIClient.new(app_mode: true)
 
-        expect(client.random_mode).to be(true)
+        expect(client.app_mode).to be(true)
       end
 
       describe '#find_teacher' do
-        subject { TRS::FakeAPIClient.new(random_mode: true) }
+        subject { TRS::FakeAPIClient.new(app_mode: true) }
 
         context 'without a special TRN' do
           let(:trn) { 1_234_567 }
@@ -194,7 +194,7 @@ describe TRS::FakeAPIClient do
   end
 
   describe 'Redis data storing functionality' do
-    subject { TRS::FakeAPIClient.new(random_mode: true) }
+    subject { TRS::FakeAPIClient.new(app_mode: true) }
 
     let(:teacher) { FactoryBot.build(:teacher) }
     let(:trn) { teacher.trn }

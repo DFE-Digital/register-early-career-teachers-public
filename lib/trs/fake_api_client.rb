@@ -4,7 +4,7 @@ module TRS
   # The default mode is intended for testing, the class can be directly instantiated
   # with custom data to return TRS::Teacher objects in various states
   #
-  # When random mode is enabled (by passing in `random_mode: true`) it's intended to
+  # When app mode is enabled (by passing in `app_mode: true`) it's intended to
   # be used by the app.
   #
   # In this mode TRS::Teacher objects in various states can be returned by
@@ -14,10 +14,10 @@ module TRS
   # lib/trs/fake_api_names.yml
   class FakeAPIClient
     class FakeAPIClientUsedInProduction < StandardError; end
-    attr_reader :random_mode
+    attr_reader :app_mode
 
     def initialize(
-      random_mode: false,
+      app_mode: false,
       raise_not_found: false,
       raise_deactivated: false,
       induction_status: nil,
@@ -28,7 +28,7 @@ module TRS
     )
       fail(FakeAPIClientUsedInProduction) if Rails.env.production?
 
-      @random_mode = random_mode
+      @app_mode = app_mode
 
       @raise_not_found = raise_not_found
       @raise_deactivated = raise_deactivated
@@ -45,7 +45,7 @@ module TRS
 
       Rails.logger.info("TRSFakeAPIClient pretending to find teacher with TRN=#{trn} and Date of birth=#{date_of_birth} and National Insurance Number=#{national_insurance_number}")
 
-      override_data_for_special_trns(trn) if random_mode
+      override_data_for_special_trns(trn) if app_mode
       build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
     end
 
@@ -148,7 +148,7 @@ module TRS
     end
 
     def teacher_params(trn:, date_of_birth:, national_insurance_number:, first_name: 'Kirk', last_name: 'Van Houten')
-      if @random_mode
+      if @app_mode
         if (teacher = ::Teacher.find_by(trn:))
           return {
             'trn' => teacher.trn,
@@ -219,7 +219,7 @@ module TRS
 
       induction_status = retrieve_induction_status(trn)
 
-      if @random_mode && induction_status.present?
+      if @app_mode && induction_status.present?
         {
           'induction' => {
             'status' => induction_status['status'],
