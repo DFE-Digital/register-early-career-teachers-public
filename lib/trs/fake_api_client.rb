@@ -52,6 +52,8 @@ module TRS
     def begin_induction!(trn:, start_date:, modified_at: Time.zone.now)
       Rails.logger.info("TRSFakeAPIClient pretending to begin teacher with TRN=#{trn}'s induction")
 
+      return true unless app_mode?
+
       update_induction_status(
         trn:,
         status: 'InProgress',
@@ -63,6 +65,8 @@ module TRS
     def pass_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
       Rails.logger.info("TRSFakeAPIClient pretending to pass teacher with TRN=#{trn}'s induction")
 
+      return true unless app_mode?
+
       update_induction_status(
         trn:,
         status: 'Passed',
@@ -73,6 +77,10 @@ module TRS
     end
 
     def fail_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
+      Rails.logger.info("TRSFakeAPIClient pretending to fail teacher with TRN=#{trn}'s induction")
+
+      return true unless app_mode?
+
       update_induction_status(
         trn:,
         status: 'Failed',
@@ -83,6 +91,10 @@ module TRS
     end
 
     def reset_teacher_induction(trn:, modified_at: Time.zone.now)
+      Rails.logger.info("TRSFakeAPIClient pretending to reset teacher with TRN=#{trn}'s induction")
+
+      return true unless app_mode?
+
       update_induction_status(
         trn:,
         status: 'RequiredToComplete',
@@ -99,7 +111,7 @@ module TRS
   private
 
     def redis_client
-      @redis_client ||= Redis.new
+      @redis_client ||= Redis.new(url: ENV.fetch('REDIS_CACHE_STORE', 'redis://localhost:6379'))
     end
 
     def redis_induction_key(trn)
@@ -209,9 +221,7 @@ module TRS
     def induction_data(trn)
       return { 'induction' => { 'status' => @induction_status } } if @induction_status
 
-      induction_status = retrieve_induction_status(trn)
-
-      if app_mode? && induction_status.present?
+      if app_mode? && (induction_status = retrieve_induction_status(trn)) && induction_status.present?
         {
           'induction' => {
             'status' => induction_status['status'],
