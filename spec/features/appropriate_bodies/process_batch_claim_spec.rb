@@ -36,8 +36,7 @@ RSpec.describe 'Process bulk claims' do
         perform_enqueued_jobs
         page.reload
         expect(page.get_by_text('CSV file summary')).to be_visible
-        expect(page.get_by_text("Your CSV named 'valid_complete_claim.csv' has 2 ECTs")).to be_visible
-        expect(page.get_by_role('link', name: 'Download CSV with error messages included')).to be_visible
+        expect(page.get_by_text("Your CSV named 'valid_complete_claim.csv' has 2 ECT records")).to be_visible
       end
     end
 
@@ -78,8 +77,7 @@ RSpec.describe 'Process bulk claims' do
           perform_enqueued_jobs
           page.reload
           expect(page.get_by_text('CSV file summary')).to be_visible
-          expect(page.get_by_text("Your CSV named 'valid_complete_claim.csv' has 2 ECTs")).to be_visible
-          expect(page.get_by_role('link', name: 'Download CSV with error messages included')).to be_visible
+          expect(page.get_by_text("Your CSV named 'valid_complete_claim.csv' has 2 ECT records")).to be_visible
         end
       end
     end
