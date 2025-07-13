@@ -70,6 +70,8 @@ class TestGuidanceComponent < ViewComponent::Base
             '7000002 (teacher not found)',
             '7000003 (prohibited from teaching)',
             '7000004 (teacher has been deactivated in TRS)',
+            '7000005 (teacher has alerts but is not prohibited)',
+            '7000006 (teacher is exempt from mentor funding)',
           ],
           type: 'bullet'
         )
