@@ -11,7 +11,7 @@ RSpec.describe "Appropriate Body bulk actions confirmation", type: :request do
                       file_name: 'test-file.csv')
   end
 
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
   include_context '3 valid actions'
 
   describe 'PATCH /appropriate-body/bulk/actions/:batch_id' do

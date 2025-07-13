@@ -1,5 +1,5 @@
 RSpec.describe 'Registering a mentor' do
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
 
   scenario 'An ECT becoming mentor cannot mentor themself' do
     given_there_is_a_school_in_the_service

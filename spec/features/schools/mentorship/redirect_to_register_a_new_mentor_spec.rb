@@ -1,5 +1,5 @@
 RSpec.describe 'Redirect to register a new mentor for an ECT' do
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
 
   let(:trn) { '9876543' }
 
