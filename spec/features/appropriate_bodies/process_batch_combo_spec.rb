@@ -1,7 +1,7 @@
 RSpec.describe 'Process bulk claims then actions events' do
   include ActiveJob::TestHelper
 
-  include_context 'fake trs api returns 2 random teachers'
+  include_context 'test trs api client'
 
   let(:appropriate_body) do
     FactoryBot.create(:appropriate_body, name: 'The Appropriate Body')
