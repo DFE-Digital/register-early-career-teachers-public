@@ -61,7 +61,15 @@ module TRS
     end
 
     def prohibited_from_teaching?
-      @alerts&.any? { |alert| alert.dig('alertType', 'alertCategory', 'alertCategoryId') == PROHIBITED_FROM_TEACHING_CATEGORY_ID }
+      PROHIBITED_FROM_TEACHING_CATEGORY_ID.in?(alert_codes)
+    end
+
+    def has_alerts?
+      alert_codes.any?
+    end
+
+    def qts_awarded?
+      @qts_awarded_on.present?
     end
 
   private
@@ -70,8 +78,10 @@ module TRS
       @api_client ||= TRS::APIClient.build
     end
 
-    def qts_awarded?
-      @qts_awarded_on.present?
+    def alert_codes
+      return [] if @alerts.blank?
+
+      @alerts.map { |a| a.dig(*%w[alertType alertCategory alertCategoryId]) }
     end
   end
 end
