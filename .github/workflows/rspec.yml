@@ -31,6 +31,7 @@ jobs:
       ENCRYPTION_DETERMINISTIC_KEY: test_deterministic_key
       ENCRYPTION_DERIVATION_SALT: test_derivation_salt
       CI: true
+      REDIS_CACHE_URL: 'redis://127.0.0.1:6379'
 
     services:
       postgres:
@@ -42,6 +43,12 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
 
     steps:
       - name: Checkout code
