@@ -1,5 +1,5 @@
 RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   let(:page_heading) { "Find an early career teacher" }
@@ -73,7 +73,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
       end
 
       context "when the submission is valid but ECT does not have QTS awarded" do
-        include_context 'fake trs api client that finds teacher without QTS'
+        include_context 'test trs api client that finds teacher without QTS'
 
         it 're-renders the find page and displays the relevant error' do
           post(
@@ -86,7 +86,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
       end
 
       context "when the submission is valid but ECT was prohibited from teaching" do
-        include_context 'fake trs api client that finds teacher prohibited from teaching'
+        include_context 'test trs api client that finds teacher prohibited from teaching'
 
         it 're-renders the find page and displays the relevant error' do
           post(
@@ -148,7 +148,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
       end
 
       context "when the submission is valid but no ECT is found" do
-        include_context 'fake trs api client that finds nothing'
+        include_context 'test trs api client that finds nothing'
         let(:birth_year_param) { "2001" }
 
         it 're-renders the find page and displays the relevant error' do
@@ -164,7 +164,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
       end
 
       context "when the submission is valid but the ECT is deactivated" do
-        include_context 'fake trs api client deactivated teacher'
+        include_context 'test trs api client deactivated teacher'
         let(:birth_year_param) { "2001" }
 
         it 're-renders the find page and displays the relevant error' do

@@ -10,7 +10,7 @@ RSpec.describe 'Claiming an ECT' do
       FactoryBot.create(:induction_period, teacher:, started_on: 14.months.ago, finished_on: 13.months.ago, appropriate_body: other_body)
     end
 
-    include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+    include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
 
     scenario 'Happy path when induction is not completed' do
       given_i_am_on_the_claim_an_ect_find_page
@@ -31,7 +31,7 @@ RSpec.describe 'Claiming an ECT' do
   end
 
   describe "when the ECT is already claimed by another appropriate body" do
-    include_context 'fake trs api client that finds teacher with specific induction status', 'InProgress'
+    include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
 
     before do
       FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_body)
@@ -51,7 +51,7 @@ RSpec.describe 'Claiming an ECT' do
   end
 
   describe "when the ECT has passed the induction" do
-    include_context 'fake trs api client that finds teacher with specific induction status', 'Passed'
+    include_context 'test trs api client that finds teacher with specific induction status', 'Passed'
 
     scenario 'Button is hidden when induction is completed' do
       given_i_am_on_the_claim_an_ect_find_page
@@ -64,7 +64,7 @@ RSpec.describe 'Claiming an ECT' do
   end
 
   describe "when the ECT is exempt from induction" do
-    include_context 'fake trs api client that finds teacher with specific induction status', 'Exempt'
+    include_context 'test trs api client that finds teacher with specific induction status', 'Exempt'
 
     scenario 'Button is hidden and exempt message is shown' do
       given_i_am_on_the_claim_an_ect_find_page

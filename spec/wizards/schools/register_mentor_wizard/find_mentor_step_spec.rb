@@ -76,7 +76,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
     context 'when the mentor is not found in TRS' do
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(raise_not_found: true))
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_not_found: true))
         subject.save!
       end
 
@@ -90,7 +90,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       let(:ect) { FactoryBot.create(:ect_at_school_period, :active, teacher:) }
 
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         subject.save!
       end
 
@@ -112,7 +112,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       end
 
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         subject.save!
       end
 
@@ -127,7 +127,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
       before do
         wizard.store.update!(school_urn: active_mentor_period.school.urn)
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         subject.save!
       end
 
@@ -140,9 +140,9 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
 
       before do
-        fake_client = TRS::FakeAPIClient.new
+        test_client = TRS::TestAPIClient.new
 
-        allow(fake_client).to receive(:find_teacher).and_return(
+        allow(test_client).to receive(:find_teacher).and_return(
           TRS::Teacher.new(
             'trn' => '1234568',
             'firstName' => 'Jane',
@@ -159,7 +159,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
             ]
           )
         )
-        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
+        allow(::TRS::APIClient).to receive(:new).and_return(test_client)
         subject.save!
       end
 
@@ -172,7 +172,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       let(:school) { FactoryBot.create(:school) }
 
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         wizard.store.update!(school_urn: school.urn)
         subject.save!
       end
@@ -214,7 +214,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       end
 
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
       end
 
       it 'updates the wizard mentor trn and TRS data' do

@@ -1,5 +1,5 @@
 RSpec.describe 'Process bulk claims' do
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
