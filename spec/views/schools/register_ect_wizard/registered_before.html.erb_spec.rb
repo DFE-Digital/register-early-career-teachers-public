@@ -109,8 +109,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
         finished_on: nil,
         school:,
         teacher:,
-        training_programme: 'school_led',
-        lead_provider_id: nil
+        training_programme: 'school_led'
       )
     end
 

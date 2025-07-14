@@ -21,7 +21,8 @@ They do not need to provide us with any further details.
 
 <% if @wizard.ect.provider_led_training_programme? %>
 <% if @mentor.funding_available? %>
-We'll pass on their details to <%= @wizard.ect.lead_provider.name %> who will contact them to arrange mentor training.
+We'll pass on their details to <%= ECTAtSchoolPeriods::Training.new(@wizard.ect).latest_lead_provider_name %>
+ who will contact them to arrange mentor training.
 <% else %>
 They cannot do mentor training according to our records.
 This could be because they've undertaken it before.

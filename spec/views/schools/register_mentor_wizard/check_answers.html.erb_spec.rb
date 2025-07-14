@@ -6,7 +6,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   end
 
   let(:ect) do
-    FactoryBot.create(:ect_at_school_period, :active, teacher:, lead_provider:)
+    FactoryBot.create(:ect_at_school_period, :with_training_period, :active, teacher:, lead_provider:)
   end
 
   let(:store) do

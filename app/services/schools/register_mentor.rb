@@ -56,7 +56,7 @@ module Schools
       @training_period = ::TrainingPeriods::Create.new(
         period: mentor_at_school_period,
         started_on: mentor_at_school_period.started_on,
-        school_partnership:,
+        school_partnership: earliest_matching_school_partnership,
         expression_of_interest:
       ).call
     end

@@ -173,7 +173,6 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   school: ackley_bridge,
   email: 'kate.winslet@titanic.com',
   started_on: 1.year.ago,
-  lead_provider: nil,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
   training_programme: 'school_led'
@@ -227,7 +226,6 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   school: ackley_bridge,
   email: 'alan.rickman@diehard.com',
   started_on: 2.years.ago,
-  lead_provider: better_practice_network,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   training_programme: 'provider_led'
@@ -274,7 +272,6 @@ hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   school: abbey_grove_school,
   email: 'hugh.grant@wonka.com',
   started_on: 2.years.ago,
-  lead_provider: nil,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   training_programme: 'school_led'
@@ -315,7 +312,6 @@ colin_firth_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   school: abbey_grove_school,
   email: 'colin.firth@aol.com',
   started_on: 2.years.ago,
-  lead_provider: nil,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
   training_programme: 'school_led'
@@ -405,7 +401,6 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
   school: mallory_towers,
   email: 'imogen.stubbs@eriktheviking.com',
   started_on: 2.years.ago,
-  lead_provider: nil,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
   training_programme: 'school_led'
@@ -438,7 +433,6 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   school: mallory_towers,
   email: 'gemma.jones@rocketman.com',
   started_on: 21.months.ago,
-  lead_provider: better_practice_network,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'part_time',
   training_programme: 'provider_led'
@@ -482,7 +476,6 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   teacher: anthony_hopkins,
   school: brookfield_school,
   email: 'anthony.hopkins@favabeans.com',
-  lead_provider: teach_fast,
   school_reported_appropriate_body: umber_teaching_school_hub,
   training_programme: 'provider_led',
   started_on: 2.years.ago,
@@ -503,7 +496,6 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'stephen.fry@sausage.com',
   started_on: 2.years.ago,
-  lead_provider: teach_fast,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
   training_programme: 'provider_led',
   working_pattern: 'part_time'
@@ -521,15 +513,20 @@ TrainingPeriod.create!(
 
 print_seed_info("Harriet Walter (ECT) with multiple induction periods", indent: 2, colour: ECT_COLOUR)
 
-ECTAtSchoolPeriod.create!(
+harriet_walter_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   teacher: harriet_walter,
   school: brookfield_school,
   email: 'harriet-walter@history.com',
   started_on: 2.years.ago,
-  lead_provider: teach_fast,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
   training_programme: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
+
+TrainingPeriod.create!(
+  ect_at_school_period: harriet_walter_ect_at_brookfield_school,
+  started_on: 2.years.ago,
+  school_partnership: teach_fast_grain_partnership_2022
+).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Helen Mirren (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
@@ -571,7 +568,6 @@ dominic_west_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'harriet-walter@history.com',
   started_on: 18.months.ago,
-  lead_provider: ambitious_institute,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
   training_programme: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }

@@ -9,18 +9,12 @@ module TrainingPeriodSources
     @active_lead_provider ||= ActiveLeadProvider.find_by!(lead_provider:, contract_period:)
   end
 
-  def school_partnership
-    SchoolPartnership
-      .joins(:lead_provider_delivery_partnership)
-      .find_by(
-        school:,
-        lead_provider_delivery_partnerships: {
-          active_lead_provider_id: active_lead_provider.id
-        }
-      )
+  def earliest_matching_school_partnership
+    SchoolPartnerships::Query.new(school:, lead_provider:, contract_period:)
+    .earliest_school_partnership
   end
 
   def expression_of_interest
-    school_partnership ? nil : active_lead_provider
+    earliest_matching_school_partnership ? nil : active_lead_provider
   end
 end
