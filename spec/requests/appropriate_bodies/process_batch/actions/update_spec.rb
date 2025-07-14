@@ -39,7 +39,7 @@ RSpec.describe "Appropriate Body bulk actions confirmation", type: :request do
         expect(Event.last.pending_induction_submission_batch.id).to eq(batch.id)
       end
 
-      it "redirects" do
+      it "redirects and renders a summary of successful outcomes" do
         put ab_batch_action_path(batch)
 
         expect(response).to redirect_to(ab_batch_action_path(batch))
@@ -59,7 +59,7 @@ RSpec.describe "Appropriate Body bulk actions confirmation", type: :request do
     context 'with 1 valid and 2 invalid actions' do
       include_context '1 valid and 2 invalid actions'
 
-      it "redirects" do
+      it "redirects and renders a summary of successful outcomes and errors to fix" do
         put ab_batch_action_path(batch)
 
         expect(response).to redirect_to(ab_batch_action_path(batch))
@@ -72,6 +72,29 @@ RSpec.describe "Appropriate Body bulk actions confirmation", type: :request do
         expect(response.body).to include("Your CSV named '1 valid 2 invalid actions.csv' has 1 ECT record including:")
         expect(response.body).to include("1 ECT with a passed induction")
         expect(response.body).to include("You had 2 ECTs with errors")
+      end
+    end
+
+    context 'with no valid actions' do
+      let(:file_name) { 'no valid actions.csv' }
+
+      let(:data) do
+        [{ trn: '7654321', date_of_birth: '1981-06-30' }]
+      end
+
+      it "redirects and renders a summary of errors to fix" do
+        put ab_batch_action_path(batch)
+
+        expect(response).to redirect_to(ab_batch_action_path(batch))
+        follow_redirect!
+        expect(response.body).to include("We're processing your CSV file, it could take up to 5 minutes.")
+
+        perform_enqueued_jobs
+        get ab_batch_action_path(batch)
+
+        expect(response.body).to include("Your CSV named 'no valid actions.csv' has 1 ECT with errors")
+        expect(response.body).to include("Download CSV with error messages included")
+        expect(response.body).to include("You'll need to fix these errors before you try again.")
       end
     end
   end

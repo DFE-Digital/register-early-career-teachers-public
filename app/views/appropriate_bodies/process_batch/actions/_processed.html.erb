@@ -2,7 +2,7 @@
 
 <% if batch.no_valid_data? %>
   <p class='govuk-body'>
-    Your CSV named '<%= batch.file_name %>' has <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors.
+    Your CSV named '<%= batch.file_name %>' has <%= pluralize(batch.pending_induction_submissions.with_errors.count, 'ECT') %> with errors.
   </p>
 
   <p class='govuk-body'>
