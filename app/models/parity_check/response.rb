@@ -7,6 +7,7 @@ module ParityCheck
     delegate :run, to: :request
 
     before_validation :clear_bodies, if: :bodies_matching?
+    before_save :format_bodies
 
     validates :request, presence: true
     validates :ecf_status_code, inclusion: { in: 100..599 }
@@ -59,34 +60,21 @@ module ParityCheck
     end
 
     def body_diff
-      @body_diff ||= Diffy::Diff.new(ecf_body, rect_body, context: 3)
-    end
-
-    def ecf_body_hash
-      @ecf_body_hash ||= parse_json_body(ecf_body)
-    end
-
-    def rect_body_hash
-      @rect_body_hash ||= parse_json_body(rect_body)
-    end
-
-    def ecf_body=(value)
-      super(pretty_json(value))
-    end
-
-    def rect_body=(value)
-      super(pretty_json(value))
+      Diffy::Diff.new(ecf_body, rect_body, context: 3)
     end
 
   private
 
-    def pretty_json(value)
-      parsed_json = parse_json_body(value)
-      parsed_json ? JSON.pretty_generate(parsed_json) : value
+    def format_bodies
+      ecf_body_hash = parse_json_body(ecf_body)
+      self.ecf_body = JSON.pretty_generate(ecf_body_hash) if ecf_body_hash
+
+      rect_body_hash = parse_json_body(rect_body)
+      self.rect_body = JSON.pretty_generate(rect_body_hash) if rect_body_hash
     end
 
     def parse_json_body(body)
-      JSON.parse(body)&.deep_symbolize_keys if body
+      JSON.parse(body) if body
     rescue JSON::ParserError
       nil
     end
