@@ -187,5 +187,27 @@ describe TRS::FakeAPIClient do
         expect(trs_teacher.induction_status).to eql('RequiredToComplete')
       end
     end
+
+    describe '#reopen_teacher_induction!' do
+      let(:completed_date) { 1.day.ago.to_date }
+
+      before { subject.reopen_teacher_induction!(trn: teacher.trn, start_date:) }
+
+      it 'sets the status to InProgres, sets the startDate to the provided one and clears the completedDate' do
+        expect(redis_client.hgetall(key)).to match(
+          include(
+            'status' => 'InProgress',
+            'startDate' => start_date.to_s,
+            'completedDate' => ''
+          )
+        )
+      end
+
+      it 'retrieves the teacher record with the updated info' do
+        trs_teacher = subject.find_teacher(trn:)
+
+        expect(trs_teacher.induction_status).to eql('InProgress')
+      end
+    end
   end
 end

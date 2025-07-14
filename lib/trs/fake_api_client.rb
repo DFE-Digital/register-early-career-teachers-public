@@ -67,6 +67,18 @@ module TRS
       )
     end
 
+    def reopen_teacher_induction!(trn:, start_date:, modified_at: Time.zone.now)
+      Rails.logger.info("TRSFakeAPIClient pretending to reopen teacher with TRN=#{trn}'s induction")
+
+      update_induction_status(
+        trn:,
+        status: 'InProgress',
+        start_date: start_date.iso8601,
+        completed_date: nil,
+        modified_at: modified_at.utc.iso8601(3)
+      )
+    end
+
   private
 
     def redis_client

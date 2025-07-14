@@ -33,6 +33,7 @@ module TRS
     def pass_induction!(...) = nil
     def fail_induction!(...) = nil
     def reset_teacher_induction!(...) = nil
+    def reopen_teacher_induction!(...) = nil
 
   private
 
