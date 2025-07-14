@@ -8,13 +8,13 @@ RSpec.describe "Appropriate Body bulk claims confirmation", type: :request do
     FactoryBot.create(:pending_induction_submission_batch, :claim,
                       appropriate_body:,
                       data:,
-                      file_name: 'test-file.csv')
+                      file_name:)
   end
 
   include_context 'test trs api client'
 
   describe 'PATCH /appropriate-body/bulk/claims/:batch_id' do
-    context 'when both claims are valid' do
+    context 'with only valid claims' do
       include_context '2 valid claims'
 
       it "enqueues a job" do
@@ -49,11 +49,11 @@ RSpec.describe "Appropriate Body bulk claims confirmation", type: :request do
         perform_enqueued_jobs
         get ab_batch_claim_path(batch)
 
-        expect(response.body).to include("Your CSV named 'test-file.csv' has 2 ECT records that you can claim")
+        expect(response.body).to include("Your CSV named '2 valid claims.csv' has 2 ECT records that you can claim")
       end
     end
 
-    context 'when 1 valid and one invalid claim' do
+    context 'with one valid and one invalid claim' do
       include_context '1 valid and 1 invalid claim'
 
       it "redirects" do
@@ -66,8 +66,8 @@ RSpec.describe "Appropriate Body bulk claims confirmation", type: :request do
         perform_enqueued_jobs
         get ab_batch_claim_path(batch)
 
-        expect(response.body).to include("Your CSV named 'test-file.csv' has 1 ECT records that you can claim")
-        expect(response.body).to include("You have 1 ECTs with errors")
+        expect(response.body).to include("Your CSV named '1 valid 1 invalid claim.csv' has 1 ECT record that you can claim")
+        expect(response.body).to include("You have 1 ECT with errors")
       end
     end
   end
