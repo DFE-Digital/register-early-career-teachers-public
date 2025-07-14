@@ -183,7 +183,7 @@ module TRS
     def induction_data(trn)
       return { 'induction' => { 'status' => @induction_status } } if @induction_status
 
-      if (induction_status = retrieve_induction_status(trn)) && induction_status.present?
+      if redis_client.connected? && (induction_status = retrieve_induction_status(trn)) && induction_status.present?
         {
           'induction' => {
             'status' => induction_status['status'],
