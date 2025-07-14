@@ -40,8 +40,8 @@ module Builders
         mentorship_period = ::MentorshipPeriod.find_or_initialize_by(mentee: teacher_period, started_on: period.start_date)
         mentorship_period.mentor = mentor_period
         mentorship_period.finished_on = period.end_date
-        mentorship_period.ect_start_induction_record_id = period.start_source_id
-        mentorship_period.ect_end_induction_record_id = period.end_source_id
+        mentorship_period.ecf_start_induction_record_id = period.start_source_id
+        mentorship_period.ecf_end_induction_record_id = period.end_source_id
         mentorship_period.save!
       rescue ActiveRecord::ActiveRecordError => e
         log_period_error(period:, message: e.message)

@@ -5,15 +5,15 @@ RSpec.describe Migrators::MentorshipPeriod do
       mentor = FactoryBot.create(:migration_participant_profile, :mentor, school_cohort: ect.school_cohort)
       FactoryBot.create(:migration_induction_record, participant_profile: mentor, start_date: 1.week.ago, end_date: nil)
       FactoryBot.create(:migration_induction_record, participant_profile: ect, mentor_profile: mentor, start_date: 1.week.ago, end_date: nil)
-      ect.teacher_profile
+      ect
     end
 
     def create_resource(migration_resource)
-      ect = FactoryBot.create(:teacher, trn: migration_resource.trn, ecf_ect_profile_id: migration_resource.participant_profiles.first.id)
-      school = FactoryBot.create(:school, urn: migration_resource.participant_profiles.first.school_cohort.school.urn)
-      FactoryBot.create(:ect_at_school_period, teacher: ect, school:, started_on: migration_resource.participant_profiles.first.induction_records.first.start_date, finished_on: nil)
+      ect = FactoryBot.create(:teacher, trn: migration_resource.teacher_profile.trn, ecf_ect_profile_id: migration_resource.id)
+      school = FactoryBot.create(:school, urn: migration_resource.school_cohort.school.urn)
+      FactoryBot.create(:ect_at_school_period, teacher: ect, school:, started_on: migration_resource.induction_records.first.start_date, finished_on: nil)
 
-      migration_mentor = Migration::ParticipantProfile.find_by(teacher_profile: migration_resource).induction_records.first.mentor_profile
+      migration_mentor = migration_resource.induction_records.first.mentor_profile
       mentor = FactoryBot.create(:teacher, trn: migration_mentor.teacher_profile.trn, ecf_mentor_profile_id: migration_mentor.id)
       FactoryBot.create(:mentor_at_school_period, teacher: mentor, school:, started_on: migration_mentor.induction_records.first.start_date, finished_on: nil)
     end
