@@ -166,10 +166,10 @@ describe TRS::FakeAPIClient do
       end
     end
 
-    describe '#reset_teacher_induction' do
+    describe '#reset_teacher_induction!' do
       let(:completed_date) { 1.day.ago.to_date }
 
-      before { subject.reset_teacher_induction(trn: teacher.trn) }
+      before { subject.reset_teacher_induction!(trn: teacher.trn) }
 
       it 'clears the start date and completed date in Redis, and sets status back to required to complete' do
         expect(redis_client.hgetall(key)).to match(
