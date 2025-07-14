@@ -77,9 +77,22 @@ describe TRS::FakeAPIClient do
         expect(subject.find_teacher(trn:)).to be_present
       end
     end
+
+    context 'when the teacher already exists in the database' do
+      let(:trn) { 1_112_222 }
+
+      before { FactoryBot.create(:teacher, trn:, trs_first_name: 'Christopher', trs_last_name: 'Eccleston') }
+
+      it 'returns the TRS teacher with name of the existing teacher' do
+        trs_teacher = subject.find_teacher(trn:)
+
+        expect(trs_teacher.first_name).to eql('Christopher')
+        expect(trs_teacher.last_name).to eql('Eccleston')
+      end
+    end
   end
 
-  describe 'Redis data storing functionality' do
+  describe 'Redis data storing functionality', :redis do
     subject { TRS::FakeAPIClient.new }
 
     let(:teacher) { FactoryBot.build(:teacher) }
