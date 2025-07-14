@@ -52,7 +52,7 @@ module InductionPeriods
     end
 
     def reset_trs_status
-      TRS::APIClient.build.reset_teacher_induction(trn: teacher.trn)
+      TRS::APIClient.build.reset_teacher_induction!(trn: teacher.trn)
     end
 
     def record_teacher_trs_induction_start_date_updated_event(appropriate_body, induction_period)

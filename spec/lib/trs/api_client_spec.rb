@@ -180,7 +180,7 @@ RSpec.describe TRS::APIClient do
     end
 
     it "puts to the induction endpoint with the 'reset' parameters" do
-      client.reset_teacher_induction(trn:, modified_at:)
+      client.reset_teacher_induction!(trn:, modified_at:)
 
       expect(connection).to have_received(:put).with("v3/persons/#{trn}/cpd-induction", expected_payload).once
     end

@@ -55,7 +55,7 @@ module TRS
       )
     end
 
-    def reset_teacher_induction(trn:, modified_at: Time.zone.now)
+    def reset_teacher_induction!(trn:, modified_at: Time.zone.now)
       Rails.logger.info("TRSFakeAPIClient pretending to reset teacher with TRN=#{trn}'s induction")
 
       update_induction_status(

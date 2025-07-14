@@ -553,7 +553,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
       before do
         allow(TRS::APIClient).to receive(:new).and_return(trs_api_client)
-        allow(trs_api_client).to receive(:reset_teacher_induction)
+        allow(trs_api_client).to receive(:reset_teacher_induction!)
       end
 
       it "deletes the induction period and redirects with success message" do
@@ -586,7 +586,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
       before do
         allow(TRS::APIClient).to receive(:new).and_return(trs_api_client)
-        allow(trs_api_client).to receive(:reset_teacher_induction)
+        allow(trs_api_client).to receive(:reset_teacher_induction!)
         allow(trs_api_client).to receive(:begin_induction!)
       end
 
