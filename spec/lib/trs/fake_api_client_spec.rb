@@ -79,7 +79,7 @@ describe TRS::FakeAPIClient do
     end
   end
 
-  describe 'Redis data storing functionality' do
+  describe 'Redis data storing functionality', :redis do
     subject { TRS::FakeAPIClient.new }
 
     let(:teacher) { FactoryBot.build(:teacher) }
