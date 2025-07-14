@@ -22,6 +22,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
   let(:ect_period) do
     FactoryBot.create(
       :ect_at_school_period,
+      :with_training_period,
       teacher: ect_teacher,
       school:,
       started_on: start_date,

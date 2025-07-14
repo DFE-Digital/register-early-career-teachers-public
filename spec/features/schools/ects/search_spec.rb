@@ -1,5 +1,5 @@
 RSpec.describe 'Searching for an ECT', type: :feature do
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
 
   before do
     given_there_is_a_school_with_teachers

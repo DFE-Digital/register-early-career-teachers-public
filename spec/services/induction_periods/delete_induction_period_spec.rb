@@ -6,7 +6,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
     )
   end
 
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
   include ActiveJob::TestHelper
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }

@@ -1,5 +1,5 @@
 RSpec.describe 'Registering an ECT' do
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
 
   scenario 'previously registered' do
     given_i_am_logged_in_as_a_state_funded_school_user_who_has_previously_registered_an_ect

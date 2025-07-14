@@ -2,6 +2,8 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-third">
+    <%= govuk_button_link_to("Import TRS record", new_admin_import_ect_find_path, secondary: true) %>
+
     <%= form_with method: :get, data: { turbo: false } do |f| %>
 
       <%= f.govuk_text_field(

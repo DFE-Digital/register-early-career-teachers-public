@@ -1,0 +1,27 @@
+<% page_data(
+  title: "#{@pending_induction_submission.trs_first_name} #{@pending_induction_submission.trs_last_name} is registered",
+  header: false)
+%>
+
+<%= govuk_panel(title_text: "You've successfully imported #{@pending_induction_submission.trs_first_name} #{@pending_induction_submission.trs_last_name}'s induction") %>
+
+<p>
+  You've successfully imported <%= @pending_induction_submission.trs_first_name %> <%= @pending_induction_submission.trs_last_name %> into the system. They are now available for appropriate bodies to claim.
+</p>
+
+<h2 class="govuk-heading-m">What happens next</h2>
+
+<p>
+  Use this service to manage <%= @pending_induction_submission.trs_first_name %> <%= @pending_induction_submission.trs_last_name %>'s induction. For example, if:
+</p>
+
+<%= govuk_list([
+  "they need their details updated",
+  "they change appropriate body",
+  "their induction programme changes or ends"
+], type: :bullet) %>
+
+<%= govuk_list([
+  govuk_link_to("Import another ECT", new_admin_import_ect_find_path, no_visited_state: true),
+  govuk_link_to("Back to teachers", admin_teachers_path, no_visited_state: true)
+]) %>

@@ -71,7 +71,7 @@ module Schools
       end
 
       def lead_provider
-        ect&.lead_provider
+        ECTAtSchoolPeriods::Training.new(ect).latest_lead_provider if ect
       end
 
     private

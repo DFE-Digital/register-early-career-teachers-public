@@ -43,7 +43,7 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
   describe '#next_step' do
     subject { wizard.current_step }
 
-    let(:fake_trs_client) { TRS::FakeAPIClient.new }
+    let(:test_trs_client) { TRS::TestAPIClient.new }
     let(:fake_trs_teacher) do
       TRS::Teacher.new(
         'trn' => '1234568',
@@ -61,7 +61,7 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
 
     context 'when the ect is not found in TRS' do
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(raise_not_found: true))
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_not_found: true))
         subject.save!
       end
 
@@ -74,8 +74,8 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
 
       before do
-        allow(fake_trs_client).to receive(:find_teacher).and_return(fake_trs_teacher)
-        allow(::TRS::APIClient).to receive(:new).and_return(fake_trs_client)
+        allow(test_trs_client).to receive(:find_teacher).and_return(fake_trs_teacher)
+        allow(::TRS::APIClient).to receive(:new).and_return(test_trs_client)
         subject.save!
       end
 
@@ -108,7 +108,7 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
       let(:school) { FactoryBot.create(:school) }
 
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         wizard.store.update!(school_urn: school.urn)
         subject.save!
       end
@@ -152,7 +152,7 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
       let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :national_insurance_number, step_params:) }
 
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
       end
 
       it 'updates the wizard ect and TRS data' do

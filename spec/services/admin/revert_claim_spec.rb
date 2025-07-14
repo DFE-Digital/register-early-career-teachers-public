@@ -8,7 +8,7 @@ RSpec.describe Admin::RevertClaim do
     )
   end
 
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
   include ActiveJob::TestHelper
 
   before do

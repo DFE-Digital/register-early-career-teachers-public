@@ -67,6 +67,19 @@ RSpec.describe "Run parity check" do
     expect(page.locator(".govuk-error-summary a").and(page.get_by_text("Select at least one endpoint."))).to be_visible
   end
 
+  scenario "Running a parity check when there are no lead providers" do
+    LeadProvider.destroy_all
+
+    page.goto(new_migration_parity_check_path)
+
+    page.get_by_label(post_endpoint.description).click
+
+    page.get_by_role("button", name: "Run").click
+
+    expect(page.get_by_role("heading", name: "There is a problem")).to be_visible
+    expect(page.locator(".govuk-error-summary a").and(page.get_by_text("There are no lead providers available; create at least one lead provider to run a parity check."))).to be_visible
+  end
+
   scenario "Running a parity check when there are no endpoints" do
     ParityCheck::Endpoint.destroy_all
 

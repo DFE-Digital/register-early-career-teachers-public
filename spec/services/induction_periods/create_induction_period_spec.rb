@@ -32,7 +32,7 @@ describe 'InductionPeriods::CreateInductionPeriod' do
 
     describe '#create_induction_period!' do
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         allow(BeginECTInductionJob).to receive(:perform_later)
       end
 

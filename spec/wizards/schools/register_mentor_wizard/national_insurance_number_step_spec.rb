@@ -71,7 +71,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
 
     context 'when the mentor is not found in TRS' do
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new(raise_not_found: true))
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_not_found: true))
         subject.save!
       end
 
@@ -86,7 +86,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
 
       before do
         wizard.store.update!(trn: '1234568', school_urn: active_mentor_period.school.urn)
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         subject.save!
       end
 
@@ -101,7 +101,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
 
       before do
         wizard.store.update!(trn: '1234568', school_urn: active_mentor_period.school.urn)
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         subject.save!
       end
 
@@ -114,9 +114,9 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
 
       before do
-        fake_client = TRS::FakeAPIClient.new
+        test_client = TRS::TestAPIClient.new
 
-        allow(fake_client).to receive(:find_teacher).and_return(
+        allow(test_client).to receive(:find_teacher).and_return(
           TRS::Teacher.new(
             'trn' => '1234568',
             'firstName' => 'Jane',
@@ -133,7 +133,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
             ]
           )
         )
-        allow(::TRS::APIClient).to receive(:new).and_return(fake_client)
+        allow(::TRS::APIClient).to receive(:new).and_return(test_client)
         subject.save!
       end
 
@@ -146,7 +146,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
       let(:school) { FactoryBot.create(:school) }
 
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         wizard.store.update!(school_urn: school.urn)
         subject.save!
       end
@@ -191,7 +191,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
       end
 
       before do
-        allow(::TRS::APIClient).to receive(:new).and_return(TRS::FakeAPIClient.new)
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
       end
 
       it 'updates the wizard mentor national insurance number and TRS data' do
