@@ -36,7 +36,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
       end
 
       context "when the induction period is with another AB" do
-        include_context "fake trs api client"
+        include_context "test trs api client"
         let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
         it "returns true" do
@@ -49,7 +49,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
       end
 
       context "when there's an open induction_period with the same AB" do
-        include_context "fake trs api client"
+        include_context "test trs api client"
         let(:appropriate_body) { pending_induction_submission.appropriate_body }
 
         it "raises TeacherHasActiveInductionPeriodWithCurrentAB" do
@@ -61,7 +61,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
     end
 
     context "when there is no match" do
-      include_context "fake trs api client that finds nothing"
+      include_context "test trs api client that finds nothing"
 
       it "raises teacher not found error" do
         pending_induction_submission = FactoryBot.create(:pending_induction_submission)

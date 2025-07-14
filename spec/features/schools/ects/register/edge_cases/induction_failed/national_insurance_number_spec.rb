@@ -1,5 +1,5 @@
 RSpec.describe 'Registering an ECT' do
-  include_context 'fake trs api returns a teacher and then a teacher that has failed their induction'
+  include_context 'test trs api returns a teacher and then a teacher that has failed their induction'
 
   scenario 'User enters national insurance number but teacher has failed their induction' do
     given_i_am_logged_in_as_a_school_user

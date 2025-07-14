@@ -1,6 +1,6 @@
 RSpec.describe "Admin deletes an induction period" do
   include ActiveJob::TestHelper
-  include_context "fake trs api client"
+  include_context "test trs api client"
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }

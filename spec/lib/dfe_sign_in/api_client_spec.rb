@@ -1,6 +1,6 @@
 describe DfESignIn::APIClient do
   let(:fake_base_url) { 'https://api.very-nice-website.org/' }
-  let(:fake_client_id) { 'SomeService' }
+  let(:test_client_id) { 'SomeService' }
   let(:fake_api_audience) { 'signin.very-nice-website.org' }
   let(:fake_api_secret) { 'ABC123' }
 
@@ -10,7 +10,7 @@ describe DfESignIn::APIClient do
   before do
     stub_const('ENV', {
       'DFE_SIGN_IN_API_BASE_URL' => fake_base_url,
-      'DFE_SIGN_IN_CLIENT_ID' => fake_client_id,
+      'DFE_SIGN_IN_CLIENT_ID' => test_client_id,
       'DFE_SIGN_IN_API_AUDIENCE' => fake_api_audience,
       'DFE_SIGN_IN_API_SECRET' => fake_api_secret,
     })
@@ -56,7 +56,7 @@ describe DfESignIn::APIClient do
       DfESignIn::APIClient.new
 
       expect(JWT).to have_received(:encode).with(
-        { iss: fake_client_id, aud: fake_api_audience },
+        { iss: test_client_id, aud: fake_api_audience },
         fake_api_secret,
         'HS256'
       )

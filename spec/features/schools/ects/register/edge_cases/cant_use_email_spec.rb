@@ -1,5 +1,5 @@
 RSpec.describe 'Registering an ECT', :js do
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
 
   let(:trn) { '3002586' }
 
