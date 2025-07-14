@@ -9,7 +9,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
     )
   end
 
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
 
   let(:author) do
     Sessions::Users::AppropriateBodyUser.new(

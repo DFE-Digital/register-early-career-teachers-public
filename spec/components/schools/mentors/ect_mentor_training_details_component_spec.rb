@@ -10,10 +10,11 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
     let(:ect_start_date) { mentor_start_date + 1.month }
     let(:ect) do
       FactoryBot.create(:ect_at_school_period,
+                        :with_training_period,
                         teacher: ect_teacher,
                         school:,
-                        training_programme: 'provider_led',
                         lead_provider:,
+                        training_programme: 'provider_led',
                         started_on: ect_start_date,
                         finished_on: nil)
     end
@@ -65,7 +66,6 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
                         teacher: ect_teacher,
                         school:,
                         training_programme: 'school_led',
-                        lead_provider: nil,
                         started_on: mentor_start_date + 1.month,
                         finished_on: nil)
     end

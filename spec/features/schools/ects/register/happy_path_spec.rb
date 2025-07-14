@@ -1,5 +1,5 @@
 RSpec.describe 'Registering an ECT' do
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
 
   before do
     create_contract_period_for_start_date

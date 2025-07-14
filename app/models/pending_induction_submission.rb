@@ -26,7 +26,7 @@ class PendingInductionSubmission < ApplicationRecord
   scope :ready_for_deletion, -> { where(delete_at: ..Time.current) }
 
   # Associations
-  belongs_to :appropriate_body
+  belongs_to :appropriate_body, optional: true
   belongs_to :pending_induction_submission_batch, optional: true, touch: true
 
   # Validations

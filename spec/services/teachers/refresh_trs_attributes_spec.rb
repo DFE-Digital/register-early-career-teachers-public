@@ -2,7 +2,7 @@ describe Teachers::RefreshTRSAttributes do
   include ActiveJob::TestHelper
 
   describe '#refresh!' do
-    include_context 'fake trs api client that finds teacher that has passed their induction'
+    include_context 'test trs api client that finds teacher that has passed their induction'
 
     let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Kermit", trs_last_name: "Van Bouten") }
     let(:enable_trs_teacher_refresh) { true }
@@ -62,7 +62,7 @@ describe Teachers::RefreshTRSAttributes do
     end
 
     context 'when the teacher has been deactivated in TRS' do
-      include_context 'fake trs api client deactivated teacher'
+      include_context 'test trs api client deactivated teacher'
 
       let(:fake_manage) do
         double(Teachers::Manage, mark_teacher_as_deactivated!: true)

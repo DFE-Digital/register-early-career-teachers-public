@@ -9,4 +9,5 @@ module "domains" {
   environment         = each.value.environment_short
   host_name           = each.value.origin_hostname
   cached_paths        = try(each.value.cached_paths, [])
+  rate_limit_max      = try(var.rate_limit_max, null)
 }

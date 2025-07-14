@@ -17,7 +17,7 @@ module TRS
       if Rails.application.config.enable_fake_trs_api
         Rails.logger.warn("Using TRS::FakeAPIClient")
 
-        return TRS::FakeAPIClient.new(random_names: true)
+        return TRS::FakeAPIClient.new
       end
 
       new

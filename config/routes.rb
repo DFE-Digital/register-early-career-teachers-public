@@ -69,6 +69,18 @@ Rails.application.routes.draw do
       end
     end
 
+    namespace :import_ect, path: 'import-ect' do
+      resource :find_ect, only: %i[new create], path: 'find-ect', controller: '/admin/import_ect/find_ect', as: 'find'
+      resources :check_ect, only: %i[edit update], path: 'check-ect', controller: '/admin/import_ect/check_ect', as: 'check'
+      resources :register_ect, only: %i[show], path: 'register-ect', controller: '/admin/import_ect/register_ect', as: 'register'
+
+      namespace :errors do
+        get 'induction-already-completed/:id', to: '/admin/import_ect/errors#induction_already_completed', as: 'already_complete'
+        get 'no-qts/:id', to: '/admin/import_ect/errors#no_qts', as: 'no_qts'
+        get 'prohibited-from-teaching/:id', to: '/admin/import_ect/errors#prohibited_from_teaching', as: 'prohibited'
+      end
+    end
+
     resource :finance, only: %i[show], controller: 'finance' do
       collection do
         resources :statements, as: 'finance_statements', controller: 'finance/statements', only: %i[index show] do

@@ -1,5 +1,5 @@
 RSpec.describe ProcessBatchActionJob, type: :job do
-  include_context 'fake trs api client'
+  include_context 'test trs api client'
 
   let(:author) { FactoryBot.create(:user, name: 'Barry Cryer', email: 'barry@not-a-clue.co.uk') }
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_08_153449) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_14_101747) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -188,10 +188,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_08_153449) do
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
     t.bigint "school_reported_appropriate_body_id"
-    t.bigint "lead_provider_id"
     t.enum "training_programme", enum_type: "training_programme"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
-    t.index ["lead_provider_id"], name: "index_ect_at_school_periods_on_lead_provider_id"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
     t.index ["school_reported_appropriate_body_id"], name: "idx_on_school_reported_appropriate_body_id_01f5ffc90a"
@@ -729,7 +727,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_08_153449) do
   add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
-  add_foreign_key "ect_at_school_periods", "lead_providers"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"
   add_foreign_key "events", "active_lead_providers", on_delete: :nullify
