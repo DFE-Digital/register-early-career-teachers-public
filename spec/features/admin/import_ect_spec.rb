@@ -4,7 +4,7 @@ RSpec.describe 'Admin importing an ECT' do
   before { sign_in_as_dfe_user(role: :admin, user: admin_user) }
 
   describe "Happy path - importing a valid teacher" do
-    include_context 'fake trs api client'
+    include_context 'test trs api client'
 
     scenario 'Successfully import an ECT from TRS' do
       given_i_am_on_the_admin_teachers_index_page
@@ -27,7 +27,7 @@ RSpec.describe 'Admin importing an ECT' do
 
   describe "Error cases" do
     context "when teacher not found in TRS" do
-      include_context 'fake trs api client that finds nothing'
+      include_context 'test trs api client that finds nothing'
 
       scenario 'Shows teacher not found error' do
         given_i_am_on_the_find_ect_page
@@ -39,7 +39,7 @@ RSpec.describe 'Admin importing an ECT' do
     end
 
     context "when teacher already exists in RIAB" do
-      include_context 'fake trs api client'
+      include_context 'test trs api client'
 
       let!(:existing_teacher) { FactoryBot.create(:teacher, trn: '1234567') }
 
@@ -54,7 +54,7 @@ RSpec.describe 'Admin importing an ECT' do
     end
 
     context "when teacher does not have QTS" do
-      include_context 'fake trs api client that finds teacher without QTS'
+      include_context 'test trs api client that finds teacher without QTS'
 
       scenario 'Shows QTS not awarded error page' do
         given_i_am_on_the_find_ect_page
@@ -67,7 +67,7 @@ RSpec.describe 'Admin importing an ECT' do
     end
 
     context "when teacher is prohibited from teaching" do
-      include_context 'fake trs api client that finds teacher prohibited from teaching'
+      include_context 'test trs api client that finds teacher prohibited from teaching'
 
       scenario 'Shows prohibited from teaching error page' do
         given_i_am_on_the_find_ect_page

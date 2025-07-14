@@ -1,5 +1,5 @@
 RSpec.describe 'Registering an ECT' do
-  include_context 'fake trs api client that finds teacher prohibited from teaching'
+  include_context 'test trs api client that finds teacher prohibited from teaching'
 
   scenario 'The ECT is prohibited from teaching' do
     given_i_am_logged_in_as_a_school_user

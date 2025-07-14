@@ -21,7 +21,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when there is a match" do
-      include_context 'fake trs api client that finds teacher with specific induction status', 'RequiredToComplete'
+      include_context 'test trs api client that finds teacher with specific induction status', 'RequiredToComplete'
 
       let(:find_ect) { Admin::ImportECT::FindECT.new(pending_induction_submission:) }
 
@@ -51,7 +51,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when teacher already exists in system" do
-      include_context 'fake trs api client'
+      include_context 'test trs api client'
 
       let!(:existing_teacher) { FactoryBot.create(:teacher, trn: pending_induction_submission.trn) }
       let(:find_ect) { Admin::ImportECT::FindECT.new(pending_induction_submission:) }
@@ -65,7 +65,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when there is no match" do
-      include_context 'fake trs api client that finds nothing'
+      include_context 'test trs api client that finds nothing'
 
       it "raises teacher not found error" do
         find_ect = Admin::ImportECT::FindECT.new(pending_induction_submission:)
@@ -75,7 +75,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when teacher is prohibited from teaching" do
-      include_context 'fake trs api client that finds teacher prohibited from teaching'
+      include_context 'test trs api client that finds teacher prohibited from teaching'
 
       it "raises prohibited from teaching error" do
         find_ect = Admin::ImportECT::FindECT.new(pending_induction_submission:)
@@ -85,7 +85,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when teacher does not have QTS" do
-      include_context 'fake trs api client that finds teacher without QTS'
+      include_context 'test trs api client that finds teacher without QTS'
 
       it "raises QTS not awarded error" do
         find_ect = Admin::ImportECT::FindECT.new(pending_induction_submission:)
@@ -95,7 +95,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when teacher has completed induction" do
-      include_context 'fake trs api client that finds teacher with specific induction status', 'Passed'
+      include_context 'test trs api client that finds teacher with specific induction status', 'Passed'
 
       it "raises induction already completed error" do
         find_ect = Admin::ImportECT::FindECT.new(pending_induction_submission:)
@@ -105,7 +105,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when teacher has failed induction" do
-      include_context 'fake trs api client that finds teacher with specific induction status', 'Failed'
+      include_context 'test trs api client that finds teacher with specific induction status', 'Failed'
 
       it "raises induction already completed error" do
         find_ect = Admin::ImportECT::FindECT.new(pending_induction_submission:)
@@ -115,7 +115,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when teacher is exempt from induction" do
-      include_context 'fake trs api client that finds teacher with specific induction status', 'Exempt'
+      include_context 'test trs api client that finds teacher with specific induction status', 'Exempt'
 
       it "raises induction already completed error" do
         find_ect = Admin::ImportECT::FindECT.new(pending_induction_submission:)
@@ -125,7 +125,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when teacher is deactivated" do
-      include_context 'fake trs api client deactivated teacher'
+      include_context 'test trs api client deactivated teacher'
 
       it "raises teacher deactivated error" do
         find_ect = Admin::ImportECT::FindECT.new(pending_induction_submission:)
