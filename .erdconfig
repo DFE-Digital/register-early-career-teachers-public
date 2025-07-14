@@ -26,3 +26,25 @@ exclude:
   - SolidQueue::ClaimedExecution
   - SolidQueue::ReadyExecution
   - SolidQueue::Semaphore 
+  - Migration::TeacherProfile
+  - Migration::SchoolMentor
+  - Migration::SchoolLocalAuthority
+  - Migration::SchoolCohort
+  - Migration::Schedule
+  - Migration::ProviderRelationship
+  - Migration::Partnership
+  - Migration::ParticipantProfile
+  - Migration::ParticipantIdentity
+  - Migration::LocalAuthority
+  - Migration::InductionRecord
+  - Migration::InductionProgramme
+  - Migration::FinanceAdjustment
+  - Migration::CpdLeadProvider
+  - Migration::CoreInductionProgramme
+  - Migration::Cohort
+  - Migration::User
+  - Migration::Statement
+  - Migration::School
+  - Migration::LeadProvider
+  - Migration::DeliveryPartner
+  - Migration::AppropriateBody
