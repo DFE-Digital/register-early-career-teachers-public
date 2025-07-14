@@ -26,11 +26,6 @@ module Migrators
       migrate(self.class.ects) do |participant_profile|
         teacher = ::Teacher.find_by!(ecf_ect_profile_id: participant_profile.id)
 
-        if teacher.nil?
-          failure_manager.record_failure(participant_profile, "Cannot find Teacher for ECT in mentorship period")
-          return false
-        end
-
         success = true
         induction_records = InductionRecordSanitizer.new(participant_profile:)
 
