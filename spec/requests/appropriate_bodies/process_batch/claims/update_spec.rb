@@ -56,7 +56,7 @@ RSpec.describe "Appropriate Body bulk claims confirmation", type: :request do
     context 'with one valid and one invalid claim' do
       include_context '1 valid and 1 invalid claim'
 
-      it "redirects" do
+      it "redirects and renders a summary of successful outcomes and errors to fix" do
         put ab_batch_claim_path(batch)
 
         expect(response).to redirect_to(ab_batch_claim_path(batch))
@@ -68,6 +68,29 @@ RSpec.describe "Appropriate Body bulk claims confirmation", type: :request do
 
         expect(response.body).to include("Your CSV named '1 valid 1 invalid claim.csv' has 1 ECT record that you can claim")
         expect(response.body).to include("You have 1 ECT with errors")
+      end
+    end
+
+    context 'with no valid claims' do
+      let(:file_name) { 'no valid claims.csv' }
+
+      let(:data) do
+        [{ trn: '7654321', date_of_birth: '1981-06-30' }]
+      end
+
+      it "redirects and renders a summary of errors to fix" do
+        put ab_batch_claim_path(batch)
+
+        expect(response).to redirect_to(ab_batch_claim_path(batch))
+        follow_redirect!
+        expect(response.body).to include("We're processing your CSV file, it could take up to 5 minutes.")
+
+        perform_enqueued_jobs
+        get ab_batch_claim_path(batch)
+
+        expect(response.body).to include("Your CSV named 'no valid claims.csv' has 1 ECT with errors")
+        expect(response.body).to include("Download CSV with error messages included")
+        expect(response.body).to include("You'll need to fix these errors before you try again.")
       end
     end
   end
