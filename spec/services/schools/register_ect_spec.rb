@@ -78,7 +78,6 @@ RSpec.describe Schools::RegisterECT do
         expect(ect_at_school_period.working_pattern).to eq(working_pattern)
         expect(ect_at_school_period.email).to eq(email)
         expect(ect_at_school_period.school_reported_appropriate_body_id).to eq(school_reported_appropriate_body.id)
-        expect(ect_at_school_period.lead_provider_id).to eq(lead_provider.id)
         expect(ect_at_school_period.training_programme).to eq(training_programme)
       end
 

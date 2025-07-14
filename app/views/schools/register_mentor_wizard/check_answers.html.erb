@@ -30,7 +30,7 @@
     if @wizard.ect.provider_led_training_programme? && @mentor.funding_available?
       summary_list.with_row do |row|
         row.with_key(text: 'Lead provider')
-        row.with_value(text: @wizard.ect.lead_provider.name)
+        row.with_value(text: ECTAtSchoolPeriods::Training.new(@wizard.ect).latest_lead_provider_name )
       end
     end
   end

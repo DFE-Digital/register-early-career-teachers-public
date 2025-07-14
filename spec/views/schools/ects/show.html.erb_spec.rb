@@ -2,11 +2,12 @@ RSpec.describe 'schools/ects/show.html.erb' do
   let(:contract_period) { FactoryBot.create(:contract_period) }
   let!(:current_ect_period) do
     FactoryBot.create(:ect_at_school_period,
+                      :with_training_period,
                       :teaching_school_hub_ab,
                       teacher:,
                       started_on: '2025-01-11',
                       finished_on: nil,
-                      lead_provider: requested_lead_provider,
+                      lead_provider:,
                       school_reported_appropriate_body: requested_appropriate_body,
                       school: current_school,
                       working_pattern: 'full_time',
@@ -22,7 +23,6 @@ RSpec.describe 'schools/ects/show.html.erb' do
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Barry', trs_last_name: 'White', corrected_name: 'Baz White') }
   let(:previous_school) { FactoryBot.create(:school, urn: '123456') }
   let(:current_school) { FactoryBot.create(:school, :state_funded, urn: '987654') }
-  let(:requested_lead_provider) { FactoryBot.create(:lead_provider, name: 'Requested LP') }
   let(:requested_appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Requested AB') }
   let(:training_programme) { 'provider_led' }
 
@@ -101,10 +101,6 @@ RSpec.describe 'schools/ects/show.html.erb' do
 
   describe 'ECTE training details' do
     before do
-      FactoryBot.create(:training_period, :active, :for_ect, school_partnership:,
-                                                             ect_at_school_period: current_ect_period,
-                                                             started_on: current_ect_period.started_on)
-
       FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
 
       render
@@ -131,13 +127,11 @@ RSpec.describe 'schools/ects/show.html.erb' do
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Ambition institute')
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Provider-led')
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 1.year.ago.to_date.to_fs(:govuk))
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Requested LP')
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Requested AB')
     end
 
     context 'when school-led' do
       let(:training_programme) { 'school_led' }
-      let(:requested_lead_provider) { nil }
 
       it 'does not render the lead provider summary card' do
         expect(rendered).not_to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
