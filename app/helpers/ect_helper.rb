@@ -20,6 +20,11 @@ module ECTHelper
   end
 
   # @param ect [ECTAtSchoolPeriod]
+  def latest_eoi_lead_provider_name(ect)
+    ECTAtSchoolPeriods::Training.new(ect).latest_eoi_lead_provider_name
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
   def link_to_assign_mentor(ect)
     govuk_warning_text(text: "You must #{assign_or_create_mentor_link(ect)} for this ECT.".html_safe)
   end

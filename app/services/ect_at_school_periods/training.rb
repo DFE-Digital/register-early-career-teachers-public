@@ -60,5 +60,16 @@ module ECTAtSchoolPeriods
 
     # latest_lead_provider_name
     delegate :name, to: :latest_lead_provider, allow_nil: true, prefix: true
+
+    # latest_eoi_lead_provider_name
+    delegate :name, to: :latest_eoi_lead_provider, allow_nil: true, prefix: true
+
+  private
+
+    def latest_eoi_lead_provider
+      return if latest_training_period.nil? || latest_training_period.school_partnership_id.present?
+
+      latest_training_period.expression_of_interest&.lead_provider
+    end
   end
 end

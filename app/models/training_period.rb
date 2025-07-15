@@ -51,6 +51,10 @@ class TrainingPeriod < ApplicationRecord
     trainee.training_periods.excluding(self)
   end
 
+  def only_expression_of_interest?
+    school_partnership_id.blank? && expression_of_interest.present?
+  end
+
 private
 
   def one_id_of_trainee_present
