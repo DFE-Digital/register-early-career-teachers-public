@@ -14,7 +14,7 @@ RSpec.describe Schools::Validation::ECTStartDate do
 
       it 'is not valid and returns the correct error message' do
         expect(subject).not_to be_valid
-        expect(subject.error_message).to eq('Start date cannot be earlier than the last 2 registration periods. Enter a date later than 1 June 2024')
+        expect(subject.error_message).to eq('Start date cannot be earlier than the last 2 registration periods. Enter a date later than 1 June 2024.')
       end
     end
 
