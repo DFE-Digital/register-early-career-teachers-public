@@ -24,38 +24,6 @@ describe GIASHelpers do
       end
     end
 
-    describe '.currently_open' do
-      it "returns currently open schools only" do
-        expect(School.currently_open).to contain_exactly(open_school,
-                                                         independent_school,
-                                                         state_funded_school,
-                                                         not_in_england_school,
-                                                         section_41_approved_school,
-                                                         eligible_school,
-                                                         cip_only_school,
-                                                         not_cip_only_school)
-      end
-    end
-
-    describe ".in_england" do
-      it "returns schools in England only" do
-        expect(School.in_england).to contain_exactly(open_school,
-                                                     independent_school,
-                                                     state_funded_school,
-                                                     not_open_school,
-                                                     section_41_approved_school,
-                                                     eligible_school,
-                                                     cip_only_school,
-                                                     not_cip_only_school)
-      end
-    end
-
-    describe '.section_41' do
-      it "returns section 41 approved schools only" do
-        expect(School.section_41).to contain_exactly(section_41_approved_school)
-      end
-    end
-
     describe '.eligible' do
       it "returns eligible schools only" do
         expect(School.eligible).to contain_exactly(open_school,
@@ -69,6 +37,8 @@ describe GIASHelpers do
     describe '.cip_only' do
       it "returns `cip`/`school-led` schools only" do
         expect(School.cip_only).to contain_exactly(independent_school,
+                                                   not_in_england_school,
+                                                   not_open_school,
                                                    cip_only_school)
       end
     end
@@ -77,8 +47,6 @@ describe GIASHelpers do
       it "returns not `cip`/`school-led` schools only" do
         expect(School.not_cip_only).to contain_exactly(open_school,
                                                        state_funded_school,
-                                                       not_in_england_school,
-                                                       not_open_school,
                                                        section_41_approved_school,
                                                        eligible_school,
                                                        not_cip_only_school)

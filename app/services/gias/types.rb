@@ -86,7 +86,5 @@ module GIAS
     ].freeze
 
     IN_ENGLAND_TYPES = (ALL_TYPES - NOT_IN_ENGLAND_TYPES).freeze
-
-    OPEN_STATUSES = GIAS::School.statuses.values_at("open", "proposed_to_close").freeze
   end
 end
