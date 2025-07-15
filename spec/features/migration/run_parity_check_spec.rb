@@ -29,6 +29,9 @@ RSpec.describe "Run parity check" do
     expect(page.locator("legend").and(page.get_by_text("Users"))).to be_visible
     page.get_by_label(put_endpoint.description).click
 
+    # clear previous jobs to avoid selecting wrong parity check request id
+    clear_previous_enqueued_jobs
+
     page.get_by_text("Sequential").click
 
     page.get_by_role("button", name: "Run").click
