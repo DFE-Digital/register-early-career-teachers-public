@@ -215,10 +215,15 @@ module BatchHelper
       caption: "Valid claim submissions (#{valid_submissions.count} records)",
       head: ['TRN', 'Date of birth', 'Induction programme', 'Start date'],
       rows: valid_submissions.map do |submission|
+        induction_programme = if Rails.application.config.enable_bulk_claim
+                                ::TRAINING_PROGRAMME.fetch(submission.training_programme.to_sym, '-')
+                              else
+                                ::INDUCTION_PROGRAMMES.fetch(submission.induction_programme.to_sym, '-')
+                              end
         [
           submission.trn,
           submission.date_of_birth&.to_fs(:govuk) || '-',
-          submission.induction_programme || '-',
+          induction_programme,
           submission.started_on&.to_fs(:govuk) || '-'
         ]
       end
