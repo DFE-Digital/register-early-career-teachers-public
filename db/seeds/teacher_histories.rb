@@ -191,14 +191,16 @@ InductionPeriod.create!(
   finished_on: 2.years.ago,
   number_of_terms: 3,
   appropriate_body: golden_leaf_teaching_school_hub,
-  induction_programme: 'fip'
+  induction_programme: 'fip',
+  training_programme: 'provider_led'
 ).tap { |ip| describe_induction_period(ip) }
 
 InductionPeriod.create!(
   teacher: kate_winslet,
   started_on: 1.year.ago,
   appropriate_body: umber_teaching_school_hub,
-  induction_programme: 'fip'
+  induction_programme: 'fip',
+  training_programme: 'provider_led'
 ).tap { |ip| describe_induction_period(ip) }
 
 print_seed_info("Hugh Laurie (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -245,7 +247,8 @@ InductionPeriod.create!(
   teacher: alan_rickman,
   appropriate_body: golden_leaf_teaching_school_hub,
   started_on: 2.years.ago + 2.months,
-  induction_programme: 'fip'
+  induction_programme: 'fip',
+  training_programme: 'provider_led'
 ).tap { |ip| describe_induction_period(ip) }
 
 InductionExtension.create!(
@@ -291,6 +294,7 @@ InductionPeriod.create!(
   started_on: 2.years.ago + 3.days,
   finished_on: 1.week.ago,
   induction_programme: 'fip',
+  training_programme: 'provider_led',
   number_of_terms: 3
 ).tap { |ip| describe_induction_period(ip) }
 
@@ -334,6 +338,7 @@ InductionPeriod.create!(
   started_on: 2.years.ago + 3.days,
   finished_on: 1.week.ago,
   induction_programme: 'fip',
+  training_programme: 'provider_led',
   number_of_terms: 3
 ).tap { |ip| describe_induction_period(ip) }
 
@@ -356,6 +361,7 @@ InductionPeriod.create!(
   started_on: 2.years.ago,
   finished_on: 1.year.ago,
   induction_programme: 'fip',
+  training_programme: 'provider_led',
   number_of_terms: [1, 2, 3].sample
 ).tap { |ip| describe_induction_period(ip) }
 
@@ -363,7 +369,8 @@ InductionPeriod.create!(
   appropriate_body: golden_leaf_teaching_school_hub,
   teacher: harriet_walter,
   started_on: 1.year.ago,
-  induction_programme: 'fip'
+  induction_programme: 'fip',
+  training_programme: 'provider_led'
 ).tap { |ip| describe_induction_period(ip) }
 
 InductionExtension.create!(
@@ -385,6 +392,7 @@ InductionPeriod.create!(
   started_on: 18.months.ago,
   finished_on: 14.months.ago,
   induction_programme: 'fip',
+  training_programme: 'provider_led',
   number_of_terms: 1
 ).tap { |ip| describe_induction_period(ip) }
 
@@ -393,7 +401,8 @@ InductionPeriod.create!(
   teacher: imogen_stubbs,
   started_on: 14.months.ago,
   finished_on: nil,
-  induction_programme: 'cip'
+  induction_programme: 'cip',
+  training_programme: 'school_led'
 ).tap { |ip| describe_induction_period(ip) }
 
 imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
@@ -425,7 +434,8 @@ InductionPeriod.create!(
   teacher: gemma_jones,
   started_on: 20.months.ago,
   finished_on: nil,
-  induction_programme: 'fip'
+  induction_programme: 'fip',
+  training_programme: 'provider_led'
 ).tap { |ip| describe_induction_period(ip) }
 
 gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(

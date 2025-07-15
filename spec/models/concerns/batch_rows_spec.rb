@@ -53,7 +53,7 @@ RSpec.describe BatchRows do
 
     context 'when parsed CSV data omits the optional error column' do
       before do
-        allow(dummy_claim).to receive(:data).and_return([{ trn: '1234567', date_of_birth: '1981-06-30', induction_programme: 'fip', started_on: '2025-01-30' }])
+        allow(dummy_claim).to receive(:data).and_return([{ trn: '1234567', date_of_birth: '1981-06-30', training_programme: 'provider-led', started_on: '2025-01-30' }])
         allow(dummy_action).to receive(:data).and_return([{ trn: '1234567', date_of_birth: '1981-06-30', number_of_terms: '0.5', finished_on: '2025-01-30', outcome: 'pass' }])
       end
 
@@ -190,7 +190,7 @@ class DummyBatchClaim < OpenStruct
 
   def claim? = true
   def action? = false
-  def data = [{ trn: '1234567', date_of_birth: '1981-06-30', induction_programme: 'fip', started_on: '2025-01-30', error: '' }]
+  def data = [{ trn: '1234567', date_of_birth: '1981-06-30', training_programme: 'fip', started_on: '2025-01-30', error: '' }]
 end
 
 class DummyBatchAction < OpenStruct

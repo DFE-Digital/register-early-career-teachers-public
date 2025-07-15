@@ -225,9 +225,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_14_101747) do
     t.string "modifications", array: true
     t.bigint "active_lead_provider_id"
     t.bigint "lead_provider_delivery_partnership_id"
+    t.bigint "pending_induction_submission_batch_id"
     t.bigint "statement_id"
     t.bigint "statement_adjustment_id"
-    t.bigint "pending_induction_submission_batch_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
@@ -312,6 +312,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_14_101747) do
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.bigint "teacher_id"
     t.enum "outcome", enum_type: "induction_outcomes"
+    t.enum "training_programme", enum_type: "training_programme"
     t.index ["appropriate_body_id"], name: "index_induction_periods_on_appropriate_body_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
   end
@@ -478,6 +479,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_14_101747) do
     t.datetime "delete_at", precision: nil
     t.bigint "pending_induction_submission_batch_id"
     t.string "error_messages", default: [], array: true
+    t.enum "training_programme", enum_type: "training_programme"
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
     t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"

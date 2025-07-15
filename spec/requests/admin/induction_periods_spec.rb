@@ -226,6 +226,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
         expect(period.started_on).to eq(valid_params[:induction_period][:started_on].to_date)
         expect(period.finished_on).to eq(valid_params[:induction_period][:finished_on].to_date)
         expect(period.induction_programme).to eq(valid_params[:induction_period][:induction_programme])
+        expect(period.training_programme).to eq('provider_led')
       end
     end
   end
@@ -284,6 +285,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
           expect(induction_period.finished_on).to eq(valid_params[:induction_period][:finished_on].to_date)
           expect(induction_period.number_of_terms).to eq(valid_params[:induction_period][:number_of_terms])
           expect(induction_period.induction_programme).to eq(valid_params[:induction_period][:induction_programme])
+          expect(induction_period.training_programme).to eq('provider_led')
           expect(induction_period.appropriate_body).to eq(appropriate_body)
         end
 
@@ -444,6 +446,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
           expect(induction_period.finished_on).to eq(params[:induction_period][:finished_on].to_date)
           expect(induction_period.number_of_terms).to eq(params[:induction_period][:number_of_terms])
           expect(induction_period.induction_programme).to eq(params[:induction_period][:induction_programme])
+          expect(induction_period.training_programme).to eq('provider_led')
         end
 
         it "notifies TRS of the updated dates" do
@@ -495,6 +498,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
           induction_period.reload
           expect(induction_period.induction_programme).to eq("cip")
+          expect(induction_period.training_programme).to eq('provider_led')
         end
       end
     end

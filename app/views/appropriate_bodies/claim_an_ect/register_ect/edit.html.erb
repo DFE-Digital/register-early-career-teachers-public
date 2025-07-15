@@ -13,13 +13,23 @@
       hint: { text: teacher_induction_date_hint_text }
   %>
 
-  <%=
-    f.govuk_collection_radio_buttons :induction_programme,
-      induction_programme_choices,
-      :identifier,
-      :name,
-      legend: { text: "Which ECF based induction training programme is #{pending_induction_submission_full_name(@pending_induction_submission)} doing?" }
-  %>
+  <% if Rails.application.config.enable_bulk_claim %>
+    <%=
+      f.govuk_collection_radio_buttons :training_programme,
+        training_programme_choices,
+        :identifier,
+        :name,
+        legend: { text: "Which ECF based induction training programme is #{pending_induction_submission_full_name(@pending_induction_submission)} doing?" }
+    %>
+  <% else %>
+    <%=
+      f.govuk_collection_radio_buttons :induction_programme,
+        induction_programme_choices,
+        :identifier,
+        :name,
+        legend: { text: "Which ECF based induction training programme is #{pending_induction_submission_full_name(@pending_induction_submission)} doing?" }
+    %>
+  <% end %>
 
   <%= f.govuk_submit %>
 <% end %>

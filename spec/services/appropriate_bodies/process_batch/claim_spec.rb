@@ -14,7 +14,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   let(:trn) { '1000890' }
   let(:date_of_birth) { '1997-03-15' }
   let(:started_on) { 1.week.ago.to_date.to_s }
-  let(:induction_programme) { 'FIP' }
+  let(:training_programme) { 'provider-led' }
   let(:error) { '' }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -23,7 +23,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     FactoryBot.create(:pending_induction_submission_batch, :claim,
                       appropriate_body:,
                       data: [
-                        { trn:, date_of_birth:, started_on:, induction_programme:, error: }
+                        { trn:, date_of_birth:, started_on:, training_programme:, error: }
                       ])
   end
 
@@ -131,13 +131,13 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
           end
         end
 
-        context 'when the induction_programme is missing' do
-          let(:induction_programme) { '' }
+        context 'when the training programme is missing' do
+          let(:training_programme) { '' }
 
           it 'captures an error message' do
             expect(submission.error_messages).to eq [
               'Fill in the blanks on this row',
-              'Induction programme type must be DIY, FIP or CIP'
+              'Induction programme type must be school-led or provider-led'
             ]
           end
         end
@@ -210,19 +210,19 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
           end
         end
 
-        context 'when the induction_programme is not recognised' do
-          let(:induction_programme) { 'foo' }
+        context 'when the training programme is not recognised' do
+          let(:training_programme) { 'foo' }
 
           it 'captures an error message' do
-            expect(submission.error_messages).to eq ['Induction programme type must be DIY, FIP or CIP']
+            expect(submission.error_messages).to eq ['Induction programme type must be school-led or provider-led']
           end
         end
 
-        context 'when the induction_programme is capitalised' do
-          let(:induction_programme) { 'FIP' }
+        context 'when the training programme is capitalised' do
+          let(:training_programme) { 'SCHOOL-LED' }
 
           it 'passes validation' do
-            expect(submission.error_messages).not_to eq ['Induction programme type must be DIY, FIP or CIP']
+            expect(submission.error_messages).not_to eq ['Induction programme type must be school-led or provider-led']
           end
         end
 
@@ -230,7 +230,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
           let(:teacher) {}
           let(:trn) { '0004' }
           let(:date_of_birth) { '30/06/1981' }
-          let(:induction_programme) { 'foo' }
+          let(:training_programme) { 'foo' }
           let(:started_on) { '' }
 
           it 'captures an error message' do
@@ -240,7 +240,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
               'Dates must be in the format YYYY-MM-DD',
               'Dates cannot be in the future',
               'Induction start date must be after 1 September 2021',
-              'Induction programme type must be DIY, FIP or CIP'
+              'Induction programme type must be school-led or provider-led'
             ]
           end
         end
@@ -262,7 +262,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
           expect(induction_period.started_on).to eq(Date.parse(started_on))
           expect(induction_period.finished_on).to be_nil
           expect(induction_period.outcome).to be_nil
-          expect(induction_period.induction_programme).to eq('fip')
+          expect(induction_period.training_programme).to eq('provider_led')
+          expect(induction_period.induction_programme).to eq('fip') # 'fip' is the value for provider-led
         end
 
         it 'creates events owned by the author' do
@@ -483,7 +484,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     context 'when induction programme is unknown' do
       include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
 
-      let(:induction_programme) { 'foo' }
+      let(:training_programme) { 'foo' }
 
       before { service.process! }
 
@@ -496,8 +497,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        # it { is_expected.to eq ['Induction programme type must be school-led or provider-led'] }
-        it { is_expected.to eq ['Induction programme type must be DIY, FIP or CIP'] }
+        it { is_expected.to eq ['Induction programme type must be school-led or provider-led'] }
       end
     end
 
