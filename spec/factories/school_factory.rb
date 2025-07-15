@@ -33,7 +33,31 @@ FactoryBot.define do
     end
 
     trait :eligible do
-      gias_school { association :gias_school, :eligible_type, urn: }
+      gias_school { association :gias_school, :open, :in_england, :eligible_type, urn: }
+    end
+
+    trait :open do
+      gias_school { association :gias_school, :open, :in_england, urn: }
+    end
+
+    trait :not_open do
+      gias_school { association :gias_school, :not_open, :in_england, urn: }
+    end
+
+    trait :not_in_england do
+      gias_school { association :gias_school, :open, :not_in_england, urn: }
+    end
+
+    trait :section_41_approved do
+      gias_school { association :gias_school, :open, :section_41, :not_eligible_type, urn: }
+    end
+
+    trait :cip_only do
+      gias_school { association :gias_school, :open, :in_england, :cip_only_type, urn: }
+    end
+
+    trait :not_cip_only do
+      gias_school { association :gias_school, :open, :in_england, :not_cip_only_type, urn: }
     end
   end
 end

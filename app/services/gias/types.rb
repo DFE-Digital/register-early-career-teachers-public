@@ -1,5 +1,5 @@
 module GIAS
-  module Types
+  class Types
     ALL_TYPES = [
       "Academy 16 to 19 sponsor led",
       "Academy 16-19 converter",
