@@ -33,7 +33,7 @@
           width: 4,
           inputmode: "numeric" %>
 
-      <%= f.govuk_collection_radio_buttons :induction_programme, induction_programme_choices, :identifier, :name, legend: { text: 'Induction programme' }  %>
+      <%= f.govuk_collection_radio_buttons :induction_programme, training_programme_choices, :identifier, :name, legend: { text: 'Induction programme' }  %>
 
       <%= f.submit "Save", class: "govuk-button" %>
     <% end %>

@@ -67,6 +67,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
         end
 
         it 'searches within the scope of the current appropriate body' do
+          allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(false)
           allow(PendingInductionSubmissions::Search).to receive(:new).with(appropriate_body:).and_call_original
           patch(
             "/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}",
@@ -76,6 +77,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
         end
 
         it 'passes the parameters to the AppropriateBodies::ClaimAnECT::RegisterECT service and redirects' do
+          allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(false)
           patch(
             "/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}",
             params: { pending_induction_submission: registration_params }
@@ -97,6 +99,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
         end
 
         it 'calls AppropriateBodies::ClaimAnECT::RegisterECT#register' do
+          allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(false)
           fake_register_ect = double(AppropriateBodies::ClaimAnECT::RegisterECT, register: pending_induction_submission, pending_induction_submission:)
           allow(AppropriateBodies::ClaimAnECT::RegisterECT).to receive(:new).and_return(fake_register_ect)
 
@@ -109,19 +112,73 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
             ActionController::Parameters.new(**registration_params).permit!
           ).once
         end
+
+        context "with new induction programme types (post-2025)" do
+          let(:registration_params) do
+            {
+              trs_induction_status: 'None',
+              training_programme: 'provider_led',
+              'started_on(3)' => start_date.day.to_s,
+              'started_on(2)' => start_date.month.to_s,
+              'started_on(1)' => start_date.year.to_s
+            }
+          end
+
+          it 'passes the parameters to the AppropriateBodies::ClaimAnECT::RegisterECT service and redirects' do
+            allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(true)
+            patch(
+              "/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}",
+              params: { pending_induction_submission: registration_params }
+            )
+
+            expect(AppropriateBodies::ClaimAnECT::RegisterECT).to have_received(:new).with(
+              appropriate_body:,
+              pending_induction_submission:,
+              author: instance_of(Sessions::Users::AppropriateBodyUser)
+            ) do |arguments|
+              arguments.fetch(:author).tap do |author|
+                expect(author.name).to eql(user.name)
+                expect(author.email).to eql(user.email)
+              end
+            end
+
+            expect(response).to be_redirection
+            expect(response.redirect_url).to match(%r{/claim-an-ect/register-ect/\d+\z})
+          end
+        end
       end
 
       context "when the submission is invalid" do
-        let(:registration_params) { { induction_programme: "xyz", } }
+        context "with old induction programme types (pre-2025)" do
+          before { allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(false) }
 
-        it 'passes the parameters to the AppropriateBodies::ClaimAnECT::RegisterECT but does not redirect and rerenders the form' do
-          patch(
-            "/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}",
-            params: { pending_induction_submission: registration_params }
-          )
+          let(:registration_params) { { induction_programme: "xyz", } }
 
-          expect(response).to be_ok
-          expect(response.body).to include(page_heading)
+          it 'passes the parameters to the AppropriateBodies::ClaimAnECT::RegisterECT but does not redirect and rerenders the form' do
+            patch(
+              "/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}",
+              params: { pending_induction_submission: registration_params }
+            )
+
+            expect(response).to be_ok
+            expect(response.body).to include(page_heading)
+          end
+        end
+
+        context "with new induction programme types (post-2025)" do
+          before { allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(true) }
+
+          let(:registration_params) { { training_programme: "xyz", } }
+
+          it 'passes the parameters to the AppropriateBodies::ClaimAnECT::RegisterECT but does not redirect and rerenders the form' do
+            patch(
+              "/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}",
+              params: { pending_induction_submission: registration_params }
+            )
+
+            expect(response).to be_ok
+            expect(response.body).to include(page_heading)
+          end
         end
       end
     end

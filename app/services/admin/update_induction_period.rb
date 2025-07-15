@@ -18,7 +18,24 @@ module Admin
     def update_induction_period!
       previous_start_date = induction_period.started_on
       previous_end_date = induction_period.finished_on
+
       induction_period.assign_attributes(params)
+
+      # Transition induction programme to the new training programme values
+      if Rails.application.config.enable_bulk_claim
+        induction_programme = ::PROGRAMME_MAPPER[params[:training_programme]]
+        # 1. Set database enforced induction_programme but only for new inductions
+        induction_period.assign_attributes(induction_programme:) if induction_period.induction_programme.blank?
+        # 2. Set database enforced induction_programme but only for new inductions
+        # induction_period.assign_attributes(induction_programme:) unless induction_programme.eql?('unknown')
+        # 3. Set database enforced induction_programme on every edit
+        # induction_period.assign_attributes(induction_programme:)
+      else
+        # Populate training_programme for existing induction periods
+        training_programme = ::PROGRAMME_MAPPER[params[:induction_programme]]
+        induction_period.assign_attributes(training_programme:)
+      end
+
       modifications = induction_period.changes
 
       # Prevent setting dates to nil for induction periods with outcomes

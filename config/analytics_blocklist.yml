@@ -233,6 +233,7 @@
   - date_of_birth
   - trs_induction_status
   - induction_programme
+  - training_programme
   - started_on
   - finished_on
   - number_of_terms

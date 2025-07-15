@@ -4,7 +4,7 @@ module BatchRows
   CLAIM_CSV_HEADINGS = {
     trn: 'TRN',
     date_of_birth: 'Date of birth',
-    induction_programme: 'Induction programme',
+    training_programme: 'Induction programme',
     started_on: 'Induction period start date',
     error: 'Error message',
   }.freeze

@@ -2,7 +2,7 @@
 
 <% if batch.no_valid_data? %>
   <p class='govuk-body'>
-    Your CSV named '<%= batch.file_name %>' has <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors.
+    Your CSV named '<%= batch.file_name %>' has <%= pluralize(batch.pending_induction_submissions.with_errors.count, 'ECT') %> with errors.
   </p>
 
   <p class='govuk-body'>
@@ -16,14 +16,14 @@
 
 <% else %>
   <p class='govuk-body'>
-    Your CSV named '<%= batch.file_name %>' has <%= batch.pending_induction_submissions.without_errors.count %> ECT records including:
+    Your CSV named '<%= batch.file_name %>' has <%= pluralize(batch.pending_induction_submissions.without_errors.count, 'ECT record') %> including:
   </p>
 
   <%= batch_action_summary(batch) %>
 
   <% if batch.pending_induction_submissions.with_errors.any? %>
     <p class='govuk-body'>
-      You had <%= batch.pending_induction_submissions.with_errors.count %> ECTs with errors. 
+      You had <%= pluralize(batch.pending_induction_submissions.with_errors.count, 'ECT') %> with errors. 
       You can download a CSV with error messages included after you record your outcomes.
     </p>
   <% end %>
