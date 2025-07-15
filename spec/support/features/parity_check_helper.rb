@@ -13,6 +13,10 @@ module ParityCheckHelper
 
     ParityCheckRequestJob.perform_now(request_id:)
   end
+
+  def clear_previous_enqueued_jobs
+    ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+  end
 end
 
 RSpec.configure do |config|
