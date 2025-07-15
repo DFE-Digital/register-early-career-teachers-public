@@ -16,6 +16,6 @@ private
       tmf = TeacherMigrationFailure.arel_table
       scope = scope.where(tmf[:message].matches("%#{failure_message}%"))
     end
-    scope
+    scope.distinct
   end
 end
