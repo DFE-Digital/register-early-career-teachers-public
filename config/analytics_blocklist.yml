@@ -268,7 +268,7 @@
   - released_count
   - passed_count
   - failed_count
-  - claimed_count  
+  - claimed_count
   - error_message
   - created_at
   - updated_at
@@ -330,7 +330,7 @@
   - delivery_partner_id
   - active_lead_provider_id
   - lead_provider_delivery_partnership_id
-  - pending_induction_submission_batch_id  
+  - pending_induction_submission_batch_id
   - statement_id
   - statement_adjustment_id
   - user_id
@@ -355,6 +355,8 @@
   - ecf_end_induction_record_id
   - working_pattern
   - email
+  - school_reported_appropriate_body_id
+  - training_programme
   :dfe_roles:
   - id
   - role_type

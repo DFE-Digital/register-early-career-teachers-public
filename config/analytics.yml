@@ -9,9 +9,6 @@ shared:
     - establishment_number
     - dfe_sign_in_organisation_id
     - dqt_id
-  :ect_at_school_periods:
-    - school_reported_appropriate_body_id
-    - training_programme
   :induction_extensions:
     - id
     - teacher_id
