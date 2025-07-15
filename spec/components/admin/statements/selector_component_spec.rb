@@ -1,8 +1,9 @@
 RSpec.describe Admin::Statements::SelectorComponent, type: :component do
-  let(:statement) { FactoryBot.create(:statement) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: statement_contract_period) }
+  let(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
   let(:component) { described_class.new statement: }
   let(:statement_lead_provider) { statement.active_lead_provider.lead_provider }
-  let(:statement_year) { statement.active_lead_provider.contract_period.year }
+  let(:statement_contract_period) { FactoryBot.create(:contract_period, year: 2034) }
 
   context ".lead_providers" do
     let!(:lead_provider1) { FactoryBot.create(:lead_provider, name: "AAAC") }
@@ -27,7 +28,7 @@ RSpec.describe Admin::Statements::SelectorComponent, type: :component do
 
     it "returns contract_period in year order" do
       expect(component.contract_periods.map(&:year)).to contain_exactly(
-        statement_year,
+        statement_contract_period.year,
         contract_period2.year,
         contract_period3.year,
         contract_period1.year
