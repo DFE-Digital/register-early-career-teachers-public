@@ -7,7 +7,7 @@ describe Teacher do
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
 
-    it "returns the current appropriate body when one exists" do
+    it "returns the appropriate body from the ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
       other_appropriate_body = FactoryBot.create(:appropriate_body)
       _other_induction_period = FactoryBot.create(
@@ -30,7 +30,7 @@ describe Teacher do
       expect(teacher.current_appropriate_body).to eq(appropriate_body)
     end
 
-    it "returns nil when there is no current appropriate body" do
+    it "returns nil when the teacher has no ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
       other_appropriate_body = FactoryBot.create(:appropriate_body)
       _other_induction_period = FactoryBot.create(
