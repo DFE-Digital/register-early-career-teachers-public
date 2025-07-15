@@ -10,7 +10,6 @@ module ParityCheck
     validates :mode, presence: true, inclusion: { in: %w[concurrent sequential] }
     validates :endpoint_ids, presence: { message: "Select at least one endpoint." }
     validate :endpoints_exist
-    validate :lead_providers_exist
 
     def run!
       return unless valid?
@@ -40,12 +39,6 @@ module ParityCheck
       return if endpoints.none? || endpoints.count == endpoint_ids.uniq.count
 
       errors.add(:endpoint_ids, "One or more selected endpoints do not exist.")
-    end
-
-    def lead_providers_exist
-      return if lead_providers.any?
-
-      errors.add(:base, "There are no lead providers available; create at least one lead provider to run a parity check.")
     end
 
     def lead_providers

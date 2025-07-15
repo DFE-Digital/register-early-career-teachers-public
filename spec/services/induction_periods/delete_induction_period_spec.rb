@@ -23,7 +23,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
     let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
 
     before do
-      allow(trs_client).to receive(:reset_teacher_induction)
+      allow(trs_client).to receive(:reset_teacher_induction!)
       allow(trs_client).to receive(:begin_induction!)
       allow(Events::Record).to receive(:record_induction_period_deleted_event!)
       allow(Events::Record).to receive(:record_teacher_induction_status_reset_event!)
@@ -37,7 +37,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
     it "resets the TRS status" do
       service.delete_induction_period!
 
-      expect(trs_client).to have_received(:reset_teacher_induction).with(trn: teacher.trn)
+      expect(trs_client).to have_received(:reset_teacher_induction!).with(trn: teacher.trn)
     end
 
     it "does not update the TRS start date" do
@@ -72,7 +72,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
         }.not_to change(InductionPeriod, :count)
         expect(Events::Record).not_to have_received(:record_induction_period_deleted_event!)
         expect(Events::Record).not_to have_received(:record_teacher_trs_induction_start_date_updated_event!)
-        expect(trs_client).not_to have_received(:reset_teacher_induction)
+        expect(trs_client).not_to have_received(:reset_teacher_induction!)
         expect(trs_client).not_to have_received(:begin_induction!)
       end
     end
@@ -83,7 +83,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
     let!(:later_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 3) }
 
     before do
-      allow(trs_client).to receive(:reset_teacher_induction)
+      allow(trs_client).to receive(:reset_teacher_induction!)
       allow(trs_client).to receive(:begin_induction!)
       allow(Events::Record).to receive(:record_induction_period_deleted_event!)
       allow(Events::Record).to receive(:record_teacher_induction_status_reset_event!)
@@ -114,7 +114,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
       it "does not reset the TRS status" do
         service.delete_induction_period!
 
-        expect(trs_client).not_to have_received(:reset_teacher_induction)
+        expect(trs_client).not_to have_received(:reset_teacher_induction!)
       end
 
       it "records a TRS induction start date updated event with the correct parameters" do
@@ -159,7 +159,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
 
       it "does not reset the TRS status" do
         service.delete_induction_period!
-        expect(trs_client).not_to have_received(:reset_teacher_induction)
+        expect(trs_client).not_to have_received(:reset_teacher_induction!)
       end
 
       it "does not record a TRS induction start date updated event" do

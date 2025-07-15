@@ -80,7 +80,7 @@ module TRS
       )
     end
 
-    def reset_teacher_induction(trn:, modified_at: Time.zone.now)
+    def reset_teacher_induction!(trn:, modified_at: Time.zone.now)
       update_induction_status(
         trn:,
         status: 'RequiredToComplete',
