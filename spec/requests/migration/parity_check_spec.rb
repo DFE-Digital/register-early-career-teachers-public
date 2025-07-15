@@ -3,7 +3,7 @@ RSpec.describe "Parity check", type: :request do
 
   before { allow(Rails.configuration).to receive(:parity_check).and_return({ enabled: }) }
 
-  describe "GET /migration/parity_checks/new" do
+  describe "GET /migration/parity-checks/new" do
     context "when signed in as a DfE user" do
       include_context 'sign in as DfE user'
 
@@ -81,7 +81,7 @@ RSpec.describe "Parity check", type: :request do
     end
   end
 
-  describe "GET /migration/parity_checks/completed" do
+  describe "GET /migration/parity-checks/completed" do
     context "when signed in as a DfE user" do
       include_context 'sign in as DfE user'
 
@@ -112,7 +112,7 @@ RSpec.describe "Parity check", type: :request do
     end
   end
 
-  describe "GET /migration/parity_checks/:id" do
+  describe "GET /migration/parity-checks/:id" do
     let(:run) { FactoryBot.create(:parity_check_run, :completed) }
 
     context "when signed in as a DfE user" do
@@ -161,7 +161,7 @@ RSpec.describe "Parity check", type: :request do
     end
   end
 
-  describe "GET /migration/parity_checks/:run_id/requests/:id" do
+  describe "GET /migration/parity-checks/:run_id/requests/:id" do
     let(:run) { FactoryBot.create(:parity_check_run, :completed) }
     let(:request) { FactoryBot.create(:parity_check_request, :completed, run:) }
 
@@ -218,7 +218,7 @@ RSpec.describe "Parity check", type: :request do
     end
   end
 
-  describe "GET /migration/parity_checks/:run_id/responses/:id" do
+  describe "GET /migration/parity-checks/:run_id/responses/:id" do
     let(:run) { FactoryBot.create(:parity_check_run, :completed) }
     let(:request) { FactoryBot.create(:parity_check_request, :completed, run:) }
     let(:parity_check_response) { FactoryBot.create(:parity_check_response, :different, request:) }
