@@ -151,7 +151,7 @@ Rails.application.routes.draw do
     resources :teachers, only: %i[index show]
 
     constraints -> { Rails.application.config.parity_check[:enabled] } do
-      resources :parity_checks, only: %i[new create show], param: :run_id do
+      resources :parity_checks, path: "parity-checks", only: %i[new create show], param: :run_id do
         collection do
           get :completed
         end
