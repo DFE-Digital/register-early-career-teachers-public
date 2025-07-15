@@ -44,7 +44,6 @@ FactoryBot.define do
     end
 
     trait(:eligible_for_cip) do
-      cip_only_type
       funding_eligibility { "eligible_for_cip" }
     end
 
@@ -82,37 +81,37 @@ FactoryBot.define do
     # location
     trait(:in_england) do
       in_england { true }
-      type_name { "Community school" }
+      type_name { GIAS::Types::IN_ENGLAND_TYPES.sample }
     end
 
     trait(:not_in_england) do
       in_england { false }
-      type_name { "Offshore schools" }
+      type_name { GIAS::Types::NOT_IN_ENGLAND_TYPES.sample }
     end
 
     # type code
     trait(:cip_only_type) do
-      type_name { "Other independent school" }
+      type_name { GIAS::Types::CIP_ONLY_TYPES.sample }
     end
 
     trait(:not_cip_only_type) do
-      type_name { "Studio schools" }
+      type_name { (GIAS::Types::ALL_TYPES - GIAS::Types::CIP_ONLY_TYPES).sample }
     end
 
     trait(:eligible_type) do
-      type_name { "Free schools" }
+      type_name { GIAS::Types::ELIGIBLE_TYPES.sample }
     end
 
     trait(:not_eligible_type) do
-      type_name { "Further education" }
+      type_name { GIAS::Types::NOT_ELIGIBLE_TYPES.sample }
     end
 
     trait(:independent_school_type) do
-      type_name { "Other independent special school" }
+      type_name { GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.sample }
     end
 
     trait(:state_school_type) do
-      type_name { "Foundation school" }
+      type_name { GIAS::Types::STATE_SCHOOL_TYPES.sample }
     end
   end
 end

@@ -21,6 +21,18 @@ RSpec.describe Schools::Query do
       expect(described_class.new(contract_period_id:).schools).to eq([school])
     end
 
+    context "when there is existing partnerships" do
+      let(:school1) { FactoryBot.create(:school, :eligible) }
+      let(:school2) { FactoryBot.create(:school, :ineligible) }
+      let!(:school1_partnership) { FactoryBot.create(:school_partnership, school: school1) }
+      let!(:school2_partnership) { FactoryBot.create(:school_partnership, school: school2, lead_provider_delivery_partnership: school1_partnership.lead_provider_delivery_partnership) }
+      let(:contract_period_id) { school1_partnership.contract_period.id }
+
+      it "returns all schools" do
+        expect(described_class.new(contract_period_id:).schools).to contain_exactly(school1, school2)
+      end
+    end
+
     it "orders schools by `created_at` date in ascending order" do
       school1 = FactoryBot.create(:school, :eligible, created_at: 2.days.ago)
       school2 = FactoryBot.create(:school, :eligible, created_at: 1.day.ago)

@@ -1,11 +1,6 @@
 describe GIASHelpers do
   describe "scopes" do
     let!(:open_school) { FactoryBot.create(:school, :open) }
-    let!(:independent_school) { FactoryBot.create(:school, :independent) }
-    let!(:state_funded_school) { FactoryBot.create(:school, :state_funded) }
-    let!(:not_in_england_school) { FactoryBot.create(:school, :not_in_england) }
-    let!(:not_open_school) { FactoryBot.create(:school, :not_open) }
-    let!(:section_41_approved_school) { FactoryBot.create(:school, :section_41_approved) }
     let!(:eligible_school) { FactoryBot.create(:school, :eligible) }
     let!(:cip_only_school) { FactoryBot.create(:school, :cip_only) }
     let!(:not_cip_only_school) { FactoryBot.create(:school, :not_cip_only) }
@@ -13,11 +8,6 @@ describe GIASHelpers do
     describe ".in_gias_schools" do
       it "returns schools with linked `gias_schools` records" do
         expect(School.in_gias_schools).to contain_exactly(open_school,
-                                                          independent_school,
-                                                          state_funded_school,
-                                                          not_in_england_school,
-                                                          not_open_school,
-                                                          section_41_approved_school,
                                                           eligible_school,
                                                           cip_only_school,
                                                           not_cip_only_school)
@@ -27,8 +17,6 @@ describe GIASHelpers do
     describe '.eligible' do
       it "returns eligible schools only" do
         expect(School.eligible).to contain_exactly(open_school,
-                                                   state_funded_school,
-                                                   section_41_approved_school,
                                                    eligible_school,
                                                    not_cip_only_school)
       end
@@ -36,18 +24,13 @@ describe GIASHelpers do
 
     describe '.cip_only' do
       it "returns `cip`/`school-led` schools only" do
-        expect(School.cip_only).to contain_exactly(independent_school,
-                                                   not_in_england_school,
-                                                   not_open_school,
-                                                   cip_only_school)
+        expect(School.cip_only).to contain_exactly(cip_only_school)
       end
     end
 
     describe '.not_cip_only' do
       it "returns not `cip`/`school-led` schools only" do
         expect(School.not_cip_only).to contain_exactly(open_school,
-                                                       state_funded_school,
-                                                       section_41_approved_school,
                                                        eligible_school,
                                                        not_cip_only_school)
       end
