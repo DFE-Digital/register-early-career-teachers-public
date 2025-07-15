@@ -16,7 +16,7 @@ module Admin
             trn: pending_induction_submission.trn,
             trs_first_name: pending_induction_submission.trs_first_name,
             trs_last_name: pending_induction_submission.trs_last_name,
-            event_metadata: { author:, appropriate_body: nil }
+            event_metadata: Events::Metadata.with_author_but_no_appropriate_body(author:)
           )
 
           @teacher = manage_teacher.teacher
