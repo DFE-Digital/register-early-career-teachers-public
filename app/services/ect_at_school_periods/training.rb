@@ -67,7 +67,7 @@ module ECTAtSchoolPeriods
   private
 
     def latest_eoi_lead_provider
-      return if latest_training_period.nil? || latest_training_period.school_partnership_id.present?
+      return unless latest_training_period&.only_expression_of_interest?
 
       latest_training_period.expression_of_interest&.lead_provider
     end
