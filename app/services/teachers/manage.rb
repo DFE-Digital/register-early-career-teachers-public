@@ -22,18 +22,10 @@ class Teachers::Manage
     end
 
     if teacher.new_record? && teacher.save
-      Events::Record.teacher_imported_from_trs_event!(
-        author: event_metadata[:author],
-        teacher:,
-        appropriate_body: event_metadata[:appropriate_body]
-      )
+      Events::Record.teacher_imported_from_trs_event!(teacher:, **event_metadata)
     end
 
-    new(
-      author: event_metadata[:author],
-      teacher:,
-      appropriate_body: event_metadata[:appropriate_body]
-    )
+    new(teacher:, **event_metadata)
   end
 
   def update_name!(trs_first_name:, trs_last_name:)
