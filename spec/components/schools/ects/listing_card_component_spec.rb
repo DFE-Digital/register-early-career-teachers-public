@@ -71,4 +71,31 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       expect(rendered_content).not_to have_selector('.govuk-summary-list__row', text: 'Lead provider')
     end
   end
+
+  context 'when latest training period is an expression of interest only' do
+    let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Jimmy Provider') }
+    let(:ect) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        :active,
+        :with_eoi_only_training_period,
+        lead_provider:,
+        school:,
+        started_on:
+      )
+    end
+
+    it 'renders lead provider name on the EOI' do
+      render_inline(described_class.new(ect:))
+
+      expect(rendered_content).to have_selector('.govuk-summary-list__row', text: 'Lead provider')
+      expect(rendered_content).to have_text('Jimmy Provider')
+    end
+
+    it 'renders the delivery partner fallback text' do
+      render_inline(described_class.new(ect:))
+      expect(rendered_content).to have_selector('.govuk-summary-list__row', text: 'Delivery partner')
+      expect(rendered_content).to have_text('Their lead provider will confirm this')
+    end
+  end
 end

@@ -19,13 +19,27 @@ module Schools
       def delivery_partner_row
         return if ect.school_led_training_programme?
 
-        { key: { text: 'Delivery partner' }, value: { text: latest_delivery_partner_name(ect) } }
+        {
+          key: { text: 'Delivery partner' },
+          value: {
+            text: latest_training_period_only_expression_of_interest? ? 'Their lead provider will confirm this' : latest_delivery_partner_name(ect)
+          }
+        }
       end
 
       def lead_provider_row
         return if ect.school_led_training_programme?
 
-        { key: { text: 'Lead provider' }, value: { text: latest_lead_provider_name(ect) } }
+        {
+          key: { text: 'Lead provider' },
+          value: {
+            text: latest_training_period_only_expression_of_interest? ? latest_eoi_lead_provider_name(ect) : latest_lead_provider_name(ect)
+          }
+        }
+      end
+
+      def latest_training_period_only_expression_of_interest?
+        ECTAtSchoolPeriods::Training.new(ect).latest_training_period&.only_expression_of_interest?
       end
 
       def left_rows
