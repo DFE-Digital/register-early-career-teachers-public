@@ -17,6 +17,17 @@ describe ParityCheck::Response do
   end
 
   describe "before_save" do
+    it "formats bodies as pretty JSON if they are valid JSON" do
+      ecf_body = { ecf_key: "ecf_value" }
+      rect_body = { rect_key: "rect_value" }
+      response = FactoryBot.build(:parity_check_response, ecf_body: ecf_body.to_json, rect_body: rect_body.to_json)
+
+      response.save!
+
+      expect(response.ecf_body).to eq(JSON.pretty_generate(ecf_body))
+      expect(response.rect_body).to eq(JSON.pretty_generate(rect_body))
+    end
+
     it "does not format bodies if they are not valid JSON" do
       response = FactoryBot.build(:parity_check_response, ecf_body: "not json", rect_body: "also not json")
 
@@ -40,7 +51,7 @@ describe ParityCheck::Response do
   end
 
   describe "scopes" do
-    let(:request) { FactoryBot.create(:parity_check_request, :in_progress) }
+    let(:request) { FactoryBot.create(:parity_check_request) }
     let!(:matching_response) { FactoryBot.create(:parity_check_response, :matching, request:) }
     let!(:matching_status_codes_response) { FactoryBot.create(:parity_check_response, :matching, ecf_body: "different", request:) }
     let!(:matching_bodies_response) { FactoryBot.create(:parity_check_response, :matching, ecf_status_code: 404, request:) }
@@ -81,20 +92,6 @@ describe ParityCheck::Response do
 
       it { is_expected.to contain_exactly(matching_response, matching_bodies_response) }
     end
-  end
-
-  describe "#ecf_body=" do
-    let(:ecf_body) { { key: "value" } }
-    let(:response) { FactoryBot.build(:parity_check_response, ecf_body: ecf_body.to_json) }
-
-    it { expect(response.ecf_body).to eq(JSON.pretty_generate(ecf_body)) }
-  end
-
-  describe "#rect_body=" do
-    let(:rect_body) { { key: "value" } }
-    let(:response) { FactoryBot.build(:parity_check_response, rect_body: rect_body.to_json) }
-
-    it { expect(response.rect_body).to eq(JSON.pretty_generate(rect_body)) }
   end
 
   describe "#rect_performance_gain_ratio" do
@@ -244,53 +241,5 @@ describe ParityCheck::Response do
         DIFF
       )
     }
-  end
-
-  describe "#ecf_body_hash" do
-    subject { response.ecf_body_hash }
-
-    let(:response) { FactoryBot.build(:parity_check_response, ecf_body:) }
-
-    context "when the ECF body is valid JSON" do
-      let(:ecf_body) { { key: { "value" => :nested } }.to_json }
-
-      it { is_expected.to eq(key: { value: "nested" }) }
-    end
-
-    context "when the ECF body is not valid JSON" do
-      let(:ecf_body) { "not json" }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the ECF body is nil" do
-      let(:ecf_body) { nil }
-
-      it { is_expected.to be_nil }
-    end
-  end
-
-  describe "#rect_body_hash" do
-    subject { response.rect_body_hash }
-
-    let(:response) { FactoryBot.build(:parity_check_response, rect_body:) }
-
-    context "when the RECT body is valid JSON" do
-      let(:rect_body) { { key: { "value" => :nested } }.to_json }
-
-      it { is_expected.to eq(key: { value: "nested" }) }
-    end
-
-    context "when the RECT body is not valid JSON" do
-      let(:rect_body) { "not json" }
-
-      it { is_expected.to be_nil }
-    end
-
-    context "when the RECT body is nil" do
-      let(:rect_body) { nil }
-
-      it { is_expected.to be_nil }
-    end
   end
 end

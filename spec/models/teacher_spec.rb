@@ -6,6 +6,51 @@ describe Teacher do
     it { is_expected.to have_many(:appropriate_bodies).through(:induction_periods) }
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
+
+    it "returns the appropriate body from the ongoing induction period" do
+      teacher = FactoryBot.create(:teacher)
+      other_appropriate_body = FactoryBot.create(:appropriate_body)
+      _other_induction_period = FactoryBot.create(
+        :induction_period,
+        teacher:,
+        appropriate_body: other_appropriate_body,
+        started_on: 2.years.ago,
+        finished_on: 1.year.ago
+      )
+      appropriate_body = FactoryBot.create(:appropriate_body)
+      _ongoing_induction_period = FactoryBot.create(
+        :induction_period,
+        teacher:,
+        appropriate_body:,
+        started_on: 1.year.ago,
+        finished_on: nil,
+        number_of_terms: nil
+      )
+
+      expect(teacher.current_appropriate_body).to eq(appropriate_body)
+    end
+
+    it "returns nil when the teacher has no ongoing induction period" do
+      teacher = FactoryBot.create(:teacher)
+      other_appropriate_body = FactoryBot.create(:appropriate_body)
+      _other_induction_period = FactoryBot.create(
+        :induction_period,
+        teacher:,
+        appropriate_body: other_appropriate_body,
+        started_on: 2.years.ago,
+        finished_on: 1.year.ago
+      )
+      appropriate_body = FactoryBot.create(:appropriate_body)
+      _ongoing_induction_period = FactoryBot.create(
+        :induction_period,
+        teacher:,
+        appropriate_body:,
+        started_on: 1.year.ago,
+        finished_on: 2.weeks.ago
+      )
+
+      expect(teacher.current_appropriate_body).to be_nil
+    end
   end
 
   describe "validations" do

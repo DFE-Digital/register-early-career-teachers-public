@@ -77,9 +77,22 @@ describe TRS::FakeAPIClient do
         expect(subject.find_teacher(trn:)).to be_present
       end
     end
+
+    context 'when the teacher already exists in the database' do
+      let(:trn) { 1_112_222 }
+
+      before { FactoryBot.create(:teacher, trn:, trs_first_name: 'Christopher', trs_last_name: 'Eccleston') }
+
+      it 'returns the TRS teacher with name of the existing teacher' do
+        trs_teacher = subject.find_teacher(trn:)
+
+        expect(trs_teacher.first_name).to eql('Christopher')
+        expect(trs_teacher.last_name).to eql('Eccleston')
+      end
+    end
   end
 
-  describe 'Redis data storing functionality' do
+  describe 'Redis data storing functionality', :redis do
     subject { TRS::FakeAPIClient.new }
 
     let(:teacher) { FactoryBot.build(:teacher) }
@@ -153,10 +166,10 @@ describe TRS::FakeAPIClient do
       end
     end
 
-    describe '#reset_teacher_induction' do
+    describe '#reset_teacher_induction!' do
       let(:completed_date) { 1.day.ago.to_date }
 
-      before { subject.reset_teacher_induction(trn: teacher.trn) }
+      before { subject.reset_teacher_induction!(trn: teacher.trn) }
 
       it 'clears the start date and completed date in Redis, and sets status back to required to complete' do
         expect(redis_client.hgetall(key)).to match(
@@ -172,6 +185,28 @@ describe TRS::FakeAPIClient do
         trs_teacher = subject.find_teacher(trn:)
 
         expect(trs_teacher.induction_status).to eql('RequiredToComplete')
+      end
+    end
+
+    describe '#reopen_teacher_induction!' do
+      let(:completed_date) { 1.day.ago.to_date }
+
+      before { subject.reopen_teacher_induction!(trn: teacher.trn, start_date:) }
+
+      it 'sets the status to InProgres, sets the startDate to the provided one and clears the completedDate' do
+        expect(redis_client.hgetall(key)).to match(
+          include(
+            'status' => 'InProgress',
+            'startDate' => start_date.to_s,
+            'completedDate' => ''
+          )
+        )
+      end
+
+      it 'retrieves the teacher record with the updated info' do
+        trs_teacher = subject.find_teacher(trn:)
+
+        expect(trs_teacher.induction_status).to eql('InProgress')
       end
     end
   end
