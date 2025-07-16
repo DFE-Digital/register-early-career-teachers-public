@@ -57,3 +57,14 @@ $x-govuk-masthead-text-colour: govuk-colour("white");
     display: none;
   }
 }
+
+.release-notes-tags {
+  .tag-group {
+    margin: -15px 0 20px;
+
+    .govuk-tag {
+      font-size: 1em;
+      margin: 0 10px 8px 0;
+    }
+  }
+}

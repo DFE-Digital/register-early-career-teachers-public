@@ -1,6 +1,6 @@
 RSpec.describe "api/guidance/release_notes.html.erb" do
-  let(:release_note_1) { { title: 'Note 1', date: 1.month.ago, body: 'Note 1 body' } }
-  let(:release_note_2) { { title: 'Note 2', date: 2.weeks.ago, body: 'Note 2 body' } }
+  let(:release_note_1) { { title: 'Note 1', date: 1.month.ago, body: 'Note 1 body', tags: ["#bug-fix", "#new-feature"] } }
+  let(:release_note_2) { { title: 'Note 2', date: 2.weeks.ago, body: 'Note 2 body', tags: ["#breaking-change", "#sandbox-release"] } }
 
   before do
     assign(:release_notes, [API::ReleaseNote.new(**release_note_1), API::ReleaseNote.new(**release_note_2)])
@@ -27,6 +27,11 @@ RSpec.describe "api/guidance/release_notes.html.erb" do
 
       expect(rendered).to have_css('p', text: release_note_1[:body])
       expect(rendered).to have_css('p', text: release_note_2[:body])
+
+      expect(rendered).to have_css('.tag-group .govuk-tag--green', text: "NEW FEATURE")
+      expect(rendered).to have_css('.tag-group .govuk-tag--yellow', text: "BUG FIX")
+      expect(rendered).to have_css('.tag-group .govuk-tag--red', text: "BREAKING CHANGE")
+      expect(rendered).to have_css('.tag-group .govuk-tag--grey', text: "SANDBOX RELEASE")
     end
   end
 end
