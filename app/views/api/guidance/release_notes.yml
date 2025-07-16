@@ -1,5 +1,8 @@
 # - title: This is an example note
 #   date: 2025-05-20
+#.  tags:
+#     - "#sandbox-release"
+#     - "#new-feature"
 #   body: |
 #     Enter the release note body here.
 #
@@ -20,6 +23,9 @@
 
 - title: View financial statements in test environment
   date: 2025-06-23
+  tags:
+    - "#sandbox-release"
+    - "#new-feature"
   body: |
    Lead providers can now check their financial statements in the ['Register early career teachers’ v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3).
 
