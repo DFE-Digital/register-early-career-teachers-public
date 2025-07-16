@@ -38,7 +38,7 @@ module AppropriateBodies
 
       # @return [Hash{String => Array<String>}]
       def failed_submissions
-        pending_induction_submission_batch.pending_induction_submissions.with_errors.pluck(:trn, :error_messages).to_h
+        @failed_submissions ||= pending_induction_submission_batch.pending_induction_submissions.with_errors.pluck(:trn, :error_messages).to_h
       end
 
       # @return [Array<Array>]
