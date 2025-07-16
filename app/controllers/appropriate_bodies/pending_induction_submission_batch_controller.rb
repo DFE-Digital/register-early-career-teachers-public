@@ -9,7 +9,7 @@ module AppropriateBodies
         format.html
 
         format.csv do
-          send_data @pending_induction_submission_batch.to_csv,
+          send_data PendingInductionSubmissionBatchPresenter.new(@pending_induction_submission_batch).to_csv,
                     filename: "Errors for #{@pending_induction_submission_batch.file_name}",
                     type: 'text/csv'
         end
@@ -21,8 +21,7 @@ module AppropriateBodies
     end
 
     def new
-      pending_induction_submission_batch = PendingInductionSubmissionBatch.new
-      @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
+      @pending_induction_submission_batch = PendingInductionSubmissionBatch.new
     end
 
   private
@@ -43,8 +42,7 @@ module AppropriateBodies
     end
 
     def find_batch
-      pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
-      @pending_induction_submission_batch = PendingInductionSubmissionBatchPresenter.new(pending_induction_submission_batch)
+      @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
 
       render "errors/unauthorised", status: :unauthorized if wrong_appropriate_body?
     end
