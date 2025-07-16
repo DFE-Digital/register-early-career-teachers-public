@@ -15,7 +15,7 @@
   <%= turbo_include_tags %>
 
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload", nonce: true %>
-  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true, nonce: true %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module", nonce: true %>
 
   <%= yield :head %>
 </head>
