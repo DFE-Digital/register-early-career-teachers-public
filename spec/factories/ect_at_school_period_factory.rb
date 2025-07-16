@@ -74,5 +74,25 @@ FactoryBot.define do
                           started_on: ect.started_on)
       end
     end
+
+    trait :with_eoi_only_training_period do
+      transient do
+        lead_provider { FactoryBot.create(:lead_provider) }
+      end
+
+      after(:create) do |ect, evaluator|
+        active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider: evaluator.lead_provider)
+
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period: ect,
+          school_partnership: nil,
+          expression_of_interest: active_lead_provider,
+          started_on: ect.started_on + 1.week,
+          finished_on: ect.started_on + 1.month
+        )
+      end
+    end
   end
 end
