@@ -21,9 +21,7 @@ module Schools
 
         {
           key: { text: 'Delivery partner' },
-          value: {
-            text: latest_training_period_only_expression_of_interest? ? 'Their lead provider will confirm this' : latest_delivery_partner_name(ect)
-          }
+          value: { text: delivery_partner_display_text }
         }
       end
 
@@ -32,10 +30,24 @@ module Schools
 
         {
           key: { text: 'Lead provider' },
-          value: {
-            text: latest_training_period_only_expression_of_interest? ? latest_eoi_lead_provider_name(ect) : latest_lead_provider_name(ect)
-          }
+          value: { text: lead_provider_display_text }
         }
+      end
+
+      def delivery_partner_display_text
+        if latest_training_period_only_expression_of_interest?
+          'Their lead provider will confirm this'
+        else
+          latest_delivery_partner_name(ect)
+        end
+      end
+
+      def lead_provider_display_text
+        if latest_training_period_only_expression_of_interest?
+          latest_eoi_lead_provider_name(ect)
+        else
+          latest_lead_provider_name(ect)
+        end
       end
 
       def latest_training_period_only_expression_of_interest?
