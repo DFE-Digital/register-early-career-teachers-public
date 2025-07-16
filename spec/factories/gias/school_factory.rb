@@ -44,7 +44,6 @@ FactoryBot.define do
     end
 
     trait(:eligible_for_cip) do
-      cip_only_type
       funding_eligibility { "eligible_for_cip" }
     end
 

@@ -4,11 +4,11 @@ FactoryBot.define do
     independent
 
     trait :independent do
-      gias_school { association :gias_school, :independent_school_type, urn: }
+      gias_school { association :gias_school, :open, :independent_school_type, :eligible_for_cip, urn: }
     end
 
     trait :state_funded do
-      gias_school { association :gias_school, :state_school_type, urn: }
+      gias_school { association :gias_school, :open, :state_school_type, :eligible_for_fip, urn: }
     end
 
     trait :provider_led_last_chosen do
@@ -30,6 +30,26 @@ FactoryBot.define do
 
     trait :teaching_school_hub_ab_last_chosen do
       association :last_chosen_appropriate_body, :teaching_school_hub, factory: :appropriate_body
+    end
+
+    trait :eligible do
+      gias_school { association :gias_school, :open, :in_england, :eligible_type, :eligible_for_fip, urn: }
+    end
+
+    trait :ineligible do
+      gias_school { association :gias_school, :open, :in_england, :not_eligible_type, :funding_ineligible, urn: }
+    end
+
+    trait :open do
+      gias_school { association :gias_school, :open, :in_england, :eligible_for_fip, urn: }
+    end
+
+    trait :cip_only do
+      gias_school { association :gias_school, :open, :in_england, :eligible_for_cip, urn: }
+    end
+
+    trait :not_cip_only do
+      gias_school { association :gias_school, :open, :in_england, :not_cip_only_type, urn: }
     end
   end
 end

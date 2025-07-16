@@ -4,7 +4,7 @@ class LeadProviderDeliveryPartnership < ApplicationRecord
   has_many :school_partnerships
   has_many :events
 
-  delegate :lead_provider, to: :active_lead_provider
+  delegate :lead_provider, :contract_period, to: :active_lead_provider
 
   validates :active_lead_provider_id, presence: { message: 'Select an active lead provider' }
   validates :delivery_partner_id,
