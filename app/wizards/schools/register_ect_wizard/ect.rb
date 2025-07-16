@@ -70,9 +70,14 @@ module Schools
         trs_date_of_birth.to_date == date_of_birth.to_date
       end
 
-      # Extract into their own SO when this logic becomes dependant of the ECT being assigned
-      def possible_lead_providers
-        @possible_lead_providers ||= LeadProvider.select(:id, :name).all
+      def lead_providers_within_contract_period
+        return [] unless contract_start_date
+
+        @lead_providers_within_contract_period ||= LeadProviders::Active.in_contract_period(contract_start_date).select(:id, :name)
+      end
+
+      def contract_start_date
+        ContractPeriod.containing_date(start_date&.to_date)
       end
 
       def previously_registered?

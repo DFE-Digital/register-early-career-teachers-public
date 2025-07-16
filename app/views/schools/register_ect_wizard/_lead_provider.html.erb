@@ -17,7 +17,7 @@ We will let the lead provider know your school wants to work with them so they c
 
   <%=
     f.govuk_collection_radio_buttons(:lead_provider_id,
-                                     @ect.possible_lead_providers,
+                                     @ect.lead_providers_within_contract_period,
                                      :id,
                                      :name,
                                      legend: {
