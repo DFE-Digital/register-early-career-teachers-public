@@ -5,6 +5,8 @@
     <span class="govuk-caption-m"><%= release_note.date %></span>
     <%= release_note.title %>
   </h2>
-
+  <div class="release-notes-tags">
+    <%= release_note.tags  %>
+  </div>
   <%== release_note.body %>
 <% end %>
