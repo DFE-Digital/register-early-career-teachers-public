@@ -1,4 +1,4 @@
-module TrainingPeriods
+module MentorAtSchoolPeriods
   class LatestRegistrationChoices
     attr_reader :trn
 
