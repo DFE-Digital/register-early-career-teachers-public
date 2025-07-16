@@ -28,4 +28,10 @@ describe SchoolPartnership do
       end
     end
   end
+
+  describe "delegate methods" do
+    it { is_expected.to delegate_method(:lead_provider).to(:lead_provider_delivery_partnership) }
+    it { is_expected.to delegate_method(:delivery_partner).to(:lead_provider_delivery_partnership) }
+    it { is_expected.to delegate_method(:contract_period).to(:lead_provider_delivery_partnership) }
+  end
 end

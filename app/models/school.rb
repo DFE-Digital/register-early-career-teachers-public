@@ -1,4 +1,6 @@
 class School < ApplicationRecord
+  include GIASHelpers
+
   # Enums
   enum :last_chosen_training_programme,
        { provider_led: "provider_led",
@@ -76,8 +78,6 @@ class School < ApplicationRecord
            to: :gias_school,
            allow_nil: true
 
-  def independent? = GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(type_name)
-
   # last_chosen_appropriate_body_name
   delegate :name, to: :last_chosen_appropriate_body, prefix: true, allow_nil: true
 
@@ -108,8 +108,6 @@ class School < ApplicationRecord
   end
 
   def last_programme_choices? = last_chosen_appropriate_body_id && last_chosen_training_programme
-
-  def state_funded? = GIAS::Types::STATE_SCHOOL_TYPES.include?(type_name)
 
   def to_param = urn
 end
