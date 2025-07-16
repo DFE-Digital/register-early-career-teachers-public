@@ -12,10 +12,12 @@ module Schools
       def next_step
         return :check_answers unless mentor_assigned_to_provider_led_ect?
 
-        if mentor_eligible_for_funding?
-          raise "needs implementing"
+        if mentor_became_ineligible_for_funding?
+          :check_answers
+        elsif mentor.latest_registration_choice.training_period
+          :previous_training_period_details
         else
-          raise "needs implementing"
+          :programme_choices
         end
       end
 
@@ -35,8 +37,8 @@ module Schools
       end
 
       # Does that mentor have a mentor_became_ineligible_for_funding_on?
-      def mentor_eligible_for_funding?
-        ::Teachers::MentorFundingEligibility.new(urn: mentor.trn).eligible?
+      def mentor_became_ineligible_for_funding?
+        ::Teachers::MentorFundingEligibility.new(trn: mentor.trn).ineligible?
       end
 
       def persist

@@ -14,5 +14,9 @@ module Teachers
 
       teacher.mentor_became_ineligible_for_funding_reason.blank?
     end
+
+    def ineligible?
+      teacher.mentor_became_ineligible_for_funding_on.present?
+    end
   end
 end
