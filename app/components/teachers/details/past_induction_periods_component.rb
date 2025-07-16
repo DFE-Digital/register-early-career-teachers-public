@@ -18,6 +18,14 @@ module Teachers::Details
       @past_periods ||= induction.past_induction_periods
     end
 
+    def induction_period_programme(period)
+      if Rails.application.config.enable_bulk_claim
+        helpers.training_programme_name(period.training_programme)
+      else
+        ::INDUCTION_PROGRAMMES[period.induction_programme.to_sym]
+      end
+    end
+
     def edit_link(period)
       return unless enable_edit
 
