@@ -1,5 +1,0 @@
----
-title: ECT guidance
----
-
-Hi
