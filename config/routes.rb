@@ -309,8 +309,8 @@ Rails.application.routes.draw do
       get "change-email-address", action: :new
       post "change-email-address", action: :create
 
-      get "cant-use-changed_email", action: :new
-      post "cant-use-changed_email", action: :create
+      get "cant-use-changed-email", action: :new
+      post "cant-use-changed-email", action: :create
       get "cant-use-email", action: :new
       post "cant-use-email", action: :create
 
@@ -322,6 +322,15 @@ Rails.application.routes.draw do
 
       get "started-on", action: :new
       post "started-on", action: :create
+
+      get "previous-training-period-details", action: :new
+      post "previous-training-period-details", action: :create
+
+      get "programme-choices", action: :new
+      post "programme-choices", action: :create
+
+      get "lead-provider", action: :new
+      post "lead-provider", action: :create
 
       get "check-answers", action: :new
       post "check-answers", action: :create
