@@ -16,7 +16,7 @@ module Teachers
     end
 
     def ineligible?
-      teacher.mentor_became_ineligible_for_funding_on.present?
+      !eligible?
     end
   end
 end
