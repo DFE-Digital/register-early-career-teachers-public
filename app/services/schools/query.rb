@@ -144,7 +144,9 @@ module Schools
     end
 
     def default_scope(contract_period_id)
-      return School.none if ignore?(filter: contract_period_id) || contract_period_id.blank?
+      return School.none if ignore?(filter: contract_period_id) ||
+        contract_period_id.blank? ||
+        ContractPeriod.find_by(year: contract_period_id).blank?
 
       School
         .eligible
