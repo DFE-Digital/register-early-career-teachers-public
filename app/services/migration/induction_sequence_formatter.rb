@@ -121,7 +121,7 @@ module Migration
 
     def display_summary
       puts "\n📝 SUMMARY:"
-      puts "   Total problematic participants: #{count_unique_participants}"
+      puts "   Total participants: #{count_unique_participants}"
       puts "   Total induction records: #{sum_total_records}"
       puts "   Total NULL end_date records: #{sum_null_end_date_records}"
       puts "   Lead providers involved: #{list_lead_providers.join(', ')}"
