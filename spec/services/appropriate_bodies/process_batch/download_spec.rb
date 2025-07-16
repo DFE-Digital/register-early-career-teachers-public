@@ -32,7 +32,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Download do
   end
 
   describe '#type' do
-    it 'prefixes the original uploaded file' do
+    it 'defaults to text/csv' do
       expect(service.type).to eq('text/csv')
     end
   end
