@@ -40,3 +40,6 @@ shared:
     - trs_initial_teacher_training_end_date
     - trs_data_last_refreshed_at
     - trs_deactivated
+    - ecf_user_id
+    - ecf_ect_profile_id
+    - ecf_mentor_profile_id
