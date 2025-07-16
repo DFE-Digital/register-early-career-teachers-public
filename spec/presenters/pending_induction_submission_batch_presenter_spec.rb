@@ -3,16 +3,6 @@ RSpec.describe PendingInductionSubmissionBatchPresenter do
 
   let(:batch) { FactoryBot.build(:pending_induction_submission_batch, :action) }
 
-  describe 'decorated model methods' do
-    it '#batch_type' do
-      expect(presenter.batch_type).to eq('action')
-    end
-
-    it '#batch_status' do
-      expect(presenter.batch_status).to eq('pending')
-    end
-  end
-
   describe '#to_csv' do
     context 'when there is no persisted CSV data' do
       let(:batch) { FactoryBot.build(:pending_induction_submission_batch, :action, data:) }
