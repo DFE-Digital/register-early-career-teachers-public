@@ -23,4 +23,10 @@ end %>
   <%= govuk_link_to('View change history', admin_teacher_timeline_path(@teacher)) %>
 </p>
 
+<% if @teacher.induction_periods.none? %>
+  <p class="govuk-body">
+    <%= govuk_link_to("Add an induction period", new_admin_teacher_induction_period_path(@teacher)) %>
+  </p>
+<% end %>
+
 <%= govuk_warning_text(text: "Some of this teacher's records could not be migrated") if @teacher.has_migration_failures? %>
