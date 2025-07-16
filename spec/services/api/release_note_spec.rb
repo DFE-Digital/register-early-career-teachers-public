@@ -11,11 +11,7 @@ describe API::ReleaseNote do
       expect(release_note.title).to eql(title)
       expect(release_note.date).to eql(date.to_formatted_s(:govuk))
       expect(release_note.body).to eql(%(<p class="govuk-body-m">#{body}</p>))
-      expect(release_note.tags).to eql(
-        %(<div class=\"tag-group\">) +
-        %(<strong class=\"govuk-tag govuk-tag--green govuk-!-font-weight-bold\">NEW FEATURE</strong>) +
-        %(<strong class=\"govuk-tag govuk-tag--yellow govuk-!-font-weight-bold\">BUG FIX</strong></div>)
-      )
+      expect(release_note.tags).to eql(tags)
     end
 
     context "when the body contains markdown" do

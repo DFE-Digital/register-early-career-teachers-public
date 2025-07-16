@@ -6,17 +6,13 @@ module API
       @title = title
       @date = date.to_formatted_s(:govuk)
       @body = render(body)
-      @tags = render_tags(tags)
+      @tags = tags
     end
 
   private
 
     def render(markdown)
       GovukMarkdown.render(markdown.to_str, { strip_front_matter: false, headings_start_with: 'l' })
-    end
-
-    def render_tags(tags)
-      API::TagsRenderer.render(tags)
     end
   end
 end

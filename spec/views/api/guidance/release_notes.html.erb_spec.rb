@@ -28,10 +28,10 @@ RSpec.describe "api/guidance/release_notes.html.erb" do
       expect(rendered).to have_css('p', text: release_note_1[:body])
       expect(rendered).to have_css('p', text: release_note_2[:body])
 
-      expect(rendered).to have_css('.tag-group .govuk-tag--green', text: "NEW FEATURE")
-      expect(rendered).to have_css('.tag-group .govuk-tag--yellow', text: "BUG FIX")
-      expect(rendered).to have_css('.tag-group .govuk-tag--red', text: "BREAKING CHANGE")
-      expect(rendered).to have_css('.tag-group .govuk-tag--grey', text: "SANDBOX RELEASE")
+      expect(rendered).to have_css('.tag-group .govuk-tag--green', text: "New feature")
+      expect(rendered).to have_css('.tag-group .govuk-tag--yellow', text: "Bug fix")
+      expect(rendered).to have_css('.tag-group .govuk-tag--red', text: "Breaking change")
+      expect(rendered).to have_css('.tag-group .govuk-tag--grey', text: "Sandbox release")
     end
   end
 end
