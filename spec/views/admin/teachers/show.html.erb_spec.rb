@@ -17,10 +17,6 @@ RSpec.describe 'admin/teachers/show.html.erb' do
     expect(view.content_for(:page_caption)).to have_text('TRN: 1234567')
   end
 
-  it 'displays induction information' do
-    expect(rendered).to have_text('Current induction period')
-  end
-
   it 'links to teacher timeline' do
     expect(rendered).to have_link('View change history', href: admin_teacher_timeline_path(teacher))
   end
@@ -28,6 +24,22 @@ RSpec.describe 'admin/teachers/show.html.erb' do
   context 'when there are no migration failures' do
     it 'does not report migration failures' do
       expect(rendered).not_to have_text("Some of this teacher's records could not be migrated")
+    end
+  end
+
+  it "displays current induction period" do
+    expect(rendered).to have_text('Current induction period')
+  end
+
+  it "displays a link to add an induction period" do
+    expect(rendered).to have_link("Add an induction period")
+  end
+
+  context "when there are no induction periods" do
+    before { teacher.induction_periods.destroy_all }
+
+    it "displays a link to add an induction period" do
+      expect(rendered).to have_link("Add an induction period")
     end
   end
 end
