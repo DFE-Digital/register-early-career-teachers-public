@@ -1,5 +1,0 @@
----
-title: Technical documentation
----
-
-Hi
