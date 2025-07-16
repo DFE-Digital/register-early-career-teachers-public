@@ -73,11 +73,20 @@ module Schools
       end
 
       def lead_provider
-        ECTAtSchoolPeriods::Training.new(ect).latest_lead_provider if ect
+        @lead_provider ||= LeadProvider.find(lead_provider_id) if lead_provider_id
       end
 
       def finish_existing_at_school_periods
         mentoring_at_new_school_only == "yes"
+      end
+
+      def latest_registration_choice
+        @latest_registration_choice ||= TrainingPeriods::LatestRegistrationChoices.new(trn:)
+      end
+
+      # Extract into separate service to get active lead provider for contract period, same for register ECT wizard
+      def active_lead_providers
+        @active_lead_providers ||= LeadProvider.select(:id, :name).all
       end
 
     private

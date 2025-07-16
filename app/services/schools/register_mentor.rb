@@ -32,7 +32,7 @@ module Schools
       @corrected_name = corrected_name
       @school_urn = school_urn
       @email = email
-      @started_on = started_on || Date.current
+      @started_on = started_on&.to_date || Date.current
       @trn = trn
       @lead_provider = lead_provider
       @finish_existing_at_school_periods = finish_existing_at_school_periods
