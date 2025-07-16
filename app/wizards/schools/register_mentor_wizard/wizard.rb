@@ -25,6 +25,9 @@ module Schools
             trn_not_found: TRNNotFoundStep,
             mentoring_at_new_school_only: MentoringAtNewSchoolOnlyStep,
             started_on: StartedOnStep,
+            previous_training_period_details: PreviousTrainingPeriodDetailsStep,
+            programme_choices: ProgrammeChoicesStep,
+            lead_provider: LeadProviderStep,
           }
         ]
       end
@@ -70,6 +73,9 @@ module Schools
 
             steps << :mentoring_at_new_school_only
             steps << :started_on
+            steps << :previous_training_period_details
+            steps << :programme_choices
+            steps << :lead_provider
 
             steps << :review_mentor_eligibility if mentor.funding_available?
             steps += %i[change_mentor_details change_email_address check_answers]
