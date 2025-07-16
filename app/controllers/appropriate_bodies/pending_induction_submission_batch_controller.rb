@@ -9,7 +9,7 @@ module AppropriateBodies
         format.html
 
         format.csv do
-          send_data PendingInductionSubmissionBatchPresenter.new(@pending_induction_submission_batch).to_csv,
+          send_data ProcessBatch::Download.new(pending_induction_submission_batch: @pending_induction_submission_batch).to_csv,
                     filename: "Errors for #{@pending_induction_submission_batch.file_name}",
                     type: 'text/csv'
         end
