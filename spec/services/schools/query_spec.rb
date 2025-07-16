@@ -44,24 +44,24 @@ RSpec.describe Schools::Query do
 
     describe "filtering" do
       describe "by `contract_period_id`" do
-        let!(:school1) { FactoryBot.create(:school) }
+        let!(:school1) { FactoryBot.create(:school, :eligible) }
         let!(:school2) { FactoryBot.create(:school) }
+        let!(:school3) { FactoryBot.create(:school) }
 
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :for_ect) }
-        let!(:school3) { training_period.school_partnership.school }
-
-        let(:contract_period_id) { training_period.contract_period.id }
-        let!(:lead_provider_id) { training_period.lead_provider.id }
+        let(:another_contract_period) { FactoryBot.create(:contract_period) }
+        let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: another_contract_period) }
+        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+        let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school3, lead_provider_delivery_partnership:) }
+        let(:contract_period_id) { another_contract_period.id }
 
         let(:query_params) do
           {
             contract_period_id:,
-            lead_provider_id:
           }
         end
 
         it "filters by `contract_period_id`" do
-          expect(query.schools).to contain_exactly(school3)
+          expect(query.schools).to contain_exactly(school1, school3)
         end
 
         context "when `contract_period_id` param is omitted" do
