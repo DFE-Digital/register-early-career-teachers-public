@@ -32,7 +32,11 @@ class SchoolSerializer < Blueprinter::Base
       end
 
       def expressions_of_interest?(school, options)
-        return school.transient_expression_of_interest if school.respond_to?(:transient_expression_of_interest)
+        if school.respond_to?(:transient_expression_of_interest_ects) &&
+            school.respond_to?(:transient_expression_of_interest_mentors)
+          return school.transient_expression_of_interest_ects ||
+              school.transient_expression_of_interest_mentors
+        end
 
         school.ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(options[:contract_period_id], options[:lead_provider_id]).exists? ||
           school.mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(options[:contract_period_id], options[:lead_provider_id]).exists?
