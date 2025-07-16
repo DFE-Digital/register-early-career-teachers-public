@@ -81,7 +81,7 @@ module Schools
       end
 
       def latest_registration_choice
-        @latest_registration_choice ||= TrainingPeriods::LatestRegistrationChoices.new(trn:)
+        @latest_registration_choice ||= MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn:)
       end
 
       # Extract into separate service to get active lead provider for contract period, same for register ECT wizard
