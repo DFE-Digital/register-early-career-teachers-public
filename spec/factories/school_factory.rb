@@ -44,18 +44,6 @@ FactoryBot.define do
       gias_school { association :gias_school, :open, :in_england, :eligible_for_fip, urn: }
     end
 
-    trait :not_open do
-      gias_school { association :gias_school, :not_open, :in_england, :eligible_for_cip, urn: }
-    end
-
-    trait :not_in_england do
-      gias_school { association :gias_school, :open, :not_in_england, :eligible_for_cip, urn: }
-    end
-
-    trait :section_41_approved do
-      gias_school { association :gias_school, :open, :section_41, :not_eligible_type, urn: }
-    end
-
     trait :cip_only do
       gias_school { association :gias_school, :open, :in_england, :eligible_for_cip, urn: }
     end
