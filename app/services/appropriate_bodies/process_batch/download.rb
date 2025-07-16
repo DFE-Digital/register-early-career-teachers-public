@@ -9,8 +9,18 @@ module AppropriateBodies
         @pending_induction_submission_batch = pending_induction_submission_batch
       end
 
-      # @raise [MissingCSVDataError]
-      # @return [String] downloadable CSV of failed submissions and their errors
+      # @return [String]
+      def filename
+        "Errors for #{pending_induction_submission_batch.file_name}"
+      end
+
+      # @return [String]
+      def type
+        'text/csv'
+      end
+
+      # @raise [AppropriateBodies::ProcessBatch::Download::MissingCSVDataError]
+      # @return [String]
       def to_csv
         raise MissingCSVDataError, "No persisted CSV data found" if pending_induction_submission_batch.data.blank?
 
@@ -26,7 +36,7 @@ module AppropriateBodies
         pending_induction_submission_batch.row_headings.values
       end
 
-      # @return [Hash{String => Array<String>}] mapping of TRN to error messages
+      # @return [Hash{String => Array<String>}]
       def failed_submissions
         pending_induction_submission_batch.pending_induction_submissions.with_errors.pluck(:trn, :error_messages).to_h
       end
