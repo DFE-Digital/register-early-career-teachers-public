@@ -5,7 +5,7 @@ module Schools
 
       validates :mentoring_at_new_school_only,
                 inclusion: { in: %w[yes no],
-                             message: "Select 'Yes' or 'No' to confirm whether they will be mentoring at our school only" }
+                             message: "Select 'Yes' or 'No' to confirm whether they will be mentoring at your school only" }
 
       def self.permitted_params
         %i[mentoring_at_new_school_only]
