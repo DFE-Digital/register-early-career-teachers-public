@@ -60,11 +60,10 @@ $x-govuk-masthead-text-colour: govuk-colour("white");
 
 .release-notes-tags {
   .tag-group {
-    margin: -15px 0 20px;
+    line-height: 2em;
+  }
 
-    .govuk-tag {
-      font-size: 1em;
-      margin: 0 10px 8px 0;
-    }
+  .govuk-tag {
+    margin: 0 10px 8px 0;
   }
 }
