@@ -67,3 +67,19 @@ $x-govuk-masthead-text-colour: govuk-colour("white");
     margin: 0 10px 8px 0;
   }
 }
+
+code {
+  padding: 2px 5px;
+  font-family: monospace;
+  background-color: $govuk-template-background-colour;
+  white-space: pre-wrap;
+  font-size: 0.8em;
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}

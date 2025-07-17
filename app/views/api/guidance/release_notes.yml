@@ -27,7 +27,7 @@
     - sandbox-release
     - removed-field
   body: |
-   Lead providers can now check their financial statements in the ['Register early career teachers’ v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3).
+   Lead providers can now check their financial statements in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3).
 
    Use the GET `/api/v3/statements` endpoint to retrieve all statements or GET `/api/v3/statements/{id}` endpoint to retrieve a specific statement.
 
