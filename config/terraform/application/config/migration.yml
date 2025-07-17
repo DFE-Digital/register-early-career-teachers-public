@@ -12,6 +12,7 @@ ENABLE_PERSONAS: false
 ENABLE_BULK_UPLOAD: true
 ENABLE_BULK_CLAIM: false
 ENABLE_PARITY_CHECK: true
+ENABLE_API: true
 SERVICE_URL: "https://cpd-ec2-migration-web.teacherservices.cloud"
 DFE_ANALYTICS_ENABLED: false
 TRS_API_BASE_URL: "https://preprod.teacher-qualifications-api.education.gov.uk"
