@@ -43,8 +43,7 @@ private
                                                      end_date: induction_record.end_date,
                                                      start_source_id: induction_record.id,
                                                      end_source_id: induction_record.id,
-                                                     training_programme:,
-                                                     lead_provider_id:)
+                                                     training_programme:)
         periods << current_period
       else
         current_period.end_date = induction_record.end_date

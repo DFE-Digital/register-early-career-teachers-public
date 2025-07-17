@@ -10,14 +10,13 @@ module Migration
     attr_accessor :urn, :start_date, :end_date, :start_source_id, :end_source_id,
                   :training_programme, :lead_provider_id
 
-    def initialize(urn:, start_date:, end_date:, start_source_id:, end_source_id:, training_programme:, lead_provider_id:)
+    def initialize(urn:, start_date:, end_date:, start_source_id:, end_source_id:, training_programme:)
       @urn = urn
       @start_date = start_date
       @end_date = end_date
       @start_source_id = start_source_id
       @end_source_id = end_source_id
       @training_programme = training_programme
-      @lead_provider_id = lead_provider_id
     end
   end
 end
