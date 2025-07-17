@@ -48,9 +48,9 @@ module TeachersIndex
 
     def navigation_link_path
       if showing_closed?
-        ab_teachers_path(q: query)
+        open_ab_teachers_path(q: query)
       else
-        ab_teachers_path(status: 'closed', q: query)
+        closed_ab_teachers_path(q: query)
       end
     end
   end

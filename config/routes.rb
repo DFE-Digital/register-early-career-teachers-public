@@ -107,6 +107,9 @@ Rails.application.routes.draw do
   resource :appropriate_bodies, only: %i[show], path: 'appropriate-body', as: 'ab_landing', controller: 'appropriate_bodies/landing'
   namespace :appropriate_bodies, path: 'appropriate-body', as: 'ab' do
     resources :teachers, only: %i[show index], controller: 'teachers' do
+      match 'closed', to: 'teachers#index', via: :get, on: :collection, as: 'closed', defaults: { status: 'closed' }
+      match 'open', to: 'teachers#index', via: :get, on: :collection, as: 'open', defaults: { status: 'open' }
+
       resource :release_ect, only: %i[new create show], path: 'release', controller: 'teachers/release_ect'
       resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
       resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: 'teachers/record_failed_outcome'
