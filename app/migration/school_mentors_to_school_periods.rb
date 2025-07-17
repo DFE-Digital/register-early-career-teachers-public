@@ -26,8 +26,7 @@ private
                                   end_date: nil,
                                   start_source_id: school_mentor.id,
                                   end_source_id: nil,
-                                  training_programme: nil,
-                                  lead_provider_id: nil)
+                                  training_programme: nil)
     end
   end
 end
