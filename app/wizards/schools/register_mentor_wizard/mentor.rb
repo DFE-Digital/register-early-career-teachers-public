@@ -84,9 +84,14 @@ module Schools
         @latest_registration_choice ||= MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn:)
       end
 
-      # Extract into separate service to get active lead provider for contract period, same for register ECT wizard
-      def active_lead_providers
-        @active_lead_providers ||= LeadProvider.select(:id, :name).all
+      def lead_providers_within_contract_period
+        return [] unless contract_period
+
+        @lead_providers_within_contract_period ||= LeadProviders::Active.in_contract_period(contract_period).select(:id, :name)
+      end
+
+      def contract_period
+        ContractPeriod.containing_date(started_on&.to_date)
       end
 
     private
