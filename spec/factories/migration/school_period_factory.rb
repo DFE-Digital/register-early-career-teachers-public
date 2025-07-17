@@ -6,7 +6,6 @@ FactoryBot.define do
     start_source_id { SecureRandom.uuid }
     end_source_id { SecureRandom.uuid }
     training_programme { "school_led" }
-    lead_provider_id { nil }
 
     initialize_with { new(**attributes) }
   end
