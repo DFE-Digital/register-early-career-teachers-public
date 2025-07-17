@@ -15,7 +15,7 @@
 <%= render Teachers::DetailsComponent.new(mode: :admin, teacher: @teacher) do |component|
   component.with_induction_outcome_actions
   component.with_induction_summary
-  component.with_current_induction_period(enable_edit: true)
+  component.with_current_induction_period(enable_edit: true, enable_delete: true)
   component.with_past_induction_periods(enable_edit: true)
 end %>
 

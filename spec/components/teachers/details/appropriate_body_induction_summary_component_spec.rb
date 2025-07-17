@@ -1,9 +1,9 @@
 RSpec.describe Teachers::Details::AppropriateBodyInductionSummaryComponent, type: :component do
-  include AppropriateBodyHelper
   include Rails.application.routes.url_helpers
 
+  subject(:component) { described_class.new(teacher:) }
+
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:component) { described_class.new(teacher:) }
 
   context "when teacher has no induction periods" do
     it "does not render" do

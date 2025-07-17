@@ -56,7 +56,7 @@ Rails.application.routes.draw do
       resource :timeline, only: %i[show], controller: 'teachers/timeline'
       resources :induction_periods, only: %i[new create edit update destroy], path: 'induction-periods' do
         member do
-          get :confirm_delete
+          get :confirm_delete, path: 'confirm-delete'
         end
       end
       resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
@@ -114,6 +114,7 @@ Rails.application.routes.draw do
       resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
       resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: 'teachers/record_failed_outcome'
 
+      resources :induction_periods, only: %i[edit update], path: 'induction-periods'
       resources :extensions, controller: 'teachers/extensions', only: %i[show edit update index new create]
       resources :initial_teacher_training_records, path: 'itt-data', controller: 'teachers/initial_teacher_training_records', only: :index
     end

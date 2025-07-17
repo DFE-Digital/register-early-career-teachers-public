@@ -1,6 +1,7 @@
 RSpec.describe Teachers::Details::ITTDetailsComponent, type: :component do
+  subject(:component) { described_class.new(teacher:) }
+
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:component) { described_class.new(teacher:) }
 
   context "when teacher has QTS award date and ITT provider" do
     let(:teacher) do

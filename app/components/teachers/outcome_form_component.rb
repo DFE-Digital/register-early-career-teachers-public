@@ -2,6 +2,7 @@ module Teachers
   class OutcomeFormComponent < ViewComponent::Base
     attr_reader :form, :teacher, :is_admin, :appropriate_body
 
+    # TODO: refactor to use `mode` and `admin_{mode}?` like other components when put to use
     def initialize(form:, teacher:, is_admin:, appropriate_body: nil)
       @form = form
       @teacher = teacher

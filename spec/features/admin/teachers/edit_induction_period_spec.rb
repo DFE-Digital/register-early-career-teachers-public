@@ -3,34 +3,41 @@ RSpec.describe "Admin amending number of terms of an induction period" do
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, number_of_terms: nil) }
 
-  before { sign_in_as_dfe_user(role: :admin) }
+  let!(:induction_period) do
+    FactoryBot.create(:induction_period, :active,
+                      teacher:,
+                      appropriate_body:,
+                      started_on: Date.new(2024, 1, 1))
+  end
+
+  before do
+    sign_in_as_dfe_user(role: :admin)
+    page.goto(admin_teacher_path(teacher))
+  end
 
   scenario 'Happy path - updating number of terms' do
-    given_i_am_on_the_ect_page(teacher)
+    given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
-
-    new_finish_date = induction_period.started_on + 1.week
-    when_i_set_end_date(new_finish_date.month.to_s, new_finish_date.year.to_s)
+    when_i_set_end_date(induction_period.started_on + 32.days)
     when_i_update_the_number_of_terms(5)
     and_i_click_submit
-
     then_i_should_be_on_the_success_page
     and_the_induction_period_should_have_been_updated
-    and_an_event_should_have_been_recorded("Number of terms set to '5.0'")
+    and_an_event_should_have_been_recorded(
+      "Finished on set to '2 Feb 2024'",
+      "Number of terms set to '5.0'"
+    )
   end
 
   scenario 'Validation - cannot enter invalid number of terms' do
-    given_i_am_on_the_ect_page(teacher)
+    given_i_am_on_the_teacher_page
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
-
     when_i_update_the_number_of_terms(-1)
     and_i_click_submit
-
     then_i_should_see_validation_errors
   end
 
@@ -42,14 +49,12 @@ RSpec.describe "Admin amending number of terms of an induction period" do
       number_of_terms: 3
     )
 
-    given_i_am_on_the_ect_page(teacher)
+    given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
-
     when_i_update_the_number_of_terms(5)
     and_i_click_submit
-
     then_i_should_be_on_the_success_page
     and_the_induction_period_should_have_been_updated
     and_an_event_should_have_been_recorded("Number of terms changed from '3.0' to '5.0'")
@@ -62,18 +67,17 @@ RSpec.describe "Admin amending number of terms of an induction period" do
       number_of_terms: 3 # Add initial number of terms
     )
 
-    given_i_am_on_the_ect_page(teacher)
+    given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
-
     then_i_should_see_only_number_of_terms_field
   end
 
   scenario 'Can edit induction period with outcome' do
     induction_period.update!(outcome: 'pass')
 
-    given_i_am_on_the_ect_page(teacher)
+    given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
@@ -81,10 +85,8 @@ RSpec.describe "Admin amending number of terms of an induction period" do
 
 private
 
-  def given_i_am_on_the_ect_page(teacher)
-    path = "/admin/teachers/#{teacher.id}"
-    page.goto(path)
-    expect(page.url).to end_with(path)
+  def given_i_am_on_the_teacher_page
+    expect(page.url).to end_with("/admin/teachers/#{teacher.id}")
   end
 
   def then_i_should_see_the_edit_link
@@ -103,11 +105,11 @@ private
     expect(page.url).to end_with("/admin/teachers/#{teacher.id}/induction-periods/#{induction_period.id}/edit")
   end
 
-  def when_i_set_end_date(month, year)
+  def when_i_set_end_date(end_date)
     end_date_group = page.get_by_role('group', name: 'End date')
-    end_date_group.get_by_label('Day').fill("30")
-    end_date_group.get_by_label('Month').fill(month)
-    end_date_group.get_by_label('Year').fill(year)
+    end_date_group.get_by_label('Day').fill(end_date.day.to_s)
+    end_date_group.get_by_label('Month').fill(end_date.month.to_s)
+    end_date_group.get_by_label('Year').fill(end_date.year.to_s)
   end
 
   def when_i_update_the_number_of_terms(number)
@@ -128,24 +130,19 @@ private
     expect(induction_period.number_of_terms).to eq(5)
   end
 
-  def and_an_event_should_have_been_recorded(expected_modification)
+  def and_an_event_should_have_been_recorded(*expected_modification)
     perform_enqueued_jobs
 
     event = Event.last
     expect(event.event_type).to eq("induction_period_updated")
-    expect(event.modifications).to include(expected_modification)
+    expect(event.author_type).to eq("dfe_staff_user")
+    expect(event.heading).to eq("Induction period updated by admin")
+    expect(event.modifications).to include(*expected_modification)
   end
 
   def then_i_should_see_validation_errors
     expect(page.locator('.govuk-error-summary')).to be_visible
     expect(page.get_by_role('alert').get_by_text("Number of terms must be between 0 and 16")).to be_visible
-  end
-
-  def when_i_try_to_change_end_date(day, month, year)
-    end_date_group = page.get_by_role('group', name: 'End date')
-    end_date_group.get_by_label('Day').fill(day)
-    end_date_group.get_by_label('Month').fill(month)
-    end_date_group.get_by_label('Year').fill(year)
   end
 
   def then_i_should_see_outcome_error_message

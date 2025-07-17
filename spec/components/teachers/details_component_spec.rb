@@ -4,7 +4,7 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
   let(:mode) { :appropriate_body }
   let(:component) { described_class.new(teacher:, mode:) }
 
-  describe "initialization" do
+  describe "modes" do
     it "accepts valid modes" do
       valid_modes = %i[admin appropriate_body school]
 
@@ -22,64 +22,36 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
     end
   end
 
-  describe "with different modes" do
-    context "when mode is :admin" do
-      let(:mode) { :admin }
-
-      it "initializes with admin mode" do
-        expect(component.teacher).to eq(teacher)
-      end
-
-      it "renders the component with admin mode" do
-        # Render the component with the personal_details slot
-        result = render_inline(component, &:with_personal_details)
-
-        # Verify the component renders something
-        expect(result.to_html).not_to be_empty
-      end
-    end
-
-    context "when mode is :school" do
-      let(:mode) { :school }
-
-      it "initializes with school mode" do
-        expect(component.teacher).to eq(teacher)
-      end
-
-      it "renders the component with school mode" do
-        # Render the component with the personal_details slot
-        result = render_inline(component, &:with_personal_details)
-
-        # Verify the component renders something
-        expect(result.to_html).not_to be_empty
-      end
-    end
+  it "has slots" do
+    expect(component).to respond_to(:personal_details)
+    expect(component).to respond_to(:induction_summary)
+    expect(component).to respond_to(:current_induction_period)
+    expect(component).to respond_to(:itt_details)
+    expect(component).to respond_to(:past_induction_periods)
+    expect(component).to respond_to(:induction_outcome_actions)
   end
 
-  describe "slot components" do
-    it "passes the teacher to slot components" do
-      # Spy on the PersonalDetailsComponent to verify it receives the teacher
+  describe "#personal_details" do
+    before do
       allow(Teachers::Details::PersonalDetailsComponent).to receive(:new).and_call_original
-
-      # Render the component with the personal_details slot
       render_inline(component, &:with_personal_details)
+    end
 
-      # Verify the component was created with the correct teacher
+    it "passes the teacher to slot component" do
       expect(Teachers::Details::PersonalDetailsComponent).to have_received(:new).with(teacher:)
     end
   end
 
-  describe "InductionSummaryComponent" do
+  describe "#induction_summary" do
     context "when mode is :admin" do
       let(:mode) { :admin }
 
       before do
         allow(Teachers::Details::AdminInductionSummaryComponent).to receive(:new).and_call_original
+        render_inline(component, &:with_induction_summary)
       end
 
       it "uses AdminInductionSummaryComponent" do
-        render_inline(component, &:with_induction_summary)
-
         expect(Teachers::Details::AdminInductionSummaryComponent).to have_received(:new).with(teacher:)
       end
     end
@@ -89,11 +61,10 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
 
       before do
         allow(Teachers::Details::AppropriateBodyInductionSummaryComponent).to receive(:new).and_call_original
+        render_inline(component, &:with_induction_summary)
       end
 
       it "uses AppropriateBodyInductionSummaryComponent" do
-        render_inline(component, &:with_induction_summary)
-
         expect(Teachers::Details::AppropriateBodyInductionSummaryComponent).to have_received(:new).with(teacher:)
       end
     end
@@ -103,13 +74,76 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
 
       before do
         allow(Teachers::Details::AppropriateBodyInductionSummaryComponent).to receive(:new).and_call_original
+        render_inline(component, &:with_induction_summary)
       end
 
       it "uses AppropriateBodyInductionSummaryComponent for school mode" do
-        render_inline(component, &:with_induction_summary)
-
         expect(Teachers::Details::AppropriateBodyInductionSummaryComponent).to have_received(:new).with(teacher:)
       end
+    end
+  end
+
+  describe "#current_induction_period" do
+    before do
+      allow(Teachers::Details::CurrentInductionPeriodComponent).to receive(:new).and_call_original
+    end
+
+    it 'passes mode and teacher to slot component and defaults enable flags to false' do
+      render_inline(component.with_current_induction_period)
+
+      expect(Teachers::Details::CurrentInductionPeriodComponent).to have_received(:new).with(mode:,
+                                                                                             teacher:,
+                                                                                             enable_delete: false,
+                                                                                             enable_edit: false,
+                                                                                             enable_release: false)
+    end
+
+    it 'sets enable edit, delete and release flags' do
+      render_inline(component.with_current_induction_period(enable_release: true, enable_edit: true, enable_delete: true))
+
+      expect(Teachers::Details::CurrentInductionPeriodComponent).to have_received(:new).with(mode:,
+                                                                                             teacher:,
+                                                                                             enable_delete: true,
+                                                                                             enable_edit: true,
+                                                                                             enable_release: true)
+    end
+  end
+
+  describe "#itt_details" do
+    before do
+      allow(Teachers::Details::ITTDetailsComponent).to receive(:new).and_call_original
+      render_inline(component, &:with_itt_details)
+    end
+
+    it "passes the teacher to slot component" do
+      expect(Teachers::Details::ITTDetailsComponent).to have_received(:new).with(teacher:)
+    end
+  end
+
+  describe "#induction_outcome_actions" do
+    before do
+      allow(Teachers::Details::InductionOutcomeActionsComponent).to receive(:new).and_call_original
+      render_inline(component, &:with_induction_outcome_actions)
+    end
+
+    it "passes the mode and teacher to slot component" do
+      expect(Teachers::Details::InductionOutcomeActionsComponent).to have_received(:new).with(mode:, teacher:)
+    end
+  end
+
+  describe "#past_induction_periods" do
+    before do
+      allow(Teachers::Details::PastInductionPeriodsComponent).to receive(:new).and_call_original
+    end
+
+    it "passes the teacher slot component and defaults enable flag to false" do
+      render_inline(component.with_past_induction_periods)
+      expect(Teachers::Details::PastInductionPeriodsComponent).to have_received(:new).with(teacher:, enable_edit: false)
+    end
+
+    it "sets enable edit flag" do
+      render_inline(component.with_past_induction_periods(enable_edit: true))
+      expect(Teachers::Details::PastInductionPeriodsComponent).to have_received(:new).with(teacher:, enable_edit: true)
     end
   end
 end
