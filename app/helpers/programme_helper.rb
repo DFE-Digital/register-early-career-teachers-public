@@ -1,6 +1,6 @@
 module ProgrammeHelper
-  def training_programme_name(training_programme)
-    ::TRAINING_PROGRAMME.fetch(training_programme&.to_sym, 'Training programme is not recognised')
+  def training_programme_name(training_programme, default = 'Training programme is not recognised')
+    ::TRAINING_PROGRAMME.fetch(training_programme&.to_sym, default)
   end
 
   def previous_choice_message(use_previous_ect_choices)
