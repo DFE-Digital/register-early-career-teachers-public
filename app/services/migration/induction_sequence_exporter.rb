@@ -16,45 +16,16 @@ module Migration
 
       Rails.logger.info("InductionSequenceExporter: Exporting analysis to CSV: #{file_path}")
 
-      CSV.open(file_path, "w", write_headers: true, headers: csv_headers) do |csv|
-        @results.each do |result|
-          write_result_to_csv(csv, result)
-        end
+      data = @results.flat_map do |result|
+        result[:provider_periods].map { |period| build_csv_row(result, period) }
+      end
+
+      CSV.open(file_path, "w", headers: data.first.keys, write_headers: true) do |csv|
+        data.each { |row| csv << row }
       end
 
       Rails.logger.info("InductionSequenceExporter: Export completed: #{file_path}")
       file_path.to_s
-    end
-
-    def csv_headers
-      [
-        "Participant ID",
-        "Participant Type",
-        "Lead Provider",
-        "Total Records",
-        "NULL End Date Records",
-        "Total Days with Provider",
-        "Schools",
-        "Programme Types",
-        "Induction Record ID",
-        "Created At",
-        "Start Date",
-        "End Date",
-        "Explicit End Date",
-        "Next Induction Record ID",
-        "Duration Days",
-        "Period Status",
-        "School",
-        "School URN",
-        "Mentor Profile ID",
-        "Induction Programme Type",
-        "Core Induction Programme",
-        "Induction Programme ID",
-        "Partnership ID",
-        "Delivery Partner",
-        "Induction Status",
-        "Training Status",
-      ]
     end
 
   private
@@ -71,42 +42,35 @@ module Migration
       "/tmp/#{DEFAULT_FILE_NAME}_#{timestamp}.csv"
     end
 
-    def write_result_to_csv(csv, result)
-      result[:provider_periods].each do |period|
-        row_data = build_csv_row(result, period)
-        csv << row_data
-      end
-    end
-
     def build_csv_row(result, period)
-      [
-        result[:participant_id],
-        result[:participant_type],
-        result[:lead_provider_name],
-        result[:total_record_count],
-        result[:null_end_date_count],
-        result[:total_days],
-        result[:schools].join(";"),
-        result[:programme_types].join(";"),
-        period[:record_id],
-        period[:created_at],
-        period[:start_date],
-        period[:end_date],
-        period[:explicit_end_date] ? "Yes" : "No",
-        period[:next_record_id],
-        period[:duration_days],
-        period[:status],
-        period[:school],
-        period[:school_urn],
-        period[:mentor_profile_id],
-        period[:programme],
-        period[:core_induction_programme],
-        period[:programme_id],
-        period[:partnership_id],
-        period[:delivery_partner],
-        period[:induction_status],
-        period[:training_status],
-      ]
+      {
+        "Participant ID" => result[:participant_id],
+        "Participant Type" => result[:participant_type],
+        "Lead Provider" => result[:lead_provider_name],
+        "Total Records" => result[:total_record_count],
+        "NULL End Date Records" => result[:null_end_date_count],
+        "Total Days with Provider" => result[:total_days],
+        "Schools" => result[:schools].join(";"),
+        "Programme Types" => result[:programme_types].join(";"),
+        "Induction Record ID" => period[:record_id],
+        "Created At" => period[:created_at],
+        "Start Date" => period[:start_date],
+        "End Date" => period[:end_date],
+        "Explicit End Date" => period[:explicit_end_date] ? "Yes" : "No",
+        "Next Induction Record ID" => period[:next_record_id],
+        "Duration Days" => period[:duration_days],
+        "Period Status" => period[:status],
+        "School" => period[:school],
+        "School URN" => period[:school_urn],
+        "Mentor Profile ID" => period[:mentor_profile_id],
+        "Induction Programme Type" => period[:programme],
+        "Core Induction Programme" => period[:core_induction_programme],
+        "Induction Programme ID" => period[:programme_id],
+        "Partnership ID" => period[:partnership_id],
+        "Delivery Partner" => period[:delivery_partner],
+        "Induction Status" => period[:induction_status],
+        "Training Status" => period[:training_status]
+      }
     end
   end
 end
