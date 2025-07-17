@@ -6,7 +6,7 @@ RSpec.describe API::Guidance::ReleaseNotes::TagsComponent, type: :component do
       )
     end
 
-    let(:tags) { ["#bug-fix", "#new-feature"] }
+    let(:tags) { %w[bug-fix new-feature] }
 
     describe '#initialize' do
       it 'sets it to the injected object if provided' do
@@ -18,7 +18,7 @@ RSpec.describe API::Guidance::ReleaseNotes::TagsComponent, type: :component do
       let(:expected_output) do
         %(<div class=\"release-notes-tags\">) +
           %(<div class=\"tag-group\">) +
-          %(<strong class=\"govuk-tag govuk-tag--green\">New feature</strong>) +
+          %(<strong class=\"govuk-tag govuk-tag--green\">New feature</strong>\n) +
           %(<strong class=\"govuk-tag govuk-tag--yellow\">Bug fix</strong></div></div>\n)
       end
 
@@ -29,12 +29,12 @@ RSpec.describe API::Guidance::ReleaseNotes::TagsComponent, type: :component do
       end
 
       context "when a tag is are not mapped" do
-        let(:tags) { ["#new-tag"] }
+        let(:tags) { %w[new-tag] }
 
         it "raises an error" do
           expect {
             render_inline(component)
-          }.to raise_error(described_class::UnknownTagError, "Tag not recognised: #new-tag")
+          }.to raise_error(described_class::UnknownTagError, "Tag not recognised: new-tag")
         end
       end
 
@@ -44,7 +44,7 @@ RSpec.describe API::Guidance::ReleaseNotes::TagsComponent, type: :component do
         it "renders no tags" do
           render_inline(component)
 
-          expect(rendered_content).to eql("\n")
+          expect(rendered_content).to be_empty
         end
       end
     end

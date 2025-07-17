@@ -1,6 +1,6 @@
 RSpec.describe "api/guidance/release_notes.html.erb" do
-  let(:release_note_1) { { title: 'Note 1', date: 1.month.ago, body: 'Note 1 body', tags: ["#bug-fix", "#new-feature"] } }
-  let(:release_note_2) { { title: 'Note 2', date: 2.weeks.ago, body: 'Note 2 body', tags: ["#breaking-change", "#sandbox-release"] } }
+  let(:release_note_1) { { title: 'Note 1', date: 1.month.ago, body: 'Note 1 body', tags: %w[bug-fix new-feature] } }
+  let(:release_note_2) { { title: 'Note 2', date: 2.weeks.ago, body: 'Note 2 body', tags: %w[breaking-change sandbox-release] } }
 
   before do
     assign(:release_notes, [API::ReleaseNote.new(**release_note_1), API::ReleaseNote.new(**release_note_2)])

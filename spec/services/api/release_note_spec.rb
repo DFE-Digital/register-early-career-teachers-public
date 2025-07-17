@@ -5,7 +5,7 @@ describe API::ReleaseNote do
     let(:title) { "A title" }
     let(:date) { Date.new(2024, 1, 1) }
     let(:body) { "Some body text" }
-    let(:tags) { ["#bug-fix", "#new-feature"] }
+    let(:tags) { %w[bug-fix new-feature] }
 
     it "is initialized with title, date, body and tags" do
       expect(release_note.title).to eql(title)
