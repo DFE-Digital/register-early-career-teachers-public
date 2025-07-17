@@ -24,10 +24,9 @@ module Admin
 
     def update
       service = update_induction_period_service
-
       service.update_induction_period!
       redirect_to admin_teacher_path(@induction_period.teacher), alert: 'Induction period updated successfully'
-    rescue UpdateInductionPeriod::RecordedOutcomeError => e
+    rescue InductionPeriods::UpdateInductionPeriod::RecordedOutcomeError => e
       @induction_period.errors.add(:base, e.message)
       render :edit, status: :unprocessable_entity
     rescue ActiveRecord::RecordInvalid
@@ -41,7 +40,7 @@ module Admin
 
     def destroy
       @induction_period = induction_period
-      service = InductionPeriods::DeleteInductionPeriod.new(author: current_user, induction_period: @induction_period)
+      service = delete_induction_period_service
       service.delete_induction_period!
       redirect_to admin_teacher_path(@induction_period.teacher), alert: 'Induction period deleted successfully'
     rescue ActiveRecord::RecordInvalid, ActiveRecord::Rollback => e
@@ -78,7 +77,18 @@ module Admin
     end
 
     def update_induction_period_service
-      UpdateInductionPeriod.new(author: current_user, induction_period:, params: induction_period_params)
+      InductionPeriods::UpdateInductionPeriod.new(
+        author: current_user,
+        induction_period:,
+        params: induction_period_params
+      )
+    end
+
+    def delete_induction_period_service
+      InductionPeriods::DeleteInductionPeriod.new(
+        author: current_user,
+        induction_period:
+      )
     end
   end
 end

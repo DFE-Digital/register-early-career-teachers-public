@@ -1,5 +1,4 @@
-RSpec.describe "Admin::InductionPeriods", type: :request do
-  include ActionView::Helpers::SanitizeHelper
+RSpec.describe 'Admin editing an active induction period', type: :request do
   include_context 'sign in as DfE user'
 
   let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
@@ -392,7 +391,7 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
           expect(induction_period.appropriate_body).to eq(appropriate_body)
         end
 
-        it "records an 'admin updates induction period' event" do
+        it "records an induction period updated event" do
           allow(Events::Record).to receive(:record_induction_period_updated_event!).once.and_call_original
 
           induction_period.assign_attributes(valid_params[:induction_period])

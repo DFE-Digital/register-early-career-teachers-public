@@ -61,8 +61,8 @@
       class: "govuk-!-margin-bottom-8"
     ) do |f| %>
       <div class="govuk-button-group">
-        <%= f.submit "Delete induction period", class: "govuk-button govuk-button--warning" %>
-        <%= link_to "Cancel", admin_teacher_path(@induction_period.teacher), class: "govuk-button govuk-button--secondary" %>
+        <%= f.govuk_submit "Delete induction period", warning: true %>
+        <%= govuk_button_link_to "Cancel", admin_teacher_path(@induction_period.teacher), secondary: true %>
       </div>
     <% end %>
   </div>
