@@ -5,6 +5,6 @@
     <span class="govuk-caption-m"><%= release_note.date %></span>
     <%= release_note.title %>
   </h2>
-
+  <%= render API::Guidance::ReleaseNotes::TagsComponent.new(tags: release_note.tags) %>
   <%== release_note.body %>
 <% end %>
