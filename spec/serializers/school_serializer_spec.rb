@@ -1,9 +1,14 @@
 describe SchoolSerializer, type: :serializer do
   subject(:response) do
-    JSON.parse(described_class.render(school, contract_period_id: contract_period.id, lead_provider_id: lead_provider.id))
+    JSON.parse(described_class.render(scope))
   end
 
-  let(:school) { FactoryBot.create(:school, urn: "123456") }
+  let(:school) do
+    FactoryBot.create(:school,
+                      urn: "123456",
+                      created_at: Time.utc(2023, 7, 1, 12, 0, 0),
+                      updated_at: Time.utc(2023, 7, 1, 12, 0, 0))
+  end
   let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
   let(:contract_period) { school_partnership.contract_period }
   let(:lead_provider) { school_partnership.lead_provider }
@@ -36,6 +41,8 @@ describe SchoolSerializer, type: :serializer do
                       ect_at_school_period:,
                       started_on: another_ect_at_school_period.started_on)
   end
+  let(:query) { Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_id: contract_period.id) }
+  let(:scope) { query.school(school.id) }
 
   describe "core attributes" do
     it "serializes `id`" do
@@ -76,14 +83,10 @@ describe SchoolSerializer, type: :serializer do
 
     describe "timestamp serialization" do
       it "serializes `created_at`" do
-        school.created_at = Time.utc(2023, 7, 1, 12, 0, 0)
-
         expect(attributes["created_at"]).to eq("2023-07-01T12:00:00Z")
       end
 
       it "serializes `updated_at`" do
-        school.updated_at = Time.utc(2023, 7, 1, 12, 0, 0)
-
         expect(attributes["updated_at"]).to eq("2023-07-01T12:00:00Z")
       end
     end
