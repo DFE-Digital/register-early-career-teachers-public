@@ -205,6 +205,20 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
   end
 
+  describe '#finish_existing_at_school_periods' do
+    context "when mentoring_at_new_school_only set to yes" do
+      before { store.mentoring_at_new_school_only = "yes" }
+
+      it { expect(mentor.finish_existing_at_school_periods).to be(true) }
+    end
+
+    context "when mentoring_at_new_school_only set to no" do
+      before { store.mentoring_at_new_school_only = "no" }
+
+      it { expect(mentor.finish_existing_at_school_periods).to be(false) }
+    end
+  end
+
   describe '#lead_providers_within_contract_period' do
     let!(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
     let!(:lp_in) { FactoryBot.create(:lead_provider) }
