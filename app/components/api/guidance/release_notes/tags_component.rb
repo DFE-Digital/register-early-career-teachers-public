@@ -11,7 +11,7 @@ module API
           "new-field" => "turquoise",
           "data-update" => "blue",
           "contract-closure" => "orange",
-          "new-course" => "pink",
+          "removed-field" => "pink",
           "production-release" => "purple",
           "sandbox-release" => "grey",
         }.freeze
