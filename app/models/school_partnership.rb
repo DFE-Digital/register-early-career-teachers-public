@@ -4,6 +4,9 @@ class SchoolPartnership < ApplicationRecord
   belongs_to :school
   has_many :events
 
+  after_commit :touch_school_api_updated_at_if_first_partnership, on: :create
+  after_commit :touch_school_api_updated_at_if_last_partnership, on: :destroy
+
   # delegates
   delegate :lead_provider, :delivery_partner, :contract_period, to: :lead_provider_delivery_partnership
 
@@ -17,4 +20,14 @@ class SchoolPartnership < ApplicationRecord
             }
 
   scope :earliest_first, -> { order(created_at: 'asc') }
+
+private
+
+  def touch_school_api_updated_at_if_first_partnership
+    school.touch(:api_updated_at) if school.school_partnerships.count == 1
+  end
+
+  def touch_school_api_updated_at_if_last_partnership
+    school.touch(:api_updated_at) if school.school_partnerships.reload.none?
+  end
 end
