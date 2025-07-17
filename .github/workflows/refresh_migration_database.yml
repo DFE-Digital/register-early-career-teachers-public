@@ -58,4 +58,9 @@ jobs:
         shell: bash
         run: |
           kubectl -n cpd-production exec -ti --tty deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::SeedEndpoints.new.plant!"
+
+      - name: Clear User OTP tokens
+        shell: bash
+        run: |
+          kubectl -n cpd-production exec -ti --tty deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner User.update_all(otp_secret: nil)"
           
