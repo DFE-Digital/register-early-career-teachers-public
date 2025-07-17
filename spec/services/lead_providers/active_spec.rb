@@ -25,4 +25,21 @@ describe LeadProviders::Active do
       it { is_expected.to be(false) }
     end
   end
+
+  describe '.in_contract_period' do
+    subject { described_class.in_contract_period(contract_period) }
+
+    let(:contract_period) { FactoryBot.create(:contract_period) }
+    let!(:included_lp) { FactoryBot.create(:lead_provider) }
+    let!(:excluded_lp) { FactoryBot.create(:lead_provider) }
+
+    before do
+      FactoryBot.create(:active_lead_provider, lead_provider: included_lp, contract_period:)
+    end
+
+    it 'returns only lead providers active in the given contract period' do
+      expect(subject).to include(included_lp)
+      expect(subject).not_to include(excluded_lp)
+    end
+  end
 end

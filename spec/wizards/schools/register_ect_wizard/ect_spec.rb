@@ -480,5 +480,29 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
       end
     end
+
+    describe '#lead_providers_within_contract_period' do
+      let!(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
+      let!(:lp_in) { FactoryBot.create(:lead_provider) }
+      let!(:lp_out) { FactoryBot.create(:lead_provider) }
+
+      before do
+        FactoryBot.create(:active_lead_provider, contract_period:, lead_provider: lp_in)
+        store.start_date = "1 March 2025"
+      end
+
+      it 'returns lead providers active in the contract period' do
+        expect(ect.lead_providers_within_contract_period).to include(lp_in)
+        expect(ect.lead_providers_within_contract_period).not_to include(lp_out)
+      end
+
+      context 'when no contract period matches the start_date' do
+        before { store.start_date = nil }
+
+        it 'returns an empty array' do
+          expect(ect.lead_providers_within_contract_period).to eq([])
+        end
+      end
+    end
   end
 end
