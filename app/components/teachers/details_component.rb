@@ -1,5 +1,7 @@
 module Teachers
   class DetailsComponent < ViewComponent::Base
+    MODES = %i[admin appropriate_body school].freeze
+
     renders_one :personal_details, -> {
       Teachers::Details::PersonalDetailsComponent.new(teacher:)
     }
@@ -9,7 +11,7 @@ module Teachers
     }
 
     renders_one :induction_summary, -> {
-      if mode == :admin
+      if admin_mode?
         Teachers::Details::AdminInductionSummaryComponent.new(teacher:)
       else
         Teachers::Details::AppropriateBodyInductionSummaryComponent.new(teacher:)
@@ -17,11 +19,7 @@ module Teachers
     }
 
     renders_one :current_induction_period, ->(enable_release: nil, enable_edit: nil) {
-      Teachers::Details::CurrentInductionPeriodComponent.new(
-        teacher:,
-        enable_release:,
-        enable_edit:
-      )
+      Teachers::Details::CurrentInductionPeriodComponent.new(mode:, teacher:, enable_release:, enable_edit:)
     }
 
     renders_one :past_induction_periods, ->(enable_edit: nil) {
@@ -29,16 +27,22 @@ module Teachers
     }
 
     renders_one :induction_outcome_actions, -> {
-      Teachers::Details::InductionOutcomeActionsComponent.new(teacher:, mode:)
+      Teachers::Details::InductionOutcomeActionsComponent.new(mode:, teacher:)
     }
 
-    attr_reader :teacher, :mode
+    attr_reader :mode, :teacher
 
     def initialize(mode:, teacher:)
-      fail unless mode.in?(%i[admin appropriate_body school])
+      fail unless mode.in?(MODES)
 
-      @teacher = teacher
       @mode = mode
+      @teacher = teacher
+    end
+
+  private
+
+    def admin_mode?
+      mode == :admin
     end
   end
 end

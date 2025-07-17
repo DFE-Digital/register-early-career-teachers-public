@@ -1,7 +1,7 @@
 <%
   page_data(
     title: "Delete induction period for #{teacher_full_name(@induction_period.teacher)}",
-    backlink_href: admin_teacher_path(@induction_period.teacher)
+    backlink_href: ab_teacher_path(@induction_period.teacher)
   )
 %>
 
@@ -56,13 +56,13 @@
     %>
 
     <%= form_with(
-      url: admin_teacher_induction_period_path(@induction_period.teacher, @induction_period),
+      url: ab_teacher_induction_period_path(@induction_period.teacher, @induction_period),
       method: :delete,
       class: "govuk-!-margin-bottom-8"
     ) do |f| %>
       <div class="govuk-button-group">
         <%= f.govuk_submit "Delete induction period", warning: true %>
-        <%= govuk_button_link_to "Cancel", admin_teacher_path(@induction_period.teacher), secondary: true %>
+        <%= govuk_button_link_to "Cancel", ab_teacher_path(@induction_period.teacher), secondary: true %>
       </div>
     <% end %>
   </div>

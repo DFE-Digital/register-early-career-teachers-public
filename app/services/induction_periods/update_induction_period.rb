@@ -1,4 +1,4 @@
-module Admin
+module InductionPeriods
   class UpdateInductionPeriod
     class RecordedOutcomeError < StandardError; end
 

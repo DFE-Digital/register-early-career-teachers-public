@@ -18,6 +18,10 @@ module Teachers::Details
       @past_periods ||= induction.past_induction_periods
     end
 
+    def card_actions(period)
+      [edit_link(period), delete_link(period)].compact
+    end
+
     def induction_period_programme(period)
       if Rails.application.config.enable_bulk_claim
         helpers.training_programme_name(period.training_programme)

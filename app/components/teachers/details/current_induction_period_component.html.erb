@@ -1,7 +1,7 @@
 <h2 class="govuk-heading-m">Current induction period</h2>
 
 <%=
-  govuk_summary_list(card: { heading_level: 3, title: card_title, actions: }) do |sl|
+  govuk_summary_list(card: { heading_level: 3, title:, actions: }) do |sl|
     sl.with_row do |row|
       row.with_key(text: "Induction programme")
       row.with_value(text: training_programme)

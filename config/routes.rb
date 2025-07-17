@@ -56,7 +56,7 @@ Rails.application.routes.draw do
       resource :timeline, only: %i[show], controller: 'teachers/timeline'
       resources :induction_periods, only: %i[new create edit update destroy], path: 'induction-periods' do
         member do
-          get :confirm_delete
+          get :confirm_delete, path: 'confirm-delete'
         end
       end
       resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
@@ -109,6 +109,12 @@ Rails.application.routes.draw do
     resources :teachers, only: %i[show index], controller: 'teachers' do
       match 'closed', to: 'teachers#index', via: :get, on: :collection, as: 'closed', defaults: { status: 'closed' }
       match 'open', to: 'teachers#index', via: :get, on: :collection, as: 'open', defaults: { status: 'open' }
+
+      resources :induction_periods, only: %i[edit update destroy], path: 'induction-periods' do
+        member do
+          get :confirm_delete, path: 'confirm-delete'
+        end
+      end
 
       resource :release_ect, only: %i[new create show], path: 'release', controller: 'teachers/release_ect'
       resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
