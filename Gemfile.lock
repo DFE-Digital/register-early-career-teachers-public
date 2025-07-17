@@ -195,7 +195,7 @@ GEM
       http_parser.rb (~> 0)
     email_validator (2.2.4)
       activemodel
-    erb (5.0.1)
+    erb (5.0.2)
     erubi (1.13.1)
     et-orbi (1.2.11)
       tzinfo
@@ -330,7 +330,7 @@ GEM
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
-    io-console (0.8.0)
+    io-console (0.8.1)
     io-endpoint (0.15.2)
     io-event (1.11.0)
     io-stream (0.10.0)
@@ -521,11 +521,10 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.4.0)
-    propshaft (1.1.0)
+    propshaft (1.2.0)
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
-      railties (>= 7.0.0)
     prosopite (2.1.1)
     protocol-hpack (1.5.1)
     protocol-http (0.51.0)
