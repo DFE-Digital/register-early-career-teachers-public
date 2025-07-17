@@ -14,7 +14,6 @@ module Admin
 
       def show
         @batch = PendingInductionSubmissionBatch.find(params[:id])
-        @batch_presenter = PendingInductionSubmissionBatchPresenter.new(@batch)
       end
     end
   end
