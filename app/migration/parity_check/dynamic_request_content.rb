@@ -18,6 +18,7 @@ module ParityCheck
 
     def example_id
       Statement
+        .output_fee
         .joins(:active_lead_provider)
         .where(active_lead_provider: lead_provider.active_lead_providers)
         .order("RANDOM()")

@@ -13,10 +13,14 @@ RSpec.describe ParityCheck::DynamicRequestContent do
 
     context "when fetching example_id" do
       let(:identifier) { :example_id }
-      let!(:statement) { FactoryBot.create(:statement, lead_provider:) }
+      let!(:statement) { FactoryBot.create(:statement, :output_fee, lead_provider:) }
 
-      # Statement for different lead provider should not be used.
-      before { FactoryBot.create(:statement) }
+      before do
+        # Statement for different lead provider should not be used.
+        FactoryBot.create(:statement)
+        # Statement for service fee should not be used
+        FactoryBot.create(:statement, :service_fee, lead_provider:)
+      end
 
       it { is_expected.to eq(statement.api_id) }
     end
