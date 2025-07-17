@@ -16,7 +16,7 @@
 
   <%= f.govuk_collection_radio_buttons(
     :lead_provider_id,
-    @mentor.active_lead_providers,
+    @mentor.lead_providers_within_contract_period,
     :id,
     :name,
     legend: {
