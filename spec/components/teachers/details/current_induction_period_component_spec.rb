@@ -25,9 +25,14 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
       expect(component.render?).to be true
     end
 
+    it "displays the heading" do
+      render_inline(component)
+      expect(page).to have_css("h2", text: "Current induction period")
+    end
+
     it "displays the appropriate body name" do
       render_inline(component)
-      expect(page).to have_content("Test AB")
+      expect(page).to have_css("h3", text: "Test AB")
     end
 
     it "displays the start date" do
