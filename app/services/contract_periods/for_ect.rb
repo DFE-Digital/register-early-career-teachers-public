@@ -1,13 +1,14 @@
 module ContractPeriods
   class ForECT
-    def initialize(started_on:, created_at:)
+    class NoContractPeriodFoundForStartedOnDate < StandardError; end
+
+    def initialize(started_on:)
       @started_on = started_on
-      @created_at = created_at
     end
 
     def call
       ContractPeriod.ongoing_on(@started_on).first ||
-        ContractPeriod.ongoing_on(@created_at).first
+        raise(NoContractPeriodFoundForStartedOnDate, "No contract period found for started_on=#{@started_on}")
     end
   end
 end
