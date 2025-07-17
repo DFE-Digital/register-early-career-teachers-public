@@ -218,9 +218,6 @@
   - corrected_name
   - trs_first_name
   - trs_last_name
-  - ecf_user_id
-  - ecf_ect_profile_id
-  - ecf_mentor_profile_id
   - mentor_became_ineligible_for_funding_on
   - mentor_became_ineligible_for_funding_reason
   :pending_induction_submissions:
