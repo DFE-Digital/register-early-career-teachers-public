@@ -4,38 +4,38 @@ class SchoolSerializer < Blueprinter::Base
 
     field :name
     field(:urn) { |school, _| school.urn.to_s }
-    field(:cohort) do |_school, options|
-      options[:contract_period_id]&.to_s
+    field(:cohort) do |school, _|
+      school.contract_period_id
     end
-    field(:in_partnership) do |school, options|
-      in_partnership?(school, options)
+    field(:in_partnership) do |school, _|
+      in_partnership?(school)
     end
-    field(:induction_programme_choice) do |school, options|
-      school.training_programme_for(options[:contract_period_id])
+    field(:induction_programme_choice) do |school, _|
+      school.training_programme_for(school.contract_period_id)
     end
-    field(:expression_of_interest) do |school, options|
-      expressions_of_interest?(school, options)
+    field(:expression_of_interest) do |school, _|
+      expressions_of_interest?(school)
     end
     field :created_at
     field :updated_at
 
     class << self
-      def in_partnership?(school, options)
-        return false if options[:contract_period_id].blank?
+      def in_partnership?(school)
+        return false if school.contract_period_id.blank?
         return school.transient_in_partnership if school.respond_to?(:transient_in_partnership)
 
-        school.school_partnerships.for_contract_period(options[:contract_period_id]).exists?
+        school.school_partnerships.for_contract_period(school.contract_period_id).exists?
       end
 
-      def expressions_of_interest?(school, options)
+      def expressions_of_interest?(school)
         if school.respond_to?(:transient_expression_of_interest_ects) &&
             school.respond_to?(:transient_expression_of_interest_mentors)
           return school.transient_expression_of_interest_ects ||
               school.transient_expression_of_interest_mentors
         end
 
-        school.ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(options[:contract_period_id], options[:lead_provider_id]).exists? ||
-          school.mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(options[:contract_period_id], options[:lead_provider_id]).exists?
+        school.ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(school.contract_period_id, school.lead_provider_id).exists? ||
+          school.mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(school.contract_period_id, school.lead_provider_id).exists?
       end
     end
   end

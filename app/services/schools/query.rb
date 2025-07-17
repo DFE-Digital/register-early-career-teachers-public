@@ -13,7 +13,9 @@ module Schools
         transient_mentors_at_school(contract_period_id),
         transient_ects_at_school_training_programme(contract_period_id),
         transient_expression_of_interest_ects(lead_provider_id, contract_period_id),
-        transient_expression_of_interest_mentors(lead_provider_id, contract_period_id)
+        transient_expression_of_interest_mentors(lead_provider_id, contract_period_id),
+        "'#{contract_period_id}' AS contract_period_id",
+        "'#{lead_provider_id}' AS lead_provider_id"
       ).or(schools_with_existing_partnerships(contract_period_id))
         .distinct
 
