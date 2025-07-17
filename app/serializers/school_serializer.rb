@@ -11,7 +11,7 @@ class SchoolSerializer < Blueprinter::Base
       in_partnership?(school, options)
     end
     field(:induction_programme_choice) do |school, options|
-      training_programme_for(school, options)
+      school.training_programme_for(options[:contract_period_id])
     end
     field(:expression_of_interest) do |school, options|
       expressions_of_interest?(school, options)
@@ -25,10 +25,6 @@ class SchoolSerializer < Blueprinter::Base
         return school.transient_in_partnership if school.respond_to?(:transient_in_partnership)
 
         school.school_partnerships.for_contract_period(options[:contract_period_id]).exists?
-      end
-
-      def training_programme_for(school, options)
-        Schools::TrainingProgramme.new(school:, contract_period_id: options[:contract_period_id]).training_programme
       end
 
       def expressions_of_interest?(school, options)
