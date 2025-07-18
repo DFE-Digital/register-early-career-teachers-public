@@ -215,6 +215,9 @@
   - school_id
   - api_id
   :teachers:
+  - ecf_user_id
+  - ecf_ect_profile_id
+  - ecf_mentor_profile_id
   - corrected_name
   - trs_first_name
   - trs_last_name
