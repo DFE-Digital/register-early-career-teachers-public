@@ -2,7 +2,6 @@ module InductionPeriods
   class CreateInductionPeriod
     attr_reader :induction_period,
                 :event,
-                :params,
                 :teacher,
                 :author
 
@@ -12,7 +11,6 @@ module InductionPeriods
     def initialize(author:, teacher:, params:)
       @author = author
       @teacher = teacher
-      @params = params
       @induction_period = InductionPeriod.new(params.merge(teacher:))
     end
 
@@ -39,7 +37,7 @@ module InductionPeriods
 
       Events::Record.record_induction_period_opened_event!(
         author: @author,
-        teacher: @teacher,
+        teacher:,
         appropriate_body: @induction_period.appropriate_body,
         induction_period: @induction_period,
         modifications: @induction_period.changes
