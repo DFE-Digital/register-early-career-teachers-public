@@ -51,6 +51,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   # Scopes
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
   scope :provider_led, -> { where(training_programme: :provider_led) }
+  scope :with_expressions_of_interest, -> { joins(training_periods: :expression_of_interest).distinct }
 
   # Instance methods
 

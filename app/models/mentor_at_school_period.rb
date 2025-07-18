@@ -36,6 +36,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
   # Scopes
   scope :for_school, ->(school_id) { where(school_id:) }
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
+  scope :with_expressions_of_interest, -> { joins(training_periods: :expression_of_interest).distinct }
 
   # Instance methods
   def siblings
