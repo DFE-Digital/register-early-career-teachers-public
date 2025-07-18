@@ -11,8 +11,8 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       it { expect { fetch }.to raise_error(described_class::UnrecognizedIdentifierError, "Identifier not recognized: unrecognized_identifier") }
     end
 
-    context "when fetching example_id" do
-      let(:identifier) { :example_id }
+    context "when fetching statement_id" do
+      let(:identifier) { :statement_id }
       let!(:statement) { FactoryBot.create(:statement, :output_fee, lead_provider:) }
 
       before do
