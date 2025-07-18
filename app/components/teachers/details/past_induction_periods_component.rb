@@ -26,16 +26,23 @@ module Teachers::Details
       end
     end
 
-    def edit_link(period)
-      return unless enable_edit
+    delegate :govuk_link_to, to: :helpers
 
-      helpers.govuk_link_to('Edit', helpers.edit_admin_teacher_induction_period_path(teacher_id: teacher.id, id: period.id), no_visited_state: true)
-    end
+    def actions_for(period)
+      return [] unless enable_edit
 
-    def delete_link(period)
-      return unless enable_edit
-
-      helpers.govuk_link_to('Delete', helpers.confirm_delete_admin_teacher_induction_period_path(teacher_id: teacher.id, id: period.id), method: :get, class: 'govuk-link--destructive', no_visited_state: true)
+      [
+        govuk_link_to(
+          'Edit',
+          helpers.edit_admin_teacher_induction_period_path(teacher, period),
+          no_visited_state: true
+        ),
+        govuk_link_to(
+          'Delete',
+          helpers.confirm_delete_admin_teacher_induction_period_path(teacher, period),
+          no_visited_state: true
+        )
+      ]
     end
   end
 end
