@@ -337,6 +337,14 @@ describe ECTAtSchoolPeriod do
 
       it { is_expected.to contain_exactly(period_1, period_2, period_3, teacher_2_period) }
     end
+
+    describe ".with_expressions_of_interest" do
+      subject { described_class.with_expressions_of_interest }
+
+      let!(:period_with_expression_of_interest) { FactoryBot.create(:ect_at_school_period, :with_eoi_only_training_period, started_on: '2023-01-01', finished_on: '2023-06-01') }
+
+      it { is_expected.to contain_exactly(period_with_expression_of_interest) }
+    end
   end
 
   describe "#siblings" do
