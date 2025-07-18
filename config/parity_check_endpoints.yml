@@ -5,6 +5,17 @@ get:
       query:
         filter:
           cohort: 2021
+  - "/api/v3/statements":
+      paginate: true
+      query:
+        filter:
+          cohort: "2022,2023"
+  - "/api/v3/statements":
+      paginate: true
+      query:
+        filter:
+          cohort: "2022,2023"
+          updated_since: "2024-11-13T11:21:55Z"
   - "/api/v3/statements/:id":
       id: example_id
   - "/api/v3/schools":
