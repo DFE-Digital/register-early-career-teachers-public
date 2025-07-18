@@ -41,10 +41,10 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
-      "Induction status changed from '' to 'InProgress'",
+      "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
       "Imported from TRS",
-      "Induction status changed from '' to 'InProgress'",
+      "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/
     )
 
@@ -65,10 +65,10 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
-      "Induction status changed from '' to 'InProgress'",
+      "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
       "Imported from TRS",
-      "Induction status changed from '' to 'InProgress'",
+      "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
       "The Appropriate Body started a bulk action"
     )
@@ -88,10 +88,10 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
-      "Induction status changed from '' to 'InProgress'",
+      "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
       "Imported from TRS",
-      "Induction status changed from '' to 'InProgress'",
+      "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action"
@@ -102,10 +102,10 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
-      "Induction status changed from '' to 'InProgress'",
+      "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
       "Imported from TRS",
-      "Induction status changed from '' to 'InProgress'",
+      "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action",
