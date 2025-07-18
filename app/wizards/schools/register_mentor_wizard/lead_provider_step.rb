@@ -1,9 +1,11 @@
 module Schools
   module RegisterMentorWizard
     class LeadProviderStep < Step
-      attr_accessor :lead_provider_id
+      attr_reader :lead_provider_id
 
-      validates_with LeadProviderValidator
+      validates :lead_provider_id,
+                presence: { message: "Select a lead provider to contact your school" },
+                lead_provider: { message: "Select a lead provider to contact your school" }
 
       def self.permitted_params
         %i[lead_provider_id]

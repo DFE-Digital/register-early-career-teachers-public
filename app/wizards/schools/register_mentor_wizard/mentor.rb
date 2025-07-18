@@ -94,7 +94,48 @@ module Schools
         ContractPeriod.containing_date(started_on&.to_date)
       end
 
+      # Does mentor have any previous mentor_at_school_periods (open or closed)?
+      def has_mentor_at_school_periods?
+        mentor_at_school_periods.exists?
+      end
+
+      # Does mentor have an open mentor_at_school_period at another school?
+      def has_open_mentor_at_school_period_at_another_school?
+        previous_school_mentor_at_school_periods.exists?
+      end
+
+      def previous_school_mentor_at_school_periods
+        finishes_in_the_future_scope = ::MentorAtSchoolPeriod.finished_on_or_after(start_date)
+        mentor_at_school_periods.where.not(school:).ongoing.or(finishes_in_the_future_scope)
+      end
+
+      # Is mentor being assigned to a provider-led ECT?
+      def provider_led_ect?
+        ect.provider_led?
+      end
+
+      # Does that mentor have a mentor_became_ineligible_for_funding_on?
+      def became_ineligible_for_funding?
+        ::Teachers::MentorFundingEligibility.new(trn:).ineligible?
+      end
+
+      def ect_lead_provider
+        ect_training_service.latest_lead_provider
+      end
+
+      def ect_eoi_lead_provider
+        ect_training_service.latest_eoi_lead_provider
+      end
+
     private
+
+      def mentor_at_school_periods
+        ::MentorAtSchoolPeriod.includes(:teacher).where(teacher: { trn: })
+      end
+
+      def ect_training_service
+        @ect_training_service ||= ECTAtSchoolPeriods::Training.new(ect)
+      end
 
       # The wizard store object where we delegate the rest of methods
       def wizard_store

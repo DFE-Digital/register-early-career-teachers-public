@@ -3,9 +3,7 @@ module Schools
     class ProgrammeChoicesStep < Step
       attr_accessor :use_same_programme_choices
 
-      validates :use_same_programme_choices,
-                inclusion: { in: %w[yes no],
-                             message: "Select 'Yes' or 'No'" }
+      validates :use_same_programme_choices, inclusion: { in: %w[yes no], message: "Select 'Yes' or 'No'" }
 
       def self.permitted_params
         %i[use_same_programme_choices]
@@ -34,7 +32,7 @@ module Schools
       end
 
       def lead_provider_id
-        ect.lead_provider.id if use_same_programme_choices == "yes"
+        mentor.ect_lead_provider.id if use_same_programme_choices == "yes"
       end
     end
   end
