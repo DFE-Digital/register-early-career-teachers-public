@@ -79,7 +79,7 @@ describe InductionPeriods::CreateInductionPeriod do
       end
     end
 
-    context 'with existing periods' do
+    context "when the induction period is earlier than existing periods" do
       before do
         FactoryBot.create(
           :induction_period,
@@ -91,43 +91,52 @@ describe InductionPeriods::CreateInductionPeriod do
         )
       end
 
-      context 'when creating an earlier period' do
-        let(:started_on) { Date.parse('2023-1-1') }
-        let(:finished_on) { Date.parse('2023-6-1') }
-        let(:params) do
-          {
-            started_on:,
-            finished_on:,
-            appropriate_body_id: appropriate_body.id,
-            induction_programme:,
-            number_of_terms: 2
-          }
-        end
-
-        it 'notifies TRS of the earlier induction start date' do
-          expect { subject.create_induction_period! }
-            .to have_enqueued_job(BeginECTInductionJob)
-            .with(trn: teacher.trn, start_date: started_on)
-        end
+      let(:started_on) { Date.parse('2023-1-1') }
+      let(:finished_on) { Date.parse('2023-6-1') }
+      let(:params) do
+        {
+          started_on:,
+          finished_on:,
+          appropriate_body_id: appropriate_body.id,
+          induction_programme:,
+          number_of_terms: 2
+        }
       end
 
-      context 'when creating a later period' do
-        let(:started_on) { Date.parse('2024-7-1') }
-        let(:finished_on) { Date.parse('2024-12-1') }
-        let(:params) do
-          {
-            started_on:,
-            finished_on:,
-            appropriate_body_id: appropriate_body.id,
-            induction_programme:,
-            number_of_terms: 2
-          }
-        end
+      it 'notifies TRS of the earlier induction start date' do
+        expect { subject.create_induction_period! }
+          .to have_enqueued_job(BeginECTInductionJob)
+          .with(trn: teacher.trn, start_date: started_on)
+      end
+    end
 
-        it 'does not notify TRS' do
-          expect { subject.create_induction_period! }
-            .not_to have_enqueued_job(BeginECTInductionJob)
-        end
+    context "when the induction period is later than existing periods" do
+      before do
+        FactoryBot.create(
+          :induction_period,
+          teacher:,
+          appropriate_body:,
+          started_on: Date.parse('2024-1-1'),
+          finished_on: Date.parse('2024-6-1'),
+          number_of_terms: 2
+        )
+      end
+
+      let(:started_on) { Date.parse('2024-7-1') }
+      let(:finished_on) { Date.parse('2024-12-1') }
+      let(:params) do
+        {
+          started_on:,
+          finished_on:,
+          appropriate_body_id: appropriate_body.id,
+          induction_programme:,
+          number_of_terms: 2
+        }
+      end
+
+      it 'does not notify TRS' do
+        expect { subject.create_induction_period! }
+          .not_to have_enqueued_job(BeginECTInductionJob)
       end
     end
 
