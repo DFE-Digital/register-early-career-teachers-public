@@ -110,6 +110,42 @@ describe InductionPeriods::CreateInductionPeriod do
       end
     end
 
+    context "when the induction period is earlier than existing periods" \
+            "and we're using multiparameter assignment" do
+      before do
+        FactoryBot.create(
+          :induction_period,
+          teacher:,
+          appropriate_body:,
+          started_on: Date.parse('2024-1-1'),
+          finished_on: Date.parse('2024-6-1'),
+          number_of_terms: 2
+        )
+      end
+
+      let(:started_on) { Date.parse('2023-1-1') }
+      let(:finished_on) { Date.parse('2023-6-1') }
+      let(:params) do
+        {
+          "started_on(1i)" => started_on.year.to_s,
+          "started_on(2i)" => started_on.month.to_s,
+          "started_on(3i)" => started_on.day.to_s,
+          "finished_on(1i)" => finished_on.year.to_s,
+          "finished_on(2i)" => finished_on.month.to_s,
+          "finished_on(3i)" => finished_on.day.to_s,
+          appropriate_body_id: appropriate_body.id,
+          induction_programme:,
+          number_of_terms: 2
+        }
+      end
+
+      it 'notifies TRS of the earlier induction start date' do
+        expect { subject.create_induction_period! }
+          .to have_enqueued_job(BeginECTInductionJob)
+          .with(trn: teacher.trn, start_date: started_on)
+      end
+    end
+
     context "when the induction period is later than existing periods" do
       before do
         FactoryBot.create(
