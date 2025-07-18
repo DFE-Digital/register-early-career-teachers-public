@@ -24,7 +24,11 @@ module InductionPeriods
         record_event or raise ActiveRecord::Rollback
       end
 
-      notify_trs_of_new_induction_start if notify_trs?
+      if teacher.induction_periods.started_before(induction_period.started_on)
+          .or(teacher.induction_periods.with_outcome)
+          .none?
+        notify_trs_of_new_induction_start
+      end
 
       induction_period
     end
@@ -44,23 +48,6 @@ module InductionPeriods
       )
 
       true
-    end
-
-    # Only notify TRS if this is the earliest induction period for the teacher
-    # and the teacher hasn't already passed or failed induction
-    # @return [Boolean]
-    def notify_trs?
-      !teacher_has_earlier_induction_periods? && !teacher_has_passed_or_failed_induction?
-    end
-
-    # @return [Boolean]
-    def teacher_has_earlier_induction_periods?
-      InductionPeriod.where(teacher:).started_before(induction_period.started_on).exists?
-    end
-
-    # @return [Boolean]
-    def teacher_has_passed_or_failed_induction?
-      InductionPeriod.where(teacher:, outcome: ::INDUCTION_OUTCOMES.keys.map(&:to_s)).exists?
     end
 
     def notify_trs_of_new_induction_start
