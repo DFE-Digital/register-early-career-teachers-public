@@ -298,6 +298,40 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
         expect(period.training_programme).to eq('provider_led')
       end
     end
+
+    context "with no earlier induction periods" do
+      before do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: 9.months.ago,
+                          finished_on: 6.months.ago,
+                          induction_programme: "fip")
+      end
+
+      let(:started_on) { 12.months.ago }
+      let(:finished_on) { 9.months.ago }
+      let(:params) do
+        {
+          induction_period: {
+            "started_on(3i)" => started_on.day,
+            "started_on(2i)" => started_on.month,
+            "started_on(1i)" => started_on.year,
+            "finished_on(3i)" => finished_on.day,
+            "finished_on(2i)" => finished_on.month,
+            "finished_on(1i)" => finished_on.year,
+            induction_programme: 'fip',
+            appropriate_body_id: appropriate_body.id,
+            number_of_terms: 2
+          }
+        }
+      end
+
+      it "notifies TRS" do
+        expect { post admin_teacher_induction_periods_path(teacher), params: }
+          .to have_enqueued_job(BeginECTInductionJob)
+          .with(trn: teacher.trn, start_date: started_on.to_date)
+      end
+    end
   end
 
   describe "GET /admin/teachers/:teacher_id/induction-periods/new" do
