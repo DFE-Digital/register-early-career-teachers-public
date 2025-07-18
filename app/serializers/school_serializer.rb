@@ -5,13 +5,13 @@ class SchoolSerializer < Blueprinter::Base
     field :name
     field(:urn) { |school, _| school.urn.to_s }
     field(:cohort) do |school, _|
-      school.contract_period_id
+      school.transient_contract_period_id
     end
     field(:in_partnership) do |school, _|
       in_partnership?(school)
     end
     field(:induction_programme_choice) do |school, _|
-      school.training_programme_for(school.contract_period_id)
+      school.training_programme_for(school.transient_contract_period_id)
     end
     field(:expression_of_interest) do |school, _|
       expressions_of_interest?(school)
@@ -21,10 +21,11 @@ class SchoolSerializer < Blueprinter::Base
 
     class << self
       def in_partnership?(school)
-        return false if school.contract_period_id.blank?
-        return school.transient_in_partnership if school.respond_to?(:transient_in_partnership)
-
-        school.school_partnerships.for_contract_period(school.contract_period_id).exists?
+        if school.respond_to?(:transient_in_partnership)
+          school.transient_in_partnership
+        else
+          school.school_partnerships.for_contract_period(contract_period_id).exists?
+        end
       end
 
       def expressions_of_interest?(school)
@@ -34,8 +35,8 @@ class SchoolSerializer < Blueprinter::Base
               school.transient_expression_of_interest_mentors
         end
 
-        school.ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(school.contract_period_id, school.lead_provider_id).exists? ||
-          school.mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(school.contract_period_id, school.lead_provider_id).exists?
+        school.ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(school.transient_contract_period_id, school.transient_lead_provider_id).exists? ||
+          school.mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(school.transient_contract_period_id, school.transient_lead_provider_id).exists?
       end
     end
   end

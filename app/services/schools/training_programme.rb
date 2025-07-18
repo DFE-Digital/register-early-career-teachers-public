@@ -13,7 +13,7 @@ module Schools
 
   private
 
-    attr_reader :school, :contract_period_id, :lead_provider_id
+    attr_reader :school, :contract_period_id
 
     def ects_expressions_of_interest
       @ects_expressions_of_interest ||= school.ect_at_school_periods.with_expressions_of_interest_for_contract_period(contract_period_id)
@@ -24,11 +24,11 @@ module Schools
     end
 
     def ect_at_school_periods
-      @ect_at_school_periods ||= school.ect_at_school_periods.for_contract_period(contract_period_id)
+      @ect_at_school_periods ||= school.ect_at_school_periods.with_partnerships_for_contract_period(contract_period_id)
     end
 
     def mentors_at_school_periods
-      @mentors_at_school_periods ||= school.mentor_at_school_periods.for_contract_period(contract_period_id)
+      @mentors_at_school_periods ||= school.mentor_at_school_periods.with_partnerships_for_contract_period(contract_period_id)
     end
 
     def mentors_at_school?

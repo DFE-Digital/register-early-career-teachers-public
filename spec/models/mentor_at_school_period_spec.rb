@@ -90,7 +90,7 @@ describe MentorAtSchoolPeriod do
       end
     end
 
-    describe ".for_contract_period" do
+    describe ".with_partnerships_for_contract_period" do
       let!(:training_period) do
         FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period: period_2,
                                                          started_on: period_2.started_on,
@@ -98,7 +98,7 @@ describe MentorAtSchoolPeriod do
       end
 
       it "returns mentor in training periods only for the specified contract period" do
-        expect(described_class.for_contract_period(training_period.school_partnership.contract_period.id)).to match_array([period_2])
+        expect(described_class.with_partnerships_for_contract_period(training_period.school_partnership.contract_period.id)).to match_array([period_2])
       end
     end
 
