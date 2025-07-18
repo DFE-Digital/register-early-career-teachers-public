@@ -17,18 +17,9 @@ get:
           cohort: "2022,2023"
           updated_since: "2024-11-13T11:21:55Z"
   - "/api/v3/statements/:id":
-      id: example_id
-  - "/api/v3/schools":
-    paginate: true
-  - "/api/v3/schools/:id":
-      id: example_id
-  - "/api/v3/partnerships/ecf":
-  - "/api/v3/partnerships/ecf/:id":
-      id: example_id
+      id: statement_id
 post:
-  - "/api/v3/statements":
-      body: example_body
-  - "/api/v3/participant-declarations":
+  - "/api/v3/partnerships/ecf":
       body: example_body
 put:
   - "/api/v3/participant-declarations/:id":

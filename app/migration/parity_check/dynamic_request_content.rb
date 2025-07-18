@@ -16,7 +16,7 @@ module ParityCheck
 
     # Path ID methods
 
-    def example_id
+    def statement_id
       Statement
         .output_fee
         .joins(:active_lead_provider)
