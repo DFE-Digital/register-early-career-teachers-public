@@ -209,6 +209,14 @@ describe MentorAtSchoolPeriod do
         expect(described_class.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to match_array([period_2])
       end
     end
+
+    describe ".with_expressions_of_interest" do
+      subject { described_class.with_expressions_of_interest }
+
+      let!(:period_with_expression_of_interest) { FactoryBot.create(:mentor_at_school_period, :with_eoi_only_training_period, started_on: '2023-01-01', finished_on: '2023-06-01') }
+
+      it { is_expected.to contain_exactly(period_with_expression_of_interest) }
+    end
   end
 
   describe "#siblings" do
