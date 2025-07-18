@@ -52,10 +52,15 @@ jobs:
       - name: Generate known keys
         shell: bash
         run: |
-          kubectl -n cpd-production exec -ti --tty deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::TokenProvider.new.generate!"
+          kubectl -n cpd-production exec deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::TokenProvider.new.generate!"
 
       - name: Seed parity check endpoints
         shell: bash
         run: |
-          kubectl -n cpd-production exec -ti --tty deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::SeedEndpoints.new.plant!"
+          kubectl -n cpd-production exec deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::SeedEndpoints.new.plant!"
+
+      - name: Clear User OTP tokens
+        shell: bash
+        run: |
+          kubectl -n cpd-production exec deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner \"User.update_all(otp_secret: nil)\""
           
