@@ -1,10 +1,10 @@
-class LeadProviderValidator < ActiveModel::Validator
-  def validate(record)
-    if record.lead_provider_id.blank?
-      record.errors.add(:lead_provider_id, "Select which lead provider will be training the ECT")
-    end
-    unless LeadProvider.exists?(record.lead_provider_id)
-      record.errors.add(:lead_provider_id, "Enter the name of a known lead provider")
-    end
+class LeadProviderValidator < ActiveModel::EachValidator
+  def validate_each(record, attribute, value)
+    return if value.blank?
+    return if record.errors[attribute].any?
+    return if LeadProvider.find_by(id: value)
+
+    message = options[:message] || "Select a lead provider"
+    record.errors.add(attribute, message)
   end
 end

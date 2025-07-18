@@ -8,17 +8,6 @@ module Schools
       def previous_step
         :started_on
       end
-
-    private
-
-      def persist
-        ActiveRecord::Base.transaction do
-          AssignMentor.new(ect:, author:, mentor: mentor.register!(author:)).assign!
-        end
-      rescue StandardError => e
-        mentor.registered = false
-        raise e
-      end
     end
   end
 end
