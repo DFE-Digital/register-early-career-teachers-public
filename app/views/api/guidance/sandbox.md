@@ -1,6 +1,4 @@
----
-title: Using the API sandbox
----
+# Using the API sandbox 
 
 Use this guidance to understand: 
 
@@ -14,24 +12,24 @@ The sandbox is a safe, test version of the live service. It lets lead providers 
 
 Lead providers can use the sandbox to: 
 
-* explore the API and test their integration 
-* simulate common tasks (such as submitting participant data or changing mentor details)
+* explore the API and test their integration
+* simulate common tasks (such as submitting declarations or changing participant schedules)
 * check how their system handles responses from the service
 * prepare for live data submissions with confidence
 * test new functionality before it goes live 
 
 The sandbox works just like the live environment, but no real training records, payments, or notifications are sent. 
 
-To help get started, we recommend that technical teams bookmark the [Swagger API documentation](add link) so they can quickly find the latest information about endpoints, request formats, and validation rules. 
+To help get started, we recommend that technical teams bookmark the [Swagger API documentation](relative path “/api/docs/v3”) so they can quickly find the latest information about endpoints, request formats, and validation rules. 
 
 ## Benefits of using the sandbox 
 
 Using the sandbox helps lead providers: 
 
-* test safely by experimenting with data and functionality without risk to live records or triggering real-world consequences
+* test new and existing features safely by experimenting with data and functionality without risk to live records or triggering real-world consequences
 * build confidence by verifying their integration works as expected before going live
 * reduce errors by spotting and fixing issues early to avoid delays or data problems in the live system
-* understand user journeys by simulating common actions (like deferring a participant or assigning a mentor) to understand how they work in practice
+* understand user journeys by simulating common actions (like deferring a participant) to understand how they work in practice
 * train their team by giving staff a risk-free environment to learn how to use the service and test workflows 
 
 ## Access the sandbox 
