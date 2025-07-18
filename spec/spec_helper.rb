@@ -25,4 +25,5 @@ RSpec.configure do |config|
 end
 
 RSpec::Matchers.define_negated_matcher :not_change, :change
+RSpec::Matchers.define_negated_matcher :not_have_enqueued_job, :have_enqueued_job
 WebMock.disable_net_connect!(allow_localhost: true)

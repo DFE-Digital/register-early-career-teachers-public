@@ -6,63 +6,81 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   describe "POST /admin/teachers/:teacher_id/induction-periods" do
-    let(:valid_params) do
-      {
-        induction_period: {
-          started_on: 6.months.ago,
-          finished_on: 3.months.ago,
-          induction_programme: 'fip',
-          appropriate_body_id: appropriate_body.id,
-          number_of_terms: 2
-        }
-      }
-    end
-
     context "with valid parameters" do
+      let(:started_on) { 6.months.ago }
+      let(:finished_on) { 3.months.ago }
+      let(:valid_params) do
+        {
+          induction_period: {
+            "started_on(3i)" => started_on.day,
+            "started_on(2i)" => started_on.month,
+            "started_on(1i)" => started_on.year,
+            "finished_on(3i)" => finished_on.day,
+            "finished_on(2i)" => finished_on.month,
+            "finished_on(1i)" => finished_on.year,
+            induction_programme: 'fip',
+            appropriate_body_id: appropriate_body.id,
+            number_of_terms: 2
+          }
+        }
+      end
+
       it "creates a new induction period" do
-        expect {
-          post admin_teacher_induction_periods_path(teacher), params: valid_params
-        }.to change(InductionPeriod, :count).by(1)
+        expect { post admin_teacher_induction_periods_path(teacher), params: valid_params }
+          .to change(InductionPeriod, :count).by(1)
       end
 
       it "redirects to the teacher page with success message" do
         post admin_teacher_induction_periods_path(teacher), params: valid_params
+
         expect(response).to redirect_to(admin_teacher_path(teacher))
         expect(flash[:alert]).to eq('Induction period created successfully')
       end
 
       it "records an 'admin creates induction period' event" do
-        allow(Events::Record).to receive(:record_induction_period_opened_event!).once.and_call_original
+        allow(Events::Record)
+          .to receive(:record_induction_period_opened_event!)
+          .once.and_call_original
 
         post admin_teacher_induction_periods_path(teacher), params: valid_params
 
-        expect(Events::Record).to have_received(:record_induction_period_opened_event!).once.with(
-          hash_including(
-            {
-              appropriate_body:,
-              author: kind_of(Sessions::User),
-              induction_period: kind_of(InductionPeriod),
-              teacher:,
-            }
+        expect(Events::Record)
+          .to have_received(:record_induction_period_opened_event!)
+          .once
+          .with(
+            hash_including(
+              {
+                appropriate_body:,
+                author: kind_of(Sessions::User),
+                induction_period: kind_of(InductionPeriod),
+                teacher:,
+              }
+            )
           )
-        )
       end
 
       it "creates the period with correct attributes" do
         post admin_teacher_induction_periods_path(teacher), params: valid_params
+
         period = InductionPeriod.last
-        expect(period.started_on).to eq(valid_params[:induction_period][:started_on].to_date)
-        expect(period.finished_on).to eq(valid_params[:induction_period][:finished_on].to_date)
-        expect(period.induction_programme).to eq(valid_params[:induction_period][:induction_programme])
+        expect(period.started_on).to eq(started_on.to_date)
+        expect(period.finished_on).to eq(finished_on.to_date)
+        expect(period.induction_programme).to eq('fip')
       end
     end
 
     context "with invalid parameters" do
+      let(:started_on) { nil }
+      let(:finished_on) { 3.months.ago }
       let(:invalid_params) do
         {
           induction_period: {
-            started_on: nil,
-            finished_on: 1.year.ago + 6.months,
+            "started_on(3i)" => "",
+            "started_on(2i)" => "",
+            "started_on(1i)" => "",
+            "finished_on(3i)" => finished_on.day,
+            "finished_on(2i)" => finished_on.month,
+            "finished_on(1i)" => finished_on.year,
             induction_programme: 'fip',
             appropriate_body_id: appropriate_body.id,
             number_of_terms: 2
@@ -72,7 +90,8 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
 
       it "does not create a new induction period" do
         expect {
-          post admin_teacher_induction_periods_path(teacher), params: invalid_params
+          post admin_teacher_induction_periods_path(teacher),
+               params: invalid_params
         }.not_to change(InductionPeriod, :count)
       end
 
@@ -127,9 +146,21 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
     end
 
     context "with invalid appropriate body" do
+      let(:started_on) { 6.months.ago }
+      let(:finished_on) { 3.months.ago }
       let(:params) do
         {
-          induction_period: valid_params[:induction_period].merge(appropriate_body_id: nil)
+          induction_period: {
+            "started_on(3i)" => started_on.day,
+            "started_on(2i)" => started_on.month,
+            "started_on(1i)" => started_on.year,
+            "finished_on(3i)" => finished_on.day,
+            "finished_on(2i)" => finished_on.month,
+            "finished_on(1i)" => finished_on.year,
+            induction_programme: 'fip',
+            appropriate_body_id: nil,
+            number_of_terms: 2
+          }
         }
       end
 
@@ -152,11 +183,21 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
     end
 
     context "with start date before QTS award date" do
+      let(:started_on) { teacher.trs_qts_awarded_on - 1.day }
+      let(:finished_on) { 3.months.ago }
       let(:params) do
         {
-          induction_period: valid_params[:induction_period].merge(
-            started_on: teacher.trs_qts_awarded_on - 1.day
-          )
+          induction_period: {
+            "started_on(3i)" => started_on.day,
+            "started_on(2i)" => started_on.month,
+            "started_on(1i)" => started_on.year,
+            "finished_on(3i)" => finished_on.day,
+            "finished_on(2i)" => finished_on.month,
+            "finished_on(1i)" => finished_on.year,
+            induction_programme: 'fip',
+            appropriate_body_id: appropriate_body.id,
+            number_of_terms: 2
+          }
         }
       end
 
@@ -179,11 +220,21 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
     end
 
     context "with end date before start date" do
+      let(:started_on) { 6.months.ago }
+      let(:finished_on) { started_on - 1.day }
       let(:params) do
         {
-          induction_period: valid_params[:induction_period].merge(
-            finished_on: valid_params[:induction_period][:started_on] - 1.day
-          )
+          induction_period: {
+            "started_on(3i)" => started_on.day,
+            "started_on(2i)" => started_on.month,
+            "started_on(1i)" => started_on.year,
+            "finished_on(3i)" => finished_on.day,
+            "finished_on(2i)" => finished_on.month,
+            "finished_on(1i)" => finished_on.year,
+            induction_programme: 'fip',
+            appropriate_body_id: appropriate_body.id,
+            number_of_terms: 2
+          }
         }
       end
 
@@ -214,6 +265,24 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
                           induction_programme: "fip")
       end
 
+      let(:started_on) { 6.months.ago }
+      let(:finished_on) { 3.months.ago }
+      let(:valid_params) do
+        {
+          induction_period: {
+            "started_on(3i)" => started_on.day,
+            "started_on(2i)" => started_on.month,
+            "started_on(1i)" => started_on.year,
+            "finished_on(3i)" => finished_on.day,
+            "finished_on(2i)" => finished_on.month,
+            "finished_on(1i)" => finished_on.year,
+            induction_programme: 'fip',
+            appropriate_body_id: appropriate_body.id,
+            number_of_terms: 2
+          }
+        }
+      end
+
       it "creates a new induction period" do
         expect {
           post admin_teacher_induction_periods_path(teacher), params: valid_params
@@ -223,10 +292,44 @@ RSpec.describe "Admin::InductionPeriods", type: :request do
       it "creates the period with correct attributes" do
         post admin_teacher_induction_periods_path(teacher), params: valid_params
         period = InductionPeriod.last
-        expect(period.started_on).to eq(valid_params[:induction_period][:started_on].to_date)
-        expect(period.finished_on).to eq(valid_params[:induction_period][:finished_on].to_date)
-        expect(period.induction_programme).to eq(valid_params[:induction_period][:induction_programme])
+        expect(period.started_on).to eq(started_on.to_date)
+        expect(period.finished_on).to eq(finished_on.to_date)
+        expect(period.induction_programme).to eq('fip')
         expect(period.training_programme).to eq('provider_led')
+      end
+    end
+
+    context "with no earlier induction periods" do
+      before do
+        FactoryBot.create(:induction_period,
+                          teacher:,
+                          started_on: 9.months.ago,
+                          finished_on: 6.months.ago,
+                          induction_programme: "fip")
+      end
+
+      let(:started_on) { 12.months.ago }
+      let(:finished_on) { 9.months.ago }
+      let(:params) do
+        {
+          induction_period: {
+            "started_on(3i)" => started_on.day,
+            "started_on(2i)" => started_on.month,
+            "started_on(1i)" => started_on.year,
+            "finished_on(3i)" => finished_on.day,
+            "finished_on(2i)" => finished_on.month,
+            "finished_on(1i)" => finished_on.year,
+            induction_programme: 'fip',
+            appropriate_body_id: appropriate_body.id,
+            number_of_terms: 2
+          }
+        }
+      end
+
+      it "notifies TRS" do
+        expect { post admin_teacher_induction_periods_path(teacher), params: }
+          .to have_enqueued_job(BeginECTInductionJob)
+          .with(trn: teacher.trn, start_date: started_on.to_date)
       end
     end
   end
