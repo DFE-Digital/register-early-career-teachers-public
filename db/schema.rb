@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_14_101747) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_16_140403) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -503,6 +503,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_14_101747) do
     t.bigint "last_chosen_appropriate_body_id"
     t.bigint "last_chosen_lead_provider_id"
     t.enum "last_chosen_training_programme", enum_type: "training_programme"
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true

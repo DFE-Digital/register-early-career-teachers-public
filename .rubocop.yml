@@ -77,6 +77,11 @@ Rails/UnknownEnv:
     - review
     - migration
 
+Rails/SkipsModelValidations:
+  Enabled: true
+  Exclude:
+    - spec/support/shared_examples/declarative_touch.rb
+
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
 

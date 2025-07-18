@@ -69,6 +69,84 @@ describe MentorAtSchoolPeriod do
     end
   end
 
+  describe "after_commit callbacks" do
+    let!(:school) { FactoryBot.create(:school) }
+
+    describe "touch_school_api_updated_at_if_first_mentor_and_no_ects on create" do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+
+      it "touches the school's api_updated_at if it's the first mentor and there are no ECTs" do
+        expect { mentor_at_school_period }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
+      end
+
+      it "does not touch the school's api_updated_at if there are existing ECTs" do
+        FactoryBot.create(:ect_at_school_period, school:)
+        expect { mentor_at_school_period }.not_to(change { school.reload.api_updated_at })
+      end
+
+      it "does not touch the school's api_updated_at if there are existing mentors" do
+        FactoryBot.create(:mentor_at_school_period, school:)
+        expect { mentor_at_school_period }.not_to(change { school.reload.api_updated_at })
+      end
+    end
+
+    describe "touch_school_api_updated_at_if_first_mentor_and_only_school_led_ects on create" do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+
+      it "touches the school's api_updated_at if it's the first mentor and there are only school-led ECTs" do
+        FactoryBot.create(:ect_at_school_period, :school_led, school:)
+        expect { mentor_at_school_period }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
+      end
+
+      it "does not touch the school's api_updated_at if there are existing provider-led ECTs" do
+        FactoryBot.create(:ect_at_school_period, :provider_led, school:)
+        expect { mentor_at_school_period }.not_to(change { school.reload.api_updated_at })
+      end
+
+      it "does not touch the school's api_updated_at if there are existing mentors" do
+        FactoryBot.create(:mentor_at_school_period, school:)
+        expect { mentor_at_school_period }.not_to(change { school.reload.api_updated_at })
+      end
+    end
+
+    describe "touch_school_api_updated_at_if_no_mentors_or_ects on destroy" do
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+
+      it "touches the school's api_updated_at if it's the last mentor and there are no ECTs" do
+        expect { mentor_at_school_period.destroy! }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
+      end
+
+      it "does not touch the school's api_updated_at if there are other mentors" do
+        FactoryBot.create(:mentor_at_school_period, school:)
+        expect { mentor_at_school_period.destroy! }.not_to(change { school.reload.api_updated_at })
+      end
+
+      it "does not touch the school's api_updated_at if there are other ECTs" do
+        FactoryBot.create(:ect_at_school_period, school:)
+        expect { mentor_at_school_period.destroy! }.not_to(change { school.reload.api_updated_at })
+      end
+    end
+
+    describe "touch_school_api_updated_at_if_last_mentor_and_only_school_led_ects on destroy" do
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+
+      it "touches the school's api_updated_at if it's the last mentor and there are only school-led ECTs" do
+        FactoryBot.create(:ect_at_school_period, :school_led, school:)
+        expect { mentor_at_school_period.destroy! }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
+      end
+
+      it "does not touch the school's api_updated_at if there are other mentors" do
+        FactoryBot.create(:mentor_at_school_period, school:)
+        expect { mentor_at_school_period.destroy! }.not_to(change { school.reload.api_updated_at })
+      end
+
+      it "does not touch the school's api_updated_at if there are provider-led ECTs" do
+        FactoryBot.create(:ect_at_school_period, :provider_led, school:)
+        expect { mentor_at_school_period.destroy! }.not_to(change { school.reload.api_updated_at })
+      end
+    end
+  end
+
   describe "scopes" do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { FactoryBot.create(:school) }
@@ -88,6 +166,14 @@ describe MentorAtSchoolPeriod do
       it "returns mentor periods only for the specified teacher" do
         expect(described_class.for_teacher(teacher.id)).to match_array([period_1, period_2, period_3])
       end
+    end
+
+    describe ".with_expressions_of_interest" do
+      subject { described_class.with_expressions_of_interest }
+
+      let!(:period_with_expression_of_interest) { FactoryBot.create(:mentor_at_school_period, :with_eoi_only_training_period, started_on: '2023-01-01', finished_on: '2023-06-01') }
+
+      it { is_expected.to contain_exactly(period_with_expression_of_interest) }
     end
   end
 

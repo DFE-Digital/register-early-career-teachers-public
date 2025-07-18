@@ -19,6 +19,11 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :mentor_at_school_periods, through: :teacher
   has_many :events
 
+  after_commit :touch_school_api_updated_at_if_first_ect_and_no_mentors, on: :create
+  after_commit :touch_school_api_updated_at_if_last_provider_led_ect_and_no_mentors, on: :destroy
+  after_commit :touch_school_api_updated_at_if_last_provider_led_ect_changing_to_school_led_and_no_mentors, on: :update
+  after_commit :touch_school_api_updated_at_if_no_ects_or_mentors, on: :destroy
+
   # Validations
   validate :appropriate_body_for_independent_school,
            if: -> { school&.independent? },
@@ -45,6 +50,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   # Scopes
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
+  scope :provider_led, -> { where(training_programme: :provider_led) }
+  scope :with_expressions_of_interest, -> { joins(training_periods: :expression_of_interest).distinct }
 
   # Instance methods
 
@@ -69,6 +76,36 @@ class ECTAtSchoolPeriod < ApplicationRecord
   delegate :trn, to: :teacher
 
 private
+
+  def touch_school_api_updated_at_if_first_ect_and_no_mentors
+    return if school.ect_at_school_periods.count > 1
+    return if school.mentor_at_school_periods.any?
+
+    school.touch(:api_updated_at)
+  end
+
+  def touch_school_api_updated_at_if_last_provider_led_ect_and_no_mentors
+    return if school.mentor_at_school_periods.any?
+    return if school_led?
+    return if school.ect_at_school_periods.reload.provider_led.any?
+
+    school.touch(:api_updated_at)
+  end
+
+  def touch_school_api_updated_at_if_last_provider_led_ect_changing_to_school_led_and_no_mentors
+    return if school.mentor_at_school_periods.any?
+    return if school.ect_at_school_periods.reload.provider_led.any?
+    return unless saved_change_to_attribute?(:training_programme) && school_led?
+
+    school.touch(:api_updated_at)
+  end
+
+  def touch_school_api_updated_at_if_no_ects_or_mentors
+    return if school.ect_at_school_periods.reload.any?
+    return if school.mentor_at_school_periods.any?
+
+    school.touch(:api_updated_at)
+  end
 
   def appropriate_body_for_independent_school
     return if school_reported_appropriate_body&.national? || school_reported_appropriate_body&.teaching_school_hub?
