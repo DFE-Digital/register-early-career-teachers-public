@@ -7,22 +7,26 @@
 
 <p class="govuk-body">
   These are the programme choices we have for the ECT who
-  <%= @wizard.mentor.full_name %>
+  <%= @mentor.full_name %>
   will be mentoring.
 </p>
 
 <%= govuk_summary_list do |summary_list|
   summary_list.with_row do |row|
     row.with_key(text: "Lead provider")
-    row.with_value(text: @wizard.ect.lead_provider.name)
+    row.with_value(
+      text: (@mentor.ect_lead_provider || @mentor.ect_eoi_lead_provider).name,
+    )
   end
 end %>
 
-<p class="govuk-body">
-  <%= @wizard.ect.lead_provider.name %>
-  will confirm if they'll be working with your school and which delivery
-  partner will delivery training events.
-</p>
+<% unless @mentor.ect_lead_provider %>
+  <p class="govuk-body">
+    <%= @mentor.ect_lead_provider&.name %>
+    will confirm if they'll be working with your school and which delivery
+    partner will delivery training events.
+  </p>
+<% end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
