@@ -17,30 +17,30 @@ module InductionPeriods
     # @return [InductionPeriod]
     # @raise [ActiveRecord::RecordInvalid, ActiveRecord::Rollback]
     def create_induction_period!
-      raise ActiveRecord::RecordInvalid, @induction_period unless @induction_period.valid?
+      raise ActiveRecord::RecordInvalid, induction_period unless induction_period.valid?
 
       ActiveRecord::Base.transaction do
-        @induction_period.save!
+        induction_period.save!
         record_event or raise ActiveRecord::Rollback
       end
 
       notify_trs_of_new_induction_start if notify_trs?
 
-      @induction_period
+      induction_period
     end
 
   private
 
     # @return [Boolean]
     def record_event
-      return false unless @induction_period.persisted?
+      return false unless induction_period.persisted?
 
       Events::Record.record_induction_period_opened_event!(
-        author: @author,
+        author:,
         teacher:,
-        appropriate_body: @induction_period.appropriate_body,
-        induction_period: @induction_period,
-        modifications: @induction_period.changes
+        appropriate_body: induction_period.appropriate_body,
+        induction_period:,
+        modifications: induction_period.changes
       )
 
       true
@@ -55,7 +55,7 @@ module InductionPeriods
 
     # @return [Boolean]
     def teacher_has_earlier_induction_periods?
-      InductionPeriod.where(teacher:).started_before(@induction_period.started_on).exists?
+      InductionPeriod.where(teacher:).started_before(induction_period.started_on).exists?
     end
 
     # @return [Boolean]
@@ -66,7 +66,7 @@ module InductionPeriods
     def notify_trs_of_new_induction_start
       BeginECTInductionJob.perform_later(
         trn: teacher.trn,
-        start_date: @induction_period.started_on
+        start_date: induction_period.started_on
       )
     end
   end
