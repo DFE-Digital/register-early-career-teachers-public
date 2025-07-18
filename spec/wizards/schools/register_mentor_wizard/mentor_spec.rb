@@ -204,4 +204,42 @@ describe Schools::RegisterMentorWizard::Mentor do
       expect(mentor.trn).to eq("3002586")
     end
   end
+
+  describe '#finish_existing_at_school_periods' do
+    context "when mentoring_at_new_school_only set to yes" do
+      before { store.mentoring_at_new_school_only = "yes" }
+
+      it { expect(mentor.finish_existing_at_school_periods).to be(true) }
+    end
+
+    context "when mentoring_at_new_school_only set to no" do
+      before { store.mentoring_at_new_school_only = "no" }
+
+      it { expect(mentor.finish_existing_at_school_periods).to be(false) }
+    end
+  end
+
+  describe '#lead_providers_within_contract_period' do
+    let!(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
+    let!(:lp_in) { FactoryBot.create(:lead_provider) }
+    let!(:lp_out) { FactoryBot.create(:lead_provider) }
+
+    before do
+      FactoryBot.create(:active_lead_provider, contract_period:, lead_provider: lp_in)
+      store.started_on = "2025-05-01"
+    end
+
+    it 'returns lead providers active in the contract period' do
+      expect(mentor.lead_providers_within_contract_period).to include(lp_in)
+      expect(mentor.lead_providers_within_contract_period).not_to include(lp_out)
+    end
+
+    context 'when no contract period matches the started_on' do
+      before { store.started_on = nil }
+
+      it 'returns an empty array' do
+        expect(mentor.lead_providers_within_contract_period).to eq([])
+      end
+    end
+  end
 end

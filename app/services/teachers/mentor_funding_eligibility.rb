@@ -6,10 +6,17 @@ module Teachers
       @teacher = Teacher.find_by(trn:)
     end
 
+    # TODO: `mentor_became_ineligible_for_funding_on` is a date,
+    # should we pass in a date to determine eligibility? (Date.today or "mentoring start date")
+
     def eligible?
       return true if teacher.nil?
 
       teacher.mentor_became_ineligible_for_funding_reason.blank?
+    end
+
+    def ineligible?
+      !eligible?
     end
   end
 end

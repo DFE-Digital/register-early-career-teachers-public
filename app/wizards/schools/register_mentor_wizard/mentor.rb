@@ -53,6 +53,8 @@ module Schools
                                     school_urn:,
                                     email:,
                                     author:,
+                                    started_on:,
+                                    finish_existing_at_school_periods:,
                                     lead_provider:)
                                .register!
                                .tap { self.registered = true }
@@ -71,7 +73,25 @@ module Schools
       end
 
       def lead_provider
-        ECTAtSchoolPeriods::Training.new(ect).latest_lead_provider if ect
+        @lead_provider ||= LeadProvider.find(lead_provider_id) if lead_provider_id
+      end
+
+      def finish_existing_at_school_periods
+        mentoring_at_new_school_only == "yes"
+      end
+
+      def latest_registration_choice
+        @latest_registration_choice ||= MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn:)
+      end
+
+      def lead_providers_within_contract_period
+        return [] unless contract_period
+
+        @lead_providers_within_contract_period ||= LeadProviders::Active.in_contract_period(contract_period).select(:id, :name)
+      end
+
+      def contract_period
+        ContractPeriod.containing_date(started_on&.to_date)
       end
 
     private
