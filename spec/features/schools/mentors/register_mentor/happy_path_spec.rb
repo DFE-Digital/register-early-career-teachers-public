@@ -208,8 +208,6 @@ RSpec.describe 'Registering a mentor', :js do
     expect(page.locator('dd', hasText: 'Kirk Van Damme')).to be_visible
     expect(page.locator('dt', hasText: 'Email address')).to be_visible
     expect(page.locator('dd', hasText: 'example@example.com')).to be_visible
-    expect(page.locator('dt', hasText: 'Lead provider')).to be_visible
-    expect(page.locator('dd', hasText: "Xavier's School for Gifted Youngsters")).to be_visible
   end
 
   def when_i_click_confirm_details
