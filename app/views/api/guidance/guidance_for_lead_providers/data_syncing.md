@@ -1,45 +1,64 @@
-# Syncing data best practice 
+# Syncing data best practice
 
-To ensure smooth and reliable integration with the API, it’s important to follow best practice when syncing participant and training data. 
+To ensure smooth and reliable integration with the API, it’s important to follow best practice when syncing participant and training data. 
 
-Poor syncing can lead to: 
+Poor syncing can lead to: 
 
-* duplicated records 
-* payment delays 
-* conflicting updates 
-* unnecessary API load 
+* payment delays
+* conflicting updates
+* unnecessary API load 
 
-## Only send what's changed 
+## Only send what has changed 
 
-Send data only when it has been added, updated, or corrected. 
+Send data only when it has been added, updated, or corrected. 
 
-Repeatedly submitting unchanged records increases the risk of version conflicts or overwriting correct data. For example, if an ECT’s mentor has not changed, lead providers should not re-submit their mentor record with the same details. 
+Repeatedly submitting unchanged records increases the risk of version conflicts or overwriting correct data. For example, if an ECT’s mentor has not changed, lead providers should not re-submit their mentor record with the same details. 
 
-## Use timestamps or status flags to detect changes 
+## Use timestamps or status flags to detect changes 
 
-Store and compare: 
+Store and compare: 
 
-* last updated timestamps 
-* change flags 
-* status values such as `new`, `updated` and `withdrawn` 
+* last updated timestamps
+* change flags
+* status values such as `new`, `updated` and `withdrawn` 
 
-This helps systems detect and sync only what's needed. For example, compare the local `last_updated` timestamp for a participant against the value in their sync logs before deciding to re-send the record. 
+This helps systems detect and sync only what's needed. 
 
-## Sync regularly  
+## Rate limits 
 
-Use timed or event-triggered syncs. Avoid real-time syncs unless absolutely necessary. This balances freshness with performance and API limits. 
-Schedule a sync once every [X?] hours or after significant updates such as a declaration submission. 
+Providers are limited to 1,000 requests per 5 minutes when using the API in the production environment. If the limit is exceeded, providers will see `429` HTTP status codes. 
 
-## Handle API responses and errors properly 
+This limit on requests for each authentication key is calculated on a rolling basis. 
 
-Always log responses and use them to update records. 
+## Perform weekly full syncs 
 
-If a record fails, providers need to: 
+We recommend you sync all records in the API twice a week without using the `updated_since` filters. DfE can coordinate ‘windows’ for providers to do this when the service has a low background load. Contact us if you need further details. 
 
-* avoid re-submitting the same bad data 
-* apply corrections where needed 
+## Make regular poll requests 
 
-For example, if a provider gets a `422 Unprocessable entity` message due to a missing training programme ID, they need to fix the local record before reattempting the sync. 
+To ensure you never miss any declarations, participants, transfers or unfunded mentors, we recommend making regular poll requests to the relevant `GET endpoints` several times daily. Use the `updated_since` filter and the default pagination of [100] records per page. 
+
+Continue this until the API response is empty. 
+
+### Polling windows 
+
+Always poll 2 windows back from your last successful update request. This guarantees that all participant data is captured. For example: 
+
+* at 3:15pm enter the following request: `/api/v3/participants/ecf?filter[updated_since]=2025-01-28T13:15:00Z`
+* at 4:15pm enter the following request: `/api/v3/participants/ecf?filter[updated_since]=2025-01-28T14:15:00Z` 
+
+Try polling randomly rather than on the hour to prevent system overload. 
+
+## Handle API responses and errors properly 
+
+Always log responses and use them to update records. 
+
+If a record fails, providers need to: 
+
+* avoid re-submitting the same bad data
+* apply corrections where needed 
+
+For example, if a provider gets a `422 Unprocessable entity` message due to a missing training programme ID, they need to fix the local record before reattempting the sync. 
 
 ## Avoid common syncing issues
 
@@ -49,32 +68,6 @@ For example, if a provider gets a `422 Unprocessable entity` message due to a mi
 | Re-sending withdrawn participants as active | Use clear status tracking and validation before syncing | 
 | Syncing large volumes at peak hours | Schedule batch syncs during off-peak hours | 
 | Missing required fields | Validate all required data fields locally before submitting |
-
-## Example: syncing a participant and declaration 
-
-After a participant starts training, lead providers would send: 
-
-```
-POST /participants 
-{ 
-  "full_name": "Joe Bloggs", 
-  "start_date": "2025-09-01", 
-  "mentor_id": "MENTOR123" 
-}
-```
-
-Once that’s successfully created, they might later send a declaration: 
-
-```
-POST /declarations
-{
-  "participant_id": "PART123",
-  "declaration_type": "started",
-  "declaration_date": "2025-09-05"
-}
-```
-
-If nothing changes after that, no further data is needed until a meaningful update occurs (for example, deferral, reinstatement, mentor change). 
  
 ## Test syncing strategy in the sandbox
 
