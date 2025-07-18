@@ -27,7 +27,7 @@ describe InductionPeriods::CreateInductionPeriod do
     it 'accepts and assigns the author, teacher and params' do
       expect(subject.author).to eql(author)
       expect(subject.teacher).to eql(teacher)
-      expect(subject.params).to eql(params)
+      expect(subject.induction_period).to be_a(InductionPeriod)
     end
   end
 
