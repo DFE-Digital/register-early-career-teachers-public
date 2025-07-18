@@ -31,7 +31,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
   # Scopes
   scope :for_school, ->(school_id) { where(school_id:) }
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
-  scope :for_contract_period, ->(year) {
+  scope :with_partnerships_for_contract_period, ->(year) {
     joins(training_periods: {
       active_lead_provider: :contract_period
     }).where(contract_periods: { year: })
