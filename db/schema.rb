@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_16_140403) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_19_173448) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -705,6 +705,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_16_140403) do
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.bigint "expression_of_interest_id"
+    t.enum "training_programme", null: false, enum_type: "training_programme"
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"

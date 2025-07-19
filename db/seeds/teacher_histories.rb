@@ -153,7 +153,8 @@ TrainingPeriod.create!(
   started_on: 3.years.ago,
   finished_on: 140.weeks.ago,
   expression_of_interest: ambitious_artisan_2022,
-  school_partnership: ambitious_artisan_partnership_2022
+  school_partnership: ambitious_artisan_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 # 10 week break
@@ -162,7 +163,8 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 130.weeks.ago,
   finished_on: nil,
-  school_partnership: ambitious_artisan_partnership_2022
+  school_partnership: ambitious_artisan_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Kate Winslet (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -182,7 +184,8 @@ TrainingPeriod.create!(
   ect_at_school_period: kate_winslet_ect_at_ackley_bridge,
   started_on: 1.year.ago,
   expression_of_interest: ambitious_artisan_2023,
-  school_partnership: ambitious_artisan_partnership_2023
+  school_partnership: ambitious_artisan_partnership_2023,
+  training_programme: 'school_led'
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
@@ -192,7 +195,7 @@ InductionPeriod.create!(
   number_of_terms: 3,
   appropriate_body: golden_leaf_teaching_school_hub,
   induction_programme: 'fip',
-  training_programme: 'provider_led'
+  training_programme: 'school_led'
 ).tap { |ip| describe_induction_period(ip) }
 
 InductionPeriod.create!(
@@ -200,7 +203,7 @@ InductionPeriod.create!(
   started_on: 1.year.ago,
   appropriate_body: umber_teaching_school_hub,
   induction_programme: 'fip',
-  training_programme: 'provider_led'
+  training_programme: 'school_led'
 ).tap { |ip| describe_induction_period(ip) }
 
 print_seed_info("Hugh Laurie (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -217,7 +220,8 @@ TrainingPeriod.create!(
   mentor_at_school_period: hugh_laurie_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
   expression_of_interest: teach_fast_grain_2022,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Alan Rickman (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -240,7 +244,8 @@ ackley_bridge.update!(last_chosen_lead_provider: better_practice_network,
 TrainingPeriod.create!(
   ect_at_school_period: alan_rickman_ect_at_ackley_bridge,
   started_on: 2.years.ago + 1.month,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
@@ -285,7 +290,8 @@ TrainingPeriod.create!(
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
   expression_of_interest: ambitious_artisan_2022,
-  school_partnership: ambitious_artisan_partnership_2022
+  school_partnership: ambitious_artisan_partnership_2022,
+  training_programme: 'school_led'
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
@@ -318,7 +324,7 @@ colin_firth_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   started_on: 2.years.ago,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
   working_pattern: 'full_time',
-  training_programme: 'school_led'
+  training_programme: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 abbey_grove_school.update!(last_chosen_lead_provider: nil,
@@ -329,7 +335,8 @@ TrainingPeriod.create!(
   ect_at_school_period: colin_firth_ect_at_abbey_grove,
   started_on: 2.years.ago,
   finished_on: 1.week.ago,
-  school_partnership: ambitious_artisan_partnership_2022
+  school_partnership: ambitious_artisan_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 InductionPeriod.create!(
@@ -418,7 +425,8 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: imogen_stubbs_at_malory_towers,
   started_on: 1.year.ago,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'school_led'
 ).tap { |tp| describe_training_period(tp) }
 
 InductionExtension.create!(
@@ -455,7 +463,8 @@ mallory_towers.update!(last_chosen_lead_provider: better_practice_network,
 TrainingPeriod.create!(
   ect_at_school_period: gemma_jones_at_malory_towers,
   started_on: 20.months.ago,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 InductionExtension.create!(
@@ -476,7 +485,8 @@ andre_roussimoff_mentoring_at_ackley_bridge = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: andre_roussimoff_mentoring_at_ackley_bridge,
   started_on: 1.year.ago,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Anthony Hopkins (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -495,7 +505,8 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: anthony_hopkins_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Stephen Fry (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -518,7 +529,8 @@ brookfield_school.update!(last_chosen_lead_provider: teach_fast,
 TrainingPeriod.create!(
   ect_at_school_period: stephen_fry_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Harriet Walter (ECT) with multiple induction periods", indent: 2, colour: ECT_COLOUR)
@@ -535,7 +547,8 @@ harriet_walter_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: harriet_walter_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Helen Mirren (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -551,7 +564,8 @@ helen_mirren_mentoring_at_brookfield_school = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: helen_mirren_mentoring_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("John Withers (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -567,7 +581,8 @@ john_withers_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022
+  school_partnership: teach_fast_grain_partnership_2022,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Dominic West (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -585,7 +600,8 @@ dominic_west_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: dominic_west_ect_at_brookfield_school,
   started_on: 18.months.ago,
-  expression_of_interest: ambitious_artisan_2023
+  expression_of_interest: ambitious_artisan_2023,
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Adding mentorships:")

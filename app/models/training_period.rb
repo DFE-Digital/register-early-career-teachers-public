@@ -2,6 +2,13 @@ class TrainingPeriod < ApplicationRecord
   include Interval
   include DeclarativeTouch
 
+  # Enums
+  enum :training_programme,
+       { provider_led: "provider_led",
+         school_led: "school_led" },
+       validate: { message: "Must be provider_led or school_led" },
+       suffix: :training_programme
+
   # Associations
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
@@ -24,7 +31,7 @@ class TrainingPeriod < ApplicationRecord
             presence: true
 
   validate :one_id_of_trainee_present
-  validate :at_least_expression_of_interest_or_school_partnership_present
+  validate :at_least_expression_of_interest_or_school_partnership_present, if: :provider_led_training_programme?
   validate :trainee_distinct_period
   validate :enveloped_by_trainee_at_school_period
 
