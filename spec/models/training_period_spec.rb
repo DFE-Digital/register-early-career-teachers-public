@@ -17,6 +17,17 @@ describe TrainingPeriod do
     it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[expression_of_interest_id], timestamp_attribute: :api_updated_at, target_optional: false
   end
 
+  describe "enums" do
+    it "uses the training programme enum" do
+      is_expected.to define_enum_for(:training_programme)
+                       .with_values({ provider_led: "provider_led",
+                                      school_led: "school_led" })
+                       .validating
+                       .with_suffix(:training_programme)
+                       .backed_by_column_of_type(:enum)
+    end
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:ect_at_school_period).class_name("ECTAtSchoolPeriod").inverse_of(:training_periods) }
     it { is_expected.to belong_to(:mentor_at_school_period).inverse_of(:training_periods) }
@@ -62,31 +73,41 @@ describe TrainingPeriod do
       let(:dates) { { started_on: 3.years.ago.to_date, finished_on: nil } }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **dates) }
 
-      context 'when neither the expression of interest or school partnership is present' do
-        subject { FactoryBot.build(:training_period, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
+      context 'when provider-led' do
+        subject { FactoryBot.build(:training_period, :provider_led, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
 
-        it 'has a base error stating either expression of interest or school partnership required' do
-          subject.valid?
-          expect(subject.errors.messages[:base]).to include('Either expression of interest or school partnership required')
+        context 'when neither the expression of interest or school partnership is present' do
+          it 'has a base error stating either expression of interest or school partnership required' do
+            subject.valid?
+            expect(subject.errors.messages[:base]).to include('Either expression of interest or school partnership required')
+          end
+        end
+
+        context 'when just the expression of interest is present' do
+          subject { FactoryBot.create(:training_period, :with_expression_of_interest, ect_at_school_period:, **dates) }
+
+          it { is_expected.to(be_valid) }
+        end
+
+        context 'when just the school partnership is present' do
+          subject { FactoryBot.create(:training_period, :with_school_partnership, ect_at_school_period:, **dates) }
+
+          it { is_expected.to(be_valid) }
+        end
+
+        context 'when both the expression of interest and school partnership are present' do
+          subject { FactoryBot.create(:training_period, :with_school_partnership, :with_expression_of_interest, ect_at_school_period:, **dates) }
+
+          it { is_expected.to(be_valid) }
         end
       end
 
-      context 'when just the expression of interest is present' do
-        subject { FactoryBot.create(:training_period, :with_expression_of_interest, ect_at_school_period:, **dates) }
+      context 'when school-led' do
+        subject { FactoryBot.build(:training_period, :school_led, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
 
-        it { is_expected.to(be_valid) }
-      end
-
-      context 'when just the school partnership is present' do
-        subject { FactoryBot.create(:training_period, :with_school_partnership, ect_at_school_period:, **dates) }
-
-        it { is_expected.to(be_valid) }
-      end
-
-      context 'when both the expression of interest and school partnership are present' do
-        subject { FactoryBot.create(:training_period, :with_school_partnership, :with_expression_of_interest, ect_at_school_period:, **dates) }
-
-        it { is_expected.to(be_valid) }
+        it 'allows nil expression of interest and training period' do
+          is_expected.to(be_valid)
+        end
       end
     end
 
