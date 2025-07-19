@@ -19,12 +19,12 @@ describe TrainingPeriod do
 
   describe "enums" do
     it "uses the training programme enum" do
-      is_expected.to define_enum_for(:training_programme)
-                       .with_values({ provider_led: "provider_led",
-                                      school_led: "school_led" })
-                       .validating
-                       .with_suffix(:training_programme)
-                       .backed_by_column_of_type(:enum)
+      expect(subject).to define_enum_for(:training_programme)
+                           .with_values({ provider_led: "provider_led",
+                                          school_led: "school_led" })
+                           .validating
+                           .with_suffix(:training_programme)
+                           .backed_by_column_of_type(:enum)
     end
   end
 
@@ -106,7 +106,7 @@ describe TrainingPeriod do
         subject { FactoryBot.build(:training_period, :school_led, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
 
         it 'allows nil expression of interest and training period' do
-          is_expected.to(be_valid)
+          expect(subject).to(be_valid)
         end
       end
     end
