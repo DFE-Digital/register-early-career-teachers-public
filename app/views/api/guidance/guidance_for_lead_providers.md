@@ -45,7 +45,7 @@ Lead providers should use the [sandbox environment](https://sandbox.register-ear
 * errors can be fixed early
 * payments are not delayed due to data issues 
 
-[Read the sandbox guidance](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/sandbox)) 
+[Read the sandbox guidance](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/sandbox) 
 
 [Read the live environment guidance](add link when page has been created) 
 
