@@ -1,7 +1,7 @@
 module Schools
   module RegisterMentorWizard
     class LeadProviderStep < Step
-      attr_reader :lead_provider_id
+      attr_accessor :lead_provider_id
 
       validates :lead_provider_id,
                 presence: { message: "Select a lead provider to contact your school" },

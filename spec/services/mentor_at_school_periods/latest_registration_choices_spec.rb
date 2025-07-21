@@ -4,7 +4,7 @@ describe MentorAtSchoolPeriods::LatestRegistrationChoices do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school_partnership) { FactoryBot.create(:school_partnership) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, school_partnership:, mentor_at_school_period:) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :active, school_partnership:, started_on: mentor_at_school_period.started_on, mentor_at_school_period:) }
 
   describe '#school' do
     it { expect(subject.school).to eq(school_partnership.school) }

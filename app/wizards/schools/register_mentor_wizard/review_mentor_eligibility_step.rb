@@ -16,6 +16,12 @@ module Schools
       def previous_step
         :email_address
       end
+
+    private
+
+      def persist
+        mentor.update!(lead_provider_id: mentor.ect_lead_provider&.id)
+      end
     end
   end
 end

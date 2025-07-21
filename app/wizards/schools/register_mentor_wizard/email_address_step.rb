@@ -15,7 +15,7 @@ module Schools
 
         return :check_answers unless mentor.has_mentor_at_school_periods?
 
-        if mentor.open_mentor_at_school_period_at_another_school?
+        if mentor.has_open_mentor_at_school_period_at_another_school?
           # Ask school: are they mentoring at new school only?
           :mentoring_at_new_school_only
         else

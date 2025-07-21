@@ -120,7 +120,7 @@ module Schools
       end
 
       def ect_lead_provider
-        ect_training_service.latest_lead_provider
+        ect_training_service.latest_lead_provider if ect
       end
 
       def ect_eoi_lead_provider

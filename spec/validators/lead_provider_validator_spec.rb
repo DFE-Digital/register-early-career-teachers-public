@@ -33,7 +33,7 @@ RSpec.describe LeadProvider, type: :validator do
 
     it "adds a default error message" do
       expect(subject.valid?).to be(false)
-      expect(subject.errors[:lead_provider_id]).to include("Enter the name of a known lead provider")
+      expect(subject.errors[:lead_provider_id]).to include("Select a lead provider")
     end
   end
 
