@@ -54,7 +54,7 @@ module Navigation
           { text: "Swagger API documentation", href: '/api/guidance/swagger_api_documentation' },
           { text: "Release notes", href: '/api/guidance/release_notes' },
           { text: "Sandbox", href: '/api/guidance/sandbox' },
-          { text: "Guidance", href: '/api/guidance/early-career-training-programme-guidance' },
+          { text: "Guidance", href: '/api/guidance/guidance_for_lead_providers' },
         ]
       }.fetch(navigation_area, [])
     end
