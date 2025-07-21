@@ -110,4 +110,8 @@ class School < ApplicationRecord
   def last_programme_choices? = last_chosen_appropriate_body_id && last_chosen_training_programme
 
   def to_param = urn
+
+  def training_programme_for(contract_period_id)
+    Schools::TrainingProgramme.new(school: self, contract_period_id:).training_programme
+  end
 end
