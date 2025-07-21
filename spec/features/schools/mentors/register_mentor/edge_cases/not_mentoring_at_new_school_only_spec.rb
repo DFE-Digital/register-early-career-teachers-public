@@ -3,11 +3,13 @@ RSpec.describe 'Registering a mentor', :js do
 
   let(:trn) { '3002586' }
 
-  scenario 'happy path' do
+  scenario 'mentor has existing mentorship and is not mentoring at new school only' do
     given_there_is_a_school_in_the_service
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
+    and_mentor_has_existing_mentorship_at_another_school
     and_i_sign_in_as_that_school_user
     and_i_am_on_the_schools_landing_page
+
     when_i_click_to_assign_a_mentor_to_the_ect
     then_i_am_in_the_requirements_page
 
@@ -27,56 +29,16 @@ RSpec.describe 'Registering a mentor', :js do
     and_i_click_continue
     then_i_should_be_taken_to_the_review_mentor_eligibility_page
     and_i_click_continue
+
+    then_i_should_be_taken_to_mentoring_at_your_school_only_page
+    when_i_select_no_they_will_also_be_mentoring_at_another_school
+
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_all_the_mentor_data_on_the_page
 
     when_i_click_confirm_details
     then_i_should_be_taken_to_the_confirmation_page
-
-    when_i_click_on_back_to_ects
-    then_i_should_be_taken_to_the_ects_page
-    and_the_ect_is_shown_linked_to_the_mentor_just_registered
-  end
-
-  scenario 'check your answers' do
-    given_there_is_a_school_in_the_service
-    and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    and_i_sign_in_as_that_school_user
-    and_i_am_on_the_schools_landing_page
-    when_i_click_to_assign_a_mentor_to_the_ect
-    then_i_am_in_the_requirements_page
-
-    when_i_click_continue
-    then_i_should_be_taken_to_the_find_mentor_page
-
-    when_i_submit_the_find_mentor_form
-    then_i_should_be_taken_to_the_review_mentor_details_page
-    and_i_should_see_the_mentor_details_in_the_review_page
-
-    when_i_select_that_my_mentor_name_is_incorrect
-    and_i_enter_the_corrected_name
-    and_i_click_confirm_and_continue
-    then_i_should_be_taken_to_the_email_address_page
-
-    when_i_enter_the_mentor_email_address
-    and_i_click_continue
-    then_i_should_be_taken_to_the_review_mentor_eligibility_page
-    and_i_should_see_mentor_funding_on_the_page
-    and_i_click_continue
-    then_i_should_be_taken_to_the_check_answers_page
-    and_i_should_see_all_the_mentor_data_on_the_page
-
-    when_i_try_to_change_the_name
-    then_i_should_be_taken_to_the_change_mentor_details_page
-    and_i_should_see_the_corrected_name
-    and_i_click_confirm_and_continue
-    then_i_should_be_taken_to_the_check_answers_page
-
-    when_i_try_to_change_the_email
-    then_i_should_be_taken_to_the_change_email_address_page
-    and_i_should_see_the_current_email
-    and_i_click_continue
-    then_i_should_be_taken_to_the_check_answers_page
+    and_mentor_has_mentorship_with_new_school
   end
 
   def given_there_is_a_school_in_the_service
@@ -88,10 +50,16 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    lead_provider = FactoryBot.create(:lead_provider, name: "Xavier's School for Gifted Youngsters")
-    contract_period = FactoryBot.create(:contract_period, year: Date.current.year)
-    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :ongoing, lead_provider:, contract_period:, school: @school)
+    @lead_provider = FactoryBot.create(:lead_provider, name: "Xavier's School for Gifted Youngsters")
+    FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period: FactoryBot.create(:contract_period, year: Date.current.year))
+    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :active, lead_provider: @lead_provider, school: @school)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
+  end
+
+  def and_mentor_has_existing_mentorship_at_another_school
+    another_school = FactoryBot.create(:school, urn: "7654321")
+    @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: 'Kirk', trs_last_name: 'Van Houten', corrected_name: nil)
+    @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school: another_school, teacher: @teacher)
   end
 
   def and_i_am_on_the_schools_landing_page
@@ -160,41 +128,21 @@ RSpec.describe 'Registering a mentor', :js do
     page.get_by_label('email').fill('example@example.com')
   end
 
-  def and_i_click_continue
-    page.get_by_role('button', name: "Continue").click
-  end
-
-  def when_i_try_to_change_the_name
-    page.get_by_role('link', name: 'Change').first.click
-  end
-
-  def then_i_should_be_taken_to_the_change_mentor_details_page
-    expect(page.url).to end_with('/school/register-mentor/change-mentor-details')
-  end
-
-  def and_i_should_see_the_corrected_name
-    expect(page.get_by_label('Enter the correct full name').input_value).to eq('Kirk Van Damme')
-  end
-
-  def when_i_try_to_change_the_email
-    page.get_by_role('link', name: 'Change email address').last.click
-  end
-
-  def then_i_should_be_taken_to_the_change_email_address_page
-    expect(page.url).to end_with('/school/register-mentor/change-email-address')
-  end
-
-  def and_i_should_see_the_current_email
-    expect(page.get_by_label('email').input_value).to eq('example@example.com')
-  end
-
   def then_i_should_be_taken_to_the_review_mentor_eligibility_page
     expect(page.url).to end_with('/school/register-mentor/review-mentor-eligibility')
   end
 
-  def and_i_should_see_mentor_funding_on_the_page
-    expect(page.get_by_text("Our records show that Kirk Van Damme can get up to 20 hours of ECTE mentor training as your school is working with a DfE-funded training provider.")).to be_visible
-    expect(page.get_by_text("We'll pass on their details to Xavier's School for Gifted Youngsters who will contact them to arrange the training.")).to be_visible
+  def and_i_click_continue
+    page.get_by_role('button', name: "Continue").click
+  end
+
+  def then_i_should_be_taken_to_mentoring_at_your_school_only_page
+    expect(page.url).to end_with('/school/register-mentor/mentoring-at-new-school-only')
+  end
+
+  def when_i_select_no_they_will_also_be_mentoring_at_another_school
+    page.get_by_role(:radio, name: "No, they will also be mentoring at another school").check
+    page.get_by_role(:button, name: 'Continue').click
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
@@ -208,6 +156,8 @@ RSpec.describe 'Registering a mentor', :js do
     expect(page.locator('dd', hasText: 'Kirk Van Damme')).to be_visible
     expect(page.locator('dt', hasText: 'Email address')).to be_visible
     expect(page.locator('dd', hasText: 'example@example.com')).to be_visible
+    expect(page.locator('dt', hasText: 'Mentoring only at your school')).to be_visible
+    expect(page.locator('dd', hasText: 'No')).to be_visible
   end
 
   def when_i_click_confirm_details
@@ -218,16 +168,13 @@ RSpec.describe 'Registering a mentor', :js do
     expect(page.url).to end_with('/school/register-mentor/confirmation')
   end
 
-  def when_i_click_on_back_to_ects
-    page.get_by_role('link', name: 'Back to ECTs').click
-  end
+  def and_mentor_has_mentorship_with_new_school
+    expect(@existing_mentor_at_school_period.reload.finished_on).to be_nil
+    expect(@teacher.mentor_at_school_periods.count).to eq(2)
 
-  def then_i_should_be_taken_to_the_ects_page
-    expect(page.url).to end_with('/schools/home/ects')
-  end
-
-  def and_the_ect_is_shown_linked_to_the_mentor_just_registered
-    expect(page.get_by_text("Kirk Van Damme")).to be_visible
-    expect(page.get_by_text(@ect_name)).to be_visible
+    new_mentor_at_school_period = @teacher.mentor_at_school_periods.excluding(@existing_mentor_at_school_period).last
+    expect(new_mentor_at_school_period.started_on).to eq(Date.current)
+    expect(new_mentor_at_school_period.finished_on).to be_nil
+    expect(new_mentor_at_school_period.training_periods.count).to eq(1)
   end
 end

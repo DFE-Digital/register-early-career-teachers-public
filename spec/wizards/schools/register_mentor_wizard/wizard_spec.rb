@@ -238,6 +238,11 @@ describe Schools::RegisterMentorWizard::Wizard do
           expect(subject).to eq(%i[find_mentor
                                    review_mentor_details
                                    email_address
+                                   mentoring_at_new_school_only
+                                   started_on
+                                   previous_training_period_details
+                                   programme_choices
+                                   lead_provider
                                    review_mentor_eligibility
                                    change_mentor_details
                                    change_email_address
@@ -285,6 +290,11 @@ describe Schools::RegisterMentorWizard::Wizard do
                                    national_insurance_number
                                    review_mentor_details
                                    email_address
+                                   mentoring_at_new_school_only
+                                   started_on
+                                   previous_training_period_details
+                                   programme_choices
+                                   lead_provider
                                    review_mentor_eligibility
                                    change_mentor_details
                                    change_email_address
