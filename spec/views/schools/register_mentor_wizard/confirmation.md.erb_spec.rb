@@ -8,15 +8,15 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
   let(:ect) { FactoryBot.create(:ect_at_school_period, :with_training_period, :active, teacher:, lead_provider:) }
 
   let(:store) do
-    double(
-      trn: '0000007',
-      trs_first_name: "John",
-      trs_last_name: "Wayne",
-      change_name: 'no',
-      corrected_name: nil,
-      already_active_at_school:,
-      eligible_for_mentor_funding?: true
-    )
+    FactoryBot.build(:session_repository,
+                     trn: '0000007',
+                     trs_first_name: "John",
+                     trs_last_name: "Wayne",
+                     change_name: 'no',
+                     corrected_name: nil,
+                     already_active_at_school:,
+                     eligible_for_mentor_funding?: true,
+                     ect_id: ect.id)
   end
 
   let(:wizard) do
