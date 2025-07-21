@@ -32,6 +32,22 @@ School users are also known as:
 
 ## Accessing the service
 
+### Schools that will access the service
+
+Only schools eligible for DfE-funded training will need to use the service to register their ECTs and mentors. 
+
+To be eligible for DfE funding schools:
+- must be open.
+- must be in England.
+- must be state funded (either a state funded establishment type OR an independent school with [section 41 funding](https://www.gov.uk/government/publications/independent-special-schools-and-colleges)).
+
+Non state funded schools will not need to use the service, as they are not eligible for DfE-funded training. Teachers can still undertake induction and self-funded training in some of these schools.
+
+See [here](https://github.com/DFE-Digital/register-ects-project-board/discussions/125) for the full list of GIAS fields and values that tell us which schools are eligible for DfE-funded training.
+
+We still need to define what will show to schools that are not eligible if they try to access the service, and what happens when school eligibility changes between years (e.g. gaining or losing section 41 status).
+
+
 ### Getting access to the service via DfE Sign-in
 
 For a school admin to get access to the service, they will need to use [DfE Sign in](https://services.signin.education.gov.uk/).
