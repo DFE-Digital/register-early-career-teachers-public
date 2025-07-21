@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at|
+RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at, target_optional: true|
   if :update.in?(on_event)
     before { instance } # Ensure its created first.
 
@@ -8,7 +8,11 @@ RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_even
       context "when the #{attribute_to_change} attribute changes" do
         let(:new_value) do
           column = instance.class.columns_hash[attribute_to_change.to_s]
-          Faker::Types.send("rb_#{column.type}")
+          if column.type == :enum
+            instance.class.defined_enums[attribute_to_change.to_s].keys.excluding(instance[attribute_to_change]).sample
+          else
+            Faker::Types.send("rb_#{column.type}")
+          end
         end
 
         before do
@@ -30,11 +34,13 @@ RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_even
           end
         end
 
-        context "when the target is nil" do
-          let(:target) { nil }
+        if target_optional
+          context "when the target is nil" do
+            let(:target) { nil }
 
-          it "does not raise an error" do
-            expect { instance.update_attribute(attribute_to_change, new_value) }.not_to raise_error
+            it "does not raise an error" do
+              expect { instance.update_attribute(attribute_to_change, new_value) }.not_to raise_error
+            end
           end
         end
       end

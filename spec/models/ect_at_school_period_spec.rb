@@ -1,4 +1,12 @@
 describe ECTAtSchoolPeriod do
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:ect_at_school_period, school: target) }
+    let(:target) { FactoryBot.create(:school) }
+
+    it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at, target_optional: false
+    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[training_programme], timestamp_attribute: :api_updated_at, target_optional: false
+  end
+
   describe "enums" do
     it do
       is_expected.to define_enum_for(:training_programme)
@@ -189,87 +197,6 @@ describe ECTAtSchoolPeriod do
         is_expected.to validate_inclusion_of(:training_programme)
                          .in_array(%w[provider_led school_led])
                          .with_message("Must be provider-led or school-led")
-      end
-    end
-  end
-
-  describe "after_commit callbacks" do
-    let!(:school) { FactoryBot.create(:school) }
-
-    describe "touch_school_api_updated_at_if_first_ect_and_no_mentors on create" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
-
-      it "touches the school's api_updated_at if it's the first ECT and there are no mentors" do
-        expect { ect_at_school_period }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
-      end
-
-      it "does not touch the school's api_updated_at if there are existing mentors" do
-        FactoryBot.create(:mentor_at_school_period, school:)
-        expect { ect_at_school_period }.not_to(change { school.reload.api_updated_at })
-      end
-
-      it "does not touch the school's api_updated_at if there are existing ECTs" do
-        FactoryBot.create(:ect_at_school_period, school:)
-        expect { ect_at_school_period }.not_to(change { school.reload.api_updated_at })
-      end
-    end
-
-    describe "touch_school_api_updated_at_if_last_provider_led_ect_and_no_mentors on destroy" do
-      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :provider_led, school:) }
-
-      it "touches the school's api_updated_at if it's the last provider-led ECT and there are no mentors" do
-        FactoryBot.create(:ect_at_school_period, :school_led, school:)
-        expect { ect_at_school_period.destroy! }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
-      end
-
-      it "does not touch the school's api_updated_at if there are mentors" do
-        FactoryBot.create(:mentor_at_school_period, school:)
-        expect { ect_at_school_period.destroy! }.not_to(change { school.reload.api_updated_at })
-      end
-
-      context "when the ECT is school-led" do
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :school_led, school:) }
-
-        it "does not touch the school's api_updated_at" do
-          FactoryBot.create(:ect_at_school_period, :school_led, school:)
-          expect { ect_at_school_period.destroy! }.not_to(change { school.reload.api_updated_at })
-        end
-      end
-    end
-
-    describe "touch_school_api_updated_at_if_no_ects_or_mentors on destroy" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
-
-      it "touches the school's api_updated_at if it's the last ECT and there are no mentors" do
-        expect { ect_at_school_period.destroy! }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
-      end
-
-      it "does not touch the school's api_updated_at if there are other ECTs" do
-        FactoryBot.create(:ect_at_school_period, school:)
-        expect { ect_at_school_period.destroy! }.not_to(change { school.reload.api_updated_at })
-      end
-
-      it "does not touch the school's api_updated_at if there are other mentors" do
-        FactoryBot.create(:mentor_at_school_period, school:)
-        expect { ect_at_school_period.destroy! }.not_to(change { school.reload.api_updated_at })
-      end
-    end
-
-    describe "touch_school_api_updated_at_if_last_provider_led_ect_changing_to_school_led_and_no_mentors on update" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :provider_led, school:) }
-
-      it "touches the school's api_updated_at if it's the last provider-led ECT changing to school-led and there are no mentors" do
-        expect { ect_at_school_period.update!(training_programme: :school_led) }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
-      end
-
-      it "does not touch the school's api_updated_at if there are other provider-led ECTs" do
-        FactoryBot.create(:ect_at_school_period, :provider_led, school:)
-        expect { ect_at_school_period.update!(training_programme: :school_led) }.not_to(change { school.reload.api_updated_at })
-      end
-
-      it "does not touch the school's api_updated_at if there are other mentors" do
-        FactoryBot.create(:mentor_at_school_period, school:)
-        expect { ect_at_school_period.update!(training_programme: :school_led) }.not_to(change { school.reload.api_updated_at })
       end
     end
   end

@@ -1,5 +1,6 @@
 class MentorAtSchoolPeriod < ApplicationRecord
   include Interval
+  include DeclarativeTouch
 
   # Associations
   belongs_to :school, inverse_of: :mentor_at_school_periods
@@ -11,11 +12,6 @@ class MentorAtSchoolPeriod < ApplicationRecord
            -> { ongoing.includes(:teacher) },
            through: :mentorship_periods,
            source: :mentee
-
-  after_commit :touch_school_api_updated_at_if_first_mentor_and_no_ects, on: :create
-  after_commit :touch_school_api_updated_at_if_first_mentor_and_only_school_led_ects, on: :create
-  after_commit :touch_school_api_updated_at_if_no_mentors_or_ects, on: :destroy
-  after_commit :touch_school_api_updated_at_if_last_mentor_and_only_school_led_ects, on: :destroy
 
   # Validations
   validates :email,
@@ -32,6 +28,8 @@ class MentorAtSchoolPeriod < ApplicationRecord
             presence: true
 
   validate :teacher_school_distinct_period
+
+  touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
 
   # Scopes
   scope :for_school, ->(school_id) { where(school_id:) }
@@ -64,33 +62,5 @@ private
 
   def teacher_school_distinct_period
     overlap_validation(name: 'Teacher School Mentor')
-  end
-
-  def touch_school_api_updated_at_if_first_mentor_and_no_ects
-    return if school.mentor_at_school_periods.count > 1
-    return if school.ect_at_school_periods.any?
-
-    school.touch(:api_updated_at)
-  end
-
-  def touch_school_api_updated_at_if_first_mentor_and_only_school_led_ects
-    return if school.mentor_at_school_periods.count > 1
-    return if school.ect_at_school_periods.provider_led.any?
-
-    school.touch(:api_updated_at)
-  end
-
-  def touch_school_api_updated_at_if_no_mentors_or_ects
-    return if school.mentor_at_school_periods.reload.any?
-    return if school.ect_at_school_periods.any?
-
-    school.touch(:api_updated_at)
-  end
-
-  def touch_school_api_updated_at_if_last_mentor_and_only_school_led_ects
-    return if school.mentor_at_school_periods.reload.any?
-    return if school.ect_at_school_periods.provider_led.any?
-
-    school.touch(:api_updated_at)
   end
 end
