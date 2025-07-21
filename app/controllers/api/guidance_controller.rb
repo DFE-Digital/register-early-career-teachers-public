@@ -18,9 +18,8 @@ module API
       path = params[:page]
 
       template = {
-        "how-to-use-api" => "how_to_use_api",
-        "technical-documentation" => "technical_documentation",
-        "early-career-training-programme-guidance" => "ect_programme_guidance",
+        "swagger-api-documentation" => "swagger_api_documentation",
+        "guidance-for-lead-providers" => "guidance_for_lead_providers",
         "sandbox" => "sandbox",
       }.fetch(path)
 
