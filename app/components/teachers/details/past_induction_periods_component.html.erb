@@ -8,7 +8,7 @@
           card: {
             heading_level: 3,
             title: period.appropriate_body.name,
-            actions: enable_edit ? [edit_link(period), delete_link(period)] : []
+            actions: actions_for(period)
           }
         ) do |sl|
           sl.with_row do |row|
