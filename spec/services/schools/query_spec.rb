@@ -400,6 +400,44 @@ RSpec.describe Schools::Query do
         it { expect(returned_school).not_to be_transient_expression_of_interest_mentors }
       end
     end
+
+    describe "transient_contract_period_id" do
+      let!(:school) { FactoryBot.create(:school, :eligible) }
+      let(:query_schools) { query.schools }
+      let(:returned_school) { query_schools.find(school.id) }
+      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+      let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
+
+      let(:query_params) do
+        {
+          contract_period_id:,
+          lead_provider_id:,
+        }
+      end
+
+      it "returns the `contract_period_id` sent in the params" do
+        expect(returned_school.transient_contract_period_id).to eq(contract_period_id.to_s)
+      end
+    end
+
+    describe "transient_lead_provider_id" do
+      let!(:school) { FactoryBot.create(:school, :eligible) }
+      let(:query_schools) { query.schools }
+      let(:returned_school) { query_schools.find(school.id) }
+      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+      let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
+
+      let(:query_params) do
+        {
+          contract_period_id:,
+          lead_provider_id:,
+        }
+      end
+
+      it "returns the `lead_provider_id` sent in the params" do
+        expect(returned_school.transient_lead_provider_id).to eq(lead_provider_id.to_s)
+      end
+    end
   end
 
   describe "#school_by_api_id" do
