@@ -2,7 +2,8 @@ RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :componen
   include AppropriateBodyHelper
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:component) { described_class.new(teacher:) }
+  let(:enable_edit) { false }
+  let(:component) { described_class.new(teacher:, enable_edit:) }
 
   context "when teacher has no past induction periods" do
     it "does not render" do
@@ -12,7 +13,7 @@ RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :componen
 
   context "when teacher has past induction periods" do
     let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Past AB") }
-    let!(:past_period) do
+    let!(:past_induction_period) do
       FactoryBot.create(:induction_period,
                         teacher:,
                         appropriate_body:,
@@ -49,6 +50,32 @@ RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :componen
     it "displays the number of terms" do
       render_inline(component)
       expect(page).to have_content("3")
+    end
+
+    context "when edit is enabled" do
+      let(:enable_edit) { true }
+
+      it "renders actions when edit is enabled" do
+        render_inline(component)
+        expect(page).to have_link(
+          "Edit",
+          href: "/admin/teachers/#{teacher.id}/induction-periods/#{past_induction_period.id}/edit"
+        )
+        expect(page).to have_link(
+          "Delete",
+          href: "/admin/teachers/#{teacher.id}/induction-periods/#{past_induction_period.id}/confirm_delete"
+        )
+      end
+    end
+
+    context "when edit is disabled" do
+      let(:enable_edit) { false }
+
+      it "does not render actions when edit is disabled" do
+        render_inline(component)
+        expect(page).not_to have_link("Edit")
+        expect(page).not_to have_link("Delete")
+      end
     end
   end
 end
