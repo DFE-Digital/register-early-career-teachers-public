@@ -1,5 +1,6 @@
 class TrainingPeriod < ApplicationRecord
   include Interval
+  include DeclarativeTouch
 
   # Associations
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
@@ -15,8 +16,8 @@ class TrainingPeriod < ApplicationRecord
   has_many :declarations, inverse_of: :training_period
   has_many :events
 
-  after_commit :touch_school_api_updated_at_if_adding_first_expression_of_interest, on: %i[create update]
-  after_commit :touch_school_api_updated_at_if_removing_last_expression_of_interest, on: %i[destroy update]
+  touch -> { trainee.school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+  touch -> { trainee.school }, on_event: %i[update], when_changing: %i[expression_of_interest_id], timestamp_attribute: :api_updated_at
 
   # Validations
   validates :started_on,
@@ -59,36 +60,6 @@ class TrainingPeriod < ApplicationRecord
   end
 
 private
-
-  def touch_school_api_updated_at_if_adding_first_expression_of_interest
-    return unless saved_change_to_attribute?(:expression_of_interest_id)
-
-    from, to = saved_change_to_expression_of_interest_id
-    return unless from.nil? && to.present?
-
-    school = trainee.school
-    ect_expressions_of_interest = school.ect_at_school_periods.with_expressions_of_interest
-    mentor_expressions_of_interest = school.mentor_at_school_periods.with_expressions_of_interest
-
-    return if (ect_expressions_of_interest.count + mentor_expressions_of_interest.count) > 1
-
-    trainee.school.touch(:api_updated_at)
-  end
-
-  def touch_school_api_updated_at_if_removing_last_expression_of_interest
-    return unless saved_change_to_attribute?(:expression_of_interest_id) || expression_of_interest_id
-
-    from, to = saved_change_to_expression_of_interest_id
-    return unless (from.present? && to.nil?) || destroyed?
-
-    school = trainee.school
-    ect_expressions_of_interest = school.ect_at_school_periods.with_expressions_of_interest
-    mentor_expressions_of_interest = school.mentor_at_school_periods.with_expressions_of_interest
-
-    return if ect_expressions_of_interest.any? || mentor_expressions_of_interest.any?
-
-    trainee.school.touch(:api_updated_at)
-  end
 
   def one_id_of_trainee_present
     ids = [ect_at_school_period_id, mentor_at_school_period_id]
