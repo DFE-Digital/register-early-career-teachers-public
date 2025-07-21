@@ -26,7 +26,7 @@ A participant’s `training_status` value will determine whether a lead provider
 | -------- | -------- | -------- | 
 | `active`     | Participants currently in training     | Lead providers can update participant data and submit declarations for `active` participants     | 
 | `deferred`     | Participants who have deferred training     | Lead providers **cannot** update participant data or submit declarations for `deferred` participants. Lead providers must [notify DfE when the participant resumes training](add link to ‘notify DfE a participant has resumed training' guidance)    | 
-| `withdrawn`     | Participants who have withdrawn from training     | Lead providers **cannot** update participant data for `withdrawn` participants. Lead providers can **only** submit declarations for `withdrawn` participants if the `declaration_date` is backdated to before the `withdrawal_date`     | 
+| `withdrawn`     | Participants who have withdrawn from training     | Lead providers **cannot** update participant data for `withdrawn` participants. Lead providers can **only** submit declarations for `withdrawn` participants if the `declaration_date` is backdated to before the `withdrawal_date`    | 
 
 [View more detailed specifications for the participants schema](add link to participants schema). 
 
