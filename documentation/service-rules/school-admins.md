@@ -36,10 +36,10 @@ School users are also known as:
 
 Only schools eligible for DfE-funded training will need to use the service to register their ECTs and mentors. 
 
-To be eligible for DfE funding:
-	• Schools must be open.
-	• Schools must be in England.
-	• Schools must be state funded (either a state funded establishment type OR an independent school with [section 41 funding](https://www.gov.uk/government/publications/independent-special-schools-and-colleges)).
+To be eligible for DfE funding schools:
+- must be open.
+- must be in England.
+- must be state funded (either a state funded establishment type OR an independent school with [section 41 funding](https://www.gov.uk/government/publications/independent-special-schools-and-colleges)).
 
 Non state funded schools will not need to use the service, as they are not eligible for DfE-funded training. Teachers can still undertake induction and self-funded training in some of these schools.
 
