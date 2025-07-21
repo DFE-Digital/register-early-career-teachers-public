@@ -1,4 +1,12 @@
 describe SchoolPartnership do
+  describe "declarative touch" do
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
+    let(:instance) { FactoryBot.create(:school_partnership, school: target) }
+    let(:target) { FactoryBot.create(:school) }
+
+    it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:lead_provider_delivery_partnership).inverse_of(:school_partnerships) }
     it { is_expected.to belong_to(:school) }
@@ -50,34 +58,5 @@ describe SchoolPartnership do
     it { is_expected.to delegate_method(:lead_provider).to(:lead_provider_delivery_partnership) }
     it { is_expected.to delegate_method(:delivery_partner).to(:lead_provider_delivery_partnership) }
     it { is_expected.to delegate_method(:contract_period).to(:lead_provider_delivery_partnership) }
-  end
-
-  describe "callbacks" do
-    let(:school) { FactoryBot.create(:school) }
-    let(:partnership) { FactoryBot.create(:school_partnership, school:) }
-
-    describe "touch_school_api_updated_at_if_first_partnership" do
-      it "touches the school's api_updated_at if this is the first partnership created" do
-        expect { partnership }.to(change { school.reload.api_updated_at })
-      end
-
-      it "does not touch the school's api_updated_at if the school already has a partnership" do
-        FactoryBot.create(:school_partnership, school:)
-        expect { partnership }.not_to(change { school.reload.api_updated_at })
-      end
-    end
-
-    describe "touch_school_api_updated_at_if_last_partnership" do
-      it "touches the school's api_updated_at if this is the last partnership destroyed" do
-        partnership
-        expect { partnership.destroy }.to(change { school.reload.api_updated_at })
-      end
-
-      it "does not touch the school's api_updated_at if the school has another partnership" do
-        FactoryBot.create(:school_partnership, school:)
-        partnership
-        expect { partnership.destroy }.not_to(change { school.reload.api_updated_at })
-      end
-    end
   end
 end

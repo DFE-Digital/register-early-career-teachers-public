@@ -2,9 +2,9 @@ module DeclarativeTouch
   extend ActiveSupport::Concern
 
   class_methods do
-    def touch(target, when_changing:, timestamp_attribute:)
-      before_commit do
-        should_touch = when_changing.any? do |attr|
+    def touch(target, when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at)
+      after_commit(on: on_event) do
+        should_touch = when_changing.blank? || when_changing.any? do |attr|
           saved_change_to_attribute?(attr)
         end
 

@@ -1,4 +1,6 @@
 class SchoolPartnership < ApplicationRecord
+  include DeclarativeTouch
+
   # Associations
   belongs_to :lead_provider_delivery_partnership, inverse_of: :school_partnerships
   belongs_to :school
@@ -6,11 +8,10 @@ class SchoolPartnership < ApplicationRecord
   has_one :active_lead_provider, through: :lead_provider_delivery_partnership
   has_one :contract_period, through: :active_lead_provider
 
-  after_commit :touch_school_api_updated_at_if_first_partnership, on: :create
-  after_commit :touch_school_api_updated_at_if_last_partnership, on: :destroy
-
   # delegates
   delegate :lead_provider, :delivery_partner, :contract_period, to: :lead_provider_delivery_partnership
+
+  touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
 
   # Validations
   validates :lead_provider_delivery_partnership_id, presence: true
@@ -24,14 +25,4 @@ class SchoolPartnership < ApplicationRecord
   # Scopes
   scope :earliest_first, -> { order(created_at: 'asc') }
   scope :for_contract_period, ->(year) { joins(:contract_period).where(contract_periods: { year: }) }
-
-private
-
-  def touch_school_api_updated_at_if_first_partnership
-    school.touch(:api_updated_at) if school.school_partnerships.count == 1
-  end
-
-  def touch_school_api_updated_at_if_last_partnership
-    school.touch(:api_updated_at) if school.school_partnerships.reload.none?
-  end
 end
