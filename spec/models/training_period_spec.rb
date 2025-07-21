@@ -1,4 +1,22 @@
 describe TrainingPeriod do
+  describe "declarative touch" do
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, school: target, started_on: '2021-01-01') }
+    let(:instance) { FactoryBot.create(:training_period, :with_expression_of_interest, :for_mentor, mentor_at_school_period:) }
+    let(:target) { FactoryBot.create(:school) }
+
+    def will_change_attribute(attribute_to_change:, new_value:)
+      if attribute_to_change == :expression_of_interest_id
+        return if ActiveLeadProvider.find_by(id: new_value)
+
+        FactoryBot.create(:active_lead_provider, id: new_value)
+      end
+    end
+
+    it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[expression_of_interest_id], timestamp_attribute: :api_updated_at, target_optional: false
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:ect_at_school_period).class_name("ECTAtSchoolPeriod").inverse_of(:training_periods) }
     it { is_expected.to belong_to(:mentor_at_school_period).inverse_of(:training_periods) }
@@ -176,115 +194,6 @@ describe TrainingPeriod do
     describe ".for_mentor" do
       it "returns training periods only for the specified mentor at school period" do
         expect(TrainingPeriod.for_mentor(456).to_sql).to end_with(%(WHERE "training_periods"."mentor_at_school_period_id" = 456))
-      end
-    end
-  end
-
-  describe "after_commit callbacks" do
-    let!(:school) { FactoryBot.create(:school) }
-
-    describe "touch_school_api_updated_at_if_adding_first_expression_of_interest on create" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, school:, started_on: '2021-01-01') }
-      let(:training_period) { FactoryBot.create(:training_period, :with_expression_of_interest, :for_ect, ect_at_school_period:) }
-
-      it "touches the school's api_updated_at if it's the first training period with an expression of interest for the school" do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
-
-        expect { training_period }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
-      end
-
-      it "does not touch the school's api_updated_at if there are existing training periods for an ECT with an expression of interest for the school" do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :with_expression_of_interest, :for_ect, ect_at_school_period:)
-
-        expect { training_period }.not_to(change { school.reload.api_updated_at })
-      end
-
-      it "does not touch the school's api_updated_at if there are existing training periods for a mentor with an expression of interest for the school" do
-        mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :with_expression_of_interest, :for_mentor, mentor_at_school_period:)
-
-        expect { training_period }.not_to(change { school.reload.api_updated_at })
-      end
-    end
-
-    describe "touch_school_api_updated_at_if_adding_first_expression_of_interest on update" do
-      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, school:, started_on: '2021-01-01') }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
-
-      it "touches the school's api_updated_at if it's the first training period with an expression of interest for the school" do
-        mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:)
-
-        expect { training_period.update!(expression_of_interest:) }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
-      end
-
-      it "does not touch the school's api_updated_at if there are existing training periods for an ECT with an expression of interest for the school" do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :with_expression_of_interest, :for_ect, ect_at_school_period:)
-
-        expect { training_period.update!(expression_of_interest:) }.not_to(change { school.reload.api_updated_at })
-      end
-
-      it "does not touch the school's api_updated_at if there are existing training periods for a mentor with an expression of interest for the school" do
-        mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :with_expression_of_interest, :for_mentor, mentor_at_school_period:)
-
-        expect { training_period.update!(expression_of_interest:) }.not_to(change { school.reload.api_updated_at })
-      end
-    end
-
-    describe "touch_school_api_updated_at_if_removing_last_expression_of_interest on destroy" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, school:, started_on: '2021-01-01') }
-      let!(:training_period) { FactoryBot.create(:training_period, :with_expression_of_interest, :for_mentor, mentor_at_school_period:) }
-
-      it "touches the school's api_updated_at if it was the last training period with an expression of interest for the school" do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
-
-        expect { training_period.destroy! }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
-      end
-
-      it "does not touch the school's api_updated_at if there are other training periods for an ECT with an expression of interest for the school" do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :with_expression_of_interest, :for_ect, ect_at_school_period:)
-
-        expect { training_period.destroy! }.not_to(change { school.reload.api_updated_at })
-      end
-
-      it "does not touch the school's api_updated_at if there are other training periods for a mentor with an expression of interest for the school" do
-        mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :with_expression_of_interest, :for_mentor, mentor_at_school_period:)
-
-        expect { training_period.destroy! }.not_to(change { school.reload.api_updated_at })
-      end
-    end
-
-    describe "touch_school_api_updated_at_if_removing_last_expression_of_interest on update" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, school:, started_on: '2021-01-01') }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :with_expression_of_interest, ect_at_school_period:) }
-
-      it "touches the school's api_updated_at if it's the last training period with an expression of interest for the school" do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
-
-        expect { training_period.update!(expression_of_interest: nil) }.to change { school.reload.api_updated_at }.to be_within(5.seconds).of(Time.current)
-      end
-
-      it "does not touch the school's api_updated_at if there are other training periods for an ECT with an expression of interest for the school" do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :with_expression_of_interest, :for_ect, ect_at_school_period:)
-
-        expect { training_period.update!(expression_of_interest: nil) }.not_to(change { school.reload.api_updated_at })
-      end
-
-      it "does not touch the school's api_updated_at if there are other training periods for a mentor with an expression of interest for the school" do
-        mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school:, started_on: '2021-01-01')
-        FactoryBot.create(:training_period, :with_expression_of_interest, :for_mentor, mentor_at_school_period:)
-
-        expect { training_period.update!(expression_of_interest: nil) }.not_to(change { school.reload.api_updated_at })
       end
     end
   end
