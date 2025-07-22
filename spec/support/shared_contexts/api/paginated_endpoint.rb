@@ -4,28 +4,40 @@ shared_examples "a paginated endpoint" do
   end
 
   it "returns 5 resources on page 1" do
-    authenticated_api_get(path, params: { page: { per_page: 5, page: 1 } })
+    params = { page: { per_page: 5, page: 1 } }
+    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+
+    authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:success)
     expect(parsed_response_data.size).to eq(5)
   end
 
   it "returns 3 resources on page 2" do
-    authenticated_api_get(path, params: { page: { per_page: 5, page: 2 } })
+    params = { page: { per_page: 5, page: 2 } }
+    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+
+    authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:success)
     expect(parsed_response_data.size).to eq(3)
   end
 
   it "returns empty for page 3" do
-    authenticated_api_get(path, params: { page: { per_page: 5, page: 3 } })
+    params = { page: { per_page: 5, page: 3 } }
+    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+
+    authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:success)
     expect(parsed_response_data).to be_empty
   end
 
   it "returns error when requesting page -1" do
-    authenticated_api_get(path, params: { page: { per_page: 5, page: -1 } })
+    params = { page: { per_page: 5, page: -1 } }
+    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+
+    authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:bad_request)
     expect(response.content_type).to eql("application/json; charset=utf-8")
