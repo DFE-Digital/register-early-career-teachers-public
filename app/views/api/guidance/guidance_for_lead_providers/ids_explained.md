@@ -1,4 +1,6 @@
-# IDs explained
+---
+title: IDs explained
+---
 
 We use various unique identifiers (IDs) in the endpoint requests and responses to help make the API reliable, efficient, and unambiguous.
 

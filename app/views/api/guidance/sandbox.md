@@ -1,4 +1,6 @@
-# Using the API sandbox 
+---
+title: Using the API sandbox
+---
 
 Use this guidance to understand: 
 
@@ -20,7 +22,7 @@ Lead providers can use the sandbox to:
 
 The sandbox works just like the live environment, but no real training records, payments, or notifications are sent. 
 
-To help get started, we recommend that technical teams bookmark the [Swagger API documentation](relative path “/api/docs/v3”) so they can quickly find the latest information about endpoints, request formats, and validation rules. 
+To help get started, we recommend that technical teams bookmark the [Swagger API documentation](/api/docs/v3) so they can quickly find the latest information about endpoints, request formats, and validation rules.
 
 ## Benefits of using the sandbox 
 
@@ -45,7 +47,7 @@ They'll receive:
 
 ### 2. Use the sandbox URL 
 
-The sandbox runs on a separate domain from the live service: https://sandbox.register-early-career-teachers.education.gov.uk/api 
+The sandbox runs on a separate domain from the live service: [https://sandbox.register-early-career-teachers.education.gov.uk/api](https://sandbox.register-early-career-teachers.education.gov.uk/api)
 
 ### 3. Check your setup 
 
@@ -63,6 +65,6 @@ Things to keep in mind:
   
 ## Access YAML format API specs 
 
-Lead provider development teams can also access the OpenAPI spec in a YAML format: [View the OpenAPI v3.0.0. spec](/lead-providers/api-docs/v3/api_spec.yml)  
+Lead provider development teams can also access the OpenAPI spec in a YAML format: [View the OpenAPI v3.0.0. spec](/api/docs/v3/swagger.yaml)
 
 They can use API testing tools such as [Postman](https://www.postman.com/) to make test API calls. Lead providers can import the API as a collection by using Postman's import feature and copying in the YAML URL of the API specification. 

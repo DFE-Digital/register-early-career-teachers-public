@@ -22,7 +22,7 @@ Lead providers are responsible for delivering high-quality early career teacher 
 
 ## Where to manage ECT training data 
 
-Lead providers must use the [‘Register early career teachers’ API](relative URL + /api) to submit and update data about: 
+Lead providers must use the [‘Register early career teachers’ API](/api) to submit and update data about:
 
 * early career teachers
 * mentors
@@ -45,7 +45,7 @@ Lead providers should use the [sandbox environment](https://sandbox.register-ear
 * errors can be fixed early
 * payments are not delayed due to data issues 
 
-[Read the sandbox guidance](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/sandbox) 
+[Read the sandbox guidance](/api/guidance/sandbox)
 
 [Read the live environment guidance](add link when page has been created) 
 
@@ -63,4 +63,4 @@ They’ll typically hear from DfE through:
 * emails
 * Slack messages 
 
-DfE also publishes [release notes](relative link + api/guidance/release-notes) whenever it updates the API.  
+DfE also publishes [release notes](/api/guidance/release-notes) whenever it updates the API.
