@@ -1,10 +1,23 @@
 ---
 shared:
   :teachers:
-  - trn
+    - trn
+    - trs_first_name
+    - trs_last_name
+    - corrected_name
+    - search
   :events:
-  - heading
-  - body
-  - author_name
-  - author_email
-  - metadata
+    - heading
+    - body
+    - author_name
+    - author_email
+    - metadata
+  :pending_induction_submissions:
+    - trn
+    - date_of_birth
+    - trs_first_name
+    - trs_last_name
+    - trs_email_address
+    - error_messages
+  :pending_induction_submission_batches:
+    - data
