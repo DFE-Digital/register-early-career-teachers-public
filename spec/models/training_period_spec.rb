@@ -204,14 +204,16 @@ describe TrainingPeriod do
       end
     end
 
-    describe 'only allows provider led mentor training' do
+    describe 'only allows provider-led mentor training' do
       context 'for mentor training' do
         subject { FactoryBot.build(:training_period, :for_mentor) }
 
         it { is_expected.to allow_value('provider_led').for(:training_programme) }
         it { is_expected.not_to allow_value('school_led').for(:training_programme).with_message('Mentor training periods can only be provider-led') }
       end
+    end
 
+    describe 'allows provider-led and school-led ECT training' do
       context 'for ECT training' do
         subject { FactoryBot.build(:training_period, :for_ect) }
 
