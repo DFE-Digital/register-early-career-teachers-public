@@ -74,7 +74,7 @@ RSpec.describe TrainingPeriods::Create do
     let(:period) { FactoryBot.create(:ect_at_school_period) }
 
     it 'calls new with the school_led arguments' do
-      allow(TrainingPeriods::Create).to receive(:new).with(any_args).and_call_original
+      allow(TrainingPeriods::Create).to receive(:new).and_return(true)
 
       TrainingPeriods::Create.school_led(period:, started_on:)
 
