@@ -504,5 +504,103 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
       end
     end
+
+    describe '#lead_provider_has_confirmed_partnership_for_contract_period?' do
+      let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Confirmed LP') }
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:school) { FactoryBot.create(:school) }
+      let(:teacher) { FactoryBot.create(:teacher) }
+      let(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
+
+      context 'when everything is valid' do
+        let!(:ect_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :provider_led,
+            :with_training_period,
+            teacher:,
+            school:,
+            started_on: Date.new(2025, 3, 10),
+            finished_on: Date.new(2025, 10, 10),
+            lead_provider:,
+            delivery_partner:,
+            contract_period:
+          )
+        end
+
+        it 'returns true' do
+          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be true
+        end
+      end
+
+      context 'when previous_lead_provider is nil' do
+        # No ect_period or training period created
+        it 'returns false' do
+          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
+        end
+      end
+
+      context 'when school is nil' do
+        it 'returns false' do
+          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be false
+        end
+      end
+
+      context 'when contract_start_date is nil' do
+        before { store.start_date = nil }
+
+        let!(:ect_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :provider_led,
+            :with_training_period,
+            teacher:,
+            school:,
+            started_on: Date.new(2025, 3, 10),
+            finished_on: Date.new(2025, 10, 10),
+            lead_provider:,
+            delivery_partner:,
+            contract_period:
+          )
+        end
+
+        it 'returns false' do
+          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
+        end
+      end
+
+      context 'when no school partnership exists in the contract period' do
+        let!(:other_contract_period) do
+          FactoryBot.create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 12, 31))
+        end
+
+        let!(:ect_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :provider_led,
+            :with_training_period,
+            teacher:,
+            school:,
+            started_on: Date.new(2025, 3, 10),
+            finished_on: Date.new(2025, 10, 10),
+            lead_provider:,
+            delivery_partner:,
+            contract_period: other_contract_period
+          )
+        end
+
+        it 'returns false' do
+          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
+        end
+      end
+
+      context 'when all inputs are nil' do
+        let(:dummy_store) { FactoryBot.build(:session_repository, start_date: nil, trn: nil) }
+
+        it 'returns false' do
+          expect(described_class.new(dummy_store).lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be false
+        end
+      end
+    end
   end
 end

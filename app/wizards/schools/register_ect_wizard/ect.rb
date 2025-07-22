@@ -146,6 +146,18 @@ module Schools
           .last
       end
 
+      def lead_provider_has_confirmed_partnership_for_contract_period?(school)
+        return false unless previous_lead_provider && contract_start_date && school
+
+        SchoolPartnerships::Query
+          .new(
+            school:,
+            lead_provider: previous_lead_provider,
+            contract_period: contract_start_date
+          )
+          .exists?
+      end
+
     private
 
       def first_induction_period
@@ -175,6 +187,8 @@ module Schools
       end
 
       def previous_training_period
+        return unless previous_ect_at_school_period
+
         @previous_training_period ||= TrainingPeriods::Search
           .new(order: :started_on)
           .training_periods(ect_id: previous_ect_at_school_period.id)
