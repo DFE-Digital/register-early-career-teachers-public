@@ -21,6 +21,9 @@ module API
         "swagger-api-documentation" => "swagger_api_documentation",
         "guidance-for-lead-providers" => "guidance_for_lead_providers",
         "sandbox" => "sandbox",
+        "guidance-for-lead-providers/api-data-states" => "guidance_for_lead_providers/api_data_states",
+        "guidance-for-lead-providers/data-syncing" => "guidance_for_lead_providers/data_syncing",
+        "guidance-for-lead-providers/ids-explained" => "guidance_for_lead_providers/ids_explained",
       }.fetch(path)
 
       render "api/guidance/" + template
