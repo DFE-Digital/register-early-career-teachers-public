@@ -31,6 +31,7 @@ module Builders
           training_period.started_on = period.start_date
           training_period.finished_on = period.end_date
           training_period.ecf_end_induction_record_id = period.end_source_id
+          training_period.training_programme = period.training_programme.in?(%w[core_induction_programme design_our_own]) ? "school_led" : "provider_led"
           training_period.save!
         rescue ActiveRecord::ActiveRecordError => e
           ::TeacherMigrationFailure.create!(teacher:, model: :training_period, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")
