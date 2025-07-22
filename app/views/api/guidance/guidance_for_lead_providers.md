@@ -47,8 +47,6 @@ Lead providers should use the [sandbox environment](https://sandbox.register-ear
 
 [Read the sandbox guidance](/api/guidance/sandbox)
 
-[Read the live environment guidance](add link when page has been created) 
-
 ## Other interactions with DfE 
 
 In addition to managing training data, lead providers may also need to: 
