@@ -1,4 +1,6 @@
-# Syncing data best practice
+---
+title: Syncing data best practice
+---
 
 To ensure smooth and reliable integration with the API, it’s important to follow best practice when syncing participant and training data. 
 

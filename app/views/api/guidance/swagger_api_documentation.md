@@ -1,8 +1,10 @@
-# Swagger API documentation
+---
+title: Swagger API documentation
+---
 
 ## What is Swagger API documentation? 
 
-The [Swagger documentation](relative path “/api/docs/v3”) explains how lead providers connect their organisation’s system to the 'Register early career teachers’ service’s API. 
+The [Swagger documentation](/api/docs/v3) explains how lead providers connect their organisation’s system to the 'Register early career teachers’ service’s API.
 
 It includes: 
 
