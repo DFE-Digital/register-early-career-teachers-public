@@ -29,8 +29,6 @@ A participant’s `training_status` value will determine whether a lead provider
 | `deferred`     | Participants who have deferred training     | Lead providers **cannot** update participant data or submit declarations for `deferred` participants. Lead providers must [notify DfE when the participant resumes training](add link to ‘notify DfE a participant has resumed training' guidance)    | 
 | `withdrawn`     | Participants who have withdrawn from training     | Lead providers **cannot** update participant data for `withdrawn` participants. Lead providers can **only** submit declarations for `withdrawn` participants if the `declaration_date` is backdated to before the `withdrawal_date`    | 
 
-[View more detailed specifications for the participants schema](add link to participants schema). 
-
 ### Participant status
 
 The `participant_status` attribute highlights information given **by school induction tutors** via the 'Register early career teachers’ service. 
@@ -43,7 +41,7 @@ We have occasionally seen cases where this information has been inaccurate becau
 
 Declaration states are defined by the `state` attribute. 
 
-Lead providers must [submit declarations](add link to ‘submit view and void declarations' guidance) to confirm a participant has engaged in training within a given milestone period. A declaration’s `state` value will reflect if and when DfE will pay lead providers for the training delivered. 
+Lead providers must submit declarations to confirm a participant has engaged in training within a given milestone period. A declaration’s `state` value will reflect if and when DfE will pay lead providers for the training delivered. 
 
 | State | Definition | Action | 
 | -------- | -------- | -------- | 
@@ -55,8 +53,6 @@ Lead providers must [submit declarations](add link to ‘submit view and void de
 | `paid`     | A declaration that has been paid for by DfE    | Providers can view and void `paid` declarations     | 
 | `awaiting_clawback`     | A `paid` declaration that has since been voided by a provider    | Providers can **only** view `awaiting_clawback` declarations     | 
 | `clawed_back`     | An `awaiting_clawback` declaration that has since had its value deducted from payment by DfE to a provider     | Providers can **only** view `clawed_back` declarations     | 
-
-[View more detailed specifications for the participant declarations schema](add participant declarations schema link). 
 
 ## Example of how states change over time 
 
