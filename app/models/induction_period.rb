@@ -57,6 +57,14 @@ class InductionPeriod < ApplicationRecord
     super || ::PROGRAMME_MAPPER[induction_programme]
   end
 
+  def training_programme=(value)
+    if Rails.application.config.enable_bulk_claim
+      self.induction_programme = ::PROGRAMME_MAPPER[value]
+    end
+
+    super
+  end
+
 private
 
   # Ensure admin users inserting new induction periods include end dates.
