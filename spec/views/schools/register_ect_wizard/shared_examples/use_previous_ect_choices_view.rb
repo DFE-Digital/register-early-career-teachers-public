@@ -58,30 +58,61 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
   end
 
   context "when school-led" do
-    let(:school) { FactoryBot.create(:school, :school_led_last_chosen) }
+    let(:appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub, name: 'Team 7') }
+    let(:school) do
+      FactoryBot.create(
+        :school,
+        :school_led_last_chosen,
+        last_chosen_appropriate_body: appropriate_body
+      )
+    end
 
     before do
       assign(:school, school)
+      render
     end
 
-    it "does not render the content" do
-      render
+    it 'renders the appropriate body row' do
+      expect(rendered).to have_css('.govuk-summary-list__key', text: 'Appropriate body')
+      expect(rendered).to have_css('.govuk-summary-list__value', text: 'Team 7')
+    end
 
-      expect(rendered).not_to have_content("will confirm if they’ll be working with your school and which delivery partner will deliver training events.")
+    it 'renders the training programme row' do
+      expect(rendered).to have_css('.govuk-summary-list__key', text: 'Training programme')
+      expect(rendered).to have_css('.govuk-summary-list__value', text: 'School-led')
+    end
+
+    it 'does not render the lead provider row' do
+      expect(rendered).not_to have_css('.govuk-summary-list__key', text: 'Lead provider')
+    end
+
+    it 'does not render the delivery partner row' do
+      expect(rendered).not_to have_css('.govuk-summary-list__key', text: 'Delivery partner')
     end
   end
 
-  context "when provider-led" do
+  context 'when provider-led with confirmed partnership' do
     let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
 
     before do
+      allow(wizard.ect).to receive(:lead_provider_has_confirmed_partnership_for_contract_period?).with(school).and_return(true)
+      allow(wizard.ect).to receive_messages(
+        previous_lead_provider_name: 'Orochimaru',
+        previous_delivery_partner_name: 'Akatsuki'
+      )
+
       assign(:school, school)
+      render
     end
 
-    it "renders the content" do
-      render
+    it 'renders the lead provider row' do
+      expect(rendered).to have_css('.govuk-summary-list__key', text: 'Lead provider')
+      expect(rendered).to have_css('.govuk-summary-list__value', text: 'Orochimaru')
+    end
 
-      expect(rendered).to have_content("will confirm if they’ll be working with your school and which delivery partner will deliver training events.")
+    it 'renders the delivery partner row' do
+      expect(rendered).to have_css('.govuk-summary-list__key', text: 'Delivery partner')
+      expect(rendered).to have_css('.govuk-summary-list__value', text: 'Akatsuki')
     end
   end
 end
