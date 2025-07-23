@@ -10,7 +10,8 @@ module MentorAtSchoolPeriods
       @training_period ||= ::TrainingPeriod
         .includes(mentor_at_school_period: [:teacher])
         .where(teacher: { trn: })
-        .latest_first.first
+        .latest_first
+        .first
     end
 
     delegate :school_partnership, to: :training_period, allow_nil: true
