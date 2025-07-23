@@ -1,15 +1,39 @@
 <% page_data(title: "Organisations") %>
 
 <h2 class="govuk-heading-m">
-  <%= govuk_link_to('Schools', admin_schools_path, no_visited_state: true, no_underline: true) %>
+  <%= govuk_link_to(
+    "Schools",
+    admin_schools_path,
+    no_visited_state: true,
+    no_underline: true,
+  ) %>
 </h2>
 <p class="govuk-body">
   The schools who have teachers or mentors undertaking ECF training
 </p>
 <hr class="govuk-section-break--l govuk-section-break--visible">
 <h2 class="govuk-heading-m">
-  <%= govuk_link_to('Appropriate bodies', admin_appropriate_bodies_path, no_visited_state: true, no_underline: true) %>
+  <%= govuk_link_to(
+    "Appropriate bodies",
+    admin_appropriate_bodies_path,
+    no_visited_state: true,
+    no_underline: true,
+  ) %>
 </h2>
 <p class="govuk-body">
-  Appropriate bodies are responsible for assuring the quality of the statutory induction of ECTs
+  Appropriate bodies are responsible for assuring the quality of the statutory
+  induction of ECTs
+</p>
+<hr class="govuk-section-break--l govuk-section-break--visible">
+<h2 class="govuk-heading-m">
+  <%= govuk_link_to(
+    "Lead providers",
+    admin_lead_providers_path,
+    no_visited_state: true,
+    no_underline: true,
+  ) %>
+</h2>
+<p class="govuk-body">
+  Lead providers are responsible for the online learning platform used for
+  training ECTs and mentors.
 </p>
