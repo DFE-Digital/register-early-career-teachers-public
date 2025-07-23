@@ -49,6 +49,7 @@ Rails.application.routes.draw do
           resources :current_ects, only: :index, path: 'current-ects', controller: 'appropriate_bodies/current_ects'
         end
         resources :schools, only: %i[index show], param: :urn
+        resources :lead_providers, only: %i[index], path: 'lead-providers'
       end
     end
 
