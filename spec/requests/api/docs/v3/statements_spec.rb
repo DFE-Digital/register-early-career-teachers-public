@@ -5,81 +5,18 @@ RSpec.describe "Statements endpoint", openapi_spec: "v3/swagger.yaml", type: :re
 
   let(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
 
-  path "/api/v3/statements" do
-    get "Retrieve financial statements" do
-      tags "Statements"
-      produces "application/json"
-      security [api_key: []]
+  it_behaves_like "an API index endpoint documentation",
+                  "/api/v3/statements",
+                  "Statements",
+                  "statements as part of which the DfE will make output payments for participants",
+                  "#/components/schemas/StatementsFilter",
+                  "#/components/schemas/StatementsResponse"
 
-      parameter name: :filter,
-                in: :query,
-                required: false,
-                schema: {
-                  "$ref": "#/components/schemas/StatementsFilter",
-                },
-                style: "deepObject"
-
-      parameter name: :page,
-                in: :query,
-                required: false,
-                schema: {
-                  "$ref": "#/components/schemas/PaginationFilter",
-                },
-                style: "deepObject"
-
-      response "200", "A list of statements as part of which the DfE will make output payments for participants" do
-        schema({ "$ref": "#/components/schemas/StatementsResponse" })
-
-        run_test!
-      end
-
-      response "401", "Unauthorized" do
-        let(:token) { "invalid" }
-
-        schema({ "$ref": "#/components/schemas/UnauthorisedResponse" })
-
-        run_test!
-      end
-    end
-  end
-
-  path "/api/v3/statements/{id}" do
-    get "Retrieve a specific financial statement" do
-      tags "Statements"
-      produces "application/json"
-      security [api_key: []]
-
-      parameter name: :id,
-                in: :path,
-                required: true,
-                schema: {
-                  "$ref": "#/components/schemas/IDAttribute",
-                }
-
-      response "200", "A specific financial statement" do
-        let(:id) { statement.api_id }
-
-        schema({ "$ref": "#/components/schemas/StatementResponse" })
-
-        run_test!
-      end
-
-      response "404", "Not found" do
-        let(:id) { SecureRandom.uuid }
-
-        schema({ "$ref": "#/components/schemas/NotFoundResponse" })
-
-        run_test!
-      end
-
-      response "401", "Unauthorized" do
-        let(:id) { statement.api_id }
-        let(:token) { "invalid" }
-
-        schema({ "$ref": "#/components/schemas/UnauthorisedResponse" })
-
-        run_test!
-      end
-    end
+  it_behaves_like "an API show endpoint documentation",
+                  "/api/v3/statements/{id}",
+                  "Statements",
+                  "financial statement",
+                  "#/components/schemas/StatementResponse" do
+    let(:resource) { statement }
   end
 end
