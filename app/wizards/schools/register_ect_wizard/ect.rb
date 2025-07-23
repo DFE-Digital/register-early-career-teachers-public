@@ -158,6 +158,12 @@ module Schools
           .exists?
       end
 
+      def previous_eoi_lead_provider_name
+        return unless previous_training_period&.expression_of_interest
+
+        previous_training_period&.expression_of_interest&.lead_provider&.name
+      end
+
     private
 
       def first_induction_period
