@@ -23,17 +23,22 @@ module API
           contract_period_id: contract_period&.id,
           updated_since:,
           urn:,
+          sort:,
         }
 
         Schools::Query.new(**conditions.compact)
       end
 
       def school_params
-        params.permit(:api_id, filter: %i[urn])
+        params.permit(:api_id, :sort, filter: %i[urn])
       end
 
       def api_id
         school_params[:api_id]
+      end
+
+      def sort
+        school_params[:sort]
       end
 
       def urn

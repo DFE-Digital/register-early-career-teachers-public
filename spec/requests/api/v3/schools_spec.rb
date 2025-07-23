@@ -31,6 +31,10 @@ RSpec.describe "Schools API", type: :request do
       let(:mandatory_params) { { filter: { cohort: contract_period.id } } }
     end
     it_behaves_like "a filter validatable endpoint", %i[cohort]
+    it_behaves_like "an API endpoint with sorting" do
+      let(:query) { Schools::Query }
+      let(:mandatory_params) { { filter: { cohort: contract_period.id } } }
+    end
   end
 
   describe "#show" do
