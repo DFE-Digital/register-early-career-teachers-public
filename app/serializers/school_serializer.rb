@@ -17,7 +17,7 @@ class SchoolSerializer < Blueprinter::Base
       expressions_of_interest?(school)
     end
     field :created_at
-    field :updated_at
+    field(:api_updated_at, name: :updated_at)
 
     class << self
       def in_partnership?(school)
