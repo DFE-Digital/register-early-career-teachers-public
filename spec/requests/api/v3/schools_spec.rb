@@ -2,14 +2,10 @@ RSpec.describe "Schools API", type: :request do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
   let(:contract_period) { active_lead_provider.contract_period }
-  let(:serializer) { SchoolSerializer }
 
   def create_resource(active_lead_provider:)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-    school = FactoryBot.create(:school)
-    FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:)
-    query = Schools::Query.new(lead_provider_id: active_lead_provider.lead_provider_id, contract_period_id: active_lead_provider.contract_period_id)
-    query.school(school.id)
+    FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:).school
   end
 
   describe "#index" do
@@ -31,8 +27,10 @@ RSpec.describe "Schools API", type: :request do
       let(:mandatory_params) { { filter: { cohort: contract_period.id } } }
     end
     it_behaves_like "a filter validatable endpoint", %i[cohort]
-    it_behaves_like "an API endpoint with sorting" do
-      let(:query) { Schools::Query }
+    it_behaves_like "a sortable endpoint" do
+      let(:mandatory_params) { { filter: { cohort: contract_period.id } } }
+    end
+    it_behaves_like "a filter by urn endpoint" do
       let(:mandatory_params) { { filter: { cohort: contract_period.id } } }
     end
   end
