@@ -1,4 +1,22 @@
 describe TrainingPeriod do
+  describe "declarative touch" do
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, school: target, started_on: '2021-01-01') }
+    let(:instance) { FactoryBot.create(:training_period, :with_expression_of_interest, :for_mentor, mentor_at_school_period:) }
+    let(:target) { FactoryBot.create(:school) }
+
+    def will_change_attribute(attribute_to_change:, new_value:)
+      if attribute_to_change == :expression_of_interest_id
+        return if ActiveLeadProvider.find_by(id: new_value)
+
+        FactoryBot.create(:active_lead_provider, id: new_value)
+      end
+    end
+
+    it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[expression_of_interest_id], timestamp_attribute: :api_updated_at, target_optional: false
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:ect_at_school_period).class_name("ECTAtSchoolPeriod").inverse_of(:training_periods) }
     it { is_expected.to belong_to(:mentor_at_school_period).inverse_of(:training_periods) }

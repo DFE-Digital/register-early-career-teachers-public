@@ -1,5 +1,6 @@
 class TrainingPeriod < ApplicationRecord
   include Interval
+  include DeclarativeTouch
 
   # Associations
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
@@ -14,6 +15,9 @@ class TrainingPeriod < ApplicationRecord
 
   has_many :declarations, inverse_of: :training_period
   has_many :events
+
+  touch -> { trainee.school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+  touch -> { trainee.school }, on_event: %i[update], when_changing: %i[expression_of_interest_id], timestamp_attribute: :api_updated_at
 
   # Validations
   validates :started_on,

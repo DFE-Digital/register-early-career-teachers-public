@@ -1,5 +1,8 @@
 class School < ApplicationRecord
   include GIASHelpers
+  include DeclarativeTouch
+
+  touch -> { self }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
 
   # Enums
   enum :last_chosen_training_programme,

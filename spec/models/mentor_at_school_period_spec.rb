@@ -1,4 +1,11 @@
 describe MentorAtSchoolPeriod do
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:mentor_at_school_period, school: target) }
+    let(:target) { FactoryBot.create(:school) }
+
+    it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at, target_optional: false
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:school).inverse_of(:mentor_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:mentor_at_school_periods) }

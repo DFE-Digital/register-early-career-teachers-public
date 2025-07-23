@@ -1,5 +1,6 @@
 class ECTAtSchoolPeriod < ApplicationRecord
   include Interval
+  include DeclarativeTouch
 
   # Enums
   enum :training_programme,
@@ -18,6 +19,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :training_periods, inverse_of: :ect_at_school_period
   has_many :mentor_at_school_periods, through: :teacher
   has_many :events
+
+  touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+  touch -> { school }, on_event: %i[update], when_changing: %i[training_programme], timestamp_attribute: :api_updated_at
 
   # Validations
   validate :appropriate_body_for_independent_school,
