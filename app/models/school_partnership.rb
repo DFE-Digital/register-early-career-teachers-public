@@ -1,4 +1,6 @@
 class SchoolPartnership < ApplicationRecord
+  include DeclarativeTouch
+
   # Associations
   belongs_to :lead_provider_delivery_partnership, inverse_of: :school_partnerships
   belongs_to :school
@@ -8,6 +10,8 @@ class SchoolPartnership < ApplicationRecord
 
   # delegates
   delegate :lead_provider, :delivery_partner, :contract_period, to: :lead_provider_delivery_partnership
+
+  touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
 
   # Validations
   validates :lead_provider_delivery_partnership_id, presence: true

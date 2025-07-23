@@ -33,6 +33,13 @@ describe GIAS::School do
     it { is_expected.to have_db_column(:website).of_type(:string) }
   end
 
+  describe "declarative touch" do
+    let(:instance) { target&.gias_school || FactoryBot.create(:gias_school) }
+    let(:target) { FactoryBot.create(:school, :independent) }
+
+    it_behaves_like "a declarative touch model", when_changing: %i[name], timestamp_attribute: :api_updated_at
+  end
+
   describe "db indexes" do
     it { is_expected.to have_db_index(:name) }
     it { is_expected.to have_db_index(:ukprn).unique }
