@@ -40,7 +40,7 @@ RSpec.describe "Admin organisations lead providers" do
   def and_i_should_see_lead_providers
     table = page.locator('main.govuk-main-wrapper table.govuk-table')
     @lead_providers.each do |lp|
-      expect(table.get_by_role("link", name: lp.name)).to be_visible
+      expect(table.get_by_text(lp.name)).to be_visible
     end
   end
 end
