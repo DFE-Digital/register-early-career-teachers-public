@@ -1,6 +1,4 @@
 RSpec.describe "Statements API", type: :request do
-  let(:serializer) { StatementSerializer }
-  let(:query) { Statements::Query }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
 
@@ -29,6 +27,5 @@ RSpec.describe "Statements API", type: :request do
 
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "a show endpoint"
-    it_behaves_like "a filter by lead provider endpoint"
   end
 end

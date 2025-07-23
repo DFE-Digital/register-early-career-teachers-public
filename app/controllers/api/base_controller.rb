@@ -3,5 +3,8 @@ module API
     include TokenAuthenticatable
     include Paginatable
     include ErrorRescuable
+    include DateFilterable
+    include ContractPeriodFilterable
+    include FilterValidatable
   end
 end
