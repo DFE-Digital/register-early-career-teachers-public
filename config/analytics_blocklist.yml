@@ -190,6 +190,7 @@
   - ecf_start_induction_record_id
   - ecf_end_induction_record_id
   - expression_of_interest_id
+  - training_programme
   :teacher_migration_failures:
   - id
   - teacher_id

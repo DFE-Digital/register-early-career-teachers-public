@@ -76,6 +76,7 @@ RSpec.describe Schools::RegisterMentor do
           expect(training_period.started_on).to eq(started_on)
           expect(training_period.expression_of_interest).to eq(active_lead_provider)
           expect(training_period.school_partnership).to be_nil
+          expect(training_period.training_programme).to eql('provider_led')
         end
       end
 

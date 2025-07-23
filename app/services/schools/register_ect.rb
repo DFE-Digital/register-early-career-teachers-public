@@ -50,7 +50,7 @@ module Schools
         update_school_last_choices!
         create_teacher!
         @ect_at_school_period = start_at_school!
-        create_training_period! if provider_led_training_programme?
+        create_training_period!
         record_event!
       end
 
@@ -58,10 +58,6 @@ module Schools
     end
 
   private
-
-    def provider_led_training_programme?
-      @training_programme == 'provider_led'
-    end
 
     def already_registered_as_an_ect?
       ::Teacher.find_by_trn(trn)&.ect_at_school_periods&.exists?
@@ -76,12 +72,24 @@ module Schools
     end
 
     def create_training_period!
-      @training_period = ::TrainingPeriods::Create.new(
-        period: ect_at_school_period,
-        started_on: ect_at_school_period.started_on,
-        school_partnership: earliest_matching_school_partnership,
-        expression_of_interest:
-      ).call
+      @training_period = case training_programme
+                         when 'school_led'
+                           ::TrainingPeriods::Create.school_led(
+                             period: ect_at_school_period,
+                             started_on: ect_at_school_period.started_on
+                           ).call
+                         when 'provider_led'
+                           ::TrainingPeriods::Create.provider_led(
+                             period: ect_at_school_period,
+                             started_on: ect_at_school_period.started_on,
+                             school_partnership:,
+                             expression_of_interest:
+                           ).call
+                         end
+    end
+
+    def school_partnership
+      earliest_matching_school_partnership
     end
 
     def start_at_school!
@@ -96,9 +104,13 @@ module Schools
     end
 
     def update_school_last_choices!
-      school.update!(last_chosen_appropriate_body: school_reported_appropriate_body,
-                     last_chosen_lead_provider: lead_provider,
-                     last_chosen_training_programme: training_programme)
+      choices = {
+        last_chosen_appropriate_body: school_reported_appropriate_body,
+        last_chosen_lead_provider: lead_provider,
+        last_chosen_training_programme: training_programme
+      }
+
+      school.update!(**choices.compact)
     end
 
     def record_event!

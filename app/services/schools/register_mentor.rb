@@ -39,7 +39,7 @@ module Schools
       ActiveRecord::Base.transaction do
         create_teacher!
         start_at_school!
-        create_training_period! if provider_led_training_programme?
+        create_training_period!
         record_event!
       end
 
@@ -48,17 +48,21 @@ module Schools
 
   private
 
-    def provider_led_training_programme?
-      lead_provider.present?
+    def training_programme
+      (lead_provider.present?) ? 'provider_led' : 'school_led'
     end
 
     def create_training_period!
-      @training_period = ::TrainingPeriods::Create.new(
-        period: mentor_at_school_period,
-        started_on: mentor_at_school_period.started_on,
-        school_partnership: earliest_matching_school_partnership,
-        expression_of_interest:
-      ).call
+      return if training_programme == 'school_led'
+
+      @training_period = ::TrainingPeriods::Create.provider_led(period: mentor_at_school_period,
+                                                                started_on: mentor_at_school_period.started_on,
+                                                                school_partnership:,
+                                                                expression_of_interest:).call
+    end
+
+    def school_partnership
+      earliest_matching_school_partnership if lead_provider.present?
     end
 
     def already_registered_as_a_mentor?
