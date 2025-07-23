@@ -1,10 +1,6 @@
 module API
   module V3
     class SchoolsController < BaseController
-      include DateFilterable
-      include ContractPeriodFilterable
-      include FilterValidatable
-
       filter_validation required_filters: %i[cohort]
 
       def index

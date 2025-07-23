@@ -16,7 +16,7 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([previous_contract_period_resource, next_contract_period_resource]), root: "data"))
+    expect(response_ids).to eq(apply_expected_order([previous_contract_period_resource, next_contract_period_resource]).map(&:api_id))
   end
 
   it "ignores invalid cohorts" do
@@ -27,11 +27,11 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
     next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
     create_resource(active_lead_provider: next_active_lead_provider)
 
-    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort" } })
+    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort,1099" } })
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([resource]), root: "data"))
+    expect(response_ids).to eq([resource.api_id])
   end
 end
 
@@ -52,7 +52,7 @@ RSpec.shared_examples "a filter by updated_since endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([resource_updated_one_week_ago, resource_updated_one_month_ago]), root: "data"))
+    expect(response_ids).to eq(apply_expected_order([resource_updated_one_week_ago, resource_updated_one_month_ago]).map(&:api_id))
   end
 
   it "correctly decodes URL encoded dates" do
@@ -63,7 +63,7 @@ RSpec.shared_examples "a filter by updated_since endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([resource_updated_one_week_ago, resource_updated_one_month_ago]), root: "data"))
+    expect(response_ids).to eq(apply_expected_order([resource_updated_one_week_ago, resource_updated_one_month_ago]).map(&:api_id))
   end
 
   it "returns 400 bad request when the updated_since is not a valid date" do
@@ -90,7 +90,7 @@ RSpec.shared_examples "a filter by a single cohort (contract_period year) endpoi
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([previous_contract_period_resource]), root: "data"))
+    expect(response_ids).to eq([previous_contract_period_resource.api_id])
   end
 
   it "ignores invalid cohorts" do
@@ -101,28 +101,42 @@ RSpec.shared_examples "a filter by a single cohort (contract_period year) endpoi
     next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
     create_resource(active_lead_provider: next_active_lead_provider)
 
-    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort" } })
+    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort,1099" } })
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([resource]), root: "data"))
+    expect(response_ids).to eq([resource.api_id])
   end
 end
 
-RSpec.shared_examples "a filter by lead provider endpoint" do
-  let(:resource) do
-    lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
-    contract_period = active_lead_provider.contract_period
-    create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:))
-  end
+RSpec.shared_examples "a filter by urn endpoint" do
+  it "returns only resources for the specified urn" do
+    resource = create_resource(active_lead_provider:)
 
-  it "returns only resources for the specified lead provider" do
-    params = {}
-    params.merge!(mandatory_params) if defined?(mandatory_params)
+    # Resource with another urn should not be included.
+    create_resource(active_lead_provider:)
+
+    params = { filter: { urn: resource.urn } }
+    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
     authenticated_api_get(path, params:)
 
-    expect(response).to have_http_status(:not_found)
+    expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq({ errors: [{ title: "Resource not found", detail: "Nothing could be found for the provided details" }] }.to_json)
+    expect(response_ids).to eq([resource.api_id])
+  end
+
+  it "ignores invalid cohorts" do
+    resource = create_resource(active_lead_provider:)
+
+    # Resource with another urn should not be included.
+    create_resource(active_lead_provider:)
+
+    params = { filter: { urn: "#{resource.urn},invalid" } }
+    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+    authenticated_api_get(path, params:)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response_ids).to eq([resource.api_id])
   end
 end
