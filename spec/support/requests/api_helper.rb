@@ -38,4 +38,8 @@ module APIHelper
   def parsed_response_errors
     parsed_response[:errors]
   end
+
+  def response_ids
+    parsed_response[:data].map { |data| data[:id] }
+  end
 end

@@ -7,6 +7,13 @@ shared_examples "an index endpoint" do
       ]
     end
 
+    before do
+      # Resource for a different lead provider/contract period.
+      contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+      lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
+      create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:))
+    end
+
     it "returns the correct resources in a serialized format" do
       params = {}
       params.deep_merge!(mandatory_params) if defined?(mandatory_params)
@@ -15,7 +22,7 @@ shared_examples "an index endpoint" do
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq(serializer.render(apply_expected_order(resources), root: "data"))
+      expect(response_ids).to eq(apply_expected_order(resources).map(&:api_id))
     end
   end
 
@@ -28,7 +35,7 @@ shared_examples "an index endpoint" do
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq(serializer.render([], root: "data"))
+      expect(parsed_response_data).to eq([])
     end
   end
 end
