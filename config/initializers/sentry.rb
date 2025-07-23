@@ -7,6 +7,6 @@ if Rails.application.config.enable_sentry
     config.release = ENV["COMMIT_SHA"]
     config.traces_sample_rate = 0.1
     config.profiles_sample_rate = 0.1
-    config.active_job_report_on_retry_error = true
+    config.rails.active_job_report_on_retry_error = true
   end
 end
