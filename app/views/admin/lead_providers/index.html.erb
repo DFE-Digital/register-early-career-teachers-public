@@ -1,7 +1,7 @@
 <% page_data(title: "Lead providers", breadcrumbs: @breadcrumbs) %>
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-full">
+  <div class="govuk-grid-column-full">
     <%= govuk_table do |table|
       table.with_head do |head|
         head.with_row { |row| row.with_cell(text: "Lead provider") }
@@ -9,14 +9,7 @@
 
       table.with_body do |body|
         @lead_providers.each do |lead_provider|
-          body.with_row do |row|
-            row.with_cell do
-              govuk_link_to(
-                lead_provider.name,
-                "##{lead_provider.name.parameterize}",
-              )
-            end
-          end
+          body.with_row { |row| row.with_cell(text: lead_provider.name) }
         end
       end
     end %>
