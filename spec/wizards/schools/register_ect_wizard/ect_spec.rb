@@ -602,5 +602,73 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
       end
     end
+
+    describe '#previous_eoi_lead_provider_name' do
+      let(:school) { FactoryBot.create(:school) }
+
+      context 'when there is a previous training period with an EOI' do
+        let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Team Kurenai") }
+        let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+        let(:teacher) { FactoryBot.create(:teacher) }
+
+        let!(:ect_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :provider_led,
+            school:,
+            teacher:,
+            started_on: Date.new(2025, 3, 10)
+          )
+        end
+
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            ect_at_school_period: ect_period,
+            started_on: Date.new(2025, 3, 10),
+            expression_of_interest:
+          )
+        end
+
+        it 'returns the name of the EOI lead provider for the previous training period' do
+          expect(ect.previous_eoi_lead_provider_name).to eq("Team Kurenai")
+        end
+      end
+
+      context 'when there is no previous training period' do
+        it 'returns nil' do
+          expect(ect.previous_eoi_lead_provider_name).to be_nil
+        end
+      end
+
+      context 'when the previous training period has no EOI' do
+        let(:teacher) { FactoryBot.create(:teacher) }
+
+        let!(:ect_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :provider_led,
+            school:,
+            teacher:,
+            started_on: Date.new(2025, 3, 10)
+          )
+        end
+
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            ect_at_school_period: ect_period,
+            started_on: Date.new(2025, 3, 10),
+            expression_of_interest: nil
+          )
+        end
+
+        it 'returns nil' do
+          expect(ect.previous_eoi_lead_provider_name).to be_nil
+        end
+      end
+    end
   end
 end

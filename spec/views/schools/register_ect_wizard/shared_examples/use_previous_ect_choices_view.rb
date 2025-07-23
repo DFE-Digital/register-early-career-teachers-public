@@ -115,4 +115,29 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
       expect(rendered).to have_css('.govuk-summary-list__value', text: 'Akatsuki')
     end
   end
+
+  context 'when provider-led with expression of interest only' do
+    let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
+
+    before do
+      allow(wizard.ect).to receive(:lead_provider_has_confirmed_partnership_for_contract_period?).with(school).and_return(false)
+      allow(wizard.ect).to receive(:previous_eoi_lead_provider_name).and_return('Uchiha Clan')
+
+      assign(:school, school)
+      render
+    end
+
+    it 'renders the lead provider row with the EOI name' do
+      expect(rendered).to have_css('.govuk-summary-list__key', text: 'Lead provider')
+      expect(rendered).to have_css('.govuk-summary-list__value', text: 'Uchiha Clan')
+    end
+
+    it 'does not render the delivery partner row' do
+      expect(rendered).not_to have_css('.govuk-summary-list__key', text: 'Delivery partner')
+    end
+
+    it 'renders the explanatory paragraph' do
+      expect(rendered).to include('Uchiha Clan will confirm if they’ll be working with your school and which delivery partner will deliver training events.')
+    end
+  end
 end
