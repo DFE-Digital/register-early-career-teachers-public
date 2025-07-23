@@ -4,9 +4,20 @@ FactoryBot.define do
   factory(:training_period) do
     for_ect
     with_school_partnership
+    provider_led
 
     started_on { generate(:base_training_date) }
     finished_on { started_on + 1.day }
+
+    trait(:school_led) do
+      training_programme { 'school_led' }
+      school_partnership { nil }
+      expression_of_interest { nil }
+    end
+
+    trait(:provider_led) do
+      training_programme { 'provider_led' }
+    end
 
     trait :with_school_partnership do
       association :school_partnership

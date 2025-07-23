@@ -4,13 +4,15 @@ RSpec.describe TrainingPeriods::Create do
       period:,
       started_on:,
       school_partnership:,
-      expression_of_interest:
+      expression_of_interest:,
+      training_programme:
     ).call
   end
 
   let(:started_on) { Time.zone.today - 1.month }
   let(:school_partnership) { FactoryBot.create(:school_partnership) }
   let(:expression_of_interest) { nil }
+  let(:training_programme) { 'provider_led' }
 
   context 'with an ECTAtSchoolPeriod' do
     let(:teacher) { FactoryBot.create(:teacher) }
@@ -65,6 +67,36 @@ RSpec.describe TrainingPeriods::Create do
       expect {
         result
       }.to raise_error(ArgumentError, /Unsupported period type/)
+    end
+  end
+
+  describe '.school_led' do
+    let(:period) { FactoryBot.create(:ect_at_school_period) }
+
+    it 'calls new with the school_led arguments' do
+      allow(TrainingPeriods::Create).to receive(:new).and_return(true)
+
+      TrainingPeriods::Create.school_led(period:, started_on:)
+
+      expect(TrainingPeriods::Create).to have_received(:new).with(period:, started_on:, training_programme: 'school_led')
+    end
+  end
+
+  describe '.provider_led' do
+    let(:period) { FactoryBot.create(:ect_at_school_period) }
+
+    it 'calls new with the provider_led arguments' do
+      allow(TrainingPeriods::Create).to receive(:new).with(any_args).and_call_original
+
+      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:)
+
+      expect(TrainingPeriods::Create).to have_received(:new).with(
+        period:,
+        started_on:,
+        school_partnership:,
+        expression_of_interest:,
+        training_programme: 'provider_led'
+      )
     end
   end
 end
