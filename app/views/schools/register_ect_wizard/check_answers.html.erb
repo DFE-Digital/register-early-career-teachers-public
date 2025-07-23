@@ -84,6 +84,12 @@ end %>
                         visually_hidden_text: 'lead provider')
       end
     end
+    if @ect.use_previous_ect_choices && @ect.lead_provider_has_confirmed_partnership_for_contract_period?(@school)
+      summary_list.with_row do |row|
+        row.with_key(text: 'Delivery partner')
+        row.with_value(text: @ect.delivery_partner_name)
+      end
+    end
   end
 end %>
 
