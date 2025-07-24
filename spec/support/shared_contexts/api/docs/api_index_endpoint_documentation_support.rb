@@ -1,10 +1,18 @@
-RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |url, tag, resource_description, filter_schema_ref, response_schema_ref, default_sortable, sorting_schema_ref = nil|
+RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |url, tag, resource_description, response_schema_ref, filter_schema_ref, default_sortable, sorting_schema_ref = nil|
   path url do
     get "Retrieve multiple #{resource_description}" do
       tags tag
       consumes "application/json"
       produces "application/json"
       security [api_key: []]
+
+      if url.match?(/schools/)
+        parameter name: "filter[cohort]",
+                  example: "2024",
+                  in: :query,
+                  style: "deepObject",
+                  required: true
+      end
 
       if filter_schema_ref
         parameter name: :filter,
@@ -43,15 +51,12 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
       end
 
       response "200", "A list of #{resource_description}" do
-        let(:id) { resource&.api_id }
-
         schema({ "$ref": response_schema_ref })
 
         run_test!
       end
 
       response "401", "Unauthorized" do
-        let(:id) { resource&.api_id }
         let(:token) { "invalid" }
 
         schema({ "$ref": "#/components/schemas/UnauthorisedResponse" })

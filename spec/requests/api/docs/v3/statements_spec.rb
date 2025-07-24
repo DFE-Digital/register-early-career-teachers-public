@@ -9,8 +9,8 @@ RSpec.describe "Statements endpoint", openapi_spec: "v3/swagger.yaml", type: :re
                   "/api/v3/statements",
                   "Statements",
                   "statements as part of which the DfE will make output payments for participants",
-                  "#/components/schemas/StatementsFilter",
-                  "#/components/schemas/StatementsResponse"
+                  "#/components/schemas/StatementsResponse",
+                  "#/components/schemas/StatementsFilter"
 
   it_behaves_like "an API show endpoint documentation",
                   "/api/v3/statements/{id}",
