@@ -309,7 +309,7 @@ RSpec.describe Schools::Query do
 
         context "when ect has chosen `school_led` as training programme" do
           before do
-            training_period.ect_at_school_period.update!(training_programme: "school_led")
+            training_period.update!(training_programme: "school_led")
           end
 
           it "returns `provider_led`" do
