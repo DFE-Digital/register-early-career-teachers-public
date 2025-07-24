@@ -29,6 +29,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
+  create_enum "induction_programme_choice", ["not_yet_known", "provider_led", "school_led"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed"]
   create_enum "parity_check_run_modes", ["concurrent", "sequential"]
@@ -508,6 +509,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
     t.index ["urn"], name: "schools_unique_urn", unique: true
   end
 
+  create_table "schools_lead_providers_contract_periods_metadata", force: :cascade do |t|
+    t.bigint "school_id", null: false
+    t.bigint "lead_provider_id", null: false
+    t.bigint "contract_period_id", null: false
+    t.boolean "in_partnership", null: false
+    t.boolean "expression_of_interest", null: false
+    t.enum "induction_programme_choice", null: false, enum_type: "induction_programme_choice"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_period_id"], name: "idx_on_contract_period_id_bb6ce363be"
+    t.index ["lead_provider_id"], name: "idx_on_lead_provider_id_817fe9b8b1"
+    t.index ["school_id", "contract_period_id"], name: "idx_on_school_id_contract_period_id_f05c4eb736", unique: true
+    t.index ["school_id"], name: "idx_on_school_id_cec39b7e6e"
+  end
+
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
     t.bigint "job_id", null: false
     t.string "queue_name", null: false
@@ -767,6 +783,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"
+  add_foreign_key "schools_lead_providers_contract_periods_metadata", "contract_periods", primary_key: "year"
+  add_foreign_key "schools_lead_providers_contract_periods_metadata", "lead_providers"
+  add_foreign_key "schools_lead_providers_contract_periods_metadata", "schools"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
