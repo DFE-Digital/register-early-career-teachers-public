@@ -2,7 +2,7 @@
 <%= govuk_html_element do %>
   <%= render partial: "layouts/shared/head" %>
 
-  <body class="govuk-template__body">
+  <body class="govuk-template__body api-guidance">
     <%= render partial: "layouts/shared/js_enabled" %>
 
     <%= govuk_skip_link %>
@@ -14,36 +14,40 @@
     <%= render Navigation::PrimaryNavigationComponent.new(
       current_path: request.fullpath,
       current_user_type: current_user&.user_type,
-      inverse: true
+      inverse: content_for?(:api_guidance_home_header)
     ) %>
 
-    <div class="x-govuk-masthead">
-      <div class="govuk-width-container">
-        <%=
-          environment_specific_phase_banner(
-            html_attributes: { class: %w[x-govuk-phase-banner--inverse] },
-            tag_html_attributes: { class: %w[x-govuk-tag--inverse] }
-          )
-        %>
-
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-            <%= yield(:page_header) %>
-
-            <p class="x-govuk-masthead__description">
-            Find out what data lead providers need to submit to DfE, how to keep it up to date, and when to report changes about early career teachers and their mentors.
-            </p>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <% if content_for?(:api_guidance_home_header) %>
+      <%= yield(:api_guidance_home_header) %>
       <main class="govuk-main-wrapper" id="main-content" role="main">
         <div class="govuk-width-container">
           <%= yield %>
         </div>
       </main>
+    <% else %>
+      <div class="govuk-width-container">
+        <%= environment_specific_phase_banner %>
+        <%= yield(:backlink_or_breadcrumb) %>
+
+        <main class="govuk-main-wrapper" id="main-content" role="main">
+          <%= render partial: "layouts/shared/main_preamble" %>
+
+          <div class="govuk-grid-row">
+            <% if content_for?(:sidebar) %>
+              <div class="govuk-grid-column-one-third">
+                <%= yield(:sidebar) %>
+              </div>
+            <% end %>
+            <div class="govuk-grid-column-two-thirds">
+              <%= yield(:page_caption) %>
+              <%= yield(:page_header) %>
+
+              <%= yield %>
+            </div>
+          </div>
+        </main>
+      </div>
+    <% end %>
 
     <%= render partial: "layouts/shared/footer" %>
   </body>

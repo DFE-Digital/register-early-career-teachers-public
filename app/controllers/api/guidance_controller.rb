@@ -2,7 +2,7 @@ module API
   class GuidanceController < ApplicationController
     skip_before_action :authenticate
 
-    layout 'api_guidance', only: 'show'
+    layout 'api_guidance'
 
     def show
     end
