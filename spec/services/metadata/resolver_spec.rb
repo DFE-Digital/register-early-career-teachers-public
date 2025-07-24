@@ -1,0 +1,16 @@
+RSpec.describe Metadata::Resolver do
+  describe ".resolve_handler" do
+    it "returns the correct handler for a known object type" do
+      object = School.new
+      handler = Metadata::Resolver.resolve_handler(object)
+      expect(handler).to be_a(Metadata::Handler::School)
+    end
+
+    it "raises an error for an unknown object type" do
+      unknown_object = Class.new
+      expect {
+        Metadata::Resolver.resolve_handler(unknown_object)
+      }.to raise_error(ArgumentError, "No metadata handler found for Class")
+    end
+  end
+end
