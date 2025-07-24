@@ -63,8 +63,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "local_authority_code"
-    t.integer "establishment_number"
     t.uuid "dfe_sign_in_organisation_id"
     t.uuid "dqt_id"
     t.enum "body_type", default: "teaching_school_hub", enum_type: "appropriate_body_type"
