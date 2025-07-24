@@ -28,6 +28,7 @@ RSpec/AnyInstance:
     - 'spec/requests/appropriate_bodies/claim_an_ect/register_ect_spec.rb'
     - 'spec/services/sessions/users/builder_spec.rb'
     - 'spec/wizards/application_wizard_step_spec.rb'
+    - 'spec/initializers/blazer_spec.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
