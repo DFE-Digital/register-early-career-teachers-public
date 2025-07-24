@@ -1,4 +1,4 @@
-RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |url, tag, resource_description, response_schema_ref|
+RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |url, tag, resource_description, response_schema_ref, filter_schema_ref = nil|
   path url do
     get "Retrieve a single #{resource_description}" do
       tags tag
@@ -12,6 +12,14 @@ RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |u
                 schema: {
                   "$ref": "#/components/schemas/IDAttribute",
                 }
+
+      if url.match?(/schools/)
+        parameter name: "filter[cohort]",
+                  example: "2024",
+                  in: :query,
+                  style: "deepObject",
+                  required: true
+      end
 
       response "200", "A single #{resource_description}" do
         let(:id) { resource.api_id }
