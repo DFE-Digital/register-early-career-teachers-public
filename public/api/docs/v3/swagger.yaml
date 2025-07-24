@@ -15,6 +15,11 @@ paths:
       security:
       - api_key: []
       parameters:
+      - name: filter[cohort]
+        example: '2021'
+        in: query
+        style: deepObject
+        required: true
       - name: filter
         in: query
         required: false
@@ -58,6 +63,11 @@ paths:
         required: true
         schema:
           "$ref": "#/components/schemas/IDAttribute"
+      - name: filter[cohort]
+        example: '2021'
+        in: query
+        style: deepObject
+        required: true
       responses:
         '200':
           description: A single ECF school scoped to cohort
