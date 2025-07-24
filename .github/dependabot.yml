@@ -1,10 +1,16 @@
 version: 2
+multi-ecosystem-groups:
+  playwright-group:
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 5
 updates:
   - package-ecosystem: bundler
     directory: "/"
     schedule:
       interval: daily
-    open-pull-requests-limit: 5
+    patterns:
+      - playwright-ruby-client
     labels:
       - Dependencies
     groups:
@@ -12,11 +18,13 @@ updates:
         patterns:
           - govuk-components
           - govuk_design_system_formbuilder
+    multi-ecosystem-group: playwright-group
   - package-ecosystem: npm
     directory: "/"
     schedule:
       interval: daily
-    open-pull-requests-limit: 5
+    patterns:
+      - playwright
     labels:
       - Dependencies
     groups:
@@ -25,6 +33,7 @@ updates:
           - esbuild
           - "@esbuild/linux-x64"
           - "@esbuild/darwin-arm64"
+    multi-ecosystem-group: playwright-group
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
