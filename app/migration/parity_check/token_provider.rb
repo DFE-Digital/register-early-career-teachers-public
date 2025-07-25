@@ -14,7 +14,7 @@ module ParityCheck
     def token(lead_provider:)
       ensure_parity_check_enabled!
 
-      known_tokens_by_lead_provider_ecf_id[lead_provider.ecf_id]
+      known_tokens_by_lead_provider_ecf_id.fetch(lead_provider.ecf_id)
     end
 
   private

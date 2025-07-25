@@ -53,8 +53,9 @@ RSpec.describe ParityCheck::Runner, type: :model do
       expect(created_run.mode).to eq(mode)
     end
 
-    it "creates a request for each lead provider and endpoint" do
+    it "creates a request for each lead provider and endpoint, ignoring lead providers without an ecf_id" do
       other_lead_provider = FactoryBot.create(:lead_provider)
+      FactoryBot.create(:lead_provider, ecf_id: nil) # Ignored due to ecf_id being nil
       lead_providers = [lead_provider, other_lead_provider]
 
       created_run = nil
