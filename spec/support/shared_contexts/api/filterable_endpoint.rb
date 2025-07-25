@@ -125,7 +125,7 @@ RSpec.shared_examples "a filter by urn endpoint" do
     expect(response_ids).to eq([resource.api_id])
   end
 
-  it "ignores invalid cohorts" do
+  it "ignores invalid urns" do
     resource = create_resource(active_lead_provider:)
 
     # Resource with another urn should not be included.
