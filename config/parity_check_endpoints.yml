@@ -18,9 +18,43 @@ get:
           updated_since: "2024-11-13T11:21:55Z"
   - "/api/v3/statements/:id":
       id: statement_id
+    
+  - "/api/v3/schools/ecf":
+      paginate: true
+      query:
+        filter:
+          cohort: 2022
+  - "/api/v3/schools/ecf":
+      paginate: true
+      query:
+        filter:
+          urn: "102396"
+          cohort: 2023
+  - "/api/v3/schools/ecf":
+      paginate: true
+      query:
+        filter:
+          cohort: 2023
+          updated_since: "2025-04-13T11:21:55Z"
+  - "/api/v3/schools/ecf":
+      paginate: true
+      query:
+        cohort: 2021
+        sort: "-updated_at"
+  - "/api/v3/schools/ecf":
+      paginate: true
+      query:
+        filter:
+          cohort: "2021,2022"
+          urn: "102396"
+          updated_since: "2025-04-13T11:21:55Z"
+  - "/api/v3/schools/ecf/:id":
+      id: school_id
+
 post:
   - "/api/v3/partnerships/ecf":
       body: example_body
+
 put:
   - "/api/v3/participant-declarations/:id":
       id: example_id
