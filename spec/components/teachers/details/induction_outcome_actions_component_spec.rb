@@ -7,6 +7,8 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
   context "without active induction period" do
     it "does not render" do
       expect(component.render?).to be false
+      render_inline(component)
+      expect(rendered_content).to be_empty
     end
   end
 
@@ -18,6 +20,8 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
 
     it "renders" do
       expect(component.render?).to be true
+      render_inline(component)
+      expect(rendered_content).not_to be_empty
     end
 
     context "when in admin mode" do

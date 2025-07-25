@@ -7,6 +7,8 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
   context "when teacher has no current induction period" do
     it "does not render" do
       expect(component.render?).to be false
+      render_inline(component)
+      expect(rendered_content).to be_empty
     end
   end
 
@@ -24,6 +26,8 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
 
     it "renders" do
       expect(component.render?).to be true
+      render_inline(component)
+      expect(rendered_content).not_to be_empty
     end
 
     it "displays the heading" do
