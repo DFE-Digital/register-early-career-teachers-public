@@ -35,7 +35,7 @@ SCHOOL = {
           example: "2021",
         },
         in_partnership: {
-          description: "Whether or not the school already has an active partnership, if it is doing a funded induction programme",
+          description: "Whether or not the school already has an active partnership, if it is doing a provider-led training programme",
           type: :boolean,
           nullable: false,
           example: false,
@@ -52,7 +52,7 @@ SCHOOL = {
           ],
         },
         expression_of_interest: {
-          description: "Whether or not an ECF participant linked to the school has expressed interest in doing a funded induction programme",
+          description: "Whether or not the school has expressed interest in doing a provider-led training programme for participants",
           type: :boolean,
           nullable: false,
           example: false,
