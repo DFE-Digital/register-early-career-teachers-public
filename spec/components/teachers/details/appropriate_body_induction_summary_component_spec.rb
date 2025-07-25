@@ -1,13 +1,15 @@
 RSpec.describe Teachers::Details::AppropriateBodyInductionSummaryComponent, type: :component do
-  include AppropriateBodyHelper
   include Rails.application.routes.url_helpers
 
+  subject(:component) { described_class.new(teacher:) }
+
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:component) { described_class.new(teacher:) }
 
   context "when teacher has no induction periods" do
     it "does not render" do
       expect(component.render?).to be false
+      render_inline(component)
+      expect(rendered_content).to be_empty
     end
   end
 
@@ -16,6 +18,8 @@ RSpec.describe Teachers::Details::AppropriateBodyInductionSummaryComponent, type
 
     it "renders" do
       expect(component.render?).to be true
+      render_inline(component)
+      expect(rendered_content).not_to be_empty
     end
 
     it "displays the induction start date" do
