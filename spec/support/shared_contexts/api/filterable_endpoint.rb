@@ -47,7 +47,6 @@ RSpec.shared_examples "a filter by updated_since endpoint" do
   it "returns only resource that have been updated since the provided date" do
     updated_since = 2.months.ago.utc.iso8601
     params = { filter: { updated_since: } }
-    params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)
@@ -58,7 +57,6 @@ RSpec.shared_examples "a filter by updated_since endpoint" do
   it "correctly decodes URL encoded dates" do
     updated_since = URI.encode_www_form_component(2.months.ago.iso8601)
     params = { filter: { updated_since: } }
-    params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)
@@ -68,7 +66,6 @@ RSpec.shared_examples "a filter by updated_since endpoint" do
 
   it "returns 400 bad request when the updated_since is not a valid date" do
     params = { filter: { updated_since: "invalid-date" } }
-    params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:bad_request)
@@ -117,7 +114,6 @@ RSpec.shared_examples "a filter by urn endpoint" do
     create_resource(active_lead_provider:)
 
     params = { filter: { urn: resource.urn } }
-    params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)
@@ -132,7 +128,6 @@ RSpec.shared_examples "a filter by urn endpoint" do
     create_resource(active_lead_provider:)
 
     params = { filter: { urn: "#{resource.urn},invalid" } }
-    params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)

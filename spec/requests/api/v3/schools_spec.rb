@@ -4,7 +4,6 @@ RSpec.describe "Schools API", type: :request do
   let(:contract_period) { active_lead_provider.contract_period }
   let(:serializer) { SchoolSerializer }
   let(:serializer_options) { { contract_period_id: contract_period.id, lead_provider_id: lead_provider.id } }
-  let(:endpoint_mandatory_params) { { filter: { cohort: contract_period.id } } }
 
   def create_resource(active_lead_provider:)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
@@ -12,7 +11,7 @@ RSpec.describe "Schools API", type: :request do
   end
 
   describe "#index" do
-    let(:path) { api_v3_schools_path }
+    let(:path) { api_v3_schools_path(filter: { cohort: contract_period.id }) }
 
     def apply_expected_order(resources)
       resources.sort_by(&:created_at)
@@ -31,7 +30,7 @@ RSpec.describe "Schools API", type: :request do
   describe "#show" do
     let(:resource) { create_resource(active_lead_provider:) }
     let(:path_id) { resource.api_id }
-    let(:path) { api_v3_school_path(path_id) }
+    let(:path) { api_v3_school_path(path_id, filter: { cohort: contract_period.id }) }
 
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "a show endpoint"
