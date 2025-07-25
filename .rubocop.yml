@@ -110,3 +110,8 @@ RSpec/SpecFilePathFormat:
 RSpec/EmptyExampleGroup:
   Exclude:
     - 'spec/requests/api/docs/**/*'
+
+RSpec/VariableName:
+  Exclude:
+    - 'spec/requests/api/docs/**/*'
+    - 'spec/support/shared_contexts/api_doc_request_auth.rb'
