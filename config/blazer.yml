@@ -1,8 +1,29 @@
 # see https://github.com/ankane/blazer for more info
 
 data_sources:
+  # http://localhost:3000/admin/blazer/queries/docs?data_source=main
   main:
     url: <%= ENV["BLAZER_DATABASE_URL"] %>
+
+    # https://blazer.dokkuapp.com/queries/1-smart-variable
+    smart_variables:
+      appropriate_body_id: "SELECT id, name FROM appropriate_bodies ORDER BY name ASC"
+      teacher_id: "SELECT id, CONCAT(trs_first_name, ' ', trs_last_name) AS full_name FROM teachers ORDER BY full_name ASC"
+      batch_status: ['pending', 'processing', 'processed', 'completing', 'completed', 'failed']
+      batch_type: ['action', 'claim']
+
+    # https://blazer.dokkuapp.com/queries/2-smart-column
+    smart_columns:
+      appropriate_body_id: "SELECT id, name FROM appropriate_bodies WHERE id IN {value}"
+      teacher_id: "SELECT id, CONCAT(trs_first_name, ' ', trs_last_name) AS full_name FROM teachers WHERE id IN {value}"
+
+    # https://blazer.dokkuapp.com/queries/3-linked-column
+    linked_columns:
+      appropriate_body_id: "/admin/organisations/appropriate-bodies/{value}"
+      teacher_id: "/admin/teachers/{value}"
+      pending_induction_submission_batch_id: "/admin/bulk/batches/{value}"
+      induction_period_id: "/admin/teachers/N/induction-periods/{value}/edit"
+
 
 # statement timeout, in seconds
 # none by default
