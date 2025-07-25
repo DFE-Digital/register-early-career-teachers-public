@@ -187,7 +187,7 @@ Rails.application.routes.draw do
       get "cannot-register-ect", action: :new
       get "cannot-register-ect-yet", action: :new
 
-      get "already_active_at_school", action: :new
+      get "already-active_at-school", action: :new
       get "induction-completed", action: :new
       get "induction-exempt", action: :new
       get "induction-failed", action: :new
