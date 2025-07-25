@@ -15,10 +15,7 @@ shared_examples "an index endpoint" do
     end
 
     it "returns the correct resources in a serialized format" do
-      params = {}
-      params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
-
-      authenticated_api_get(path, params:)
+      authenticated_api_get(path)
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
@@ -28,10 +25,7 @@ shared_examples "an index endpoint" do
 
   context "when no resources exist for the lead provider" do
     it "returns an empty result in serialized format" do
-      params = {}
-      params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
-
-      authenticated_api_get(path, params:)
+      authenticated_api_get(path)
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
