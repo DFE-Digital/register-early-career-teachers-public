@@ -42,9 +42,9 @@ describe ParityCheck::Response do
   describe "scopes" do
     let(:request) { FactoryBot.create(:parity_check_request, :in_progress) }
     let!(:matching_response) { FactoryBot.create(:parity_check_response, :matching, request:) }
-    let!(:matching_status_codes_response) { FactoryBot.create(:parity_check_response, :matching, ecf_body: "different", request:) }
-    let!(:matching_bodies_response) { FactoryBot.create(:parity_check_response, :matching, ecf_status_code: 404, request:) }
-    let!(:different_response) { FactoryBot.create(:parity_check_response, :different, request:) }
+    let!(:matching_status_codes_response) { FactoryBot.create(:parity_check_response, :matching, ecf_body: "different", request:, page: 2) }
+    let!(:matching_bodies_response) { FactoryBot.create(:parity_check_response, :matching, ecf_status_code: 404, request:, page: 3) }
+    let!(:different_response) { FactoryBot.create(:parity_check_response, :different, request:, page: 1) }
 
     describe ".different" do
       subject { described_class.different }
@@ -80,6 +80,12 @@ describe ParityCheck::Response do
       subject { described_class.bodies_matching }
 
       it { is_expected.to contain_exactly(matching_response, matching_bodies_response) }
+    end
+
+    describe ".ordered_by_page" do
+      subject { described_class.ordered_by_page }
+
+      it { is_expected.to eq([different_response, matching_status_codes_response, matching_bodies_response, matching_response]) }
     end
   end
 

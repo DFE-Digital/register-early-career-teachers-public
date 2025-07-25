@@ -21,6 +21,7 @@ module ParityCheck
     scope :bodies_matching, -> { where(ecf_body: nil, rect_body: nil) } # We nil matching response bodies.
     scope :matching, -> { status_codes_matching.bodies_matching }
     scope :different, -> { status_codes_different.or(bodies_different) }
+    scope :ordered_by_page, -> { order(:page) }
 
     def rect_performance_gain_ratio
       return unless ecf_time_ms && rect_time_ms
