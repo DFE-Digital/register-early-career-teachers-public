@@ -14,13 +14,13 @@ RSpec.shared_examples "a sortable endpoint" do |additional_sorts = []|
       resources.sort_by!(&:"#{sort[1..]}").tap { |l| l.reverse! if sort[0] == "-" }
 
       params = { sort: }
-      params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+      params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
       authenticated_api_get(path, params:)
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response_ids).to eql(resources.map(&:api_id))
+      expect(response.body).to eq(serializer.render(resources, root: "data", **serializer_options))
     end
   end
 end
