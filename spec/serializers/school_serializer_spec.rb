@@ -38,7 +38,6 @@ describe SchoolSerializer, type: :serializer do
                       started_on: another_ect_at_school_period.started_on)
   end
 
-
   context "when serialiser input is a query scope" do
     subject(:response) do
       JSON.parse(described_class.render(scope))

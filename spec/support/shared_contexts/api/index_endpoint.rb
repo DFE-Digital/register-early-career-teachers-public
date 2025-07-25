@@ -16,26 +16,26 @@ shared_examples "an index endpoint" do
 
     it "returns the correct resources in a serialized format" do
       params = {}
-      params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+      params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
       authenticated_api_get(path, params:)
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response_ids).to eq(apply_expected_order(resources).map(&:api_id))
+      expect(response.body).to eq(serializer.render(apply_expected_order(resources), root: "data", **serializer_options))
     end
   end
 
   context "when no resources exist for the lead provider" do
     it "returns an empty result in serialized format" do
       params = {}
-      params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+      params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
       authenticated_api_get(path, params:)
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(parsed_response_data).to eq([])
+      expect(response.body).to eq(serializer.render([], root: "data"))
     end
   end
 end

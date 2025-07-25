@@ -1,13 +1,13 @@
 shared_examples "a show endpoint" do
   it "returns the correct resource in a serialized format" do
     params = {}
-    params.merge!(mandatory_params) if defined?(mandatory_params)
+    params.merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(parsed_response_data[:id]).to eq(resource.api_id)
+    expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
   end
 
   context "when the resource does not exist" do
@@ -15,7 +15,7 @@ shared_examples "a show endpoint" do
 
     it "returns 404 not found" do
       params = {}
-      params.merge!(mandatory_params) if defined?(mandatory_params)
+      params.merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
       authenticated_api_get(path, params:)
 
@@ -34,7 +34,7 @@ shared_examples "a show endpoint" do
 
     it "returns 404 not found" do
       params = {}
-      params.merge!(mandatory_params) if defined?(mandatory_params)
+      params.merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
       authenticated_api_get(path, params:)
 

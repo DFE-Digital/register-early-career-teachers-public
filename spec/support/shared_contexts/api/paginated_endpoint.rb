@@ -5,7 +5,7 @@ shared_examples "a paginated endpoint" do
 
   it "returns 5 resources on page 1" do
     params = { page: { per_page: 5, page: 1 } }
-    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+    params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
     authenticated_api_get(path, params:)
 
@@ -15,7 +15,7 @@ shared_examples "a paginated endpoint" do
 
   it "returns 3 resources on page 2" do
     params = { page: { per_page: 5, page: 2 } }
-    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+    params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
     authenticated_api_get(path, params:)
 
@@ -25,7 +25,7 @@ shared_examples "a paginated endpoint" do
 
   it "returns empty for page 3" do
     params = { page: { per_page: 5, page: 3 } }
-    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+    params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
     authenticated_api_get(path, params:)
 
@@ -35,7 +35,7 @@ shared_examples "a paginated endpoint" do
 
   it "returns error when requesting page -1" do
     params = { page: { per_page: 5, page: -1 } }
-    params.deep_merge!(mandatory_params) if defined?(mandatory_params)
+    params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
 
     authenticated_api_get(path, params:)
 
