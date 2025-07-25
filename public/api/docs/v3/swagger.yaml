@@ -15,11 +15,6 @@ paths:
       security:
       - api_key: []
       parameters:
-      - name: filter[cohort]
-        example: '2024'
-        in: query
-        style: deepObject
-        required: true
       - name: filter
         in: query
         required: false
@@ -63,11 +58,12 @@ paths:
         required: true
         schema:
           "$ref": "#/components/schemas/IDAttribute"
-      - name: filter[cohort]
-        example: '2024'
+      - name: filter
         in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SchoolFilter"
         style: deepObject
-        required: true
       responses:
         '200':
           description: A single ECF school scoped to cohort
@@ -242,7 +238,7 @@ components:
               example: '2021'
             in_partnership:
               description: Whether or not the school already has an active partnership,
-                if it is doing a funded induction programme
+                if it is doing a provider-led training programme
               type: boolean
               nullable: false
               example: false
@@ -256,8 +252,8 @@ components:
               - provider_led
               - not_yet_known
             expression_of_interest:
-              description: Whether or not an ECF participant linked to the school
-                has expressed interest in doing a funded induction programme
+              description: Whether or not the school has expressed interest in doing
+                a provider-led training programme for participants
               type: boolean
               nullable: false
               example: false
@@ -292,6 +288,16 @@ components:
             and time (ISO 8601 date format)
           type: string
           example: '2021-05-13T11:21:55Z'
+    SchoolFilter:
+      description: Filter schools to return more specific results
+      type: object
+      required:
+      - cohort
+      properties:
+        cohort:
+          description: Return schools within the specified cohort.
+          type: string
+          example: '2021'
     SchoolResponse:
       description: A single school.
       type: object
