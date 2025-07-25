@@ -95,7 +95,7 @@ module Schools
 
       "(
         #{
-          School.distinct.select('ect_at_school_periods.training_programme').from('schools s')
+          School.distinct.select('training_periods.training_programme').from('schools s')
           .left_joins(ect_at_school_periods: { training_periods: { expression_of_interest: :contract_period } })
           .left_joins(ect_at_school_periods: { training_periods: { active_lead_provider: :contract_period } })
           .where('contract_periods.year = ? OR contract_periods_active_lead_providers.year = ?', contract_period_id, contract_period_id)
