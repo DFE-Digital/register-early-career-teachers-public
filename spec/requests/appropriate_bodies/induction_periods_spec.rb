@@ -102,7 +102,6 @@ RSpec.describe 'Appropriate body editing an active induction period', type: :req
         context "when updating earliest period start date" do
           before do
             teacher.induction_periods.destroy_all
-            allow(BeginECTInductionJob).to receive(:perform_later)
           end
 
           let!(:earliest_period) do
@@ -118,8 +117,9 @@ RSpec.describe 'Appropriate body editing an active induction period', type: :req
           end
 
           it "enqueues BeginECTInductionJob" do
-            patch(ab_teacher_induction_period_path(teacher, earliest_period), params:)
-            expect(BeginECTInductionJob).to have_received(:perform_later).with(
+            expect {
+              patch(ab_teacher_induction_period_path(teacher, earliest_period), params:)
+            }.to have_enqueued_job(BeginECTInductionJob).with(
               trn: teacher.trn,
               start_date: params[:induction_period][:started_on].to_date
             )
@@ -172,10 +172,6 @@ RSpec.describe 'Appropriate body editing an active induction period', type: :req
         let(:started_on) { 8.months.ago.to_date }
         let(:finished_on) { 5.months.ago.to_date }
 
-        before do
-          allow(PassECTInductionJob).to receive(:perform_later)
-        end
-
         it "updates all fields" do
           patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
 
@@ -191,9 +187,9 @@ RSpec.describe 'Appropriate body editing an active induction period', type: :req
         end
 
         it "notifies TRS of the updated dates" do
-          patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
-
-          expect(PassECTInductionJob).to have_received(:perform_later).with(
+          expect {
+            patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
+          }.to have_enqueued_job(PassECTInductionJob).with(
             trn: teacher.trn,
             start_date: started_on,
             completed_date: finished_on,
@@ -252,10 +248,6 @@ RSpec.describe 'Appropriate body editing an active induction period', type: :req
 
         let(:finished_on) { 5.months.ago.to_date }
 
-        before do
-          allow(FailECTInductionJob).to receive(:perform_later)
-        end
-
         it "updates the end date" do
           patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
 
@@ -267,9 +259,9 @@ RSpec.describe 'Appropriate body editing an active induction period', type: :req
         end
 
         it "notifies TRS of the updated end date" do
-          patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
-
-          expect(FailECTInductionJob).to have_received(:perform_later).with(
+          expect {
+            patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
+          }.to have_enqueued_job(FailECTInductionJob).with(
             trn: teacher.trn,
             start_date: induction_period.started_on,
             completed_date: finished_on,
