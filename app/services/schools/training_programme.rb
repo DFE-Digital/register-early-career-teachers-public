@@ -40,7 +40,10 @@ module Schools
     def ect_training_programme
       return school.transient_ects_at_school_training_programme if school.respond_to?(:transient_ects_at_school_training_programme)
 
-      ECTAtSchoolPeriod.where(id: ects_expressions_of_interest.pluck(:id) + ect_at_school_periods.pluck(:id)).order(training_programme: :asc).pick(:training_programme)
+      TrainingPeriod
+        .where(ect_at_school_period_id: ects_expressions_of_interest.pluck(:id) + ect_at_school_periods.pluck(:id))
+        .order(training_programme: :asc)
+        .pick(:training_programme)
     end
 
     def not_yet_known
