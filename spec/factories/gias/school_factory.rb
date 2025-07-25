@@ -92,10 +92,12 @@ FactoryBot.define do
     # type code
     trait(:cip_only_type) do
       type_name { GIAS::Types::CIP_ONLY_TYPES.sample }
+      funding_eligibility { :eligible_for_cip }
     end
 
     trait(:not_cip_only_type) do
       type_name { (GIAS::Types::ALL_TYPES - GIAS::Types::CIP_ONLY_TYPES).sample }
+      funding_eligibility { :eligible_for_fip }
     end
 
     trait(:eligible_type) do
