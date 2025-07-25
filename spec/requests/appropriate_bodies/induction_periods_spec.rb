@@ -12,6 +12,7 @@ RSpec.describe 'Appropriate body editing an active induction period', type: :req
     it "returns success" do
       get edit_ab_teacher_induction_period_path(induction_period.teacher, induction_period)
       expect(response).to be_successful
+      expect(response.body).to include("Edit induction period")
     end
   end
 

@@ -356,6 +356,7 @@ RSpec.describe 'Admin editing an active induction period', type: :request do
     it "returns success" do
       get edit_admin_teacher_induction_period_path(induction_period.teacher, induction_period)
       expect(response).to be_successful
+      expect(response.body).to include("Edit induction period")
     end
   end
 
