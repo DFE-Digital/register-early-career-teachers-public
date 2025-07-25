@@ -1,4 +1,4 @@
-RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |url, tag, resource_description, response_schema_ref, filter_schema_ref, default_sortable, sorting_schema_ref = nil|
+RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |url, tag, resource_description, response_schema_ref, filter_schema_ref, default_sortable, mandatory_cohort_filter = nil, sorting_schema_ref = nil|
   path url do
     get "Retrieve multiple #{resource_description}" do
       tags tag
@@ -6,12 +6,13 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
       produces "application/json"
       security [api_key: []]
 
-      if url.match?(/schools/)
+      if mandatory_cohort_filter
         parameter name: "filter[cohort]",
                   example: "2024",
                   in: :query,
                   style: "deepObject",
                   required: true
+        let(:"filter[cohort]") { school_partnership.contract_period.year }
       end
 
       if filter_schema_ref
