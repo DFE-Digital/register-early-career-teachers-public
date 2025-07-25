@@ -4,7 +4,6 @@ describe ECTAtSchoolPeriod do
     let(:target) { FactoryBot.create(:school) }
 
     it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at, target_optional: false
-    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[training_programme], timestamp_attribute: :api_updated_at, target_optional: false
   end
 
   describe "enums" do

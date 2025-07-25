@@ -21,7 +21,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :events
 
   touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
-  touch -> { school }, on_event: %i[update], when_changing: %i[training_programme], timestamp_attribute: :api_updated_at
 
   # Validations
   validate :appropriate_body_for_independent_school,
