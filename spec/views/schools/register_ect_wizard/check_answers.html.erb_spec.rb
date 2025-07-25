@@ -62,11 +62,20 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
         context 'when ECT has provider-led programme' do
           before do
             allow(wizard.ect).to receive(:provider_led?).and_return(true)
+            allow(wizard.ect).to receive(:lead_provider_has_confirmed_partnership_for_contract_period?).with(wizard.school).and_return(true)
+            allow(wizard.ect).to receive_messages(lead_provider_name: "Confirmed LP", delivery_partner_name: "Confirmed DP")
           end
 
           it 'hides change link for lead provider' do
             render
             expect(rendered).not_to have_link('Change', href: schools_register_ect_wizard_change_training_programme_path)
+          end
+
+          it 'renders the delivery partner name from confirmed previous choices' do
+            render
+
+            expect(rendered).to have_css('.govuk-summary-list__key', text: 'Delivery partner')
+            expect(rendered).to have_css('.govuk-summary-list__value', text: 'Confirmed DP')
           end
         end
       end
@@ -116,12 +125,20 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
       context 'when ECT has provider-led programme' do
         before do
-          allow(wizard.ect).to receive(:provider_led?).and_return(true)
+          allow(wizard.ect).to receive(:lead_provider_has_confirmed_partnership_for_contract_period?)
+            .with(wizard.school).and_return(true)
+          allow(wizard.ect).to receive_messages(provider_led?: true, delivery_partner_name: "Should Not Show")
         end
 
         it 'hides change link for lead provider' do
           render
           expect(rendered).to have_link('Change', href: schools_register_ect_wizard_change_training_programme_path)
+        end
+
+        it 'does not render the delivery partner row' do
+          render
+          expect(rendered).not_to have_css('.govuk-summary-list__key', text: 'Delivery partner')
+          expect(rendered).not_to have_css('.govuk-summary-list__value', text: 'Should Not Show')
         end
       end
     end

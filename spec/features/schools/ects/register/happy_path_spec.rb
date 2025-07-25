@@ -233,7 +233,6 @@ RSpec.describe 'Registering an ECT' do
     row = page.locator('.govuk-summary-list__row', has: page.locator('text=Training programme'))
     expect(row.text_content).to include('Training programme')
     expect(row.text_content).to include('Provider-led')
-    expect(page.get_by_text(@school.last_chosen_lead_provider_name).first).to be_visible
   end
 
   def when_i_select_that_i_dont_want_to_use_the_school_previous_choices
