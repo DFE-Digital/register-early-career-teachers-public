@@ -52,9 +52,14 @@ RSpec.describe "View parity check request" do
     responses = FactoryBot.create_list(:parity_check_response, Pagy::DEFAULT[:limit] + 1, :matching)
     request = FactoryBot.create(:parity_check_request, :completed, run:, responses:)
 
+    responses.each.with_index { |response, index| response.update(page: index + 1) }
+
     page.goto(migration_parity_check_request_path(run, request))
 
     expect(page.locator("tbody tr")).to have_count(Pagy::DEFAULT[:limit])
+
+    page_numbers_in_order = page.locator("table tbody tr td:first-child").all.map(&:text_content).map(&:to_i)
+    expect(page_numbers_in_order).to eq(page_numbers_in_order.sort)
 
     pagination = page.locator(".govuk-pagination")
     expect(pagination).to be_visible
