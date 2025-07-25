@@ -47,6 +47,7 @@ RSpec.configure do |config|
           # Schools
           School: SCHOOL,
           SchoolsFilter: SCHOOLS_FILTER,
+          SchoolFilter: SCHOOL_FILTER,
           SchoolResponse: SCHOOL_RESPONSE,
           SchoolsResponse: SCHOOLS_RESPONSE,
 

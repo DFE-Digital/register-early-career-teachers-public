@@ -1,7 +1,7 @@
-RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |url, tag, resource_description, response_schema_ref, mandatory_cohort_filter = nil|
-  path url do
-    get "Retrieve a single #{resource_description}" do
-      tags tag
+RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |params = {}|
+  path params[:url] do
+    get "Retrieve a single #{params[:resource_description]}" do
+      tags params[:tag]
       consumes "application/json"
       produces "application/json"
       security [api_key: []]
@@ -13,19 +13,20 @@ RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |u
                   "$ref": "#/components/schemas/IDAttribute",
                 }
 
-      if mandatory_cohort_filter
-        parameter name: "filter[cohort]",
-                  example: "2024",
+      if params[:filter_schema_ref]
+        parameter name: :filter,
                   in: :query,
-                  style: "deepObject",
-                  required: true
-        let(:"filter[cohort]") { school_partnership.contract_period.year }
+                  required: false,
+                  schema: {
+                    "$ref": params[:filter_schema_ref],
+                  },
+                  style: "deepObject"
       end
 
-      response "200", "A single #{resource_description}" do
+      response "200", "A single #{params[:resource_description]}" do
         let(:id) { resource.api_id }
 
-        schema({ "$ref": response_schema_ref })
+        schema({ "$ref": params[:response_schema_ref] })
 
         run_test!
       end

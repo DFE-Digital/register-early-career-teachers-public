@@ -1,26 +1,17 @@
-RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |url, tag, resource_description, response_schema_ref, filter_schema_ref, default_sortable, mandatory_cohort_filter = nil, sorting_schema_ref = nil|
-  path url do
-    get "Retrieve multiple #{resource_description}" do
-      tags tag
+RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |params = {}|
+  path params[:url] do
+    get "Retrieve multiple #{params[:resource_description]}" do
+      tags params[:tag]
       consumes "application/json"
       produces "application/json"
       security [api_key: []]
 
-      if mandatory_cohort_filter
-        parameter name: "filter[cohort]",
-                  example: "2024",
-                  in: :query,
-                  style: "deepObject",
-                  required: true
-        let(:"filter[cohort]") { school_partnership.contract_period.year }
-      end
-
-      if filter_schema_ref
+      if params[:filter_schema_ref]
         parameter name: :filter,
                   in: :query,
                   required: false,
                   schema: {
-                    "$ref": filter_schema_ref,
+                    "$ref": params[:filter_schema_ref],
                   },
                   style: "deepObject"
       end
@@ -33,7 +24,7 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
                 },
                 style: "deepObject"
 
-      if default_sortable
+      if params[:default_sortable]
         parameter name: :sort,
                   in: :query,
                   required: false,
@@ -42,17 +33,17 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
                   }
       end
 
-      if sorting_schema_ref
+      if params[:sorting_schema_ref]
         parameter name: :sort,
                   in: :query,
                   required: false,
                   schema: {
-                    "$ref": sorting_schema_ref,
+                    "$ref": params[:sorting_schema_ref],
                   }
       end
 
-      response "200", "A list of #{resource_description}" do
-        schema({ "$ref": response_schema_ref })
+      response "200", "A list of #{params[:resource_description]}" do
+        schema({ "$ref": params[:response_schema_ref] })
 
         run_test!
       end
