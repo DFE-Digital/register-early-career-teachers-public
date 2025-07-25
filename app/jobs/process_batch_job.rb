@@ -18,7 +18,19 @@ class ProcessBatchJob < ApplicationJob
     author = event_author(pending_induction_submission_batch, author_email, author_name)
     batch_service = self.class.batch_service.new(pending_induction_submission_batch:, author:)
 
-    batch_service.complete! if pending_induction_submission_batch.processed? || pending_induction_submission_batch.completing?
+    # confirm and complete
+    if pending_induction_submission_batch.processed?
+      if batch_service.revalidated?
+        batch_service.complete!
+      else
+        pending_induction_submission_batch.pending!
+        self.class.perform_later(pending_induction_submission_batch, author_email, author_name)
+      end
+    end
+
+    # resume completing
+    batch_service.complete! if pending_induction_submission_batch.completing?
+    # process or resume processing
     batch_service.process! if pending_induction_submission_batch.pending? || pending_induction_submission_batch.processing?
   rescue StandardError => e
     Rails.logger.debug("Attempt #{executions}: #{e.message}")

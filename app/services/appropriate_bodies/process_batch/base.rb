@@ -32,6 +32,18 @@ module AppropriateBodies
         pending_induction_submission_batch.processed!
       end
 
+      # @return [Boolean] valid submissions are still valid
+      def revalidated?
+        pending_induction_submission_batch.pending_induction_submissions.without_errors.all? do |pending_induction_submission|
+          @row = pending_induction_submission_batch.row_by(trn: pending_induction_submission.trn)
+          @pending_induction_submission = pending_induction_submission
+
+          next(false) if fails_pre_checks?
+
+          validate_submission!.nil?
+        end
+      end
+
     private
 
       # Formatting validation of TRN and DOB happens after creation so a safe version of the TRN is used
@@ -111,6 +123,10 @@ module AppropriateBodies
         "#{name} does not have their qualified teacher status (QTS)"
       rescue StandardError
         "Something went wrong. You’ll need to try again later"
+      end
+
+      def fails_pre_checks?
+        raise(NotImplementedError)
       end
     end
   end
