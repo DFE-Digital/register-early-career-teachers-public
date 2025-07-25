@@ -4,7 +4,8 @@ namespace :sandbox_seed_data do
     seeds = [
       SandboxSeedData::ContractPeriods,
       SandboxSeedData::LeadProviders,
-      SandboxSeedData::Statements
+      SandboxSeedData::Statements,
+      SandboxSeedData::Schools,
     ]
 
     seeds.each do |seed_class|
