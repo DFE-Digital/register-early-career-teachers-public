@@ -13,10 +13,7 @@ RSpec.shared_examples "a sortable endpoint" do |additional_sorts = []|
       # Sort resources based on the specified sort parameter.
       resources.sort_by!(&:"#{sort[1..]}").tap { |l| l.reverse! if sort[0] == "-" }
 
-      params = { sort: }
-      params.deep_merge!(endpoint_mandatory_params) if defined?(endpoint_mandatory_params)
-
-      authenticated_api_get(path, params:)
+      authenticated_api_get(path, params: { sort: })
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
