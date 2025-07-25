@@ -1,4 +1,4 @@
-RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |url, tag, resource_description, response_schema_ref, filter_schema_ref = nil|
+RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |url, tag, resource_description, response_schema_ref, mandatory_cohort_filter = nil|
   path url do
     get "Retrieve a single #{resource_description}" do
       tags tag
@@ -13,12 +13,13 @@ RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |u
                   "$ref": "#/components/schemas/IDAttribute",
                 }
 
-      if url.match?(/schools/)
+      if mandatory_cohort_filter
         parameter name: "filter[cohort]",
                   example: "2024",
                   in: :query,
                   style: "deepObject",
                   required: true
+        let(:"filter[cohort]") { school_partnership.contract_period.year }
       end
 
       response "200", "A single #{resource_description}" do

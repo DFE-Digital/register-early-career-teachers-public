@@ -16,7 +16,7 @@ paths:
       - api_key: []
       parameters:
       - name: filter[cohort]
-        example: '2021'
+        example: '2024'
         in: query
         style: deepObject
         required: true
@@ -64,7 +64,7 @@ paths:
         schema:
           "$ref": "#/components/schemas/IDAttribute"
       - name: filter[cohort]
-        example: '2021'
+        example: '2024'
         in: query
         style: deepObject
         required: true
