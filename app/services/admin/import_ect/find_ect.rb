@@ -16,7 +16,6 @@ module Admin
 
         check_if_teacher_already_exists!
         trs_teacher.check_eligibility!
-        check_admin_induction_eligibility!
 
         pending_induction_submission.save(context: :find_ect)
       end
@@ -36,14 +35,6 @@ module Admin
         return unless existing_teacher
 
         raise Admin::Errors::TeacherAlreadyExists, existing_teacher
-      end
-
-      def check_admin_induction_eligibility!
-        induction_status = trs_teacher.induction_status
-
-        if %w[Passed Failed Exempt].include?(induction_status)
-          raise TRS::Errors::InductionAlreadyCompleted
-        end
       end
     end
   end

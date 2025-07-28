@@ -53,29 +53,28 @@ RSpec.describe 'Claiming an ECT' do
   describe "when the ECT has passed the induction" do
     include_context 'test trs api client that finds teacher with specific induction status', 'Passed'
 
-    scenario 'Button is hidden when induction is completed' do
+    scenario 'Shows error message that induction is already completed' do
       given_i_am_on_the_claim_an_ect_find_page
       when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
       and_i_submit_the_form
 
-      now_i_should_be_on_the_claim_an_ect_check_page
-      then_i_should_not_see_the_claim_button
+      now_i_should_be_on_the_induction_already_completed_error_page
+      expect(page.get_by_text('You cannot register Kirk Van Houten')).to be_visible
+      expect(page.get_by_text('Our records show that Kirk Van Houten has already completed their induction')).to be_visible
     end
   end
 
   describe "when the ECT is exempt from induction" do
     include_context 'test trs api client that finds teacher with specific induction status', 'Exempt'
 
-    scenario 'Button is hidden and exempt message is shown' do
+    scenario 'Shows error message that induction is already completed' do
       given_i_am_on_the_claim_an_ect_find_page
       when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
       and_i_submit_the_form
 
-      now_i_should_be_on_the_claim_an_ect_check_page
-      then_i_should_not_see_the_claim_button
-
-      then_i_should_be_told_the_ect_cannot_register
-      expect(page.get_by_text('Our records show that Kirk Van Houten is exempt from completing their induction')).to be_visible
+      now_i_should_be_on_the_induction_already_completed_error_page
+      expect(page.get_by_text('You cannot register Kirk Van Houten')).to be_visible
+      expect(page.get_by_text('Our records show that Kirk Van Houten has already completed their induction')).to be_visible
     end
   end
 
@@ -110,6 +109,12 @@ private
   def now_i_should_be_on_the_claim_an_ect_check_page
     @pending_induction_submission = PendingInductionSubmission.last
     path = "/appropriate-body/claim-an-ect/check-ect/#{@pending_induction_submission.id}/edit"
+    expect(page.url).to end_with(path)
+  end
+
+  def now_i_should_be_on_the_induction_already_completed_error_page
+    @pending_induction_submission = PendingInductionSubmission.last
+    path = "/appropriate-body/claim-an-ect/errors/induction-already-completed/#{@pending_induction_submission.id}"
     expect(page.url).to end_with(path)
   end
 

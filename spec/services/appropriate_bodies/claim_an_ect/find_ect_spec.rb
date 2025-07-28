@@ -70,5 +70,38 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::TeacherNotFound)
       end
     end
+
+    context "when teacher has completed induction" do
+      include_context 'test trs api client that finds teacher with specific induction status', 'Passed'
+
+      it "raises induction already completed error" do
+        pending_induction_submission = FactoryBot.create(:pending_induction_submission)
+        find_ect = AppropriateBodies::ClaimAnECT::FindECT.new(appropriate_body:, pending_induction_submission:)
+
+        expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
+      end
+    end
+
+    context "when teacher has failed induction" do
+      include_context 'test trs api client that finds teacher with specific induction status', 'Failed'
+
+      it "raises induction already completed error" do
+        pending_induction_submission = FactoryBot.create(:pending_induction_submission)
+        find_ect = AppropriateBodies::ClaimAnECT::FindECT.new(appropriate_body:, pending_induction_submission:)
+
+        expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
+      end
+    end
+
+    context "when teacher is exempt from induction" do
+      include_context 'test trs api client that finds teacher with specific induction status', 'Exempt'
+
+      it "raises induction already completed error" do
+        pending_induction_submission = FactoryBot.create(:pending_induction_submission)
+        find_ect = AppropriateBodies::ClaimAnECT::FindECT.new(appropriate_body:, pending_induction_submission:)
+
+        expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
+      end
+    end
   end
 end

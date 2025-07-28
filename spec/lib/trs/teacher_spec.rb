@@ -128,6 +128,34 @@ RSpec.describe TRS::Teacher do
         expect { subject.check_eligibility! }.to raise_error(TRS::Errors::ProhibitedFromTeaching)
       end
     end
+
+    context "when the teacher has completed induction" do
+      let(:data) do
+        {
+          'qts' => { 'awarded' => '2024-09-18' },
+          'induction' => { 'status' => 'Passed' },
+          'alerts' => []
+        }
+      end
+
+      it "raises TRS::Errors::InductionAlreadyCompleted" do
+        expect { subject.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
+      end
+    end
+
+    context "when the teacher is eligible" do
+      let(:data) do
+        {
+          'qts' => { 'awarded' => '2024-09-18' },
+          'induction' => { 'status' => 'RequiredToComplete' },
+          'alerts' => []
+        }
+      end
+
+      it "returns true" do
+        expect(subject.check_eligibility!).to be true
+      end
+    end
   end
 
   describe '#prohibited_from_teaching?' do
@@ -163,6 +191,38 @@ RSpec.describe TRS::Teacher do
       end
 
       it { is_expected.not_to be_prohibited_from_teaching }
+    end
+  end
+
+  describe '#induction_completed?' do
+    context 'when teacher has passed induction' do
+      let(:data) { { 'induction' => { 'status' => 'Passed' } } }
+
+      it { is_expected.to be_induction_completed }
+    end
+
+    context 'when teacher has failed induction' do
+      let(:data) { { 'induction' => { 'status' => 'Failed' } } }
+
+      it { is_expected.to be_induction_completed }
+    end
+
+    context 'when teacher is exempt from induction' do
+      let(:data) { { 'induction' => { 'status' => 'Exempt' } } }
+
+      it { is_expected.to be_induction_completed }
+    end
+
+    context 'when teacher has not completed induction' do
+      let(:data) { { 'induction' => { 'status' => 'InProgress' } } }
+
+      it { is_expected.not_to be_induction_completed }
+    end
+
+    context 'when teacher is required to complete induction' do
+      let(:data) { { 'induction' => { 'status' => 'RequiredToComplete' } } }
+
+      it { is_expected.not_to be_induction_completed }
     end
   end
 end

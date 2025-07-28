@@ -56,6 +56,7 @@ module TRS
     def check_eligibility!
       raise TRS::Errors::QTSNotAwarded unless qts_awarded?
       raise TRS::Errors::ProhibitedFromTeaching if prohibited_from_teaching?
+      raise TRS::Errors::InductionAlreadyCompleted if induction_completed?
 
       true
     end
@@ -70,6 +71,10 @@ module TRS
 
     def qts_awarded?
       @qts_awarded_on.present?
+    end
+
+    def induction_completed?
+      %w[Passed Failed Exempt].include?(@induction_status)
     end
 
   private
