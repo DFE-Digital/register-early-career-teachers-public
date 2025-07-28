@@ -27,12 +27,7 @@ module Migration
     scope :cip_only_except_welsh, -> { currently_open.where(school_type_code: CIP_ONLY_EXCEPT_WELSH_TYPE_CODES) }
     scope :eligible_or_cip_only_except_welsh, -> { eligible.or(cip_only_except_welsh) }
     scope :not_cip_only, -> { where.not(id: cip_only) }
-
-    def self.with_induction_records
-      joins(school_cohorts: { induction_programmes: :induction_records })
-        .where.not(induction_records: { id: nil })
-        .distinct
-    end
+    scope :with_induction_records, -> { joins(:induction_records).distinct }
 
     def cip_only_type? = GIAS::Types::CIP_ONLY_EXCEPT_WELSH.include?(school_type_name)
 
@@ -63,9 +58,5 @@ module Migration
     def status = school_status_name.underscore.parameterize(separator: "_").sub("open_but_", "")
 
     def ukprn_to_i = ukprn.presence&.to_i
-
-    def with_induction_records?
-      induction_records.exists?
-    end
   end
 end

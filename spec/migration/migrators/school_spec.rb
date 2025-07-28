@@ -77,8 +77,8 @@ describe Migrators::School do
         end
       end
 
-      context "otherwise" do
-        let!(:ecf_school) { FactoryBot.create(:ecf_migration_school, school_status_code: 1, school_type_code: 10) }
+      context "when the school is open or has no induction records" do
+        let!(:ecf_school) { FactoryBot.create(:ecf_migration_school, school_status_code: 1, school_status_name: 'open', school_type_code: 10) }
 
         before do
           described_class.new(worker: 0).migrate!
