@@ -45,8 +45,7 @@ RSpec.describe 'Claiming an ECT' do
       now_i_should_be_on_the_claim_an_ect_check_page
       then_i_should_not_see_the_claim_button
 
-      then_i_should_be_told_the_ect_cannot_register
-      expect(page.get_by_text('Our records show that Kirk Van Houten is completing their induction with another appropriate body.')).to be_visible
+      then_i_should_see_an_error_message('Our records show that Kirk Van Houten is completing their induction with another appropriate body.')
     end
   end
 
@@ -59,8 +58,7 @@ RSpec.describe 'Claiming an ECT' do
       and_i_submit_the_form
 
       now_i_should_be_on_the_induction_already_completed_error_page
-      expect(page.get_by_text('You cannot register Kirk Van Houten')).to be_visible
-      expect(page.get_by_text('Our records show that Kirk Van Houten has already completed their induction')).to be_visible
+      then_i_should_see_an_error_message('Our records show that Kirk Van Houten has already completed their induction')
     end
   end
 
@@ -73,8 +71,7 @@ RSpec.describe 'Claiming an ECT' do
       and_i_submit_the_form
 
       now_i_should_be_on_the_induction_already_completed_error_page
-      expect(page.get_by_text('You cannot register Kirk Van Houten')).to be_visible
-      expect(page.get_by_text('Our records show that Kirk Van Houten has already completed their induction')).to be_visible
+      then_i_should_see_an_error_message('Our records show that Kirk Van Houten has already completed their induction')
     end
   end
 
@@ -158,7 +155,8 @@ private
     end
   end
 
-  def then_i_should_be_told_the_ect_cannot_register
+  def then_i_should_see_an_error_message(error_message)
     expect(page.get_by_text('You cannot register Kirk Van Houten')).to be_visible
+    expect(page.get_by_text(error_message)).to be_visible
   end
 end
