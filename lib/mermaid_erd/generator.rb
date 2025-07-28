@@ -16,6 +16,8 @@ module MermaidErd
     end
 
     def generate
+      raise '[⚠] Mermaid ERD generation is only allowed in development environment' unless Rails.env.development?
+
       Rails.application.eager_load!
       models = load_models
       lines = ['```mermaid', 'erDiagram']
