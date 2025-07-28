@@ -1,8 +1,12 @@
 class LeadProviderDeliveryPartnership < ApplicationRecord
+  include DeclarativeTouch
+
   belongs_to :active_lead_provider
   belongs_to :delivery_partner
   has_many :school_partnerships
   has_many :events
+
+  touch -> { delivery_partner }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
 
   delegate :lead_provider, :contract_period, to: :active_lead_provider
 
