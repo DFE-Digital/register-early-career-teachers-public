@@ -20,7 +20,7 @@ RSpec.describe "Schools endpoint", openapi_spec: "v3/swagger.yaml", type: :reque
                   {
                     url: "/api/v3/schools",
                     tag: "Schools",
-                    resource_description: "ECF schools scoped to cohort",
+                    resource_description: "schools scoped to cohort",
                     response_schema_ref: "#/components/schemas/SchoolsResponse",
                     filter_schema_ref: "#/components/schemas/SchoolsFilter",
                     default_sortable: true
@@ -30,7 +30,7 @@ RSpec.describe "Schools endpoint", openapi_spec: "v3/swagger.yaml", type: :reque
                   {
                     url: "/api/v3/schools/{id}",
                     tag: "Schools",
-                    resource_description: "ECF school scoped to cohort",
+                    resource_description: "school scoped to cohort",
                     response_schema_ref: "#/components/schemas/SchoolResponse",
                     filter_schema_ref: "#/components/schemas/SchoolFilter",
                   } do
