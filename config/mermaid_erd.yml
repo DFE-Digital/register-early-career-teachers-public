@@ -1,0 +1,13 @@
+
+exclude:
+  - ActiveStorage::*
+  - SolidQueue::*
+  - Blazer::*
+  - Migration::*
+  - GIAS::*
+  - API::*
+  - ParityCheck::*
+  - Statement::*
+  - Event
+  - DataMigration
+  - MigrationFailure
