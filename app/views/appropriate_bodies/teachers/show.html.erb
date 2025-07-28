@@ -11,6 +11,6 @@
 <%= render Teachers::DetailsComponent.new(mode: :appropriate_body, teacher: @teacher) do |component|
   component.with_induction_outcome_actions
   component.with_induction_summary
-  component.with_current_induction_period(enable_release: true)
+  component.with_current_induction_period(enable_release: true, enable_edit: true)
   component.with_past_induction_periods
 end %>

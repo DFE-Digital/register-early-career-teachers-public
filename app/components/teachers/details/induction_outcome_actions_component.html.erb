@@ -1,6 +1,4 @@
-<% if Teachers::InductionPeriod.new(@teacher).ongoing_induction_period %>
-  <div class="govuk-button-group">
-    <%= govuk_button_link_to("Pass induction", record_passed_outcome_url) %>
-    <%= govuk_link_to("Fail induction", record_failed_outcome_url) %>
-  </div>
-<% end %>
+<div class="govuk-button-group">
+  <%= govuk_button_link_to("Pass induction", record_passed_outcome_path) %>
+  <%= govuk_link_to("Fail induction", record_failed_outcome_path) %>
+</div>
