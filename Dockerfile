@@ -72,6 +72,9 @@ RUN apk add --update --no-cache tzdata && \
     cp /usr/share/zoneinfo/Europe/London /etc/localtime && \
     echo "Europe/London" > /etc/timezone
 
+# Create non-root user and group
+RUN addgroup -S appgroup -g 20001 && adduser -S appuser -G appgroup -u 10001
+
 # libpq: required to run postgres
 RUN apk add --no-cache libpq
 
@@ -79,7 +82,12 @@ RUN apk add --no-cache libpq
 COPY --from=builder /app /app
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 
+RUN chown -R appuser:appgroup /app/tmp
+
 EXPOSE 8080
+
+# Switch to non-root user
+USER 10001
 
 ENTRYPOINT ["./bin/rails", "server"]
 CMD ["-p", "8080"]
