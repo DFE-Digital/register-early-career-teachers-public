@@ -23,7 +23,7 @@ module Schools
                    school_urn:,
                    email:,
                    author:,
-                   finish_existing_at_school_periods: nil,
+                   finish_existing_at_school_periods: false,
                    started_on: nil,
                    lead_provider: nil)
       @author = author

@@ -32,7 +32,7 @@ module Schools
       end
 
       def lead_provider_id
-        mentor.ect_lead_provider.id if use_same_programme_choices == "yes"
+        mentor.ect_lead_provider&.id if use_same_programme_choices == "yes"
       end
     end
   end

@@ -76,6 +76,7 @@ module Schools
         @lead_provider ||= LeadProvider.find(lead_provider_id) if lead_provider_id
       end
 
+      # The form submits a symbol (:yes or :no), but Rails stores it as a string ('yes'/'no').
       def finish_existing_at_school_periods
         mentoring_at_new_school_only == "yes"
       end
