@@ -1,5 +1,5 @@
 SCHOOL = {
-  description: "The data attributes associated with an ECF school",
+  description: "The data attributes associated with a school",
   type: :object,
   required: %i[id type attributes],
   properties: {
