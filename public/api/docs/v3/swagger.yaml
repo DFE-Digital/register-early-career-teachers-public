@@ -9,7 +9,7 @@ externalDocs:
 paths:
   "/api/v3/schools":
     get:
-      summary: Retrieve multiple ECF schools scoped to cohort
+      summary: Retrieve multiple schools scoped to cohort
       tags:
       - Schools
       security:
@@ -34,7 +34,7 @@ paths:
           "$ref": "#/components/schemas/SortingOptions"
       responses:
         '200':
-          description: A list of ECF schools scoped to cohort
+          description: A list of schools scoped to cohort
           content:
             application/json:
               schema:
@@ -47,7 +47,7 @@ paths:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
   "/api/v3/schools/{id}":
     get:
-      summary: Retrieve a single ECF school scoped to cohort
+      summary: Retrieve a single school scoped to cohort
       tags:
       - Schools
       security:
@@ -66,7 +66,7 @@ paths:
         style: deepObject
       responses:
         '200':
-          description: A single ECF school scoped to cohort
+          description: A single school scoped to cohort
           content:
             application/json:
               schema:
@@ -202,7 +202,7 @@ components:
       - "-updated_at"
       example: created_at
     School:
-      description: The data attributes associated with an ECF school
+      description: The data attributes associated with a school
       type: object
       required:
       - id
