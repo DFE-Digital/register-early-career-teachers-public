@@ -17,17 +17,17 @@ module Schools
             confirmation: ConfirmationStep,
             email_address: EmailAddressStep,
             find_mentor: FindMentorStep,
+            lead_provider: LeadProviderStep,
+            mentoring_at_new_school_only: MentoringAtNewSchoolOnlyStep,
             national_insurance_number: NationalInsuranceNumberStep,
             no_trn: NoTRNStep,
             not_found: NotFoundStep,
-            review_mentor_details: ReviewMentorDetailsStep,
-            review_mentor_eligibility: ReviewMentorEligibilityStep,
-            trn_not_found: TRNNotFoundStep,
-            mentoring_at_new_school_only: MentoringAtNewSchoolOnlyStep,
-            started_on: StartedOnStep,
             previous_training_period_details: PreviousTrainingPeriodDetailsStep,
             programme_choices: ProgrammeChoicesStep,
-            lead_provider: LeadProviderStep,
+            review_mentor_details: ReviewMentorDetailsStep,
+            review_mentor_eligibility: ReviewMentorEligibilityStep,
+            started_on: StartedOnStep,
+            trn_not_found: TRNNotFoundStep,
           }
         ]
       end
@@ -71,12 +71,16 @@ module Schools
             return steps unless mentor.email
             return steps + %i[change_email_address cant_use_changed_email cant_use_email] if mentor.cant_use_email?
 
-            steps << :mentoring_at_new_school_only
-            steps << :started_on
-            steps << :previous_training_period_details
-            steps << :programme_choices
-            steps << :lead_provider
+            steps << if mentor.has_open_mentor_at_school_period_at_another_school?
+                       :mentoring_at_new_school_only
+                     else
+                       :started_on
+                     end
 
+            steps << :started_on if mentor.mentoring_at_new_school_only == "yes"
+            steps << :previous_training_period_details if mentor.latest_registration_choice.training_period
+            steps << :programme_choices unless mentor.became_ineligible_for_funding?
+            steps << :lead_provider unless mentor.use_same_programme_choices == "yes"
             steps << :review_mentor_eligibility if mentor.funding_available?
             steps += %i[change_mentor_details change_email_address check_answers]
 
