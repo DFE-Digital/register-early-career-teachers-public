@@ -142,6 +142,10 @@ module GIAS
       @type_name ||= data.fetch("TypeOfEstablishment (name)")
     end
 
+    def type_code
+      @type_code ||= data.fetch("TypeOfEstablishment (code)")
+    end
+
     def ukprn
       @ukprn ||= data.fetch("UKPRN").presence
     end
