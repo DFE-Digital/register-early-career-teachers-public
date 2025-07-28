@@ -48,4 +48,11 @@ describe LeadProviderDeliveryPartnership do
     it { is_expected.to delegate_method(:lead_provider).to(:active_lead_provider) }
     it { is_expected.to delegate_method(:contract_period).to(:active_lead_provider) }
   end
+
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: target) }
+    let(:target) { FactoryBot.create(:delivery_partner) }
+
+    it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+  end
 end
