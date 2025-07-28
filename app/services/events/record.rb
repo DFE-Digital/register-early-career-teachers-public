@@ -112,7 +112,8 @@ module Events
 
     def self.record_induction_period_updated_event!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
       event_type = :induction_period_updated
-      heading = 'Induction period updated by admin'
+      heading = 'Induction period updated by admin' if author.dfe_user?
+      heading = 'Induction period updated by appropriate body' if author.appropriate_body_user?
 
       new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
     end

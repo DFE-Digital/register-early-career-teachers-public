@@ -77,6 +77,8 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
     it 'does not render' do
       component = described_class.new(teacher:, mentor:)
       expect(component.render?).to be false
+      render_inline(component)
+      expect(rendered_content).to be_empty
     end
   end
 end
