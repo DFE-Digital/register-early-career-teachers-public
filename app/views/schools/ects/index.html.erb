@@ -22,8 +22,8 @@
       <% if @filtered_teachers.count.zero? %>
         <p class="govuk-body">There are no ECTs that match your search.</p>
       <% else %>
-        <% @filtered_teachers.to_a.map { |t| t.ect_at_school_periods.first }.each do |ect| %>
-          <%= render Schools::ECTs::ListingCardComponent.new(ect:) %>
+        <% @filtered_teachers.to_a.map { |t| t.ect_at_school_periods.first }.each do |ect_at_school_period| %>
+          <%= render Schools::ECTs::ListingCardComponent.new(ect_at_school_period:) %>
         <% end %>
       <% end %>
       <%= govuk_pagination(pagy: @pagy) %>
