@@ -780,4 +780,88 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "mentor_at_school_periods"
   add_foreign_key "training_periods", "school_partnerships"
+
+  create_view "schools_lead_providers_contract_periods", sql_definition: <<-SQL
+      SELECT schools.id AS school_id,
+      lead_providers.id AS lead_provider_id,
+      contract_periods.year AS contract_period_id,
+      (EXISTS ( SELECT 1
+             FROM ((((schools s
+               JOIN school_partnerships sp ON ((s.id = sp.school_id)))
+               JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
+               JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
+               JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
+            WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+           LIMIT 1)) AS in_partnership,
+          CASE
+              WHEN (EXISTS ( SELECT 1
+                 FROM ((((((schools s
+                   JOIN mentor_at_school_periods masp ON ((s.id = masp.school_id)))
+                   JOIN training_periods tp ON ((masp.id = tp.mentor_at_school_period_id)))
+                   JOIN school_partnerships sp ON ((tp.school_partnership_id = sp.id)))
+                   JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
+                   JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
+                   JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
+                WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+               LIMIT 1)) THEN 'provider_led'::text
+              WHEN (EXISTS ( SELECT 1
+                 FROM ((((((schools s
+                   JOIN ect_at_school_periods easp ON ((s.id = easp.school_id)))
+                   JOIN training_periods tp ON ((easp.id = tp.ect_at_school_period_id)))
+                   JOIN school_partnerships sp ON ((tp.school_partnership_id = sp.id)))
+                   JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
+                   JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
+                   JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
+                WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+               LIMIT 1)) THEN
+              CASE
+                  WHEN (( SELECT DISTINCT tp.training_programme
+                     FROM ((((((schools s
+                       JOIN ect_at_school_periods easp ON ((s.id = easp.school_id)))
+                       JOIN training_periods tp ON ((easp.id = tp.ect_at_school_period_id)))
+                       JOIN school_partnerships sp ON ((tp.school_partnership_id = sp.id)))
+                       JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
+                       JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
+                       JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
+                    WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+                    ORDER BY tp.training_programme
+                   LIMIT 1) = 'provider_led'::training_programme) THEN 'provider_led'::text
+                  WHEN (( SELECT DISTINCT tp.training_programme
+                     FROM ((((((schools s
+                       JOIN ect_at_school_periods easp ON ((s.id = easp.school_id)))
+                       JOIN training_periods tp ON ((easp.id = tp.ect_at_school_period_id)))
+                       JOIN school_partnerships sp ON ((tp.school_partnership_id = sp.id)))
+                       JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
+                       JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
+                       JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
+                    WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+                    ORDER BY tp.training_programme
+                   LIMIT 1) = 'school_led'::training_programme) THEN 'school_led'::text
+                  ELSE NULL::text
+              END
+              ELSE 'not_yet_known'::text
+          END AS training_programme,
+          CASE
+              WHEN (EXISTS ( SELECT 1
+                 FROM ((((schools s
+                   JOIN mentor_at_school_periods masp ON ((s.id = masp.school_id)))
+                   JOIN training_periods tp ON ((masp.id = tp.mentor_at_school_period_id)))
+                   JOIN active_lead_providers alp ON ((tp.expression_of_interest_id = alp.id)))
+                   JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
+                WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+               LIMIT 1)) THEN true
+              WHEN (EXISTS ( SELECT 1
+                 FROM ((((schools s
+                   JOIN ect_at_school_periods easp ON ((s.id = easp.school_id)))
+                   JOIN training_periods tp ON ((easp.id = tp.ect_at_school_period_id)))
+                   JOIN active_lead_providers alp ON ((tp.expression_of_interest_id = alp.id)))
+                   JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
+                WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+               LIMIT 1)) THEN true
+              ELSE false
+          END AS expression_of_interest
+     FROM ((schools
+       CROSS JOIN lead_providers)
+       CROSS JOIN contract_periods);
+  SQL
 end
