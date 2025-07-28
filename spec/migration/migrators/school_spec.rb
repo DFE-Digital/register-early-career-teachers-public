@@ -41,16 +41,54 @@ describe Migrators::School do
     let!(:data_migration) { FactoryBot.create(:data_migration, model: :school, worker: 0) }
 
     context "when the ECF school can't be found in RECT" do
-      let!(:ecf_school) { FactoryBot.create(:ecf_migration_school, school_status_code: 1, school_type_code: 10) }
+      context "when the school is closed and with induction records" do
+        let!(:induction_record) { FactoryBot.create(:migration_induction_record) }
+        let!(:ecf_school) { induction_record.school }
+        let(:rect_school) { School.find_by_urn(ecf_school.urn) }
 
-      before do
-        described_class.new(worker: 0).migrate!
+        before do
+          ecf_school.update!(school_status_code: 2, school_type_code: 10, school_status_name: 'closed', school_type_name: 'Community school')
+          described_class.new(worker: 0).migrate!
+        end
+
+        it "migrates it to RECT" do
+          expect(rect_school).to be_present
+          expect(rect_school.api_id).to eq(ecf_school.id)
+          expect(rect_school.address_line1).to eq(ecf_school.address_line1)
+          expect(rect_school.address_line2).to eq(ecf_school.address_line2)
+          expect(rect_school.address_line3).to eq(ecf_school.address_line3)
+          expect(rect_school.administrative_district_name).to eq(ecf_school.administrative_district_name)
+          expect(rect_school.establishment_number.to_s).to eq(ecf_school.urn)
+          expect(rect_school.funding_eligibility).to eq(ecf_school.funding_eligibility)
+          expect(rect_school.induction_eligibility).to eq(ecf_school.induction_eligibility)
+          expect(rect_school.in_england).to eq(ecf_school.in_england?)
+          expect(rect_school.local_authority_code).to eq(ecf_school.local_authority_code)
+          expect(rect_school.name).to eq(ecf_school.name)
+          expect(rect_school.phase_name).to eq(ecf_school.school_phase_name)
+          expect(rect_school.postcode).to eq(ecf_school.postcode)
+          expect(rect_school.primary_contact_email).to eq(ecf_school.primary_contact_email)
+          expect(rect_school.secondary_contact_email).to eq(ecf_school.secondary_contact_email)
+          expect(rect_school.section_41_approved).to eq(ecf_school.section_41_approved?)
+          expect(rect_school.status).to eq(ecf_school.status)
+          expect(rect_school.type_name).to eq(ecf_school.school_type_name)
+          expect(rect_school.ukprn.to_s).to eq(ecf_school.ukprn)
+          expect(rect_school.urn.to_s).to eq(ecf_school.urn)
+          expect(rect_school.website).to eq(ecf_school.school_website)
+        end
       end
 
-      it "adds an error" do
-        expect(data_migration.reload.failure_count).to eq(1)
-        expect(data_migration.migration_failures.count).to eq(1)
-        expect(data_migration.migration_failures.first.failure_message).to eq(":school_missing - School #{ecf_school.urn} (#{ecf_school.name}) missing on RECT!")
+      context "otherwise" do
+        let!(:ecf_school) { FactoryBot.create(:ecf_migration_school, school_status_code: 1, school_type_code: 10) }
+
+        before do
+          described_class.new(worker: 0).migrate!
+        end
+
+        it "adds an error" do
+          expect(data_migration.reload.failure_count).to eq(1)
+          expect(data_migration.migration_failures.count).to eq(1)
+          expect(data_migration.migration_failures.first.failure_message).to eq(":school_missing - School #{ecf_school.urn} (#{ecf_school.name}) missing on RECT!")
+        end
       end
     end
 
