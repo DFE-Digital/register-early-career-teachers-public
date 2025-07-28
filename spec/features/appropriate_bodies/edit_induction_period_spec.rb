@@ -2,7 +2,8 @@ RSpec.describe "Appropriate body editing an induction period" do
   include ActiveJob::TestHelper
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher) }
+  # let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
 
   let!(:induction_period) do
     FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
@@ -13,33 +14,25 @@ RSpec.describe "Appropriate body editing an induction period" do
     page.goto(ab_teacher_path(teacher))
   end
 
-  scenario 'invalid number of terms' do
-    given_i_am_on_the_teacher_page
-    when_i_click_edit_link
-    then_i_should_be_on_the_edit_induction_period_page
-    when_i_update_the_number_of_terms(-1)
-    and_i_click_submit
-    then_i_should_see_an_error("Number of terms must be between 0 and 16")
-  end
-
-  scenario 'valid number of terms only' do
+  scenario 'valid start date' do
     given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
-    when_i_update_the_number_of_terms(1)
+    when_i_set_start_date(Time.zone.yesterday)
     and_i_click_submit
-    then_i_should_see_an_error("Delete the number of terms if the induction has no end date")
+    then_i_should_be_on_the_teacher_page
+    and_i_should_see_success_banner
   end
 
-  scenario 'end date only' do
+  scenario 'invalid start date' do
     given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
-    when_i_set_end_date(Time.zone.today)
+    when_i_set_start_date(2.years.ago)
     and_i_click_submit
-    then_i_should_see_an_error("Enter a number of terms")
+    then_i_should_see_an_error('Start date cannot be before QTS award date')
   end
 
   scenario 'programme type (old)' do
@@ -105,23 +98,15 @@ private
     expect(edit_link).to be_visible
   end
 
-  def then_i_should_not_see_the_edit_link
-    expect(edit_link).not_to be_visible
-  end
-
   def when_i_click_edit_link
     edit_link.click
   end
 
-  def when_i_update_the_number_of_terms(number)
-    page.get_by_label("Number of terms").fill(number.to_s)
-  end
-
-  def when_i_set_end_date(end_date)
-    end_date_group = page.get_by_role('group', name: 'End date')
-    end_date_group.get_by_label('Day').fill(end_date.day.to_s)
-    end_date_group.get_by_label('Month').fill(end_date.month.to_s)
-    end_date_group.get_by_label('Year').fill(end_date.year.to_s)
+  def when_i_set_start_date(start_date)
+    end_date_group = page.get_by_role('group', name: 'Start date')
+    end_date_group.get_by_label('Day').fill(start_date.day.to_s)
+    end_date_group.get_by_label('Month').fill(start_date.month.to_s)
+    end_date_group.get_by_label('Year').fill(start_date.year.to_s)
   end
 
   def and_i_click_submit
