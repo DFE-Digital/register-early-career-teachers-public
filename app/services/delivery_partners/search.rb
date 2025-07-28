@@ -1,19 +1,17 @@
 module DeliveryPartners
   class Search
     def initialize(query_string = nil)
-      @scope = DeliveryPartner
-
       @query_string = query_string
     end
 
     def search
-      query = if @query_string.blank?
-                @scope.all
-              else
-                @scope.where("name ILIKE ?", "%#{@query_string}%")
-              end
+      scope = DeliveryPartner.all
 
-      query.order(name: 'asc')
+      if @query_string.present?
+        scope = scope.where("name ILIKE ?", "%#{@query_string}%")
+      end
+
+      scope.order(name: :asc)
     end
   end
 end

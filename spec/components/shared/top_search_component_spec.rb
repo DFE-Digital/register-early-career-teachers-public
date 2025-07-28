@@ -22,7 +22,7 @@ RSpec.describe Shared::TopSearchComponent, type: :component do
   end
 
   context "with custom options" do
-    let(:component) { described_class.new(query_param: :search_term, label_text: 'Custom Label', submit_text: 'Go', url: '/custom_path') }
+    let(:component) { described_class.new(query_param: :search_term, label_text: 'Custom Label', hint_text: "Custom hint", submit_text: 'Go', url: '/custom_path') }
 
     it 'renders a text field with the custom label and value from params' do
       expect(rendered_content).to have_css('label.govuk-label', text: 'Custom Label')
@@ -38,6 +38,10 @@ RSpec.describe Shared::TopSearchComponent, type: :component do
 
     it 'sets url from the argument' do
       expect(component.url).to eq('/custom_path')
+    end
+
+    it 'renders custom hint text' do
+      expect(rendered_content).to have_css('.govuk-hint', text: 'Custom hint')
     end
   end
 end
