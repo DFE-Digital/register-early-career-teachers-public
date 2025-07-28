@@ -29,6 +29,12 @@ RSpec.describe 'admin/appropriate_bodies/index.html.erb' do
     expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link('Appropriate bodies')
   end
 
+  it "renders a link to view all bulk uploads" do
+    render
+
+    expect(rendered).to have_link("View all bulk uploads", href: admin_bulk_batches_path)
+  end
+
   it 'renders a list of appropriate bodies' do
     render
 
