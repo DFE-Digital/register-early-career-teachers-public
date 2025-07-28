@@ -27,7 +27,7 @@ module Schools
     private
 
       def persist
-        mentor.update(mentoring_at_new_school_only:)
+        mentor.update!(mentoring_at_new_school_only:)
       end
     end
   end

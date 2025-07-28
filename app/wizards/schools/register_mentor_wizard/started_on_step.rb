@@ -33,7 +33,7 @@ module Schools
     private
 
       def persist
-        mentor.update(started_on:)
+        mentor.update!(started_on:)
       end
 
       def pre_populate_attributes
