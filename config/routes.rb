@@ -45,9 +45,12 @@ Rails.application.routes.draw do
     resources :organisations, only: %i[index] do
       collection do
         resources :appropriate_bodies, only: %i[index show], path: 'appropriate-bodies' do
-          resource :timeline, only: %i[show], controller: 'appropriate_bodies/timeline'
-          resources :current_ects, only: :index, path: 'current-ects', controller: 'appropriate_bodies/current_ects'
+          scope module: :appropriate_bodies do
+            resource :timeline, only: :show
+            resources :current_ects, only: :index, path: 'current-ects'
+          end
         end
+
         resources :schools, only: %i[index show], param: :urn
         resources :lead_providers, only: %i[index], path: 'lead-providers'
       end
