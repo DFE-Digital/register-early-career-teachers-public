@@ -1,10 +1,11 @@
 RSpec.describe MermaidErd::Generator do
-  subject(:generator) { described_class.new(config_path:, output_path:)}
+  subject(:generator) { described_class.new(config_path:, output_path:) }
 
   let(:config_path) { Rails.root.join('tmp/test_erd.yml') }
   let(:output_path) { Rails.root.join('tmp/test_domain_model.md') }
 
   before do
+    allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new('development'))
     File.write(config_path, { 'exclude' => [] }.to_yaml)
   end
 
@@ -60,6 +61,16 @@ RSpec.describe MermaidErd::Generator do
         expect {
           generator.generate
         }.to raise_error(/YAML syntax error/)
+      end
+    end
+
+    context 'when the environment is production' do
+      before { allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new('production')) }
+
+      it 'raises an error' do
+        expect {
+          generator.generate
+        }.to raise_error(/only allowed in development/)
       end
     end
   end
