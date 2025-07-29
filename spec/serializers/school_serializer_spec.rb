@@ -1,8 +1,4 @@
 describe SchoolSerializer, type: :serializer do
-  subject(:response) do
-    JSON.parse(described_class.render(scope))
-  end
-
   let(:school) do
     FactoryBot.create(:school,
                       urn: "123456",
@@ -41,58 +37,125 @@ describe SchoolSerializer, type: :serializer do
                       ect_at_school_period:,
                       started_on: another_ect_at_school_period.started_on)
   end
-  let(:query) { Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_id: contract_period.id) }
-  let(:scope) { query.school(school.id) }
 
-  describe "core attributes" do
-    it "serializes `id`" do
-      expect(response["id"]).to eq(school.api_id)
+  context "when serialiser input is a query scope" do
+    subject(:response) do
+      JSON.parse(described_class.render(scope))
     end
 
-    it "serializes `type`" do
-      expect(response["type"]).to eq("school")
+    let(:query) { Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_id: contract_period.id) }
+    let(:scope) { query.school(school.id) }
+
+    describe "core attributes" do
+      it "serializes `id`" do
+        expect(response["id"]).to eq(school.api_id)
+      end
+
+      it "serializes `type`" do
+        expect(response["type"]).to eq("school")
+      end
+    end
+
+    describe "nested attributes" do
+      subject(:attributes) { response["attributes"] }
+
+      it "serializes `name`" do
+        expect(attributes["name"]).to eq(school.name)
+      end
+
+      it "serializes `urn`" do
+        expect(attributes["urn"]).to eq("123456")
+      end
+
+      it "serializes `cohort`" do
+        expect(attributes["cohort"]).to eq(contract_period.id.to_s)
+      end
+
+      it "serializes `in_partnership`" do
+        expect(attributes["in_partnership"]).to be(true)
+      end
+
+      it "serializes `induction_programme_choice`" do
+        expect(attributes["induction_programme_choice"]).to eq("provider_led")
+      end
+
+      it "serializes `expression_of_interest`" do
+        expect(attributes["expression_of_interest"]).to be(true)
+      end
+
+      describe "timestamp serialization" do
+        it "serializes `created_at`" do
+          expect(attributes["created_at"]).to eq("2023-07-01T12:00:00Z")
+        end
+
+        context "when serializing `updated_at`" do
+          let(:api_updated_at) { Time.utc(2024, 8, 8, 8, 0, 0) }
+
+          it "serializes the `api_updated_at`" do
+            school.update!(api_updated_at:)
+
+            expect(attributes["updated_at"]).to eq(api_updated_at.rfc3339)
+          end
+        end
+      end
     end
   end
 
-  describe "nested attributes" do
-    subject(:attributes) { response["attributes"] }
-
-    it "serializes `name`" do
-      expect(attributes["name"]).to eq(school.name)
+  context "when serialiser input is a school object" do
+    subject(:response) do
+      JSON.parse(described_class.render(school, contract_period_id: contract_period.id, lead_provider_id: lead_provider.id))
     end
 
-    it "serializes `urn`" do
-      expect(attributes["urn"]).to eq("123456")
-    end
-
-    it "serializes `cohort`" do
-      expect(attributes["cohort"]).to eq(contract_period.id.to_s)
-    end
-
-    it "serializes `in_partnership`" do
-      expect(attributes["in_partnership"]).to be(true)
-    end
-
-    it "serializes `induction_programme_choice`" do
-      expect(attributes["induction_programme_choice"]).to eq("provider_led")
-    end
-
-    it "serializes `expression_of_interest`" do
-      expect(attributes["expression_of_interest"]).to be(true)
-    end
-
-    describe "timestamp serialization" do
-      it "serializes `created_at`" do
-        expect(attributes["created_at"]).to eq("2023-07-01T12:00:00Z")
+    describe "core attributes" do
+      it "serializes `id`" do
+        expect(response["id"]).to eq(school.api_id)
       end
 
-      context "when serializing `updated_at`" do
-        let(:api_updated_at) { Time.utc(2024, 8, 8, 8, 0, 0) }
+      it "serializes `type`" do
+        expect(response["type"]).to eq("school")
+      end
+    end
 
-        it "serializes the `api_updated_at`" do
-          school.update!(api_updated_at:)
+    describe "nested attributes" do
+      subject(:attributes) { response["attributes"] }
 
-          expect(attributes["updated_at"]).to eq(api_updated_at.rfc3339)
+      it "serializes `name`" do
+        expect(attributes["name"]).to eq(school.name)
+      end
+
+      it "serializes `urn`" do
+        expect(attributes["urn"]).to eq("123456")
+      end
+
+      it "serializes `cohort`" do
+        expect(attributes["cohort"]).to eq(contract_period.id.to_s)
+      end
+
+      it "serializes `in_partnership`" do
+        expect(attributes["in_partnership"]).to be(true)
+      end
+
+      it "serializes `induction_programme_choice`" do
+        expect(attributes["induction_programme_choice"]).to eq("provider_led")
+      end
+
+      it "serializes `expression_of_interest`" do
+        expect(attributes["expression_of_interest"]).to be(true)
+      end
+
+      describe "timestamp serialization" do
+        it "serializes `created_at`" do
+          expect(attributes["created_at"]).to eq("2023-07-01T12:00:00Z")
+        end
+
+        context "when serializing `updated_at`" do
+          let(:api_updated_at) { Time.utc(2024, 8, 8, 8, 0, 0) }
+
+          it "serializes the `api_updated_at`" do
+            school.update!(api_updated_at:)
+
+            expect(attributes["updated_at"]).to eq(api_updated_at.rfc3339)
+          end
         end
       end
     end

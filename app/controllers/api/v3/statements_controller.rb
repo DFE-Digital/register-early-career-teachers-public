@@ -1,9 +1,6 @@
 module API
   module V3
     class StatementsController < BaseController
-      include DateFilterable
-      include ContractPeriodFilterable
-
       def index
         render json: to_json(paginate(statements_query.statements))
       end

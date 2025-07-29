@@ -7,9 +7,86 @@ externalDocs:
   description: Find out more about Swagger
   url: https://swagger.io/
 paths:
+  "/api/v3/schools":
+    get:
+      summary: Retrieve multiple schools scoped to cohort
+      tags:
+      - Schools
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SchoolsFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      - name: sort
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SortingOptions"
+      responses:
+        '200':
+          description: A list of schools scoped to cohort
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/SchoolsResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+  "/api/v3/schools/{id}":
+    get:
+      summary: Retrieve a single school scoped to cohort
+      tags:
+      - Schools
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SchoolFilter"
+        style: deepObject
+      responses:
+        '200':
+          description: A single school scoped to cohort
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/SchoolResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
   "/api/v3/statements":
     get:
-      summary: Retrieve financial statements
+      summary: Retrieve multiple statements as part of which the DfE will make output
+        payments for participants
       tags:
       - Statements
       security:
@@ -43,7 +120,7 @@ paths:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
   "/api/v3/statements/{id}":
     get:
-      summary: Retrieve a specific financial statement
+      summary: Retrieve a single financial statement
       tags:
       - Statements
       security:
@@ -56,23 +133,23 @@ paths:
           "$ref": "#/components/schemas/IDAttribute"
       responses:
         '200':
-          description: A specific financial statement
+          description: A single financial statement
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/StatementResponse"
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/NotFoundResponse"
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
 components:
   securitySchemes:
     api_key:
@@ -116,6 +193,129 @@ components:
             is 3000, if the value is greater that the maximum allowed it will fallback
             to 3000.
           example: 10
+    SortingOptions:
+      description: Sort records being returned.
+      enum:
+      - created_at
+      - "-created_at"
+      - updated_at
+      - "-updated_at"
+      example: created_at
+    School:
+      description: The data attributes associated with a school
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: school
+          enum:
+          - school
+        attributes:
+          properties:
+            name:
+              description: The name of the school
+              type: string
+              nullable: false
+              example: School Example
+            urn:
+              description: The Unique Reference Number (URN) of the school
+              type: string
+              nullable: false
+              example: '123456'
+            cohort:
+              description: Indicates which call-off contract funds this participant's
+                training. 2021 indicates a participant that has started, or will start,
+                their training in the 2021/22 academic year.
+              type: string
+              nullable: false
+              example: '2021'
+            in_partnership:
+              description: Whether or not the school already has an active partnership,
+                if it is doing a provider-led training programme
+              type: boolean
+              nullable: false
+              example: false
+            induction_programme_choice:
+              description: The induction programme the school offers
+              type: string
+              nullable: false
+              example: not_yet_known
+              enum:
+              - school_led
+              - provider_led
+              - not_yet_known
+            expression_of_interest:
+              description: Whether or not the school has expressed interest in doing
+                a provider-led training programme for participants
+              type: boolean
+              nullable: false
+              example: false
+            created_at:
+              description: The date and time the school was created
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            updated_at:
+              description: The last time a change was made to this school record by
+                the DfE
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    SchoolsFilter:
+      description: Filter schools to return more specific results
+      type: object
+      required:
+      - cohort
+      properties:
+        cohort:
+          description: Return schools within the specified cohort.
+          type: string
+          example: '2021'
+        urn:
+          description: Return a school with the specified Unique Reference Number
+            (URN).
+          type: string
+          example: '106286'
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    SchoolFilter:
+      description: Filter schools to return more specific results
+      type: object
+      required:
+      - cohort
+      properties:
+        cohort:
+          description: Return schools within the specified cohort.
+          type: string
+          example: '2021'
+    SchoolResponse:
+      description: A single school.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/School"
+    SchoolsResponse:
+      description: A list of schools for the given cohort.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/School"
     Statement:
       description: A financial statement.
       type: object

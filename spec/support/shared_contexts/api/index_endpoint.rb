@@ -8,9 +8,9 @@ shared_examples "an index endpoint" do
     end
 
     before do
-      # Resource for a different lead provider.
+      # Resource for a different lead provider/contract period.
+      contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
       lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
-      contract_period = active_lead_provider.contract_period
       create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:))
     end
 
@@ -19,7 +19,7 @@ shared_examples "an index endpoint" do
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq(serializer.render(apply_expected_order(resources), root: "data"))
+      expect(response.body).to eq(serializer.render(apply_expected_order(resources), root: "data", **serializer_options))
     end
   end
 
