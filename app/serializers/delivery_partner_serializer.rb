@@ -4,13 +4,15 @@ class DeliveryPartnerSerializer < Blueprinter::Base
 
     field :name
     field(:cohort) do |delivery_partner, options|
-      lead_provider = options[:lead_provider]
-
-      delivery_partner
-        .lead_provider_delivery_partnerships
-        .joins(:active_lead_provider)
-        .where(active_lead_providers: { lead_provider_id: lead_provider.id })
-        .pluck("active_lead_providers.contract_period_id")
+      if delivery_partner.respond_to?(:transient_cohort)
+        delivery_partner.transient_cohort
+      else
+        delivery_partner
+          .lead_provider_delivery_partnerships
+          .joins(:active_lead_provider)
+          .where(active_lead_providers: { lead_provider_id: options[:lead_provider].id })
+          .pluck("active_lead_providers.contract_period_id")
+      end
     end
 
     field :created_at
