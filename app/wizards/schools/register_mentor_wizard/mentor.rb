@@ -101,7 +101,7 @@ module Schools
       end
 
       # Does mentor have an open mentor_at_school_period at another school?
-      def has_open_mentor_at_school_period_at_another_school?
+      def currently_mentor_at_another_school?
         previous_school_mentor_at_school_periods.exists?
       end
 
