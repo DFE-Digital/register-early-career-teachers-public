@@ -20,9 +20,7 @@
     <% if content_for?(:api_guidance_home_header) %>
       <%= yield(:api_guidance_home_header) %>
       <main class="govuk-main-wrapper" id="main-content" role="main">
-        <div class="govuk-width-container">
-          <%= yield %>
-        </div>
+        <%= yield %>
       </main>
     <% else %>
       <div class="govuk-width-container">

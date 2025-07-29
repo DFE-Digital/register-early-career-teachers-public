@@ -30,17 +30,29 @@
   </div>
 <% end %>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Release notes</h2>
-    <p>
-      We publish release notes whenever we make updates to the API such as new features, fixes, or improvements. This so lead providers know how the update might affect their use of the API.
-    </p>
-    <p><%= govuk_link_to("Browse all release notes", api_guidance_release_notes_path) %></p>
+<div class="govuk-service-navigation govuk-!-padding-top-7">
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-heading-m">Release notes</h2>
+        <p>
+          We publish release notes whenever we make updates to the API such as new features, fixes, or improvements. This so lead providers know how the update might affect their use of the API.
+        </p>
 
-    <h3 class="govuk-caption-xl">23 June 2025</h3>
-    <h3 class="govuk-heading-s">View financial statements in test environment</h3>
-    <p><%= govuk_link_to("Lead providers can now check their financial statements in the API sandbox", api_guidance_release_notes_path) %></p>
+        <% if @latest_release_note.present? %>
+          <h2 class="govuk-heading-m">
+            <span class="govuk-caption-m"><%= @latest_release_note.date %></span>
+            <%= @latest_release_note.title %>
+          </h2>
+          <p>
+            <%= render API::Guidance::ReleaseNotes::TagsComponent.new(tags: @latest_release_note.tags) %>
+          </p>
+          <p class="govuk-body">
+            <%= govuk_link_to("Read release note", api_guidance_release_notes_path(anchor: @latest_release_note.date.parameterize)) %>
+          </p>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -53,13 +65,13 @@
     <p><%= govuk_link_to("View our swagger API documentation", api_guidance_page_path("swagger-api-documentation")) %></p>
   </div>
 
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Sandbox</h2>
-    <p>
-      The sandbox environment is where lead providers can test API integrations without affecting real data.
-    </p>
-    <p><%= govuk_link_to("Use the lead provider sandbox", api_guidance_page_path("sandbox")) %></p>
-  </div>
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">Sandbox</h2>
+      <p>
+        The sandbox environment is where lead providers can test API integrations without affecting real data.
+      </p>
+      <p><%= govuk_link_to("Use the lead provider sandbox", api_guidance_page_path("sandbox")) %></p>
+    </div>
 
   <div class="govuk-grid-column-one-third">
     <h2 class="govuk-heading-m">Guidance</h2>
