@@ -5,6 +5,7 @@ module API
     layout 'api_guidance'
 
     def show
+      @latest_release_note = release_notes.first
     end
 
     def release_notes

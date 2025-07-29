@@ -86,4 +86,8 @@ $x-govuk-masthead-text-colour: govuk-colour("white");
     text-decoration: underline;
   }
 
+  .govuk-main-wrapper {
+    padding-top: 0;
+  }
+
 }
