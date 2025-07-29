@@ -49,7 +49,7 @@ module ParityCheck
     end
 
     def lead_providers
-      @lead_providers ||= LeadProvider.all
+      @lead_providers ||= LeadProvider.where.not(ecf_id: nil)
     end
   end
 end

@@ -4,7 +4,7 @@ module Migration::ParityChecks
 
     def show
       @request = ParityCheck::Run.completed.find(params[:parity_check_run_id]).requests.find(params[:id])
-      @pagy, @responses = pagy(@request.responses)
+      @pagy, @responses = pagy(@request.responses.ordered_by_page)
 
       @multiple_pages = @responses.any?(&:page)
       @breadcrumbs = {

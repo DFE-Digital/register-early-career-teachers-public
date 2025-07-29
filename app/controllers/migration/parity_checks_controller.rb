@@ -1,7 +1,7 @@
 class Migration::ParityChecksController < ::AdminController
   layout "full"
 
-  before_action :load_endpoints, :load_pending_and_in_progress_runs, only: %i[new create]
+  before_action :load_endpoints, :load_pending_and_in_progress_runs, :load_lead_providers, only: %i[new create]
   before_action :load_completed_runs, only: %i[new create completed]
 
   def new
@@ -42,6 +42,10 @@ private
   def load_pending_and_in_progress_runs
     @in_progress_run = ParityCheck::Run.in_progress.first
     @pending_runs = ParityCheck::Run.pending
+  end
+
+  def load_lead_providers
+    @lead_providers = LeadProvider.where.not(ecf_id: nil)
   end
 
   def load_completed_runs

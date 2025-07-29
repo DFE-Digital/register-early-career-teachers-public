@@ -3,7 +3,7 @@ RSpec.describe "Run parity check" do
   let(:rect_url) { "https://rect.example.com" }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let!(:get_endpoint) { FactoryBot.create(:parity_check_endpoint, :get, path: "/api/v1/statements") }
-  let!(:post_endpoint) { FactoryBot.create(:parity_check_endpoint, :post, path: "/api/v1/statement") }
+  let!(:post_endpoint) { FactoryBot.create(:parity_check_endpoint, :post, path: "/api/v1/statements") }
   let!(:put_endpoint) { FactoryBot.create(:parity_check_endpoint, :put, path: "/api/v3/users") }
 
   before do
@@ -12,7 +12,7 @@ RSpec.describe "Run parity check" do
       enabled: true,
       ecf_url:,
       rect_url:,
-      tokens: { lead_provider.ecf_id => "test-token" }
+      tokens: { lead_provider.ecf_id => "test-token" }.to_json
     })
   end
 
@@ -75,12 +75,8 @@ RSpec.describe "Run parity check" do
 
     page.goto(new_migration_parity_check_path)
 
-    page.get_by_label(post_endpoint.description).click
-
-    page.get_by_role("button", name: "Run").click
-
-    expect(page.get_by_role("heading", name: "There is a problem")).to be_visible
-    expect(page.locator(".govuk-error-summary a").and(page.get_by_text("There are no lead providers available; create at least one lead provider to run a parity check."))).to be_visible
+    expect(page.get_by_text("Lead providers with an ecf_id are required for parity checks.")).to be_visible
+    expect(page.get_by_role("form")).not_to be_visible
   end
 
   scenario "Running a parity check when there are no endpoints" do
@@ -89,6 +85,15 @@ RSpec.describe "Run parity check" do
     page.goto(new_migration_parity_check_path)
 
     expect(page.get_by_text("No endpoints available for parity checks.")).to be_visible
+    expect(page.get_by_role("form")).not_to be_visible
+  end
+
+  scenario "Running a parity check when there are no lead providers with an ecf_id" do
+    LeadProvider.update_all(ecf_id: nil)
+
+    page.goto(new_migration_parity_check_path)
+
+    expect(page.get_by_text("Lead providers with an ecf_id are required for parity checks.")).to be_visible
     expect(page.get_by_role("form")).not_to be_visible
   end
 end

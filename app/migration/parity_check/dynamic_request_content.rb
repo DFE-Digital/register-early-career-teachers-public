@@ -17,12 +17,21 @@ module ParityCheck
     # Path ID methods
 
     def statement_id
-      Statement
-        .output_fee
-        .joins(:active_lead_provider)
-        .where(active_lead_provider: lead_provider.active_lead_providers)
-        .order("RANDOM()")
+      Statements::Query.new(lead_provider:)
+        .statements
+        .distinct(false)
+        .reorder("RANDOM()")
         .pick(:api_id)
+    end
+
+    def school_id
+      contract_period_id = ContractPeriod.order("RANDOM()").pick(:year)
+      Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_id:)
+        .schools
+        .distinct(false)
+        .includes(:gias_school)
+        .reorder("RANDOM()")
+        .pick(gias_school: :api_id)
     end
 
     # Request body methods
