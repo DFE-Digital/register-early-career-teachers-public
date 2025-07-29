@@ -376,6 +376,22 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
+      context 'when teacher has completed induction and is also claimed by another appropriate body' do
+        let(:other_body) { FactoryBot.create(:appropriate_body) }
+
+        let!(:induction_period) do
+          FactoryBot.create(:induction_period, :pass,
+                            appropriate_body: other_body,
+                            teacher:)
+        end
+
+        before { service.process! }
+
+        it 'prioritizes completed induction error over claimed by another AB error' do
+          expect(submission.error_messages).to eq ['Kirk Van Houten has already completed their induction']
+        end
+      end
+
       describe '#complete!' do
         it 'closes induction period with a pass' do
           service.complete!
