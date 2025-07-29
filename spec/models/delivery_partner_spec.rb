@@ -11,4 +11,11 @@ describe DeliveryPartner do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name) }
   end
+
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:delivery_partner) }
+    let(:target) { instance }
+
+    it_behaves_like "a declarative touch model", when_changing: %i[name], timestamp_attribute: :api_updated_at
+  end
 end
