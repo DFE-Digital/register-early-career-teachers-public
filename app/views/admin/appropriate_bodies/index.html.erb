@@ -1,4 +1,4 @@
-<% page_data(title: "Appropriate bodies") %>
+<% page_data(title: "Appropriate bodies", breadcrumbs: @breadcrumbs) %>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
@@ -17,7 +17,6 @@
     <% @appropriate_bodies.each do |appropriate_body| %>
       <%=
         govuk_summary_card(title: govuk_link_to(appropriate_body.name, admin_appropriate_body_path(appropriate_body))) do |card|
-
           card.with_summary_list do |summary_list|
             summary_list.with_row do |row|
               row.with_key(text: "Ongoing inductions")
