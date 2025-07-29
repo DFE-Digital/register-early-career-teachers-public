@@ -48,6 +48,10 @@ Rails.application.routes.draw do
           scope module: :appropriate_bodies do
             resource :timeline, only: :show
             resources :current_ects, only: :index, path: 'current-ects'
+
+            namespace :bulk do
+              resources :batches, only: :index
+            end
           end
         end
 
