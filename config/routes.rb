@@ -319,9 +319,13 @@ Rails.application.routes.draw do
 
       get "mentoring-at-new-school-only", action: :new
       post "mentoring-at-new-school-only", action: :create
+      get "change-mentoring-at-new-school-only", action: :new
+      post "change-mentoring-at-new-school-only", action: :create
 
       get "started-on", action: :new
       post "started-on", action: :create
+      get "change-started-on", action: :new
+      post "change-started-on", action: :create
 
       get "previous-training-period-details", action: :new
       post "previous-training-period-details", action: :create
@@ -331,6 +335,8 @@ Rails.application.routes.draw do
 
       get "lead-provider", action: :new
       post "lead-provider", action: :create
+      get "change-lead-provider", action: :new
+      post "change-lead-provider", action: :create
 
       get "check-answers", action: :new
       post "check-answers", action: :create
