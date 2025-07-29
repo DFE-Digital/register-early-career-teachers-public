@@ -2,7 +2,7 @@ module Schools
   module RegisterMentorWizard
     class ReviewMentorEligibilityStep < Step
       def next_step
-        return :check_answers unless mentor.has_mentor_at_school_periods?
+        return :check_answers unless mentor.previously_registered_as_mentor?
 
         if mentor.has_open_mentor_at_school_period_at_another_school?
           # Ask school: are they mentoring at new school only?
