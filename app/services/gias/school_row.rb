@@ -138,6 +138,10 @@ module GIAS
       @status ||= data.fetch("EstablishmentStatus (name)").underscore.parameterize(separator: "_").sub("open_but_", "")
     end
 
+    def type_code
+      @type_code ||= data.fetch("TypeOfEstablishment (code)")
+    end
+
     def type_name
       @type_name ||= data.fetch("TypeOfEstablishment (name)")
     end

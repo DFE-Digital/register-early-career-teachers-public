@@ -24,12 +24,18 @@ module Migrators
 
     def self.reset! = nil
 
-    def self.schools = ::Migration::School.includes(:local_authority).eligible_or_cip_only_except_welsh
+    def self.schools
+      ::Migration::School.with(eligible_or_cip_or_with_irs:
+                                 [
+                                   ::Migration::School.includes(:local_authority).eligible_or_cip_only_except_welsh.distinct,
+                                   ::Migration::School.not_open.with_induction_records.distinct
+                                 ])
+                         .from("eligible_or_cip_or_with_irs AS schools")
+    end
 
     def migrate!
       migrate(self.class.schools) do |ecf_school|
-        gias_school = find_gias_school(urn: ecf_school.urn.to_i)
-
+        gias_school = find_gias_school(urn: ecf_school.urn.to_i) || migrate_school!(ecf_school)
         if check_gias_school(gias_school:, ecf_school:)
           [compare_fields(gias_school:, ecf_school:),
            update_gias_school!(gias_school:, api_id: ecf_school.id)].all?
@@ -66,6 +72,13 @@ module Migrators
     def find_gias_school(urn:) = gias_schools.find { |school| school.urn == urn }
 
     def gias_schools = @gias_schools ||= ::GIAS::School.where(urn: self.class.schools.pluck(:urn).sort)
+
+    def migrate_school!(ecf_school)
+      return false if ecf_school.open?
+      return false if ecf_school.induction_records.blank?
+
+      Builders::GIAS::School.new(ecf_school).build
+    end
 
     def update_gias_school!(gias_school:, api_id:) = gias_school.update!(api_id:)
   end
