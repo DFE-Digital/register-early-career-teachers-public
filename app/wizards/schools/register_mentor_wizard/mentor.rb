@@ -96,7 +96,7 @@ module Schools
       end
 
       # Does mentor have any previous mentor_at_school_periods (open or closed)?
-      def has_mentor_at_school_periods?
+      def previously_registered_as_mentor?
         mentor_at_school_periods.exists?
       end
 
@@ -131,7 +131,7 @@ module Schools
     private
 
       def mentor_at_school_periods
-        ::MentorAtSchoolPeriod.includes(:teacher).where(teacher: { trn: })
+        ::MentorAtSchoolPeriods::Search.new.mentor_periods(trn:)
       end
 
       def ect_training_service
