@@ -25,6 +25,22 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       it { is_expected.to eq(statement.api_id) }
     end
 
+    context "when fetching school_id" do
+      let(:identifier) { :school_id }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
+      let!(:school) { FactoryBot.create(:school, :eligible, :not_cip_only) }
+
+      before do
+        # Ineligible school
+        FactoryBot.create(:school, :ineligible, :not_cip_only)
+          .tap { it.gias_school.update!(funding_eligibility: :ineligible) }
+        # CIP only school
+        FactoryBot.create(:school, :eligible, :cip_only)
+      end
+
+      it { is_expected.to eq(school.api_id) }
+    end
+
     context "when fetching example_body" do
       let(:identifier) { :example_body }
 

@@ -2,16 +2,20 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <p>
-      Select endpoints you would like to run a parity check against.
-    </p>
-
-    <% if @endpoints.any? %>
-      <%= render partial: "form" %>
-    <% else %>
+    <% if @lead_providers.none? %>
+      <p>
+        Lead providers with an <strong>ecf_id</strong> are required for parity checks.
+      </p>
+    <% elsif @endpoints.none? %>
       <p>
         No endpoints available for parity checks.
       </p>
+    <% else %>
+      <p>
+        Select endpoints you would like to run a parity check against.
+      </p>
+
+      <%= render partial: "form" %>
     <% end %>
   </div>
   <div class="govuk-grid-column-one-third">
