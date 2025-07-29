@@ -34,7 +34,8 @@
       row.with_value(text: @mentor.mentoring_at_new_school_only.capitalize)
       row.with_action(
         text: "Change",
-        href: schools_register_mentor_wizard_mentoring_at_new_school_only_path,
+        href:
+          schools_register_mentor_wizard_change_mentoring_at_new_school_only_path,
         visually_hidden_text: "mentoring only at your school",
       )
     end
@@ -46,7 +47,7 @@
       row.with_value(text: @mentor.started_on.to_date.to_fs(:govuk))
       row.with_action(
         text: "Change",
-        href: schools_register_mentor_wizard_started_on_path,
+        href: schools_register_mentor_wizard_change_started_on_path,
         visually_hidden_text: "mentor start date",
       )
     end
@@ -58,7 +59,7 @@
       row.with_value(text: @mentor.lead_provider.name)
       row.with_action(
         text: "Change",
-        href: (schools_register_mentor_wizard_lead_provider_path),
+        href: (schools_register_mentor_wizard_change_lead_provider_path),
         visually_hidden_text: "lead provider",
       )
     end

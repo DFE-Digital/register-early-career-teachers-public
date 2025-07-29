@@ -4,7 +4,7 @@ module Schools
       def next_step
         return :check_answers unless mentor.previously_registered_as_mentor?
 
-        if mentor.has_open_mentor_at_school_period_at_another_school?
+        if mentor.currently_mentor_at_another_school?
           # Ask school: are they mentoring at new school only?
           :mentoring_at_new_school_only
         else
