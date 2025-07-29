@@ -12,7 +12,7 @@
   "devDependencies": {
     "playwright": "^1.53.0",
     "standard": "^17.1.2",
-    "stylelint": "^16.22.0",
+    "stylelint": "^16.23.0",
     "stylelint-config-gds": "^2.0.0"
   },
   "optionalDependencies": {
