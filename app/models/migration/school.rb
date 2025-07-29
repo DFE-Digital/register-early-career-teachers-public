@@ -8,6 +8,8 @@ module Migration
     OPEN_STATUS_CODES = [1, 3].freeze
 
     has_many :school_cohorts
+    has_many :induction_programmes, through: :school_cohorts
+    has_many :induction_records, through: :induction_programmes
     has_many :partnerships
 
     has_many :school_local_authorities
@@ -16,6 +18,7 @@ module Migration
     has_one :local_authority, through: :latest_school_authority
 
     scope :currently_open, -> { where(school_status_code: OPEN_STATUS_CODES) }
+    scope :not_open, -> { where.not(school_status_code: OPEN_STATUS_CODES) }
     scope :eligible_establishment_type, -> { where(school_type_code: ELIGIBLE_TYPE_CODES) }
     scope :in_england, -> { where("administrative_district_code ILIKE 'E%' OR administrative_district_code = '9999'") }
     scope :section_41, -> { where(section_41_approved: true) }
@@ -24,6 +27,7 @@ module Migration
     scope :cip_only_except_welsh, -> { currently_open.where(school_type_code: CIP_ONLY_EXCEPT_WELSH_TYPE_CODES) }
     scope :eligible_or_cip_only_except_welsh, -> { eligible.or(cip_only_except_welsh) }
     scope :not_cip_only, -> { where.not(id: cip_only) }
+    scope :with_induction_records, -> { joins(:induction_records).distinct }
 
     def cip_only_type? = GIAS::Types::CIP_ONLY_EXCEPT_WELSH.include?(school_type_name)
 
@@ -42,7 +46,7 @@ module Migration
 
     def in_england? = GIAS::Types::IN_ENGLAND_TYPES.include?(school_type_name)
 
-    def local_authority_code = local_authority&.code&.to_i
+    def local_authority_code = local_authority&.code.to_i
 
     # local_authority_name
     delegate :name, to: :local_authority, prefix: true, allow_nil: true
