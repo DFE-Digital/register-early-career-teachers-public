@@ -4,7 +4,7 @@ shared_examples "a show endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(resource, root: "data"))
+    expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
   end
 
   context "when the resource does not exist" do
@@ -21,8 +21,8 @@ shared_examples "a show endpoint" do
 
   context "when the resource exists but does not belong to the lead provider" do
     let(:resource) do
+      contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
       lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
-      contract_period = active_lead_provider.contract_period
       create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:))
     end
 
