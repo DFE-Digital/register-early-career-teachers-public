@@ -229,7 +229,7 @@ describe Teachers::Search do
           let(:school) { FactoryBot.create(:school) }
 
           context 'when ECT has left the school' do
-            let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :past, school:, teacher:) }
+            let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :finished, school:, teacher:) }
 
             it 'returns no teachers' do
               expect(Teachers::Search.new(ect_at_school: school).search).to be_empty
@@ -245,7 +245,7 @@ describe Teachers::Search do
           end
 
           context 'when ECT is scheduled to join the school' do
-            let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :future, school:, teacher:) }
+            let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :not_started_yet, school:, teacher:) }
 
             it 'returns the teacher' do
               expect(Teachers::Search.new(ect_at_school: school).search).to include(teacher)
