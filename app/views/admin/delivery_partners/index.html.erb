@@ -32,6 +32,9 @@
       </p>
     <% end %>
 
-    <%= govuk_pagination pagy: @pagy %>
+    <%= render Shared::PaginationSummaryComponent.new(
+      pagy: @pagy,
+      record_name: "results",
+    ) %>
   </div>
 </div>
