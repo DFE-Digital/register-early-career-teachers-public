@@ -20,7 +20,7 @@ RSpec.describe "Appropriate Body bulk actions confirmation", type: :request do
       it "enqueues a job" do
         expect {
           put ab_batch_action_path(batch)
-        }.to have_enqueued_job(ProcessBatchActionJob).with(batch, user.email, user.name)
+        }.to have_enqueued_job(ProcessBatchActionJob).with(batch, user.email, user.name, kind_of(String))
       end
 
       it "records an upload completed event" do

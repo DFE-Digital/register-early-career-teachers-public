@@ -12,7 +12,10 @@ class ProcessBatchJob < ApplicationJob
   # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
   # @param author_email [String]
   # @param author_name [String]
-  def perform(pending_induction_submission_batch, author_email, author_name)
+  # @param web_request_uuid [String]
+  def perform(pending_induction_submission_batch, author_email, author_name, web_request_uuid)
+    RequestLocals.store[:dfe_analytics_request_id] = web_request_uuid
+
     return if pending_induction_submission_batch.failed?
 
     author = event_author(pending_induction_submission_batch, author_email, author_name)

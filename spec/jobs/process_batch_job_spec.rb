@@ -10,7 +10,7 @@ RSpec.describe ProcessBatchJob, type: :job do
   describe '#perform' do
     it 'raises an error intended for the subclass' do
       expect {
-        described_class.perform_now(pending_induction_submission_batch, author.email, author.name)
+        described_class.perform_now(pending_induction_submission_batch, author.email, author.name, SecureRandom.uuid)
       }.to raise_error(NotImplementedError, "You must implement the ProcessBatchJob#batch_service method")
     end
   end
