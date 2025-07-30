@@ -2,12 +2,10 @@
 title: Guidance for lead providers 
 ---
 
-## Working with DfE on early career teacher training programmes 
-
 Use this guidance to: 
 
 * understand lead providers responsibilities
-* know how lead providers should interact with the DfE and the ‘Register early career teachers’ service
+* know how lead providers should interact with the Department for Education (DfE) and the ‘Register early career teachers’ service
 * find where to manage data, funding and reporting 
 
 ## What lead providers are responsible for 
