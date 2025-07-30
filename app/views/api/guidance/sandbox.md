@@ -47,7 +47,7 @@ They'll receive:
 
 ### 2. Use the sandbox URL 
 
-The sandbox runs on a separate domain from the live service: [https://sandbox.register-early-career-teachers.education.gov.uk/api](https://sandbox.register-early-career-teachers.education.gov.uk/api)
+The [sandbox runs on a separate domain](https://sandbox.register-early-career-teachers.education.gov.uk/api) from the live service. 
 
 ### 3. Check your setup 
 
