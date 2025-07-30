@@ -60,7 +60,7 @@ If a record fails, providers need to:
 * avoid re-submitting the same bad data
 * apply corrections where needed 
 
-For example, if a provider gets a `422 Unprocessable entity` message due to a missing training programme ID, they need to fix the local record before reattempting the sync. 
+For example, if a provider gets a `422 Unprocessable entity` message due to a missing participant ID, they need to fix the local record before reattempting the sync. 
 
 ## Avoid common syncing issues
 
