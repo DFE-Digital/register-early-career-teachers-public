@@ -27,7 +27,7 @@ describe DeliveryPartnerSerializer, type: :serializer do
     end
 
     it "serializes `cohort`" do
-      expect(attributes["cohort"]).to contain_exactly(2024)
+      expect(attributes["cohort"]).to contain_exactly("2024")
     end
 
     it "serializes `created_at`" do
@@ -63,7 +63,7 @@ describe DeliveryPartnerSerializer, type: :serializer do
       end
 
       it "does not include other lead provider's cohorts" do
-        expect(attributes["cohort"]).to contain_exactly(2024)
+        expect(attributes["cohort"]).to contain_exactly("2024")
       end
     end
 
@@ -76,7 +76,7 @@ describe DeliveryPartnerSerializer, type: :serializer do
       end
 
       it "serializes `cohort` with unique contract periods" do
-        expect(attributes["cohort"]).to contain_exactly(2023, 2024)
+        expect(attributes["cohort"]).to contain_exactly("2023", "2024")
       end
     end
   end
