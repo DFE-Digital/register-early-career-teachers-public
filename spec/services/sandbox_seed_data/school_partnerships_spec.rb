@@ -14,14 +14,20 @@ RSpec.describe SandboxSeedData::SchoolPartnerships do
 
     # Ensure there are schools to create partnerships with
     before do
-      FactoryBot.create_list(:lead_provider_delivery_partnership, 10, active_lead_provider:)
+      FactoryBot.create_list(:lead_provider_delivery_partnership, 5, active_lead_provider:)
       FactoryBot.create_list(:school, 100)
     end
 
-    it "creates the correct quantity of school partnerships" do
+    it "creates school partnerships for all lead providers" do
       instance.plant
 
-      expect(SchoolPartnership.all.size).to eq(described_class::NUMBER_OF_RECORDS)
+      expect(SchoolPartnership.all.map(&:lead_provider).uniq).to eq(LeadProvider.all)
+    end
+
+    it "creates school partnerships for all contract periods" do
+      instance.plant
+
+      expect(SchoolPartnership.all.map(&:contract_period).uniq).to eq(ContractPeriod.all)
     end
 
     it "logs the creation of school partnerships" do
