@@ -33,13 +33,18 @@ module Migrators
           .ect
           .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
           .find_each do |participant_profile|
-          induction_records = InductionRecordSanitizer.new(participant_profile:)
+          sanitizer = InductionRecordSanitizer.new(participant_profile:, group_by: :school)
 
-          if induction_records.valid?
-            school_periods = SchoolPeriodExtractor.new(induction_records:)
+          school_periods = []
+
+          # TODO: we could just grab the first entry in each school group
+          if sanitizer.valid?
+            sanitizer.induction_records.each do |urn, irs|
+              school_periods << SchoolPeriodExtractor.new(induction_records: irs).school_periods
+            end
 
             teacher.update!(ecf_ect_profile_id: participant_profile.id)
-            result = Builders::ECT::SchoolPeriods.new(teacher:, school_periods:).build
+            result = Builders::ECT::SchoolPeriods.new(teacher:, school_periods: school_periods.flatten).build
           else
             ::TeacherMigrationFailure.create!(teacher:,
                                               model: :ect_at_school_period,
