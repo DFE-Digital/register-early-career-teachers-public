@@ -28,6 +28,9 @@ We write tickets and organise our sprints on the internal repository. The public
 
 We still aim to work as openly as possible and will respond to any issues or pull requests raised against the public repository.
 
-## Entity Relationships
 
-![Entity Relationship Diagram](documentation/domain-model.png)
+## Entity Relationship Diagram
+
+This diagram is generated from the application's models and shows their relationships.
+
+👉🏽 [View Mermaid ERD](documentation/domain-model.md)

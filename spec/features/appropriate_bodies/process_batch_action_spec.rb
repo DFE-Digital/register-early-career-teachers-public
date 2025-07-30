@@ -98,7 +98,7 @@ RSpec.describe 'Process bulk actions' do
       end
 
       context 'when file is not a CSV (image)' do
-        let(:file_path) { Rails.root.join('documentation/domain-model.png').to_s }
+        let(:file_path) { Rails.root.join('spec/fixtures/dummy_image.png').to_s }
 
         scenario 'fails immediately' do
           then_i_should_see_the_error('The selected file must be a CSV')
