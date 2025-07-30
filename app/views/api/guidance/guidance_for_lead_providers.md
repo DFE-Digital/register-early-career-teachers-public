@@ -18,7 +18,7 @@ Lead providers are responsible for delivering high-quality early career teacher 
 * managing changes to participant details and training status
 * making sure declarations are correct so funding can be released 
 
-## Where to manage ECT training data 
+## Where to manage participant training data 
 
 Lead providers must use the [‘Register early career teachers’ API](/api) to submit and update data about:
 
