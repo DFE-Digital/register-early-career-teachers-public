@@ -8,6 +8,10 @@ RSpec.describe 'admin/appropriate_bodies/index.html.erb' do
   before do
     assign(:appropriate_bodies, appropriate_bodies)
     assign(:pagy, pagy)
+    assign(:breadcrumbs, {
+      "Organisations" => admin_organisations_path,
+      "Appropriate bodies" => nil,
+    })
   end
 
   it %(sets the main heading and page title to 'Appropriate bodies') do
@@ -15,6 +19,14 @@ RSpec.describe 'admin/appropriate_bodies/index.html.erb' do
 
     expect(view.content_for(:page_title)).to eql('Appropriate bodies')
     expect(view.content_for(:page_header)).to have_css('h1', text: 'Appropriate bodies')
+  end
+
+  it 'renders breadcrumbs' do
+    render
+
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Organisations', href: admin_organisations_path)
+    expect(view.content_for(:backlink_or_breadcrumb)).to include('Appropriate bodies')
+    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link('Appropriate bodies')
   end
 
   it 'renders a list of appropriate bodies' do
