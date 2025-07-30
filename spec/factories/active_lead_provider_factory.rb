@@ -4,7 +4,7 @@ FactoryBot.define do
     association :contract_period
 
     initialize_with do
-      ActiveLeadProvider.find_or_create_by(lead_provider:, contract_period:)
+      ActiveLeadProvider.find_by(lead_provider:, contract_period:) || new(**attributes)
     end
   end
 end
