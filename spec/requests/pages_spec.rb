@@ -35,11 +35,19 @@ RSpec.describe "Pages", type: :request do
     end
   end
 
-  describe 'GET /privacy' do
+  describe 'GET /cookies' do
     it 'shows the cookies page' do
       get '/cookies'
       expect(response).to be_successful
       expect(response.body).to include('Cookies')
+    end
+  end
+
+  describe 'GET /school-requirements' do
+    it 'shows the school requirements page' do
+      get '/school-requirements'
+      expect(response).to be_successful
+      expect(response.body).to include('What your school needs in place to register ECTs and mentors for ECTE')
     end
   end
 end
