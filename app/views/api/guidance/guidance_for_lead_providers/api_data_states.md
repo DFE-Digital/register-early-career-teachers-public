@@ -12,7 +12,9 @@ Use this page to:
 * learn how these states affect data submission and funding
 * handle transitions correctly in lead provider systems 
 
-## Participant states 
+## Participant states
+
+### Training status
 
 Participant states are defined by the `training_status` attribute. 
 
