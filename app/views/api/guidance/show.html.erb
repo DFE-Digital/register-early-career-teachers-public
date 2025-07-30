@@ -30,7 +30,7 @@
   </div>
 <% end %>
 
-<div class="govuk-service-navigation govuk-!-padding-top-7">
+<div class="release-notes-panel govuk-!-padding-top-7">
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -48,7 +48,7 @@
             <%= render API::Guidance::ReleaseNotes::TagsComponent.new(tags: @latest_release_note.tags) %>
           </p>
           <p class="govuk-body">
-            <%= govuk_link_to("Read release note", api_guidance_release_notes_path(anchor: @latest_release_note.date.parameterize)) %>
+            <%= govuk_link_to("Read release note", api_guidance_release_notes_path(anchor: "latest")) %>
           </p>
         <% end %>
       </div>

@@ -12,7 +12,7 @@ module API
       @release_notes = YAML.load_file(
         Rails.root.join('app/views/api/guidance/release_notes.yml'),
         permitted_classes: [Date]
-      ).map { |note| API::ReleaseNote.new(**note.symbolize_keys) }
+      ).map.with_index { |note, i| API::ReleaseNote.new(**note.symbolize_keys, latest: i.zero?) }
     end
 
     def page
