@@ -42,7 +42,7 @@ RSpec.configure do |config|
           UnauthorisedResponse: UNAUTHORISED_RESPONSE,
           NotFoundResponse: NOT_FOUND_RESPONSE,
           PaginationFilter: PAGINATION_FILTER,
-          SortOrder: SORT_ORDER,
+          SortingTimestamps: SORTING_TIMESTAMPS,
 
           # Schools
           School: SCHOOL,

@@ -13,7 +13,7 @@ RSpec.describe "Delivery partners endpoint", openapi_spec: "v3/swagger.yaml", ty
                     resource_description: "delivery partners",
                     response_schema_ref: "#/components/schemas/DeliveryPartnersResponse",
                     filter_schema_ref: "#/components/schemas/DeliveryPartnersFilter",
-                    sorting_schema_ref: "#/components/schemas/SortOrder",
+                    sorting_schema_ref: "#/components/schemas/SortingTimestamps",
                   }
 
   it_behaves_like "an API show endpoint documentation",

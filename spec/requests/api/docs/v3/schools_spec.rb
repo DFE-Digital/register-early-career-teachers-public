@@ -23,7 +23,7 @@ RSpec.describe "Schools endpoint", openapi_spec: "v3/swagger.yaml", type: :reque
                     resource_description: "schools scoped to cohort",
                     response_schema_ref: "#/components/schemas/SchoolsResponse",
                     filter_schema_ref: "#/components/schemas/SchoolsFilter",
-                    sorting_schema_ref: "#/components/schemas/SortOrder",
+                    sorting_schema_ref: "#/components/schemas/SortingTimestamps",
                   }
 
   it_behaves_like "an API show endpoint documentation",
