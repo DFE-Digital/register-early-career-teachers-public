@@ -196,7 +196,7 @@ private
   end
 
   def and_i_submit_the_form
-    page.locator("input[type=submit]", hasText: "Save").click
+    page.locator("button[type=submit]", hasText: "Save").click
   end
 
   def then_i_see_a_success_message
