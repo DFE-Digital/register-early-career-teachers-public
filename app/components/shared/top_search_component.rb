@@ -24,7 +24,7 @@ module Shared
               label: { text: label_text, size: "s" }
             )
           end,
-          f.govuk_submit(submit_text, class: "govuk-button--secondary app-search__button")
+          f.govuk_submit(submit_text, secondary: true, class: "app-search__button")
         ])
       end
     end
