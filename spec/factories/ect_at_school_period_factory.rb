@@ -12,12 +12,12 @@ FactoryBot.define do
     email { Faker::Internet.email }
     working_pattern { WORKING_PATTERNS.keys.sample }
 
-    trait :future do
+    trait :not_started_yet do
       started_on { 2.weeks.from_now }
       finished_on { nil }
     end
 
-    trait :past do
+    trait :finished do
       started_on { 1.year.ago }
       finished_on { 2.weeks.ago }
     end
