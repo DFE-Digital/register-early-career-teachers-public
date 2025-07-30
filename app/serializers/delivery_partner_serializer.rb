@@ -4,8 +4,8 @@ class DeliveryPartnerSerializer < Blueprinter::Base
 
     field :name
     field(:cohort) do |delivery_partner, options|
-      if delivery_partner.respond_to?(:transient_cohort)
-        delivery_partner.transient_cohort
+      if delivery_partner.respond_to?(:transient_cohorts)
+        delivery_partner.transient_cohorts
       else
         delivery_partner
           .lead_provider_delivery_partnerships

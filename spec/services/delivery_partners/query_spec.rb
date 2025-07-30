@@ -17,7 +17,7 @@ RSpec.describe DeliveryPartners::Query do
       expect(query.delivery_partners).to eq([delivery_partner1, delivery_partner2, delivery_partner3])
     end
 
-    describe "transient_cohort" do
+    describe "transient_cohorts" do
       let(:lead_provider_2024) { FactoryBot.create(:lead_provider) }
       let(:lead_provider_2025) { FactoryBot.create(:lead_provider) }
 
@@ -38,7 +38,7 @@ RSpec.describe DeliveryPartners::Query do
           query = described_class.new(lead_provider:)
 
           expect(query.delivery_partners).to contain_exactly(delivery_partner1)
-          expect(query.delivery_partners.map(&:transient_cohort)).to contain_exactly(%w[2024 2025])
+          expect(query.delivery_partners.map(&:transient_cohorts)).to contain_exactly(%w[2024 2025])
         end
       end
 
@@ -49,7 +49,7 @@ RSpec.describe DeliveryPartners::Query do
           query = described_class.new(lead_provider:)
 
           expect(query.delivery_partners).to contain_exactly(delivery_partner1)
-          expect(query.delivery_partners.map(&:transient_cohort)).to contain_exactly(%w[2024])
+          expect(query.delivery_partners.map(&:transient_cohorts)).to contain_exactly(%w[2024])
         end
       end
     end
