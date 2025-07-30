@@ -26,6 +26,7 @@ brookfield_school = School.find_by!(urn: 2_976_163)
 
 rp2022 = ContractPeriod.find_by(year: 2022)
 rp2023 = ContractPeriod.find_by(year: 2023)
+rp2025 = ContractPeriod.find_by(year: 2025)
 
 ambitious_institute = LeadProvider.find_by!(name: 'Ambitious Institute')
 teach_fast = LeadProvider.find_by!(name: 'Teach Fast')
@@ -37,10 +38,12 @@ ambitious_institute__artisan__2022 = find_lead_provider_delivery_partnership(del
 ambitious_institute__artisan__2023 = find_lead_provider_delivery_partnership(delivery_partner: artisan, lead_provider: ambitious_institute, contract_period: rp2023)
 teach_fast__grain__2022 = find_lead_provider_delivery_partnership(delivery_partner: grain, lead_provider: teach_fast, contract_period: rp2022)
 teach_fast__grain__2023 = find_lead_provider_delivery_partnership(delivery_partner: grain, lead_provider: teach_fast, contract_period: rp2023)
+teach_fast__grain__2025 = find_lead_provider_delivery_partnership(delivery_partner: grain, lead_provider: teach_fast, contract_period: rp2025)
 [
   { school: abbey_grove_school, lead_provider_delivery_partnership: ambitious_institute__artisan__2022 },
   { school: abbey_grove_school, lead_provider_delivery_partnership: ambitious_institute__artisan__2023 },
   { school: abbey_grove_school, lead_provider_delivery_partnership: teach_fast__grain__2023 },
+  { school: abbey_grove_school, lead_provider_delivery_partnership: teach_fast__grain__2025 },
   { school: ackley_bridge, lead_provider_delivery_partnership: ambitious_institute__artisan__2023 },
   { school: mallory_towers, lead_provider_delivery_partnership: teach_fast__grain__2022 },
   { school: brookfield_school, lead_provider_delivery_partnership: teach_fast__grain__2022 },

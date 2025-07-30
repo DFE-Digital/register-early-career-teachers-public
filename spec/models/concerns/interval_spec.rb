@@ -95,6 +95,32 @@ describe Interval do
         expect(DummyMentor.finished_on_or_after(Date.yesterday).to_sql).to end_with(%("finished_on" >= '#{Date.yesterday.iso8601}'))
       end
     end
+
+    describe '.ongoing_today' do
+      it 'queries for dates within the range field' do
+        today = Time.zone.today.to_s
+        expect(DummyMentor.ongoing_today.to_sql).to end_with(%{"range" @> date('#{today}'))})
+      end
+    end
+
+    describe '.starting_tomorrow_or_after' do
+      it 'queries for start dates on or after tomorrow' do
+        tomorrow = Time.zone.tomorrow.to_s
+        expect(DummyMentor.starting_tomorrow_or_after.to_sql).to end_with(%("started_on" >= '#{tomorrow}'))
+      end
+    end
+
+    describe '.ongoing_today_or_starting_tomorrow_or_after' do
+      it 'chains together .ongoing_today and .starting_tomorrow_or_after' do
+        allow(DummyMentor).to receive(:ongoing_today).and_call_original
+        allow(DummyMentor).to receive(:starting_tomorrow_or_after).and_call_original
+
+        DummyMentor.ongoing_today_or_starting_tomorrow_or_after
+
+        expect(DummyMentor).to have_received(:ongoing_today).once
+        expect(DummyMentor).to have_received(:starting_tomorrow_or_after).once
+      end
+    end
   end
 
   describe "#finish!" do

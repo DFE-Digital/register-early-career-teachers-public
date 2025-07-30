@@ -16,6 +16,8 @@ ambitious_institute_2023 = active_lead_providers.fetch([ambitious_institute, 202
 ambitious_institute_2024 = active_lead_providers.fetch([ambitious_institute, 2024])
 teach_fast_2022 = active_lead_providers.fetch([teach_fast, 2022])
 teach_fast_2023 = active_lead_providers.fetch([teach_fast, 2023])
+teach_fast_2024 = active_lead_providers.fetch([teach_fast, 2024])
+teach_fast_2025 = active_lead_providers.fetch([teach_fast, 2025])
 better_practice_network_2023 = active_lead_providers.fetch([better_practice_network, 2023])
 better_practice_network_2024 = active_lead_providers.fetch([better_practice_network, 2024])
 
@@ -29,6 +31,8 @@ rising_minds = DeliveryPartner.find_by!(name: "Rising Minds Network")
   { active_lead_provider: ambitious_institute_2024, delivery_partner: artisan },
   { active_lead_provider: teach_fast_2022, delivery_partner: grain },
   { active_lead_provider: teach_fast_2023, delivery_partner: grain },
+  { active_lead_provider: teach_fast_2024, delivery_partner: grain },
+  { active_lead_provider: teach_fast_2025, delivery_partner: grain },
   { active_lead_provider: better_practice_network_2023, delivery_partner: rising_minds },
   { active_lead_provider: better_practice_network_2024, delivery_partner: rising_minds }
 ].each do |data|

@@ -12,7 +12,14 @@ def teacher_name(teacher)
 end
 
 def describe_period_duration(period)
-  period.finished_on ? "between #{period.started_on} and #{period.finished_on}" : "since #{period.started_on}"
+  case
+  when period.started_on.future?
+    "from #{period.started_on}"
+  when period.finished_on
+    "between #{period.started_on} and #{period.finished_on}"
+  else
+    "since #{period.started_on}"
+  end
 end
 
 def describe_mentorship_period(mp)
@@ -70,7 +77,9 @@ def describe_training_period(tp)
     lead_provider_name = lpdp.active_lead_provider.lead_provider.name
     delivery_partner_name = lpdp.delivery_partner.name
 
-    print_seed_info("* was trained by #{lead_provider_name} (LP) and #{delivery_partner_name} #{describe_period_duration(tp)} #{suffix}", indent: 4)
+    prefix = (tp.started_on.future?) ? 'will be' : 'was'
+
+    print_seed_info("* #{prefix} trained by #{lead_provider_name} (LP) and #{delivery_partner_name} #{describe_period_duration(tp)} #{suffix}", indent: 4)
   else
     lead_provider_name = tp.expression_of_interest.lead_provider.name
 
@@ -115,12 +124,15 @@ def find_school_partnership(delivery_partner:, lead_provider:, contract_period:)
     )
 end
 
-rp_2022 = ContractPeriod.find_by(year: 2022)
-rp_2023 = ContractPeriod.find_by(year: 2023)
+cp_2022 = ContractPeriod.find_by(year: 2022)
+cp_2023 = ContractPeriod.find_by(year: 2023)
+_cp_2024 = ContractPeriod.find_by(year: 2024)
+cp_2025 = ContractPeriod.find_by(year: 2025)
 
-ambitious_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: rp_2022, lead_provider: ambitious_institute)
-ambitious_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: rp_2023, lead_provider: ambitious_institute)
-teach_fast_grain_2022 = ActiveLeadProvider.find_by!(contract_period: rp_2022, lead_provider: teach_fast)
+ambitious_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: ambitious_institute)
+ambitious_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: ambitious_institute)
+teach_fast_grain_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: teach_fast)
+teach_fast_grain_2025 = ActiveLeadProvider.find_by!(contract_period: cp_2025, lead_provider: teach_fast)
 
 ambitious_artisan_partnership_2022 = find_school_partnership(
   lead_provider: ambitious_institute,
@@ -134,6 +146,11 @@ ambitious_artisan_partnership_2023 = find_school_partnership(
 )
 teach_fast_grain_partnership_2022 = find_school_partnership(
   contract_period: ContractPeriod.find_by!(year: 2022),
+  lead_provider: teach_fast,
+  delivery_partner: grain_teaching_school_hub
+)
+teach_fast_grain_partnership_2025 = find_school_partnership(
+  contract_period: ContractPeriod.find_by!(year: 2025),
   lead_provider: teach_fast,
   delivery_partner: grain_teaching_school_hub
 )
@@ -602,6 +619,26 @@ TrainingPeriod.create!(
   started_on: 18.months.ago,
   expression_of_interest: ambitious_artisan_2023,
   training_programme: 'provider_led'
+).tap { |tp| describe_training_period(tp) }
+
+print_seed_info("Peter Davison (ECT)", indent: 2, colour: ECT_COLOUR)
+
+peter_davison = Teacher.find_by!(trs_first_name: 'Peter', trs_last_name: 'Davison')
+peter_davison_at_abbey_grove_school = ECTAtSchoolPeriod.create!(
+  teacher: peter_davison,
+  school: abbey_grove_school,
+  email: 'pd@tardis.bbc',
+  started_on: 2.weeks.from_now,
+  school_reported_appropriate_body: south_yorkshire_studio_hub,
+  training_programme: 'provider_led'
+).tap { |sp| describe_ect_at_school_period(sp) }
+
+TrainingPeriod.create!(
+  ect_at_school_period: peter_davison_at_abbey_grove_school,
+  started_on: 2.weeks.from_now,
+  school_partnership: teach_fast_grain_partnership_2025,
+  training_programme: 'provider_led',
+  expression_of_interest: teach_fast_grain_2025
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Adding mentorships:")
