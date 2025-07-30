@@ -31,7 +31,7 @@ paths:
         in: query
         required: false
         schema:
-          "$ref": "#/components/schemas/SortOrder"
+          "$ref": "#/components/schemas/SortingTimestamps"
       responses:
         '200':
           description: A list of delivery partners
@@ -101,7 +101,7 @@ paths:
         in: query
         required: false
         schema:
-          "$ref": "#/components/schemas/SortOrder"
+          "$ref": "#/components/schemas/SortingTimestamps"
       responses:
         '200':
           description: A list of schools scoped to cohort
@@ -263,7 +263,7 @@ components:
             is 3000, if the value is greater that the maximum allowed it will fallback
             to 3000.
           example: 10
-    SortOrder:
+    SortingTimestamps:
       description: Sort records being returned.
       enum:
       - created_at
