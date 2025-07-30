@@ -24,15 +24,6 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
                 },
                 style: "deepObject"
 
-      if params[:default_sortable]
-        parameter name: :sort,
-                  in: :query,
-                  required: false,
-                  schema: {
-                    "$ref": "#/components/schemas/SortingOptions",
-                  }
-      end
-
       if params[:sorting_schema_ref]
         parameter name: :sort,
                   in: :query,

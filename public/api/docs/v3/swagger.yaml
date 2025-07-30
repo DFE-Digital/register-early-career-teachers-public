@@ -7,6 +7,76 @@ externalDocs:
   description: Find out more about Swagger
   url: https://swagger.io/
 paths:
+  "/api/v3/delivery-partners":
+    get:
+      summary: Retrieve multiple delivery partners
+      tags:
+      - Delivery Partners
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/DeliveryPartnersFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      - name: sort
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SortOrder"
+      responses:
+        '200':
+          description: A list of delivery partners
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeliveryPartnersResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+  "/api/v3/delivery-partners/{id}":
+    get:
+      summary: Retrieve a single a delivery partner
+      tags:
+      - Delivery Partners
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: A single a delivery partner
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeliveryPartnerResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
   "/api/v3/schools":
     get:
       summary: Retrieve multiple schools scoped to cohort
@@ -31,7 +101,7 @@ paths:
         in: query
         required: false
         schema:
-          "$ref": "#/components/schemas/SortingOptions"
+          "$ref": "#/components/schemas/SortOrder"
       responses:
         '200':
           description: A list of schools scoped to cohort
@@ -193,7 +263,7 @@ components:
             is 3000, if the value is greater that the maximum allowed it will fallback
             to 3000.
           example: 10
-    SortingOptions:
+    SortOrder:
       description: Sort records being returned.
       enum:
       - created_at
@@ -409,3 +479,71 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Statement"
+    DeliveryPartner:
+      description: A delivery partner.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: delivery-partner
+          enum:
+          - delivery-partner
+        attributes:
+          properties:
+            name:
+              description: The name of the delivery partner you are working with.
+              type: string
+              nullable: false
+              example: Awesome Delivery Partner Ltd
+            cohort:
+              description: The cohorts for which you may report school partnerships
+                with this delivery partner.
+              type: array
+              nullable: false
+              example:
+              - '2021'
+              - '2022'
+            created_at:
+              description: The date and time the delivery partner was created.
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            updated_at:
+              description: The date and time the delivery partner was last updated.
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    DeliveryPartnersFilter:
+      description: Filter delivery partners to return more specific results
+      type: object
+      properties:
+        cohort:
+          description: Return delivery partners from the specified cohort or cohorts.
+            This is a comma delimited string of years.
+          type: string
+          example: '2021,2022'
+    DeliveryPartnerResponse:
+      description: A delivery partner.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/DeliveryPartner"
+    DeliveryPartnersResponse:
+      description: A list of delivery partners.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/DeliveryPartner"
