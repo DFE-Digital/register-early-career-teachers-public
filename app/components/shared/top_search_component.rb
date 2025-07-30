@@ -1,15 +1,17 @@
 module Shared
   class TopSearchComponent < ViewComponent::Base
-    attr_reader :query_param, :label_text, :submit_text, :url
+    attr_reader :query_param, :label_text, :hint_text, :submit_text, :url
 
     def initialize(
       query_param: :q,
       label_text: 'Search by name or teacher reference number (TRN)',
+      hint_text: nil,
       submit_text: 'Search',
       url: nil
     )
       @query_param = query_param
       @label_text = label_text
+      @hint_text = hint_text
       @submit_text = submit_text
       @url = url
     end
@@ -21,7 +23,8 @@ module Shared
             f.govuk_text_field(
               query_param,
               value: search_value,
-              label: { text: label_text, size: "s" }
+              label: { text: label_text, size: "s" },
+              hint: { text: hint_text }
             )
           end,
           f.govuk_submit(submit_text, secondary: true, class: "app-search__button")

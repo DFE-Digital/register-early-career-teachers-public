@@ -1,0 +1,40 @@
+<% page_data(title: "Delivery partners", breadcrumbs: @breadcrumbs) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <%= render Shared::TopSearchComponent.new(
+      label_text: "Search for delivery partner",
+      hint_text: "Search by name",
+    ) %>
+
+    <% if params[:q].present? && @pagy.count.positive? %>
+      <p class="govuk-body">
+        <strong><%= @pagy.count %></strong>
+        results found for "<%= params[:q] %>"
+      </p>
+    <% end %>
+
+    <% if @delivery_partners.present? %>
+      <%= govuk_table do |table|
+        table.with_head do |head|
+          head.with_row { |row| row.with_cell(text: "Delivery partner") }
+        end
+
+        table.with_body do |body|
+          @delivery_partners.each do |delivery_partner|
+            body.with_row { |row| row.with_cell(text: delivery_partner.name) }
+          end
+        end
+      end %>
+    <% else %>
+      <p class="govuk-body">
+        No results found
+      </p>
+    <% end %>
+
+    <%= render Shared::PaginationSummaryComponent.new(
+      pagy: @pagy,
+      record_name: "results",
+    ) %>
+  </div>
+</div>
