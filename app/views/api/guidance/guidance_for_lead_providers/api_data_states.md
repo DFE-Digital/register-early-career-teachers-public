@@ -54,18 +54,6 @@ Lead providers must submit declarations to confirm a participant has engaged in 
 | `awaiting_clawback`     | A `paid` declaration that has since been voided by a provider    | Providers can **only** view `awaiting_clawback` declarations     | 
 | `clawed_back`     | An `awaiting_clawback` declaration that has since had its value deducted from payment by DfE to a provider     | Providers can **only** view `clawed_back` declarations     | 
 
-## Example of how states change over time 
-
-An ECT might move through the following participant states: 
-
-* `pending` when added to the system   
-* `active` when they’ve started training
-* `deferred` if they’ve paused training
-* `active` when they’ve been reinstated
-* `completed` when they’ve finished the programme 
-
-At each stage, declarations (like `started`, `retained-1`, `completed`) are submitted and will move through their own states (for example, `submitted` to `eligible` to `paid`). 
-
 ## Best practice 
 
 Lead providers should:  
