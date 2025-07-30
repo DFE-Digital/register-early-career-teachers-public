@@ -7,6 +7,14 @@ describe Teachers::FullNameParser do
     it "returns the first name part" do
       expect(service.first_name).to eq "Alison"
     end
+
+    context "when the first name starts with a title" do
+      let(:full_name) { "Missi Pyle" }
+
+      it "returns the first name intact" do
+        expect(service.first_name).to eq "Missi"
+      end
+    end
   end
 
   describe '#last_name' do
