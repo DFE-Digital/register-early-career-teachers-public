@@ -1,4 +1,6 @@
 shared_examples "an index endpoint" do
+  let(:options) { defined?(serializer_options) ? serializer_options : {} }
+
   context "when 2 resources exist for the lead provider" do
     let!(:resources) do
       [
@@ -19,7 +21,7 @@ shared_examples "an index endpoint" do
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq(serializer.render(apply_expected_order(resources), root: "data", **serializer_options))
+      expect(response.body).to eq(serializer.render(apply_expected_order(resources), root: "data", **options))
     end
   end
 

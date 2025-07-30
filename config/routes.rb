@@ -340,7 +340,7 @@ Rails.application.routes.draw do
         end
 
         resources :statements, only: %i[index show], param: :api_id
-        resources :delivery_partners, only: %i[index show], path: "delivery-partners"
+        resources :delivery_partners, only: %i[index show], path: "delivery-partners", param: :api_id
         resources :partnerships, only: %i[show index create update]
         resources :schools, only: %i[index show], param: :api_id
         resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors"
