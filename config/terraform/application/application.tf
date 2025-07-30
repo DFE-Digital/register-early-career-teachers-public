@@ -72,7 +72,8 @@ module "web_application" {
   replicas   = var.webapp_replicas
   max_memory = var.webapp_memory_max
 
-  enable_logit = var.enable_logit
+  enable_logit    = var.enable_logit
+  run_as_non_root = var.run_as_non_root
 
   # Uncomment this when we want traffic to be redirected to the maintenance
   # page during disaster recovery (i.e., while waiting for a database to be
@@ -100,8 +101,9 @@ module "worker_application" {
   command       = ["bundle", "exec", "rake", "solid_queue:start"]
   probe_command = ["pgrep", "-f", "solid-queue-worker"]
 
-  replicas   = var.worker_replicas
-  max_memory = var.worker_memory_max
+  replicas        = var.worker_replicas
+  max_memory      = var.worker_memory_max
+  run_as_non_root = var.run_as_non_root
 
   enable_logit   = var.enable_logit
   enable_gcp_wif = true
