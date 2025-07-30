@@ -103,22 +103,22 @@ describe Interval do
       end
     end
 
-    describe '.starting_in_the_future' do
+    describe '.starting_tomorrow_or_after' do
       it 'queries for start dates on or after tomorrow' do
         tomorrow = Time.zone.tomorrow.to_s
-        expect(DummyMentor.starting_in_the_future.to_sql).to end_with(%("started_on" >= '#{tomorrow}'))
+        expect(DummyMentor.starting_tomorrow_or_after.to_sql).to end_with(%("started_on" >= '#{tomorrow}'))
       end
     end
 
-    describe '.ongoing_today_or_starting_in_the_future' do
-      it 'chains together .ongoing_today and .starting_in_the_future' do
+    describe '.ongoing_today_or_starting_tomorrow_or_after' do
+      it 'chains together .ongoing_today and .starting_tomorrow_or_after' do
         allow(DummyMentor).to receive(:ongoing_today).and_call_original
-        allow(DummyMentor).to receive(:starting_in_the_future).and_call_original
+        allow(DummyMentor).to receive(:starting_tomorrow_or_after).and_call_original
 
-        DummyMentor.ongoing_today_or_starting_in_the_future
+        DummyMentor.ongoing_today_or_starting_tomorrow_or_after
 
         expect(DummyMentor).to have_received(:ongoing_today).once
-        expect(DummyMentor).to have_received(:starting_in_the_future).once
+        expect(DummyMentor).to have_received(:starting_tomorrow_or_after).once
       end
     end
   end
