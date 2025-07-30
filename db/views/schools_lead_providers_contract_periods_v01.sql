@@ -12,7 +12,6 @@ SELECT
         INNER JOIN contract_periods cp ON alp.contract_period_id = cp.year
         WHERE schools.id = s.id
           AND cp.year = contract_periods.year
-          AND alp.lead_provider_id = lead_providers.id
         LIMIT 1
     ) AS in_partnership,
     -- training_programme
@@ -28,7 +27,6 @@ SELECT
         INNER JOIN contract_periods cp ON alp.contract_period_id = cp.year
         WHERE schools.id = s.id
           AND cp.year = contract_periods.year
-          AND alp.lead_provider_id = lead_providers.id
         LIMIT 1
       ) THEN 'provider_led'
       WHEN EXISTS (
@@ -42,7 +40,6 @@ SELECT
         INNER JOIN contract_periods cp ON alp.contract_period_id = cp.year
         WHERE schools.id = s.id
           AND cp.year = contract_periods.year
-          AND alp.lead_provider_id = lead_providers.id
         LIMIT 1
       ) THEN (
         CASE
@@ -57,7 +54,6 @@ SELECT
             INNER JOIN contract_periods cp ON alp.contract_period_id = cp.year
             WHERE schools.id = s.id
               AND cp.year = contract_periods.year
-              AND alp.lead_provider_id = lead_providers.id
             ORDER BY tp.training_programme ASC
             LIMIT 1
           ) = 'provider_led'
@@ -73,7 +69,6 @@ SELECT
             INNER JOIN contract_periods cp ON alp.contract_period_id = cp.year
             WHERE schools.id = s.id
               AND cp.year = contract_periods.year
-              AND alp.lead_provider_id = lead_providers.id
             ORDER BY tp.training_programme ASC
             LIMIT 1
           ) = 'school_led'

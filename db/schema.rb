@@ -793,7 +793,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
                JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
                JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
                JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
-            WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+            WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year))
            LIMIT 1)) AS in_partnership,
           CASE
               WHEN (EXISTS ( SELECT 1
@@ -804,7 +804,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
                    JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
                    JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
                    JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
-                WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+                WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year))
                LIMIT 1)) THEN 'provider_led'::text
               WHEN (EXISTS ( SELECT 1
                  FROM ((((((schools s
@@ -814,7 +814,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
                    JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
                    JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
                    JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
-                WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+                WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year))
                LIMIT 1)) THEN
               CASE
                   WHEN (( SELECT DISTINCT tp.training_programme
@@ -825,7 +825,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
                        JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
                        JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
                        JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
-                    WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+                    WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year))
                     ORDER BY tp.training_programme
                    LIMIT 1) = 'provider_led'::training_programme) THEN 'provider_led'::text
                   WHEN (( SELECT DISTINCT tp.training_programme
@@ -836,7 +836,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
                        JOIN lead_provider_delivery_partnerships lpd ON ((sp.lead_provider_delivery_partnership_id = lpd.id)))
                        JOIN active_lead_providers alp ON ((lpd.active_lead_provider_id = alp.id)))
                        JOIN contract_periods cp ON ((alp.contract_period_id = cp.year)))
-                    WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year) AND (alp.lead_provider_id = lead_providers.id))
+                    WHERE ((schools.id = s.id) AND (cp.year = contract_periods.year))
                     ORDER BY tp.training_programme
                    LIMIT 1) = 'school_led'::training_programme) THEN 'school_led'::text
                   ELSE NULL::text
