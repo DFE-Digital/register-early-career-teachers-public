@@ -16,16 +16,31 @@
   end
 
   if @school.provider_led_training_programme_chosen?
-    summary_list.with_row do |row|
-      row.with_key(text: 'Lead provider')
-      row.with_value(text: @school.last_chosen_lead_provider_name)
-    end
-  end
+    if @ect.lead_provider_has_confirmed_partnership_for_contract_period?(@school)
+      summary_list.with_row do |row|
+        row.with_key(text: 'Lead provider')
+        row.with_value(text: @ect.previous_lead_provider_name)
+      end
+
+      summary_list.with_row do |row|
+        row.with_key(text: 'Delivery partner')
+        row.with_value(text: @ect.previous_delivery_partner_name)
+      end 
+    else
+      summary_list.with_row do |row|
+        row.with_key(text: 'Lead provider')
+        row.with_value(text: @ect.previous_eoi_lead_provider_name)
+      end 
+    end 
+  end 
 end %>
 
-<% if @school.provider_led_training_programme_chosen? %>
-  <p class="govuk-body"><%= @school.last_chosen_lead_provider_name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.</p>
+<% if @school.provider_led_training_programme_chosen? && !@ect.lead_provider_has_confirmed_partnership_for_contract_period?(@school) %>
+  <p class="govuk-body">
+    <%= @ect.previous_eoi_lead_provider_name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.
+  </p>
 <% end %>
+
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
