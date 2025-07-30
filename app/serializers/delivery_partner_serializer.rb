@@ -12,6 +12,7 @@ class DeliveryPartnerSerializer < Blueprinter::Base
           .joins(:active_lead_provider)
           .where(active_lead_providers: { lead_provider_id: options[:lead_provider].id })
           .pluck("active_lead_providers.contract_period_id")
+          .map(&:to_s)
       end
     end
 
