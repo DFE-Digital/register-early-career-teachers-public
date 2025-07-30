@@ -50,6 +50,7 @@ Rails.application.routes.draw do
         end
         resources :schools, only: %i[index show], param: :urn
         resources :lead_providers, only: %i[index], path: 'lead-providers'
+        resources :delivery_partners, only: %i[index], path: 'delivery-partners'
       end
     end
 
