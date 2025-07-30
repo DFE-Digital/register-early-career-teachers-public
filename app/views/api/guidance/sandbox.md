@@ -18,7 +18,7 @@ Lead providers can use the sandbox to:
 * simulate common tasks (such as submitting declarations or changing participant schedules)
 * check how their system handles responses from the service
 * prepare for live data submissions with confidence
-* test new functionality before it goes live 
+* test new functionality and give us feedback before it goes live
 
 The sandbox works just like the live environment, but no real training records, payments, or notifications are sent. 
 
