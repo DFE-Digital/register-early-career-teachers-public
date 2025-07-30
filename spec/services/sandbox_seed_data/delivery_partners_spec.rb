@@ -15,7 +15,19 @@ RSpec.describe SandboxSeedData::DeliveryPartners do
     it "creates the correct quantity of delivery partners" do
       instance.plant
 
-      expect(DeliveryPartner.all.size).to eq(described_class::NUMBER_OF_RECORDS)
+      expect(DeliveryPartner.all.size).to eq(described_class::NUMBER_OF_RECORDS_PER_LEAD_PROVIDER)
+    end
+
+    it "creates delivery partners and lead providers partnerships" do
+      instance.plant
+
+      expect(LeadProviderDeliveryPartnership.all.size).to eq(described_class::NUMBER_OF_RECORDS_PER_LEAD_PROVIDER)
+    end
+
+    it "creates delivery partners for all lead providers and contract periods" do
+      instance.plant
+
+      expect(LeadProviderDeliveryPartnership.all.map(&:active_lead_provider).uniq).to eq(ActiveLeadProvider.all)
     end
 
     it "logs the creation of delivery partners" do
