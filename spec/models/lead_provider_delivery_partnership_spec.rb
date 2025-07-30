@@ -4,6 +4,7 @@ describe LeadProviderDeliveryPartnership do
     it { is_expected.to belong_to(:delivery_partner) }
     it { is_expected.to have_many(:school_partnerships) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
   end
 
   describe 'validation' do
