@@ -20,8 +20,8 @@ A participant's `training_status` highlights data entered **by lead providers** 
 
 A participant’s `training_status` value will determine whether a lead provider can: 
 
-* update their details. For example, notifying DfE that a participant has withdrawn from training 
-* submit a declaration. For example, notifying DfE that a participant has started their training 
+* update their details
+* submit a declaration 
 
 | Training status | Definition | Action | 
 | -------- | -------- | -------- | 
