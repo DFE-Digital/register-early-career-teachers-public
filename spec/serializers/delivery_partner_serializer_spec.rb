@@ -39,17 +39,17 @@ describe DeliveryPartnerSerializer, type: :serializer do
       expect(attributes["updated_at"]).to eq(delivery_partner.api_updated_at.utc.rfc3339)
     end
 
-    context "when `transient_cohort` is present" do
+    context "when `transient_cohorts` is present" do
       before do
-        # We simulate the transient cohort here; it is usually set in the query service.
+        # We simulate the transient cohorts here; it is usually set in the query service.
         class << delivery_partner
-          attr_accessor :transient_cohort
+          attr_accessor :transient_cohorts
         end
 
-        delivery_partner.transient_cohort = %w[2024 2025]
+        delivery_partner.transient_cohorts = %w[2024 2025]
       end
 
-      it "includes the transient cohort" do
+      it "includes the transient cohorts" do
         expect(attributes["cohort"]).to contain_exactly("2024", "2025")
       end
     end
