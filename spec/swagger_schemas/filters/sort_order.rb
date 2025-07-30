@@ -1,4 +1,4 @@
-SORTING_OPTIONS = {
+SORT_ORDER = {
   description: "Sort records being returned.",
   enum: [
     "created_at",

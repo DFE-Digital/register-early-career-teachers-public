@@ -42,7 +42,7 @@ RSpec.configure do |config|
           UnauthorisedResponse: UNAUTHORISED_RESPONSE,
           NotFoundResponse: NOT_FOUND_RESPONSE,
           PaginationFilter: PAGINATION_FILTER,
-          SortingOptions: SORTING_OPTIONS,
+          SortOrder: SORT_ORDER,
 
           # Schools
           School: SCHOOL,
@@ -56,6 +56,12 @@ RSpec.configure do |config|
           StatementsFilter: STATEMENTS_FILTER,
           StatementResponse: STATEMENT_RESPONSE,
           StatementsResponse: STATEMENTS_RESPONSE,
+
+          # Delivery Partners
+          DeliveryPartner: DELIVERY_PARTNER,
+          DeliveryPartnersFilter: DELIVERY_PARTNERS_FILTER,
+          DeliveryPartnerResponse: DELIVERY_PARTNER_RESPONSE,
+          DeliveryPartnersResponse: DELIVERY_PARTNERS_RESPONSE,
         }
       }
     }
