@@ -15,7 +15,7 @@ def describe_period_duration(period)
   case
   when period.started_on.future?
     "from #{period.started_on}"
-  when period.finished_on.present?
+  when period.finished_on
     "between #{period.started_on} and #{period.finished_on}"
   else
     "since #{period.started_on}"
