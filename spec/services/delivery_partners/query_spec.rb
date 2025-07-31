@@ -108,7 +108,7 @@ RSpec.describe DeliveryPartners::Query do
         it "filters by `contract_period_years`" do
           FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1)
           delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2).delivery_partner
-          query = described_class.new(contract_period_years: contract_period2.year)
+          query = described_class.new(contract_period_years: contract_period2.year.to_s)
 
           expect(query.delivery_partners).to eq([delivery_partner2])
         end
@@ -129,6 +129,14 @@ RSpec.describe DeliveryPartners::Query do
           query = described_class.new(contract_period_years: "0000")
 
           expect(query.delivery_partners).to be_empty
+        end
+
+        it "ignores invalid `contract_period_years`" do
+          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
+
+          query = described_class.new(contract_period_years: "#{contract_period1.year},invalid_year")
+
+          expect(query.delivery_partners).to contain_exactly(delivery_partner1)
         end
 
         it "does not filter by `contract_period_years` if blank" do
