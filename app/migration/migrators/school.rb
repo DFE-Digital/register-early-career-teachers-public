@@ -74,11 +74,14 @@ module Migrators
     def gias_schools = @gias_schools ||= ::GIAS::School.where(urn: self.class.schools.pluck(:urn).sort)
 
     def migrate_school!(ecf_school)
-      return false if ecf_school.open?
-      return false if ecf_school.induction_records.blank?
-
-      Builders::GIAS::School.new(ecf_school).build
+      Builders::GIAS::School.new(ecf_school).build if migrateable_school?(ecf_school)
     end
+
+    def migrateable_school?(ecf_school) = open_school_with_partnerships?(ecf_school) || not_open_school_with_induction_records?(ecf_school)
+
+    def not_open_school_with_induction_records?(ecf_school) = !ecf_school.open? && ecf_school.induction_records.exists?
+
+    def open_school_with_partnerships?(ecf_school) = ecf_school.open? && ecf_school.partnerships.exists?
 
     def update_gias_school!(gias_school:, api_id:) = gias_school.update!(api_id:)
   end
