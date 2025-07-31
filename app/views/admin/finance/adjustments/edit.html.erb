@@ -4,7 +4,7 @@
   <div class="govuk-grid-column-full">
     <%= form_with model: @adjustment, url: admin_finance_statement_adjustment_path(@statement, @adjustment) do |form| %>
       <%= render "fields", form: %>
-      <%= form.submit "Save changes", class: "govuk-button" %>
+      <%= form.govuk_submit "Save changes" %>
     <% end %>
 
     <%= govuk_link_to "Cancel and return to statement", statement_path %>
