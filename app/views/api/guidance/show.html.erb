@@ -40,10 +40,10 @@
         </p>
 
         <% if @latest_release_note.present? %>
-          <h2 class="govuk-heading-m">
+          <h3 class="govuk-heading-m">
             <span class="govuk-caption-m"><%= @latest_release_note.date %></span>
             <%= @latest_release_note.title %>
-          </h2>
+          </h3>
           <p>
             <%= render API::Guidance::ReleaseNotes::TagsComponent.new(tags: @latest_release_note.tags) %>
           </p>
@@ -56,14 +56,15 @@
   </div>
 </div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Swagger API documentation</h2>
-    <p>
-      These instructions and reference materials explain how to use our API, including its endpoints, data formats, and authentication.
-    </p>
-    <p><%= govuk_link_to("View our swagger API documentation", api_guidance_page_path("swagger-api-documentation")) %></p>
-  </div>
+<div class="govuk-width-container govuk-!-padding-top-7">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">Swagger API documentation</h2>
+      <p>
+        These instructions and reference materials explain how to use our API, including its endpoints, data formats, and authentication.
+      </p>
+      <p><%= govuk_link_to("View our swagger API documentation", api_guidance_page_path("swagger-api-documentation")) %></p>
+    </div>
 
     <div class="govuk-grid-column-one-third">
       <h2 class="govuk-heading-m">Sandbox</h2>
@@ -73,11 +74,12 @@
       <p><%= govuk_link_to("Use the lead provider sandbox", api_guidance_page_path("sandbox")) %></p>
     </div>
 
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Guidance</h2>
-    <p>
-      Find out what data lead providers need to submit to DfE, how to keep it up to date, and when to report changes about early career teachers and their mentors.
-    </p>
-    <p><%= govuk_link_to("View our guidance for lead providers", api_guidance_page_path("guidance-for-lead-providers")) %></p>
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">Guidance</h2>
+      <p>
+        Find out what data lead providers need to submit to DfE, how to keep it up to date, and when to report changes about early career teachers and their mentors.
+      </p>
+      <p><%= govuk_link_to("View our guidance for lead providers", api_guidance_page_path("guidance-for-lead-providers")) %></p>
+    </div>
   </div>
 </div>
