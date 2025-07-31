@@ -34,6 +34,7 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
         expected_items = [
           { text: "Teachers", href: "/admin/teachers" },
+          { text: "Schools", href: "/admin/schools" },
           { text: "Organisations", href: "/admin/organisations" },
           { text: "Finance", href: "/admin/finance" }
         ]
