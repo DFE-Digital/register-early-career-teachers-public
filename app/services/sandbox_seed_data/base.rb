@@ -17,7 +17,7 @@ module SandboxSeedData
     end
 
     def plantable?
-      Rails.env.sandbox? || Rails.env.development?
+      %w[development review sandbox].include?(Rails.env)
     end
 
   private
