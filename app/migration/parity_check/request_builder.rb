@@ -16,7 +16,7 @@ module ParityCheck
     delegate :method, :path, :options, to: :endpoint
 
     def url(app:)
-      parity_check_url(app:) + formatted_path
+      parity_check_url(app:) + formatted_path(app:)
     end
 
     def headers
@@ -51,10 +51,16 @@ module ParityCheck
 
   private
 
-    def formatted_path
-      return path unless path.include?(ID_PLACEHOLDER)
+    def app_specific_path(app:)
+      options[:"#{app}_path"] || path
+    end
 
-      path.sub(ID_PLACEHOLDER, path_id)
+    def formatted_path(app:)
+      app_specific_path = app_specific_path(app:)
+
+      return app_specific_path unless app_specific_path.include?(ID_PLACEHOLDER)
+
+      app_specific_path.sub(ID_PLACEHOLDER, path_id)
     end
 
     def path_id
