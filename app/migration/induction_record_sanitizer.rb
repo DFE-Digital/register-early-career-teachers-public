@@ -30,15 +30,17 @@ class InductionRecordSanitizer
 
     case group_by
     when :school, :provider
-      induction_records.each do |_subject, induction_record_group|
+      induction_records.each_value do |induction_record_group|
         does_not_have_multiple_blank_end_dates!(induction_record_group)
         does_not_have_multiple_active_induction_statuses!(induction_record_group)
+        # NOTE: Ignore the end_date for validation as we will concentrate on the start_date
         # induction_record_dates_are_sequential!(induction_record_group)
       end
     when :none
       does_not_have_multiple_blank_end_dates!(induction_records)
       does_not_have_multiple_active_induction_statuses!(induction_records)
-      # induction_record_dates_are_sequential!(induction_records)
+      # NOTE: include end_date checking in "original" ungrouped version
+      induction_record_dates_are_sequential!(induction_records)
     else
       raise InductionRecordError, "invalid grouping specified [#{group_by}]"
     end
@@ -132,25 +134,24 @@ private
   end
 
   def does_not_have_multiple_blank_end_dates!(induction_record_collection)
-    raise(MultipleBlankEndDateError) if induction_record_collection.select { |ir| ir.end_date.nil? }.count > 1
+    raise(MultipleBlankEndDateError) if induction_record_collection.count { |ir| ir.end_date.nil? } > 1
   end
 
   def does_not_have_multiple_active_induction_statuses!(induction_record_collection)
-    raise(MultipleActiveStatesError) if induction_record_collection.select { |ir| ir.induction_status == "active" }.count > 1
+    raise(MultipleActiveStatesError) if induction_record_collection.count { |ir| ir.induction_status == "active" } > 1
   end
 
-  # NOTE: Ignore the end_date for validation as we will concentrate on the start_date
-  # def induction_record_dates_are_sequential!(induction_record_collection)
-  #   previous_end_date = induction_record_collection.first.end_date
+  def induction_record_dates_are_sequential!(induction_record_collection)
+    previous_end_date = induction_record_collection.first.end_date
 
-  #   induction_record_collection.each_with_index do |ir, idx|
-  #     raise(StartDateAfterEndDateError) if ir.end_date.present? && ir.end_date < ir.start_date
+    induction_record_collection.each_with_index do |ir, idx|
+      raise(StartDateAfterEndDateError) if ir.end_date.present? && ir.end_date < ir.start_date
 
-  #     next if idx.zero?
+      next if idx.zero?
 
-  #     raise(InvalidDateSequenceError) if previous_end_date.nil? || ir.start_date < previous_end_date
+      raise(InvalidDateSequenceError) if previous_end_date.nil? || ir.start_date < previous_end_date
 
-  #     previous_end_date = ir.end_date
-  #   end
-  # end
+      previous_end_date = ir.end_date
+    end
+  end
 end

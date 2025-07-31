@@ -39,8 +39,8 @@ module Migrators
 
           # TODO: we could just grab the first entry in each school group
           if sanitizer.valid?
-            sanitizer.induction_records.each do |urn, irs|
-              school_periods << SchoolPeriodExtractor.new(induction_records: irs).school_periods
+            sanitizer.induction_records.each_value do |induction_records_group|
+              school_periods << SchoolPeriodExtractor.new(induction_records: induction_records_group).school_periods
             end
 
             teacher.update!(ecf_ect_profile_id: participant_profile.id)
