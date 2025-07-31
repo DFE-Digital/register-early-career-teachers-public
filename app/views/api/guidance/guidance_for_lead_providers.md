@@ -1,6 +1,4 @@
----
-title: Guidance for lead providers 
----
+# Guidance for lead providers 
 
 Use this guidance to: 
 
@@ -44,6 +42,10 @@ Lead providers should use the [sandbox environment](https://sandbox.register-ear
 * payments are not delayed due to data issues 
 
 [Read the sandbox guidance](/api/guidance/sandbox)
+
+The sandbox works just like the live environment, but no real training records, payments, or notifications are sent. 
+
+To help get started, we recommend technical teams bookmark the [Swagger API documentation](/api/docs/v3) so they can quickly find the latest information about endpoints, request formats, and validation rules.
 
 ## Other interactions with DfE 
 
