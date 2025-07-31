@@ -92,7 +92,7 @@ module Schools
       end
 
       def contract_period
-        ContractPeriod.containing_date(started_on&.to_date)
+        ContractPeriod.containing_date(started_on&.to_date || Date.current)
       end
 
       # Does mentor have any previous mentor_at_school_periods (open or closed)?
