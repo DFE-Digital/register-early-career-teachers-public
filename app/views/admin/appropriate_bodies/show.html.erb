@@ -12,6 +12,16 @@
     end
 
     sl.with_row do |row|
+      row.with_key(text: "Number of bulk uploads")
+      row.with_value(text: @bulk_batches_count)
+      row.with_action(
+        text: "View",
+        href: admin_appropriate_body_bulk_batches_path(@appropriate_body),
+        visually_hidden_text: "bulk uploads"
+      )
+    end
+
+    sl.with_row do |row|
       row.with_key(text: "Establishment number")
       row.with_value(text: @appropriate_body.establishment_number)
     end
