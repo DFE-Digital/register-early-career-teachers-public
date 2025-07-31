@@ -235,7 +235,7 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
 
     context 'when no contract period matches the started_on' do
-      before { store.started_on = nil }
+      before { store.started_on = "2020-01-01" }
 
       it 'returns an empty array' do
         expect(mentor.lead_providers_within_contract_period).to eq([])
