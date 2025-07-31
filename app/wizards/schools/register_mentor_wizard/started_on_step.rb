@@ -15,7 +15,7 @@ module Schools
 
         if mentor.became_ineligible_for_funding?
           :check_answers
-        elsif mentor.latest_registration_choice.training_period
+        elsif mentor.latest_registration_choice.school_partnership
           :previous_training_period_details
         else
           :programme_choices
