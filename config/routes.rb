@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get '/cookies', to: 'pages#cookies'
   get '/accessibility', to: 'pages#accessibility'
   get '/privacy', to: 'pages#privacy'
+  get '/school-requirements', to: 'pages#school_requirements'
 
   get "healthcheck" => "health_check#show", as: :rails_health_check
 

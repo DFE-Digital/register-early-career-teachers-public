@@ -18,4 +18,7 @@ class PagesController < ApplicationController
 
   def privacy
   end
+
+  def school_requirements
+  end
 end
