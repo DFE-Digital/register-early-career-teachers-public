@@ -24,7 +24,7 @@ private
   def parse_full_name
     n1 = full_name.strip
     n1 = n1.gsub(/\(.*\)/, "")
-    n1 = n1.gsub(/\A((mrs|miss|mr|ms|dr|)\.?)/i, "")
+    n1 = n1.gsub(/\A((mrs|miss|mr|ms|dr|)\.?) /i, "")
     n1 = n1.strip
     n1.split(/\s/)
   end
