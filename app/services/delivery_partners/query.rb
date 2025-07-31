@@ -64,8 +64,8 @@ module DeliveryPartners
       return if ignore?(filter: contract_period_years)
 
       delivery_partners_with_contract_periods = DeliveryPartner
-        .joins(lead_provider_delivery_partnerships: :active_lead_provider)
-        .where("active_lead_providers.contract_period_id IN (?)", extract_conditions(contract_period_years))
+        .joins(lead_provider_delivery_partnerships: { active_lead_provider: :contract_period })
+        .where(contract_period: { year: extract_conditions(contract_period_years, integers: true) })
 
       scope.merge!(delivery_partners_with_contract_periods)
     end

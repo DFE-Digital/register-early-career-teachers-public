@@ -52,5 +52,12 @@ RSpec.describe Queries::ConditionFormats do
           .to eql(%w[123e4567-e89b-12d3-a456-426614174000])
       end
     end
+
+    context "when integer is true" do
+      it "returns only valid integers" do
+        expect(object.extract_conditions(["2022", 123, 4.56, "not-a-uuid"], integers: true))
+          .to eql(["2022", 123])
+      end
+    end
   end
 end
