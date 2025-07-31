@@ -25,12 +25,14 @@ module Migrators
     def self.reset! = nil
 
     def self.schools
-      ::Migration::School.with(eligible_or_cip_or_with_irs:
+      ::Migration::School.with(eligible_or_cip_or_with_irs_or_partnerships:
                                  [
                                    ::Migration::School.includes(:local_authority).eligible_or_cip_only_except_welsh.distinct,
-                                   ::Migration::School.not_open.with_induction_records.distinct
+                                   ::Migration::School.with_induction_records,
+                                   ::Migration::School.with_partnerships
                                  ])
-                         .from("eligible_or_cip_or_with_irs AS schools")
+                         .distinct
+                         .from("eligible_or_cip_or_with_irs_or_partnerships AS schools")
     end
 
     def migrate!
@@ -77,11 +79,7 @@ module Migrators
       Builders::GIAS::School.new(ecf_school).build if migrateable_school?(ecf_school)
     end
 
-    def migrateable_school?(ecf_school) = open_school_with_partnerships?(ecf_school) || not_open_school_with_induction_records?(ecf_school)
-
-    def not_open_school_with_induction_records?(ecf_school) = !ecf_school.open? && ecf_school.induction_records.exists?
-
-    def open_school_with_partnerships?(ecf_school) = ecf_school.open? && ecf_school.partnerships.exists?
+    def migrateable_school?(ecf_school) = ecf_school.induction_records.exists? || ecf_school.partnerships.exists?
 
     def update_gias_school!(gias_school:, api_id:) = gias_school.update!(api_id:)
   end

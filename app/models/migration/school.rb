@@ -28,6 +28,7 @@ module Migration
     scope :eligible_or_cip_only_except_welsh, -> { eligible.or(cip_only_except_welsh) }
     scope :not_cip_only, -> { where.not(id: cip_only) }
     scope :with_induction_records, -> { joins(:induction_records).distinct }
+    scope :with_partnerships, -> { joins(:partnerships).distinct }
 
     def cip_only_type? = GIAS::Types::CIP_ONLY_EXCEPT_WELSH.include?(school_type_name)
 
