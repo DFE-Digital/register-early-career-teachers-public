@@ -15,25 +15,4 @@ class AppropriateBody < ApplicationRecord
   validates :name,
             presence: true,
             uniqueness: true
-
-  validates :local_authority_code,
-            presence: { message: 'Enter a local authority code', allow_blank: true },
-            inclusion: {
-              in: 50..999,
-              message: 'Must be a number between 50 and 999',
-              allow_blank: true
-            },
-            uniqueness: {
-              scope: :establishment_number,
-              message: "An appropriate body with this local authority code and establishment number already exists",
-              allow_blank: true
-            }
-
-  validates :establishment_number,
-            presence: { message: 'Enter a establishment number', allow_blank: true },
-            inclusion: {
-              in: 1000..9999,
-              message: 'Must be a number between 1000 and 9999',
-              allow_blank: true
-            }
 end

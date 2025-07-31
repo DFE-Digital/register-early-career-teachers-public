@@ -253,6 +253,7 @@ erDiagram
     datetime created_at
     datetime updated_at
     uuid api_id
+    datetime api_updated_at
   }
   Declaration {
     integer id
@@ -276,8 +277,6 @@ erDiagram
     string name
     datetime created_at
     datetime updated_at
-    integer local_authority_code
-    integer establishment_number
     uuid dfe_sign_in_organisation_id
     uuid dqt_id
     enum body_type
