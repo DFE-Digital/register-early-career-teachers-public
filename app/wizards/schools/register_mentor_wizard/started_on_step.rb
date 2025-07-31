@@ -1,9 +1,9 @@
 module Schools
   module RegisterMentorWizard
     class StartedOnStep < Step
-      attribute :started_on, :date
+      attr_accessor :started_on
 
-      validates :started_on, presence: { message: "Enter the date they started or will start ECT mentoring at your school" }
+      validates :started_on, mentor_start_date: true
       validate :started_on_cannot_be_before_previous_started_and_finished_dates, if: :started_on
 
       def self.permitted_params
@@ -33,11 +33,11 @@ module Schools
     private
 
       def persist
-        mentor.update!(started_on:)
+        mentor.update!(started_on: started_on_formatted)
       end
 
       def pre_populate_attributes
-        self.started_on ||= mentor.started_on
+        self.started_on = Schools::Validation::MentorStartDate.new(date_as_hash: mentor.started_on).date_as_hash unless started_on
       end
 
       def started_on_cannot_be_before_previous_started_and_finished_dates
@@ -46,9 +46,21 @@ module Schools
         date = mentor.previous_school_mentor_at_school_periods.pluck(:started_on, :finished_on).flatten.compact.max
         return unless date
 
-        if started_on.before?(date.next_day)
-          errors.add(:started_on, "#{mentor.full_name} was registered as a mentor #{date.to_fs(:govuk)}. Enter a later date.")
+        if started_on_as_date.before?(date.next_day)
+          errors.add(:started_on, "#{mentor.full_name} was registered as a mentor at their last school starting on the #{date.to_fs(:govuk)}. Enter a later date.")
         end
+      end
+
+      def started_on_formatted
+        @started_on_formatted ||= started_on_obj.formatted_date
+      end
+
+      def started_on_obj
+        @started_on_obj ||= Schools::Validation::MentorStartDate.new(date_as_hash: started_on)
+      end
+
+      def started_on_as_date
+        @started_on_as_date ||= started_on_obj.value_as_date
       end
     end
   end
