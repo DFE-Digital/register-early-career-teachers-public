@@ -15,7 +15,7 @@ RSpec.describe 'Viewing the release notes' do
   scenario "Viewing the latest release note" do
     given_i_am_on_the_api_guidance_page
     when_i_click_on_read_latest_release_note
-    then_i_am_can_see_the_latest_release_note
+    then_i_see_latest_release_note
   end
 
 private
@@ -41,7 +41,7 @@ private
     page.get_by_role('link', name: "Read release note").click
   end
 
-  def then_i_am_can_see_the_latest_release_note
+  def then_i_see_latest_release_note
     expect(page.url).to end_with('/api/guidance/release-notes#latest')
     expect(page.locator('id=latest', hasText: release_note_data.map(&:date).first)).to be_visible
   end

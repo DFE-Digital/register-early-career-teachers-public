@@ -30,7 +30,7 @@
         <main class="govuk-main-wrapper" id="main-content" role="main">
           <%= render partial: "layouts/shared/main_preamble" %>
 
-          <div class="govuk-grid-row">
+          <div class="govuk-grid-row govuk-!-padding-top-7">
             <% if content_for?(:sidebar) %>
               <div class="govuk-grid-column-one-third">
                 <%= yield(:sidebar) %>
