@@ -56,11 +56,12 @@ Rails.application.routes.draw do
           end
         end
 
-        resources :schools, only: %i[index show], param: :urn
         resources :lead_providers, only: %i[index], path: 'lead-providers'
         resources :delivery_partners, only: %i[index], path: 'delivery-partners'
       end
     end
+
+    resources :schools, only: %i[index show], param: :urn
 
     resources :teachers, only: %i[index show] do
       resource :timeline, only: %i[show], controller: 'teachers/timeline'
