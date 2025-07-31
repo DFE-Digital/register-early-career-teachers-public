@@ -13,8 +13,13 @@ module Metadata::Handler
   private
 
     def create_lead_provider_contract_period_metadata!(school)
-      LeadProvider.all.to_a.product(ContractPeriod.all.to_a).collect do |lead_provider, contract_period|
+      lead_provider_and_contract_periods = school.school_partnerships.map do |partnership|
+        [partnership.active_lead_provider.lead_provider, partnership.active_lead_provider.contract_period]
+      end
+
+      lead_provider_and_contract_periods.collect do |lead_provider, contract_period|
         next if school.lead_provider_contract_period_metadata.exists?(lead_provider:, contract_period:)
+        next if Metadata::SchoolLeadProviderContractPeriod.where(school:, lead_provider:, contract_period:).exists?
 
         Metadata::SchoolLeadProviderContractPeriod.new(school:, lead_provider:, contract_period:).tap do |metadata|
           update_lead_provider_contract_period_metadata!(metadata)
