@@ -5,7 +5,7 @@ class SchoolSerializer < Blueprinter::Base
     field :name
     field(:urn) { |school, _| school.urn.to_s }
     field(:cohort) do |school, options|
-      metadata(school, options).contract_period.year.to_s
+      metadata(school, options).contract_period_id.to_s
     end
     field(:in_partnership) do |school, options|
       metadata(school, options).in_partnership
@@ -24,7 +24,7 @@ class SchoolSerializer < Blueprinter::Base
         lead_provider_id = options[:lead_provider].id
         contract_period_id = options[:contract_period].id
 
-        school.lead_provider_contract_period_metadata.find(lead_provider_id:, contract_period_id:)
+        school.lead_provider_contract_period_metadata.find { it.lead_provider_id == lead_provider_id && it.contract_period_id == contract_period_id } || OpenStruct.new(in_partnership: false, contract_period_id:, induction_programme_choice: :not_yet_known, expression_of_interest: false)
       end
     end
   end
