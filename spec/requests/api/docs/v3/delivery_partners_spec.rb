@@ -20,7 +20,7 @@ RSpec.describe "Delivery partners endpoint", openapi_spec: "v3/swagger.yaml", ty
                   {
                     url: "/api/v3/delivery-partners/{id}",
                     tag: "Delivery Partners",
-                    resource_description: "a delivery partner",
+                    resource_description: "delivery partner",
                     response_schema_ref: "#/components/schemas/DeliveryPartnerResponse",
                   } do
   end
