@@ -47,7 +47,7 @@ paths:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
   "/api/v3/delivery-partners/{id}":
     get:
-      summary: Retrieve a single a delivery partner
+      summary: Retrieve a single delivery partner
       tags:
       - Delivery Partners
       security:
@@ -60,7 +60,7 @@ paths:
           "$ref": "#/components/schemas/IDAttribute"
       responses:
         '200':
-          description: A single a delivery partner
+          description: A single delivery partner
           content:
             application/json:
               schema:
