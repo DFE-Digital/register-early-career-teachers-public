@@ -95,9 +95,9 @@ RSpec.describe TeachersIndex::SearchSectionComponent, type: :component do
     end
 
     it 'renders submit button with correct styling' do
-      button = rendered.css('input[type="submit"]').first
+      button = rendered.css('button[type="submit"]').first
       expect(button['class']).to include('govuk-button')
-      expect(button['value']).to eq('Search')
+      expect(button.text).to eq('Search')
     end
 
     it 'renders reset button with correct styling' do

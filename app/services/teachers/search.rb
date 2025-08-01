@@ -68,7 +68,7 @@ module Teachers
       @scope.merge!(
         @scope.eager_load(ect_at_school_periods: [:school, { mentorship_periods: { mentor: :teacher } }])
               .where(ect_at_school_periods: { school: })
-              .merge(ECTAtSchoolPeriod.ongoing)
+              .merge(ECTAtSchoolPeriod.ongoing_today_or_starting_tomorrow_or_after)
       )
 
       @sort_order = :mentorless_first_then_by_registration_date

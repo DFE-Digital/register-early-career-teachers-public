@@ -48,36 +48,30 @@ describe Migrators::School do
 
         before do
           ecf_school.update!(school_status_code: 2, school_type_code: 10, school_status_name: 'closed', school_type_name: 'Community school')
-          described_class.new(worker: 0).migrate!
         end
 
         it "migrates it to RECT" do
-          expect(rect_school).to be_present
+          expect { described_class.new(worker: 0).migrate! }.to change(GIAS::School, :count).by(1)
           expect(rect_school.api_id).to eq(ecf_school.id)
-          expect(rect_school.address_line1).to eq(ecf_school.address_line1)
-          expect(rect_school.address_line2).to eq(ecf_school.address_line2)
-          expect(rect_school.address_line3).to eq(ecf_school.address_line3)
-          expect(rect_school.administrative_district_name).to eq(ecf_school.administrative_district_name)
-          expect(rect_school.establishment_number.to_s).to eq(ecf_school.urn)
-          expect(rect_school.funding_eligibility).to eq(ecf_school.funding_eligibility)
-          expect(rect_school.induction_eligibility).to eq(ecf_school.induction_eligibility)
-          expect(rect_school.in_england).to eq(ecf_school.in_england?)
-          expect(rect_school.local_authority_code).to eq(ecf_school.local_authority_code)
-          expect(rect_school.name).to eq(ecf_school.name)
-          expect(rect_school.phase_name).to eq(ecf_school.school_phase_name)
-          expect(rect_school.postcode).to eq(ecf_school.postcode)
-          expect(rect_school.primary_contact_email).to eq(ecf_school.primary_contact_email)
-          expect(rect_school.secondary_contact_email).to eq(ecf_school.secondary_contact_email)
-          expect(rect_school.section_41_approved).to eq(ecf_school.section_41_approved?)
-          expect(rect_school.status).to eq(ecf_school.status)
-          expect(rect_school.type_name).to eq(ecf_school.school_type_name)
-          expect(rect_school.ukprn.to_s).to eq(ecf_school.ukprn)
-          expect(rect_school.urn.to_s).to eq(ecf_school.urn)
-          expect(rect_school.website).to eq(ecf_school.school_website)
         end
       end
 
-      context "when the school is open or has no induction records" do
+      context "when the school is open and with partnerships" do
+        let!(:partnership) { FactoryBot.create(:migration_partnership) }
+        let!(:ecf_school) { partnership.school }
+        let(:rect_school) { School.find_by_urn(ecf_school.urn) }
+
+        before do
+          ecf_school.update!(school_status_code: 1, school_type_code: 10, school_status_name: 'open', school_type_name: 'Community school')
+        end
+
+        it "migrates it to RECT" do
+          expect { described_class.new(worker: 0).migrate! }.to change(GIAS::School, :count).by(1)
+          expect(rect_school.api_id).to eq(ecf_school.id)
+        end
+      end
+
+      context "when the school has no partnerships or induction records" do
         let!(:ecf_school) { FactoryBot.create(:ecf_migration_school, school_status_code: 1, school_status_name: 'open', school_type_code: 10) }
 
         before do

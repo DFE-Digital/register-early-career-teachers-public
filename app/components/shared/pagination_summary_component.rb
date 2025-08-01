@@ -10,8 +10,12 @@ module Shared
     delegate :from, :to, :count,
              to: :pagy
 
+    def render?
+      pagy.pages > 1
+    end
+
     def summary_text
-      "Showing #{from} to #{to} of #{count} #{record_name}"
+      "Showing #{tag.strong from} to #{tag.strong to} of #{tag.strong count} #{record_name}".html_safe
     end
   end
 end

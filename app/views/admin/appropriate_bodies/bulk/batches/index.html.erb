@@ -1,0 +1,10 @@
+<%
+  page_data(
+    title: "CSV Uploads for #{@appropriate_body.name}",
+    backlink_href: admin_appropriate_body_path(@appropriate_body)
+  )
+%>
+
+<%= admin_batch_list_table(@batches) %>
+
+<%= govuk_pagination pagy: @pagy %>

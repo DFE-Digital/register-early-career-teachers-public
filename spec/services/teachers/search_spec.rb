@@ -224,10 +224,33 @@ describe Teachers::Search do
           expect(query.to_sql).to include(%("ect_at_school_periods"."school_id" = 123))
         end
 
-        it 'only selects ongoing ECT at school periods' do
-          query = Teachers::Search.new(ect_at_school: 123).search
+        describe 'current and future teachers' do
+          let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'John', trs_last_name: 'Connor') }
+          let(:school) { FactoryBot.create(:school) }
 
-          expect(query.to_sql).to include(%("ect_at_school_periods"."finished_on" IS NULL))
+          context 'when ECT has left the school' do
+            let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :finished, school:, teacher:) }
+
+            it 'returns no teachers' do
+              expect(Teachers::Search.new(ect_at_school: school).search).to be_empty
+            end
+          end
+
+          context 'when currently an ECT at the school' do
+            let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, school:, teacher:) }
+
+            it 'returns the teacher' do
+              expect(Teachers::Search.new(ect_at_school: school).search).to include(teacher)
+            end
+          end
+
+          context 'when ECT is scheduled to join the school' do
+            let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :not_started_yet, school:, teacher:) }
+
+            it 'returns the teacher' do
+              expect(Teachers::Search.new(ect_at_school: school).search).to include(teacher)
+            end
+          end
         end
       end
 

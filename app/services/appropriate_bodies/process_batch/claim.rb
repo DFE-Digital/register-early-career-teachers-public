@@ -99,7 +99,7 @@ module AppropriateBodies
 
       # @return [Boolean] school-led, provider-led (case-insensitive)
       def invalid_training_programme?
-        TRAINING_PROGRAMME.keys.map(&:to_s).exclude?(row.training_programme.downcase.underscore.strip)
+        TRAINING_PROGRAMME.keys.map(&:to_s).exclude?(row.training_programme.to_s.downcase.underscore.strip)
       end
 
       # @return [Boolean] started_on before 1 September 2021

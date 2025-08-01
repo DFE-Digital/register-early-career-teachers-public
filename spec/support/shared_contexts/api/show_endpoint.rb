@@ -1,10 +1,12 @@
 shared_examples "a show endpoint" do
+  let(:options) { defined?(serializer_options) ? serializer_options : {} }
+
   it "returns the correct resource in a serialized format" do
     authenticated_api_get(path)
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render(resource, root: "data", **options))
   end
 
   context "when the resource does not exist" do
