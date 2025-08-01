@@ -477,3 +477,10 @@
   - options
   - created_at
   - updated_at
+  :schools_lead_providers_contract_periods:
+  - school_id
+  - lead_provider_id
+  - contract_period_id
+  - in_partnership
+  - training_programme
+  - expression_of_interest
