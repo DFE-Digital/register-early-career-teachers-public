@@ -79,4 +79,22 @@ describe ContractPeriod do
       end
     end
   end
+
+  describe '.most_recent_first' do
+    let!(:period_2022) { FactoryBot.create(:contract_period, year: 2022) }
+    let!(:period_2024) { FactoryBot.create(:contract_period, year: 2024) }
+    let!(:period_2023) { FactoryBot.create(:contract_period, year: 2023) }
+    let!(:period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+
+    it 'orders contract periods by year in descending order' do
+      result = ContractPeriod.most_recent_first
+      expect(result.to_a).to eq([period_2025, period_2024, period_2023, period_2022])
+    end
+
+    it 'returns contract periods with most recent year first' do
+      result = ContractPeriod.most_recent_first
+      expect(result.first).to eq(period_2025)
+      expect(result.last).to eq(period_2022)
+    end
+  end
 end
