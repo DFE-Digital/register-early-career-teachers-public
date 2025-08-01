@@ -49,7 +49,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context 'when provider led chosen' do
-    let!(:training_period) { FactoryBot.create(:training_period, ect_at_school_period: ect_at_school_period, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, ect_at_school_period:, started_on:) }
 
     it "renders their latest providers" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
@@ -63,7 +63,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context 'when school led chosen' do
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :school_led, teacher:, school:, started_on:, finished_on: nil) }
+    let(:training_period) { FactoryBot.create(:training_period, :ongoing, :school_led) }
 
     it "don't render providers" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
