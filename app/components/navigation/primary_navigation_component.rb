@@ -42,8 +42,7 @@ module Navigation
         dfe_staff_user: [
           { text: "Teachers", href: admin_teachers_path, active_when: '/admin/teachers' },
           { text: "Organisations", href: admin_organisations_path, active_when: '/admin/organisations' },
-          { text: "Finance", href: admin_finance_path, active_when: '/admin/finance' },
-          { text: "Bulk uploads", href: admin_bulk_batches_path, active_when: '/admin/bulk' },
+          { text: "Finance", href: admin_finance_path, active_when: '/admin/finance' }
         ],
         school_user: [
           { text: "ECTs", href: schools_ects_home_path },

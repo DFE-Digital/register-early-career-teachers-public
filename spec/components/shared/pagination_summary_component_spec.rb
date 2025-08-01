@@ -23,4 +23,13 @@ RSpec.describe Shared::PaginationSummaryComponent, type: :component do
       expect(subject).to have_content("Showing 41 to 60 of 196 records")
     end
   end
+
+  describe "only 1 page" do
+    let(:pagy) { Pagy.new(count: 5, limit: 20, page: 1) }
+
+    it "does not render" do
+      expect(subject).not_to have_content("Showing")
+      expect(subject).not_to have_content("govuk_pagination component")
+    end
+  end
 end

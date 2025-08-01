@@ -1,15 +1,12 @@
 FactoryBot.define do
   factory(:appropriate_body) do
     sequence(:name) { |n| "Appropriate Body #{n}" }
-    sequence(:local_authority_code, 55) { |n| 55 + (n % 945) }
-    sequence(:establishment_number) { |n| 1000 + (n / 945) }
     dfe_sign_in_organisation_id { SecureRandom.uuid }
     teaching_school_hub
 
     trait :istip do
       body_type { 'national' }
       name { AppropriateBodies::Search::ISTIP }
-      local_authority_code { 50 }
       dfe_sign_in_organisation_id { "203606a4-4199-46a9-84e4-56fbc5da2a36" }
     end
 

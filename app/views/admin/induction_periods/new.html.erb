@@ -39,7 +39,7 @@
         <%= f.govuk_collection_radio_buttons :induction_programme, induction_programme_choices, :identifier, :name, legend: { text: 'Induction programme' }  %>
       <% end %>
 
-      <%= f.submit "Save", class: "govuk-button" %>
+      <%= f.govuk_submit "Save" %>
     <% end %>
   </div>
 </div>

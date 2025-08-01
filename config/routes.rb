@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get '/cookies', to: 'pages#cookies'
   get '/accessibility', to: 'pages#accessibility'
   get '/privacy', to: 'pages#privacy'
+  get '/school-requirements', to: 'pages#school_requirements'
 
   get "healthcheck" => "health_check#show", as: :rails_health_check
 
@@ -45,11 +46,19 @@ Rails.application.routes.draw do
     resources :organisations, only: %i[index] do
       collection do
         resources :appropriate_bodies, only: %i[index show], path: 'appropriate-bodies' do
-          resource :timeline, only: %i[show], controller: 'appropriate_bodies/timeline'
-          resources :current_ects, only: :index, path: 'current-ects', controller: 'appropriate_bodies/current_ects'
+          scope module: :appropriate_bodies do
+            resource :timeline, only: :show
+            resources :current_ects, only: :index, path: 'current-ects'
+
+            namespace :bulk do
+              resources :batches, only: :index
+            end
+          end
         end
+
         resources :schools, only: %i[index show], param: :urn
         resources :lead_providers, only: %i[index], path: 'lead-providers'
+        resources :delivery_partners, only: %i[index], path: 'delivery-partners'
       end
     end
 
@@ -339,7 +348,7 @@ Rails.application.routes.draw do
         end
 
         resources :statements, only: %i[index show], param: :api_id
-        resources :delivery_partners, only: %i[index show], path: "delivery-partners"
+        resources :delivery_partners, only: %i[index show], path: "delivery-partners", param: :api_id
         resources :partnerships, only: %i[show index create update]
         resources :schools, only: %i[index show], param: :api_id
         resources :unfunded_mentors, only: %i[index show], path: "unfunded-mentors"
