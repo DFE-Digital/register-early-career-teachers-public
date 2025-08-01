@@ -12,6 +12,12 @@ RSpec.describe 'Viewing the release notes' do
     then_i_should_see_an_entry_for_each_release_note
   end
 
+  scenario "Viewing the latest release note" do
+    given_i_am_on_the_api_guidance_page
+    when_i_click_on_read_latest_release_note
+    then_i_see_latest_release_note
+  end
+
 private
 
   def given_i_am_on_the_api_guidance_page
@@ -29,5 +35,14 @@ private
     release_note_data.map(&:title).each do |title|
       expect(page.get_by_role("heading", name: title)).to be_visible
     end
+  end
+
+  def when_i_click_on_read_latest_release_note
+    page.get_by_role('link', name: "Read release note").click
+  end
+
+  def then_i_see_latest_release_note
+    expect(page.url).to end_with('/api/guidance/release-notes#latest')
+    expect(page.locator('id=latest', hasText: release_note_data.map(&:date).first)).to be_visible
   end
 end

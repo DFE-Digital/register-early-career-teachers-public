@@ -30,42 +30,56 @@
   </div>
 <% end %>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Release notes</h2>
-    <p>
-      We publish release notes whenever we make updates to the API such as new features, fixes, or improvements. This so lead providers know how the update might affect their use of the API.
-    </p>
-    <p><%= govuk_link_to("Browse all release notes", api_guidance_release_notes_path) %></p>
+<div class="release-notes-panel govuk-!-padding-top-7">
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-heading-m">Release notes</h2>
+        <p>
+          We publish release notes whenever we make updates to the API such as new features, fixes, or improvements. This so lead providers know how the update might affect their use of the API.
+        </p>
 
-    <h3 class="govuk-caption-xl">23 June 2025</h3>
-    <h3 class="govuk-heading-s">View financial statements in test environment</h3>
-    <p><%= govuk_link_to("Lead providers can now check their financial statements in the API sandbox", api_guidance_release_notes_path) %></p>
+        <% if @latest_release_note.present? %>
+          <h3 class="govuk-heading-m">
+            <span class="govuk-caption-m"><%= @latest_release_note.date %></span>
+            <%= @latest_release_note.title %>
+          </h3>
+          <p>
+            <%= render API::Guidance::ReleaseNotes::TagsComponent.new(tags: @latest_release_note.tags) %>
+          </p>
+          <p class="govuk-body">
+            <%= govuk_link_to("Read release note", api_guidance_release_notes_path(anchor: "latest")) %>
+          </p>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Swagger API documentation</h2>
-    <p>
-      These instructions and reference materials explain how to use our API, including its endpoints, data formats, and authentication.
-    </p>
-    <p><%= govuk_link_to("View our swagger API documentation", api_guidance_page_path("swagger-api-documentation")) %></p>
-  </div>
+<div class="govuk-width-container govuk-!-padding-top-7">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">Swagger API documentation</h2>
+      <p>
+        These instructions and reference materials explain how to use our API, including its endpoints, data formats, and authentication.
+      </p>
+      <p><%= govuk_link_to("View our swagger API documentation", api_guidance_page_path("swagger-api-documentation")) %></p>
+    </div>
 
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Sandbox</h2>
-    <p>
-      The sandbox environment is where lead providers can test API integrations without affecting real data.
-    </p>
-    <p><%= govuk_link_to("Use the lead provider sandbox", api_guidance_page_path("sandbox")) %></p>
-  </div>
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">Sandbox</h2>
+      <p>
+        The sandbox environment is where lead providers can test API integrations without affecting real data.
+      </p>
+      <p><%= govuk_link_to("Use the lead provider sandbox", api_guidance_page_path("sandbox")) %></p>
+    </div>
 
-  <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">Guidance</h2>
-    <p>
-      Find out what data lead providers need to submit to DfE, how to keep it up to date, and when to report changes about early career teachers and their mentors.
-    </p>
-    <p><%= govuk_link_to("View our guidance for lead providers", api_guidance_page_path("guidance-for-lead-providers")) %></p>
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">Guidance</h2>
+      <p>
+        Find out what data lead providers need to submit to DfE, how to keep it up to date, and when to report changes about early career teachers and their mentors.
+      </p>
+      <p><%= govuk_link_to("View our guidance for lead providers", api_guidance_page_path("guidance-for-lead-providers")) %></p>
+    </div>
   </div>
 </div>
