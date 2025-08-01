@@ -14,6 +14,7 @@ class InductionRecordSanitizer
     @participant_profile = participant_profile
     @group_by = group_by.to_sym
     @error = nil
+    raise ArgumentError, "group_by param must be either :school, :provider or :none" unless group_by.in? %i[none school provider]
   end
 
   def valid?
