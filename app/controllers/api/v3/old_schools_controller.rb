@@ -1,6 +1,6 @@
 module API
   module V3
-    class SchoolsController < BaseController
+    class OldSchoolsController < BaseController
       filter_validation required_filters: %i[cohort]
 
       def index
@@ -22,7 +22,7 @@ module API
           sort:,
         }
 
-        Schools::Query.new(**conditions.compact)
+        Schools::OldQuery.new(**conditions.compact)
       end
 
       def school_params
@@ -42,7 +42,7 @@ module API
       end
 
       def to_json(obj)
-        SchoolSerializer.render(obj, root: "data", lead_provider: current_lead_provider, contract_period:)
+        OldSchoolSerializer.render(obj, root: "data")
       end
     end
   end
