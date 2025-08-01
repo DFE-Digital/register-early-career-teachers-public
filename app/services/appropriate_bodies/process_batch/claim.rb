@@ -55,26 +55,25 @@ module AppropriateBodies
           capture_error(trs_error)
           true
         elsif teacher
-          if induction_periods.last_induction_period&.outcome.eql?('pass')
+          if already_passed?
             capture_error("#{name} has already passed their induction")
             true
-          elsif induction_periods.last_induction_period&.outcome.eql?('fail')
+          elsif already_failed?
             capture_error("#{name} has already failed their induction")
             true
           elsif claimed_by_another_ab?
             capture_error("#{name} is already claimed by another appropriate body")
             true
-          elsif overlapping_with_induction_period?
-            capture_error('Induction start date must not overlap with any other induction periods')
-            true
           elsif !claimed_by_another_ab?
             capture_error("#{name} is already claimed by your appropriate body")
             true
+          elsif induction_periods.none?
+            false
           end
         elsif prohibited_from_teaching?
           capture_error("#{name} is prohibited from teaching")
           true
-        elsif pending_induction_submission.trs_qts_awarded_on.blank?
+        elsif no_qts?
           capture_error("#{name} does not have their qualified teacher status (QTS)")
           true
         elsif predates_qts_award?
@@ -83,6 +82,21 @@ module AppropriateBodies
         else
           false
         end
+      end
+
+      # @return [Boolean]
+      def no_qts?
+        pending_induction_submission.trs_qts_awarded_on.blank?
+      end
+
+      # @return [Boolean]
+      def already_passed?
+        induction_periods.last_induction_period&.outcome.eql?('pass')
+      end
+
+      # @return [Boolean]
+      def already_failed?
+        induction_periods.last_induction_period&.outcome.eql?('fail')
       end
 
       # @return [Boolean]
