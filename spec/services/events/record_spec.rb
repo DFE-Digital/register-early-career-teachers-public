@@ -740,7 +740,7 @@ RSpec.describe Events::Record do
     include_context 'test trs api client'
 
     before do
-      ProcessBatchClaimJob.perform_now(batch, author.email, author.name)
+      ProcessBatchClaimJob.perform_now(batch, author.email, author.name, SecureRandom.uuid)
     end
 
     it 'queues a RecordEventJob with the correct values' do

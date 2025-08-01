@@ -2,7 +2,7 @@ RSpec.describe ProcessBatchActionJob, type: :job do
   include_context 'test trs api client'
 
   let(:author) { FactoryBot.create(:user, name: 'Barry Cryer', email: 'barry@not-a-clue.co.uk') }
-
+  let(:web_request_uuid) { SecureRandom.uuid }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   describe '#perform' do
@@ -20,13 +20,13 @@ RSpec.describe ProcessBatchActionJob, type: :job do
       include_context '3 valid actions'
 
       it 'creates records for all rows' do
-        described_class.perform_now(pending_induction_submission_batch, author.email, author.name)
+        described_class.perform_now(pending_induction_submission_batch, author.email, author.name, web_request_uuid)
         expect(submissions.count).to eq(3)
       end
 
       it 'broadcasts progress as submission records are created' do
         expect {
-          described_class.perform_now(pending_induction_submission_batch, author.email, author.name)
+          described_class.perform_now(pending_induction_submission_batch, author.email, author.name, web_request_uuid)
         }.to have_broadcasted_to(
           "batch_progress_stream_#{pending_induction_submission_batch.id}"
         ).from_channel(pending_induction_submission_batch).exactly(11).times

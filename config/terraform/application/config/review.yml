@@ -13,7 +13,7 @@ TEST_GUIDANCE: true
 ENABLE_SENTRY: false
 SENTRY_ENVIRONMENT: review
 ENABLE_BLAZER: true
-DFE_ANALYTICS_ENABLED: false
+DFE_ANALYTICS_ENABLED: true # revert before merge
 TRS_API_BASE_URL: 'https://preprod.teacher-qualifications-api.education.gov.uk'
 TRS_API_VERSION: '20250203'
 ENCRYPTION_PRIMARY_KEY: review_primary_key
