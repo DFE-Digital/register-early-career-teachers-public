@@ -24,9 +24,6 @@ class School < ApplicationRecord
   has_many :mentor_teachers, -> { distinct }, through: :mentor_at_school_periods, source: :teacher
   has_many :school_partnerships
   has_many :lead_provider_contract_period_metadata, class_name: "Metadata::SchoolLeadProviderContractPeriod"
-  has_many :filtered_lead_provider_contract_period_metadata, ->(lead_provider_id, contract_period_id) {
-    where(lead_provider_id:, contract_period_id:)
-  }, class_name: 'Metadata::SchoolLeadProviderContractPeriod'
 
   # Validations
   validates :last_chosen_lead_provider_id,
