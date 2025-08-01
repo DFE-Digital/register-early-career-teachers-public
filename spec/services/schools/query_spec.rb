@@ -1,16 +1,16 @@
 RSpec.describe Schools::Query do
-  describe "#schools" do
-    subject(:query) { described_class.new(**query_params) }
+  subject(:query) { described_class.new(**query_params) }
 
-    let(:query_params) do
-      {
-        contract_period_id:,
-      }
-    end
+  let(:query_params) do
+    {
+      contract_period_id:,
+    }
+  end
 
+  describe "#schools_for_pagination" do
     context "when no params is sent" do
       it "returns no schools" do
-        expect(described_class.new.schools).to be_empty
+        expect(described_class.new.schools_for_pagination).to be_empty
       end
     end
 
@@ -18,7 +18,7 @@ RSpec.describe Schools::Query do
       school = FactoryBot.create(:school, :eligible)
       contract_period_id = FactoryBot.create(:contract_period).id
 
-      expect(described_class.new(contract_period_id:).schools).to eq([school])
+      expect(described_class.new(contract_period_id:).schools_for_pagination).to eq([school])
     end
 
     context "when there is existing partnerships" do
@@ -29,7 +29,7 @@ RSpec.describe Schools::Query do
       let(:contract_period_id) { school1_partnership.contract_period.id }
 
       it "returns all schools" do
-        expect(described_class.new(contract_period_id:).schools).to contain_exactly(school1, school2)
+        expect(described_class.new(contract_period_id:).schools_for_pagination).to contain_exactly(school1, school2)
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Schools::Query do
       school3 = FactoryBot.create(:school, :eligible, created_at: Time.zone.now)
       contract_period_id = FactoryBot.create(:contract_period).id
 
-      expect(described_class.new(contract_period_id:).schools).to contain_exactly(school1, school2, school3)
+      expect(described_class.new(contract_period_id:).schools_for_pagination).to contain_exactly(school1, school2, school3)
     end
 
     describe "filtering" do
@@ -61,12 +61,12 @@ RSpec.describe Schools::Query do
         end
 
         it "filters by `contract_period_id`" do
-          expect(query.schools).to contain_exactly(school1, school3)
+          expect(query.schools_for_pagination).to contain_exactly(school1, school3)
         end
 
         context "when `contract_period_id` param is omitted" do
           it "returns no schools" do
-            expect(described_class.new.schools).to be_empty
+            expect(described_class.new.schools_for_pagination).to be_empty
           end
         end
 
@@ -74,7 +74,7 @@ RSpec.describe Schools::Query do
           let!(:contract_period_id) { "0000" }
 
           it "returns no schools" do
-            expect(query.schools).to be_empty
+            expect(query.schools_for_pagination).to be_empty
           end
         end
 
@@ -82,7 +82,7 @@ RSpec.describe Schools::Query do
           let!(:contract_period_id) { " " }
 
           it "returns no schools" do
-            expect(query.schools).to be_empty
+            expect(query.schools_for_pagination).to be_empty
           end
         end
       end
@@ -108,7 +108,7 @@ RSpec.describe Schools::Query do
         end
 
         it "filters by `updated_since`" do
-          expect(query.schools).to contain_exactly(school2, school3)
+          expect(query.schools_for_pagination).to contain_exactly(school2, school3)
         end
 
         context "when `updated_since` param is omitted" do
@@ -120,7 +120,7 @@ RSpec.describe Schools::Query do
           end
 
           it "returns all eligible schools" do
-            expect(query.schools).to contain_exactly(school1, school2, school3)
+            expect(query.schools_for_pagination).to contain_exactly(school1, school2, school3)
           end
         end
 
@@ -128,7 +128,7 @@ RSpec.describe Schools::Query do
           let!(:updated_since) { " " }
 
           it "returns all eligible schools" do
-            expect(query.schools).to contain_exactly(school1, school2, school3)
+            expect(query.schools_for_pagination).to contain_exactly(school1, school2, school3)
           end
         end
       end
@@ -147,7 +147,7 @@ RSpec.describe Schools::Query do
         end
 
         it "filters by `urn`" do
-          expect(query.schools).to contain_exactly(school1)
+          expect(query.schools_for_pagination).to contain_exactly(school1)
         end
 
         context "when `urn` param is omitted" do
@@ -158,7 +158,7 @@ RSpec.describe Schools::Query do
           end
 
           it "returns all eligible schools" do
-            expect(query.schools).to contain_exactly(school1, school2)
+            expect(query.schools_for_pagination).to contain_exactly(school1, school2)
           end
         end
 
@@ -166,14 +166,14 @@ RSpec.describe Schools::Query do
           let!(:urn) { " " }
 
           it "returns all eligible schools" do
-            expect(query.schools).to contain_exactly(school1, school2)
+            expect(query.schools_for_pagination).to contain_exactly(school1, school2)
           end
         end
       end
     end
 
     describe "sorting" do
-      subject(:schools) { described_class.new(**query_params).schools }
+      subject(:schools) { described_class.new(**query_params).schools_for_pagination }
 
       let(:school1) { FactoryBot.create(:school, :eligible, created_at: 1.day.ago) }
       let(:school2) { FactoryBot.create(:school, :eligible, created_at: 2.days.ago) }
@@ -224,13 +224,19 @@ RSpec.describe Schools::Query do
         it { expect(schools).to eq([school2, school1, school3]) }
       end
     end
+  end
+
+  describe "#schools_from" do
+    let!(:school) { FactoryBot.create(:school, :eligible) }
+    let(:query_schools) { query.schools_from(School.all) }
+    let(:returned_school) { query_schools.find(school.id) }
+    let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+
+    it "returns all schools passed in from query" do
+      expect(subject.schools_from(School.all)).to contain_exactly(school)
+    end
 
     describe "transient_in_partnership" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-
       it { expect(returned_school).not_to be_transient_in_partnership }
 
       context "when there is any partnership for the given school and contract period" do
@@ -242,11 +248,6 @@ RSpec.describe Schools::Query do
     end
 
     describe "transient_mentors_at_school" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
-
       it { expect(returned_school).not_to be_transient_mentors_at_school }
 
       context "when there is any mentors with expression of interest for the given school and contract period" do
@@ -274,11 +275,6 @@ RSpec.describe Schools::Query do
     end
 
     describe "transient_ects_at_school_training_programme" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
-
       it { expect(returned_school).not_to be_transient_ects_at_school_training_programme }
 
       context "when there is any ects with expression of interest for the given school and contract period" do
@@ -320,10 +316,6 @@ RSpec.describe Schools::Query do
     end
 
     describe "transient_expression_of_interest_ects" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
       let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
 
       let(:query_params) do
@@ -361,10 +353,6 @@ RSpec.describe Schools::Query do
     end
 
     describe "transient_expression_of_interest_mentors" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
       let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
 
       let(:query_params) do
@@ -402,10 +390,6 @@ RSpec.describe Schools::Query do
     end
 
     describe "transient_contract_period_id" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
       let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
 
       let(:query_params) do
@@ -421,10 +405,6 @@ RSpec.describe Schools::Query do
     end
 
     describe "transient_lead_provider_id" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
       let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
 
       let(:query_params) do

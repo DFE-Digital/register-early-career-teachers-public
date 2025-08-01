@@ -4,14 +4,26 @@ module API
       filter_validation required_filters: %i[cohort]
 
       def index
-        render json: to_json(paginate(schools_query.schools))
+        render json: to_json(schools)
       end
 
       def show
-        render json: to_json(schools_query.school_by_api_id(api_id))
+        render json: to_json(school)
       end
 
     private
+
+      def paginated_results
+        paginate(schools_query.schools_for_pagination)
+      end
+
+      def schools
+        @schools ||= schools_query.schools_from(paginated_results)
+      end
+
+      def school
+        @school ||= schools_query.school_by_api_id(api_id)
+      end
 
       def schools_query
         conditions = {

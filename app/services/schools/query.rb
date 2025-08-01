@@ -4,10 +4,52 @@ module Schools
     include FilterIgnorable
     include QueryOrderable
 
-    attr_reader :scope, :sort
+    attr_reader :sort, :contract_period_id, :urn, :updated_since, :lead_provider_id, :scope
 
     def initialize(lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, contract_period_id: :ignore, sort: nil)
-      @scope = default_scope(contract_period_id).select(
+      @lead_provider_id = lead_provider_id
+      @contract_period_id = contract_period_id
+      @sort = sort
+      @urn = urn
+      @updated_since = updated_since
+      @scope = default_scope(contract_period_id)
+               .or(schools_with_existing_partnerships(contract_period_id))
+               .distinct
+    end
+
+    def schools_for_pagination
+      where_urn_is(urn)
+      where_updated_since(updated_since)
+
+      scope
+      .select("schools.id", "schools.urn", "schools.created_at", "schools.updated_at")
+      .order(order_by)
+    end
+
+    def schools_from(paginated_join)
+      School.select(*select_fields)
+      .where(schools: { id: paginated_join.map(&:id) })
+      .eager_load(:gias_school)
+      .order(order_by)
+      .distinct
+    end
+
+    def school_by_api_id(api_id)
+      return scope.select(*select_fields).find_by!(gias_school: { api_id: }) if api_id.present?
+
+      fail(ArgumentError, "api_id needed")
+    end
+
+    def school(id)
+      return scope.select(*select_fields).find(id) if id.present?
+
+      fail(ArgumentError, "id needed")
+    end
+
+  private
+
+    def select_fields
+      [
         "schools.*",
         transient_in_partnership(contract_period_id),
         transient_mentors_at_school(contract_period_id),
@@ -16,32 +58,8 @@ module Schools
         transient_expression_of_interest_mentors(lead_provider_id, contract_period_id),
         "'#{contract_period_id}' AS transient_contract_period_id",
         "'#{lead_provider_id}' AS transient_lead_provider_id"
-      ).or(schools_with_existing_partnerships(contract_period_id))
-        .distinct
-
-      @sort = sort
-
-      where_urn_is(urn)
-      where_updated_since(updated_since)
+      ]
     end
-
-    def schools
-      scope.order(order_by)
-    end
-
-    def school_by_api_id(api_id)
-      return scope.find_by!(gias_school: { api_id: }) if api_id.present?
-
-      fail(ArgumentError, "api_id needed")
-    end
-
-    def school(id)
-      return scope.find(id) if id.present?
-
-      fail(ArgumentError, "id needed")
-    end
-
-  private
 
     def schools_with_existing_partnerships(contract_period_id)
       School.where(id: School.select("schools.id")
@@ -153,7 +171,6 @@ module Schools
       School
         .eligible
         .not_cip_only
-        .eager_load(:gias_school)
     end
 
     def order_by
