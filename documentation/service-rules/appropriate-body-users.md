@@ -122,13 +122,13 @@ The registration process takes place with the following steps:
 
 #### Induction already completed
 
-Early career teachers [have only one chance to complete their induction](https://ecf-service-manual.education.gov.uk/policy/induction-for-early-career-teachers/#para-1-13).
+Early career teachers [have only one chance to complete their induction](https://register-ects-service-manual.education.gov.uk/policy/induction-for-early-career-teachers/#para-1-13).
 
-The exception is when teachers fail their induction [and then successfully appeal the decision](https://ecf-service-manual.education.gov.uk/policy/induction-for-early-career-teachers/#para-4-9). This is rare and we've decided to handle it manually for now.
+The exception is when teachers fail their induction [and then successfully appeal the decision](https://register-ects-service-manual.education.gov.uk/policy/induction-for-early-career-teachers/#para-4-9). This is rare and we've decided to handle it manually for now.
 
 #### No QTS
 
-An early career teacher cannot begin their induction [until they have been awarded QTS](https://ecf-service-manual.education.gov.uk/policy/induction-for-early-career-teachers/#para-2-10).
+An early career teacher cannot begin their induction [until they have been awarded QTS](https://register-ects-service-manual.education.gov.uk/policy/induction-for-early-career-teachers/#para-2-10).
 
 #### Exempt from completing induction
 
