@@ -9,6 +9,16 @@ FactoryBot.define do
     started_on { generate(:base_training_date) }
     finished_on { started_on + 1.day }
 
+    trait :not_started_yet do
+      started_on { 2.weeks.from_now }
+      finished_on { nil }
+    end
+
+    trait :finished do
+      started_on { 1.year.ago }
+      finished_on { 2.weeks.ago }
+    end
+
     trait(:school_led) do
       training_programme { 'school_led' }
       school_partnership { nil }
