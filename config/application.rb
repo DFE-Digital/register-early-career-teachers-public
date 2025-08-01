@@ -54,6 +54,7 @@ module RegisterEarlyCareerTeachers
     config.enable_bulk_upload = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BULK_UPLOAD', false))
     config.enable_bulk_claim = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BULK_CLAIM', false))
     config.enable_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_API', false))
+    config.bypass_filter_parameter_logging = false
     config.sentry_dsn = ENV['SENTRY_DSN']
     config.enable_request_specs_timeout = ActiveModel::Type::Boolean.new.cast(ENV.fetch('CI', false))
     config.enable_trs_teacher_refresh = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_TRS_TEACHER_REFRESH', true))
