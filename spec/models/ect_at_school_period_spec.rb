@@ -31,8 +31,6 @@ describe ECTAtSchoolPeriod do
 
       it { is_expected.to have_one(:current_training_period).class_name('TrainingPeriod') }
 
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active) }
-
       context 'when there is a current period' do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 

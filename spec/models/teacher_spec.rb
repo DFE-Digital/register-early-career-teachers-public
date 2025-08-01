@@ -8,9 +8,9 @@ describe Teacher do
     it { is_expected.to have_many(:events) }
 
     describe '.current_ect_at_school_period' do
-      it { is_expected.to have_one(:current_ect_at_school_period).class_name('ECTAtSchoolPeriod') }
-
       let(:teacher) { FactoryBot.create(:teacher) }
+
+      it { is_expected.to have_one(:current_ect_at_school_period).class_name('ECTAtSchoolPeriod') }
 
       context 'when there is a current period' do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
