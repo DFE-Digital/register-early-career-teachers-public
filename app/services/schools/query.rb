@@ -11,8 +11,7 @@ module Schools
 
       @sort = sort
 
-      where_lead_provider_is(lead_provider_id)
-      where_contract_period_is(contract_period_id)
+      where_lead_provider_and_contract_period_is(lead_provider_id, contract_period_id)
       where_urn_is(urn)
       where_updated_since(updated_since)
     end
@@ -35,20 +34,11 @@ module Schools
 
   private
 
-    def where_lead_provider_is(lead_provider_id)
-      return if ignore?(filter: lead_provider_id)
-
-      scope
+    def where_lead_provider_and_contract_period_is(lead_provider_id, contract_period_id)
+      @scope = scope
+        .includes(:lead_provider_contract_period_metadata)
         .joins(:lead_provider_contract_period_metadata)
-        .where(lead_provider_contract_period_metadata: { lead_provider_id: })
-    end
-
-    def where_contract_period_is(contract_period_id)
-      return if ignore?(filter: contract_period_id)
-
-      scope
-        .joins(:lead_provider_contract_period_metadata)
-        .where(lead_provider_contract_period_metadata: { contract_period_id: })
+        .where(lead_provider_contract_period_metadata: { lead_provider_id:, contract_period_id: })
     end
 
     def where_urn_is(urn)
