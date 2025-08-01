@@ -7,6 +7,28 @@ describe Teacher do
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
 
+    describe '.current_ect_at_school_period' do
+      it { is_expected.to have_one(:current_ect_at_school_period).class_name('ECTAtSchoolPeriod') }
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      context 'when there is a current period' do
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+
+        it 'returns the current ect_at_school_period' do
+          expect(teacher.current_ect_at_school_period).to eql(ect_at_school_period)
+        end
+      end
+
+      context 'when there is no current period' do
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :finished, teacher:) }
+
+        it 'returns nil' do
+          expect(teacher.current_ect_at_school_period).to be_nil
+        end
+      end
+    end
+
     it "returns the appropriate body from the ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
       other_appropriate_body = FactoryBot.create(:appropriate_body)
