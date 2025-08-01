@@ -21,7 +21,7 @@ RUN apk add --update --no-cache tzdata && \
 
 # build-base: dependencies for bundle
 # postgresql-dev: postgres driver and libraries
-RUN apk add --no-cache build-base yaml-dev nodejs npm postgresql16-dev
+RUN apk add --no-cache build-base yaml-dev nodejs npm postgresql16-dev gcompat
 
 # Install gems defined in Gemfile
 COPY .ruby-version Gemfile Gemfile.lock ./
@@ -76,7 +76,8 @@ RUN apk add --update --no-cache tzdata && \
 RUN addgroup -S appgroup -g 20001 && adduser -S appuser -G appgroup -u 10001
 
 # libpq: required to run postgres
-RUN apk add --no-cache libpq
+# gcompat: required to run pg fat gem (x86_64-linux) on Alpine (musl)
+RUN apk add --no-cache libpq gcompat
 
 # Copy files generated in the builder image
 COPY --from=builder /app /app
