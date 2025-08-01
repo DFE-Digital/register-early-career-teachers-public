@@ -7,10 +7,10 @@ module Schools
     attr_reader :scope, :sort
 
     def initialize(lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, contract_period_id: :ignore, sort: nil)
-      @scope = default_scope(contract_period_id).or(schools_with_existing_partnerships(contract_period_id:)).distinct
+      @scope = default_scope(contract_period_id).or(schools_with_existing_partnerships(contract_period_id:)).includes(:lead_provider_contract_period_metadata).distinct
       @sort = sort
 
-      include_metadata(lead_provider_id, contract_period_id)
+      # include_metadata(lead_provider_id, contract_period_id)
       where_urn_is(urn)
       where_updated_since(updated_since)
     end
@@ -39,12 +39,13 @@ module Schools
         .where(contract_periods: { year: contract_period_id }))
     end
 
-    def include_metadata(lead_provider_id, contract_period_id)
-      @scope = scope
-        .includes(lead_provider_contract_period_metadata: :contract_period)
-        .left_joins(:lead_provider_contract_period_metadata)
-        .where(lead_provider_contract_period_metadata: { lead_provider_id:, contract_period_id: })
-    end
+    # This filters the schools, not what we want.
+    # def include_metadata(lead_provider_id, contract_period_id)
+    #   @scope = scope
+    #     .includes(lead_provider_contract_period_metadata: :contract_period)
+    #     .left_joins(:lead_provider_contract_period_metadata)
+    #     .where(lead_provider_contract_period_metadata: { lead_provider_id:, contract_period_id: })
+    # end
 
     def where_urn_is(urn)
       return if ignore?(filter: urn)

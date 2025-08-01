@@ -42,7 +42,7 @@ module API
       end
 
       def to_json(obj)
-        SchoolSerializer.render(obj, root: "data")
+        SchoolSerializer.render(obj, root: "data", lead_provider: current_lead_provider, contract_period:)
       end
     end
   end
