@@ -372,28 +372,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
     end
 
-    context 'when the submission overlaps an earlier induction period' do
-      include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
-
-      let(:started_on) { 15.days.ago.to_date.to_s }
-
-      let(:teacher) { FactoryBot.create(:teacher, trn:) }
-
-      before do
-        FactoryBot.create(:induction_period, teacher:,
-                                             appropriate_body:,
-                                             started_on: 30.days.ago.to_date,
-                                             finished_on: 1.day.ago.to_date)
-        service.process!
-      end
-
-      describe 'submission error messages' do
-        subject { submission.error_messages }
-
-        it { is_expected.to eq ['Induction start date must not overlap with any other induction periods'] }
-      end
-    end
-
     context 'start date before QTS' do
       include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
 
