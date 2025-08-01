@@ -26,7 +26,7 @@ module BatchRows
 
       # @return [Boolean] 7 digits only
       def invalid_trn?
-        trn.strip !~ /\A\d{7}\z/
+        trn.to_s.strip !~ /\A\d{7}\z/
       end
 
       # @return [Boolean] only "error" cell can be blank
