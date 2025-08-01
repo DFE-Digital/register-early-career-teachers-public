@@ -61,6 +61,27 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         expect(submission.trs_last_name).to eq 'Van Houten'
       end
 
+      context 'when the ECT has been released from a previous induction claim' do
+        include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
+
+        let(:started_on) { 1.day.ago.to_date.to_s }
+
+        let(:teacher) { FactoryBot.create(:teacher, trn:) }
+
+        before do
+          FactoryBot.create(:induction_period, teacher:,
+                                               appropriate_body:,
+                                               started_on: 30.days.ago.to_date,
+                                               finished_on: 15.days.ago.to_date)
+          service.process!
+        end
+
+        it 'has no error message' do
+          expect(pending_induction_submission_batch.reload.error_message).to be_nil
+          expect(submission.error_messages).to be_empty
+        end
+      end
+
       describe 'formatting checks' do
         before { service.process! }
 
@@ -344,34 +365,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       end
     end
 
-    context 'when the ECT is already claimed by the AB' do
-      include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
-
-      let(:started_on) { 1.day.ago.to_date.to_s }
-
-      let(:teacher) { FactoryBot.create(:teacher, trn:) }
-
-      before do
-        FactoryBot.create(:induction_period, teacher:,
-                                             appropriate_body:,
-                                             started_on: 30.days.ago.to_date,
-                                             finished_on: 15.days.ago.to_date)
-        service.process!
-      end
-
-      describe 'batch error message' do
-        subject { pending_induction_submission_batch.error_message }
-
-        it { is_expected.to be_nil }
-      end
-
-      describe 'submission error messages' do
-        subject { submission.error_messages }
-
-        it { is_expected.to eq ['Kirk Van Houten is already claimed by your appropriate body'] }
-      end
-    end
-
     context 'when the submission overlaps an earlier induction period' do
       include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
 
@@ -381,7 +374,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         FactoryBot.create(:induction_period, teacher:,
-                                             appropriate_body:,
                                              started_on: 30.days.ago.to_date,
                                              finished_on: 1.day.ago.to_date)
         service.process!
