@@ -53,6 +53,8 @@ module Schools
                                     school_urn:,
                                     email:,
                                     author:,
+                                    started_on:,
+                                    finish_existing_at_school_periods:,
                                     lead_provider:)
                                .register!
                                .tap { self.registered = true }
@@ -71,10 +73,70 @@ module Schools
       end
 
       def lead_provider
-        ECTAtSchoolPeriods::Training.new(ect).latest_lead_provider if ect
+        @lead_provider ||= LeadProvider.find(lead_provider_id) if lead_provider_id
+      end
+
+      # The form submits a symbol (:yes or :no), but Rails stores it as a string ('yes'/'no').
+      def finish_existing_at_school_periods
+        mentoring_at_new_school_only == "yes"
+      end
+
+      def latest_registration_choice
+        @latest_registration_choice ||= MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn:)
+      end
+
+      def lead_providers_within_contract_period
+        return [] unless contract_period
+
+        @lead_providers_within_contract_period ||= LeadProviders::Active.in_contract_period(contract_period).select(:id, :name)
+      end
+
+      def contract_period
+        ContractPeriod.containing_date(started_on&.to_date)
+      end
+
+      # Does mentor have any previous mentor_at_school_periods (open or closed)?
+      def previously_registered_as_mentor?
+        mentor_at_school_periods.exists?
+      end
+
+      # Does mentor have an open mentor_at_school_period at another school?
+      def currently_mentor_at_another_school?
+        previous_school_mentor_at_school_periods.exists?
+      end
+
+      def previous_school_mentor_at_school_periods
+        finishes_in_the_future_scope = ::MentorAtSchoolPeriod.finished_on_or_after(start_date)
+        mentor_at_school_periods.where.not(school:).ongoing.or(finishes_in_the_future_scope)
+      end
+
+      # Is mentor being assigned to a provider-led ECT?
+      def provider_led_ect?
+        ect.provider_led?
+      end
+
+      # Does that mentor have a mentor_became_ineligible_for_funding_on?
+      def became_ineligible_for_funding?
+        ::Teachers::MentorFundingEligibility.new(trn:).ineligible?
+      end
+
+      def ect_lead_provider
+        ect_training_service.latest_lead_provider if ect
+      end
+
+      def ect_eoi_lead_provider
+        ect_training_service.latest_eoi_lead_provider
       end
 
     private
+
+      def mentor_at_school_periods
+        ::MentorAtSchoolPeriods::Search.new.mentor_periods(trn:)
+      end
+
+      def ect_training_service
+        @ect_training_service ||= ECTAtSchoolPeriods::Training.new(ect)
+      end
 
       # The wizard store object where we delegate the rest of methods
       def wizard_store

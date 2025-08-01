@@ -1,40 +1,70 @@
-<%
-  page_data(
-    title: "Check your answers and confirm mentor details",
-    backlink_href: @wizard.previous_step_path
-  )
-%>
-<%=
-  govuk_summary_list do |summary_list|
-    summary_list.with_row do |row|
-      row.with_key(text: 'Teacher reference number (TRN)')
-      row.with_value(text: @mentor.trn)
-    end
+<% page_data(
+  title: "Check your answers and confirm mentor details",
+  backlink_href: @wizard.previous_step_path,
+) %>
+<%= govuk_summary_list do |summary_list|
+  summary_list.with_row do |row|
+    row.with_key(text: "Teacher reference number (TRN)")
+    row.with_value(text: @mentor.trn)
+  end
 
-    summary_list.with_row do |row|
-      row.with_key(text: 'Name')
-      row.with_value(text: @mentor.full_name)
-      row.with_action(text: 'Change',
-                      href: schools_register_mentor_wizard_change_mentor_details_path,
-                      visually_hidden_text: 'name')
-    end
+  summary_list.with_row do |row|
+    row.with_key(text: "Name")
+    row.with_value(text: @mentor.full_name)
+    row.with_action(
+      text: "Change",
+      href: schools_register_mentor_wizard_change_mentor_details_path,
+      visually_hidden_text: "name",
+    )
+  end
 
-    summary_list.with_row do |row|
-      row.with_key(text: 'Email address')
-      row.with_value(text: @mentor.email)
-      row.with_action(text: 'Change',
-                      href: schools_register_mentor_wizard_change_email_address_path,
-                      visually_hidden_text: 'email address')
-    end
+  summary_list.with_row do |row|
+    row.with_key(text: "Email address")
+    row.with_value(text: @mentor.email)
+    row.with_action(
+      text: "Change",
+      href: schools_register_mentor_wizard_change_email_address_path,
+      visually_hidden_text: "email address",
+    )
+  end
 
-    if @wizard.ect.provider_led_training_programme? && @mentor.funding_available?
-      summary_list.with_row do |row|
-        row.with_key(text: 'Lead provider')
-        row.with_value(text: ECTAtSchoolPeriods::Training.new(@wizard.ect).latest_lead_provider_name )
-      end
+  if @mentor.mentoring_at_new_school_only.present?
+    summary_list.with_row do |row|
+      row.with_key(text: "Mentoring only at your school")
+      row.with_value(text: @mentor.mentoring_at_new_school_only.capitalize)
+      row.with_action(
+        text: "Change",
+        href:
+          schools_register_mentor_wizard_change_mentoring_at_new_school_only_path,
+        visually_hidden_text: "mentoring only at your school",
+      )
     end
   end
-%>
+
+  if @mentor.started_on
+    summary_list.with_row do |row|
+      row.with_key(text: "Mentor start date")
+      row.with_value(text: @mentor.started_on.to_date.to_fs(:govuk))
+      row.with_action(
+        text: "Change",
+        href: schools_register_mentor_wizard_change_started_on_path,
+        visually_hidden_text: "mentor start date",
+      )
+    end
+  end
+
+  if @mentor.lead_provider
+    summary_list.with_row do |row|
+      row.with_key(text: "Lead provider")
+      row.with_value(text: @mentor.lead_provider.name)
+      row.with_action(
+        text: "Change",
+        href: (schools_register_mentor_wizard_change_lead_provider_path),
+        visually_hidden_text: "lead provider",
+      )
+    end
+  end
+end %>
 
 <%= govuk_inset_text(text: "#{@mentor.full_name} will mentor #{@ect_name}") %>
 

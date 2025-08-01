@@ -1,0 +1,45 @@
+<% page_data(
+  title:
+    "Programme choices used by the ECT who #{@mentor.full_name} will be mentoring",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: @wizard.previous_step_path,
+) %>
+
+<p class="govuk-body">
+  These are the programme choices we have for the ECT who
+  <%= @mentor.full_name %>
+  will be mentoring.
+</p>
+
+<%= govuk_summary_list do |summary_list|
+  summary_list.with_row do |row|
+    row.with_key(text: "Lead provider")
+    row.with_value(
+      text: (@mentor.ect_lead_provider || @mentor.ect_eoi_lead_provider).name,
+    )
+  end
+end %>
+
+<% unless @mentor.ect_lead_provider %>
+  <p class="govuk-body">
+    <%= @mentor.ect_eoi_lead_provider.name %>
+    will confirm if they’ll be working with your school and which deliver
+    partner will delivery training events.
+  </p>
+<% end %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_radio_buttons_fieldset :use_same_programme_choices, legend: { text: "Do you want to use the same programme choices for #{@mentor.full_name}’s mentor training" }, inline: true do %>
+    <%= f.govuk_radio_button :use_same_programme_choices,
+                         :yes,
+                         label: {
+                           text: "Yes",
+                         },
+                         link_errors: true %>
+    <%= f.govuk_radio_button :use_same_programme_choices, :no, label: { text: "No" } %>
+  <% end %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>

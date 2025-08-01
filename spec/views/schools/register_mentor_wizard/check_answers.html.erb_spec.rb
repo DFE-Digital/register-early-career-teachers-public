@@ -92,8 +92,6 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
         expect(rendered).to have_element(:dd, text: "Jim Wayne")
         expect(rendered).to have_element(:dt, text: "Email address")
         expect(rendered).to have_element(:dd, text: "john.wayne@example.com")
-        expect(rendered).to have_element(:dt, text: "Lead provider")
-        expect(rendered).to have_element(:dd, text: "FraggleRock")
       end
     end
 

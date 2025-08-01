@@ -1,11 +1,11 @@
 module Schools
-  module RegisterECTWizard
+  module RegisterMentorWizard
     class LeadProviderStep < Step
       attr_accessor :lead_provider_id
 
       validates :lead_provider_id,
-                presence: { message: "Select which lead provider will be training the ECT" },
-                lead_provider: { message: "Enter the name of a known lead provider" }
+                presence: { message: "Select a lead provider to contact your school" },
+                lead_provider: { message: "Select a lead provider to contact your school" }
 
       def self.permitted_params
         %i[lead_provider_id]
@@ -16,13 +16,13 @@ module Schools
       end
 
       def previous_step
-        :training_programme
+        :programme_choices
       end
 
     private
 
       def persist
-        ect.update!(lead_provider_id:)
+        mentor.update!(lead_provider_id:)
       end
     end
   end
