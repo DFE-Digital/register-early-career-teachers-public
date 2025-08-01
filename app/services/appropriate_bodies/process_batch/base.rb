@@ -70,16 +70,26 @@ module AppropriateBodies
         ::Teacher.find_by(trn: pending_induction_submission.trn)
       end
 
-      # @return [Teachers::InductionPeriod]
-      def induction_periods
-        ::Teachers::InductionPeriod.new(teacher)
+      # @return [Boolean]
+      def claimed_by_another_ab?
+        return false if no_ongoing_induction_period?
+
+        teacher.ongoing_induction_period.appropriate_body != appropriate_body
       end
 
       # @return [Boolean]
-      def claimed_by_another_ab?
-        return false unless induction_periods.ongoing_induction_period
+      def no_ongoing_induction_period?
+        teacher.ongoing_induction_period.blank?
+      end
 
-        appropriate_body != induction_periods.ongoing_induction_period.appropriate_body
+      # @return [Boolean]
+      def passed?
+        teacher.last_induction_period&.outcome.eql?('pass')
+      end
+
+      # @return [Boolean]
+      def failed?
+        teacher.last_induction_period&.outcome.eql?('fail')
       end
 
       # @return [TRS::Teacher]

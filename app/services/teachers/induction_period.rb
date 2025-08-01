@@ -7,19 +7,22 @@ class Teachers::InductionPeriod
 
   # @return [Date, nil]
   def induction_start_date
-    teacher.first_induction_period&.started_on
+    first_induction_period&.started_on
   end
 
+  # @return [String, nil]
   def formatted_induction_start_date
     induction_start_date&.to_fs(:govuk)
   end
 
+  # @return [String, nil]
   def induction_programme
     return unless last_induction_period
 
     ::INDUCTION_PROGRAMMES[last_induction_period.induction_programme.to_sym]
   end
 
+  # @return [String, nil]
   def appropriate_body_name
     return unless last_induction_period
 
@@ -40,5 +43,5 @@ class Teachers::InductionPeriod
     teacher.induction_periods.ongoing_on(date).exists?
   end
 
-  delegate :last_induction_period, to: :teacher
+  delegate :last_induction_period, :first_induction_period, to: :teacher
 end
