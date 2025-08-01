@@ -18,8 +18,7 @@ module Metadata::Handler
       end
 
       lead_provider_and_contract_periods.collect do |lead_provider, contract_period|
-        next if school.lead_provider_contract_period_metadata.exists?(lead_provider:, contract_period:)
-        next if Metadata::SchoolLeadProviderContractPeriod.where(school:, lead_provider:, contract_period:).exists?
+        next if school.lead_provider_contract_period_metadata.exists?(school:, lead_provider:, contract_period:)
 
         Metadata::SchoolLeadProviderContractPeriod.new(school:, lead_provider:, contract_period:).tap do |metadata|
           update_lead_provider_contract_period_metadata!(metadata)

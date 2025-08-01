@@ -5,7 +5,7 @@ class SchoolSerializer < Blueprinter::Base
     field :name
     field(:urn) { |school, _| school.urn.to_s }
     field(:cohort) do |school, _|
-      school.lead_provider_contract_period_metadata.first.contract_period.year
+      school.lead_provider_contract_period_metadata.first.contract_period.year.to_s
     end
     field(:in_partnership) do |school, _|
       school.lead_provider_contract_period_metadata.first.in_partnership

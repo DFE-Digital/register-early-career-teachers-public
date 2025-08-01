@@ -7,11 +7,10 @@ module Schools
     attr_reader :scope, :sort
 
     def initialize(lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, contract_period_id: :ignore, sort: nil)
-      @scope = default_scope(contract_period_id).distinct
-
+      @scope = default_scope(contract_period_id).or(schools_with_existing_partnerships(contract_period_id:)).distinct
       @sort = sort
 
-      where_lead_provider_and_contract_period_is(lead_provider_id, contract_period_id)
+      include_metadata(lead_provider_id, contract_period_id)
       where_urn_is(urn)
       where_updated_since(updated_since)
     end
@@ -34,10 +33,16 @@ module Schools
 
   private
 
-    def where_lead_provider_and_contract_period_is(lead_provider_id, contract_period_id)
+    def schools_with_existing_partnerships(contract_period_id:)
+      School.where(id: School.select("schools.id")
+        .joins(school_partnerships: { lead_provider_delivery_partnership: { active_lead_provider: :contract_period } })
+        .where(contract_periods: { year: contract_period_id }))
+    end
+
+    def include_metadata(lead_provider_id, contract_period_id)
       @scope = scope
         .includes(lead_provider_contract_period_metadata: :contract_period)
-        .joins(:lead_provider_contract_period_metadata)
+        .left_joins(:lead_provider_contract_period_metadata)
         .where(lead_provider_contract_period_metadata: { lead_provider_id:, contract_period_id: })
     end
 
