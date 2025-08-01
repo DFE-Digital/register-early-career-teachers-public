@@ -33,6 +33,10 @@ FactoryBot.define do
       association :school_partnership
     end
 
+    trait :with_no_school_partnership do
+      school_partnership { nil }
+    end
+
     trait :with_expression_of_interest do
       association :expression_of_interest, factory: :active_lead_provider
     end
