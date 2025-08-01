@@ -36,7 +36,7 @@ module Schools
 
     def where_lead_provider_and_contract_period_is(lead_provider_id, contract_period_id)
       @scope = scope
-        .includes(:lead_provider_contract_period_metadata)
+        .includes(lead_provider_contract_period_metadata: :contract_period)
         .joins(:lead_provider_contract_period_metadata)
         .where(lead_provider_contract_period_metadata: { lead_provider_id:, contract_period_id: })
     end
