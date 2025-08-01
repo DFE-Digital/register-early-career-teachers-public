@@ -54,17 +54,21 @@ module AppropriateBodies
         elsif (trs_error = fetch_trs_details!)
           capture_error(trs_error)
           true
+        elsif teacher
+          if completed_induction_period?
+            capture_error("#{name} has already completed their induction")
+            true
+          elsif no_ongoing_induction_period?
+            capture_error("#{name} does not have an open induction")
+            true
+          elsif claimed_by_another_ab?
+            capture_error("#{name} is completing their induction with another appropriate body")
+            true
+          else
+            false
+          end
         elsif teacher.blank?
           capture_error("#{name} has not yet been claimed")
-          true
-        elsif completed_induction_period?
-          capture_error("#{name} has already completed their induction")
-          true
-        elsif ongoing_induction_period?
-          capture_error("#{name} does not have an open induction")
-          true
-        elsif claimed_by_another_ab?
-          capture_error("#{name} is completing their induction with another appropriate body")
           true
         else
           false
@@ -92,7 +96,7 @@ module AppropriateBodies
       end
 
       # @return [Boolean]
-      def ongoing_induction_period?
+      def no_ongoing_induction_period?
         induction_periods.ongoing_induction_period.blank?
       end
 
