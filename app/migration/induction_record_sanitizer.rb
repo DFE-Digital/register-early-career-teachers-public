@@ -134,11 +134,13 @@ private
   end
 
   def does_not_have_multiple_blank_end_dates!(induction_record_collection)
-    raise(MultipleBlankEndDateError) if induction_record_collection.count { |ir| ir.end_date.nil? } > 1
+    # calls to_a to ensure block is used when collection is ActiveRecord Relation
+    raise(MultipleBlankEndDateError) if induction_record_collection.to_a.count { |ir| ir.end_date.nil? } > 1
   end
 
   def does_not_have_multiple_active_induction_statuses!(induction_record_collection)
-    raise(MultipleActiveStatesError) if induction_record_collection.count { |ir| ir.induction_status == "active" } > 1
+    # calls to_a to ensure block is used when collection is ActiveRecord Relation
+    raise(MultipleActiveStatesError) if induction_record_collection.to_a.count { |ir| ir.induction_status == "active" } > 1
   end
 
   def induction_record_dates_are_sequential!(induction_record_collection)
