@@ -15,7 +15,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   let(:date_of_birth) { '1997-03-15' }
   let(:started_on) { 1.week.ago.to_date.to_s }
   let(:training_programme) { 'provider-led' }
-  let(:error) { '' }
+  let(:error) { nil }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
@@ -65,7 +65,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         before { service.process! }
 
         context 'when the TRN is missing' do
-          let(:trn) { '' }
+          let(:trn) { nil }
           let(:teacher) {}
 
           it 'captures an error message' do
@@ -77,7 +77,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         end
 
         context 'when the date of birth is missing' do
-          let(:date_of_birth) { '' }
+          let(:date_of_birth) { nil }
 
           it 'captures an error message' do
             expect(submission.error_messages).to eq [
@@ -89,7 +89,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         end
 
         context 'when the date of birth is unrealistic' do
-          let(:date_of_birth) { 100.years.ago }
+          let(:date_of_birth) { 100.years.ago.to_date.to_s }
 
           it 'captures an error message' do
             expect(submission.error_messages).to eq [
@@ -99,7 +99,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         end
 
         context 'when the date of birth is in the future' do
-          let(:date_of_birth) { 1.year.from_now }
+          let(:date_of_birth) { 1.year.from_now.to_date.to_s }
 
           it 'captures an error message' do
             expect(submission.error_messages).to eq [
@@ -109,7 +109,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         end
 
         context 'when the start date is missing' do
-          let(:started_on) { '' }
+          let(:started_on) { nil }
 
           it 'captures an error message' do
             expect(submission.error_messages).to eq [
@@ -132,7 +132,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
         end
 
         context 'when the training programme is missing' do
-          let(:training_programme) { '' }
+          let(:training_programme) { nil }
 
           it 'captures an error message' do
             expect(submission.error_messages).to eq [
@@ -231,7 +231,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
           let(:trn) { '0004' }
           let(:date_of_birth) { '30/06/1981' }
           let(:training_programme) { 'foo' }
-          let(:started_on) { '' }
+          let(:started_on) { nil }
 
           it 'captures an error message' do
             expect(submission.error_messages).to eq [

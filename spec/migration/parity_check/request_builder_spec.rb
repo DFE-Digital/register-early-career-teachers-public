@@ -61,6 +61,34 @@ RSpec.describe ParityCheck::RequestBuilder do
 
         it { is_expected.to eq("#{ecf_url}/test-path/#{id}") }
       end
+
+      context "when the options specify an ecf-specific path" do
+        let(:app) { :ecf }
+        let(:path) { "/default-path" }
+        let(:options) { { ecf_path: "/ecf-path" } }
+
+        it { is_expected.to eq("#{ecf_url}/ecf-path") }
+
+        context "when the app is rect" do
+          let(:app) { :rect }
+
+          it { is_expected.to eq("#{rect_url}/default-path") }
+        end
+      end
+
+      context "when the options specify a rect-specific path" do
+        let(:app) { :rect }
+        let(:path) { "/default-path" }
+        let(:options) { { rect_path: "/rect-path" } }
+
+        it { is_expected.to eq("#{rect_url}/rect-path") }
+
+        context "when the app is ecf" do
+          let(:app) { :ecf }
+
+          it { is_expected.to eq("#{ecf_url}/default-path") }
+        end
+      end
     end
 
     describe "#headers" do

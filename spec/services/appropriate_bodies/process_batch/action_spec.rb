@@ -20,7 +20,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   let(:finished_on) { 1.week.ago.to_date.to_s }
   let(:number_of_terms) { '3.2' }
   let(:outcome) { 'pass' }
-  let(:error) { '' }
+  let(:error) { nil }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
@@ -69,7 +69,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       before { service.process! }
 
       context 'when the TRN is missing' do
-        let(:trn) { '' }
+        let(:trn) { nil }
         let(:teacher) {}
 
         it 'captures an error message' do
@@ -81,7 +81,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the date of birth is missing' do
-        let(:date_of_birth) { '' }
+        let(:date_of_birth) { nil }
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
@@ -93,7 +93,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the date of birth is unrealistic' do
-        let(:date_of_birth) { 100.years.ago }
+        let(:date_of_birth) { 100.years.ago.to_date.to_s }
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
@@ -103,7 +103,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the date of birth is in the future' do
-        let(:date_of_birth) { 1.year.from_now }
+        let(:date_of_birth) { 1.year.from_now.to_date.to_s }
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
@@ -113,7 +113,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the number of terms is missing' do
-        let(:number_of_terms) { '' }
+        let(:number_of_terms) { nil }
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
@@ -124,7 +124,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the end date is missing' do
-        let(:finished_on) { '' }
+        let(:finished_on) { nil }
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
@@ -136,7 +136,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       context 'when the outcome is missing' do
-        let(:outcome) { '' }
+        let(:outcome) { nil }
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
@@ -268,7 +268,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:date_of_birth) { '30/06/1981' }
         let(:outcome) { 'foo' }
         let(:number_of_terms) { '12.06' }
-        let(:finished_on) { '' }
+        let(:finished_on) { nil }
 
         it 'captures an error message' do
           expect(submission.error_messages).to eq [
