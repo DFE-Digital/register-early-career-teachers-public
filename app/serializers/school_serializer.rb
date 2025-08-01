@@ -5,19 +5,25 @@ class SchoolSerializer < Blueprinter::Base
     field :name
     field(:urn) { |school, _| school.urn.to_s }
     field(:cohort) do |school, _|
-      school.lead_provider_contract_period_metadata.first.contract_period.year.to_s
+      metadata(school).contract_period.year.to_s
     end
     field(:in_partnership) do |school, _|
-      school.lead_provider_contract_period_metadata.first.in_partnership
+      metadata(school).in_partnership
     end
     field(:induction_programme_choice) do |school, _|
-      school.lead_provider_contract_period_metadata.first.induction_programme_choice
+      metadata(school).induction_programme_choice
     end
     field(:expression_of_interest) do |school, _|
-      school.lead_provider_contract_period_metadata.first.expression_of_interest
+      metadata(school).expression_of_interest
     end
     field :created_at
     field :updated_at
+
+    class << self
+      def metadata(school)
+        school.lead_provider_contract_period_metadata.first
+      end
+    end
   end
 
   identifier :api_id, name: :id
