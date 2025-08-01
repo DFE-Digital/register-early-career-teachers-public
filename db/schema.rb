@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_01_080740) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -520,7 +520,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
     t.datetime "updated_at", null: false
     t.index ["contract_period_id"], name: "idx_on_contract_period_id_bb6ce363be"
     t.index ["lead_provider_id"], name: "idx_on_lead_provider_id_817fe9b8b1"
-    t.index ["school_id", "contract_period_id"], name: "idx_on_school_id_contract_period_id_f05c4eb736", unique: true
+    t.index ["school_id", "contract_period_id", "lead_provider_id"], name: "index_schools_lead_providers_on_school_contract_lead", unique: true
     t.index ["school_id"], name: "idx_on_school_id_cec39b7e6e"
   end
 
