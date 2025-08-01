@@ -50,10 +50,10 @@ module Navigation
         ],
         api_guidance: [
           { text: "Home", href: '/api/guidance' },
-          { text: "Technical documentation", href: '/api/guidance/technical-documentation' },
+          { text: "Swagger API documentation", href: '/api/guidance/swagger-api-documentation' },
           { text: "Release notes", href: '/api/guidance/release-notes' },
           { text: "Sandbox", href: '/api/guidance/sandbox' },
-          { text: "Guidance", href: '/api/guidance/early-career-training-programme-guidance' },
+          { text: "Guidance", href: '/api/guidance/guidance-for-lead-providers' },
         ]
       }.fetch(navigation_area, [])
     end
