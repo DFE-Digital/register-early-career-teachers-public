@@ -4,10 +4,12 @@ module Schools
       include TeacherHelper
       include ECTHelper
 
-      attr_reader :ect_at_school_period
+      attr_reader :teacher, :ect_at_school_period, :training_period
 
-      def initialize(ect_at_school_period:)
+      def initialize(teacher:, ect_at_school_period:, training_period:)
+        @teacher = teacher
         @ect_at_school_period = ect_at_school_period
+        @training_period = training_period
       end
 
     private
@@ -35,7 +37,7 @@ module Schools
       end
 
       def delivery_partner_display_text
-        if latest_training_period_only_expression_of_interest?
+        if training_period_only_expression_of_interest?
           'Their lead provider will confirm this'
         else
           latest_delivery_partner_name(ect_at_school_period)
@@ -43,15 +45,15 @@ module Schools
       end
 
       def lead_provider_display_text
-        if latest_training_period_only_expression_of_interest?
+        if training_period_only_expression_of_interest?
           latest_eoi_lead_provider_name(ect_at_school_period)
         else
           latest_lead_provider_name(ect_at_school_period)
         end
       end
 
-      def latest_training_period_only_expression_of_interest?
-        ECTAtSchoolPeriods::Training.new(ect_at_school_period).latest_training_period&.only_expression_of_interest?
+      def training_period_only_expression_of_interest?
+        training_period&.only_expression_of_interest?
       end
 
       def left_rows
@@ -83,7 +85,7 @@ module Schools
       end
 
       def trn_row
-        { key: { text: 'TRN' }, value: { text: ect_at_school_period.trn } }
+        { key: { text: 'TRN' }, value: { text: teacher.trn } }
       end
     end
   end
