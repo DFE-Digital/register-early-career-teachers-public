@@ -362,10 +362,9 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
-      context 'with a completed induction' do
+      context 'with a passed or failed outcome' do
         let!(:induction_period) do
           FactoryBot.create(:induction_period, :pass,
-                            appropriate_body:,
                             teacher:)
         end
 
