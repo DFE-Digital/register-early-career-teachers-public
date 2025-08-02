@@ -121,11 +121,11 @@ module Schools
       end
 
       def ect_lead_provider
-        ect_training_service.latest_lead_provider if ect
+        ect_training_service.lead_provider if ect
       end
 
       def ect_eoi_lead_provider
-        ect_training_service.latest_eoi_lead_provider
+        ect_training_service.expression_of_interest_lead_provider
       end
 
     private
@@ -135,7 +135,7 @@ module Schools
       end
 
       def ect_training_service
-        @ect_training_service ||= ECTAtSchoolPeriods::Training.new(ect)
+        @ect_training_service ||= ECTAtSchoolPeriods::CurrentTraining.new(ect)
       end
 
       # The wizard store object where we delegate the rest of methods

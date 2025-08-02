@@ -49,7 +49,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context 'when provider led chosen' do
-    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, ect_at_school_period:, started_on:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
 
     it "renders their latest providers" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
