@@ -22,7 +22,7 @@ module Schools
         assigned_ects
           .order(:started_on)
           .detect do |ect|
-            name = ECTAtSchoolPeriods::Training.new(ect).latest_lead_provider_name
+            name = ECTAtSchoolPeriods::CurrentTraining.new(ect).lead_provider_name
             return name if name
           end
       end

@@ -6,12 +6,12 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_delivery_partner_name(ect)
-    ECTAtSchoolPeriods::Training.new(ect).latest_delivery_partner_name || 'Their lead provider will confirm this'
+    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || 'Their lead provider will confirm this'
   end
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_lead_provider_name(ect)
-    ECTAtSchoolPeriods::Training.new(ect).latest_lead_provider_name
+    ECTAtSchoolPeriods::CurrentTraining.new(ect).lead_provider_name
   end
 
   # @param ect [ECTAtSchoolPeriod]
@@ -21,7 +21,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_eoi_lead_provider_name(ect)
-    ECTAtSchoolPeriods::Training.new(ect).latest_eoi_lead_provider_name
+    ECTAtSchoolPeriods::CurrentTraining.new(ect).expression_of_interest_lead_provider_name
   end
 
   # @param ect [ECTAtSchoolPeriod]
