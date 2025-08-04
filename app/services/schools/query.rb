@@ -6,16 +6,15 @@ module Schools
 
     attr_reader :scope, :sort
 
-    def initialize(lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, contract_period_id: :ignore, sort: nil)
+    def initialize(lead_provider: :ignore, urn: :ignore, updated_since: :ignore, contract_period_id: :ignore, sort: nil)
       @scope = default_scope(contract_period_id).select(
         "schools.*",
         transient_in_partnership(contract_period_id),
         transient_mentors_at_school(contract_period_id),
         transient_ects_at_school_training_programme(contract_period_id),
-        transient_expression_of_interest_ects(lead_provider_id, contract_period_id),
-        transient_expression_of_interest_mentors(lead_provider_id, contract_period_id),
-        "'#{contract_period_id}' AS transient_contract_period_id",
-        "'#{lead_provider_id}' AS transient_lead_provider_id"
+        transient_expression_of_interest_ects(lead_provider, contract_period_id),
+        transient_expression_of_interest_mentors(lead_provider, contract_period_id),
+        "'#{contract_period_id}' AS transient_contract_period_id"
       ).or(schools_with_existing_partnerships(contract_period_id))
         .distinct
 
@@ -107,10 +106,8 @@ module Schools
       ) AS transient_ects_at_school_training_programme"
     end
 
-    def transient_expression_of_interest_ects(lead_provider_id, contract_period_id)
-      return School.none if ignore?(filter: lead_provider_id) ||
-        lead_provider_id.blank? ||
-        ignore?(filter: contract_period_id) ||
+    def transient_expression_of_interest_ects(lead_provider, contract_period_id)
+      return School.none if ignore?(filter: lead_provider) || ignore?(filter: contract_period_id) ||
         contract_period_id.blank?
 
       "EXISTS(
@@ -118,7 +115,7 @@ module Schools
           School.select('1 AS one').from('schools s')
           .joins(ect_at_school_periods: { training_periods: { expression_of_interest: :contract_period } })
           .where(contract_periods: { year: contract_period_id })
-          .where(expression_of_interest: { lead_provider_id: })
+          .where(expression_of_interest: { lead_provider_id: lead_provider.id })
           .where('schools.id = s.id')
           .limit(1)
           .to_sql
@@ -126,10 +123,8 @@ module Schools
       ) AS transient_expression_of_interest_ects"
     end
 
-    def transient_expression_of_interest_mentors(lead_provider_id, contract_period_id)
-      return School.none if ignore?(filter: lead_provider_id) ||
-        lead_provider_id.blank? ||
-        ignore?(filter: contract_period_id) ||
+    def transient_expression_of_interest_mentors(lead_provider, contract_period_id)
+      return School.none if ignore?(filter: lead_provider) || ignore?(filter: contract_period_id) ||
         contract_period_id.blank?
 
       "EXISTS(
@@ -137,7 +132,7 @@ module Schools
           School.select('1 AS one').from('schools s')
           .joins(mentor_at_school_periods: { training_periods: { expression_of_interest: :contract_period } })
           .where(contract_periods: { year: contract_period_id })
-          .where(expression_of_interest: { lead_provider_id: })
+          .where(expression_of_interest: { lead_provider_id: lead_provider.id })
           .where('schools.id = s.id')
           .limit(1)
           .to_sql
@@ -146,9 +141,7 @@ module Schools
     end
 
     def default_scope(contract_period_id)
-      return School.none if ignore?(filter: contract_period_id) ||
-        contract_period_id.blank? ||
-        ContractPeriod.find_by(year: contract_period_id).blank?
+      return School.none if ignore?(filter: contract_period_id) || contract_period_id.blank? || ContractPeriod.find_by(year: contract_period_id).blank?
 
       School
         .eligible
