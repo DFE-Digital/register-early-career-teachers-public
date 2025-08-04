@@ -12,6 +12,8 @@ module GIAS
       "Academy sponsor led",
       "British schools overseas",
       "City technology college",
+      "Children's centre",
+      "Children's centre linked site",
       "Community school",
       "Community special school",
       "Foundation school",
