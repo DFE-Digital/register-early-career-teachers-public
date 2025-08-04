@@ -25,8 +25,8 @@ module ParityCheck
     end
 
     def school_id
-      contract_period_id = ContractPeriod.order("RANDOM()").pick(:year)
-      Schools::Query.new(lead_provider:, contract_period_id:)
+      contract_period_year = ContractPeriod.order("RANDOM()").pick(:year)
+      Schools::Query.new(lead_provider:, contract_period_year:)
         .schools
         .distinct(false)
         .includes(:gias_school)
