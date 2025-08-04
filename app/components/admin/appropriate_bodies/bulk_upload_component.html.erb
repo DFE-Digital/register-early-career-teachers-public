@@ -1,0 +1,3 @@
+<%= batch_details %>
+<%= error_details if error_details? && batch.errored? %>
+<%= induction_details if induction_details? && batch.recorded_count.positive? %>

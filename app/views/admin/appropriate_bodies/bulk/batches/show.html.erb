@@ -6,6 +6,9 @@
 %>
 
 <%=
-  render partial: @pending_induction_submission_batch.batch_type,
-  locals: { batch: @pending_induction_submission_batch }
+  render Admin::AppropriateBodies::BulkUploadComponent.new(batch: @pending_induction_submission_batch) do |component|
+    component.with_batch_details
+    component.with_induction_details
+    component.with_error_details
+  end
 %>
