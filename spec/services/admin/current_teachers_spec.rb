@@ -10,7 +10,7 @@ describe Admin::CurrentTeachers do
       before do
         FactoryBot.create(
           :induction_period,
-          :active,
+          :ongoing,
           teacher: teacher_1,
           appropriate_body: appropriate_body_1,
           started_on: 1.month.ago.to_date,
@@ -18,7 +18,7 @@ describe Admin::CurrentTeachers do
         )
         FactoryBot.create(
           :induction_period,
-          :active,
+          :ongoing,
           teacher: teacher_2,
           appropriate_body: appropriate_body_2,
           started_on: 1.month.ago.to_date,
@@ -47,7 +47,7 @@ describe Admin::CurrentTeachers do
       before do
         FactoryBot.create(
           :induction_period,
-          :active,
+          :ongoing,
           teacher: teacher_1,
           started_on: 1.month.ago.to_date,
           induction_programme: 'fip'
@@ -73,7 +73,7 @@ describe Admin::CurrentTeachers do
       before do
         FactoryBot.create(
           :induction_period,
-          :active,
+          :ongoing,
           teacher: teacher_1,
           appropriate_body: appropriate_body_1,
           started_on: 1.month.ago.to_date,

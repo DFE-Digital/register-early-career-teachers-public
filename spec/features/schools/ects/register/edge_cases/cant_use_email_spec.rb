@@ -40,7 +40,7 @@ RSpec.describe 'Registering an ECT', :js do
   end
 
   def and_an_ongoing_ect_is_assigned_to_the_school
-    @ect = FactoryBot.create(:ect_at_school_period, :active, school: @school)
+    @ect = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 

@@ -655,7 +655,7 @@ RSpec.describe 'Admin editing an active induction period', type: :request do
 
   describe "DELETE /admin/induction_periods/:id" do
     context "when it is the only induction period" do
-      let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
+      let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
       let(:trs_api_client) { instance_double(TRS::APIClient) }
 
       before do
@@ -687,8 +687,8 @@ RSpec.describe 'Admin editing an active induction period', type: :request do
     end
 
     context "when there are multiple induction periods" do
-      let!(:induction_period1) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 9.months.ago, number_of_terms: 2) }
-      let!(:induction_period2) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 3.months.ago, number_of_terms: 2) }
+      let!(:induction_period1) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: 1.year.ago, finished_on: 9.months.ago, number_of_terms: 2) }
+      let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 3.months.ago, number_of_terms: 2) }
       let(:trs_api_client) { instance_double(TRS::APIClient) }
 
       before do
@@ -712,7 +712,7 @@ RSpec.describe 'Admin editing an active induction period', type: :request do
     end
 
     context "when deletion fails" do
-      let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
+      let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
 
       before do
         service = instance_double(InductionPeriods::DeleteInductionPeriod)

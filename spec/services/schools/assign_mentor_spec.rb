@@ -3,10 +3,10 @@ RSpec.describe Schools::AssignMentor do
     described_class.new(author:, ect: mentee, mentor: new_mentor, started_on:)
   end
 
-  let(:mentee) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
-  let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
-  let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :active, mentee:, mentor: current_mentor) }
-  let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.years.ago) }
+  let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
+  let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.years.ago) }
+  let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor) }
+  let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.years.ago) }
   let(:started_on) { Date.yesterday }
   let(:author) { FactoryBot.create(:school_user, school_urn: mentee.school.urn) }
 

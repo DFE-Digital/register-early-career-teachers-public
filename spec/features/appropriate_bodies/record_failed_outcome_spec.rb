@@ -1,6 +1,6 @@
 RSpec.describe "Recording a failed outcome for an ECT" do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:today) { Time.zone.today }
   let(:number_of_completed_terms) { 4 }

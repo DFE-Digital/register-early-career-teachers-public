@@ -4,7 +4,7 @@ RSpec.describe Teachers::Induction do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let(:induction_period_unfinished) do
-    FactoryBot.create(:induction_period, :active, teacher:, started_on: 6.months.ago)
+    FactoryBot.create(:induction_period, :ongoing, teacher:, started_on: 6.months.ago)
   end
 
   let(:induction_period_finished_one_year_ago) do
@@ -92,7 +92,7 @@ RSpec.describe Teachers::Induction do
 
   describe "#with_appropriate_body?" do
     let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
-    let(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:) }
+    let(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
 
     it "returns true when the current induction is with the body" do
       expect(service.with_appropriate_body?(induction_period.appropriate_body)).to be true

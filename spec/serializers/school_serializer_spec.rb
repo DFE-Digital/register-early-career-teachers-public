@@ -10,7 +10,7 @@ describe SchoolSerializer, type: :serializer do
   let(:lead_provider) { school_partnership.lead_provider }
   let(:ect_at_school_period) do
     FactoryBot.create(:ect_at_school_period,
-                      :active,
+                      :ongoing,
                       :provider_led,
                       school:,
                       started_on: '2021-01-01')
@@ -24,7 +24,7 @@ describe SchoolSerializer, type: :serializer do
   end
   let(:another_ect_at_school_period) do
     FactoryBot.create(:ect_at_school_period,
-                      :active,
+                      :ongoing,
                       :school_led,
                       school:,
                       started_on: '2021-01-01')

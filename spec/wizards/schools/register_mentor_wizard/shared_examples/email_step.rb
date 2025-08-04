@@ -1,7 +1,7 @@
 RSpec.shared_examples "an email step" do |current_step:, previous_step:, next_step:|
   subject { described_class.new(wizard:) }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :provider_led) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :provider_led) }
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: "1234567",

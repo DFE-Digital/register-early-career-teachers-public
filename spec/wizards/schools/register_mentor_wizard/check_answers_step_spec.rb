@@ -1,7 +1,7 @@
 describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
   subject { wizard.current_step }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :provider_led) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :provider_led) }
   let(:training_programme) { 'provider_led' }
   let(:use_previous_ect_choices) { true }
   let(:store) { FactoryBot.build(:session_repository) }
@@ -24,7 +24,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
         end
 
         context 'when the ect is not provider led' do
-          let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :school_led) }
+          let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led) }
 
           it { expect(subject.previous_step).to eq(:email_address) }
         end

@@ -31,8 +31,8 @@ RSpec.describe Events::Record do
     end
 
     it 'assigns and saves attributes correctly' do
-      ect_at_school_period = FactoryBot.create(:ect_at_school_period, :active, started_on: 3.weeks.ago)
-      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, started_on: 3.weeks.ago)
+      ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.weeks.ago)
+      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.weeks.ago)
 
       attributes = {
         author:,
@@ -51,7 +51,7 @@ RSpec.describe Events::Record do
         lead_provider: FactoryBot.create(:lead_provider),
         delivery_partner: FactoryBot.create(:delivery_partner),
         user: FactoryBot.create(:user),
-        training_period: FactoryBot.create(:training_period, :active, ect_at_school_period:, started_on: 1.week.ago),
+        training_period: FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: 1.week.ago),
         mentorship_period: FactoryBot.create(
           :mentorship_period,
           mentor: mentor_at_school_period,
@@ -362,7 +362,7 @@ RSpec.describe Events::Record do
   describe '.record_induction_period_updated_event!' do
     let(:three_weeks_ago) { 3.weeks.ago.to_date }
     let(:two_weeks_ago) { 2.weeks.ago.to_date }
-    let(:induction_period) { FactoryBot.create(:induction_period, :active, started_on: three_weeks_ago) }
+    let(:induction_period) { FactoryBot.create(:induction_period, :ongoing, started_on: three_weeks_ago) }
 
     it 'queues a RecordEventJob with the correct values' do
       induction_period.assign_attributes(started_on: two_weeks_ago)
@@ -665,8 +665,8 @@ RSpec.describe Events::Record do
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }
     let(:school) { FactoryBot.create(:school) }
     let(:mentee) { FactoryBot.create(:teacher, trs_first_name: 'Steffan', trs_last_name: 'Rhodri') }
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, teacher: mentee, school:, **started_on_param) }
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:, school:, **started_on_param) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentee, school:, **started_on_param) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:, **started_on_param) }
     let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 2.days.ago.to_date) }
 
     it 'queues a RecordEventJob with the correct values' do
@@ -692,8 +692,8 @@ RSpec.describe Events::Record do
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }
     let(:school) { FactoryBot.create(:school) }
     let(:mentor) { FactoryBot.create(:teacher, trs_first_name: 'Steffan', trs_last_name: 'Rhodri') }
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, teacher:, school:, **started_on_param) }
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor, school:, **started_on_param) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:, **started_on_param) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor, school:, **started_on_param) }
     let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 2.days.ago.to_date) }
 
     it 'queues a RecordEventJob with the correct values' do

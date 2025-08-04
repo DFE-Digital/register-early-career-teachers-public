@@ -34,7 +34,7 @@ RSpec.describe 'Claiming an ECT' do
     include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
 
     before do
-      FactoryBot.create(:induction_period, :active, teacher:, appropriate_body: other_body)
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body: other_body)
     end
 
     scenario 'Button is hidden when induction is ongoing' do

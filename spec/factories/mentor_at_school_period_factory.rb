@@ -9,7 +9,7 @@ FactoryBot.define do
     finished_on { started_on + 1.day }
     email { Faker::Internet.email }
 
-    trait :active do
+    trait :ongoing do
       started_on { generate(:base_mentor_date) + 1.year }
       finished_on { nil }
     end
