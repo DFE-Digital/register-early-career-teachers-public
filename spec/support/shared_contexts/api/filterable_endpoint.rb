@@ -138,3 +138,27 @@ RSpec.shared_examples "a filter by urn endpoint" do
     expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
   end
 end
+
+RSpec.shared_examples "a does not filter by cohort endpoint" do
+  it "returns the resources, ignoring the `cohort`" do
+    different_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+    authenticated_api_get(path, params: { filter: { cohort: different_contract_period.year.to_s } })
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
+  end
+end
+
+RSpec.shared_examples "a does not filter by updated_since endpoint" do
+  let(:options) { defined?(serializer_options) ? serializer_options : {} }
+
+  it "returns the resources, ignoring the `updated_since`" do
+    updated_since_after_resource_updated_at = (resource.updated_at + 1.day).utc.iso8601
+    authenticated_api_get(path, params: { filter: { updated_since: updated_since_after_resource_updated_at } })
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
+  end
+end
