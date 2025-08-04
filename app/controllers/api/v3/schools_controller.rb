@@ -4,7 +4,8 @@ module API
       filter_validation required_filters: %i[cohort]
 
       def index
-        render json: to_json(paginate(schools_query.schools))
+        conditions = { updated_since:, urn:, sort: }
+        render json: to_json(paginate(schools_query(conditions:).schools))
       end
 
       def show
@@ -13,15 +14,9 @@ module API
 
     private
 
-      def schools_query
-        conditions = {
-          lead_provider_id: current_lead_provider.id,
-          contract_period_id: contract_period&.id,
-          updated_since:,
-          urn:,
-          sort:,
-        }
-
+      def schools_query(conditions: {})
+        conditions[:lead_provider_id] = current_lead_provider.id
+        conditions[:contract_period_id] = contract_period&.id
         Schools::Query.new(**conditions.compact)
       end
 

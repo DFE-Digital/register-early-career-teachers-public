@@ -2,7 +2,8 @@ module API
   module V3
     class StatementsController < BaseController
       def index
-        render json: to_json(paginate(statements_query.statements))
+        conditions = { contract_period_years:, updated_since: }
+        render json: to_json(paginate(statements_query(conditions:).statements))
       end
 
       def show
@@ -11,13 +12,8 @@ module API
 
     private
 
-      def statements_query
-        conditions = {
-          lead_provider: current_lead_provider,
-          contract_period_years:,
-          updated_since:,
-        }
-
+      def statements_query(conditions: {})
+        conditions[:lead_provider] = current_lead_provider
         Statements::Query.new(**conditions.compact)
       end
 
