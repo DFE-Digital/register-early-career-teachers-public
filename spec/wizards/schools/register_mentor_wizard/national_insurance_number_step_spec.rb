@@ -82,7 +82,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
 
     context 'when the mentor is already active at the school' do
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:) }
+      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
 
       before do
         wizard.store.update!(trn: '1234568', school_urn: active_mentor_period.school.urn)
@@ -97,7 +97,7 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
 
     context 'when the mentor is already active at the school' do
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:) }
+      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
 
       before do
         wizard.store.update!(trn: '1234568', school_urn: active_mentor_period.school.urn)

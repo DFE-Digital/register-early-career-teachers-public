@@ -30,10 +30,10 @@ RSpec.describe 'Searching for a mentor', type: :feature do
     @school = FactoryBot.create(:school)
 
     @matching_teacher = FactoryBot.create(:teacher, trs_first_name: 'Jimmy', trs_last_name: 'Searchable')
-    FactoryBot.create(:mentor_at_school_period, :active, teacher: @matching_teacher, school: @school)
+    FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: @matching_teacher, school: @school)
 
     @non_matching_teacher = FactoryBot.create(:teacher, trs_first_name: 'Bob', trs_last_name: 'Invisible')
-    FactoryBot.create(:mentor_at_school_period, :active, teacher: @non_matching_teacher, school: @school)
+    FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: @non_matching_teacher, school: @school)
   end
 
   def and_i_am_logged_in_as_a_school_user

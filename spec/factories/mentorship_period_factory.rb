@@ -5,7 +5,7 @@ FactoryBot.define do
     started_on { generate(:base_mentorship_date) }
     finished_on { started_on + 1.day }
 
-    trait :active do
+    trait :ongoing do
       finished_on { nil }
     end
   end

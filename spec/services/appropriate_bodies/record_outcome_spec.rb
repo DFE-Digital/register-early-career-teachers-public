@@ -24,7 +24,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let(:induction_period) do
-    FactoryBot.create(:induction_period, :active,
+    FactoryBot.create(:induction_period, :ongoing,
                       appropriate_body:,
                       teacher:,
                       started_on: '2024-1-1')

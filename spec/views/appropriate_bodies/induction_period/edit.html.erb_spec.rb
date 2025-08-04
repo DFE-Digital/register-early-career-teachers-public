@@ -1,5 +1,5 @@
 RSpec.describe 'appropriate_bodies/induction_periods/edit.html.erb' do
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
   let(:back_path) { ab_teacher_path(ect.teacher) }
   let(:induction_period) { FactoryBot.create(:induction_period, teacher: ect.teacher) }
 

@@ -2,7 +2,7 @@ RSpec.describe "Appropriate Body teacher extensions index", type: :request do
   include AuthHelper
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }
 
   describe 'when not signed in' do
     it 'redirects to the root page' do

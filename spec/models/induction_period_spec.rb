@@ -85,7 +85,7 @@ RSpec.describe InductionPeriod do
     end
 
     describe "started_on_not_in_future" do
-      subject { FactoryBot.build(:induction_period, :active, appropriate_body:, started_on:) }
+      subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body:, started_on:) }
 
       context "when started_on is today" do
         let(:started_on) { Date.current }
@@ -136,7 +136,7 @@ RSpec.describe InductionPeriod do
 
     describe "number_of_terms" do
       context "when finished_on is empty" do
-        subject { FactoryBot.build(:induction_period, :active, appropriate_body:) }
+        subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body:) }
 
         it { is_expected.not_to validate_presence_of(:number_of_terms) }
       end

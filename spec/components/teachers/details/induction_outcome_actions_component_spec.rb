@@ -14,7 +14,7 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
 
   context "with active induction period" do
     before do
-      FactoryBot.create(:induction_period, :active, teacher:)
+      FactoryBot.create(:induction_period, :ongoing, teacher:)
       render_inline(component)
     end
 

@@ -1,7 +1,7 @@
 describe Schools::RegisterMentorWizard::Wizard do
   let(:current_step) { :find_mentor }
   let(:ect_teacher) { FactoryBot.create(:teacher, trn: "7654321") }
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, teacher: ect_teacher) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect_teacher) }
   let(:ect_id) { ect.id }
   let(:mentor_trn) { "1234567" }
   let(:mentor_date_of_birth) { "1977-02-03" }
@@ -68,7 +68,7 @@ describe Schools::RegisterMentorWizard::Wizard do
 
       context 'when the mentor is already active at the school' do
         let(:mentor_teacher) { FactoryBot.create(:teacher, trn: mentor_trn) }
-        let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor_teacher) }
+        let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_teacher) }
         let(:school_urn) { active_mentor_period.school.urn }
 
         it { is_expected.to eq(%i[find_mentor already_active_at_school]) }
@@ -110,7 +110,7 @@ describe Schools::RegisterMentorWizard::Wizard do
 
       context 'when the mentor is already active at the school' do
         let(:mentor_teacher) { FactoryBot.create(:teacher, trn: mentor_trn) }
-        let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor_teacher) }
+        let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_teacher) }
         let(:school_urn) { active_mentor_period.school.urn }
 
         it { is_expected.to eq(%i[find_mentor national_insurance_number already_active_at_school]) }
@@ -129,7 +129,7 @@ describe Schools::RegisterMentorWizard::Wizard do
 
     context 'when only TRN, DoB and already active at school have been set' do
       let(:mentor_teacher) { FactoryBot.create(:teacher, trn: mentor_trn) }
-      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor_teacher) }
+      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_teacher) }
       let(:school_urn) { active_mentor_period.school.urn }
       let(:already_active_at_school) { true }
       let(:store) do
@@ -150,7 +150,7 @@ describe Schools::RegisterMentorWizard::Wizard do
     context 'when only TRN, DoB, Nino and already active at school have been set' do
       let(:mentor_date_of_birth) { "2000-01-01" }
       let(:mentor_teacher) { FactoryBot.create(:teacher, trn: mentor_trn) }
-      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher: mentor_teacher) }
+      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_teacher) }
       let(:school_urn) { active_mentor_period.school.urn }
       let(:already_active_at_school) { true }
       let(:store) do

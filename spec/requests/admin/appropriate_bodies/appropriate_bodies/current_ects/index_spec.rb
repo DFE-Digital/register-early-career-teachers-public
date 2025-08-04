@@ -25,8 +25,8 @@ RSpec.describe 'Listing and searching ECTs belonging to an appropriate body' do
       let!(:teacher_1) { FactoryBot.create(:teacher, trs_first_name: "Pam", trs_last_name: "Ferris") }
       let!(:teacher_2) { FactoryBot.create(:teacher, trs_first_name: "Felicity", trs_last_name: "Kendall") }
 
-      let!(:induction_period_1) { FactoryBot.create(:induction_period, :active, teacher: teacher_1, appropriate_body:) }
-      let!(:induction_period_2) { FactoryBot.create(:induction_period, :active, teacher: teacher_2, appropriate_body:) }
+      let!(:induction_period_1) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher_1, appropriate_body:) }
+      let!(:induction_period_2) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher_2, appropriate_body:) }
 
       it 'shows lists current ECTs' do
         get "/admin/organisations/appropriate-bodies/#{appropriate_body.id}/current-ects"

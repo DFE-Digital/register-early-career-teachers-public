@@ -27,7 +27,7 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
       let!(:induction_period) do
         FactoryBot.create(
           :induction_period,
-          :active,
+          :ongoing,
           teacher:,
           appropriate_body: other_appropriate_body
         )

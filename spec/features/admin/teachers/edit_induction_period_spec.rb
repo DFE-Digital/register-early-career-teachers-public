@@ -5,7 +5,7 @@ RSpec.describe "Admin amending number of terms of an induction period" do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :active,
+    FactoryBot.create(:induction_period, :ongoing,
                       teacher:,
                       appropriate_body:,
                       started_on: Date.new(2024, 1, 1))

@@ -2,10 +2,10 @@ describe Schools::TeacherEmail do
   subject { described_class.new(email:, trn:) }
 
   let(:finished_ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
-  let(:ongoing_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active) }
+  let(:ongoing_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
 
   let(:finished_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period) }
-  let(:ongoing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active) }
+  let(:ongoing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
 
   let(:trn) { '123456' }
 
