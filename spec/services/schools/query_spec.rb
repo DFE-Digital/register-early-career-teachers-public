@@ -446,7 +446,7 @@ RSpec.describe Schools::Query do
     end
   end
 
-  describe "#school" do
+  describe "#school_by_id" do
     subject(:query) { described_class.new(**query_params) }
 
     let(:contract_period) { FactoryBot.create(:contract_period) }
@@ -459,15 +459,15 @@ RSpec.describe Schools::Query do
     let(:school) { FactoryBot.create(:school, :eligible) }
 
     it "returns a school for the given school id" do
-      expect(query.school(school.id)).to eq(school)
+      expect(query.school_by_id(school.id)).to eq(school)
     end
 
     it "raises an error if the school does not exist" do
-      expect { query.school("XXX123") }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { query.school_by_id("XXX123") }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "raises an error if an id is not supplied" do
-      expect { query.school(nil) }.to raise_error(ArgumentError, "id needed")
+      expect { query.school_by_id(nil) }.to raise_error(ArgumentError, "id needed")
     end
   end
 end

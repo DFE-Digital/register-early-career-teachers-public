@@ -44,7 +44,7 @@ describe SchoolSerializer, type: :serializer do
     end
 
     let(:query) { Schools::Query.new(lead_provider:, contract_period_year: contract_period.id) }
-    let(:scope) { query.school(school.id) }
+    let(:scope) { query.school_by_id(school.id) }
 
     describe "core attributes" do
       it "serializes `id`" do
