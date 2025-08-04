@@ -256,16 +256,16 @@ RSpec.describe Statements::Query do
         end
       end
 
-      describe "order by :payment_date" do
+      describe "sort by payment_date" do
         it "returns statements in correct order" do
-          query = described_class.new(order_by: :payment_date)
+          query = described_class.new(sort: "+payment_date")
           expect(query.statements).to eq([statement1, statement2])
         end
       end
 
-      describe "order by :statement_date" do
+      describe "sort by year and month" do
         it "returns statements in correct order" do
-          query = described_class.new(order_by: :statement_date)
+          query = described_class.new(sort: "+year,+month")
           expect(query.statements).to eq([statement2, statement1])
         end
       end
