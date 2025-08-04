@@ -25,7 +25,7 @@ RSpec.describe Teachers::InductionStatus do
       context 'with an ongoing induction period' do
         let(:induction_periods) do
           [
-            FactoryBot.create(:induction_period, :active, teacher:)
+            FactoryBot.create(:induction_period, :ongoing, teacher:)
           ]
         end
 
@@ -108,7 +108,7 @@ RSpec.describe Teachers::InductionStatus do
         context "when there is an open induction period" do
           let(:induction_periods) do
             [
-              FactoryBot.create(:induction_period, :active)
+              FactoryBot.create(:induction_period, :ongoing)
             ]
           end
 

@@ -64,9 +64,9 @@ RSpec.describe 'schools/ects/show.html.erb' do
       context 'when assigned' do
         before do
           mentor = FactoryBot.create(:teacher, trs_first_name: 'Moby', trs_last_name: 'Dick')
-          mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school: current_school, teacher: mentor)
+          mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: current_school, teacher: mentor)
 
-          FactoryBot.create(:mentorship_period, :active,
+          FactoryBot.create(:mentorship_period, :ongoing,
                             started_on: current_ect_period.started_on,
                             mentee: current_ect_period,
                             mentor: mentor_at_school_period)
@@ -101,7 +101,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
 
   describe 'ECTE training details' do
     before do
-      FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
 
       render
     end

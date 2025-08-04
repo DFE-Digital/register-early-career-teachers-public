@@ -7,7 +7,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
 
   context 'when the ECT has a mentor assigned' do
     before do
-      FactoryBot.create(:mentorship_period, :active, started_on: ect.started_on, mentee: ect, mentor:)
+      FactoryBot.create(:mentorship_period, :ongoing, started_on: ect.started_on, mentee: ect, mentor:)
       render_inline(described_class.new(ect:))
     end
 
@@ -77,7 +77,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     let(:ect) do
       FactoryBot.create(
         :ect_at_school_period,
-        :active,
+        :ongoing,
         :with_eoi_only_training_period,
         lead_provider:,
         school:,

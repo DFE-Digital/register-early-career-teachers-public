@@ -6,7 +6,7 @@ RSpec.describe "Appropriate body editing an induction period" do
   let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :active, teacher:, appropriate_body:)
+    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
   end
 
   before do

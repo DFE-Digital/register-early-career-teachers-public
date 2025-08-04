@@ -5,8 +5,8 @@ RSpec.describe ECTHelper, type: :helper do
     let(:ect_teacher) { FactoryBot.create(:teacher, trs_induction_status:) }
     let(:trs_induction_status) { nil }
 
-    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, teacher: ect_teacher, school:, started_on:) }
-    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, school:, started_on:) }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect_teacher, school:, started_on:) }
+    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:) }
 
     context "when the ECT has a TRS induction status" do
       context "when the status is Passed" do
@@ -36,7 +36,7 @@ RSpec.describe ECTHelper, type: :helper do
 
     context "when the ECT has an empty TRS induction status" do
       context "when the ECT has a current mentor" do
-        let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :active, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on:) }
+        let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on:) }
 
         it "returns a green 'Registered' tag" do
           expect(helper.ect_status(ect_at_school_period)).to have_css('strong.govuk-tag.govuk-tag--green', text: 'Registered')

@@ -287,7 +287,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       let(:other_body) { FactoryBot.create(:appropriate_body) }
 
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :active,
+        FactoryBot.create(:induction_period, :ongoing,
                           appropriate_body: other_body,
                           teacher:,
                           started_on: '2024-1-1')
@@ -302,7 +302,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
     context 'with an ongoing induction' do
       let!(:induction_period) do
-        FactoryBot.create(:induction_period, :active,
+        FactoryBot.create(:induction_period, :ongoing,
                           appropriate_body:,
                           teacher:,
                           started_on: '2024-1-1')

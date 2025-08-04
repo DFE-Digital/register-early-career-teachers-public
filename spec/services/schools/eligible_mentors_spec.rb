@@ -4,7 +4,7 @@ RSpec.describe Schools::EligibleMentors do
   end
 
   let(:school) { FactoryBot.create(:school) }
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, started_on: 2.years.ago) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.years.ago) }
 
   describe '#for_ect' do
     context "when the school has no active mentors" do
@@ -12,7 +12,7 @@ RSpec.describe Schools::EligibleMentors do
     end
 
     context "when the school has active mentors registered" do
-      let!(:active_mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, :active, school:, started_on: 2.years.ago) }
+      let!(:active_mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, :ongoing, school:, started_on: 2.years.ago) }
 
       it "returns those mentors" do
         expect(subject.to_a).to match_array(active_mentors)
@@ -20,10 +20,10 @@ RSpec.describe Schools::EligibleMentors do
     end
 
     context "when the ect is also a mentor at the school" do
-      let!(:mentors_excluding_ect) { FactoryBot.create_list(:mentor_at_school_period, 2, :active, school:, started_on: 2.years.ago) }
+      let!(:mentors_excluding_ect) { FactoryBot.create_list(:mentor_at_school_period, 2, :ongoing, school:, started_on: 2.years.ago) }
 
       before do
-        FactoryBot.create(:mentor_at_school_period, :active, school:, teacher: ect.teacher, started_on: 2.years.ago)
+        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: ect.teacher, started_on: 2.years.ago)
       end
 
       it "returns those mentors excluding themself" do

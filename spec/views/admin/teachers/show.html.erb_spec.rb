@@ -2,7 +2,7 @@ RSpec.describe 'admin/teachers/show.html.erb' do
   let(:teacher) { FactoryBot.create(:teacher, trn: '1234567', trs_first_name: 'Floella', trs_last_name: 'Benjamin') }
 
   before do
-    FactoryBot.create(:induction_period, :active, teacher:)
+    FactoryBot.create(:induction_period, :ongoing, teacher:)
     assign(:teacher, Admin::TeacherPresenter.new(teacher))
     render
   end

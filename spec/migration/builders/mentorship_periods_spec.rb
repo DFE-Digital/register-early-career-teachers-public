@@ -4,16 +4,16 @@ describe Builders::MentorshipPeriods do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:started_on) { 2.years.ago.to_date }
   let(:finished_on) { 6.months.ago.to_date }
-  let!(:ect_period) { FactoryBot.create(:ect_at_school_period, :active, teacher:, started_on:, finished_on:) }
+  let!(:ect_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on:, finished_on:) }
   let(:mentor_period_1) do
     FactoryBot.create(:mentor_at_school_period,
-                      :active,
+                      :ongoing,
                       school: ect_period.school,
                       started_on: started_on + 1.day)
   end
   let(:mentor_period_2) do
     FactoryBot.create(:mentor_at_school_period,
-                      :active,
+                      :ongoing,
                       school: ect_period.school,
                       started_on: started_on - 1.week)
   end
@@ -87,7 +87,7 @@ describe Builders::MentorshipPeriods do
     end
 
     context "when the mentor does not have a MentorAtSchoolPeriod at the same school" do
-      let(:mentor_period_1) { FactoryBot.create(:mentor_at_school_period, :active, started_on: started_on + 1.day) }
+      let(:mentor_period_1) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: started_on + 1.day) }
 
       it "creates a TeacherMigrationFailure record" do
         expect {

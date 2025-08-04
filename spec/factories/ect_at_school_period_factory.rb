@@ -22,7 +22,7 @@ FactoryBot.define do
       finished_on { 2.weeks.ago }
     end
 
-    trait :active do
+    trait :ongoing do
       started_on { generate(:base_ect_date) + 1.year }
       finished_on { nil }
     end

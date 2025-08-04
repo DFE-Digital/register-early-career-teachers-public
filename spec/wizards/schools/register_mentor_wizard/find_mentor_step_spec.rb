@@ -61,7 +61,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
   describe '#next_step' do
     subject { wizard.current_step }
 
-    let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
+    let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
     let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, step_params:, ect_id: ect.id) }
     let(:step_params) do
       ActionController::Parameters.new(
@@ -87,7 +87,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
     context 'when the mentor trn matches that of the ECT' do
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:ect) { FactoryBot.create(:ect_at_school_period, :active, teacher:) }
+      let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
 
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
@@ -123,7 +123,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
 
     context 'when the mentor is already active at the school' do
       let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
-      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:) }
+      let(:active_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
 
       before do
         wizard.store.update!(school_urn: active_mentor_period.school.urn)

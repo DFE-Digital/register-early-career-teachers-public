@@ -49,7 +49,7 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
   context 'when there are multiple mentors' do
     let(:second_mentor) { FactoryBot.create(:teacher, trs_first_name: 'Sasuke', trs_last_name: 'Uchiha') }
     let!(:second_mentor_at_school_period) do
-      FactoryBot.create(:mentor_at_school_period, :active, teacher: second_mentor, school:, started_on:)
+      FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: second_mentor, school:, started_on:)
     end
 
     let(:ect1_teacher) { FactoryBot.create(:teacher, trs_first_name: 'Konohamaru', trs_last_name: 'Sarutobi') }

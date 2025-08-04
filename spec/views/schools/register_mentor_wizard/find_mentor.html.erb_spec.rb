@@ -1,5 +1,5 @@
 RSpec.describe "schools/register_mentor_wizard/find_mentor.html.erb" do
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
   let(:back_path) { schools_register_mentor_wizard_start_path(ect_id: ect.id) }
   let(:continue_path) { schools_register_mentor_wizard_find_mentor_path }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, ect_id: ect.id) }

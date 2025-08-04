@@ -5,7 +5,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
   let!(:induction_period) do
     FactoryBot.create(
       :induction_period,
-      :active,
+      :ongoing,
       teacher:,
       appropriate_body:,
       started_on: 1.month.ago,
