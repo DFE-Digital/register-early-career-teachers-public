@@ -56,7 +56,7 @@ module BatchHelper
     govuk_link_to('View', paths[batch.batch_type.to_sym])
   end
 
-  # @param batches [Array<PendingInductionSubmissionBatches>]
+  # @param batches [Array<PendingInductionSubmissionBatch>]
   def batch_list_table(batches)
     govuk_table(
       caption: 'Upload history',
@@ -67,7 +67,7 @@ module BatchHelper
     )
   end
 
-  # @param batches [Array<PendingInductionSubmissionBatches>]
+  # @param batches [Array<PendingInductionSubmissionBatch>]
   def admin_batch_list_table(batches)
     govuk_table(
       head: [
@@ -93,7 +93,7 @@ module BatchHelper
           batch.tally[:uploaded_count].to_s,
           batch.tally[:processed_count].to_s,
           batch.tally[:errored_count].to_s,
-          govuk_link_to('View', admin_bulk_batch_path(batch))
+          govuk_link_to('View', admin_appropriate_body_bulk_batch_path(batch.appropriate_body, batch))
         ]
       end
     )
@@ -109,124 +109,82 @@ module BatchHelper
   end
 
   # @param batch [PendingInductionSubmissionBatch] metrics of a completed batch
-  def batch_progress_card(batch)
-    govuk_summary_list(card: { title: 'Progress' }, rows: [
+  def batch_summary_card(batch)
+    govuk_summary_list(card: { title: "#{batch.batch_type.titleize} ##{batch.id}" }, rows: [
       {
-        key: { text: 'Appropriate Body' },
-        value: { text: batch.appropriate_body.name }
-      },
-      {
-        key: { text: 'Batch ID' },
-        value: { text: batch.id }
-      },
-      {
-        key: { text: 'Batch status' },
+        key: { text: 'Status' },
         value: { text: batch_status_tag(batch) }
       },
       {
-        key: { text: 'Batch type' },
-        value: { text: batch_type_tag(batch) }
-      },
-      {
-        key: { text: 'Batch error' },
-        value: { text: batch.error_message }
+        key: { text: 'Uploaded' },
+        value: { text: batch.created_at.to_fs(:govuk) }
       },
       {
         key: { text: 'File name' },
         value: { text: batch.file_name }
       },
       {
-        key: { text: 'Number of CSV rows' },
-        value: { text: batch.tally[:uploaded_count] }
-      },
-      {
-        key: { text: 'Number of processed submission records' },
-        value: { text: batch.tally[:processed_count] }
-      },
-      {
-        key: { text: 'Number of submissions with errors' },
-        value: { text: batch.tally[:errored_count] }
-      },
-      {
-        key: { text: 'Number of submissions without errors' },
-        value: { text: batch.recorded_count }
-      },
+        key: { text: 'File size' },
+        value: { text: batch.file_size }
+      }
     ])
   end
 
-  # @param batch [PendingInductionSubmissionBatch]
-  def batch_raw_data_table(batch)
-    govuk_table(
-      caption: "Uploaded CSV data (#{batch.rows.count} rows)",
-      head: batch.row_headings.values,
-      rows: batch.rows
-    )
+  def batch_success_rate(batch)
+    (batch.recorded_count / batch.tally[:uploaded_count].to_f * 100).round(1).to_s + '%'
   end
 
   # @param batch [PendingInductionSubmissionBatch]
-  def batch_processed_data_table(batch)
-    govuk_table(
-      caption: "Processed submissions (#{batch.pending_induction_submissions.count} total)",
-      head: ['TRN', 'Date of birth', 'Status', 'Error messages'],
-      rows: batch.pending_induction_submissions.map do |submission|
-        [
-          submission.trn,
-          submission.date_of_birth&.to_fs(:govuk) || '-',
-          submission.error_messages.any? ? 'Error' : 'Valid',
-          submission.error_messages.join(', ').presence || '-'
-        ]
-      end
-    )
-  end
+  def batch_failed_rows_table(batch)
+    rows = ::AppropriateBodies::ProcessBatch::Download.new(pending_induction_submission_batch: batch).to_a
+    caption = "Errors (#{rows.count})"
+    head = batch.row_headings.values
 
-  # Temporary method helpful for debugging during development
-  def batch_download_data_table(batch)
-    govuk_table(
-      caption: "Downloadable bad CSV data (#{batch.failed_submissions.count} rows)",
-      head: batch.row_headings.values,
-      rows: batch.failed_submissions
-    )
+    govuk_table(caption:, head:, rows:)
   end
 
   # @param batch [PendingInductionSubmissionBatch]
-  def batch_actions_induction_periods_table(batch)
-    valid_submissions = batch.pending_induction_submissions.without_errors
+  def batch_action_induction_periods_table(batch)
+    caption = "Closed induction periods (#{batch.recorded_count})"
+    head = ['Name', 'Induction period end date', 'Number of terms', 'Outcome']
+    colours = { release: 'yellow', pass: 'green', fail: 'red' }
+    inductions = InductionPeriod
+        .eager_load(:teacher, :events)
+        .where(events: { pending_induction_submission_batch_id: batch.id })
+        .order(:trs_last_name)
 
-    govuk_table(
-      caption: "Valid action submissions (#{valid_submissions.count} records)",
-      head: ['TRN', 'Date of birth', 'Finish date', 'Number of terms', 'Outcome'],
-      rows: valid_submissions.map do |submission|
-        [
-          submission.trn,
-          submission.date_of_birth&.to_fs(:govuk) || '-',
-          submission.finished_on&.to_fs(:govuk) || '-',
-          submission.number_of_terms&.to_s || '-',
-          submission.outcome || '-'
-        ]
-      end
-    )
+    rows = inductions.map do |induction_period|
+      outcome = induction_period.outcome || 'release'
+
+      [
+        govuk_link_to(teacher_full_name(induction_period.teacher), admin_teacher_path(induction_period.teacher)),
+        induction_period.finished_on.to_fs(:govuk),
+        induction_period.number_of_terms.to_s,
+        govuk_tag(text: outcome.titleize, colour: colours[outcome.to_sym]),
+      ]
+    end
+
+    govuk_table(caption:, head:, rows:)
   end
 
   # @param batch [PendingInductionSubmissionBatch]
-  def batch_claims_induction_periods_table(batch)
-    valid_submissions = batch.pending_induction_submissions.without_errors
+  def batch_claim_induction_periods_table(batch)
+    caption = "Opened induction periods (#{batch.recorded_count})"
+    head = ['Name', 'Induction period start date', 'Induction programme']
 
-    govuk_table(
-      caption: "Valid claim submissions (#{valid_submissions.count} records)",
-      head: ['TRN', 'Date of birth', 'Induction programme', 'Start date'],
-      rows: valid_submissions.map do |submission|
-        induction_programme = if Rails.application.config.enable_bulk_claim
-                                ::TRAINING_PROGRAMME.fetch(submission.training_programme.to_sym, '-')
-                              else
-                                ::INDUCTION_PROGRAMMES.fetch(submission.induction_programme.to_sym, '-')
-                              end
-        [
-          submission.trn,
-          submission.date_of_birth&.to_fs(:govuk) || '-',
-          induction_programme,
-          submission.started_on&.to_fs(:govuk) || '-'
-        ]
-      end
-    )
+    inductions = InductionPeriod
+        .eager_load(:teacher, :events)
+        .where(events: { pending_induction_submission_batch_id: batch.id })
+        .order(:trs_last_name)
+
+    rows = inductions.map do |induction_period|
+      [
+        govuk_link_to(teacher_full_name(induction_period.teacher), admin_teacher_path(induction_period.teacher)),
+        induction_period.started_on.to_fs(:govuk),
+        training_programme_name(induction_period.training_programme)
+      ]
+    end
+
+    govuk_table(caption:, head:, rows:)
   end
 end

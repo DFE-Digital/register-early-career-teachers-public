@@ -16,6 +16,10 @@ module Admin::AppropriateBodies
         @page, @batches = pagy(query)
       end
 
+      def show
+        @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+      end
+
     private
 
       def set_appropriate_body
