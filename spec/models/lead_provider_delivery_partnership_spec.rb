@@ -43,6 +43,29 @@ describe LeadProviderDeliveryPartnership do
         expect(LeadProviderDeliveryPartnership.with_active_lead_provider(active_lead_provider)).not_to include(other_active_lead_provider)
       end
     end
+
+    describe '.for_contract_period' do
+      let(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+      let(:contract_period_2026) { FactoryBot.create(:contract_period, year: 2026) }
+      let(:active_lead_provider_2025) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2025) }
+      let(:active_lead_provider_2026) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2026) }
+      let!(:partnership_2025) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2025) }
+      let!(:partnership_2026) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2026) }
+
+      it 'returns partnerships for the specified contract period' do
+        expect(LeadProviderDeliveryPartnership.for_contract_period(contract_period_2025)).to include(partnership_2025)
+      end
+
+      it 'does not return partnerships from other contract periods' do
+        expect(LeadProviderDeliveryPartnership.for_contract_period(contract_period_2025)).not_to include(partnership_2026)
+      end
+
+      it 'includes the lead provider relationship' do
+        result = LeadProviderDeliveryPartnership.for_contract_period(contract_period_2025).first
+        expect(result.association(:active_lead_provider)).to be_loaded
+        expect(result.active_lead_provider.association(:lead_provider)).to be_loaded
+      end
+    end
   end
 
   describe "delegate methods" do

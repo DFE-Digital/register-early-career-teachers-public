@@ -40,6 +40,7 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
     expect(rendered).to have_css('table.govuk-table')
     expect(rendered).to have_css('th', text: 'Year')
     expect(rendered).to have_css('th', text: 'Lead provider')
+    expect(rendered).to have_css('th', text: 'Action')
     expect(rendered).to have_css('tbody tr', count: 1)
   end
 
@@ -50,7 +51,19 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
     expect(rendered).to have_css('td', text: partnership.lead_provider.name)
   end
 
-  context 'when there are multiple partnerships' do
+  it 'displays Change links for each year' do
+    render
+
+    expected_href = edit_admin_delivery_partner_path(
+      delivery_partner,
+      year: partnership.contract_period.year,
+      page: 2,
+      q: 'search term'
+    )
+    expect(rendered).to have_link('Change', href: expected_href)
+  end
+
+  context 'when there are multiple partnerships for different years' do
     let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
     let(:new_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
     let(:old_partnership) do
@@ -84,6 +97,50 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
       expect(rendered).to have_css('tbody tr', count: 2)
       expect(rendered).to have_css('td', text: '2021')
       expect(rendered).to have_css('td', text: '2023')
+    end
+  end
+
+  context 'when there are multiple partnerships for the same year' do
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
+    let(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
+    let(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
+    let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
+
+    let(:partnership_1) do
+      FactoryBot.create(
+        :lead_provider_delivery_partnership,
+        delivery_partner:,
+        active_lead_provider: active_lead_provider_1
+      )
+    end
+    let(:partnership_2) do
+      FactoryBot.create(
+        :lead_provider_delivery_partnership,
+        delivery_partner:,
+        active_lead_provider: active_lead_provider_2
+      )
+    end
+
+    before do
+      assign(:lead_provider_partnerships, [partnership_1, partnership_2])
+    end
+
+    it 'groups partnerships by year and displays lead providers in the same row' do
+      render
+
+      # Should have only one row for the year
+      expect(rendered).to have_css('tbody tr', count: 1)
+      expect(rendered).to have_css('td', text: '2025')
+
+      # Should display both lead provider names in the same cell, separated by comma
+      expect(rendered).to have_css('td', text: /Lead Provider 1.*Lead Provider 2/m)
+    end
+
+    it 'displays one Change link per year group' do
+      render
+
+      expect(rendered).to have_link('Change', count: 1)
     end
   end
 

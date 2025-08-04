@@ -1,0 +1,60 @@
+<% page_data(title: "Select lead providers working with #{@delivery_partner.name} in #{@year}", backlink_href: admin_delivery_partner_path(@delivery_partner, page: @page, q: @q)) %>
+
+<%= form_with url: admin_delivery_partner_path(@delivery_partner), method: :patch, local: true do |f| %>
+  <%= f.hidden_field :year, value: @year %>
+  <%= f.hidden_field :page, value: @page %>
+  <%= f.hidden_field :q, value: @q %>
+
+  <% if @contract_period_has_started %>
+    <% # AC 4a: Contract period is open or has previously been open %>
+    <% if @current_partnerships.any? %>
+      <div class="govuk-inset-text">
+        <h3 class="govuk-heading-s">Currently working with:</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <% @current_partnerships.each do |partnership| %>
+            <li><%= partnership.lead_provider.name %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= f.govuk_collection_check_boxes(
+      :lead_provider_ids,
+      @available_lead_providers,
+      :id,
+      ->(alp) { alp.lead_provider.name },
+      legend: { text: "Add new lead providers", size: 'm' },
+      hint: { text: "Select additional lead providers that should work with #{@delivery_partner.name} in #{@year}" }
+    ) %>
+  <% else %>
+    <% # AC 4b: Contract period is not yet open and has never previously been open %>
+    <%
+      # Get all lead providers for this contract period (available + currently assigned)
+      all_lead_providers = ActiveLeadProvider.joins(:lead_provider)
+                                            .where(contract_period: @contract_period)
+                                            .includes(:lead_provider)
+                                            .order("lead_providers.name")
+
+      # Get currently selected lead provider IDs
+      currently_selected_ids = @current_partnerships.map(&:active_lead_provider_id).map(&:to_s)
+    %>
+
+    <%= f.govuk_collection_check_boxes(
+      :lead_provider_ids,
+      all_lead_providers,
+      :id,
+      ->(alp) { alp.lead_provider.name },
+      legend: { text: "Select lead providers", size: 'm' },
+      hint: { text: "Select lead providers that should work with #{@delivery_partner.name} in #{@year}" },
+      form_group: { data: { 'checked-values': currently_selected_ids.to_json } }
+    ) do |check_box| %>
+      <%= check_box.check_box(checked: currently_selected_ids.include?(check_box.object.id.to_s)) %>
+      <%= check_box.label %>
+    <% end %>
+  <% end %>
+
+  <div class="govuk-button-group">
+    <%= f.govuk_submit("Confirm") %>
+    <%= govuk_link_to("Back", admin_delivery_partner_path(@delivery_partner, page: @page, q: @q), class: "govuk-link") %>
+  </div>
+<% end %>

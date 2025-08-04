@@ -876,4 +876,61 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe '#record_lead_provider_delivery_partnership_added_event!' do
+    let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+    let(:lead_provider_delivery_partnership) do
+      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:)
+    end
+
+    it 'records the event with correct attributes' do
+      event_record_double = instance_double(Events::Record)
+      allow(Events::Record).to receive(:new).and_return(event_record_double)
+      expect(event_record_double).to receive(:record_event!)
+
+      Events::Record.record_lead_provider_delivery_partnership_added_event!(
+        author:,
+        delivery_partner:,
+        lead_provider:,
+        contract_period:,
+        lead_provider_delivery_partnership:
+      )
+    end
+
+    it 'creates an event with the correct heading' do
+      event_record = Events::Record.new(
+        author:,
+        event_type: :lead_provider_delivery_partnership_added,
+        heading: "#{lead_provider.name} assigned to #{delivery_partner.name} for #{contract_period.year}",
+        delivery_partner:,
+        lead_provider:,
+        lead_provider_delivery_partnership:,
+        happened_at: anything
+      )
+
+      allow(Events::Record).to receive(:new).with(
+        event_type: :lead_provider_delivery_partnership_added,
+        author:,
+        heading: "#{lead_provider.name} assigned to #{delivery_partner.name} for #{contract_period.year}",
+        delivery_partner:,
+        lead_provider:,
+        lead_provider_delivery_partnership:,
+        happened_at: anything
+      ).and_return(event_record)
+
+      expect(Events::Record).to receive(:new)
+      allow(event_record).to receive(:record_event!)
+
+      Events::Record.record_lead_provider_delivery_partnership_added_event!(
+        author:,
+        delivery_partner:,
+        lead_provider:,
+        contract_period:,
+        lead_provider_delivery_partnership:
+      )
+    end
+  end
 end
