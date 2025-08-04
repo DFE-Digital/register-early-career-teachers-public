@@ -34,7 +34,7 @@ module Schools
       fail(ArgumentError, "api_id needed")
     end
 
-    def school(id)
+    def school_by_id(id)
       return scope.find(id) if id.present?
 
       fail(ArgumentError, "id needed")

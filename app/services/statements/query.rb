@@ -29,7 +29,7 @@ module Statements
       fail(ArgumentError, "api_id needed")
     end
 
-    def statement(id)
+    def statement_by_id(id)
       return scope.find(id) if id.present?
 
       fail(ArgumentError, "id needed")

@@ -195,7 +195,7 @@ describe Schools::TrainingProgramme do
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:query) { Schools::Query.new(lead_provider:, contract_period_year: contract_period.id) }
       let(:school) { FactoryBot.create(:school, :eligible, urn: "123456") }
-      let(:scope) { query.school(school.id) }
+      let(:scope) { query.school_by_id(school.id) }
 
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
