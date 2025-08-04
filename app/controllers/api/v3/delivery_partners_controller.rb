@@ -30,7 +30,7 @@ module API
       end
 
       def to_json(obj)
-        DeliveryPartnerSerializer.render(obj, root: "data", lead_provider: current_lead_provider)
+        DeliveryPartnerSerializer.render(obj, root: "data")
       end
     end
   end
