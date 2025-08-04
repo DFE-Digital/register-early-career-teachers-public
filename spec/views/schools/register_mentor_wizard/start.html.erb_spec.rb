@@ -1,6 +1,6 @@
 RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
   let(:continue_path) { schools_register_mentor_wizard_find_mentor_path }
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :active, :school_led) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led) }
   let(:ect_name) { Teachers::Name.new(ect.teacher).full_name }
 
   before do
@@ -29,7 +29,7 @@ RSpec.describe "schools/register_mentor_wizard/start.html.erb" do
       let(:back_path) { new_schools_ect_mentorship_path(ect) }
 
       before do
-        FactoryBot.create(:mentor_at_school_period, :active, school: ect.school)
+        FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect.school)
         render
       end
 

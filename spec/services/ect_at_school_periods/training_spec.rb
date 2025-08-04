@@ -2,7 +2,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#current_training_period" do
     subject { described_class.new(ect_at_school_period).current_training_period }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -18,7 +18,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training) }
     end
@@ -27,7 +27,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#current_delivery_partner" do
     subject { described_class.new(ect_at_school_period).current_delivery_partner }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -43,7 +43,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.delivery_partner) }
     end
@@ -52,7 +52,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#current_delivery_partner_name" do
     subject { described_class.new(ect_at_school_period).current_delivery_partner_name }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -68,7 +68,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.delivery_partner.name) }
     end
@@ -77,7 +77,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#current_lead_provider" do
     subject { described_class.new(ect_at_school_period).current_lead_provider }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -93,7 +93,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider) }
     end
@@ -102,7 +102,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#current_lead_provider_name" do
     subject { described_class.new(ect_at_school_period).current_lead_provider_name }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -118,7 +118,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider.name) }
     end
@@ -127,7 +127,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#latest_training_period" do
     subject { described_class.new(ect_at_school_period).latest_training_period }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -141,7 +141,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training) }
     end
@@ -150,7 +150,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#latest_delivery_partner" do
     subject { described_class.new(ect_at_school_period).latest_delivery_partner }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -164,7 +164,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.delivery_partner) }
     end
@@ -173,7 +173,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#latest_delivery_partner_name" do
     subject { described_class.new(ect_at_school_period).latest_delivery_partner_name }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -187,7 +187,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.delivery_partner.name) }
     end
@@ -196,7 +196,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#latest_lead_provider" do
     subject { described_class.new(ect_at_school_period).latest_lead_provider }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -210,7 +210,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider) }
     end
@@ -219,7 +219,7 @@ describe ECTAtSchoolPeriods::Training do
   describe "#latest_lead_provider_name" do
     subject { described_class.new(ect_at_school_period).latest_lead_provider_name }
 
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: 3.years.ago) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when the ect has had no training ever" do
       it { is_expected.to be_nil }
@@ -233,7 +233,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context "when the ect has an ongoing training period at the school" do
       let!(:old_training) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-      let!(:ongoing_training) { FactoryBot.create(:training_period, :active, :for_ect, ect_at_school_period:) }
+      let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training.school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider.name) }
     end
@@ -244,7 +244,7 @@ describe ECTAtSchoolPeriods::Training do
 
     context 'when the latest training period is an expression of interest' do
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Jimmy Provider') }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, :with_eoi_only_training_period, lead_provider:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_eoi_only_training_period, lead_provider:) }
 
       it 'returns the lead provider name from the EOI' do
         expect(subject).to eq('Jimmy Provider')
@@ -271,7 +271,7 @@ describe ECTAtSchoolPeriods::Training do
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'EOI Provider') }
 
       let(:ect_at_school_period) do
-        FactoryBot.create(:ect_at_school_period, :active).tap do |ect|
+        FactoryBot.create(:ect_at_school_period, :ongoing).tap do |ect|
           FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect, started_on: ect.started_on + 1.week, finished_on: ect.started_on + 10.days)
 
           FactoryBot.create(
@@ -295,7 +295,7 @@ describe ECTAtSchoolPeriods::Training do
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Old EOI Provider') }
 
       let(:ect_at_school_period) do
-        FactoryBot.create(:ect_at_school_period, :active, :with_eoi_only_training_period, lead_provider:)
+        FactoryBot.create(:ect_at_school_period, :ongoing, :with_eoi_only_training_period, lead_provider:)
       end
 
       let!(:confirmed_period) do

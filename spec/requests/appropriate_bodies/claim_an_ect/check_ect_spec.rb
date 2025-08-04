@@ -85,7 +85,7 @@ RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT
 
       context "when the ECT has an ongoing induction period with another appropriate body" do
         let!(:preexisting_teacher) { FactoryBot.create(:teacher, trn: pending_induction_submission.trn) }
-        let!(:induction_period) { FactoryBot.create(:induction_period, :active, teacher: preexisting_teacher) }
+        let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: preexisting_teacher) }
 
         it 'redirects to the ECT already claimed by another AB early exit page' do
           patch(

@@ -103,7 +103,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :active,
+            :ongoing,
             appropriate_body: FactoryBot.create(:appropriate_body),
             teacher:,
             started_on: Date.parse("2 October 2022")
@@ -128,7 +128,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
         let!(:induction_period) do
           FactoryBot.create(
             :induction_period,
-            :active,
+            :ongoing,
             appropriate_body:,
             teacher:,
             started_on: Date.parse("2 October 2022")

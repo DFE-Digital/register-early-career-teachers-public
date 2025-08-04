@@ -1,7 +1,7 @@
 describe TrainingPeriod do
   describe "declarative touch" do
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, school: target, started_on: '2021-01-01') }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: target, started_on: '2021-01-01') }
     let(:instance) { FactoryBot.create(:training_period, :with_expression_of_interest, :for_mentor, mentor_at_school_period:) }
     let(:target) { FactoryBot.create(:school) }
 
@@ -240,12 +240,12 @@ describe TrainingPeriod do
   describe "#siblings" do
     subject { training_period_1.siblings }
 
-    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01') }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: '2021-01-01') }
     let!(:training_period_1) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: '2022-01-01', finished_on: '2022-06-01') }
     let!(:training_period_2) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: '2022-06-01', finished_on: '2023-01-01') }
 
     let!(:unrelated_ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :active, started_on: '2021-01-01')
+      FactoryBot.create(:ect_at_school_period, :ongoing, started_on: '2021-01-01')
     end
 
     let!(:unrelated_training_period) do

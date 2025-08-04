@@ -91,7 +91,7 @@ RSpec.describe Schools::Query do
         let!(:school1) { FactoryBot.create(:school, :eligible, updated_at: 2.days.ago) }
         let!(:school2) { FactoryBot.create(:school, :eligible, updated_at: 10.minutes.ago) }
 
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :for_ect) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_ect) }
         let!(:school3) { training_period.school_partnership.school }
 
         let(:contract_period_id) { training_period.contract_period.id }
@@ -250,7 +250,7 @@ RSpec.describe Schools::Query do
       it { expect(returned_school).not_to be_transient_mentors_at_school }
 
       context "when there is any mentors with expression of interest for the given school and contract period" do
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :with_only_expression_of_interest, :for_mentor) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_mentor) }
         let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
 
         before do
@@ -261,7 +261,7 @@ RSpec.describe Schools::Query do
       end
 
       context "when there is any mentors in training for the given school and contract period" do
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :with_school_partnership, :for_mentor) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_school_partnership, :for_mentor) }
         let(:contract_period_id) { training_period.contract_period.id }
 
         before do
@@ -282,7 +282,7 @@ RSpec.describe Schools::Query do
       it { expect(returned_school).not_to be_transient_ects_at_school_training_programme }
 
       context "when there is any ects with expression of interest for the given school and contract period" do
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :with_only_expression_of_interest, :for_ect) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_ect) }
         let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
 
         before do
@@ -293,7 +293,7 @@ RSpec.describe Schools::Query do
       end
 
       context "when there is any ects in training for the given school and contract period" do
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :with_school_partnership, :for_ect) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_school_partnership, :for_ect) }
         let(:contract_period_id) { training_period.contract_period.id }
 
         before do
@@ -336,7 +336,7 @@ RSpec.describe Schools::Query do
       it { expect(returned_school).not_to be_transient_expression_of_interest_ects }
 
       context "when there is any expression of interest from an ect for the given school/contract period/lead provider" do
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :with_only_expression_of_interest, :for_ect) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_ect) }
         let(:lead_provider_id) { training_period.expression_of_interest.lead_provider.id }
         let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
 
@@ -348,7 +348,7 @@ RSpec.describe Schools::Query do
       end
 
       context "when there is any expression of interest from a mentor for the given school/contract period/lead provider" do
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :with_only_expression_of_interest, :for_mentor) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_mentor) }
         let(:lead_provider_id) { training_period.expression_of_interest.lead_provider.id }
         let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
 
@@ -377,7 +377,7 @@ RSpec.describe Schools::Query do
       it { expect(returned_school).not_to be_transient_expression_of_interest_mentors }
 
       context "when there is any expression of interest from a mentor for the given school/contract period/lead provider" do
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :with_only_expression_of_interest, :for_mentor) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_mentor) }
         let(:lead_provider_id) { training_period.expression_of_interest.lead_provider.id }
         let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
 
@@ -389,7 +389,7 @@ RSpec.describe Schools::Query do
       end
 
       context "when there is any expression of interest from an ect for the given school/contract period/lead provider" do
-        let!(:training_period) { FactoryBot.create(:training_period, :active, :with_only_expression_of_interest, :for_ect) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_ect) }
         let(:lead_provider_id) { training_period.expression_of_interest.lead_provider.id }
         let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
 

@@ -36,7 +36,7 @@ describe Teachers::InductionPeriod do
 
     context "with ongoing induction period" do
       let!(:ongoing_induction_period) do
-        FactoryBot.create(:induction_period, :active, teacher:, started_on: '2023-10-3')
+        FactoryBot.create(:induction_period, :ongoing, teacher:, started_on: '2023-10-3')
       end
 
       it 'returns the active open induction period' do
