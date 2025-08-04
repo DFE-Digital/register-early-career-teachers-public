@@ -51,7 +51,7 @@ Rails.application.routes.draw do
             resources :current_ects, only: :index, path: 'current-ects'
 
             namespace :bulk do
-              resources :batches, only: :index
+              resources :batches, only: %i[index show]
             end
           end
         end
@@ -115,7 +115,7 @@ Rails.application.routes.draw do
     end
 
     namespace :bulk do
-      resources :batches, only: %i[index show]
+      resources :batches, only: %i[index]
     end
   end
 

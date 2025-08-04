@@ -29,6 +29,10 @@ module AppropriateBodies
         end
       end
 
+      def to_a
+        errored_rows
+      end
+
     private
 
       # @return [Array<String>]

@@ -11,10 +11,6 @@ module Admin
                                         .order(created_at: :desc)
         )
       end
-
-      def show
-        @batch = PendingInductionSubmissionBatch.find(params[:id])
-      end
     end
   end
 end
