@@ -23,6 +23,7 @@ module Events
                 :delivery_partner,
                 :pending_induction_submission_batch,
                 :active_lead_provider,
+                :lead_provider_delivery_partnership,
                 :statement,
                 :statement_adjustment,
                 :user,
@@ -49,6 +50,7 @@ module Events
       delivery_partner: nil,
       pending_induction_submission_batch: nil,
       active_lead_provider: nil,
+      lead_provider_delivery_partnership: nil,
       statement: nil,
       statement_adjustment: nil,
       user: nil,
@@ -74,6 +76,7 @@ module Events
       @delivery_partner = delivery_partner
       @pending_induction_submission_batch = pending_induction_submission_batch
       @active_lead_provider = active_lead_provider
+      @lead_provider_delivery_partnership = lead_provider_delivery_partnership
       @statement = statement
       @statement_adjustment = statement_adjustment
       @user = user
@@ -416,6 +419,23 @@ module Events
       ).record_event!
     end
 
+    # Lead Provider Delivery Partnership Events
+
+    def self.record_lead_provider_delivery_partnership_added_event!(author:, delivery_partner:, lead_provider:, contract_period:, lead_provider_delivery_partnership:)
+      event_type = :lead_provider_delivery_partnership_added
+      heading = "#{lead_provider.name} assigned to #{delivery_partner.name} for #{contract_period.year}"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        delivery_partner:,
+        lead_provider:,
+        lead_provider_delivery_partnership:,
+        happened_at: Time.zone.now
+      ).record_event!
+    end
+
   private
 
     def attributes
@@ -460,6 +480,7 @@ module Events
         lead_provider:,
         delivery_partner:,
         active_lead_provider:,
+        lead_provider_delivery_partnership:,
         statement:,
         statement_adjustment:,
         user:,
