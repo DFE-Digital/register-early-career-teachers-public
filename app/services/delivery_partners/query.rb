@@ -1,8 +1,8 @@
 module DeliveryPartners
   class Query
     include Queries::ConditionFormats
-    include QueryOrderable
-    include FilterIgnorable
+    include Queries::Orderable
+    include Queries::FilterIgnorable
 
     attr_reader :scope
 
