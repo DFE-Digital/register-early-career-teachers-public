@@ -4,7 +4,7 @@ RSpec.describe Schools::Query do
 
     let(:query_params) do
       {
-        contract_period_id:,
+        contract_period_year:,
       }
     end
 
@@ -16,9 +16,9 @@ RSpec.describe Schools::Query do
 
     it "returns all eligible schools" do
       school = FactoryBot.create(:school, :eligible)
-      contract_period_id = FactoryBot.create(:contract_period).id
+      contract_period_year = FactoryBot.create(:contract_period).id
 
-      expect(described_class.new(contract_period_id:).schools).to eq([school])
+      expect(described_class.new(contract_period_year:).schools).to eq([school])
     end
 
     context "when there is existing partnerships" do
@@ -26,10 +26,10 @@ RSpec.describe Schools::Query do
       let(:school2) { FactoryBot.create(:school, :ineligible) }
       let!(:school1_partnership) { FactoryBot.create(:school_partnership, school: school1) }
       let!(:school2_partnership) { FactoryBot.create(:school_partnership, school: school2, lead_provider_delivery_partnership: school1_partnership.lead_provider_delivery_partnership) }
-      let(:contract_period_id) { school1_partnership.contract_period.id }
+      let(:contract_period_year) { school1_partnership.contract_period.id }
 
       it "returns all schools" do
-        expect(described_class.new(contract_period_id:).schools).to contain_exactly(school1, school2)
+        expect(described_class.new(contract_period_year:).schools).to contain_exactly(school1, school2)
       end
     end
 
@@ -37,9 +37,9 @@ RSpec.describe Schools::Query do
       school1 = FactoryBot.create(:school, :eligible, created_at: 2.days.ago)
       school2 = FactoryBot.create(:school, :eligible, created_at: 1.day.ago)
       school3 = FactoryBot.create(:school, :eligible, created_at: Time.zone.now)
-      contract_period_id = FactoryBot.create(:contract_period).id
+      contract_period_year = FactoryBot.create(:contract_period).id
 
-      expect(described_class.new(contract_period_id:).schools).to contain_exactly(school1, school2, school3)
+      expect(described_class.new(contract_period_year:).schools).to contain_exactly(school1, school2, school3)
     end
 
     describe "filtering" do
@@ -52,11 +52,11 @@ RSpec.describe Schools::Query do
         let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: another_contract_period) }
         let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
         let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school3, lead_provider_delivery_partnership:) }
-        let(:contract_period_id) { another_contract_period.id }
+        let(:contract_period_year) { another_contract_period.id }
 
         let(:query_params) do
           {
-            contract_period_id:,
+            contract_period_year:,
           }
         end
 
@@ -71,7 +71,7 @@ RSpec.describe Schools::Query do
         end
 
         context "when no `contract_period_id` is found" do
-          let!(:contract_period_id) { "0000" }
+          let!(:contract_period_year) { "0000" }
 
           it "returns no schools" do
             expect(query.schools).to be_empty
@@ -79,7 +79,7 @@ RSpec.describe Schools::Query do
         end
 
         context "when `contract_period_id` param is blank" do
-          let!(:contract_period_id) { " " }
+          let!(:contract_period_year) { " " }
 
           it "returns no schools" do
             expect(query.schools).to be_empty
@@ -94,14 +94,14 @@ RSpec.describe Schools::Query do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_ect) }
         let!(:school3) { training_period.school_partnership.school }
 
-        let(:contract_period_id) { training_period.contract_period.id }
+        let(:contract_period_year) { training_period.contract_period.id }
         let!(:lead_provider) { training_period.lead_provider }
 
         let(:updated_since) { 1.day.ago }
 
         let(:query_params) do
           {
-            contract_period_id:,
+            contract_period_year:,
             lead_provider:,
             updated_since:
           }
@@ -114,7 +114,7 @@ RSpec.describe Schools::Query do
         context "when `updated_since` param is omitted" do
           let(:query_params) do
             {
-              contract_period_id:,
+              contract_period_year:,
               lead_provider:,
             }
           end
@@ -136,12 +136,12 @@ RSpec.describe Schools::Query do
       describe "by `urn`" do
         let!(:school1) { FactoryBot.create(:school, :eligible, urn: "1234567") }
         let!(:school2) { FactoryBot.create(:school, :eligible, urn: "4567890") }
-        let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+        let(:contract_period_year) { FactoryBot.create(:contract_period).id }
         let!(:urn) { school1.urn }
 
         let(:query_params) do
           {
-            contract_period_id:,
+            contract_period_year:,
             urn:,
           }
         end
@@ -153,7 +153,7 @@ RSpec.describe Schools::Query do
         context "when `urn` param is omitted" do
           let(:query_params) do
             {
-              contract_period_id:,
+              contract_period_year:,
             }
           end
 
@@ -179,13 +179,13 @@ RSpec.describe Schools::Query do
       let(:school2) { FactoryBot.create(:school, :eligible, created_at: 2.days.ago) }
       let(:school3) { FactoryBot.create(:school, :eligible, created_at: Time.zone.now) }
 
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
 
       let(:sort) { nil }
 
       let(:query_params) do
         {
-          contract_period_id:,
+          contract_period_year:,
           sort:,
         }
       end
@@ -227,7 +227,7 @@ RSpec.describe Schools::Query do
 
     describe "transient_in_partnership" do
       let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
       let(:query_schools) { query.schools }
       let(:returned_school) { query_schools.find(school.id) }
 
@@ -235,7 +235,7 @@ RSpec.describe Schools::Query do
 
       context "when there is any partnership for the given school and contract period" do
         let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
-        let!(:contract_period_id) { school_partnership.contract_period.id }
+        let!(:contract_period_year) { school_partnership.contract_period.id }
 
         it { expect(returned_school).to be_transient_in_partnership }
       end
@@ -245,13 +245,13 @@ RSpec.describe Schools::Query do
       let!(:school) { FactoryBot.create(:school, :eligible) }
       let(:query_schools) { query.schools }
       let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
 
       it { expect(returned_school).not_to be_transient_mentors_at_school }
 
       context "when there is any mentors with expression of interest for the given school and contract period" do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_mentor) }
-        let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
+        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
 
         before do
           training_period.mentor_at_school_period.update!(school_id: school.id)
@@ -262,7 +262,7 @@ RSpec.describe Schools::Query do
 
       context "when there is any mentors in training for the given school and contract period" do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_school_partnership, :for_mentor) }
-        let(:contract_period_id) { training_period.contract_period.id }
+        let(:contract_period_year) { training_period.contract_period.id }
 
         before do
           training_period.mentor_at_school_period.update!(school_id: school.id)
@@ -277,13 +277,13 @@ RSpec.describe Schools::Query do
       let!(:school) { FactoryBot.create(:school, :eligible) }
       let(:query_schools) { query.schools }
       let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
 
       it { expect(returned_school).not_to be_transient_ects_at_school_training_programme }
 
       context "when there is any ects with expression of interest for the given school and contract period" do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_ect) }
-        let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
+        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
 
         before do
           training_period.ect_at_school_period.update!(school_id: school.id)
@@ -294,7 +294,7 @@ RSpec.describe Schools::Query do
 
       context "when there is any ects in training for the given school and contract period" do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_school_partnership, :for_ect) }
-        let(:contract_period_id) { training_period.contract_period.id }
+        let(:contract_period_year) { training_period.contract_period.id }
 
         before do
           training_period.ect_at_school_period.update!(school_id: school.id)
@@ -323,12 +323,12 @@ RSpec.describe Schools::Query do
       let!(:school) { FactoryBot.create(:school, :eligible) }
       let(:query_schools) { query.schools }
       let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
       let(:query_params) do
         {
-          contract_period_id:,
+          contract_period_year:,
           lead_provider:,
         }
       end
@@ -338,7 +338,7 @@ RSpec.describe Schools::Query do
       context "when there is any expression of interest from an ect for the given school/contract period/lead provider" do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_ect) }
         let(:lead_provider) { training_period.expression_of_interest.lead_provider }
-        let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
+        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
 
         before do
           training_period.ect_at_school_period.update!(school_id: school.id)
@@ -350,7 +350,7 @@ RSpec.describe Schools::Query do
       context "when there is any expression of interest from a mentor for the given school/contract period/lead provider" do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_mentor) }
         let(:lead_provider) { training_period.expression_of_interest.lead_provider }
-        let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
+        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
 
         before do
           training_period.mentor_at_school_period.update!(school_id: school.id)
@@ -364,12 +364,12 @@ RSpec.describe Schools::Query do
       let!(:school) { FactoryBot.create(:school, :eligible) }
       let(:query_schools) { query.schools }
       let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
       let(:query_params) do
         {
-          contract_period_id:,
+          contract_period_year:,
           lead_provider:,
         }
       end
@@ -379,7 +379,7 @@ RSpec.describe Schools::Query do
       context "when there is any expression of interest from a mentor for the given school/contract period/lead provider" do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_mentor) }
         let(:lead_provider) { training_period.expression_of_interest.lead_provider }
-        let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
+        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
 
         before do
           training_period.mentor_at_school_period.update!(school_id: school.id)
@@ -391,7 +391,7 @@ RSpec.describe Schools::Query do
       context "when there is any expression of interest from an ect for the given school/contract period/lead provider" do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_ect) }
         let(:lead_provider) { training_period.expression_of_interest.lead_provider }
-        let(:contract_period_id) { training_period.expression_of_interest.contract_period.id }
+        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
 
         before do
           training_period.ect_at_school_period.update!(school_id: school.id)
@@ -401,22 +401,22 @@ RSpec.describe Schools::Query do
       end
     end
 
-    describe "transient_contract_period_id" do
+    describe "transient_contract_period_year" do
       let!(:school) { FactoryBot.create(:school, :eligible) }
       let(:query_schools) { query.schools }
       let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_id) { FactoryBot.create(:contract_period).id }
+      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
       let(:query_params) do
         {
-          contract_period_id:,
+          contract_period_year:,
           lead_provider:,
         }
       end
 
-      it "returns the `contract_period_id` sent in the params" do
-        expect(returned_school.transient_contract_period_id).to eq(contract_period_id.to_s)
+      it "returns the `transient_contract_period_year` sent in the params" do
+        expect(returned_school.transient_contract_period_year).to eq(contract_period_year.to_s)
       end
     end
   end
@@ -427,7 +427,7 @@ RSpec.describe Schools::Query do
     let(:contract_period) { FactoryBot.create(:contract_period) }
     let(:query_params) do
       {
-        contract_period_id: contract_period.id,
+        contract_period_year: contract_period.id,
       }
     end
 
@@ -452,7 +452,7 @@ RSpec.describe Schools::Query do
     let(:contract_period) { FactoryBot.create(:contract_period) }
     let(:query_params) do
       {
-        contract_period_id: contract_period.id,
+        contract_period_year: contract_period.id,
       }
     end
 

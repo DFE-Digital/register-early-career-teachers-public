@@ -193,7 +193,7 @@ describe Schools::TrainingProgramme do
       subject { described_class.new(school: scope, contract_period_id:) }
 
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
-      let(:query) { Schools::Query.new(lead_provider:, contract_period_id: contract_period.id) }
+      let(:query) { Schools::Query.new(lead_provider:, contract_period_year: contract_period.id) }
       let(:school) { FactoryBot.create(:school, :eligible, urn: "123456") }
       let(:scope) { query.school(school.id) }
 
