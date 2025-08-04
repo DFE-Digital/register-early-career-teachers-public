@@ -1,0 +1,15 @@
+<%= batch_summary_card(batch) %>
+
+
+<%=
+  govuk_list([
+    pluralize(batch.recorded_count, 'closed inductions'),
+    pluralize(batch.tally[:passed_count], 'pass'),
+    pluralize(batch.tally[:failed_count], 'fail'),
+    pluralize(batch.tally[:released_count], 'release'),
+  ], type: :bullet)
+%>
+
+<%= render partial: 'errors', locals: { batch: } %>
+
+<%= batch_action_induction_periods_table(batch) %>

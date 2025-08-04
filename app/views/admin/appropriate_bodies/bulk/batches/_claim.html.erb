@@ -1,0 +1,11 @@
+<%= batch_summary_card(batch) %>
+
+<%=
+  govuk_list([
+    pluralize(batch.recorded_count, 'closed inductions'),
+  ], type: :bullet)
+%>
+
+<%= render partial: 'errors', locals: { batch: } %>
+
+<%= batch_claim_induction_periods_table(batch) %>

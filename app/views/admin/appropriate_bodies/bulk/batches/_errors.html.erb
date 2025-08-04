@@ -1,0 +1,15 @@
+<% if batch.tally[:errored_count].positive? %>
+
+  <%=
+    govuk_list([
+      pluralize(batch.tally[:errored_count], 'errors'),
+      "#{batch_success_rate(batch)} success rate"
+    ], type: :bullet)
+  %>
+
+  <%= batch_failed_rows_table(batch) %>
+
+  <p class='govuk-body'>
+    <%= govuk_link_to 'Download error CSV', '#' %>
+  </p>
+<% end %>
