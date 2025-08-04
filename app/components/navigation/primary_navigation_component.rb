@@ -41,6 +41,7 @@ module Navigation
         appropriate_body_user: [],
         dfe_staff_user: [
           { text: "Teachers", href: admin_teachers_path, active_when: '/admin/teachers' },
+          { text: "Schools", href: admin_schools_path, active_when: '/admin/schools' },
           { text: "Organisations", href: admin_organisations_path, active_when: '/admin/organisations' },
           { text: "Finance", href: admin_finance_path, active_when: '/admin/finance' }
         ],
