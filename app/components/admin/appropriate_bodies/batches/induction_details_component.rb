@@ -1,0 +1,84 @@
+module Admin
+  module AppropriateBodies
+    module Batches
+      class InductionDetailsComponent < ViewComponent::Base
+        attr_reader :batch
+
+        def initialize(batch:)
+          @batch = batch
+        end
+
+      private
+
+        delegate :id, :claim?, :action?, :recorded_count, to: :batch
+        delegate :training_programme_name, :teacher_full_name, to: :helpers
+
+        # @return [String]
+        def caption
+          case
+          when claim? then "Opened induction periods (#{recorded_count})"
+          when action? then "Closed induction periods (#{recorded_count})"
+          end
+        end
+
+        # @return [Array<String>]
+        def head
+          case
+          when claim? then ['Name', 'Induction period start date', 'Induction programme']
+          when action? then ['Name', 'Induction period end date', 'Number of terms', 'Outcome']
+          end
+        end
+
+        # @return [Array<Array<String>>]
+        def rows
+          inductions.map { |induction_period| induction_period_row(induction_period) }
+        end
+
+        # @param induction_period [InductionPeriod]
+        # @return [String]
+        def induction_outcome_tag(induction_period)
+          colours = { release: 'yellow', pass: 'green', fail: 'red' }
+          outcome = induction_period.outcome || 'release'
+          govuk_tag(text: outcome.titleize, colour: colours[outcome.to_sym])
+        end
+
+        # @param induction_period [InductionPeriod]
+        # @return [Array<String>]
+        def induction_period_row(induction_period)
+          row = [
+            link_to_teacher(induction_period.teacher)
+          ]
+
+          row +
+            case
+            when action?
+              [
+                induction_period.finished_on.to_fs(:govuk),
+                induction_period.number_of_terms.to_s,
+                induction_outcome_tag(induction_period)
+              ]
+            when claim?
+              [
+                induction_period.started_on.to_fs(:govuk),
+                training_programme_name(induction_period.training_programme)
+              ]
+            end
+        end
+
+        # @param teacher [Teacher]
+        # @return [String]
+        def link_to_teacher(teacher)
+          govuk_link_to(teacher_full_name(teacher), admin_teacher_path(teacher))
+        end
+
+        # @return [InductionPeriod::ActiveRecord_Relation]
+        def inductions
+          InductionPeriod
+              .includes(:teacher, :events)
+              .where(events: { pending_induction_submission_batch_id: id })
+              .order(:trs_last_name)
+        end
+      end
+    end
+  end
+end
