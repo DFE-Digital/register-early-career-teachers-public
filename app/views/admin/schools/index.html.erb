@@ -1,41 +1,38 @@
-<% page_data(title: "Schools", breadcrumbs: @breadcrumbs) %>
+<% page_data(title: "Schools") %>
 
-<%= form_with method: :get do |f| %>
-  <%= f.govuk_text_field(
-      "q",
-      value: @q,
-      label: { text: "Search for school", size: "s" },
-      hint: { text: "Name, URN or postcode" },
-    )
-  %>
+<%= render Shared::TopSearchComponent.new(
+  label_text: "Search by name or URN"
+) %>
 
-  <%= f.govuk_submit "Search" %>
-<% end %>
-
-<p class="govuk-body"><strong><%= @pagy.count %></strong> schools found</p>
-
-<%=
-  govuk_table do |table|
-    table.with_head do |head|
-      head.with_row do |row|
-        row.with_cell(text: "Name")
-        row.with_cell(text: "URN")
-        row.with_cell(text: "Postcode")
+<% if @schools.any? %>
+  <%=
+    govuk_table do |table|
+      table.with_head do |head|
+        head.with_row do |row|
+          row.with_cell(text: "School")
+          row.with_cell(text: "URN")
+        end
       end
-    end
 
-    table.with_body do |body|
-      @schools.each do |school|
-        body.with_row do |row|
-          row.with_cell do
-            govuk_link_to(school.name, admin_school_path(school, page: @page, q: @q))
+      table.with_body do |body|
+        @schools.each do |school|
+          body.with_row do |row|
+            row.with_cell do
+              govuk_link_to(school.name, admin_school_path(school, page: params[:page], q: params[:q]))
+            end
+            row.with_cell(text: school.urn)
           end
-          row.with_cell(text: school.urn)
-          row.with_cell(text: school.postcode)
         end
       end
     end
-  end
-%>
+  %>
 
-<%= govuk_pagination pagy: @pagy %>
+  <%= render Shared::PaginationSummaryComponent.new(
+    pagy: @pagy,
+    record_name: "results"
+  ) %>
+<% elsif params[:q].present? %>
+  <p class="govuk-body">There are no schools that match your search.</p>
+<% else %>
+  <p class="govuk-body">No schools found.</p>
+<% end %>
