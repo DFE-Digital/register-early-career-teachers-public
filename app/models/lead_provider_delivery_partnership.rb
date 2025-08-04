@@ -19,4 +19,9 @@ class LeadProviderDeliveryPartnership < ApplicationRecord
 
   scope :with_delivery_partner, ->(delivery_partner_id) { where(delivery_partner_id:) }
   scope :with_active_lead_provider, ->(active_lead_provider_id) { where(active_lead_provider_id:) }
+  scope :for_contract_period, ->(contract_period) {
+    joins(:active_lead_provider)
+      .where(active_lead_providers: { contract_period_id: contract_period.id })
+      .includes(active_lead_provider: :lead_provider)
+  }
 end

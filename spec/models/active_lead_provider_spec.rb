@@ -38,5 +38,60 @@ describe ActiveLeadProvider do
         expect(described_class.for_lead_provider(lp_2.id)).to contain_exactly(active_lead_provider_2, active_lead_provider_4)
       end
     end
+
+    describe ".available_for_delivery_partner" do
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let!(:available_alp_1) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let!(:available_alp_2) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let!(:assigned_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let!(:different_year_alp) { FactoryBot.create(:active_lead_provider) }
+
+      # Create an existing partnership for one of the ALPs
+      let!(:existing_partnership) do
+        FactoryBot.create(:lead_provider_delivery_partnership,
+                          delivery_partner:,
+                          active_lead_provider: assigned_alp)
+      end
+
+      it 'returns available lead providers for the delivery partner and contract period' do
+        result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
+        expect(result).to contain_exactly(available_alp_1, available_alp_2)
+      end
+
+      it 'excludes already assigned lead providers' do
+        result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
+        expect(result).not_to include(assigned_alp)
+      end
+
+      it 'excludes lead providers from different contract periods' do
+        result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
+        expect(result).not_to include(different_year_alp)
+      end
+
+      it 'includes lead providers assigned to other delivery partners' do
+        FactoryBot.create(:lead_provider_delivery_partnership,
+                          delivery_partner: other_delivery_partner,
+                          active_lead_provider: available_alp_1)
+
+        result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
+        expect(result).to include(available_alp_1)
+      end
+
+      it 'orders results by lead provider name' do
+        # Update lead provider names to test ordering
+        available_alp_1.lead_provider.update!(name: 'Zebra Lead Provider')
+        available_alp_2.lead_provider.update!(name: 'Alpha Lead Provider')
+
+        result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
+        expect(result.map { |alp| alp.lead_provider.name }).to eq(['Alpha Lead Provider', 'Zebra Lead Provider'])
+      end
+
+      it 'includes the lead provider relationship' do
+        result = described_class.available_for_delivery_partner(delivery_partner, contract_period).first
+        expect(result.association(:lead_provider)).to be_loaded
+      end
+    end
   end
 end
