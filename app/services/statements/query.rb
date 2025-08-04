@@ -4,10 +4,11 @@ module Statements
 
     include Queries::ConditionFormats
     include Queries::FilterIgnorable
+    include Queries::Orderable
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, contract_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, order_by: :payment_date)
+    def initialize(lead_provider: :ignore, contract_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, sort: nil)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
 
       where_lead_provider_is(lead_provider)
@@ -16,7 +17,7 @@ module Statements
       where_status_is(status)
       where_fee_type_is(fee_type)
       where_statement_date(statement_date)
-      set_order_by(order_by)
+      set_sort_by(sort)
     end
 
     def statements
@@ -77,15 +78,8 @@ module Statements
       scope.merge!(Statement.with_statement_date(year:, month:))
     end
 
-    def set_order_by(order_by)
-      return if ignore?(filter: order_by)
-
-      case order_by
-      when :statement_date
-        scope.merge!(Statement.order(year: :asc, month: :asc))
-      when :payment_date
-        scope.merge!(Statement.order(payment_date: :asc))
-      end
+    def set_sort_by(sort)
+      @scope = scope.order(sort_order(sort:, model: Statement, default: { payment_date: :asc }))
     end
   end
 end

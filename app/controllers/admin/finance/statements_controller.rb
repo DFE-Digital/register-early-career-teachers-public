@@ -46,7 +46,7 @@ module Admin::Finance
         contract_period_years:,
         statement_date:,
         fee_type:,
-        order_by: :statement_date,
+        sort: "+year,+month",
       }
       Statements::Query.new(**opts.compact)
     end
