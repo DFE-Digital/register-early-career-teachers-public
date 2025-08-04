@@ -90,4 +90,7 @@ Rails.application.configure do
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :solid_queue
   # config.active_job.queue_name_prefix = "ecf2_development"
+
+  # Custom config
+  config.bypass_filter_parameter_logging = ENV.fetch("ENABLE_BYPASS_FILTER_PARAMETER_LOGGING", false)
 end
