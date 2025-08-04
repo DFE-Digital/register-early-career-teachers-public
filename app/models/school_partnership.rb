@@ -12,6 +12,7 @@ class SchoolPartnership < ApplicationRecord
   delegate :lead_provider, :delivery_partner, :contract_period, to: :lead_provider_delivery_partnership
 
   touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+  update_metadata -> { school }, on_event: %i[create destroy]
 
   # Validations
   validates :lead_provider_delivery_partnership_id, presence: true
