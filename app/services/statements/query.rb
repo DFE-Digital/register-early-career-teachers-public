@@ -3,7 +3,7 @@ module Statements
     class InvalidFeeTypeError < StandardError; end
 
     include Queries::ConditionFormats
-    include FilterIgnorable
+    include Queries::FilterIgnorable
 
     attr_reader :scope
 

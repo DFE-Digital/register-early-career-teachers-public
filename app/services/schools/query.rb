@@ -1,8 +1,8 @@
 module Schools
   class Query
     include Queries::ConditionFormats
-    include FilterIgnorable
-    include QueryOrderable
+    include Queries::FilterIgnorable
+    include Queries::Orderable
 
     attr_reader :scope, :sort
 
