@@ -74,7 +74,7 @@ module Schools
     end
 
     def transient_mentors_at_school(contract_period_year)
-      return School.none if ignore?(filter: contract_period_year) || contract_period_year.blank?
+      return School.none if ignore?(filter: contract_period_year)
 
       "EXISTS(
         #{
@@ -90,7 +90,7 @@ module Schools
     end
 
     def transient_ects_at_school_training_programme(contract_period_year)
-      return School.none if ignore?(filter: contract_period_year) || contract_period_year.blank?
+      return School.none if ignore?(filter: contract_period_year)
 
       "(
         #{
@@ -107,8 +107,7 @@ module Schools
     end
 
     def transient_expression_of_interest_ects(lead_provider, contract_period_year)
-      return School.none if ignore?(filter: lead_provider) || ignore?(filter: contract_period_year) ||
-        contract_period_year.blank?
+      return School.none if ignore?(filter: lead_provider) || ignore?(filter: contract_period_year)
 
       "EXISTS(
         #{
@@ -124,8 +123,7 @@ module Schools
     end
 
     def transient_expression_of_interest_mentors(lead_provider, contract_period_year)
-      return School.none if ignore?(filter: lead_provider) || ignore?(filter: contract_period_year) ||
-        contract_period_year.blank?
+      return School.none if ignore?(filter: lead_provider) || ignore?(filter: contract_period_year)
 
       "EXISTS(
         #{
@@ -141,7 +139,7 @@ module Schools
     end
 
     def default_scope(contract_period_year)
-      return School.none if ignore?(filter: contract_period_year) || contract_period_year.blank? || ContractPeriod.find_by(year: contract_period_year).blank?
+      return School.none if ignore?(filter: contract_period_year) || ContractPeriod.find_by(year: contract_period_year).blank?
 
       School
         .eligible
