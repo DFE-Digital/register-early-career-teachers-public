@@ -25,6 +25,7 @@ gem "govuk_markdown"
 
 gem "mail-notify"
 
+gem "scenic"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "stackprof"
