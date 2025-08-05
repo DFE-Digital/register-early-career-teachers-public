@@ -72,9 +72,8 @@ module AppropriateBodies
 
       # @return [Boolean]
       def claimed_by_another_ab?
-        return false if no_ongoing_induction_period?
-
-        teacher.ongoing_induction_period.appropriate_body != appropriate_body
+        teacher.ongoing_induction_period.present? &&
+          teacher.current_appropriate_body != appropriate_body
       end
 
       # @return [Boolean]
