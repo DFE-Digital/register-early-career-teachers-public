@@ -1,31 +1,13 @@
 <% page_data(title: @delivery_partner.name, backlink_href: admin_delivery_partners_path(page: @page, q: @q)) %>
 
-<% if @lead_provider_partnerships.any? %>
-  <%= govuk_table do |table|
-    table.with_caption(text: "Lead provider partners")
-    table.with_head do |head|
-      head.with_row do |row|
-        row.with_cell(text: "Year")
-        row.with_cell(text: "Lead providers")
-        row.with_cell(text: "Action")
-      end
-    end
+<%= render(Admin::LeadProviderPartnershipsTableComponent.new(
+  lead_provider_partnerships: @lead_provider_partnerships,
+  delivery_partner: @delivery_partner,
+  page: @page,
+  q: @q
+)) %>
 
-    table.with_body do |body|
-      @lead_provider_partnerships.group_by(&:contract_period).each do |contract_period, partnerships|
-        body.with_row do |row|
-          row.with_cell(text: contract_period.year)
-          row.with_cell do
-            partnerships.map(&:lead_provider).map(&:name).join(", ")
-          end
-          row.with_cell do
-            govuk_link_to("Change", edit_admin_delivery_partner_path(@delivery_partner, year: contract_period.year, page: @page, q: @q))
-          end
-        end
-      end
-    end
-  end %>
-<% else %>
+<% unless @lead_provider_partnerships.any? %>
   <p class="govuk-body">
     No lead provider partnerships found for this delivery partner.
   </p>

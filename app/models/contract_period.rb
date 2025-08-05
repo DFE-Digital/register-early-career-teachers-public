@@ -40,6 +40,10 @@ class ContractPeriod < ApplicationRecord
       &.started_on
   end
 
+  def started_on_or_before_today?
+    started_on <= Time.zone.today
+  end
+
 private
 
   def siblings
