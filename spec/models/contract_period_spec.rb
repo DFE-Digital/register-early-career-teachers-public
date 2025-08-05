@@ -97,4 +97,32 @@ describe ContractPeriod do
       expect(result.last).to eq(period_2022)
     end
   end
+
+  describe "#started_on_or_before_today?" do
+    let(:today) { Time.zone.today }
+
+    context "when contract period started in the past" do
+      let(:contract_period) { FactoryBot.create(:contract_period, started_on: 1.month.ago, finished_on: 1.month.from_now) }
+
+      it "returns true" do
+        expect(contract_period.started_on_or_before_today?).to be true
+      end
+    end
+
+    context "when contract period starts today" do
+      let(:contract_period) { FactoryBot.create(:contract_period, started_on: today, finished_on: 1.month.from_now) }
+
+      it "returns true" do
+        expect(contract_period.started_on_or_before_today?).to be true
+      end
+    end
+
+    context "when contract period starts in the future" do
+      let(:contract_period) { FactoryBot.create(:contract_period, started_on: 1.month.from_now, finished_on: 2.months.from_now) }
+
+      it "returns false" do
+        expect(contract_period.started_on_or_before_today?).to be false
+      end
+    end
+  end
 end

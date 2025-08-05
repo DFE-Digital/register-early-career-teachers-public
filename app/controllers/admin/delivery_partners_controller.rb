@@ -42,9 +42,6 @@ module Admin
 
       @available_lead_providers = ActiveLeadProvider
         .available_for_delivery_partner(@delivery_partner, @contract_period)
-
-      # Determine if contract period is open or has previously been open
-      @contract_period_has_started = @contract_period.started_on <= Time.zone.today
     end
 
     def update
