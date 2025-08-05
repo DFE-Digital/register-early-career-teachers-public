@@ -6,14 +6,14 @@ module Schools
 
     attr_reader :scope, :sort
 
-    def initialize(lead_provider: :ignore, urn: :ignore, updated_since: :ignore, contract_period_year: :ignore, sort: nil)
+    def initialize(lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, contract_period_year: :ignore, sort: nil)
       @scope = default_scope(contract_period_year).select(
         "schools.*",
         transient_in_partnership(contract_period_year),
         transient_mentors_at_school(contract_period_year),
         transient_ects_at_school_training_programme(contract_period_year),
-        transient_expression_of_interest_ects(lead_provider, contract_period_year),
-        transient_expression_of_interest_mentors(lead_provider, contract_period_year),
+        transient_expression_of_interest_ects(lead_provider_id, contract_period_year),
+        transient_expression_of_interest_mentors(lead_provider_id, contract_period_year),
         "'#{contract_period_year}' AS transient_contract_period_year"
       ).or(schools_with_existing_partnerships(contract_period_year))
         .distinct
@@ -106,15 +106,15 @@ module Schools
       ) AS transient_ects_at_school_training_programme"
     end
 
-    def transient_expression_of_interest_ects(lead_provider, contract_period_year)
-      return School.none if ignore?(filter: lead_provider) || ignore?(filter: contract_period_year)
+    def transient_expression_of_interest_ects(lead_provider_id, contract_period_year)
+      return School.none if ignore?(filter: lead_provider_id) || ignore?(filter: contract_period_year)
 
       "EXISTS(
         #{
           School.select('1 AS one').from('schools s')
           .joins(ect_at_school_periods: { training_periods: { expression_of_interest: :contract_period } })
           .where(contract_periods: { year: contract_period_year })
-          .where(expression_of_interest: { lead_provider_id: lead_provider.id })
+          .where(expression_of_interest: { lead_provider_id: })
           .where('schools.id = s.id')
           .limit(1)
           .to_sql
@@ -122,15 +122,15 @@ module Schools
       ) AS transient_expression_of_interest_ects"
     end
 
-    def transient_expression_of_interest_mentors(lead_provider, contract_period_year)
-      return School.none if ignore?(filter: lead_provider) || ignore?(filter: contract_period_year)
+    def transient_expression_of_interest_mentors(lead_provider_id, contract_period_year)
+      return School.none if ignore?(filter: lead_provider_id) || ignore?(filter: contract_period_year)
 
       "EXISTS(
         #{
           School.select('1 AS one').from('schools s')
           .joins(mentor_at_school_periods: { training_periods: { expression_of_interest: :contract_period } })
           .where(contract_periods: { year: contract_period_year })
-          .where(expression_of_interest: { lead_provider_id: lead_provider.id })
+          .where(expression_of_interest: { lead_provider_id: })
           .where('schools.id = s.id')
           .limit(1)
           .to_sql

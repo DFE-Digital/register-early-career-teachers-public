@@ -32,10 +32,10 @@ RSpec.describe DeliveryPartners::Query do
       let!(:lead_provider_delivery_partnership_2025) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner1, active_lead_provider: active_lead_provider_2025) }
 
       context "when ignoring lead provider" do
-        let(:lead_provider) { :ignore }
+        let(:lead_provider_id) { :ignore }
 
         it "loads the cohorts for all lead providers" do
-          query = described_class.new(lead_provider:)
+          query = described_class.new(lead_provider_id:)
 
           expect(query.delivery_partners).to contain_exactly(delivery_partner1)
           expect(query.delivery_partners.map(&:transient_cohorts)).to contain_exactly(%w[2024 2025])
@@ -43,10 +43,10 @@ RSpec.describe DeliveryPartners::Query do
       end
 
       context "when filter by lead provider" do
-        let(:lead_provider) { lead_provider_2024 }
+        let(:lead_provider_id) { lead_provider_2024.id }
 
         it "only includes cohorts for the given lead provider" do
-          query = described_class.new(lead_provider:)
+          query = described_class.new(lead_provider_id:)
 
           expect(query.delivery_partners).to contain_exactly(delivery_partner1)
           expect(query.delivery_partners.map(&:transient_cohorts)).to contain_exactly(%w[2024])
@@ -68,20 +68,20 @@ RSpec.describe DeliveryPartners::Query do
         end
 
         it "filters by `lead_provider`" do
-          lead_provider = lead_provider_delivery_partnership1.active_lead_provider.lead_provider
-          query = described_class.new(lead_provider:)
+          lead_provider_id = lead_provider_delivery_partnership1.active_lead_provider.lead_provider.id
+          query = described_class.new(lead_provider_id:)
 
           expect(query.delivery_partners).to contain_exactly(delivery_partner1)
         end
 
         it "returns empty if no delivery partners are found for the given `lead_provider`" do
-          query = described_class.new(lead_provider: FactoryBot.create(:lead_provider))
+          query = described_class.new(lead_provider_id: FactoryBot.create(:lead_provider).id)
 
           expect(query.delivery_partners).to be_empty
         end
 
         it "does not filter by `lead_provider` if an empty string is supplied" do
-          query = described_class.new(lead_provider: " ")
+          query = described_class.new(lead_provider_id: " ")
 
           expect(query.delivery_partners).to contain_exactly(delivery_partner1, delivery_partner2, delivery_partner3)
         end
@@ -204,7 +204,7 @@ RSpec.describe DeliveryPartners::Query do
       lead_provider_delivery_partnership1 = FactoryBot.create(:lead_provider_delivery_partnership)
       lead_provider_delivery_partnership2 = FactoryBot.create(:lead_provider_delivery_partnership)
 
-      query = described_class.new(lead_provider: lead_provider_delivery_partnership1.active_lead_provider.lead_provider)
+      query = described_class.new(lead_provider_id: lead_provider_delivery_partnership1.active_lead_provider.lead_provider.id)
 
       expect { query.delivery_partner_by_api_id(lead_provider_delivery_partnership2.delivery_partner.api_id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -232,7 +232,7 @@ RSpec.describe DeliveryPartners::Query do
       lead_provider_delivery_partnership1 = FactoryBot.create(:lead_provider_delivery_partnership)
       lead_provider_delivery_partnership2 = FactoryBot.create(:lead_provider_delivery_partnership)
 
-      query = described_class.new(lead_provider: lead_provider_delivery_partnership1.active_lead_provider.lead_provider)
+      query = described_class.new(lead_provider_id: lead_provider_delivery_partnership1.active_lead_provider.lead_provider.id)
 
       expect { query.delivery_partner_by_id(lead_provider_delivery_partnership2.delivery_partner.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end

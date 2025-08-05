@@ -17,7 +17,7 @@ module ParityCheck
     # Path ID methods
 
     def statement_id
-      Statements::Query.new(lead_provider:)
+      Statements::Query.new(lead_provider_id: lead_provider.id)
         .statements
         .distinct(false)
         .reorder("RANDOM()")
@@ -26,7 +26,7 @@ module ParityCheck
 
     def school_id
       contract_period_year = ContractPeriod.order("RANDOM()").pick(:year)
-      Schools::Query.new(lead_provider:, contract_period_year:)
+      Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_year:)
         .schools
         .distinct(false)
         .includes(:gias_school)

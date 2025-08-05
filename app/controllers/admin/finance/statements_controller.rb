@@ -42,7 +42,7 @@ module Admin::Finance
 
     def statements_query
       opts = {
-        lead_provider:,
+        lead_provider_id: lead_provider&.id,
         contract_period_years:,
         statement_date:,
         fee_type:,

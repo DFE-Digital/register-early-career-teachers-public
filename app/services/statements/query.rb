@@ -8,10 +8,10 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, contract_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, sort: nil)
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, sort: nil)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
 
-      where_lead_provider_is(lead_provider)
+      where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
       where_updated_since(updated_since)
       where_status_is(status)
@@ -38,10 +38,10 @@ module Statements
 
   private
 
-    def where_lead_provider_is(lead_provider)
-      return if ignore?(filter: lead_provider)
+    def where_lead_provider_is(lead_provider_id)
+      return if ignore?(filter: lead_provider_id)
 
-      scope.merge!(Statement.joins(:lead_provider).where(lead_providers: { id: lead_provider.id }))
+      scope.merge!(Statement.joins(:lead_provider).where(lead_providers: { id: lead_provider_id }))
     end
 
     def where_contract_period_year_in(contract_period_years)

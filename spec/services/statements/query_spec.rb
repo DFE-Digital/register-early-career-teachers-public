@@ -32,19 +32,19 @@ RSpec.describe Statements::Query do
         end
 
         it "filters by `lead_provider`" do
-          query = described_class.new(lead_provider:)
+          query = described_class.new(lead_provider_id: lead_provider.id)
 
           expect(query.statements).to eq([statement1])
         end
 
         it "returns no statements if no statements are found for the given `lead_provider`" do
-          query = described_class.new(lead_provider: FactoryBot.create(:lead_provider))
+          query = described_class.new(lead_provider_id: FactoryBot.create(:lead_provider).id)
 
           expect(query.statements).to be_empty
         end
 
         it "does not filter by `lead_provider` if an empty string is supplied" do
-          query = described_class.new(lead_provider: " ")
+          query = described_class.new(lead_provider_id: " ")
 
           expect(query.statements).to contain_exactly(statement1, statement2, statement3)
         end
@@ -108,7 +108,7 @@ RSpec.describe Statements::Query do
           FactoryBot.create(:statement, lead_provider:, updated_at: 2.days.ago)
           statement2 = FactoryBot.create(:statement, lead_provider:, updated_at: Time.zone.now)
 
-          query = described_class.new(lead_provider:, updated_since:)
+          query = described_class.new(lead_provider_id: lead_provider.id, updated_since:)
 
           expect(query.statements).to eq([statement2])
         end
@@ -292,7 +292,7 @@ RSpec.describe Statements::Query do
       other_lead_provider = FactoryBot.create(:lead_provider)
       other_statement = FactoryBot.create(:statement, lead_provider: other_lead_provider)
 
-      query = described_class.new(lead_provider:)
+      query = described_class.new(lead_provider_id: lead_provider.id)
 
       expect { query.statement_by_api_id(other_statement.api_id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -322,7 +322,7 @@ RSpec.describe Statements::Query do
       other_lead_provider = FactoryBot.create(:lead_provider)
       other_statement = FactoryBot.create(:statement, lead_provider: other_lead_provider)
 
-      query = described_class.new(lead_provider:)
+      query = described_class.new(lead_provider_id: lead_provider.id)
 
       expect { query.statement_by_id(other_statement.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
