@@ -98,7 +98,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
         end
       end
 
-      context "when the submission is valid but ECT has an active induction period with another AB" do
+      context "when the submission is valid but ECT has an ongoing induction period with another AB" do
         let(:teacher) { FactoryBot.create(:teacher, trn:) }
         let!(:induction_period) do
           FactoryBot.create(
@@ -122,7 +122,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
         end
       end
 
-      context "when the submission is valid but ECT has an active induction period with the current AB" do
+      context "when the submission is valid but ECT has an ongoing induction period with the current AB" do
         let(:teacher) { FactoryBot.create(:teacher, trn:) }
         let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
         let!(:induction_period) do

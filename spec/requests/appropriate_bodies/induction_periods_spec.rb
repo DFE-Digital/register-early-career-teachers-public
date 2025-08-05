@@ -1,4 +1,4 @@
-RSpec.describe 'Appropriate body editing an active induction period', type: :request do
+RSpec.describe 'AppropriateBodies::InductionPeriodsController', type: :request do
   include_context 'sign in as non-DfE user'
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }

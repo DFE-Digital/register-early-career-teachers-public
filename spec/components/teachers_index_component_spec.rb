@@ -286,7 +286,7 @@ RSpec.describe TeachersIndexComponent, type: :component do
   describe 'real data integration' do
     it 'correctly counts open inductions for the appropriate body' do
       rendered = render_inline(component)
-      # teacher_1 and teacher_2 both have active inductions with this appropriate body
+      # teacher_1 and teacher_2 both have ongoing inductions with this appropriate body
       expect(rendered.css('h2').text).to include('2 open induction')
     end
 
