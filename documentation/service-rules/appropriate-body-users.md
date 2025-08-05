@@ -16,6 +16,24 @@ Appropriate bodies are responsible for informing DfE when:
 * an early career teacher completes their induction
 * extensions are added to an early career teacher's induction
 
+## How the service works for appropriate bodies
+
+[Signing in](#signing-in)
+
+[Viewing early career teachers](#viewing-early-career-teachers)
+
+[Finding and claiming new early career teachers](#finding-and-claiming-new-early-career-teachers)
+
+[Releasing an early career teacher](#releasing-an-early-career-teacher)
+
+[Passing an early career teacher’s induction](#passing-an-early-career-teacher-39-s-induction)
+
+[Failing an early career teacher's induction](#failing-an-early-career-teacher-39-s-induction)
+
+[Extensions](#extensions)
+
+[Processing multiple ECTs](#processing-multiple-ects)
+
 ## Signing in
 
 Appropriate body users sign in with [DfE Sign-in](https://services.signin.education.gov.uk/), an [OpenID Connect](https://openid.net/developers/how-connect-works/)-based [single sign-on](https://en.wikipedia.org/wiki/Single_sign-on) service used by DfE.
@@ -287,114 +305,3 @@ Every column is mandatory.
 
 Optionally, an `Error message` column is supported.
 Unprocessable ECTs can be downloaded as a CSV with actionable feedback on why the task was not completed.
-
-
-
-```mermaid
-erDiagram
-
-  AppropriateBody {
-    integer id
-    string name
-    datetime created_at
-    datetime updated_at
-    uuid dfe_sign_in_organisation_id
-    uuid dqt_id
-    enum body_type
-  }
-
-  PendingInductionSubmissionBatch {
-    integer id
-    integer appropriate_body_id
-    enum batch_type
-    enum batch_status
-    string error_message
-    datetime created_at
-    datetime updated_at
-    jsonb data
-    string file_name
-    integer uploaded_count
-    integer processed_count
-    integer errored_count
-    integer released_count
-    integer failed_count
-    integer passed_count
-    integer claimed_count
-    integer file_size
-    string file_type
-  }
-
-  PendingInductionSubmission {
-    integer id
-    integer appropriate_body_id
-    string establishment_id
-    string trn
-    string trs_first_name
-    string trs_last_name
-    date date_of_birth
-    string trs_induction_status
-    enum induction_programme
-    date started_on
-    date finished_on
-    float number_of_terms
-    datetime created_at
-    datetime updated_at
-    datetime confirmed_at
-    citext trs_email_address
-    jsonb trs_alerts
-    date trs_induction_start_date
-    string trs_induction_status_description
-    string trs_qts_status_description
-    date trs_initial_teacher_training_end_date
-    string trs_initial_teacher_training_provider_name
-    enum outcome
-    date trs_qts_awarded_on
-    datetime delete_at
-    integer pending_induction_submission_batch_id
-    string error_messages
-    enum training_programme
-  }
-
-  Teacher {
-    integer id
-    string corrected_name
-    datetime created_at
-    datetime updated_at
-    string trn
-    string trs_first_name
-    string trs_last_name
-    uuid ecf_user_id
-    uuid ecf_ect_profile_id
-    uuid ecf_mentor_profile_id
-    date trs_qts_awarded_on
-    string trs_qts_status_description
-    string trs_induction_status
-    string trs_initial_teacher_training_provider_name
-    date trs_initial_teacher_training_end_date
-    datetime trs_data_last_refreshed_at
-    date mentor_became_ineligible_for_funding_on
-    enum mentor_became_ineligible_for_funding_reason
-    boolean trs_deactivated
-  }
-
-  InductionPeriod {
-    <!-- integer id -->
-    <!-- integer appropriate_body_id -->
-    date started_on
-    date finished_on
-    <!-- datetime created_at -->
-    <!-- datetime updated_at -->
-    float number_of_terms
-    daterange range
-    <!-- integer teacher_id -->
-    enum outcome
-    enum induction_programme
-    enum training_programme
-  }
-
-  PendingInductionSubmissionBatch }o--|| AppropriateBody : belongs_to
-  PendingInductionSubmission }o--|| AppropriateBody : belongs_to
-  PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
-  InductionPeriod }o--|| AppropriateBody : belongs_to
-  InductionPeriod }o--|| Teacher : belongs_to
-```
