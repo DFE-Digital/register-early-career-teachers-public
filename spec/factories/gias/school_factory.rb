@@ -113,5 +113,9 @@ FactoryBot.define do
     trait(:state_school_type) do
       type_name { GIAS::Types::STATE_SCHOOL_TYPES.sample }
     end
+
+    trait(:with_school) do
+      school { build_school }
+    end
   end
 end
