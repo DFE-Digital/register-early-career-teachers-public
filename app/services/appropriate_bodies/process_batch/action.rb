@@ -57,17 +57,17 @@ module AppropriateBodies
         elsif teacher.blank?
           capture_error("#{name} has not yet been claimed")
           true
-        elsif completed_induction_period?
+        elsif passed? || failed?
           capture_error("#{name} has already completed their induction")
           true
-        elsif ongoing_induction_period?
+        elsif no_ongoing_induction_period?
           capture_error("#{name} does not have an open induction")
           true
         elsif claimed_by_another_ab?
           capture_error("#{name} is completing their induction with another appropriate body")
           true
         else
-          false
+          false # can be claimed
         end
       end
 
@@ -89,16 +89,6 @@ module AppropriateBodies
       # @return [Boolean] 0-16 upto one decimal place
       def invalid_terms?
         row.number_of_terms !~ /\A\d+(\.\d{1})?\z/ || !row.number_of_terms.to_f.between?(0, 16)
-      end
-
-      # @return [Boolean]
-      def ongoing_induction_period?
-        induction_periods.ongoing_induction_period.blank?
-      end
-
-      # @return [Boolean]
-      def completed_induction_period?
-        induction_periods.last_induction_period&.outcome.present?
       end
 
       # @return [AppropriateBodies::ReleaseECT]
