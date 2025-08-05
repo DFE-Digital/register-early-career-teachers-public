@@ -8,6 +8,9 @@ class ContractPeriod < ApplicationRecord
   has_many :lead_provider_delivery_partnerships, through: :active_lead_providers
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
 
+  # Scopes
+  scope :most_recent_first, -> { order(year: :desc, started_on: :desc) }
+
   # Validations
   validates :year,
             presence: true,
