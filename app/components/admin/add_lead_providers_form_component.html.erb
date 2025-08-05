@@ -1,7 +1,7 @@
 <%= form_with url: form_url, method: :patch, local: true do |f| %>
   <%= f.hidden_field :year, value: year %>
-  <%= f.hidden_field :page, value: page || "" %>
-  <%= f.hidden_field :q, value: q || "" %>
+  <%= f.hidden_field :page, value: page %>
+  <%= f.hidden_field :q, value: q %>
 
   <% if current_partnerships.any? %>
     <div class="govuk-inset-text">

@@ -43,5 +43,9 @@ module Admin
     def hint_text
       "Select lead providers that should work with #{delivery_partner.name} in #{year}"
     end
+
+    def selected?(active_lead_provider)
+      currently_selected_ids.include?(active_lead_provider.id.to_s)
+    end
   end
 end
