@@ -70,20 +70,22 @@ def describe_induction_period(ip)
 end
 
 def describe_training_period(tp)
-  suffix = "(training period)"
+  prefix = (tp.started_on.future?) ? 'will be' : 'was'
 
-  if tp.school_partnership.present?
+  case
+  when tp.provider_led_training_programme? && tp.school_partnership.present?
+    suffix = "(training period - provider-led)"
     lpdp = tp.school_partnership.lead_provider_delivery_partnership
     lead_provider_name = lpdp.active_lead_provider.lead_provider.name
     delivery_partner_name = lpdp.delivery_partner.name
-
-    prefix = (tp.started_on.future?) ? 'will be' : 'was'
-
-    print_seed_info("* #{prefix} trained by #{lead_provider_name} (LP) and #{delivery_partner_name} #{describe_period_duration(tp)} #{suffix}", indent: 4)
-  else
+    print_seed_info("* #{prefix} trained by #{lead_provider_name} (LP) and #{delivery_partner_name} (DP) #{describe_period_duration(tp)} #{suffix}", indent: 4)
+  when tp.provider_led_training_programme? && tp.expression_of_interest.present?
+    suffix = "(training period - provider-led)"
     lead_provider_name = tp.expression_of_interest.lead_provider.name
-
-    print_seed_info("* was registered with an expression of interest with #{lead_provider_name}", indent: 4)
+    print_seed_info("* #{prefix} trained by #{lead_provider_name} (LP) #{describe_period_duration(tp)} providing the EOI is accepted #{suffix}", indent: 4)
+  when tp.school_led_training_programme?
+    suffix = "(training period - school-led)"
+    print_seed_info("* #{prefix} trained #{describe_period_duration(tp)} #{suffix}", indent: 4)
   end
 end
 
@@ -305,9 +307,8 @@ hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: hugh_grant_ect_at_abbey_grove,
   started_on: 2.years.ago,
-  finished_on: 1.week.ago,
-  expression_of_interest: ambitious_artisan_2022,
-  school_partnership: ambitious_artisan_partnership_2022,
+  expression_of_interest: nil,
+  school_partnership: nil,
   training_programme: 'school_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -351,7 +352,6 @@ abbey_grove_school.update!(last_chosen_lead_provider: nil,
 TrainingPeriod.create!(
   ect_at_school_period: colin_firth_ect_at_abbey_grove,
   started_on: 2.years.ago,
-  finished_on: 1.week.ago,
   school_partnership: ambitious_artisan_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }

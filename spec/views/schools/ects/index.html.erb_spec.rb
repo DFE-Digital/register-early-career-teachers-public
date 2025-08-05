@@ -33,11 +33,12 @@ RSpec.describe 'schools/ects/index.html.erb' do
 
   context 'when there are teachers' do
     let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Johnnie', trs_last_name: 'Walker') }
-    let(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:) }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
     before do
       assign(:filtered_teachers, [teacher])
-      assign(:ects, [ect_period])
+      assign(:ects, [ect_at_school_period])
       assign(:number_of_teachers, 1)
       assign(:school, school)
       render
@@ -54,7 +55,7 @@ RSpec.describe 'schools/ects/index.html.erb' do
     context 'when the filtered teachers is empty' do
       before do
         assign(:filtered_teachers, [])
-        assign(:ects, [ect_period])
+        assign(:ects, [ect_at_school_period])
         assign(:number_of_teachers, 1)
         assign(:school, school)
         render

@@ -25,6 +25,28 @@ describe ECTAtSchoolPeriod do
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:mentors).through(:mentorship_periods).source(:mentor) }
     it { is_expected.to have_many(:events) }
+
+    describe '.current_training_period' do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+
+      it { is_expected.to have_one(:current_training_period).class_name('TrainingPeriod') }
+
+      context 'when there is a current period' do
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+
+        it 'returns the current ect_at_school_period' do
+          expect(ect_at_school_period.current_training_period).to eql(training_period)
+        end
+      end
+
+      context 'when there is no current period' do
+        let!(:training_period) { FactoryBot.create(:training_period, :finished, ect_at_school_period:) }
+
+        it 'returns nil' do
+          expect(ect_at_school_period.current_training_period).to be_nil
+        end
+      end
+    end
   end
 
   describe "validations" do
