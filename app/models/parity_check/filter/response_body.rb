@@ -100,11 +100,13 @@ module ParityCheck::Filter
       @ecf_key_hash ||= nested_key_hash(ecf_body_hash)
     end
 
-    def nested_key_hash(hash)
+    def nested_key_hash(item)
       result = {}
 
-      hash.keys.sort.each do |key|
-        value = hash[key]
+      return result unless item.is_a?(Hash)
+
+      item.keys.sort.each do |key|
+        value = item[key]
         result[key] = if value.is_a?(Hash) && value.any?
                         nested_key_hash(value)
                       elsif value.is_a?(Array) && value.any?

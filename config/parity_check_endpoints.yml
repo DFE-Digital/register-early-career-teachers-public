@@ -69,7 +69,6 @@ get:
       query:
         sort: "-updated_at"
   - "/api/v3/delivery-partners":
-      ecf_path: "/api/v3/schools/ecf"
       paginate: true
       query:
         filter:
