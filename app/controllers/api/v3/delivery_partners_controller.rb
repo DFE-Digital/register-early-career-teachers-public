@@ -13,7 +13,7 @@ module API
     private
 
       def delivery_partners_query(conditions: {})
-        conditions[:lead_provider] = current_lead_provider
+        conditions[:lead_provider_id] = current_lead_provider.id
         DeliveryPartners::Query.new(**conditions.compact)
       end
 
