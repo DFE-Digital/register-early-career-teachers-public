@@ -15,7 +15,7 @@ describe Migrators::School do
   end
 
   def create_gias_school(ecf_school)
-    FactoryBot.create(:gias_school,
+    FactoryBot.create(:gias_school, :with_school,
                       urn: ecf_school.urn,
                       administrative_district_name: 'AD1',
                       funding_eligibility: 'eligible_for_fip',
@@ -102,7 +102,7 @@ describe Migrators::School do
       end
 
       let!(:gias_school) do
-        FactoryBot.create(:gias_school,
+        FactoryBot.create(:gias_school, :with_school,
                           urn: ecf_school.urn,
                           administrative_district_name: 'AAD1',
                           funding_eligibility: 'eligible_for_cip',
@@ -147,6 +147,13 @@ describe Migrators::School do
       it "sets api_id to be the id of the school on ECF" do
         expect(data_migration.reload.failure_count).to eq(0)
         expect(gias_school.reload.api_id).to eq(ecf_school.id)
+      end
+
+      it "syncs the timestamps from the ECF school to the RECT school" do
+        expect(data_migration.reload.failure_count).to eq(0)
+        gias_school.reload
+        expect(gias_school.school.created_at).to eq(ecf_school.created_at)
+        expect(gias_school.school.updated_at).to eq(ecf_school.updated_at)
       end
     end
   end
