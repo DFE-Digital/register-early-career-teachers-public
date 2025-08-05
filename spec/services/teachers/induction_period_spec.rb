@@ -39,7 +39,7 @@ describe Teachers::InductionPeriod do
         FactoryBot.create(:induction_period, :ongoing, teacher:, started_on: '2023-10-3')
       end
 
-      it 'returns the active open induction period' do
+      it 'returns the ongoing induction period' do
         expect(service.ongoing_induction_period).to eq(ongoing_induction_period)
       end
     end

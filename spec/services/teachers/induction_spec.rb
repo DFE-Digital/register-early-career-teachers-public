@@ -22,7 +22,7 @@ RSpec.describe Teachers::Induction do
         induction_period_finished_one_year_ago
       end
 
-      it "returns the current active induction period" do
+      it "returns the current induction period" do
         expect(service.current_induction_period).to eq(induction_period_unfinished)
       end
     end
