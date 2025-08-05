@@ -20,21 +20,17 @@ School users are also known as:
 
 ## How the service works for schools
 
-[Accessing the service](#accessing_the_service)
+[Accessing the service](#accessing-the-service)
 
 [Registering an early career teacher](#registering-an-early-career-teacher)
 
-[Assigning a mentor to an early career teacher](#assigning_a_mentor)
- 
- 
-
-<a id="accessing_the_service"></a>
+[Assigning a mentor to an early career teacher](#assigning-a-mentor-to-an-ect)
 
 ## Accessing the service
 
 ### Schools that will access the service
 
-Only schools eligible for DfE-funded training will need to use the service to register their ECTs and mentors. 
+Only schools eligible for DfE-funded training will need to use the service to register their ECTs and mentors.
 
 To be eligible for DfE funding schools:
 - must be open.
@@ -105,7 +101,7 @@ At this stage, when we check the TRS for the existence of the ECT’s record, we
 * been prohibited from teaching
 
 If they have met any of the criteria above, we do not allow the school user to progress registering that ECT.
-  
+
 Whilst an ECT needs qualified teaching status in order to be eligible for funding for training, we do allow them to be registered in advance without it. Similarly, an ECT needs an open induction period reported by an appropriate body to be eligible for funding for training, but they can be registered in advance without this.
 
 This is because we know schools might want to register an ECT before they actually start working in a school. This might mean that ECT doesn’t always have QTS before they are registered for training.
@@ -174,7 +170,7 @@ As we don't have the induction start date for ECTs from appropriate bodies when 
 
 You can read more about why we chose to add this question [in the design history entry here](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/ects-start-date/).
 
-We’ll update this later with more information on the validation and rules for the start date that can be given. 
+We’ll update this later with more information on the validation and rules for the start date that can be given.
 
 ### Giving an ECT’s working pattern
 
@@ -182,7 +178,7 @@ We always ask for the working pattern for an ECT so:
 
 * the ECT can be onboarded to the correct kind of training with a lead provider
 * the lead provider or delivery partner can enquire more with the school for part-time ECTs, to make sure they have all the information they need and are fully supported
-* we better understand the kinds of ECTs undergoing training 
+* we better understand the kinds of ECTs undergoing training
 
 This question is new for Register early career teachers, so the working pattern field will not be populated for migrated records.
 
@@ -215,7 +211,7 @@ Typically, most schools also typically reuse these details across different acad
 
 This may be because one of the organisations has stopped providing services in a role, a lead provider and delivery partner are no longer working together to deliver training. This means their ‘previously used choices’ are no longer valid options. This would typically happen when a school is registering an ECT in a new academic year for the first time.
 
-This comes from when we expected the ECT to start training - their expected training start year, defined above. If the lead provider or delivery partner are no longer working together or at all individually in the expected training start year of an ECT, we wouldn’t show them as an option for schools to select. 
+This comes from when we expected the ECT to start training - their expected training start year, defined above. If the lead provider or delivery partner are no longer working together or at all individually in the expected training start year of an ECT, we wouldn’t show them as an option for schools to select.
 
 When this happens and a school can no longer select their previously used choices for the new academic year, we’ll simply ask them the questions for these programme details again, as outlined below.
 
@@ -228,7 +224,7 @@ If a school hasn’t registered an ECT before, or they’ve chosen not to reuse 
 
 Users from state-funded schools which appropriate body will be supporting the ECT’s induction. Only teaching school hubs now work as appropriate bodies for state-funded schools, but historically local authorities could also take on this role. A school’s choice of appropriate body is typically related to their geographical location, and [they are provided with a list to choose from here](https://www.gov.uk/government/publications/statutory-teacher-induction-appropriate-bodies/find-an-appropriate-body).
 
-However, if the school is an [independent school that is section 41 funded](https://www.gov.uk/government/publications/independent-special-schools-and-colleges), the school user will also get the option to select the ‘Independent Schools Teacher Induction Panel (ISTIP)’. 
+However, if the school is an [independent school that is section 41 funded](https://www.gov.uk/government/publications/independent-special-schools-and-colleges), the school user will also get the option to select the ‘Independent Schools Teacher Induction Panel (ISTIP)’.
 
 ### Giving an ECT’s training programme
 
@@ -240,7 +236,7 @@ This was simplified from the previous programme choices of:
 
 * core induction programme
 * full induction programme
-* do it yourself 
+* do it yourself
 
 Core induction programme and do it yourself have been merged together, into school-led.
 
@@ -250,7 +246,7 @@ We decided we did not need to ask schools for a school-led ECT’s learning mate
 * it would be adding more complexity for when schools register ECTs
 * it would be something else to build, costing time and money but with limited value
 
-If a school answers that the ECT is school-led, they’re taken to the check your answers page. 
+If a school answers that the ECT is school-led, they’re taken to the check your answers page.
 
 If a school answers that the ECT is provider-led, they’ll be asked to give the lead provider for that ECT.
 
@@ -286,8 +282,6 @@ If a school has registered an ECT using previously used programme details, if th
 
 Once a school confirms the details, it saves the details for that ECT. The ECT record is created, with a status of ‘mentor required’. It creates an ECT record that can be viewed on the ‘ECTs’ page. However, registration is still not finished!
 
-<a id="assigning_a_mentor"></a>
-
 ## Assigning a mentor to an ECT
 
 ### Assigning a mentor immediately after giving ECT details
@@ -321,7 +315,7 @@ Regardless of where the journey to assign a mentor starts, schools are taken to 
 
 This will show all existing mentors that are still actively at the school - they have an open `mentor_at_school_period`.
 
-If the school selects a previously registered mentor, they will successfully end the journey to assign a mentor, and also finish registering their ECT. This will change the ECT’s status from ‘mentor required’ to ‘registered’. 
+If the school selects a previously registered mentor, they will successfully end the journey to assign a mentor, and also finish registering their ECT. This will change the ECT’s status from ‘mentor required’ to ‘registered’.
 
 If the school registers a new mentor, they’re taken to the questions outlined below.
 
@@ -411,4 +405,3 @@ Once the school user confirms these details, they have finished:
 * registering that ECT
 
 The status of the ECT changes from ‘mentor required’ to ‘registered’. A mentor record is also created on our ‘mentors’ page.
-
