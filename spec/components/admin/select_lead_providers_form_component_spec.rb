@@ -60,6 +60,16 @@ RSpec.describe Admin::SelectLeadProvidersFormComponent, type: :component do
       end
     end
 
+    describe "#selected?" do
+      it "returns true when active lead provider is currently selected" do
+        expect(component.send(:selected?, active_lead_provider_1)).to be true
+      end
+
+      it "returns false when active lead provider is not currently selected" do
+        expect(component.send(:selected?, active_lead_provider_2)).to be false
+      end
+    end
+
     describe "#form_url" do
       it "generates correct form URL" do
         render_inline(component) # Render first to make helpers available

@@ -1,7 +1,7 @@
 <%= form_with url: form_url, method: :patch, local: true do |f| %>
   <%= f.hidden_field :year, value: year %>
-  <%= f.hidden_field :page, value: page || "" %>
-  <%= f.hidden_field :q, value: q || "" %>
+  <%= f.hidden_field :page, value: page %>
+  <%= f.hidden_field :q, value: q %>
 
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -13,11 +13,14 @@
     <div class="govuk-checkboxes">
       <% all_lead_providers_for_period.each do |alp| %>
         <div class="govuk-checkboxes__item">
-          <%= f.check_box(:lead_provider_ids,
-              { multiple: true, checked: currently_selected_ids.include?(alp.id.to_s), class: "govuk-checkboxes__input" },
-              alp.id, nil) %>
-          <%= f.label(:lead_provider_ids, alp.lead_provider.name,
-              { value: alp.id, class: "govuk-label govuk-checkboxes__label" }) %>
+          <%= f.check_box(
+            :lead_provider_ids,
+            { multiple: true, checked: selected?(alp), class: "govuk-checkboxes__input" },
+            alp.id, nil) %>
+          <%= f.label(
+            :lead_provider_ids,
+            alp.lead_provider.name,
+            { value: alp.id, class: "govuk-label govuk-checkboxes__label" }) %>
         </div>
       <% end %>
     </div>
