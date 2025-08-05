@@ -37,8 +37,11 @@ module Migrators
       migrate(self.class.schools) do |ecf_school|
         gias_school = find_gias_school(urn: ecf_school.urn.to_i) || migrate_school!(ecf_school)
         if check_gias_school(gias_school:, ecf_school:)
-          [compare_fields(gias_school:, ecf_school:),
-           update_gias_school!(gias_school:, api_id: ecf_school.id)].all?
+          [
+            compare_fields(gias_school:, ecf_school:),
+            update_gias_school!(gias_school:, api_id: ecf_school.id),
+            update_school!(school: gias_school.school, ecf_school:),
+          ].all?
         end
       end
     end
@@ -84,5 +87,13 @@ module Migrators
     def open_school_with_partnerships?(ecf_school) = ecf_school.open? && ecf_school.partnerships.exists?
 
     def update_gias_school!(gias_school:, api_id:) = gias_school.update!(api_id:)
+
+    def update_school!(school:, ecf_school:)
+      timestamp_attrs = {
+        created_at: ecf_school.created_at,
+        updated_at: ecf_school.updated_at
+      }
+      school.update_columns(timestamp_attrs)
+    end
   end
 end
