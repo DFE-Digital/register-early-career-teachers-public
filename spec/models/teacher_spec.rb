@@ -14,7 +14,7 @@ describe Teacher do
 
       context 'when there is a current period' do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
-        let!(:finished_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 10.years.ago, finished_on: 8.year.ago, teacher:) }
+        let!(:finished_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 10.years.ago, finished_on: 8.years.ago, teacher:) }
 
         it 'returns the current ect_at_school_period' do
           expect(teacher.current_ect_at_school_period).to eql(ect_at_school_period)
