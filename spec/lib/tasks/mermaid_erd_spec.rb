@@ -12,7 +12,7 @@ describe 'ERD tasks' do
 
       expect(generator).to receive(:generate)
 
-      Rake::Task['erd:generate'].invoke
+      expect { Rake::Task['erd:generate'].invoke }.to output(/\[✔\] Mermaid ERD diagram added to:/).to_stdout
     end
   end
 end
