@@ -53,13 +53,13 @@ module Admin
       ).call
 
       redirect_to admin_delivery_partner_path(params[:id], page: params[:page], q: params[:q]),
-                  notice: "Lead provider partners updated"
+                  alert: "Lead provider partners updated"
     rescue Admin::DeliveryPartners::AddLeadProviders::NoLeadProvidersSelectedError => e
       redirect_to edit_admin_delivery_partner_path(params[:id], year: params[:year], page: params[:page], q: params[:q]),
-                  alert: e.message
+                  notice: e.message
     rescue Admin::DeliveryPartners::AddLeadProviders::ValidationError => e
       redirect_to admin_delivery_partner_path(params[:id], page: params[:page], q: params[:q]),
-                  alert: e.message
+                  notice: e.message
     end
   end
 end
