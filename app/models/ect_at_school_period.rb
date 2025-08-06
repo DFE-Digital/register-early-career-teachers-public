@@ -1,6 +1,7 @@
 class ECTAtSchoolPeriod < ApplicationRecord
   include Interval
   include DeclarativeTouch
+  include DeclarativeMetadata
 
   # Enums
   enum :training_programme,
@@ -22,6 +23,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_one :current_training_period, -> { ongoing_today_or_starting_tomorrow_or_after }, class_name: 'TrainingPeriod'
 
   touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+  update_metadata -> { school }, on_event: %i[create destroy]
 
   # Validations
   validate :appropriate_body_for_independent_school,

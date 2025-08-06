@@ -1,6 +1,7 @@
 class MentorAtSchoolPeriod < ApplicationRecord
   include Interval
   include DeclarativeTouch
+  include DeclarativeMetadata
 
   # Associations
   belongs_to :school, inverse_of: :mentor_at_school_periods
@@ -30,6 +31,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
   validate :teacher_school_distinct_period
 
   touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+  update_metadata -> { school }, on_event: %i[create destroy]
 
   # Scopes
   scope :for_school, ->(school_id) { where(school_id:) }
