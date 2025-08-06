@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_06_082156) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -40,11 +40,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
 
   create_table "active_lead_providers", force: :cascade do |t|
     t.bigint "lead_provider_id", null: false
-    t.bigint "contract_period_id", null: false
+    t.bigint "contract_period_year", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["contract_period_id"], name: "index_active_lead_providers_on_contract_period_id"
-    t.index ["lead_provider_id", "contract_period_id"], name: "idx_on_lead_provider_id_contract_period_id_0083722692", unique: true
+    t.index ["contract_period_year"], name: "index_active_lead_providers_on_contract_period_year"
+    t.index ["lead_provider_id", "contract_period_year"], name: "idx_on_lead_provider_id_contract_period_year_e442ca2260", unique: true
     t.index ["lead_provider_id"], name: "index_active_lead_providers_on_lead_provider_id"
   end
 
@@ -724,7 +724,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_110140) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "active_lead_providers", "contract_periods", primary_key: "year"
+  add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"

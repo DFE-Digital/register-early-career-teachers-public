@@ -401,7 +401,7 @@
   :active_lead_providers:
   - id
   - lead_provider_id
-  - contract_period_id
+  - contract_period_year
   - created_at
   - updated_at
   :statement_adjustments:

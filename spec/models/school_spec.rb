@@ -135,15 +135,15 @@ describe School do
   end
 
   describe "#training_programme_for" do
-    subject(:training_programme_for) { school.training_programme_for(contract_period_id) }
+    subject(:training_programme_for) { school.training_programme_for(contract_period_year) }
 
     let(:school) { FactoryBot.build(:school) }
-    let(:contract_period_id) { FactoryBot.build(:contract_period).id }
+    let(:contract_period_year) { FactoryBot.build(:contract_period).id }
 
     it "calls Schools::TrainingProgramme service with correct params" do
       training_programma_service = instance_double(Schools::TrainingProgramme)
 
-      allow(Schools::TrainingProgramme).to receive(:new).with(school:, contract_period_id:).and_return(training_programma_service)
+      allow(Schools::TrainingProgramme).to receive(:new).with(school:, contract_period_year:).and_return(training_programma_service)
       expect(training_programma_service).to receive(:training_programme)
 
       training_programme_for

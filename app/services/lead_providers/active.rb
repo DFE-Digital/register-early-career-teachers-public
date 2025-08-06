@@ -13,7 +13,7 @@ module LeadProviders
     def self.in_contract_period(contract_period)
       LeadProvider
         .joins(:active_lead_providers)
-        .where(active_lead_providers: { contract_period_id: contract_period.id })
+        .where(active_lead_providers: { contract_period_year: contract_period.id })
     end
   end
 end
