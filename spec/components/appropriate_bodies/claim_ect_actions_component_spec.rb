@@ -24,7 +24,7 @@ RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
 
     context "when teacher is registered with another appropriate body" do
       let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
-      let!(:induction_period) do
+      let!(:ongoing_induction_period) do
         FactoryBot.create(
           :induction_period,
           :ongoing,

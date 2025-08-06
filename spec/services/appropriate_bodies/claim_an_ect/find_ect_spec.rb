@@ -28,7 +28,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
       it "assigns the incoming attributes to the pending_induction_submission and returns it"
     end
 
-    context "when there is a match and the teacher has an active induction period" do
+    context "when there is a match and the teacher has an ongoing induction period" do
       let(:teacher) { FactoryBot.create(:teacher) }
       let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
       let!(:induction_period) do
