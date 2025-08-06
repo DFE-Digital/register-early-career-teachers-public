@@ -30,5 +30,6 @@ RSpec.describe "Delivery partners API", type: :request do
 
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "a show endpoint"
+    it_behaves_like "a does not filter by cohort endpoint"
   end
 end
