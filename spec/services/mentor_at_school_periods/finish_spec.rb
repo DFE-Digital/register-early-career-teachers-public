@@ -5,10 +5,10 @@ describe MentorAtSchoolPeriods::Finish do
   let(:started_on) { 3.months.ago.to_date }
   let(:finished_on) { Date.current }
 
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :active, teacher:, started_on:) }
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :active, mentor_at_school_period:, started_on:) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :active, started_on:) }
-  let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :active, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on:) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:) }
+  let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
 
   describe '#finish_existing_at_school_periods!' do
     it "finishes all the associated periods" do

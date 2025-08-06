@@ -72,15 +72,15 @@ RSpec.describe 'Registering a mentor', :js do
     @another_lead_provider = FactoryBot.create(:lead_provider, name: "Another lead provider")
     FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period:)
 
-    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :provider_led, :active, lead_provider: @lead_provider, school: @school)
+    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :provider_led, :ongoing, lead_provider: @lead_provider, school: @school)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
   def and_mentor_has_existing_mentorship_at_another_school
     another_school = FactoryBot.create(:school, urn: "7654321")
     @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: 'Kirk', trs_last_name: 'Van Houten', corrected_name: nil)
-    @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school: another_school, teacher: @teacher)
-    @training_period = FactoryBot.create(:training_period, :for_mentor, :with_school_partnership, :active, started_on: @existing_mentor_at_school_period.started_on, mentor_at_school_period: @existing_mentor_at_school_period)
+    @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: another_school, teacher: @teacher)
+    @training_period = FactoryBot.create(:training_period, :for_mentor, :with_school_partnership, :ongoing, started_on: @existing_mentor_at_school_period.started_on, mentor_at_school_period: @existing_mentor_at_school_period)
   end
 
   def and_i_am_on_the_schools_landing_page

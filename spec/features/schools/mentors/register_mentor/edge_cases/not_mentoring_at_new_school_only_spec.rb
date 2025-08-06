@@ -52,14 +52,14 @@ RSpec.describe 'Registering a mentor', :js do
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
     @lead_provider = FactoryBot.create(:lead_provider, name: "Xavier's School for Gifted Youngsters")
     FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period: FactoryBot.create(:contract_period, year: Date.current.year))
-    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :active, lead_provider: @lead_provider, school: @school)
+    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :ongoing, lead_provider: @lead_provider, school: @school)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
   def and_mentor_has_existing_mentorship_at_another_school
     another_school = FactoryBot.create(:school, urn: "7654321")
     @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: 'Kirk', trs_last_name: 'Van Houten', corrected_name: nil)
-    @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :active, school: another_school, teacher: @teacher)
+    @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: another_school, teacher: @teacher)
   end
 
   def and_i_am_on_the_schools_landing_page
