@@ -40,11 +40,11 @@ module DeliveryPartners
       <<~SQL.squish
         (
           SELECT ARRAY(
-            SELECT DISTINCT active_lead_providers.contract_period_id::text
+            SELECT DISTINCT active_lead_providers.contract_period_year::text
             FROM lead_provider_delivery_partnerships
             INNER JOIN active_lead_providers ON active_lead_providers.id = lead_provider_delivery_partnerships.active_lead_provider_id
             WHERE lead_provider_delivery_partnerships.delivery_partner_id = delivery_partners.id #{lead_provider_where_clause}
-            ORDER BY active_lead_providers.contract_period_id::text
+            ORDER BY active_lead_providers.contract_period_year::text
           )
         ) AS transient_cohorts
       SQL

@@ -36,9 +36,9 @@ RSpec.describe Admin::Statements::SelectorComponent, type: :component do
     end
   end
 
-  context ".contract_period_id" do
-    it "returns contract_period_id from statement" do
-      expect(component.contract_period_id).to eq(statement.active_lead_provider.contract_period_id)
+  context ".contract_period_year" do
+    it "returns contract_period_year from statement" do
+      expect(component.contract_period_year).to eq(statement.active_lead_provider.contract_period_year)
     end
   end
 
