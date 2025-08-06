@@ -204,6 +204,24 @@ RSpec.describe ParityCheck::RequestBuilder do
             expect(instance.page).to eq(1)
           end
         end
+
+        context "when there the response bodies are nil" do
+          let(:previous_response) { FactoryBot.build(:parity_check_response, ecf_body: nil, rect_body: nil) }
+
+          it "returns false and does not increment the page number" do
+            expect(advance_page).to be_falsy
+            expect(instance.page).to eq(1)
+          end
+        end
+
+        context "when there the response bodies do not return JSON" do
+          let(:previous_response) { FactoryBot.build(:parity_check_response, ecf_body: "bad response", rect_body: "bad response") }
+
+          it "returns false and does not increment the page number" do
+            expect(advance_page).to be_falsy
+            expect(instance.page).to eq(1)
+          end
+        end
       end
 
       context "when pagination is disabled" do
