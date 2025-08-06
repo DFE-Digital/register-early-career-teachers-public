@@ -16,6 +16,24 @@ Appropriate bodies are responsible for informing DfE when:
 * an early career teacher completes their induction
 * extensions are added to an early career teacher's induction
 
+## How the service works for appropriate bodies
+
+[Signing in](#signing-in)
+
+[Viewing early career teachers](#viewing-early-career-teachers)
+
+[Finding and claiming new early career teachers](#finding-and-claiming-new-early-career-teachers)
+
+[Releasing an early career teacher](#releasing-an-early-career-teacher)
+
+[Passing an early career teacher’s induction](#passing-an-early-career-teacher-39-s-induction)
+
+[Failing an early career teacher's induction](#failing-an-early-career-teacher-39-s-induction)
+
+[Extensions](#extensions)
+
+[Processing multiple ECTs](#processing-multiple-ects)
+
 ## Signing in
 
 Appropriate body users sign in with [DfE Sign-in](https://services.signin.education.gov.uk/), an [OpenID Connect](https://openid.net/developers/how-connect-works/)-based [single sign-on](https://en.wikipedia.org/wiki/Single_sign-on) service used by DfE.
@@ -285,5 +303,5 @@ Every column is mandatory.
 
 #### Errors
 
-Optionally, an `Error message` column is supported. 
+Optionally, an `Error message` column is supported.
 Unprocessable ECTs can be downloaded as a CSV with actionable feedback on why the task was not completed.
