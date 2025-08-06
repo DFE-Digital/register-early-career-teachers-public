@@ -92,10 +92,10 @@ module ParityCheck
     end
 
     def pages_remain?(previous_response)
-      return nil unless pagination_enabled?
+      return false unless pagination_enabled?
 
-      [previous_response.ecf_body, previous_response.rect_body].any? do |body|
-        JSON.parse(body)["data"]&.size == PAGINATION_PER_PAGE
+      [previous_response.ecf_body_hash, previous_response.rect_body_hash].compact.any? do |body|
+        body[:data]&.size == PAGINATION_PER_PAGE
       rescue JSON::ParserError
         false
       end
