@@ -17,8 +17,8 @@ module Admin
         ContractPeriod.order(year: :asc)
       end
 
-      def contract_period_id
-        @statement.active_lead_provider.contract_period_id
+      def contract_period_year
+        @statement.active_lead_provider.contract_period_year
       end
 
       def statement_dates

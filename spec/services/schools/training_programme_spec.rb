@@ -1,9 +1,9 @@
 describe Schools::TrainingProgramme do
-  subject { described_class.new(school:, contract_period_id:) }
+  subject { described_class.new(school:, contract_period_year:) }
 
   let(:school) { FactoryBot.create(:school, urn: "123456") }
   let(:contract_period) { FactoryBot.create(:contract_period) }
-  let(:contract_period_id) { contract_period.id }
+  let(:contract_period_year) { contract_period.id }
 
   describe "#training_programme" do
     context "when no transient values are available" do
@@ -190,7 +190,7 @@ describe Schools::TrainingProgramme do
     end
 
     context "when transient values are available" do
-      subject { described_class.new(school: scope, contract_period_id:) }
+      subject { described_class.new(school: scope, contract_period_year:) }
 
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:query) { Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_year: contract_period.id) }

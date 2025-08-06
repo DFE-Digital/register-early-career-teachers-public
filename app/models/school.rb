@@ -114,7 +114,7 @@ class School < ApplicationRecord
 
   def to_param = urn
 
-  def training_programme_for(contract_period_id)
-    Schools::TrainingProgramme.new(school: self, contract_period_id:).training_programme
+  def training_programme_for(contract_period_year)
+    Schools::TrainingProgramme.new(school: self, contract_period_year:).training_programme
   end
 end

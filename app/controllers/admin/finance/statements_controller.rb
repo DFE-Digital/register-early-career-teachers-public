@@ -57,7 +57,7 @@ module Admin::Finance
     end
 
     def contract_period_years
-      filter_params[:contract_period_id].presence
+      filter_params[:contract_period_year].presence
     end
 
     def statement_date
@@ -78,7 +78,7 @@ module Admin::Finance
     end
 
     def filter_params
-      params.permit(:lead_provider_id, :contract_period_id, :statement_date, :statement_type)
+      params.permit(:lead_provider_id, :contract_period_year, :statement_date, :statement_type)
     end
 
     helper_method :filter_params

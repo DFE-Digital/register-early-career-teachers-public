@@ -30,11 +30,11 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
     end
   end
 
-  context ".contract_period_id" do
-    let(:filter_params) { { contract_period_id: 2025 } }
+  context ".contract_period_year" do
+    let(:filter_params) { { contract_period_year: 2025 } }
 
-    it "returns filter param contract_period_id" do
-      expect(component.contract_period_id).to eq(2025)
+    it "returns filter param contract_period_year" do
+      expect(component.contract_period_year).to eq(2025)
     end
   end
 

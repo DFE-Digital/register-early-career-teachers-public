@@ -43,7 +43,7 @@ RSpec.describe Schools::Query do
     end
 
     describe "filtering" do
-      describe "by `contract_period_id`" do
+      describe "by `contract_period_year`" do
         let!(:school1) { FactoryBot.create(:school, :eligible) }
         let!(:school2) { FactoryBot.create(:school) }
         let!(:school3) { FactoryBot.create(:school) }
@@ -60,17 +60,17 @@ RSpec.describe Schools::Query do
           }
         end
 
-        it "filters by `contract_period_id`" do
+        it "filters by `contract_period_year`" do
           expect(query.schools).to contain_exactly(school1, school3)
         end
 
-        context "when `contract_period_id` param is omitted" do
+        context "when `contract_period_year` param is omitted" do
           it "returns no schools" do
             expect(described_class.new.schools).to be_empty
           end
         end
 
-        context "when no `contract_period_id` is found" do
+        context "when no `contract_period_year` is found" do
           let!(:contract_period_year) { "0000" }
 
           it "returns no schools" do
@@ -78,7 +78,7 @@ RSpec.describe Schools::Query do
           end
         end
 
-        context "when `contract_period_id` param is blank" do
+        context "when `contract_period_year` param is blank" do
           let!(:contract_period_year) { " " }
 
           it "returns no schools" do
@@ -124,7 +124,7 @@ RSpec.describe Schools::Query do
           end
         end
 
-        context "when `contract_period_id` param is blank" do
+        context "when `contract_period_year` param is blank" do
           let!(:updated_since) { " " }
 
           it "returns all eligible schools" do
