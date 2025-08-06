@@ -13,7 +13,7 @@ module API
     private
 
       def delivery_partners_query(conditions: {})
-        conditions[:lead_provider] = current_lead_provider
+        conditions[:lead_provider_id] = current_lead_provider.id
         DeliveryPartners::Query.new(**conditions.compact)
       end
 
@@ -30,7 +30,7 @@ module API
       end
 
       def to_json(obj)
-        DeliveryPartnerSerializer.render(obj, root: "data", lead_provider: current_lead_provider)
+        DeliveryPartnerSerializer.render(obj, root: "data")
       end
     end
   end

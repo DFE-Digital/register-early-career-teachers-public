@@ -43,8 +43,8 @@ describe SchoolSerializer, type: :serializer do
       JSON.parse(described_class.render(scope))
     end
 
-    let(:query) { Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_id: contract_period.id) }
-    let(:scope) { query.school(school.id) }
+    let(:query) { Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_year: contract_period.id) }
+    let(:scope) { query.school_by_id(school.id) }
 
     describe "core attributes" do
       it "serializes `id`" do
@@ -103,7 +103,7 @@ describe SchoolSerializer, type: :serializer do
 
   context "when serialiser input is a school object" do
     subject(:response) do
-      JSON.parse(described_class.render(school, contract_period_id: contract_period.id, lead_provider_id: lead_provider.id))
+      JSON.parse(described_class.render(school, contract_period_year: contract_period.id, lead_provider_id: lead_provider.id))
     end
 
     describe "core attributes" do

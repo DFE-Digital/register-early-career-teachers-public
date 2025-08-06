@@ -1,8 +1,8 @@
 class TestQuery
-  include QueryOrderable
+  include Queries::Orderable
 end
 
-RSpec.describe QueryOrderable do
+RSpec.describe Queries::Orderable do
   let(:query) { TestQuery.new }
 
   describe "#sort_order" do

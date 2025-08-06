@@ -1,17 +1,17 @@
 module DeliveryPartners
   class Query
     include Queries::ConditionFormats
-    include QueryOrderable
-    include FilterIgnorable
+    include Queries::Orderable
+    include Queries::FilterIgnorable
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, contract_period_years: :ignore, sort: nil)
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: nil)
       @scope = DeliveryPartner
-        .select("delivery_partners.*", transient_cohorts_subquery(lead_provider:))
+        .select("delivery_partners.*", transient_cohorts_subquery(lead_provider_id:))
         .distinct
 
-      where_lead_provider_is(lead_provider)
+      where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
       set_sort_by(sort)
     end
@@ -34,8 +34,8 @@ module DeliveryPartners
 
   private
 
-    def transient_cohorts_subquery(lead_provider:)
-      lead_provider_where_clause = %(AND active_lead_providers.lead_provider_id = #{ActiveRecord::Base.connection.quote(lead_provider.id)}) unless ignore?(filter: lead_provider)
+    def transient_cohorts_subquery(lead_provider_id:)
+      lead_provider_where_clause = %(AND active_lead_providers.lead_provider_id = #{ActiveRecord::Base.connection.quote(lead_provider_id)}) unless ignore?(filter: lead_provider_id)
 
       <<~SQL.squish
         (
@@ -50,12 +50,12 @@ module DeliveryPartners
       SQL
     end
 
-    def where_lead_provider_is(lead_provider)
-      return if ignore?(filter: lead_provider)
+    def where_lead_provider_is(lead_provider_id)
+      return if ignore?(filter: lead_provider_id)
 
       delivery_partners_with_lead_provider = DeliveryPartner
         .joins(lead_provider_delivery_partnerships: :active_lead_provider)
-        .where(active_lead_provider: { lead_provider_id: lead_provider.id })
+        .where(active_lead_provider: { lead_provider_id: })
 
       scope.merge!(delivery_partners_with_lead_provider)
     end
