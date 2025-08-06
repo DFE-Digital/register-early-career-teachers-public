@@ -1,4 +1,4 @@
-RSpec.describe 'Admin editing an active induction period', type: :request do
+RSpec.describe 'Admin::InductionPeriodsController', type: :request do
   include_context 'sign in as DfE user'
 
   let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }

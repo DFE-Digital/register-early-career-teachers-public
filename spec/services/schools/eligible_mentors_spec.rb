@@ -11,11 +11,11 @@ RSpec.describe Schools::EligibleMentors do
       it { is_expected.to be_empty }
     end
 
-    context "when the school has active mentors registered" do
-      let!(:active_mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, :ongoing, school:, started_on: 2.years.ago) }
+    context "when the school has ongoing mentors registered" do
+      let!(:ongoing_mentors) { FactoryBot.create_list(:mentor_at_school_period, 2, :ongoing, school:, started_on: 2.years.ago) }
 
       it "returns those mentors" do
-        expect(subject.to_a).to match_array(active_mentors)
+        expect(subject.to_a).to match_array(ongoing_mentors)
       end
     end
 

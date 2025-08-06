@@ -4,7 +4,7 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
   let(:mode) { :admin }
   let(:teacher) { FactoryBot.create(:teacher) }
 
-  context "without active induction period" do
+  context "without ongoing induction period" do
     it "does not render" do
       expect(component.render?).to be false
       render_inline(component)
@@ -12,7 +12,7 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
     end
   end
 
-  context "with active induction period" do
+  context "with ongoing induction period" do
     before do
       FactoryBot.create(:induction_period, :ongoing, teacher:)
       render_inline(component)
