@@ -1,6 +1,6 @@
 describe ActiveLeadProvider do
   describe "associations" do
-    it { is_expected.to belong_to(:contract_period) }
+    it { is_expected.to belong_to(:contract_period).with_foreign_key(:contract_period_year) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to have_many(:statements) }
     it { is_expected.to have_many(:lead_provider_delivery_partnerships) }

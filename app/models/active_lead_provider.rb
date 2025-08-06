@@ -1,5 +1,5 @@
 class ActiveLeadProvider < ApplicationRecord
-  belongs_to :contract_period, inverse_of: :active_lead_providers
+  belongs_to :contract_period, inverse_of: :active_lead_providers, foreign_key: :contract_period_year
   belongs_to :lead_provider, inverse_of: :active_lead_providers
   has_many :lead_provider_delivery_partnerships
   has_many :delivery_partners, through: :lead_provider_delivery_partnerships
