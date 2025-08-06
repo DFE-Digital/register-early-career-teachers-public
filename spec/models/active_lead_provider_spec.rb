@@ -13,8 +13,8 @@ describe ActiveLeadProvider do
     subject { FactoryBot.create(:active_lead_provider) }
 
     it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Choose a lead provider") }
-    it { is_expected.to validate_presence_of(:contract_period_id).with_message("Choose a contract period") }
-    it { is_expected.to validate_uniqueness_of(:contract_period_id).scoped_to(:lead_provider_id).with_message("Contract period and lead provider must be unique") }
+    it { is_expected.to validate_presence_of(:contract_period_year).with_message("Choose a contract period") }
+    it { is_expected.to validate_uniqueness_of(:contract_period_year).scoped_to(:lead_provider_id).with_message("Contract period and lead provider must be unique") }
   end
 
   describe "scopes" do

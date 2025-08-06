@@ -30,7 +30,7 @@ describe Migrators::SchoolPartnership do
           school_partnership = SchoolPartnership.find_by!(api_id: partnership.id)
 
           lead_provider = school_partnership.lead_provider_delivery_partnership.active_lead_provider.lead_provider
-          year = school_partnership.lead_provider_delivery_partnership.active_lead_provider.contract_period_id
+          year = school_partnership.lead_provider_delivery_partnership.active_lead_provider.contract_period_year
           delivery_partner = school_partnership.lead_provider_delivery_partnership.delivery_partner
           school = school_partnership.school
 

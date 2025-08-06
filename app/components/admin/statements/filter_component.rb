@@ -19,8 +19,8 @@ module Admin
         ContractPeriod.order(year: :asc)
       end
 
-      def contract_period_id
-        params[:contract_period_id]
+      def contract_period_year
+        params[:contract_period_year]
       end
 
       def statement_dates

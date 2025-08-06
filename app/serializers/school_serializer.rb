@@ -5,13 +5,13 @@ class SchoolSerializer < Blueprinter::Base
     field :name
     field(:urn) { |school, _| school.urn.to_s }
     field(:cohort) do |school, options|
-      school_contract_period_id(school, options)
+      school_contract_period_year(school, options)
     end
     field(:in_partnership) do |school, options|
       in_partnership?(school, options)
     end
     field(:induction_programme_choice) do |school, options|
-      school.training_programme_for(school_contract_period_id(school, options))
+      school.training_programme_for(school_contract_period_year(school, options))
     end
     field(:expression_of_interest) do |school, options|
       expressions_of_interest?(school, options)
@@ -20,7 +20,7 @@ class SchoolSerializer < Blueprinter::Base
     field(:api_updated_at, name: :updated_at)
 
     class << self
-      def school_contract_period_id(school, options)
+      def school_contract_period_year(school, options)
         if school.respond_to?(:transient_contract_period_year)
           school.transient_contract_period_year
         else

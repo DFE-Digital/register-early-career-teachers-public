@@ -25,7 +25,7 @@ describe Migrators::ActiveLeadProvider do
 
         active_lead_provider = ActiveLeadProvider.find_by(
           lead_provider_id: LeadProvider.find_by_ecf_id(migration_resource1.id).id,
-          contract_period_id: migration_resource1.cohorts.first.start_year
+          contract_period_year: migration_resource1.cohorts.first.start_year
         )
         expect(active_lead_provider).to be_present
       end
