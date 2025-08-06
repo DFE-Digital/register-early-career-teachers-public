@@ -82,12 +82,15 @@ end
 group :development, :test do
   gem "brakeman"
   gem "debug", platforms: %i[mri windows]
-  gem "factory_bot_rails"
-  gem "faker"
   gem 'rswag-specs'
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-govuk', require: false
   gem 'rubocop-performance', require: false
+end
+
+group :development, :test, :review, :sandbox do
+  gem "factory_bot_rails"
+  gem "faker"
 end
 
 group :nanoc do
