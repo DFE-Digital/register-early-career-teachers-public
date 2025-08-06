@@ -21,6 +21,10 @@ migration:
       threads: 3
       processes: 3
       polling_interval: 0.1
+    - queues: [migration]
+      threads: 2
+      processes: 1
+      polling_interval: 0.1
 
 review:
   <<: *default
