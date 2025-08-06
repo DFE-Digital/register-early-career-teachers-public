@@ -1,5 +1,68 @@
 # CSV processing for multiple Appropriate Body claims and outcomes
 
+The "bulk upload" feature allows ABs to upload a CSV file and process multiple ECT claims
+or process multiple ECT outcomes and releases more efficiently.
+
+### Entity relationship diagram
+
+```mermaid
+erDiagram
+
+  AppropriateBody {
+    string name
+    enum body_type
+  }
+
+  PendingInductionSubmissionBatch {
+    enum batch_type "claim, action"
+    enum batch_status "pending, processing, processed, completing, completed, failed"
+    string error_message
+    string file_name
+    integer file_size
+    string file_type
+    jsonb data "[]"
+    integer uploaded_count
+    integer processed_count
+    integer errored_count
+    integer released_count
+    integer failed_count
+    integer passed_count
+    integer claimed_count
+  }
+
+  PendingInductionSubmission {
+    string trn
+    date date_of_birth
+    date started_on
+    date finished_on
+    float number_of_terms
+    enum induction_programme "fip, cip, diy"
+    enum training_programme "school_led, provider_led"
+    enum outcome "pass, fail"
+    string error_messages
+    datetime delete_at
+  }
+
+  Teacher {
+    string trn
+  }
+
+  InductionPeriod {
+    date started_on
+    date finished_on
+    float number_of_terms
+    enum induction_programme "fip, cip, diy"
+    enum training_programme "school_led, provider_led"
+    enum outcome "pass, fail"
+  }
+
+  PendingInductionSubmissionBatch |o--|{ PendingInductionSubmission : has_many
+  PendingInductionSubmissionBatch }o--|| AppropriateBody : belongs_to
+  PendingInductionSubmission }o--|| AppropriateBody : belongs_to
+  InductionPeriod }o--|| AppropriateBody : belongs_to
+  InductionPeriod }o--|| Teacher : belongs_to
+```
+
 ## Existing manual journey
 
 - The manual journeys gather data in draft form before making changes to important data in the service.
@@ -34,64 +97,3 @@
 - Prior to release we surfaced database changes to enable better testing and these became the first draft of an admin console.
 - Upon release the feature helped flag that worker queue config and pod resources needed attention.
 - Initial usage highlighted that using the CYA approach needed further consideration as external changes could invalidate rows.
-
-## Simplified ERD
-
-```mermaid
-erDiagram
-
-  AppropriateBody {
-    string name
-    enum body_type
-  }
-
-  PendingInductionSubmissionBatch {
-    enum batch_type
-    enum batch_status
-    string error_message
-    string file_name
-    integer file_size
-    string file_type
-    jsonb data
-    integer uploaded_count
-    integer processed_count
-    integer errored_count
-    integer released_count
-    integer failed_count
-    integer passed_count
-    integer claimed_count
-  }
-
-  PendingInductionSubmission {
-    string trn
-    date date_of_birth
-    date started_on
-    date finished_on
-    float number_of_terms
-    enum induction_programme
-    enum training_programme
-    enum outcome
-    string error_messages
-    datetime delete_at
-  }
-
-  Teacher {
-    string trn
-  }
-
-  InductionPeriod {
-    date started_on
-    date finished_on
-    float number_of_terms
-    daterange range
-    enum outcome
-    enum induction_programme
-    enum training_programme
-  }
-
-  PendingInductionSubmissionBatch }o--|| AppropriateBody : belongs_to
-  PendingInductionSubmission }o--|| AppropriateBody : belongs_to
-  PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
-  InductionPeriod }o--|| AppropriateBody : belongs_to
-  InductionPeriod }o--|| Teacher : belongs_to
-```
