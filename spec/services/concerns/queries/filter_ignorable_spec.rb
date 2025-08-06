@@ -1,8 +1,8 @@
 class TestQuery
-  include FilterIgnorable
+  include Queries::FilterIgnorable
 end
 
-RSpec.describe FilterIgnorable do
+RSpec.describe Queries::FilterIgnorable do
   let(:query) { TestQuery.new }
 
   describe "#ignore?" do

@@ -3,20 +3,21 @@ module Statements
     class InvalidFeeTypeError < StandardError; end
 
     include Queries::ConditionFormats
-    include FilterIgnorable
+    include Queries::FilterIgnorable
+    include Queries::Orderable
 
     attr_reader :scope
 
-    def initialize(lead_provider: :ignore, contract_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, order_by: :payment_date)
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, sort: nil)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
 
-      where_lead_provider_is(lead_provider)
+      where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
       where_updated_since(updated_since)
       where_status_is(status)
       where_fee_type_is(fee_type)
       where_statement_date(statement_date)
-      set_order_by(order_by)
+      set_sort_by(sort)
     end
 
     def statements
@@ -29,7 +30,7 @@ module Statements
       fail(ArgumentError, "api_id needed")
     end
 
-    def statement(id)
+    def statement_by_id(id)
       return scope.find(id) if id.present?
 
       fail(ArgumentError, "id needed")
@@ -37,10 +38,10 @@ module Statements
 
   private
 
-    def where_lead_provider_is(lead_provider)
-      return if ignore?(filter: lead_provider)
+    def where_lead_provider_is(lead_provider_id)
+      return if ignore?(filter: lead_provider_id)
 
-      scope.merge!(Statement.joins(:lead_provider).where(lead_providers: { id: lead_provider.id }))
+      scope.merge!(Statement.joins(:lead_provider).where(lead_providers: { id: lead_provider_id }))
     end
 
     def where_contract_period_year_in(contract_period_years)
@@ -77,15 +78,8 @@ module Statements
       scope.merge!(Statement.with_statement_date(year:, month:))
     end
 
-    def set_order_by(order_by)
-      return if ignore?(filter: order_by)
-
-      case order_by
-      when :statement_date
-        scope.merge!(Statement.order(year: :asc, month: :asc))
-      when :payment_date
-        scope.merge!(Statement.order(payment_date: :asc))
-      end
+    def set_sort_by(sort)
+      @scope = scope.order(sort_order(sort:, model: Statement, default: { payment_date: :asc }))
     end
   end
 end

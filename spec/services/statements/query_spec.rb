@@ -32,19 +32,19 @@ RSpec.describe Statements::Query do
         end
 
         it "filters by `lead_provider`" do
-          query = described_class.new(lead_provider:)
+          query = described_class.new(lead_provider_id: lead_provider.id)
 
           expect(query.statements).to eq([statement1])
         end
 
         it "returns no statements if no statements are found for the given `lead_provider`" do
-          query = described_class.new(lead_provider: FactoryBot.create(:lead_provider))
+          query = described_class.new(lead_provider_id: FactoryBot.create(:lead_provider).id)
 
           expect(query.statements).to be_empty
         end
 
         it "does not filter by `lead_provider` if an empty string is supplied" do
-          query = described_class.new(lead_provider: " ")
+          query = described_class.new(lead_provider_id: " ")
 
           expect(query.statements).to contain_exactly(statement1, statement2, statement3)
         end
@@ -108,7 +108,7 @@ RSpec.describe Statements::Query do
           FactoryBot.create(:statement, lead_provider:, updated_at: 2.days.ago)
           statement2 = FactoryBot.create(:statement, lead_provider:, updated_at: Time.zone.now)
 
-          query = described_class.new(lead_provider:, updated_since:)
+          query = described_class.new(lead_provider_id: lead_provider.id, updated_since:)
 
           expect(query.statements).to eq([statement2])
         end
@@ -256,16 +256,16 @@ RSpec.describe Statements::Query do
         end
       end
 
-      describe "order by :payment_date" do
+      describe "sort by payment_date" do
         it "returns statements in correct order" do
-          query = described_class.new(order_by: :payment_date)
+          query = described_class.new(sort: "+payment_date")
           expect(query.statements).to eq([statement1, statement2])
         end
       end
 
-      describe "order by :statement_date" do
+      describe "sort by year and month" do
         it "returns statements in correct order" do
-          query = described_class.new(order_by: :statement_date)
+          query = described_class.new(sort: "+year,+month")
           expect(query.statements).to eq([statement2, statement1])
         end
       end
@@ -292,7 +292,7 @@ RSpec.describe Statements::Query do
       other_lead_provider = FactoryBot.create(:lead_provider)
       other_statement = FactoryBot.create(:statement, lead_provider: other_lead_provider)
 
-      query = described_class.new(lead_provider:)
+      query = described_class.new(lead_provider_id: lead_provider.id)
 
       expect { query.statement_by_api_id(other_statement.api_id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -302,33 +302,33 @@ RSpec.describe Statements::Query do
     end
   end
 
-  describe "#statement" do
+  describe "#statement_by_id" do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
     it "returns the statement for a Lead Provider" do
       statement = FactoryBot.create(:statement, lead_provider:)
       query = described_class.new
 
-      expect(query.statement(statement.id)).to eq(statement)
+      expect(query.statement_by_id(statement.id)).to eq(statement)
     end
 
     it "raises an error if the statement does not exist" do
       query = described_class.new
 
-      expect { query.statement("XXX123") }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { query.statement_by_id("XXX123") }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "raises an error if the statement is not in the filtered query" do
       other_lead_provider = FactoryBot.create(:lead_provider)
       other_statement = FactoryBot.create(:statement, lead_provider: other_lead_provider)
 
-      query = described_class.new(lead_provider:)
+      query = described_class.new(lead_provider_id: lead_provider.id)
 
-      expect { query.statement(other_statement.id) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { query.statement_by_id(other_statement.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "raises an error if an api_id is not supplied" do
-      expect { described_class.new.statement(nil) }.to raise_error(ArgumentError, "id needed")
+      expect { described_class.new.statement_by_id(nil) }.to raise_error(ArgumentError, "id needed")
     end
   end
 end
