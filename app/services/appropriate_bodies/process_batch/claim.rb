@@ -17,7 +17,7 @@ module AppropriateBodies
           )
           true
         rescue StandardError => e
-          capture_error(e.message)
+          Sentry.capture_exception(e)
           next(false)
         end
 

@@ -25,7 +25,7 @@ module AppropriateBodies
 
           validate_submission!
         rescue StandardError => e
-          capture_error(e.message)
+          Sentry.capture_exception(e)
           next
         end
 
