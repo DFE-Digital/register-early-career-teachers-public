@@ -93,5 +93,64 @@ describe ActiveLeadProvider do
         expect(result.association(:lead_provider)).to be_loaded
       end
     end
+
+    describe ".for_contract_period_year" do
+      it "returns provider partnerships only for the specified contract period year" do
+        expect(described_class.for_contract_period_year(rp_1.year)).to contain_exactly(active_lead_provider_1, active_lead_provider_2)
+      end
+    end
+
+    describe ".without_existing_partnership_for" do
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let!(:available_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let!(:partnered_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let!(:different_period_alp) { FactoryBot.create(:active_lead_provider) }
+
+      before do
+        FactoryBot.create(:lead_provider_delivery_partnership,
+                          delivery_partner:,
+                          active_lead_provider: partnered_alp)
+      end
+
+      it "returns active lead providers without existing partnerships for the delivery partner and contract period" do
+        result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
+        expect(result).to include(available_alp)
+        expect(result).not_to include(partnered_alp)
+      end
+
+      it "includes active lead providers from different contract periods even if they have partnerships" do
+        result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
+        expect(result).to include(different_period_alp)
+      end
+
+      it "includes active lead providers that have partnerships with other delivery partners" do
+        other_delivery_partner = FactoryBot.create(:delivery_partner)
+        other_partnered_alp = FactoryBot.create(:active_lead_provider, contract_period:)
+        FactoryBot.create(:lead_provider_delivery_partnership,
+                          delivery_partner: other_delivery_partner,
+                          active_lead_provider: other_partnered_alp)
+
+        result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
+        expect(result).to include(other_partnered_alp)
+      end
+    end
+
+    describe ".with_lead_provider_ordered_by_name" do
+      let!(:zebra_alp) { FactoryBot.create(:active_lead_provider, lead_provider: FactoryBot.create(:lead_provider, name: "Zebra Provider")) }
+      let!(:alpha_alp) { FactoryBot.create(:active_lead_provider, lead_provider: FactoryBot.create(:lead_provider, name: "Alpha Provider")) }
+      let!(:beta_alp) { FactoryBot.create(:active_lead_provider, lead_provider: FactoryBot.create(:lead_provider, name: "Beta Provider")) }
+
+      it "returns active lead providers ordered by lead provider name" do
+        result = described_class.with_lead_provider_ordered_by_name
+        lead_provider_names = result.map { |alp| alp.lead_provider.name }
+        expect(lead_provider_names).to eq(lead_provider_names.sort)
+      end
+
+      it "includes the lead provider association" do
+        result = described_class.with_lead_provider_ordered_by_name.first
+        expect(result.association(:lead_provider)).to be_loaded
+      end
+    end
   end
 end

@@ -25,8 +25,7 @@ module DeliveryPartners
     def current_partnerships
       @current_partnerships ||= delivery_partner
         .lead_provider_delivery_partnerships
-        .joins(:active_lead_provider)
-        .where(active_lead_providers: { contract_period_id: contract_period.id })
+        .for_contract_period(contract_period)
     end
 
     def current_active_lead_provider_ids
