@@ -309,13 +309,34 @@ Rails.application.routes.draw do
       get "change-email-address", action: :new
       post "change-email-address", action: :create
 
-      get "cant-use-changed_email", action: :new
-      post "cant-use-changed_email", action: :create
+      get "cant-use-changed-email", action: :new
+      post "cant-use-changed-email", action: :create
       get "cant-use-email", action: :new
       post "cant-use-email", action: :create
 
       get "review-mentor-eligibility", action: :new
       post "review-mentor-eligibility", action: :create
+
+      get "mentoring-at-new-school-only", action: :new
+      post "mentoring-at-new-school-only", action: :create
+      get "change-mentoring-at-new-school-only", action: :new
+      post "change-mentoring-at-new-school-only", action: :create
+
+      get "started-on", action: :new
+      post "started-on", action: :create
+      get "change-started-on", action: :new
+      post "change-started-on", action: :create
+
+      get "previous-training-period-details", action: :new
+      post "previous-training-period-details", action: :create
+
+      get "programme-choices", action: :new
+      post "programme-choices", action: :create
+
+      get "lead-provider", action: :new
+      post "lead-provider", action: :create
+      get "change-lead-provider", action: :new
+      post "change-lead-provider", action: :create
 
       get "check-answers", action: :new
       post "check-answers", action: :create

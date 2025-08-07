@@ -22,18 +22,21 @@ describe Teachers::MentorFundingEligibility do
   describe 'checking eligibility' do
     context 'when the teacher is missing' do
       it { is_expected.to be_eligible }
+      it { is_expected.not_to be_ineligible }
     end
 
     context 'when the teacher has an ineligibility reason and date set' do
       let!(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding, trn:) }
 
       it { is_expected.not_to be_eligible }
+      it { is_expected.to be_ineligible }
     end
 
     context 'when the teacher has no ineligibility reason or date set' do
       let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
       it { is_expected.to be_eligible }
+      it { is_expected.not_to be_ineligible }
     end
   end
 end

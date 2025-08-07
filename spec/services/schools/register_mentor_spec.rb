@@ -7,6 +7,7 @@ RSpec.describe Schools::RegisterMentor do
                         school_urn: school.urn,
                         email:,
                         lead_provider:,
+                        finish_existing_at_school_periods:,
                         started_on:,
                         author:)
   end
@@ -23,6 +24,7 @@ RSpec.describe Schools::RegisterMentor do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
   let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
+  let(:finish_existing_at_school_periods) { false }
 
   describe '#register!' do
     context 'when no ActiveLeadProvider exists for the registration period' do
@@ -59,9 +61,36 @@ RSpec.describe Schools::RegisterMentor do
         end
 
         context "with MentorATSchoolPeriod records" do
-          before { FactoryBot.create(:mentor_at_school_period, teacher:) }
+          let!(:existing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, finished_on: nil) }
+          let(:mentor_at_school_period) { teacher.mentor_at_school_periods.excluding(existing_mentor_at_school_period).first }
 
-          it { expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid) }
+          context "with :finish_existing_at_school_periods set to false" do
+            let(:finish_existing_at_school_periods) { false }
+
+            it 'creates a new MentorATSchoolPeriod without finishing existing MentorAtSchoolPeriod' do
+              expect { service.register! }.to change(MentorAtSchoolPeriod, :count).from(1).to(2)
+
+              expect(mentor_at_school_period.teacher_id).to eq(teacher.id)
+              expect(mentor_at_school_period.started_on).to eq(started_on)
+
+              expect(existing_mentor_at_school_period.reload.teacher_id).to eq(teacher.id)
+              expect(existing_mentor_at_school_period.finished_on).to be_nil
+            end
+          end
+
+          context "with :finish_existing_at_school_periods set to true" do
+            let(:finish_existing_at_school_periods) { true }
+
+            it 'creates a new MentorATSchoolPeriod and finishes existing MentorAtSchoolPeriod' do
+              expect { service.register! }.to change(MentorAtSchoolPeriod, :count).from(1).to(2)
+
+              expect(mentor_at_school_period.teacher_id).to eq(teacher.id)
+              expect(mentor_at_school_period.started_on).to eq(started_on)
+
+              expect(existing_mentor_at_school_period.reload.teacher_id).to eq(teacher.id)
+              expect(existing_mentor_at_school_period.finished_on).to eq(mentor_at_school_period.started_on.prev_day)
+            end
+          end
         end
       end
 

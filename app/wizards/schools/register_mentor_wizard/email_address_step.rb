@@ -13,7 +13,15 @@ module Schools
         return :cant_use_email if mentor.cant_use_email?
         return :review_mentor_eligibility if ect.provider_led_training_programme? && mentor.funding_available?
 
-        :check_answers
+        return :check_answers unless mentor.previously_registered_as_mentor?
+
+        if mentor.currently_mentor_at_another_school?
+          # Ask school: are they mentoring at new school only?
+          :mentoring_at_new_school_only
+        else
+          # Ask school: when will mentor start?
+          :started_on
+        end
       end
 
       def previous_step
