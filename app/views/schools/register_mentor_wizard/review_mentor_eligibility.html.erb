@@ -12,3 +12,6 @@
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= f.govuk_submit "Continue" %>
 <% end %>
+
+<%= govuk_link_to "#{@mentor.ect_lead_provider&.name} will not be providing mentor training to #{@mentor.full_name}",
+schools_register_mentor_wizard_eligibility_lead_provider_path %>

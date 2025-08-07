@@ -340,6 +340,9 @@ Rails.application.routes.draw do
       get "change-lead-provider", action: :new
       post "change-lead-provider", action: :create
 
+      get "eligibility-lead-provider", action: :new
+      post "eligibility-lead-provider", action: :create
+
       get "check-answers", action: :new
       post "check-answers", action: :create
 
