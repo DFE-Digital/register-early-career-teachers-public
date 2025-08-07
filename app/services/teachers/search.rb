@@ -90,7 +90,7 @@ module Teachers
           :school,
           :school_reported_appropriate_body,
           {
-            mentorship_periods: {
+            current_mentorship_period: {
               mentor: :teacher,
             },
             current_training_period: {

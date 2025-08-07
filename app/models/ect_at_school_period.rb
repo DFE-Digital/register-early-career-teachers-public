@@ -20,6 +20,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :mentor_at_school_periods, through: :teacher
   has_many :events
   has_one :current_training_period, -> { ongoing_today_or_starting_tomorrow_or_after }, class_name: 'TrainingPeriod'
+  has_one :current_mentorship_period, -> { ongoing_today_or_starting_tomorrow_or_after }, class_name: 'MentorshipPeriod'
 
   touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
 

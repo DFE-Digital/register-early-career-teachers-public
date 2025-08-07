@@ -16,7 +16,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_mentor_name(ect)
-    ECTAtSchoolPeriods::Mentorship.new(ect).latest_mentor_name
+    ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor_name
   end
 
   # @param ect [ECTAtSchoolPeriod]
