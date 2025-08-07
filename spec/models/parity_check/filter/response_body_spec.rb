@@ -76,6 +76,21 @@ describe ParityCheck::Filter::ResponseBody do
           )
         end
       end
+
+      context "when the JSON contains arrays of values" do
+        let(:ecf_body) { { key1: [{ subkey: "value1", other_subkey: %w[value4 value5] }] }.to_json }
+        let(:rect_body) { { key2: "value" }.to_json }
+
+        it "returns a hash of the key structure" do
+          expect(key_hash).to eq(
+            key1: {
+              subkey: {},
+              other_subkey: {}
+            },
+            key2: {}
+          )
+        end
+      end
     end
   end
 
