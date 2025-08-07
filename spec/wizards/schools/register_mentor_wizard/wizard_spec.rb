@@ -242,6 +242,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                                    programme_choices
                                    lead_provider
                                    review_mentor_eligibility
+                                   eligibility_lead_provider
                                    change_mentor_details
                                    change_email_address
                                    check_answers])
@@ -292,6 +293,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                                    programme_choices
                                    lead_provider
                                    review_mentor_eligibility
+                                   eligibility_lead_provider
                                    change_mentor_details
                                    change_email_address
                                    check_answers])
