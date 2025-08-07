@@ -25,7 +25,8 @@ RSpec.describe Sessions::User do
           'name' => 'Christopher Lee',
           'last_active_at' => last_active_at,
           'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
-          'dfe_sign_in_user_id' => dfe_sign_in_user_id
+          'dfe_sign_in_user_id' => dfe_sign_in_user_id,
+          'dfe_sign_in_roles' => %w[AppropriateBodyUser],
         }
       end
 
@@ -107,7 +108,8 @@ RSpec.describe Sessions::User do
           'last_active_at' => last_active_at,
           'school_urn' => school_urn,
           'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
-          'dfe_sign_in_user_id' => dfe_sign_in_user_id
+          'dfe_sign_in_user_id' => dfe_sign_in_user_id,
+          'dfe_sign_in_roles' => %w[SchoolUser]
         }
       end
 

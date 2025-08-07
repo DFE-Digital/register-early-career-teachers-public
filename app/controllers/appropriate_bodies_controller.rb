@@ -9,9 +9,15 @@ private
     @appropriate_body = AppropriateBody.find(current_user.appropriate_body_id)
   end
 
-  def authorised?
-    # FIXME: make this work with DfE Sign-in
+  def authorise
+    if current_user&.has_multiple_roles? && current_user.school_user?
+      redirect_to schools_ects_home_path
+    else
+      super
+    end
+  end
 
-    current_user
+  def authorised?
+    current_user&.appropriate_body_user?
   end
 end
