@@ -25,6 +25,7 @@ module AppropriateBodies
 
           validate_submission!
         rescue StandardError => e
+          capture_error("Something went wrong. You’ll need to try again later")
           Sentry.capture_exception(e)
           next
         end
