@@ -284,10 +284,33 @@ erDiagram
   ActiveLeadProvider {
     integer id
     integer lead_provider_id
-    integer contract_period_id
+    integer contract_period_year
     datetime created_at
     datetime updated_at
   }
   ActiveLeadProvider }o--|| ContractPeriod : belongs_to
   ActiveLeadProvider }o--|| LeadProvider : belongs_to
+  Metadata_SchoolLeadProviderContractPeriod {
+    integer id
+    integer school_id
+    integer lead_provider_id
+    integer contract_period_year
+    boolean expression_of_interest
+    datetime created_at
+    datetime updated_at
+  }
+  Metadata_SchoolLeadProviderContractPeriod }o--|| School : belongs_to
+  Metadata_SchoolLeadProviderContractPeriod }o--|| LeadProvider : belongs_to
+  Metadata_SchoolLeadProviderContractPeriod }o--|| ContractPeriod : belongs_to
+  Metadata_SchoolContractPeriod {
+    integer id
+    integer school_id
+    integer contract_period_year
+    boolean in_partnership
+    enum induction_programme_choice
+    datetime created_at
+    datetime updated_at
+  }
+  Metadata_SchoolContractPeriod }o--|| School : belongs_to
+  Metadata_SchoolContractPeriod }o--|| ContractPeriod : belongs_to
 ```
