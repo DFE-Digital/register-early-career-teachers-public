@@ -7,14 +7,21 @@
 
     <%= govuk_skip_link %>
     <%= govuk_header(full_width_border: true, html_attributes: { class: [environment_specific_header_colour_class] }) do |header| %>
-      <%= header.with_navigation_item(text: current_user.organisation_name) if current_user %>
-      <%= header.with_navigation_item(text: "Sign out", href: current_user.sign_out_path) if current_user %>
+      <%= if current_user
+        header.with_navigation_item(text: current_user.organisation_name)
+      end %>
+      <%= if current_user
+        header.with_navigation_item(
+          text: "Sign out",
+          href: current_user.sign_out_path,
+        )
+      end %>
     <% end %>
 
     <%= render Navigation::PrimaryNavigationComponent.new(
       current_path: request.fullpath,
       current_user_type: current_user&.user_type,
-      inverse: content_for?(:api_guidance_home_header)
+      inverse: content_for?(:api_guidance_home_header),
     ) %>
 
     <% if content_for?(:api_guidance_home_header) %>
@@ -31,9 +38,9 @@
           <%= render partial: "layouts/shared/main_preamble" %>
 
           <div class="govuk-grid-row govuk-!-padding-top-7">
-            <% if content_for?(:sidebar) %>
+            <% if @sidebar.present? %>
               <div class="govuk-grid-column-one-third">
-                <%= yield(:sidebar) %>
+                <%= render Navigation::SubNavigationComponent.new(request.path, structure: @sidebar) %>
               </div>
             <% end %>
             <div class="govuk-grid-column-two-thirds">

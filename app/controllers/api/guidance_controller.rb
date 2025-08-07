@@ -1,6 +1,7 @@
 module API
   class GuidanceController < ApplicationController
     skip_before_action :authenticate
+    before_action :set_sidebar, only: [:page]
 
     layout 'api_guidance'
 
@@ -16,18 +17,32 @@ module API
     end
 
     def page
-      path = params[:page]
+      template = "api/guidance/#{params[:page].underscore}"
 
-      template = {
-        "swagger-api-documentation" => "swagger_api_documentation",
-        "guidance-for-lead-providers" => "guidance_for_lead_providers",
-        "sandbox" => "sandbox",
-        "guidance-for-lead-providers/api-data-states" => "guidance_for_lead_providers/api_data_states",
-        "guidance-for-lead-providers/data-syncing" => "guidance_for_lead_providers/data_syncing",
-        "guidance-for-lead-providers/ids-explained" => "guidance_for_lead_providers/ids_explained",
-      }.fetch(path)
+      if template_exists?(template)
+        render template
+      else
+        render 'errors/not_found', status: :not_found
+      end
+    end
 
-      render "api/guidance/" + template
+  private
+
+    def guidance_pages
+      [
+        { title: "API IDs explained", path: "guidance-for-lead-providers/ids-explained" },
+        { title: "API data states", path: "guidance-for-lead-providers/api-data-states" },
+        { title: "Syncing data best practice", path: "guidance-for-lead-providers/data-syncing" },
+      ]
+    end
+
+    def set_sidebar
+      return unless params[:page].starts_with?("guidance-for-lead-providers")
+
+      @sidebar = guidance_pages.map do |p|
+        path = api_guidance_page_path(p[:path])
+        Struct.new(:name, :href, :prefix, :nodes).new(p[:title], path, path, [])
+      end
     end
   end
 end
