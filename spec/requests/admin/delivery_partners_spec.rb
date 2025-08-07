@@ -151,13 +151,13 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
   end
 
-  describe "GET /admin/organisations/delivery-partners/:id/edit" do
+  describe "GET /admin/organisations/delivery-partners/:delivery_partner_id/:year/new" do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-    let(:edit_path) { edit_admin_delivery_partner_path(delivery_partner, year: contract_period.year) }
+    let(:new_path) { new_admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year) }
 
     it "redirects to sign in path" do
-      get edit_path
+      get new_path
       expect(response).to redirect_to(sign_in_path)
     end
 
@@ -165,7 +165,7 @@ RSpec.describe "Admin delivery partners", type: :request do
       include_context 'sign in as non-DfE user'
 
       it "requires authorisation" do
-        get edit_path
+        get new_path
         expect(response.status).to eq(401)
       end
     end
@@ -180,17 +180,17 @@ RSpec.describe "Admin delivery partners", type: :request do
         let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
 
         it "returns http success" do
-          get edit_path
+          get new_path
           expect(response).to have_http_status(:success)
         end
 
         it "displays the page title" do
-          get edit_path
+          get new_path
           expect(response.body).to include("Select lead providers working with #{delivery_partner.name} in #{contract_period.year}")
         end
 
         it "displays available lead providers as checkboxes" do
-          get edit_path
+          get new_path
           expect(response.body).to include(lead_provider_1.name)
           expect(response.body).to include(lead_provider_2.name)
         end
@@ -205,13 +205,13 @@ RSpec.describe "Admin delivery partners", type: :request do
           end
 
           it "shows currently associated lead providers" do
-            get edit_path
+            get new_path
             expect(response.body).to include("Currently working with:")
             expect(response.body).to include(lead_provider_1.name)
           end
 
           it "excludes already assigned lead providers from checkboxes" do
-            get edit_path
+            get new_path
             expect(response.body).not_to include("value=\"#{active_lead_provider_1.id}\"")
             expect(response.body).to include("value=\"#{active_lead_provider_2.id}\"")
           end
@@ -219,10 +219,10 @@ RSpec.describe "Admin delivery partners", type: :request do
       end
 
       context "with invalid contract period" do
-        let(:edit_path) { edit_admin_delivery_partner_path(delivery_partner, year: 9999) }
+        let(:invalid_new_path) { new_admin_delivery_partner_delivery_partnership_path(delivery_partner, 9999) }
 
         it "redirects with error message" do
-          get edit_path
+          get invalid_new_path
           expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
           follow_redirect!
           expect(response.body).to include("Contract period for year 9999 not found")
@@ -231,17 +231,17 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
   end
 
-  describe "PATCH /admin/organisations/delivery-partners/:id" do
+  describe "POST /admin/organisations/delivery-partners/:delivery_partner_id/:year" do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-    let(:update_path) { admin_delivery_partner_path(delivery_partner) }
+    let(:create_path) { admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year) }
     let!(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
     let!(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
     let!(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_1, contract_period:) }
     let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
 
     it "redirects to sign in path" do
-      patch update_path, params: { year: contract_period.year, lead_provider_ids: [active_lead_provider_1.id] }
+      post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
       expect(response).to redirect_to(sign_in_path)
     end
 
@@ -249,7 +249,7 @@ RSpec.describe "Admin delivery partners", type: :request do
       include_context 'sign in as non-DfE user'
 
       it "requires authorisation" do
-        patch update_path, params: { year: contract_period.year, lead_provider_ids: [active_lead_provider_1.id] }
+        post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
         expect(response.status).to eq(401)
       end
     end
@@ -262,12 +262,12 @@ RSpec.describe "Admin delivery partners", type: :request do
 
         it "updates lead provider partnerships" do
           expect {
-            patch update_path, params: { year: contract_period.year, lead_provider_ids: }
+            post create_path, params: { lead_provider_ids: }
           }.to change(LeadProviderDeliveryPartnership, :count).by(2)
         end
 
         it "redirects to show page with success message" do
-          patch update_path, params: { year: contract_period.year, lead_provider_ids: }
+          post create_path, params: { lead_provider_ids: }
           expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
           follow_redirect!
           expect(response.body).to include("Lead provider partners updated")
@@ -278,28 +278,30 @@ RSpec.describe "Admin delivery partners", type: :request do
           allow(DeliveryPartners::UpdateLeadProviderPairings).to receive(:new).and_return(service_double)
           expect(service_double).to receive(:update!)
 
-          patch update_path, params: { year: contract_period.year, lead_provider_ids: }
+          post create_path, params: { lead_provider_ids: }
         end
       end
 
       context "with no lead providers selected" do
-        it "redirects back to edit page with error message" do
-          patch update_path, params: { year: contract_period.year }
-          expect(response).to redirect_to(edit_admin_delivery_partner_path(delivery_partner, year: contract_period.year))
+        it "redirects back to new page with error message" do
+          post create_path
+          expect(response).to redirect_to(new_admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year))
           follow_redirect!
           expect(response.body).to include("Select at least one lead provider")
         end
 
         it "does not create partnerships" do
           expect {
-            patch update_path, params: { year: contract_period.year }
+            post create_path
           }.not_to change(LeadProviderDeliveryPartnership, :count)
         end
       end
 
       context "with invalid contract period" do
+        let(:invalid_create_path) { admin_delivery_partner_delivery_partnership_path(delivery_partner, 9999) }
+
         it "redirects with error message" do
-          patch update_path, params: { year: 9999, lead_provider_ids: [active_lead_provider_1.id] }
+          post invalid_create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
           expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
           follow_redirect!
           expect(response.body).to include("Contract period for year 9999 not found")
@@ -316,7 +318,7 @@ RSpec.describe "Admin delivery partners", type: :request do
         end
 
         it "redirects with error message" do
-          patch update_path, params: { year: contract_period.year, lead_provider_ids: }
+          post create_path, params: { lead_provider_ids: }
           expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
           follow_redirect!
           expect(response.body).to include("Unable to update lead provider partners")
