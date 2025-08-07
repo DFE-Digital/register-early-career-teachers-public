@@ -54,9 +54,9 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
   it 'displays Change links for each year' do
     render
 
-    expected_href = edit_admin_delivery_partner_path(
+    expected_href = new_admin_delivery_partner_delivery_partnership_path(
       delivery_partner,
-      year: partnership.contract_period.year,
+      partnership.contract_period.year,
       page: 2,
       q: 'search term'
     )

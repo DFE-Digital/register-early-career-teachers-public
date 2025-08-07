@@ -20,9 +20,9 @@ module Admin
     end
 
     def change_link_path(contract_period)
-      helpers.edit_admin_delivery_partner_path(
+      helpers.new_admin_delivery_partner_delivery_partnership_path(
         delivery_partner,
-        year: contract_period.year,
+        contract_period.year,
         page:,
         q:
       )
