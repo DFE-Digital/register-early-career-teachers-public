@@ -15,16 +15,16 @@ class ActiveLeadProvider < ApplicationRecord
 
   scope :for_contract_period, ->(year) { where(contract_period_year: year) }
   scope :for_lead_provider, ->(lead_provider_id) { where(lead_provider_id:) }
+  scope :for_contract_period_year, ->(contract_period_year) { where(contract_period_year:) }
+  scope :without_existing_partnership_for, ->(delivery_partner, contract_period) {
+    where.not(
+      id: LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+    )
+  }
+  scope :with_lead_provider_ordered_by_name, -> { includes(:lead_provider).order('lead_providers.name') }
   scope :available_for_delivery_partner, ->(delivery_partner, contract_period) {
-    includes(:lead_provider)
-      .where(contract_period_id: contract_period.id)
-      .where.not(
-        id: LeadProviderDeliveryPartnership
-          .where(delivery_partner:)
-          .joins(:active_lead_provider)
-          .where(active_lead_providers: { contract_period_id: contract_period.id })
-          .select(:active_lead_provider_id)
-      )
-      .order('lead_providers.name')
+    for_contract_period_year(contract_period.year)
+      .without_existing_partnership_for(delivery_partner, contract_period)
+      .with_lead_provider_ordered_by_name
   }
 end
