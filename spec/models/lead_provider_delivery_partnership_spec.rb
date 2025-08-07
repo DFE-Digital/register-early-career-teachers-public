@@ -66,6 +66,62 @@ describe LeadProviderDeliveryPartnership do
         expect(result.active_lead_provider.association(:lead_provider)).to be_loaded
       end
     end
+
+    describe '.active_lead_provider_ids_for' do
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let(:other_contract_period) { FactoryBot.create(:contract_period, year: 2026) }
+
+      let(:alp_with_partnership) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let(:alp_other_delivery_partner) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let(:alp_other_contract_period) { FactoryBot.create(:active_lead_provider, contract_period: other_contract_period) }
+      let(:alp_no_partnership) { FactoryBot.create(:active_lead_provider, contract_period:) }
+
+      let!(:partnership_same_delivery_partner) do
+        FactoryBot.create(:lead_provider_delivery_partnership,
+                          delivery_partner:,
+                          active_lead_provider: alp_with_partnership)
+      end
+
+      let!(:partnership_other_delivery_partner) do
+        FactoryBot.create(:lead_provider_delivery_partnership,
+                          delivery_partner: other_delivery_partner,
+                          active_lead_provider: alp_other_delivery_partner)
+      end
+
+      let!(:partnership_other_contract_period) do
+        FactoryBot.create(:lead_provider_delivery_partnership,
+                          delivery_partner:,
+                          active_lead_provider: alp_other_contract_period)
+      end
+
+      it 'returns active lead provider IDs for the specified delivery partner and contract period' do
+        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        expect(result.pluck(:active_lead_provider_id)).to contain_exactly(alp_with_partnership.id)
+      end
+
+      it 'excludes partnerships with other delivery partners' do
+        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        expect(result.pluck(:active_lead_provider_id)).not_to include(alp_other_delivery_partner.id)
+      end
+
+      it 'excludes partnerships from other contract periods' do
+        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        expect(result.pluck(:active_lead_provider_id)).not_to include(alp_other_contract_period.id)
+      end
+
+      it 'excludes active lead providers with no partnerships' do
+        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        expect(result.pluck(:active_lead_provider_id)).not_to include(alp_no_partnership.id)
+      end
+
+      it 'returns a select query that can be used in subqueries' do
+        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        expect(result.to_sql).to include('SELECT')
+        expect(result.to_sql).to include('active_lead_provider_id')
+      end
+    end
   end
 
   describe "delegate methods" do
