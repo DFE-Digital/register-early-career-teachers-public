@@ -52,10 +52,10 @@
     end
   end
 
-  if @mentor.lead_provider
+  if @mentor.provider_led_ect?
     summary_list.with_row do |row|
       row.with_key(text: "Lead provider")
-      row.with_value(text: @mentor.lead_provider.name)
+      row.with_value(text: @mentor.lead_provider&.name || @mentor.ect_lead_provider&.name)
       row.with_action(
         text: "Change",
         href: schools_register_mentor_wizard_change_lead_provider_path,
