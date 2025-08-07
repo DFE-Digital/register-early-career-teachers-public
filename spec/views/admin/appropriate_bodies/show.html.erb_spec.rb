@@ -21,7 +21,11 @@ RSpec.describe 'admin/appropriate_bodies/show.html.erb' do
     expect(rendered).to have_link('Timeline of events', href: admin_appropriate_body_timeline_path(appropriate_body))
   end
 
-  it "displays a link to the appropriate body's ECTs" do
+  it "links to the appropriate body's ECTs" do
     expect(rendered).to have_link('View current ECTs', href: admin_appropriate_body_current_ects_path(appropriate_body))
+  end
+
+  it "links to the appropriate body's bulk uploads" do
+    expect(rendered).to have_link('View bulk uploads', href: admin_appropriate_body_batches_path(appropriate_body))
   end
 end

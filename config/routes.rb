@@ -42,6 +42,7 @@ Rails.application.routes.draw do
     mount MissionControl::Jobs::Engine, at: "jobs"
 
     resources :users, only: %i[index]
+    resources :batches, only: %i[index], path: 'bulk' # all activity
 
     resources :organisations, only: %i[index] do
       collection do
@@ -49,10 +50,7 @@ Rails.application.routes.draw do
           scope module: :appropriate_bodies do
             resource :timeline, only: :show
             resources :current_ects, only: :index, path: 'current-ects'
-
-            namespace :bulk do
-              resources :batches, only: %i[index show]
-            end
+            resources :batches, only: %i[index show]
           end
         end
 
@@ -112,10 +110,6 @@ Rails.application.routes.draw do
           end
         end
       end
-    end
-
-    namespace :bulk do
-      resources :batches, only: %i[index]
     end
   end
 
