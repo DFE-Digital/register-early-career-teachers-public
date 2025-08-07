@@ -11,7 +11,8 @@ module AdminHelper
     govuk_list(teachers.map { |teacher| admin_teacher_name_link(teacher) })
   end
 
-  def admin_latest_induction_period_complete?(teacher)
-    teacher.last_induction_period&.complete?
+  def admin_latest_induction_complete_with_outcome?(teacher)
+    last_induction_period = teacher.last_induction_period
+    last_induction_period&.complete? && last_induction_period.outcome?
   end
 end

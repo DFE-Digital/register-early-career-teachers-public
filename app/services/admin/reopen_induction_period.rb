@@ -31,11 +31,16 @@ module Admin
 
     def check_can_reopen_period!
       check_induction_period_is_complete!
+      check_induction_period_has_outcome!
       check_induction_period_is_the_latest!
     end
 
     def check_induction_period_is_complete!
       raise ReopenInductionError, "Cannot reopen an ongoing induction" unless induction_period.complete?
+    end
+
+    def check_induction_period_has_outcome!
+      raise ReopenInductionError, "Cannot reopen an induction without an outcome" unless induction_period.outcome?
     end
 
     def check_induction_period_is_the_latest!

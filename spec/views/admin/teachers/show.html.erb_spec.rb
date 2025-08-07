@@ -1,8 +1,18 @@
 RSpec.describe 'admin/teachers/show.html.erb' do
-  let(:teacher) { FactoryBot.create(:teacher, trn: '1234567', trs_first_name: 'Floella', trs_last_name: 'Benjamin') }
+  let(:teacher) do
+    FactoryBot.create(
+      :teacher,
+      trn: '1234567',
+      trs_first_name: 'Floella',
+      trs_last_name: 'Benjamin'
+    )
+  end
+
+  let!(:induction_period) do
+    FactoryBot.create(:induction_period, :ongoing, teacher:)
+  end
 
   before do
-    FactoryBot.create(:induction_period, :ongoing, teacher:)
     assign(:teacher, Admin::TeacherPresenter.new(teacher))
     render
   end
@@ -40,6 +50,40 @@ RSpec.describe 'admin/teachers/show.html.erb' do
 
     it "displays a link to add an induction period" do
       expect(rendered).to have_link("Add an induction period")
+    end
+
+    it "does not display a button to reopen induction" do
+      expect(rendered).not_to have_button("Reopen induction")
+    end
+  end
+
+  context "when the latest induction period is complete with outcome" do
+    let!(:induction_period) do
+      FactoryBot.create(:induction_period, :pass, teacher:)
+    end
+
+    it "displays a button to reopen induction" do
+      expect(rendered).to have_button("Reopen induction")
+    end
+  end
+
+  context "when the latest induction period is complete without outcome" do
+    let!(:induction_period) do
+      FactoryBot.create(:induction_period, outcome: nil, teacher:)
+    end
+
+    it "does not display a button to reopen induction" do
+      expect(rendered).not_to have_button("Reopen induction")
+    end
+  end
+
+  context "when the latest induction period is not complete" do
+    let!(:induction_period) do
+      FactoryBot.create(:induction_period, :ongoing, teacher:)
+    end
+
+    it "does not display a button to reopen induction" do
+      expect(rendered).not_to have_button("Reopen induction")
     end
   end
 end
