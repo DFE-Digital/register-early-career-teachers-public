@@ -92,7 +92,7 @@ module Schools
       end
 
       def contract_period
-        ContractPeriod.containing_date(started_on&.to_date)
+        ContractPeriod.containing_date(started_on&.to_date || Date.current)
       end
 
       # Does mentor have any previous mentor_at_school_periods (open or closed)?
@@ -112,7 +112,7 @@ module Schools
 
       # Is mentor being assigned to a provider-led ECT?
       def provider_led_ect?
-        ect.provider_led?
+        ect&.provider_led?
       end
 
       # Does that mentor have a mentor_became_ineligible_for_funding_on?
