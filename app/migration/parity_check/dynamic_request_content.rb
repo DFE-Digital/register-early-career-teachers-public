@@ -34,6 +34,14 @@ module ParityCheck
         .pick(gias_school: :api_id)
     end
 
+    def delivery_partner_id
+      DeliveryPartners::Query.new(lead_provider:)
+        .delivery_partners
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
     # Request body methods
 
     def example_body
