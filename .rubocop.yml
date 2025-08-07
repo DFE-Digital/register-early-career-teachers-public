@@ -95,6 +95,7 @@ Rails/Output:
 Rails/SaveBang:
   Exclude:
     - app/services/**/*
+    - spec/support/shared_examples/metadata_support.rb
 
 Naming/MethodParameterName:
   Enabled: false
