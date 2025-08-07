@@ -8,6 +8,11 @@ module Admin
           @batch = batch
         end
 
+        # @return [Boolean]
+        def render?
+          batch.errored?
+        end
+
       private
 
         # @return [String]

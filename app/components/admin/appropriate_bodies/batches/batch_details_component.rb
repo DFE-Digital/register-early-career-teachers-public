@@ -67,6 +67,8 @@ module Admin
             [
               pluralize(batch.recorded_count, 'claimed ECT'),
             ]
+          else
+            raise StandardError, "unknown #{batch.class}#batch_type for #{batch.id}"
           end
         end
       end

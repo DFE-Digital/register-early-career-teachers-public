@@ -93,7 +93,7 @@ module BatchHelper
           batch.tally[:uploaded_count].to_s,
           batch.tally[:processed_count].to_s,
           batch.tally[:errored_count].to_s,
-          govuk_link_to('View', admin_appropriate_body_bulk_batch_path(batch.appropriate_body, batch))
+          govuk_link_to('View', admin_appropriate_body_batch_path(batch.appropriate_body, batch))
         ]
       end
     )
