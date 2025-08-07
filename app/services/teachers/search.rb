@@ -66,7 +66,7 @@ module Teachers
       return if school == :ignore
 
       @scope.merge!(
-        @scope.eager_load(ect_at_school_periods: [:school, { mentorship_periods: { mentor: :teacher } }])
+        @scope.includes(**ect_information)
               .where(ect_at_school_periods: { school: })
               .merge(ECTAtSchoolPeriod.ongoing_today_or_starting_tomorrow_or_after)
       )
@@ -82,6 +82,28 @@ module Teachers
         .where(mentor_at_school_periods: { school_id: school.id })
         .distinct
         .includes(:mentor_at_school_periods)
+    end
+
+    def ect_information
+      {
+        current_ect_at_school_period: [
+          :school,
+          :school_reported_appropriate_body,
+          {
+            mentorship_periods: {
+              mentor: :teacher,
+            },
+            current_training_period: {
+              school_partnership: {
+                lead_provider_delivery_partnership: [
+                  :delivery_partner,
+                  { active_lead_provider: %i[lead_provider contract_period] }
+                ]
+              }
+            }
+          }
+        ]
+      }
     end
   end
 end
