@@ -297,11 +297,37 @@
   - created_at
   - updated_at
   :events:
+  - id
   - heading
   - body
+  - event_type
+  - happened_at
+  - teacher_id
+  - appropriate_body_id
+  - induction_period_id
+  - induction_extension_id
+  - school_id
+  - ect_at_school_period_id
+  - mentor_at_school_period_id
+  - training_period_id
+  - mentorship_period_id
+  - school_partnership_id
+  - lead_provider_id
+  - delivery_partner_id
+  - active_lead_provider_id
+  - lead_provider_delivery_partnership_id
+  - pending_induction_submission_batch_id
+  - statement_id
+  - statement_adjustment_id
+  - user_id
+  - author_type
+  - author_id
   - author_name
   - author_email
+  - created_at
+  - updated_at
   - metadata
+  - modifications
   :ect_at_school_periods:
   - id
   - school_id
