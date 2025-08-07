@@ -43,5 +43,9 @@ class Teachers::InductionPeriod
     teacher.induction_periods.ongoing_on(date).exists?
   end
 
-  delegate :last_induction_period, :first_induction_period, to: :teacher
+  delegate :first_induction_period, to: :teacher
+
+private
+
+  def last_induction_period = teacher.last_induction_period
 end

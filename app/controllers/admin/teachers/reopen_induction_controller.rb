@@ -2,7 +2,11 @@ module Admin
   module Teachers
     class ReopenInductionController < AdminController
       def update
-        @teacher = Teacher.find(params[:teacher_id])
+        @teacher = Teacher
+          .includes(:last_induction_period)
+          .find(params[:teacher_id])
+
+        last_induction_period = @teacher.last_induction_period
 
         if last_induction_period.blank? || last_induction_period.ongoing?
           redirect_to admin_teacher_path(@teacher), notice: "No completed induction period found"
@@ -11,12 +15,6 @@ module Admin
         Admin::ReopenInductionPeriod.new(author: current_user, induction_period: last_induction_period).reopen_induction_period!
 
         redirect_to admin_teacher_path(@teacher)
-      end
-
-    private
-
-      def last_induction_period
-        @last_induction_period ||= ::Teachers::InductionPeriod.new(@teacher).last_induction_period
       end
     end
   end
