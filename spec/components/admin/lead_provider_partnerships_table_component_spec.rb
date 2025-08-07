@@ -54,11 +54,11 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
         change_links = page.all("a", text: "Change")
         expect(change_links.size).to eq(2)
 
-        expect(change_links.first[:href]).to include("year=2024")
+        expect(change_links.first[:href]).to include("/2024/new")
         expect(change_links.first[:href]).to include("page=2")
         expect(change_links.first[:href]).to include("q=search")
 
-        expect(change_links.last[:href]).to include("year=2025")
+        expect(change_links.last[:href]).to include("/2025/new")
         expect(change_links.last[:href]).to include("page=2")
         expect(change_links.last[:href]).to include("q=search")
       end
@@ -76,7 +76,7 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
 
       it "renders change links without page/q parameters" do
         change_links = page.all("a", text: "Change")
-        expect(change_links.first[:href]).to include("year=2024")
+        expect(change_links.first[:href]).to include("/2024/new")
         expect(change_links.first[:href]).not_to include("page=")
         expect(change_links.first[:href]).not_to include("q=")
       end
@@ -126,8 +126,7 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
       it "generates correct path with parameters" do
         render_inline(component) # Render first to make helpers available
         path = component.send(:change_link_path, contract_period_2024)
-        expect(path).to include("/admin/organisations/delivery-partners/#{delivery_partner.id}/edit")
-        expect(path).to include("year=2024")
+        expect(path).to include("/admin/organisations/delivery-partners/#{delivery_partner.id}/2024/new")
         expect(path).to include("page=2")
         expect(path).to include("q=search")
       end

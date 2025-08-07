@@ -14,7 +14,7 @@ module Admin
   private
 
     def form_url
-      helpers.admin_delivery_partner_path(delivery_partner)
+      helpers.admin_delivery_partner_delivery_partnership_path(delivery_partner, year)
     end
 
     def back_link_path

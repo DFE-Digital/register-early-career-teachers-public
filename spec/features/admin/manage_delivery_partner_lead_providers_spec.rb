@@ -97,7 +97,7 @@ private
   end
 
   def when_i_navigate_to_add_lead_providers_page
-    page.goto("/admin/organisations/delivery-partners/#{@delivery_partner.id}/edit?year=#{@contract_period.year}")
+    page.goto("/admin/organisations/delivery-partners/#{@delivery_partner.id}/#{@contract_period.year}/new")
   end
 
   def when_i_click_change_link
