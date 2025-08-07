@@ -39,7 +39,7 @@ module Admin
     end
 
     def check_induction_period_is_the_latest!
-      last_period = ::Teachers::InductionPeriod.new(teacher).last_induction_period
+      last_period = teacher.last_induction_period
 
       raise ReopenInductionError, "Only the latest period can be reopened" unless induction_period == last_period
     end

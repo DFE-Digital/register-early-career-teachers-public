@@ -12,6 +12,6 @@ module AdminHelper
   end
 
   def admin_latest_induction_period_complete?(teacher)
-    !!Teachers::InductionPeriod.new(teacher).last_induction_period&.complete?
+    teacher.last_induction_period&.complete?
   end
 end
