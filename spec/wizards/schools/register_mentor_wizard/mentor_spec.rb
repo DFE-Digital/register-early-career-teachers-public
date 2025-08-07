@@ -237,8 +237,21 @@ describe Schools::RegisterMentorWizard::Mentor do
     context 'when no contract period matches the started_on' do
       before { store.started_on = nil }
 
+      it 'falls back to today and returns providers in the current contract period' do
+        travel_to(Date.new(2025, 5, 1)) do
+          expect(mentor.lead_providers_within_contract_period).to include(lp_in)
+          expect(mentor.lead_providers_within_contract_period).not_to include(lp_out)
+        end
+      end
+    end
+
+    context 'when today is outside any contract period' do
+      before { store.started_on = nil }
+
       it 'returns an empty array' do
-        expect(mentor.lead_providers_within_contract_period).to eq([])
+        travel_to(Date.new(2024, 6, 1)) do
+          expect(mentor.lead_providers_within_contract_period).to eq([])
+        end
       end
     end
   end
