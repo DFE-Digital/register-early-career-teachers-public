@@ -8,6 +8,11 @@ module Admin
           @batch = batch
         end
 
+        # @return [Boolean]
+        def render?
+          batch.recorded_count.positive?
+        end
+
       private
 
         delegate :id, :claim?, :action?, :recorded_count, to: :batch
@@ -18,6 +23,8 @@ module Admin
           case
           when claim? then "Opened induction periods (#{recorded_count})"
           when action? then "Closed induction periods (#{recorded_count})"
+          else
+            raise StandardError, "unknown #{batch.class}#batch_type for #{batch.id}"
           end
         end
 
@@ -26,6 +33,8 @@ module Admin
           case
           when claim? then ['Name', 'Induction period start date', 'Induction programme']
           when action? then ['Name', 'Induction period end date', 'Number of terms', 'Outcome']
+          else
+            raise StandardError, "unknown #{batch.class}#batch_type for #{batch.id}"
           end
         end
 
