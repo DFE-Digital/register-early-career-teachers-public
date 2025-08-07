@@ -477,3 +477,19 @@
   - options
   - created_at
   - updated_at
+  :metadata_schools_lead_providers_contract_periods:
+  - id
+  - school_id
+  - lead_provider_id
+  - contract_period_year
+  - expression_of_interest
+  - created_at
+  - updated_at
+  :metadata_schools_contract_periods:
+  - id
+  - school_id
+  - contract_period_year
+  - in_partnership
+  - induction_programme_choice
+  - created_at
+  - updated_at
