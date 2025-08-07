@@ -6,13 +6,10 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   include_context 'test trs api client'
 
   let(:author) do
-    Sessions::Users::AppropriateBodyUser.new(
-      name: 'A user',
-      email: 'ab_user@something.org',
-      dfe_sign_in_user_id: SecureRandom.uuid,
-      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id
-    )
+    FactoryBot.create(:appropriate_body_user,
+                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
   end
+
   let(:trn) { '1000890' }
   let(:first_name) { 'Terry' }
   let(:last_name) { 'Wogan' }
