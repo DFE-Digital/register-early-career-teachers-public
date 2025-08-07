@@ -35,7 +35,7 @@ module ParityCheck
     end
 
     def delivery_partner_id
-      DeliveryPartners::Query.new(lead_provider:)
+      DeliveryPartners::Query.new(lead_provider_id: lead_provider.id)
         .delivery_partners
         .distinct(false)
         .reorder("RANDOM()")
