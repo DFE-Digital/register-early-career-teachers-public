@@ -35,7 +35,7 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
   end
 
   it "prefixes the page with 'Error:' when any step data is invalid" do
-    store.change_name = 'yes'
+    store.change_name = 'no'
     store.corrected_name = 'a' * 100
     wizard.valid_step?
 
