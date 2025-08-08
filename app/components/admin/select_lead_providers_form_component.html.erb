@@ -1,0 +1,20 @@
+<%= form_with url: form_url, method: :post, local: true do |f| %>
+  <%= f.hidden_field :year, value: year %>
+  <%= f.hidden_field :page, value: page %>
+  <%= f.hidden_field :q, value: q %>
+
+  <%= f.govuk_collection_check_boxes(
+    :lead_provider_ids,
+    all_lead_providers_for_period,
+    :id,
+    ->(alp) { alp.lead_provider.name },
+    legend: { text: legend_text, size: 'm' },
+    hint: { text: hint_text },
+    checked: currently_selected_ids
+  ) %>
+
+  <div class="govuk-button-group">
+    <%= f.govuk_submit("Confirm") %>
+    <%= govuk_link_to("Back", back_link_path, class: "govuk-link") %>
+  </div>
+<% end %>
