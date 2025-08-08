@@ -53,7 +53,8 @@ module AppropriateBodies
         ProcessBatchClaimJob.perform_later(
           @pending_induction_submission_batch,
           current_user.email,
-          current_user.name
+          current_user.name,
+          RequestLocals.fetch(:dfe_analytics_request_id)
         )
       end
     end
