@@ -5,6 +5,29 @@ RSpec.describe Metadata::Handlers::School do
   let!(:lead_provider) { school_partnership.lead_provider }
   let!(:contract_period) { school_partnership.contract_period }
 
+  describe ".refresh_all_metadata!" do
+    subject(:refresh_all_metadata) { described_class.refresh_all_metadata! }
+
+    before { stub_const("Metadata::Handlers::School::BATCH_SIZE", 2) }
+
+    it "enqueues jobs to refresh metadata for all eligible schools in batches" do
+      schools = FactoryBot.create_list(:school, 2, :eligible)
+      school_ids = ([school] + schools).map(&:id)
+
+      expect(RefreshMetadataJob).to receive(:perform_later).with(
+        object_type: School,
+        object_ids: school_ids[0..1]
+      )
+
+      expect(RefreshMetadataJob).to receive(:perform_later).with(
+        object_type: School,
+        object_ids: school_ids[2..2]
+      )
+
+      refresh_all_metadata
+    end
+  end
+
   describe "#refresh_metadata!" do
     subject(:refresh_metadata) { instance.refresh_metadata! }
 
