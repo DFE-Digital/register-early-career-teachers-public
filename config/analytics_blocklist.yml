@@ -209,6 +209,8 @@
   - updated_at
   - api_updated_at
   - urn
+  - induction_tutor_name
+  - induction_tutor_email
   :school_partnerships:
   - id
   - created_at
