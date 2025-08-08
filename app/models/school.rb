@@ -51,6 +51,10 @@ class School < ApplicationRecord
             presence: true,
             uniqueness: true
 
+  validates :induction_tutor_email,
+            notify_email: true,
+            allow_nil: true
+
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
 
