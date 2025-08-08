@@ -84,7 +84,8 @@ FactoryBot.define do
         FactoryBot.create(:training_period,
                           ect_at_school_period: ect,
                           school_partnership: partnership,
-                          started_on: ect.started_on)
+                          started_on: ect.started_on,
+                          finished_on: ect.finished_on)
       end
     end
 
