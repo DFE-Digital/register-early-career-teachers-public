@@ -362,16 +362,27 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
-      context 'with a passed or failed outcome' do
+      context 'with a passed outcome' do
         let!(:induction_period) do
-          FactoryBot.create(:induction_period, :pass,
-                            teacher:)
+          FactoryBot.create(:induction_period, :pass, teacher:)
         end
 
         before { service.process! }
 
         it 'captures an error message' do
-          expect(submission.error_messages).to eq ['Kirk Van Houten has already completed their induction']
+          expect(submission.error_messages).to eq ['Kirk Van Houten has already passed their induction']
+        end
+      end
+
+      context 'with a failed outcome' do
+        let!(:induction_period) do
+          FactoryBot.create(:induction_period, :fail, teacher:)
+        end
+
+        before { service.process! }
+
+        it 'captures an error message' do
+          expect(submission.error_messages).to eq ['Kirk Van Houten has already failed their induction']
         end
       end
 
