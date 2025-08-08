@@ -452,7 +452,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     context 'when the ECT is already claimed by another body' do
       include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
 
-      let(:other_body) { FactoryBot.create(:appropriate_body) }
+      let(:other_body) { FactoryBot.create(:appropriate_body, name: 'Acme') }
       let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
       before do
@@ -469,7 +469,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
       describe 'submission error messages' do
         subject { submission.error_messages }
 
-        it { is_expected.to eq ['Kirk Van Houten is already claimed by another appropriate body'] }
+        it { is_expected.to eq ['Kirk Van Houten is already claimed by another appropriate body (Acme)'] }
       end
     end
 
