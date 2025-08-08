@@ -4,7 +4,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
   let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:outcome) { nil }
+  let(:outcome) { "pass" }
   let(:number_of_terms) { 4.5 }
   let(:finished_on) { "2023-12-31" }
 
@@ -21,36 +21,35 @@ RSpec.describe Admin::ReopenInductionPeriod do
 
   describe "#reopen_induction_period!" do
     it "reopens the induction period" do
-      expect {
-        service.reopen_induction_period!
-      }.to change { induction_period.reload.finished_on }.to(nil)
+      expect { service.reopen_induction_period! }
+        .to change { induction_period.reload.finished_on }.to(nil)
         .and change { induction_period.reload.number_of_terms }.to(nil)
     end
 
     it "adds an event" do
-      induction_period.finished_on = induction_period.number_of_terms = nil
+      induction_period.finished_on = nil
+      induction_period.outcome = nil
+      induction_period.number_of_terms = nil
       modifications = induction_period.changes
       appropriate_body = induction_period.appropriate_body
       induction_period.reload
 
-      expect(Events::Record).to receive(:record_induction_period_reopened_event!)
+      expect(Events::Record)
+        .to receive(:record_induction_period_reopened_event!)
         .with(author:, induction_period:, modifications:, teacher:, appropriate_body:)
 
       service.reopen_induction_period!
     end
 
-    context "when induction period has an outcome" do
-      let(:outcome) { "pass" }
+    it "removes the outcome" do
+      expect { service.reopen_induction_period! }
+        .to change { induction_period.reload.outcome }.from("pass").to(nil)
+    end
 
-      it "removes the outcome" do
-        expect { service.reopen_induction_period! }.to change { induction_period.reload.outcome }.to(nil)
-      end
-
-      it "queues a job that updates the TRS status" do
-        expect {
-          service.reopen_induction_period!
-        }.to have_enqueued_job(ReopenInductionJob).with(trn: teacher.trn, start_date: induction_period.started_on)
-      end
+    it "queues a job that updates the TRS status" do
+      expect { service.reopen_induction_period! }
+        .to have_enqueued_job(ReopenInductionJob)
+        .with(trn: teacher.trn, start_date: induction_period.started_on)
     end
 
     context "when the last induction period is ongoing" do
@@ -58,13 +57,21 @@ RSpec.describe Admin::ReopenInductionPeriod do
       let(:finished_on) { nil }
 
       it "raises an error" do
-        expect {
-          service.reopen_induction_period!
-        }.to raise_error(Admin::ReopenInductionPeriod::ReopenInductionError)
+        expect { service.reopen_induction_period! }
+          .to raise_error(Admin::ReopenInductionPeriod::ReopenInductionError)
       end
     end
 
-    context "when the induction period is not the last" do
+    context "when the induction period has no outcome" do
+      let(:outcome) { nil }
+
+      it "raises an error" do
+        expect { service.reopen_induction_period! }
+          .to raise_error(Admin::ReopenInductionPeriod::ReopenInductionError)
+      end
+    end
+
+    context "when the induction period is not the latest" do
       let!(:newer_period) do
         FactoryBot.create(
           :induction_period,
@@ -77,9 +84,8 @@ RSpec.describe Admin::ReopenInductionPeriod do
       end
 
       it "raises an error" do
-        expect {
-          service.reopen_induction_period!
-        }.to raise_error(Admin::ReopenInductionPeriod::ReopenInductionError)
+        expect { service.reopen_induction_period! }
+          .to raise_error(Admin::ReopenInductionPeriod::ReopenInductionError)
       end
     end
   end

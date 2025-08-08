@@ -8,7 +8,7 @@
   )
 %>
 
-<% if admin_latest_induction_period_complete?(@teacher) %>
+<% if admin_latest_induction_complete_with_outcome?(@teacher) %>
   <%= govuk_button_to "Reopen induction", admin_teacher_reopen_induction_path(@teacher), method: :put, warning: true %>
 <% end %>
 
