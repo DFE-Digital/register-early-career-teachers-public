@@ -15,16 +15,16 @@ module Admin
 
       private
 
-        delegate :id, :claim?, :action?, :recorded_count, to: :batch
+        delegate :id, :claim?, :action?, to: :batch
         delegate :training_programme_name, :teacher_full_name, to: :helpers
 
         # @return [String]
         def caption
           case
-          when claim? then "Opened induction periods (#{recorded_count})"
-          when action? then "Closed induction periods (#{recorded_count})"
+          when claim? then "Opened induction periods (#{rows.count})"
+          when action? then "Closed induction periods (#{rows.count})"
           else
-            raise StandardError, "unknown #{batch.class}#batch_type for #{batch.id}"
+            raise StandardError, "Unknown #{batch.class}#batch_type for #{id}"
           end
         end
 
@@ -34,7 +34,7 @@ module Admin
           when claim? then ['Name', 'Induction period start date', 'Induction programme']
           when action? then ['Name', 'Induction period end date', 'Number of terms', 'Outcome']
           else
-            raise StandardError, "unknown #{batch.class}#batch_type for #{batch.id}"
+            raise StandardError, "Unknown #{batch.class}#batch_type for #{id}"
           end
         end
 
@@ -71,6 +71,8 @@ module Admin
                 induction_period.started_on.to_fs(:govuk),
                 training_programme_name(induction_period.training_programme)
               ]
+            else
+              raise StandardError, "Unknown #{batch.class}#batch_type for #{id}"
             end
         end
 
