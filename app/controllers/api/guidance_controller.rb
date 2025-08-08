@@ -16,18 +16,13 @@ module API
     end
 
     def page
-      path = params[:page]
+      template = "api/guidance/#{params[:page].underscore}"
 
-      template = {
-        "swagger-api-documentation" => "swagger_api_documentation",
-        "guidance-for-lead-providers" => "guidance_for_lead_providers",
-        "sandbox" => "sandbox",
-        "guidance-for-lead-providers/api-data-states" => "guidance_for_lead_providers/api_data_states",
-        "guidance-for-lead-providers/data-syncing" => "guidance_for_lead_providers/data_syncing",
-        "guidance-for-lead-providers/ids-explained" => "guidance_for_lead_providers/ids_explained",
-      }.fetch(path)
-
-      render "api/guidance/" + template
+      if template_exists?(template)
+        render template
+      else
+        render 'errors/not_found', status: :not_found
+      end
     end
   end
 end
