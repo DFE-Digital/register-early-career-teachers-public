@@ -50,5 +50,19 @@ describe Migrators::TrainingPeriod do
         end
       end
     end
+
+    describe ".teachers" do
+      it "excludes teacher profiles with nil TRN" do
+        teacher_profile_with_nil_trn = FactoryBot.create(:migration_teacher_profile, trn: nil)
+        FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_with_nil_trn, user: teacher_profile_with_nil_trn.user)
+
+        teacher_profile_with_valid_trn = FactoryBot.create(:migration_teacher_profile)
+        FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_with_valid_trn, user: teacher_profile_with_valid_trn.user)
+
+        teachers = described_class.teachers
+        expect(teachers).to include(teacher_profile_with_valid_trn)
+        expect(teachers).not_to include(teacher_profile_with_nil_trn)
+      end
+    end
   end
 end
