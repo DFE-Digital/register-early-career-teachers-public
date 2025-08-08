@@ -44,8 +44,8 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
                        .with_message("Select 'Yes' or 'No' to confirm whether the details are correct")
     end
 
-    context "when change_name is 'yes'" do
-      subject { described_class.new(change_name: 'yes') }
+    context "when change_name is 'no'" do
+      subject { described_class.new(change_name: 'no') }
 
       it { is_expected.to allow_value('Rick Collins').for(:corrected_name) }
 
@@ -54,8 +54,8 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
       end
     end
 
-    context "when change_name is not 'yes'" do
-      subject { described_class.new(change_name: 'no') }
+    context "when change_name is not 'no'" do
+      subject { described_class.new(change_name: 'yes') }
 
       ['Rick Collins', 'a' * 71, ' ', nil].each do |value|
         it { is_expected.to allow_value(value).for(:corrected_name) }
@@ -94,7 +94,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
       let(:step_params) do
         ActionController::Parameters.new(
           current_step.to_s => {
-            "change_name" => 'yes',
+            "change_name" => 'no',
             "corrected_name" => "Paul Saints",
           }
         )
@@ -105,7 +105,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
           .to change(subject.mentor, :corrected_name)
                 .from(nil).to('Paul Saints')
                 .and change(subject.mentor, :change_name)
-                       .from(nil).to('yes')
+                       .from(nil).to('no')
       end
     end
   end
