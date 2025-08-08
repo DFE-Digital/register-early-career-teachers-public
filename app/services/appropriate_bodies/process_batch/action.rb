@@ -58,8 +58,11 @@ module AppropriateBodies
           capture_error(trs_error)
           true
         elsif teacher
-          if passed? || failed?
-            capture_error("#{name} has already completed their induction")
+          if passed?
+            capture_error("#{name} has already passed their induction")
+            true
+          elsif failed?
+            capture_error("#{name} has already failed their induction")
             true
           elsif no_ongoing_induction_period?
             capture_error("#{name} does not have an open induction")
