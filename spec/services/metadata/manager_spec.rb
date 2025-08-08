@@ -30,4 +30,14 @@ RSpec.describe Metadata::Manager do
       end
     end
   end
+
+  describe ".refresh_all_metadata!" do
+    subject(:refresh_all_metadata) { described_class.refresh_all_metadata! }
+
+    it "calls refresh_metadata! for each handler" do
+      expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!)
+
+      refresh_all_metadata
+    end
+  end
 end
