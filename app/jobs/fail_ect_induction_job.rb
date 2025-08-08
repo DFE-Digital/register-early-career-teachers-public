@@ -1,4 +1,6 @@
 class FailECTInductionJob < ApplicationJob
+  include TRS::RetryableClient
+
   def perform(trn:, start_date:, completed_date:, pending_induction_submission_id: nil)
     ActiveRecord::Base.transaction do
       api_client.fail_induction!(trn:, start_date:, completed_date:)
@@ -7,13 +9,8 @@ class FailECTInductionJob < ApplicationJob
         PendingInductionSubmission.find(pending_induction_submission_id).update!(delete_at: 24.hours.from_now)
       end
 
-      Teachers::RefreshTRSAttributes.new(Teacher.find_by!(trn:)).refresh!
+      teacher = Teacher.find_by!(trn:)
+      Teachers::RefreshTRSAttributes.new(teacher, api_client:).refresh!
     end
-  end
-
-private
-
-  def api_client
-    TRS::APIClient.build
   end
 end
