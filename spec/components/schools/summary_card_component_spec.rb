@@ -20,7 +20,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
                       started_on: '2021-01-01')
   end
 
-  let!(:training_period) { FactoryBot.create(:training_period, ect_at_school_period: provider_led_ect, school_partnership:, started_on: '2022-01-01', finished_on: '2022-06-01') }
+  let(:training_period) { provider_led_ect.training_period }
 
   context 'when data is reported by the school' do
     before { render_inline(described_class.new(title: 'Reported to us by your school', ect: school_led_ect, data_source: :school)) }
