@@ -73,6 +73,8 @@ erDiagram
     integer last_chosen_lead_provider_id
     enum last_chosen_training_programme
     datetime api_updated_at
+    string induction_tutor_name
+    citext induction_tutor_email
   }
   School }o--|| AppropriateBody : belongs_to
   School }o--|| LeadProvider : belongs_to
