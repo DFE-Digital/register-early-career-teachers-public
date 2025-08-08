@@ -72,7 +72,7 @@ module AppropriateBodies
               false # can be claimed
             end
           elsif claimed_by_another_ab?
-            capture_error("#{name} is already claimed by another appropriate body")
+            capture_error("#{name} is already claimed by another appropriate body (#{teacher.current_appropriate_body.name})")
             true
           elsif !claimed_by_another_ab?
             capture_error("#{name} is already claimed by your appropriate body")

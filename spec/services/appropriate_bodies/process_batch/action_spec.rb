@@ -284,7 +284,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
     end
 
     context 'with an ongoing induction at another Appropriate Body' do
-      let(:other_body) { FactoryBot.create(:appropriate_body) }
+      let(:other_body) { FactoryBot.create(:appropriate_body, name: 'Acme') }
 
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing,
@@ -296,7 +296,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       before { service.process! }
 
       it 'captures error message' do
-        expect(submission.error_messages).to eq ['Kirk Van Houten is completing their induction with another appropriate body']
+        expect(submission.error_messages).to eq ['Kirk Van Houten is completing their induction with another appropriate body (Acme)']
       end
     end
 
