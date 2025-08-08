@@ -17,7 +17,10 @@ module AppropriateBodies
           )
           true
         rescue StandardError => e
-          capture_error(e.message)
+          Rails.logger.info(e.message)
+          Sentry.capture_exception(e)
+          capture_error("Something went wrong. You’ll need to try again later")
+
           next(false)
         end
 
