@@ -6,11 +6,7 @@
   <% if current_partnerships.any? %>
     <div class="govuk-inset-text">
       <h3 class="govuk-heading-s">Currently working with:</h3>
-      <ul class="govuk-list govuk-list--bullet">
-        <% current_partnership_names.each do |name| %>
-          <li><%= name %></li>
-        <% end %>
-      </ul>
+      <%= govuk_list(current_partnership_names, type: :bullet) %>
     </div>
   <% end %>
 
