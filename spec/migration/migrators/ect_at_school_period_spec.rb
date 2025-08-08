@@ -30,5 +30,19 @@ RSpec.describe Migrators::ECTAtSchoolPeriod do
         end
       end
     end
+
+    describe ".ect_teachers" do
+      it "excludes teacher profiles with nil TRN" do
+        teacher_profile_with_nil_trn = FactoryBot.create(:migration_teacher_profile, trn: nil)
+        FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_with_nil_trn, user: teacher_profile_with_nil_trn.user)
+
+        teacher_profile_with_valid_trn = FactoryBot.create(:migration_teacher_profile)
+        FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_with_valid_trn, user: teacher_profile_with_valid_trn.user)
+
+        ect_teachers = described_class.ect_teachers
+        expect(ect_teachers).to include(teacher_profile_with_valid_trn)
+        expect(ect_teachers).not_to include(teacher_profile_with_nil_trn)
+      end
+    end
   end
 end
