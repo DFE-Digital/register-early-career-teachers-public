@@ -14,4 +14,10 @@ RSpec.describe Metadata::Resolver do
       }.to raise_error(ArgumentError, "No metadata handler found for Class")
     end
   end
+
+  describe ".all_handlers" do
+    subject { described_class.all_handlers }
+
+    it { is_expected.to contain_exactly(Metadata::Handlers::School) }
+  end
 end
