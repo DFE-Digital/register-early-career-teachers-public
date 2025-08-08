@@ -9,7 +9,7 @@ module Migrators
     end
 
     def self.mentor_teachers
-      ::Migration::TeacherProfile.joins(:participant_profiles).merge(Migration::ParticipantProfile.mentor).distinct
+      ::Migration::TeacherProfile.joins(:participant_profiles).merge(Migration::ParticipantProfile.mentor).where.not(trn: nil).distinct
     end
 
     def self.dependencies

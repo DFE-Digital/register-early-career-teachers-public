@@ -9,7 +9,8 @@ RSpec.describe Migrators::Teacher do
     end
 
     def setup_failure_state
-      teacher_profile = FactoryBot.create(:migration_teacher_profile, trn: nil)
+      invalid_trn = '123'
+      teacher_profile = FactoryBot.create(:migration_teacher_profile, trn: invalid_trn)
       FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
     end
 
@@ -25,6 +26,20 @@ RSpec.describe Migrators::Teacher do
           expect(teacher.created_at).to be_within(1.second).of teacher_profile.created_at
           expect(teacher.updated_at).to be_within(1.second).of teacher_profile.updated_at
         end
+      end
+    end
+
+    describe ".teachers" do
+      it "excludes teacher profiles with nil TRN" do
+        teacher_profile_with_nil_trn = FactoryBot.create(:migration_teacher_profile, trn: nil)
+        FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_with_nil_trn, user: teacher_profile_with_nil_trn.user)
+
+        teacher_profile_with_valid_trn = FactoryBot.create(:migration_teacher_profile)
+        FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_with_valid_trn, user: teacher_profile_with_valid_trn.user)
+
+        teachers = described_class.teachers
+        expect(teachers).to include(teacher_profile_with_valid_trn)
+        expect(teachers).not_to include(teacher_profile_with_nil_trn)
       end
     end
   end
