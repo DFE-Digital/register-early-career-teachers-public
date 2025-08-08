@@ -423,7 +423,7 @@ module Events
 
     def self.record_lead_provider_delivery_partnership_added_event!(author:, delivery_partner:, lead_provider:, contract_period:, lead_provider_delivery_partnership:)
       event_type = :lead_provider_delivery_partnership_added
-      heading = "#{lead_provider.name} assigned to #{delivery_partner.name} for #{contract_period.year}"
+      heading = "#{lead_provider.name} partnered with #{delivery_partner.name} for #{contract_period.year}"
 
       new(
         event_type:,
