@@ -132,6 +132,12 @@ describe School do
         end
       end
     end
+
+    context "induction_tutor_email" do
+      it { is_expected.to allow_value(nil).for(:induction_tutor_email) }
+      it { is_expected.to allow_value("test@example.com").for(:induction_tutor_email) }
+      it { is_expected.not_to allow_value("invalid_email").for(:induction_tutor_email) }
+    end
   end
 
   describe "#training_programme_for" do
