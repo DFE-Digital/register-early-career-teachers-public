@@ -7,6 +7,7 @@ namespace :sandbox_seed_data do
       SandboxSeedData::Statements,
       SandboxSeedData::Schools,
       SandboxSeedData::DeliveryPartners,
+      SandboxSeedData::LeadProviderDeliveryPartnerships,
       SandboxSeedData::SchoolPartnerships,
     ]
 

@@ -12,22 +12,8 @@ RSpec.describe SandboxSeedData::DeliveryPartners do
     let(:contract_period) { FactoryBot.create(:contract_period) }
     let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
-    it "creates the correct quantity of delivery partners" do
-      instance.plant
-
-      expect(DeliveryPartner.all.size).to eq(described_class::NUMBER_OF_RECORDS_PER_LEAD_PROVIDER)
-    end
-
-    it "creates delivery partners and lead providers partnerships" do
-      instance.plant
-
-      expect(LeadProviderDeliveryPartnership.all.size).to eq(described_class::NUMBER_OF_RECORDS_PER_LEAD_PROVIDER)
-    end
-
-    it "creates delivery partners for all lead providers and contract periods" do
-      instance.plant
-
-      expect(LeadProviderDeliveryPartnership.all.map(&:active_lead_provider).uniq).to eq(ActiveLeadProvider.all)
+    it "creates the correct number of delivery partners" do
+      expect { instance.plant }.to change(DeliveryPartner, :count).by(described_class::NUMBER_OF_RECORDS)
     end
 
     it "logs the creation of delivery partners" do
@@ -37,14 +23,17 @@ RSpec.describe SandboxSeedData::DeliveryPartners do
       expect(logger).to have_received("formatter=").with(Rails.logger.formatter)
 
       expect(logger).to have_received(:info).with(/Planting delivery partners/).once
-      expect(logger).to have_received(:info).with(/#{DeliveryPartner.all.sample.name}/).at_least(:once)
+
+      DeliveryPartner.find_each do |delivery_partner|
+        expect(logger).to have_received(:info).with(/#{delivery_partner.name}/).once
+      end
     end
 
     context "when in the production environment" do
       let(:environment) { "production" }
 
       it "does not create any delivery partners" do
-        expect { instance.plant }.not_to change(ContractPeriod, :count)
+        expect { instance.plant }.not_to change(DeliveryPartner, :count)
       end
     end
   end
