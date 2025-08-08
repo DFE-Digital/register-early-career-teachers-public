@@ -13,6 +13,11 @@ RSpec.describe "Guidance pages" do
     and_i_do_not_see_sidebar_menu
   end
 
+  scenario "Page not found" do
+    when_i_visit_non_existing_guidance_page
+    then_i_should_see_not_found
+  end
+
 private
 
   def given_i_am_on_the_api_guidance_page
@@ -48,5 +53,15 @@ private
   def and_i_do_not_see_sidebar_menu
     sidebar = page.locator("nav.x-govuk-sub-navigation")
     expect(sidebar.get_by_role("link", name: "API IDs explained")).not_to be_visible
+  end
+
+  def when_i_visit_non_existing_guidance_page
+    path = api_guidance_page_path("does-not-exist")
+    page.goto(path)
+    expect(page.url).to end_with(path)
+  end
+
+  def then_i_should_see_not_found
+    expect(page.get_by_role("heading", name: "Page not found")).to be_visible
   end
 end
