@@ -286,8 +286,8 @@ describe Teachers::Search do
         let!(:ect_at_school_period3) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentored_teacher1, school: school1, started_on:, created_at: 2.days.ago) }
         let!(:ect_at_school_period4) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentored_teacher2, school: school1, started_on:, created_at: 1.day.ago) }
 
-        let!(:mentorship_period1) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on:) }
-        let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on:) }
+        let!(:mentorship_period1) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period3, mentor: mentor_at_school_period1, started_on:) }
+        let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on:) }
 
         it 'orders with unmentored teachers first, then by registration date' do
           results = Teachers::Search.new(ect_at_school: school1).search

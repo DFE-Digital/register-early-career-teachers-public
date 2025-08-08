@@ -71,6 +71,8 @@ RSpec.describe 'schools/ects/show.html.erb' do
                             mentee: current_ect_period,
                             mentor: mentor_at_school_period)
 
+          current_ect_period.reload
+
           render
         end
 
