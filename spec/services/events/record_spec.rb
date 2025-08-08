@@ -904,7 +904,7 @@ RSpec.describe Events::Record do
       event_record = Events::Record.new(
         author:,
         event_type: :lead_provider_delivery_partnership_added,
-        heading: "#{lead_provider.name} assigned to #{delivery_partner.name} for #{contract_period.year}",
+        heading: "#{lead_provider.name} partnered with #{delivery_partner.name} for #{contract_period.year}",
         delivery_partner:,
         lead_provider:,
         lead_provider_delivery_partnership:,
@@ -914,7 +914,7 @@ RSpec.describe Events::Record do
       allow(Events::Record).to receive(:new).with(
         event_type: :lead_provider_delivery_partnership_added,
         author:,
-        heading: "#{lead_provider.name} assigned to #{delivery_partner.name} for #{contract_period.year}",
+        heading: "#{lead_provider.name} partnered with #{delivery_partner.name} for #{contract_period.year}",
         delivery_partner:,
         lead_provider:,
         lead_provider_delivery_partnership:,
