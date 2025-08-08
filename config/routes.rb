@@ -41,7 +41,7 @@ Rails.application.routes.draw do
   post '/otp-sign-in/verify', to: 'otp_sessions#verify_code'
 
   constraints -> { Rails.application.config.enable_personas } do
-    resources 'personas', only: %i[index]
+    resources :personas, only: %i[index]
   end
 
   draw :admin
