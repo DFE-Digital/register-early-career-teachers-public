@@ -35,7 +35,7 @@ module Metadata::Handlers
           contract_period_year:
         )
 
-        expression_of_interest = expression_of_interest_for?(lead_provider_id, contract_period_year)
+        expression_of_interest = school.expression_of_interest_for?(lead_provider_id, contract_period_year)
 
         upsert(metadata, expression_of_interest:)
       end
@@ -52,12 +52,6 @@ module Metadata::Handlers
 
     def contract_period_years
       @contract_period_years ||= ContractPeriod.pluck(:year)
-    end
-
-    def expression_of_interest_for?(lead_provider_id, contract_period_year)
-      [school.ect_at_school_periods, school.mentor_at_school_periods].any? do |periods|
-        periods.with_expressions_of_interest_for_lead_provider_and_contract_period(contract_period_year, lead_provider_id).exists?
-      end
     end
   end
 end
