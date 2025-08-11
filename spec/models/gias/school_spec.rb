@@ -12,7 +12,7 @@ describe GIAS::School do
     it { is_expected.to have_db_column(:administrative_district_name).of_type(:string) }
     it { is_expected.to have_db_column(:closed_on).of_type(:date) }
     it { is_expected.to have_db_column(:created_at).of_type(:datetime).with_options(null: false) }
-    it { is_expected.to have_db_column(:establishment_number).of_type(:integer).with_options(null: false) }
+    it { is_expected.to have_db_column(:establishment_number).of_type(:integer) }
     it { is_expected.to have_db_column(:funding_eligibility).of_type(:enum).with_options(null: false) }
     it { is_expected.to have_db_column(:induction_eligibility).of_type(:boolean).with_options(null: false) }
     it { is_expected.to have_db_column(:in_england).of_type(:boolean).with_options(null: false) }
@@ -78,7 +78,7 @@ describe GIAS::School do
 
     it { is_expected.to validate_numericality_of(:local_authority_code).only_integer }
     it { is_expected.to validate_presence_of(:name) }
-    it { is_expected.to validate_numericality_of(:establishment_number).only_integer }
+    it { is_expected.to validate_numericality_of(:establishment_number).only_integer.allow_nil }
 
     it {
       is_expected.to validate_inclusion_of(:type_name)
