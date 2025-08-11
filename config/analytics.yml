@@ -45,7 +45,6 @@ shared:
     - batch_type
     - created_at
     - updated_at
-    - file_name
     - file_size
     - file_type
     - uploaded_count

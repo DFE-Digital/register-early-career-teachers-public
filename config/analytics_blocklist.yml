@@ -258,6 +258,7 @@
   :pending_induction_submission_batches:
   - data
   - error_message
+  - file_name
   :migration_failures:
   - id
   - data_migration_id
