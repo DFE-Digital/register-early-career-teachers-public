@@ -15,7 +15,6 @@ module API
     private
 
       def schools_query(conditions: {})
-        conditions[:lead_provider_id] = current_lead_provider.id
         conditions[:contract_period_year] = contract_period&.id
         Schools::Query.new(**conditions.compact)
       end
