@@ -133,10 +133,34 @@ describe School do
       end
     end
 
-    context "induction_tutor_email" do
+    context "induction tutor" do
       it { is_expected.to allow_value(nil).for(:induction_tutor_email) }
       it { is_expected.to allow_value("test@example.com").for(:induction_tutor_email) }
       it { is_expected.not_to allow_value("invalid_email").for(:induction_tutor_email) }
+
+      context "when induction_tutor_email and induction_tutor_name is blank" do
+        subject { FactoryBot.build(:school, induction_tutor_name: nil, induction_tutor_email: nil) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when induction_tutor_name is set" do
+        subject { FactoryBot.build(:school, induction_tutor_name: "Example name", induction_tutor_email: nil) }
+
+        it "requires induction_tutor_email if induction_tutor_name is present" do
+          expect(subject).to be_invalid
+          expect(subject.errors.messages[:induction_tutor_email]).to contain_exactly("Must provide email if induction tutor name is set")
+        end
+      end
+
+      context "when induction_tutor_email is set" do
+        subject { FactoryBot.build(:school, induction_tutor_name: nil, induction_tutor_email: "email@example.com") }
+
+        it "requires induction_tutor_name if induction_tutor_email is present" do
+          expect(subject).to be_invalid
+          expect(subject.errors.messages[:induction_tutor_name]).to contain_exactly("Must provide name if induction tutor email is set")
+        end
+      end
     end
   end
 
