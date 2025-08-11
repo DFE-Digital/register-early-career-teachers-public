@@ -1,3 +1,5 @@
+require "dfe_analytics/active_job_extensions"
+
 DfE::Analytics.configure do |config|
   # Whether to log events instead of sending them to BigQuery.
   #
@@ -105,4 +107,8 @@ DfE::Analytics.configure do |config|
   # models namespaced with Namespace
   #
   config.excluded_models_proc = proc { |model| model.module_parent == Migration }
+end
+
+ActiveSupport.on_load(:active_job) do |base|
+  base.prepend(DfEAnalytics::ActiveJobExtensions)
 end
