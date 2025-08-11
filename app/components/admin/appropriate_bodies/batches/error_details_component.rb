@@ -25,20 +25,20 @@ module Admin
           batch.row_headings.values
         end
 
-        # @return [Array<String>]
-        def tally
-          [error_count, success_rate]
-        end
+        # # @return [Array<String>]
+        # def tally
+        #   [error_count, success_rate]
+        # end
 
-        # @return [String]
-        def error_count
-          pluralize(batch.tally[:errored_count], 'error')
-        end
+        # # @return [String]
+        # def error_count
+        #   pluralize(batch.tally[:errored_count], 'error')
+        # end
 
-        # @return [String]
-        def success_rate
-          (batch.recorded_count / batch.tally[:uploaded_count].to_f * 100).round(1).to_s + '% success rate'
-        end
+        # # @return [String]
+        # def success_rate
+        #   (batch.recorded_count / batch.tally[:uploaded_count].to_f * 100).round(1).to_s + '% success rate'
+        # end
 
         # @return [Array<String>]
         def rows
