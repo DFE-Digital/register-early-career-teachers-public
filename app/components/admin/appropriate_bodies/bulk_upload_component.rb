@@ -1,17 +1,10 @@
 module Admin
   module AppropriateBodies
     class BulkUploadComponent < ViewComponent::Base
-      renders_one :batch_details, -> {
-        ::Admin::AppropriateBodies::Batches::BatchDetailsComponent.new(batch:)
-      }
-
-      renders_one :error_details, -> {
-        ::Admin::AppropriateBodies::Batches::ErrorDetailsComponent.new(batch:)
-      }
-
-      renders_one :induction_details, -> {
-        ::Admin::AppropriateBodies::Batches::InductionDetailsComponent.new(batch:)
-      }
+      renders_one :batch_cards,       -> { Batches::BatchCardsComponent.new(batch:) }         # coloured cards
+      renders_one :batch_details,     -> { Batches::BatchDetailsComponent.new(batch:) }       # summary list
+      renders_one :error_details,     -> { Batches::ErrorDetailsComponent.new(batch:) }       # table (paginated)
+      renders_one :induction_details, -> { Batches::InductionDetailsComponent.new(batch:) }   # table (paginated)
 
       attr_reader :batch
 

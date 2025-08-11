@@ -5,36 +5,55 @@ RSpec.describe Admin::AppropriateBodies::BulkUploadComponent, type: :component d
     FactoryBot.create(:pending_induction_submission_batch, :claim, :completed)
   end
 
-  describe "#batch_details" do
+  describe "#batch_cards" do
+    let(:subcomponent) { ::Admin::AppropriateBodies::Batches::BatchCardsComponent }
+
     before do
-      allow(::Admin::AppropriateBodies::Batches::BatchDetailsComponent).to receive(:new).and_call_original
+      allow(subcomponent).to receive(:new).and_call_original
+      render_inline(component, &:with_batch_cards)
+    end
+
+    it "passes the batch to subcomponent" do
+      expect(subcomponent).to have_received(:new).with(batch:)
+    end
+  end
+
+  describe "#batch_details" do
+    let(:subcomponent) { ::Admin::AppropriateBodies::Batches::BatchDetailsComponent }
+
+    before do
+      allow(subcomponent).to receive(:new).and_call_original
       render_inline(component, &:with_batch_details)
     end
 
-    it "passes the batch to slot component" do
-      expect(::Admin::AppropriateBodies::Batches::BatchDetailsComponent).to have_received(:new).with(batch:)
+    it "passes the batch to subcomponent" do
+      expect(subcomponent).to have_received(:new).with(batch:)
     end
   end
 
   describe "#error_details" do
+    let(:subcomponent) { ::Admin::AppropriateBodies::Batches::ErrorDetailsComponent }
+
     before do
-      allow(::Admin::AppropriateBodies::Batches::ErrorDetailsComponent).to receive(:new).and_call_original
+      allow(subcomponent).to receive(:new).and_call_original
       render_inline(component, &:with_error_details)
     end
 
-    it "passes the batch to slot component" do
-      expect(::Admin::AppropriateBodies::Batches::ErrorDetailsComponent).to have_received(:new).with(batch:)
+    it "passes the batch to subcomponent" do
+      expect(subcomponent).to have_received(:new).with(batch:)
     end
   end
 
   describe "#induction_details" do
+    let(:subcomponent) { ::Admin::AppropriateBodies::Batches::InductionDetailsComponent }
+
     before do
-      allow(::Admin::AppropriateBodies::Batches::InductionDetailsComponent).to receive(:new).and_call_original
+      allow(subcomponent).to receive(:new).and_call_original
       render_inline(component, &:with_induction_details)
     end
 
-    it "passes the batch to slot component" do
-      expect(::Admin::AppropriateBodies::Batches::InductionDetailsComponent).to have_received(:new).with(batch:)
+    it "passes the batch to subcomponent" do
+      expect(subcomponent).to have_received(:new).with(batch:)
     end
   end
 end

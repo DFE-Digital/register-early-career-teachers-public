@@ -7,6 +7,7 @@
 
 <%=
   render Admin::AppropriateBodies::BulkUploadComponent.new(batch: @pending_induction_submission_batch) do |component|
+    component.with_batch_cards
     component.with_batch_details
     component.with_error_details
     component.with_induction_details
