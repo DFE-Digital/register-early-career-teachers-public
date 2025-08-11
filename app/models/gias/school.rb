@@ -28,7 +28,7 @@ class GIAS::School < ApplicationRecord
 
   # Validations
   validates :establishment_number,
-            numericality: { only_integer: true }
+            numericality: { only_integer: true, allow_nil: true }
 
   validates :local_authority_code,
             numericality: { only_integer: true }
