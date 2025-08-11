@@ -256,24 +256,9 @@
   - pending_induction_submission_batch_id
   - error_messages
   :pending_induction_submission_batches:
-  - id
-  - appropriate_body_id
-  - batch_type
-  - batch_status
   - data
-  - file_name
-  - file_size
-  - file_type
-  - uploaded_count
-  - processed_count
-  - errored_count
-  - released_count
-  - passed_count
-  - failed_count
-  - claimed_count
   - error_message
-  - created_at
-  - updated_at
+  - file_name
   :migration_failures:
   - id
   - data_migration_id
