@@ -95,14 +95,12 @@ RSpec.describe Schools::Query do
         let!(:school3) { training_period.school_partnership.school }
 
         let(:contract_period_year) { training_period.contract_period.id }
-        let!(:lead_provider_id) { training_period.lead_provider.id }
 
         let(:updated_since) { 1.day.ago }
 
         let(:query_params) do
           {
             contract_period_year:,
-            lead_provider_id:,
             updated_since:
           }
         end
@@ -115,7 +113,6 @@ RSpec.describe Schools::Query do
           let(:query_params) do
             {
               contract_period_year:,
-              lead_provider_id:,
             }
           end
 
@@ -222,201 +219,6 @@ RSpec.describe Schools::Query do
         end
 
         it { expect(schools).to eq([school2, school1, school3]) }
-      end
-    end
-
-    describe "transient_in_partnership" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-
-      it { expect(returned_school).not_to be_transient_in_partnership }
-
-      context "when there is any partnership for the given school and contract period" do
-        let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
-        let!(:contract_period_year) { school_partnership.contract_period.id }
-
-        it { expect(returned_school).to be_transient_in_partnership }
-      end
-    end
-
-    describe "transient_mentors_at_school" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
-
-      it { expect(returned_school).not_to be_transient_mentors_at_school }
-
-      context "when there is any mentors with expression of interest for the given school and contract period" do
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_mentor) }
-        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
-
-        before do
-          training_period.mentor_at_school_period.update!(school_id: school.id)
-        end
-
-        it { expect(returned_school).to be_transient_mentors_at_school }
-      end
-
-      context "when there is any mentors in training for the given school and contract period" do
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_school_partnership, :for_mentor) }
-        let(:contract_period_year) { training_period.contract_period.id }
-
-        before do
-          training_period.mentor_at_school_period.update!(school_id: school.id)
-          training_period.school_partnership.update!(school_id: school.id)
-        end
-
-        it { expect(returned_school).to be_transient_mentors_at_school }
-      end
-    end
-
-    describe "transient_ects_at_school_training_programme" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
-
-      it { expect(returned_school).not_to be_transient_ects_at_school_training_programme }
-
-      context "when there is any ects with expression of interest for the given school and contract period" do
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_ect) }
-        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
-
-        before do
-          training_period.ect_at_school_period.update!(school_id: school.id)
-        end
-
-        it { expect(returned_school).to be_transient_ects_at_school_training_programme }
-      end
-
-      context "when there is any ects in training for the given school and contract period" do
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_school_partnership, :for_ect) }
-        let(:contract_period_year) { training_period.contract_period.id }
-
-        before do
-          training_period.ect_at_school_period.update!(school_id: school.id)
-          training_period.school_partnership.update!(school_id: school.id)
-        end
-
-        context "when ect has chosen `provider_led` as training programme" do
-          it "returns `provider_led`" do
-            expect(returned_school.transient_ects_at_school_training_programme).to eq("provider_led")
-          end
-        end
-
-        context "when ect has chosen `school_led` as training programme" do
-          before do
-            training_period.update!(training_programme: "school_led")
-          end
-
-          it "returns `school_led`" do
-            expect(returned_school.transient_ects_at_school_training_programme).to eq("school_led")
-          end
-        end
-      end
-    end
-
-    describe "transient_expression_of_interest_ects" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
-      let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
-
-      let(:query_params) do
-        {
-          contract_period_year:,
-          lead_provider_id:,
-        }
-      end
-
-      it { expect(returned_school).not_to be_transient_expression_of_interest_ects }
-
-      context "when there is any expression of interest from an ect for the given school/contract period/lead provider" do
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_ect) }
-        let(:lead_provider_id) { training_period.expression_of_interest.lead_provider.id }
-        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
-
-        before do
-          training_period.ect_at_school_period.update!(school_id: school.id)
-        end
-
-        it { expect(returned_school).to be_transient_expression_of_interest_ects }
-      end
-
-      context "when there is any expression of interest from a mentor for the given school/contract period/lead provider" do
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_mentor) }
-        let(:lead_provider_id) { training_period.expression_of_interest.lead_provider.id }
-        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
-
-        before do
-          training_period.mentor_at_school_period.update!(school_id: school.id)
-        end
-
-        it { expect(returned_school).not_to be_transient_expression_of_interest_ects }
-      end
-    end
-
-    describe "transient_expression_of_interest_mentors" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
-      let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
-
-      let(:query_params) do
-        {
-          contract_period_year:,
-          lead_provider_id:,
-        }
-      end
-
-      it { expect(returned_school).not_to be_transient_expression_of_interest_mentors }
-
-      context "when there is any expression of interest from a mentor for the given school/contract period/lead provider" do
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_mentor) }
-        let(:lead_provider_id) { training_period.expression_of_interest.lead_provider.id }
-        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
-
-        before do
-          training_period.mentor_at_school_period.update!(school_id: school.id)
-        end
-
-        it { expect(returned_school).to be_transient_expression_of_interest_mentors }
-      end
-
-      context "when there is any expression of interest from an ect for the given school/contract period/lead provider" do
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, :for_ect) }
-        let(:lead_provider_id) { training_period.expression_of_interest.lead_provider.id }
-        let(:contract_period_year) { training_period.expression_of_interest.contract_period.id }
-
-        before do
-          training_period.ect_at_school_period.update!(school_id: school.id)
-        end
-
-        it { expect(returned_school).not_to be_transient_expression_of_interest_mentors }
-      end
-    end
-
-    describe "transient_contract_period_year" do
-      let!(:school) { FactoryBot.create(:school, :eligible) }
-      let(:query_schools) { query.schools }
-      let(:returned_school) { query_schools.find(school.id) }
-      let(:contract_period_year) { FactoryBot.create(:contract_period).id }
-      let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
-
-      let(:query_params) do
-        {
-          contract_period_year:,
-          lead_provider_id:,
-        }
-      end
-
-      it "returns the `transient_contract_period_year` sent in the params" do
-        expect(returned_school.transient_contract_period_year).to eq(contract_period_year.to_s)
       end
     end
   end
