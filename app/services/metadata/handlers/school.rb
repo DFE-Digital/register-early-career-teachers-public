@@ -14,9 +14,10 @@ module Metadata::Handlers
     end
 
     class << self
-      def refresh_all_metadata!
-        ::School.in_batches(of: BATCH_SIZE) do |schools|
-          RefreshMetadataJob.perform_later(object_type: ::School, object_ids: schools.pluck(:id))
+      def refresh_all_metadata!(async: false)
+        job_method = async ? :perform_later : :perform_now
+        ::School.order(:created_at).in_batches(of: BATCH_SIZE) do |schools|
+          RefreshMetadataJob.send(job_method, object_type: ::School, object_ids: schools.pluck(:id))
         end
       end
     end

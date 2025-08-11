@@ -5,8 +5,8 @@ module Metadata
     end
 
     class << self
-      def refresh_all_metadata!
-        Resolver.all_handlers.each(&:refresh_all_metadata!)
+      def refresh_all_metadata!(async: false)
+        Resolver.all_handlers.each { it.refresh_all_metadata!(async:) }
       end
     end
 

@@ -32,12 +32,24 @@ RSpec.describe Metadata::Manager do
   end
 
   describe ".refresh_all_metadata!" do
-    subject(:refresh_all_metadata) { described_class.refresh_all_metadata! }
+    subject(:refresh_all_metadata) { described_class.refresh_all_metadata!(async:) }
 
-    it "calls refresh_metadata! for each handler" do
-      expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!)
+    let(:async) { true }
+
+    it "calls refresh_metadata! for each handler with async: true" do
+      expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!).with(async:)
 
       refresh_all_metadata
+    end
+
+    context "when async is false" do
+      let(:async) { false }
+
+      it "calls refresh_metadata! for each handler with async: false" do
+        expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!).with(async:)
+
+        refresh_all_metadata
+      end
     end
   end
 end
