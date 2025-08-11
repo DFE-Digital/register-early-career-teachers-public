@@ -21,3 +21,4 @@ shared:
     - error_messages
   :pending_induction_submission_batches:
     - data
+    - file_name
