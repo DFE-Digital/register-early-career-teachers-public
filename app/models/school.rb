@@ -117,4 +117,10 @@ class School < ApplicationRecord
   def training_programme_for(contract_period_year)
     Schools::TrainingProgramme.new(school: self, contract_period_year:).training_programme
   end
+
+  def expression_of_interest_for?(lead_provider_id, contract_period_year)
+    [ect_at_school_periods, mentor_at_school_periods].any? do |periods|
+      periods.with_expressions_of_interest_for_lead_provider_and_contract_period(contract_period_year, lead_provider_id).exists?
+    end
+  end
 end
