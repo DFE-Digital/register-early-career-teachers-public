@@ -76,6 +76,47 @@ Some more content here with [a link](http://link.com) and a code block:
 
 The sub-headings (any second-level heading) will appear as a link in the sidebar. If you're not familiar with Markdown you can reference [this cheat sheet](https://www.markdownguide.org/cheat-sheet/).
 
+## Adding a Page to the 'Guidance' Section
+
+To add a new page to the **Guidance** section:
+
+1. The URL must begin with:
+   `/api/guidance/guidance-for-lead-providers/`
+2. The page must be be added to the list in `API::Guidance::SidebarComponent`.
+
+### 1. Create the Guidance Page
+
+1. Write the page content in **Markdown**.
+2. Save the file in folder:
+   `app/views/api/guidance/guidance_for_lead_providers/`
+
+**Example:**
+`app/views/api/guidance/guidance_for_lead_providers/api_data_states.md`
+
+### 2. Add the Page to `SidebarComponent`
+
+1. Edit the component file:
+   `app/components/api/guidance/sidebar_component.rb`
+2. Update the `GUIDANCE_PAGES` constant to include the new page:
+
+<pre><code>```ruby
+  GUIDANCE_PAGES = [
+  { title: "API IDs explained", path: "api-ids-explained" },
+  { title: "API data states", path: "api-data-states" },
+  { title: "Syncing data best practice", path: "data-syncing" },
+  { title: "New API guidance page", path: "new-api-guidance-page" }, # <-- New entry
+].freeze
+```</code></pre>
+
+Field definitions:
+
+- `title` — The page title shown in the left menu.
+- `path` — The part of the URL after `/api/guidance/guidance-for-lead-providers/`.
+
+**Example:**
+For the URL: `/api/guidance/guidance-for-lead-providers/new-api-guidance-page`
+the path is: `new-api-guidance-page`
+
 ## Preview your changes
 
 When you want to view your changes as they will appear on the website, navigate to the `PORTS` tab in GitHub Codespaces and `right click` -> `Open in browser`. You can then input the path to the guidance page you are editing in the URL of the browser (see [Navigate to/create the Markdown file for the guidance page](#navigate-to-create-the-markdown-file-for-the-guidance-page) if you're unsure of what the path will be).
