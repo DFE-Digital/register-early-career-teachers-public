@@ -15,7 +15,7 @@ module API
     private
 
       def schools_query(conditions: {})
-        conditions[:contract_period_year] = contract_period&.id
+        conditions[:contract_period_year] = contract_period&.year
         Schools::Query.new(**conditions.compact)
       end
 
@@ -36,7 +36,7 @@ module API
       end
 
       def to_json(obj)
-        SchoolSerializer.render(obj, root: "data")
+        SchoolSerializer.render(obj, root: "data", contract_period_year: contract_period.year, lead_provider_id: current_lead_provider.id)
       end
     end
   end
