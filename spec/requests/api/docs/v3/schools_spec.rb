@@ -3,11 +3,15 @@ require "swagger_helper"
 RSpec.describe "Schools endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:school) { FactoryBot.create(:school, :eligible) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
-  let(:"filter[cohort]") { school_partnership.contract_period.year }
+  let(:resource) { FactoryBot.create(:school, :eligible) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, school: resource) }
+  let(:contract_period) { school_partnership.contract_period }
+  let(:"filter[cohort]") { contract_period.year }
 
   before do |example|
+    FactoryBot.create(:school_lead_provider_contract_period_metadata, school: resource, contract_period:, lead_provider: active_lead_provider.lead_provider)
+    FactoryBot.create(:school_contract_period_metadata, school: resource, contract_period:)
+
     example.metadata[:example_group][:operation][:parameters] += [{
       name: "filter[cohort]",
       in: :query,
@@ -34,6 +38,5 @@ RSpec.describe "Schools endpoint", openapi_spec: "v3/swagger.yaml", type: :reque
                     response_schema_ref: "#/components/schemas/SchoolResponse",
                     filter_schema_ref: "#/components/schemas/SchoolFilter",
                   } do
-    let(:resource) { school }
   end
 end

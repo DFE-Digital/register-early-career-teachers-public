@@ -7,7 +7,12 @@ RSpec.describe "Schools API", type: :request do
 
   def create_resource(active_lead_provider:)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-    FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:).school
+    school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
+
+    school_partnership.school.tap do |school|
+      FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, contract_period:, lead_provider:)
+      FactoryBot.create(:school_contract_period_metadata, school:, contract_period:)
+    end
   end
 
   describe "#index" do
