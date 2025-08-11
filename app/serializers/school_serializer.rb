@@ -43,8 +43,7 @@ class SchoolSerializer < Blueprinter::Base
               school.transient_expression_of_interest_mentors
         end
 
-        school.ect_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(options[:contract_period_year], options[:lead_provider_id]).exists? ||
-          school.mentor_at_school_periods.with_expressions_of_interest_for_lead_provider_and_contract_period(options[:contract_period_year], options[:lead_provider_id]).exists?
+        school.expression_of_interest_for?(options[:lead_provider_id], options[:contract_period_year])
       end
     end
   end

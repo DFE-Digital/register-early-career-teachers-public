@@ -141,12 +141,62 @@ describe School do
     let(:contract_period_year) { FactoryBot.build(:contract_period).id }
 
     it "calls Schools::TrainingProgramme service with correct params" do
-      training_programma_service = instance_double(Schools::TrainingProgramme)
+      training_programme_service = instance_double(Schools::TrainingProgramme)
 
-      allow(Schools::TrainingProgramme).to receive(:new).with(school:, contract_period_year:).and_return(training_programma_service)
-      expect(training_programma_service).to receive(:training_programme)
+      allow(Schools::TrainingProgramme).to receive(:new).with(school:, contract_period_year:).and_return(training_programme_service)
+      expect(training_programme_service).to receive(:training_programme)
 
       training_programme_for
+    end
+  end
+
+  context "#expression_of_interest_for?" do
+    subject(:school) { FactoryBot.create(:school) }
+
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
+    let(:active_lead_provider) { lead_provider_delivery_partnership.active_lead_provider }
+    let(:lead_provider) { active_lead_provider.lead_provider }
+    let(:contract_period) { active_lead_provider.contract_period }
+
+    it { is_expected.not_to be_expression_of_interest_for(lead_provider.id, contract_period.year) }
+
+    context "when there are ECTs with expressions of interest" do
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period:,
+          school_partnership: nil,
+          expression_of_interest: active_lead_provider,
+          started_on: ect_at_school_period.started_on + 1.week
+        )
+      end
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
+
+      it { is_expected.to be_expression_of_interest_for(lead_provider.id, contract_period.year) }
+    end
+
+    context "when there are mentors with expressions of interest" do
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          school_partnership: nil,
+          expression_of_interest: active_lead_provider,
+          started_on: mentor_at_school_period.started_on + 1.week
+        )
+      end
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, finished_on: nil) }
+
+      it { is_expected.to be_expression_of_interest_for(lead_provider.id, contract_period.year) }
+    end
+
+    context "when there are ECTs and mentors without expressions of interest" do
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, finished_on: nil) }
+
+      it { is_expected.not_to be_expression_of_interest_for(lead_provider.id, contract_period.year) }
     end
   end
 end
