@@ -99,14 +99,12 @@ To add a new page to the **Guidance** section:
    `app/components/api/guidance/sidebar_component.rb`
 2. Update the `GUIDANCE_PAGES` constant to include the new page:
 
-<pre><code>```ruby
-  GUIDANCE_PAGES = [
+<pre><code>GUIDANCE_PAGES = [
   { title: "API IDs explained", path: "api-ids-explained" },
   { title: "API data states", path: "api-data-states" },
   { title: "Syncing data best practice", path: "data-syncing" },
   { title: "New API guidance page", path: "new-api-guidance-page" }, # <-- New entry
-].freeze
-```</code></pre>
+].freeze</code></pre>
 
 Field definitions:
 
