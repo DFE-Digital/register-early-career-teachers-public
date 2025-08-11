@@ -65,6 +65,8 @@ Rails.application.configure do
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :solid_queue
   # config.active_job.queue_name_prefix = "ecf2_production"
+  # Remove finished solid queue jobs from database after a week
+  config.solid_queue.clear_finished_jobs_after = 1.week
 
   # GOVUK Notify
   config.action_mailer.delivery_method = :notify
