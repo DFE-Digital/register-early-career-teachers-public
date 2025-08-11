@@ -31,6 +31,7 @@ module Admin
 
     def check_can_reopen_period!
       check_induction_period_is_complete!
+      check_induction_period_has_outcome!
       check_induction_period_is_the_latest!
     end
 
@@ -38,8 +39,12 @@ module Admin
       raise ReopenInductionError, "Cannot reopen an ongoing induction" unless induction_period.complete?
     end
 
+    def check_induction_period_has_outcome!
+      raise ReopenInductionError, "Cannot reopen an induction without an outcome" unless induction_period.outcome?
+    end
+
     def check_induction_period_is_the_latest!
-      last_period = ::Teachers::InductionPeriod.new(teacher).last_induction_period
+      last_period = teacher.last_induction_period
 
       raise ReopenInductionError, "Only the latest period can be reopened" unless induction_period == last_period
     end
