@@ -138,6 +138,13 @@ describe School do
       it { is_expected.to allow_value("test@example.com").for(:induction_tutor_email) }
       it { is_expected.not_to allow_value("invalid_email").for(:induction_tutor_email) }
 
+      it "stores and queries induction_tutor_email case insensitively" do
+        school = FactoryBot.create(:school, induction_tutor_email: "email@address.com", induction_tutor_name: "Test")
+
+        expect(School.find_by(induction_tutor_email: "EMAIL@ADDRESS.COM")).to eq(school)
+        expect(School.find_by(induction_tutor_email: "email@address.com")).to eq(school)
+      end
+
       context "when induction_tutor_email and induction_tutor_name is blank" do
         subject { FactoryBot.build(:school, induction_tutor_name: nil, induction_tutor_email: nil) }
 
