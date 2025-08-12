@@ -529,6 +529,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_143143) do
     t.bigint "last_chosen_lead_provider_id"
     t.enum "last_chosen_training_programme", enum_type: "training_programme"
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.string "induction_tutor_name"
+    t.citext "induction_tutor_email"
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true

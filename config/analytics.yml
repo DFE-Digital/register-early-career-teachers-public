@@ -38,3 +38,19 @@ shared:
     - trs_initial_teacher_training_end_date
     - trs_data_last_refreshed_at
     - trs_deactivated
+  :pending_induction_submission_batches:
+    - id
+    - appropriate_body_id
+    - batch_status
+    - batch_type
+    - created_at
+    - updated_at
+    - file_size
+    - file_type
+    - uploaded_count
+    - processed_count
+    - errored_count
+    - claimed_count
+    - released_count
+    - failed_count
+    - passed_count

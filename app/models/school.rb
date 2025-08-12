@@ -51,6 +51,18 @@ class School < ApplicationRecord
             presence: true,
             uniqueness: true
 
+  validates :induction_tutor_name,
+            presence: { message: "Must provide name if induction tutor email is set" },
+            if: :induction_tutor_email
+
+  validates :induction_tutor_email,
+            presence: { message: "Must provide email if induction tutor name is set" },
+            if: :induction_tutor_name
+
+  validates :induction_tutor_email,
+            notify_email: true,
+            allow_nil: true
+
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
 

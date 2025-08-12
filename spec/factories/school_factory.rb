@@ -51,5 +51,10 @@ FactoryBot.define do
     trait :not_cip_only do
       gias_school { association :gias_school, :open, :in_england, :not_cip_only_type, urn: }
     end
+
+    trait :with_induction_tutor do
+      induction_tutor_name { Faker::Name.name }
+      induction_tutor_email { Faker::Internet.email }
+    end
   end
 end
