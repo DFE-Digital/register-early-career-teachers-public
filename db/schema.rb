@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_08_150945) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_11_143143) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -277,7 +277,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_08_150945) do
     t.string "administrative_district_name"
     t.integer "local_authority_code", null: false
     t.string "local_authority_name"
-    t.integer "establishment_number", null: false
+    t.integer "establishment_number"
     t.string "phase_name"
     t.boolean "section_41_approved", null: false
     t.string "type_name", null: false
