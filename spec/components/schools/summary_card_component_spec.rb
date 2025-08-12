@@ -49,8 +49,6 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
     end
 
     context "when the ECT is provider-led and reported by the school" do
-      let(:ect) { provider_led_ect_at_school_period }
-
       before { render_inline(described_class.new(title: "Reported to us by your school", ect_at_school_period: provider_led_ect_at_school_period, training_period: provider_led_training_period, data_source: :school)) }
 
       it "renders the lead provider" do
