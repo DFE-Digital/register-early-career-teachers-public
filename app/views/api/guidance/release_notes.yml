@@ -26,7 +26,7 @@
   tags:
     - sandbox-release
   body: |
-   Lead providers can now view delivery partner details for their schools via GET `/api/v3/delivery-partners` and GET /api/v3/delivery-partners /{id}`endpoints in the sandbox. 
+   Lead providers can now view delivery partner details for their schools via GET `/api/v3/delivery-partners` and GET /api/v3/delivery-partners /{id}`endpoints in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3)
   
    There are no changes to the functionality compared to the delivery partner endpoints in the ‘Manage training for early career teachers’ API.
   
