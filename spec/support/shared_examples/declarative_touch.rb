@@ -10,8 +10,13 @@ RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_even
           column = instance.class.columns_hash[attribute_to_change.to_s]
           if column.type == :enum
             instance.class.defined_enums[attribute_to_change.to_s].keys.excluding(instance[attribute_to_change]).sample
+<<<<<<< HEAD
           elsif column.type == :boolean
             !instance[attribute_to_change]
+=======
+          elsif attribute_to_change.match?("email")
+            Faker::Internet.email
+>>>>>>> fec8f284 ([2181] touch added to School, DeliveryPartner and LeadProviderDeliveryPartnership, to update SchoolPartnership)
           else
             Faker::Types.send("rb_#{column.type}")
           end
