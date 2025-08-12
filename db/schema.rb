@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_11_143143) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_12_092336) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -516,6 +516,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_143143) do
     t.bigint "lead_provider_delivery_partnership_id", null: false
     t.bigint "school_id", null: false
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["api_id"], name: "index_school_partnerships_on_api_id", unique: true
     t.index ["lead_provider_delivery_partnership_id"], name: "idx_on_lead_provider_delivery_partnership_id_628487f752"
     t.index ["school_id", "lead_provider_delivery_partnership_id"], name: "idx_on_school_id_lead_provider_delivery_partnership_7b2d6a6684", unique: true
