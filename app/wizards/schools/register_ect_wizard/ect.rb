@@ -151,9 +151,9 @@ module Schools
 
         SchoolPartnerships::Query
           .new(
-            school:,
-            lead_provider: previous_lead_provider,
-            contract_period: contract_start_date
+            school_id: school.id,
+            lead_provider_id: previous_lead_provider.id,
+            contract_period_years: contract_start_date.year
           )
           .exists?
       end
