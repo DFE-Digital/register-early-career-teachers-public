@@ -9,7 +9,10 @@
   end
 
   table.with_body do |body|
-    grouped_partnerships.each do |contract_period, partnerships|
+    contract_period_partnerships.each do |item|
+      contract_period = item[:contract_period]
+      partnerships = item[:partnerships]
+
       body.with_row do |row|
         row.with_cell(text: contract_period.year)
         row.with_cell do

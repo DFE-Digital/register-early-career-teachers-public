@@ -1,23 +1,19 @@
 module Admin
   class LeadProviderPartnershipsTableComponent < ViewComponent::Base
-    attr_reader :lead_provider_partnerships, :delivery_partner, :page, :q
+    attr_reader :contract_period_partnerships, :delivery_partner, :page, :q
 
-    def initialize(lead_provider_partnerships:, delivery_partner:, page: nil, q: nil)
-      @lead_provider_partnerships = lead_provider_partnerships
+    def initialize(contract_period_partnerships:, delivery_partner:, page: nil, q: nil)
+      @contract_period_partnerships = contract_period_partnerships
       @delivery_partner = delivery_partner
       @page = page
       @q = q
     end
 
     def render?
-      lead_provider_partnerships.any?
+      contract_period_partnerships.any?
     end
 
   private
-
-    def grouped_partnerships
-      @grouped_partnerships ||= lead_provider_partnerships.group_by(&:contract_period)
-    end
 
     def change_link_path(contract_period)
       helpers.new_admin_delivery_partner_delivery_partnership_path(

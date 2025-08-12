@@ -1,14 +1,14 @@
 <% page_data(title: @delivery_partner.name, backlink_href: admin_delivery_partners_path(page: @page, q: @q)) %>
 
 <%= render(Admin::LeadProviderPartnershipsTableComponent.new(
-  lead_provider_partnerships: @lead_provider_partnerships,
+  contract_period_partnerships: @contract_period_partnerships,
   delivery_partner: @delivery_partner,
   page: @page,
   q: @q
 )) %>
 
-<% unless @lead_provider_partnerships.any? %>
+<% unless @contract_period_partnerships.any? %>
   <p class="govuk-body">
-    No lead provider partnerships found for this delivery partner.
+    No contract periods with available lead providers found for this delivery partner.
   </p>
 <% end %>
