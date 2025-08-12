@@ -85,6 +85,57 @@ RSpec.describe Schools::Query do
             expect(query.schools).to be_empty
           end
         end
+
+        context "when the schools has metadata" do
+          let!(:contract_period_metadata) { FactoryBot.create(:school_contract_period_metadata, school: school1, contract_period: another_contract_period) }
+          let!(:lead_provider_contract_period_metadata) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school: school1, contract_period: another_contract_period) }
+
+          before do
+            ignored_contract_period = FactoryBot.create(:contract_period, year: another_contract_period.year + 1)
+            FactoryBot.create(:school_contract_period_metadata, school: school1, contract_period: ignored_contract_period)
+            FactoryBot.create(:school_lead_provider_contract_period_metadata, school: school1, contract_period: ignored_contract_period)
+          end
+
+          it "returns schools with only the applicable metadata" do
+            school = query.school_by_id(school1.id)
+            expect(school.contract_period_metadata).to contain_exactly(contract_period_metadata)
+            expect(school.lead_provider_contract_period_metadata).to contain_exactly(lead_provider_contract_period_metadata)
+          end
+        end
+      end
+
+      describe "by `lead_provider_id`" do
+        let!(:school1) { FactoryBot.create(:school, :eligible) }
+        let!(:school2) { FactoryBot.create(:school) }
+        let!(:school3) { FactoryBot.create(:school) }
+
+        let(:another_contract_period) { FactoryBot.create(:contract_period) }
+        let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: another_contract_period) }
+        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+        let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school3, lead_provider_delivery_partnership:) }
+        let(:contract_period_year) { another_contract_period.id }
+        let(:lead_provider) { active_lead_provider.lead_provider }
+
+        let(:query_params) do
+          {
+            contract_period_year:,
+            lead_provider_id: active_lead_provider.lead_provider_id,
+          }
+        end
+
+        context "when the schools has metadata" do
+          let!(:lead_provider_contract_period_metadata) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school: school3, contract_period_year:, lead_provider:) }
+
+          before do
+            ignored_lead_provider = FactoryBot.create(:lead_provider)
+            FactoryBot.create(:school_lead_provider_contract_period_metadata, school: school2, contract_period_year:, lead_provider: ignored_lead_provider)
+          end
+
+          it "returns schools with only the applicable metadata" do
+            school = query.school_by_id(school3.id)
+            expect(school.lead_provider_contract_period_metadata).to contain_exactly(lead_provider_contract_period_metadata)
+          end
+        end
       end
 
       describe "by `updated_since`" do
