@@ -1,25 +1,28 @@
 module SandboxSeedData
   class DeliveryPartners < Base
-    NUMBER_OF_RECORDS_PER_LEAD_PROVIDER = 5
+    NUMBER_OF_RECORDS = 50
 
     def plant
       return unless plantable?
 
       log_plant_info("delivery partners")
 
-      create_delivery_partners
+      NUMBER_OF_RECORDS.times { create_delivery_partner }
     end
 
   private
 
-    def create_delivery_partners
-      ActiveLeadProvider.find_each do |active_lead_provider|
-        NUMBER_OF_RECORDS_PER_LEAD_PROVIDER.times do
-          delivery_partner = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:).delivery_partner
-
-          log_seed_info("#{delivery_partner.name} -> #{active_lead_provider.lead_provider.name} / #{active_lead_provider.contract_period_year}", colour: Colourize::COLOURS.keys.sample)
-        end
+    def create_delivery_partner
+      delivery_partner = FactoryBot.build(:delivery_partner).tap do
+        random_date = rand(1..100).days.ago
+        it.update!(
+          created_at: random_date,
+          updated_at: random_date,
+          api_updated_at: random_date
+        )
       end
+
+      log_seed_info(delivery_partner.name, indent: 2)
     end
   end
 end
