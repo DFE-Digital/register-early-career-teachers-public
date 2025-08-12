@@ -9,7 +9,7 @@ def describe_lead_provider(lead_provider, years)
 end
 
 lead_providers_data = [
-  { name: 'Ambitious Institute', years: [2022, 2023, 2024, 2025] },
+  { name: 'Ambitious Institute', years: [2022, 2023, 2024, 2025, 2026] },
   { name: 'Capitan', years: [2021, 2022, 2023] },
   { name: 'Teach Fast', years: [2022, 2023, 2024, 2025] },
   { name: 'International Institute of Teaching', years: [2021] },

@@ -109,5 +109,52 @@ RSpec.describe Admin::AddLeadProvidersFormComponent, type: :component do
       )
       expect { render_inline(component_without_partnerships) }.not_to raise_error
     end
+
+    it "shows existing partnerships in inset text" do
+      result = render_inline(component)
+
+      expect(result.to_html).to include("Currently working with:")
+      expect(result.to_html).to include("Lead Provider One")
+    end
+
+    it "shows available providers as checkboxes" do
+      result = render_inline(component)
+
+      # Check for checkbox inputs with the correct values
+      checkbox_2 = result.css('input[type="checkbox"][value="' + active_lead_provider_2.id.to_s + '"]').first
+      checkbox_3 = result.css('input[type="checkbox"][value="' + active_lead_provider_3.id.to_s + '"]').first
+
+      expect(checkbox_2).to be_present
+      expect(checkbox_3).to be_present
+
+      # Check for labels
+      expect(result.to_html).to include("Lead Provider Two")
+      expect(result.to_html).to include("Lead Provider Three")
+    end
+
+    it "does not show existing partnerships as checkboxes" do
+      result = render_inline(component)
+
+      # Lead Provider One should not be a checkbox since it's already a partnership
+      checkbox_1 = result.css('input[type="checkbox"][value="' + active_lead_provider_1.id.to_s + '"]')
+      expect(checkbox_1).to be_empty
+    end
+
+    context "when there are no current partnerships" do
+      let(:current_partnerships) { [] }
+
+      it "does not show inset text or hidden fields" do
+        result = render_inline(component)
+
+        expect(result.to_html).not_to include("Currently working with:")
+
+        # Should not have any hidden fields for lead_provider_ids with actual values
+        # (Rails includes an empty hidden field for checkbox arrays, so we check for fields with values)
+        hidden_fields_with_values = result.css('input[name="lead_provider_ids[]"][type="hidden"]').select do |field|
+          field['value'].present? && field['value'] != ""
+        end
+        expect(hidden_fields_with_values).to be_empty
+      end
+    end
   end
 end

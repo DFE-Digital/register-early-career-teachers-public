@@ -85,7 +85,10 @@ private
   end
 
   def then_i_should_see_no_partnerships_message
-    expect(page.get_by_text("No lead provider partnerships found")).to be_visible
+    # With our new logic, we should see the table with contract periods that have available lead providers
+    # but no partnerships yet, so we should see the year 2025 with empty lead providers
+    expect(page.get_by_text("2025")).to be_visible
+    expect(page.get_by_text("Lead provider partners")).to be_visible
   end
 
   def then_i_should_see_existing_partnership
@@ -160,13 +163,13 @@ private
   end
 
   def and_i_should_see_multiple_partnerships
-    expect(page.get_by_text("Lead Provider One")).to be_visible
-    expect(page.get_by_text("Lead Provider Two")).to be_visible
+    # After fixing the form to include existing partnerships, both should be visible
+    expect(page.get_by_text("Lead Provider One, Lead Provider Two", exact: false)).to be_visible
   end
 
   def and_i_should_see_both_partnerships
-    expect(page.get_by_text("Lead Provider One")).to be_visible
-    expect(page.get_by_text("Lead Provider Two")).to be_visible
+    # After fixing the form to include existing partnerships, both should be visible
+    expect(page.get_by_text("Lead Provider One, Lead Provider Two", exact: false)).to be_visible
   end
 
   def and_the_partnership_should_exist_in_database

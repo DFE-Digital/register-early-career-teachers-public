@@ -36,16 +36,30 @@ module Admin
           .reject(&:blank?)
           .map(&:to_i)
 
-        raise NoLeadProvidersSelectedError, "Select at least one lead provider" if @active_lead_provider_ids.empty?
+        # Allow empty selections for future contract periods that haven't started yet
+        if @active_lead_provider_ids.empty? && @contract_period.started_on_or_before_today?
+          raise NoLeadProvidersSelectedError, "Select at least one lead provider"
+        end
       end
 
       def update_lead_provider_pairings
-        result = ::DeliveryPartners::UpdateLeadProviderPairings.new(
-          delivery_partner: @delivery_partner,
-          contract_period: @contract_period,
-          active_lead_provider_ids: @active_lead_provider_ids,
-          author:
-        ).update!
+        result = if @contract_period.started_on_or_before_today?
+                   # For current/past periods: only add new partnerships, preserve existing ones
+                   ::DeliveryPartners::AddLeadProviderPairings.new(
+                     delivery_partner: @delivery_partner,
+                     contract_period: @contract_period,
+                     active_lead_provider_ids: @active_lead_provider_ids,
+                     author:
+                   ).add!
+                 else
+                   # For future periods: replace all partnerships
+                   ::DeliveryPartners::UpdateLeadProviderPairings.new(
+                     delivery_partner: @delivery_partner,
+                     contract_period: @contract_period,
+                     active_lead_provider_ids: @active_lead_provider_ids,
+                     author:
+                   ).update!
+                 end
 
         raise ValidationError, "Unable to update lead provider partners" unless result
       end

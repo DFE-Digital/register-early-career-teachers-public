@@ -32,7 +32,25 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
         expect { service.call }.to change(LeadProviderDeliveryPartnership, :count).by(2)
       end
 
-      it 'calls the UpdateLeadProviderPairings service' do
+      it 'calls the appropriate service based on contract period' do
+        # Since the default factory creates a current contract period (2025 starting June 1, 2025)
+        # and current date is after June 1, 2025, it should call AddLeadProviderPairings (add-to-existing mode)
+        expect(DeliveryPartners::AddLeadProviderPairings).to receive(:new).with(
+          delivery_partner:,
+          contract_period:,
+          active_lead_provider_ids: [active_lead_provider_1.id, active_lead_provider_2.id],
+          author:
+        ).and_call_original
+
+        service.call
+      end
+    end
+
+    context 'when contract period is in the future' do
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2026, started_on: 1.year.from_now, finished_on: 2.years.from_now) }
+      let(:lead_provider_ids) { [active_lead_provider_1.id.to_s, active_lead_provider_2.id.to_s] }
+
+      it 'calls UpdateLeadProviderPairings' do
         expect(DeliveryPartners::UpdateLeadProviderPairings).to receive(:new).with(
           delivery_partner:,
           contract_period:,
@@ -68,8 +86,31 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
     context 'when lead provider IDs are empty' do
       let(:lead_provider_ids) { [] }
 
-      it 'raises a NoLeadProvidersSelectedError' do
-        expect { service.call }.to raise_error(described_class::NoLeadProvidersSelectedError, "Select at least one lead provider")
+      context 'for current or past contract periods' do
+        let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, started_on: 1.year.ago, finished_on: 1.month.from_now) }
+
+        it 'raises a NoLeadProvidersSelectedError' do
+          expect { service.call }.to raise_error(described_class::NoLeadProvidersSelectedError, "Select at least one lead provider")
+        end
+      end
+
+      context 'for future contract periods' do
+        let(:contract_period) { FactoryBot.create(:contract_period, year: 2026, started_on: 1.year.from_now, finished_on: 2.years.from_now) }
+
+        it 'allows empty selections and succeeds' do
+          expect { service.call }.not_to raise_error
+        end
+
+        it 'removes all existing partnerships' do
+          # Create an existing partnership first
+          FactoryBot.create(
+            :lead_provider_delivery_partnership,
+            delivery_partner:,
+            active_lead_provider: active_lead_provider_1
+          )
+
+          expect { service.call }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
+        end
       end
     end
 
@@ -88,18 +129,30 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
     context 'when lead provider IDs only contain blank values' do
       let(:lead_provider_ids) { ["", "   ", nil] }
 
-      it 'raises a NoLeadProvidersSelectedError' do
-        expect { service.call }.to raise_error(described_class::NoLeadProvidersSelectedError, "Select at least one lead provider")
+      context 'for current or past contract periods' do
+        let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, started_on: 1.year.ago, finished_on: 1.month.from_now) }
+
+        it 'raises a NoLeadProvidersSelectedError' do
+          expect { service.call }.to raise_error(described_class::NoLeadProvidersSelectedError, "Select at least one lead provider")
+        end
+      end
+
+      context 'for future contract periods' do
+        let(:contract_period) { FactoryBot.create(:contract_period, year: 2026, started_on: 1.year.from_now, finished_on: 2.years.from_now) }
+
+        it 'allows empty selections and succeeds' do
+          expect { service.call }.not_to raise_error
+        end
       end
     end
 
-    context 'when UpdateLeadProviderPairings service fails' do
+    context 'when the partnership service fails' do
       let(:lead_provider_ids) { [active_lead_provider_1.id.to_s] }
 
       before do
-        update_service_double = instance_double(DeliveryPartners::UpdateLeadProviderPairings)
-        allow(DeliveryPartners::UpdateLeadProviderPairings).to receive(:new).and_return(update_service_double)
-        allow(update_service_double).to receive(:update!).and_return(false)
+        add_service_double = instance_double(DeliveryPartners::AddLeadProviderPairings)
+        allow(DeliveryPartners::AddLeadProviderPairings).to receive(:new).and_return(add_service_double)
+        allow(add_service_double).to receive(:add!).and_return(false)
       end
 
       it 'raises a ValidationError' do
@@ -111,9 +164,9 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
       let(:lead_provider_ids) { [active_lead_provider_1.id.to_s] }
 
       before do
-        update_service_double = instance_double(DeliveryPartners::UpdateLeadProviderPairings)
-        allow(DeliveryPartners::UpdateLeadProviderPairings).to receive(:new).and_return(update_service_double)
-        allow(update_service_double).to receive(:update!).and_raise(StandardError, "Something went wrong")
+        add_service_double = instance_double(DeliveryPartners::AddLeadProviderPairings)
+        allow(DeliveryPartners::AddLeadProviderPairings).to receive(:new).and_return(add_service_double)
+        allow(add_service_double).to receive(:add!).and_raise(StandardError, "Something went wrong")
       end
 
       it 'lets the exception bubble up' do

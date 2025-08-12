@@ -13,7 +13,9 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
     assign(:delivery_partner, delivery_partner)
     assign(:page, '2')
     assign(:q, 'search term')
-    assign(:lead_provider_partnerships, [partnership])
+    assign(:contract_period_partnerships, [
+      { contract_period: partnership.contract_period, partnerships: [partnership] }
+    ])
   end
 
   it %(sets the page title to the delivery partner name) do
@@ -88,7 +90,10 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
       old_active_lead_provider.update!(contract_period: old_contract_period)
       new_active_lead_provider.update!(contract_period: new_contract_period)
 
-      assign(:lead_provider_partnerships, [new_partnership, old_partnership])
+      assign(:contract_period_partnerships, [
+        { contract_period: new_contract_period, partnerships: [new_partnership] },
+        { contract_period: old_contract_period, partnerships: [old_partnership] }
+      ])
     end
 
     it 'displays multiple partnerships' do
@@ -123,7 +128,9 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
     end
 
     before do
-      assign(:lead_provider_partnerships, [partnership_1, partnership_2])
+      assign(:contract_period_partnerships, [
+        { contract_period:, partnerships: [partnership_1, partnership_2] }
+      ])
     end
 
     it 'groups partnerships by year and displays lead providers in the same row' do
@@ -144,15 +151,15 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
     end
   end
 
-  context 'when there are no partnerships' do
+  context 'when there are no contract periods with available lead providers' do
     before do
-      assign(:lead_provider_partnerships, [])
+      assign(:contract_period_partnerships, [])
     end
 
     it 'shows empty state message' do
       render
 
-      expect(rendered).to have_css('p', text: 'No lead provider partnerships found for this delivery partner.')
+      expect(rendered).to have_css('p', text: 'No contract periods with available lead providers found for this delivery partner.')
       expect(rendered).not_to have_css('table.govuk-table')
     end
   end

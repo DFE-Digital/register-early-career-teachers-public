@@ -108,10 +108,10 @@ RSpec.describe "Admin delivery partners", type: :request do
         end
       end
 
-      it "shows empty state when no partnerships exist" do
+      it "shows empty state when no contract periods with available lead providers exist" do
         get show_path
 
-        expect(response.body).to include("No lead provider partnerships found")
+        expect(response.body).to include("No contract periods with available lead providers found")
       end
 
       context "with multiple partnerships for ordering" do
@@ -233,7 +233,7 @@ RSpec.describe "Admin delivery partners", type: :request do
 
   describe "POST /admin/organisations/delivery-partners/:delivery_partner_id/:year" do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-    let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2026, enabled: false) }
     let(:create_path) { admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year) }
     let!(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
     let!(:lead_provider_2) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
@@ -282,18 +282,149 @@ RSpec.describe "Admin delivery partners", type: :request do
         end
       end
 
-      context "with no lead providers selected" do
-        it "redirects back to new page with error message" do
-          post create_path
-          expect(response).to redirect_to(new_admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year))
-          follow_redirect!
-          expect(response.body).to include("Select at least one lead provider")
+      context "with existing partnerships" do
+        let!(:existing_partnership_1) do
+          FactoryBot.create(
+            :lead_provider_delivery_partnership,
+            delivery_partner:,
+            active_lead_provider: active_lead_provider_1
+          )
         end
 
-        it "does not create partnerships" do
-          expect {
+        let!(:existing_partnership_2) do
+          FactoryBot.create(
+            :lead_provider_delivery_partnership,
+            delivery_partner:,
+            active_lead_provider: active_lead_provider_2
+          )
+        end
+
+        context "when unchecking some partnerships" do
+          let(:lead_provider_ids) { [active_lead_provider_1.id] }
+
+          it "removes unchecked partnerships" do
+            expect {
+              post create_path, params: { lead_provider_ids: }
+            }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
+
+            remaining_partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
+            expect(remaining_partnerships.map(&:active_lead_provider_id)).to contain_exactly(active_lead_provider_1.id)
+          end
+
+          it "redirects with success message" do
+            post create_path, params: { lead_provider_ids: }
+            expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
+            follow_redirect!
+            expect(response.body).to include("Lead provider partners updated")
+          end
+        end
+
+        context "when adding new partnerships while keeping existing ones" do
+          let!(:lead_provider_3) { FactoryBot.create(:lead_provider, name: "Lead Provider 3") }
+          let!(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_3, contract_period:) }
+          let(:lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id, active_lead_provider_3.id] }
+
+          it "keeps existing partnerships and adds new ones" do
+            expect {
+              post create_path, params: { lead_provider_ids: }
+            }.to change(LeadProviderDeliveryPartnership, :count).by(1)
+
+            partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
+            expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(
+              active_lead_provider_1.id,
+              active_lead_provider_2.id,
+              active_lead_provider_3.id
+            )
+          end
+        end
+
+        context "when checkbox persistence is tested" do
+          let(:new_path) { new_admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year) }
+
+          it "shows existing partnerships as checked when form is reopened" do
+            # First, verify partnerships exist
+            get new_path
+            expect(response.status).to eq(200)
+
+            # Check that existing partnerships are shown as checked
+            expect(response.body).to include("checked")
+            expect(response.body).to include("value=\"#{active_lead_provider_1.id}\"")
+            expect(response.body).to include("value=\"#{active_lead_provider_2.id}\"")
+          end
+
+          it "persists checkbox state after form submission and reopening" do
+            # Submit form with only one provider selected (removing the second one)
+            post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
+            expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
+
+            # Verify the partnerships were updated correctly
+            remaining_partnerships = delivery_partner.lead_provider_delivery_partnerships.for_contract_period(contract_period)
+            expect(remaining_partnerships.count).to eq(1)
+            expect(remaining_partnerships.first.active_lead_provider_id).to eq(active_lead_provider_1.id)
+
+            # Reopen form and verify only the selected provider is checked
+            get new_path
+            expect(response.status).to eq(200)
+
+            # Parse the response to check checkbox states
+            doc = Nokogiri::HTML(response.body)
+            checkbox_1 = doc.at_css("input[value='#{active_lead_provider_1.id}']")
+            checkbox_2 = doc.at_css("input[value='#{active_lead_provider_2.id}']")
+
+            # Verify checkbox states
+
+            # Verify checkbox 1 is checked and checkbox 2 is not checked
+            expect(checkbox_1).to be_present
+            expect(checkbox_2).to be_present
+            expect(checkbox_1['checked']).to eq('checked')
+            expect(checkbox_2['checked']).to be_nil
+          end
+        end
+      end
+
+      context "with no lead providers selected" do
+        context "for future contract periods" do
+          it "allows empty selections and redirects with success message" do
             post create_path
-          }.not_to change(LeadProviderDeliveryPartnership, :count)
+            expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
+            follow_redirect!
+            expect(response.body).to include("Lead provider partners updated")
+          end
+
+          it "removes all existing partnerships" do
+            # Create existing partnerships first
+            FactoryBot.create(
+              :lead_provider_delivery_partnership,
+              delivery_partner:,
+              active_lead_provider: active_lead_provider_1
+            )
+            FactoryBot.create(
+              :lead_provider_delivery_partnership,
+              delivery_partner:,
+              active_lead_provider: active_lead_provider_2
+            )
+
+            expect {
+              post create_path
+            }.to change(LeadProviderDeliveryPartnership, :count).by(-2)
+          end
+        end
+
+        context "for current contract periods" do
+          let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true, started_on: 1.year.ago, finished_on: 1.month.from_now) }
+
+          it "redirects back to new page with error message" do
+            post create_path
+            expect(response).to redirect_to(new_admin_delivery_partner_delivery_partnership_path(delivery_partner, contract_period.year))
+            follow_redirect!
+            expect(response.body).to include("Select at least one lead provider")
+          end
+
+          it "does not create or remove partnerships" do
+            expect {
+              post create_path
+            }.not_to change(LeadProviderDeliveryPartnership, :count)
+          end
         end
       end
 

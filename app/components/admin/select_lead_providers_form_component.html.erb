@@ -3,18 +3,18 @@
   <%= f.hidden_field :page, value: page %>
   <%= f.hidden_field :q, value: q %>
 
-  <%= f.govuk_collection_check_boxes(
-    :lead_provider_ids,
-    all_lead_providers_for_period,
-    :id,
-    ->(alp) { alp.lead_provider.name },
-    legend: { text: legend_text, size: 'm' },
-    hint: { text: hint_text },
-    checked: currently_selected_ids
-  ) %>
+  <%= f.govuk_check_boxes_fieldset :lead_provider_ids,
+      legend: { text: legend_text, size: 'm' },
+      hint: { text: hint_text } do %>
+    <% all_lead_providers_for_period.each do |alp| %>
+      <%= f.govuk_check_box :lead_provider_ids,
+          alp.id.to_s,
+          label: { text: alp.lead_provider.name },
+          checked: currently_selected_ids.include?(alp.id.to_s) %>
+    <% end %>
+  <% end %>
 
   <div class="govuk-button-group">
     <%= f.govuk_submit("Confirm") %>
-    <%= govuk_link_to("Back", back_link_path, class: "govuk-link") %>
   </div>
 <% end %>

@@ -11,17 +11,29 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
   let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period: contract_period_2024) }
   let(:active_lead_provider_3) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_3, contract_period: contract_period_2025) }
 
-  let(:partnerships) do
+  let(:partnerships_2024) do
     [
       FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider: active_lead_provider_1),
-      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider: active_lead_provider_2),
+      FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider: active_lead_provider_2)
+    ]
+  end
+
+  let(:partnerships_2025) do
+    [
       FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider: active_lead_provider_3)
+    ]
+  end
+
+  let(:contract_period_partnerships) do
+    [
+      { contract_period: contract_period_2024, partnerships: partnerships_2024 },
+      { contract_period: contract_period_2025, partnerships: partnerships_2025 }
     ]
   end
 
   let(:component) do
     described_class.new(
-      lead_provider_partnerships: partnerships,
+      contract_period_partnerships:,
       delivery_partner:,
       page: "2",
       q: "search"
@@ -64,10 +76,38 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
       end
     end
 
+    context "when some contract periods have no partnerships" do
+      let(:contract_period_partnerships) do
+        [
+          { contract_period: contract_period_2024, partnerships: partnerships_2024 },
+          { contract_period: contract_period_2025, partnerships: [] }
+        ]
+      end
+
+      before { render_inline(component) }
+
+      it "renders empty cells for contract periods without partnerships" do
+        expect(page).to have_content("2024")
+        expect(page).to have_content("2025")
+        expect(page).to have_content("Lead Provider One, Lead Provider Two")
+
+        # Find the row for 2025 and check it has an empty lead providers cell
+        rows = page.all("tbody tr")
+        expect(rows.size).to eq(2)
+
+        # The second row should be for 2025 with empty partnerships
+        row_2025 = rows.last
+        cells = row_2025.all("td")
+        expect(cells[0]).to have_content("2025") # Year column
+        expect(cells[1].text.strip).to be_empty # Lead providers column should be empty
+        expect(cells[2]).to have_link("Change") # Action column
+      end
+    end
+
     context "when page and q are nil" do
       let(:component) do
         described_class.new(
-          lead_provider_partnerships: partnerships,
+          contract_period_partnerships:,
           delivery_partner:
         )
       end
@@ -90,10 +130,10 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
       end
     end
 
-    context "when there are no partnerships" do
+    context "when there are no contract periods" do
       let(:component) do
         described_class.new(
-          lead_provider_partnerships: [],
+          contract_period_partnerships: [],
           delivery_partner:
         )
       end
@@ -105,20 +145,15 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
   end
 
   describe "private methods" do
-    describe "#grouped_partnerships" do
-      it "groups partnerships by contract period" do
-        grouped = component.send(:grouped_partnerships)
-        expect(grouped.keys).to contain_exactly(contract_period_2024, contract_period_2025)
-        expect(grouped[contract_period_2024].size).to eq(2)
-        expect(grouped[contract_period_2025].size).to eq(1)
-      end
-    end
-
     describe "#lead_provider_names" do
-      it "joins lead provider names with commas" do
-        partnerships_2024 = partnerships.select { |p| p.contract_period.year == 2024 }
+      it "joins lead provider names with commas when partnerships exist" do
         names = component.send(:lead_provider_names, partnerships_2024)
         expect(names).to eq("Lead Provider One, Lead Provider Two")
+      end
+
+      it "returns empty string when no partnerships exist" do
+        names = component.send(:lead_provider_names, [])
+        expect(names).to eq("")
       end
     end
 
