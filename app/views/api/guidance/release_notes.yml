@@ -21,6 +21,21 @@
 #
 #     **bold** and _italic_ text
 
+- title: Delivery partner details available in API sandbox 
+  date: 2025-08-12
+  tags:
+    - sandbox-release
+  body: |
+   Lead providers can now view delivery partner details for their schools via GET `/api/v3/delivery-partners` and GET /api/v3/delivery-partners /{id}`endpoints in the sandbox. 
+  
+   There are no changes to the functionality compared to the delivery partner endpoints in the ‘Manage training for early career teachers’ API.
+  
+   Note that: 
+  
+   * lead providers will only see delivery partners who they’ve got a partnership with
+   * updates, name changes, or removals from a cohort appear in the endpoints 
+   * delivery partner IDs follow the ECF1 format 
+
 - title: View financial statements in test environment
   date: 2025-06-23
   tags:
