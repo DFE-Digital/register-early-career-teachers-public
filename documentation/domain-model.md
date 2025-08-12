@@ -61,6 +61,7 @@ erDiagram
     integer lead_provider_delivery_partnership_id
     integer school_id
     uuid api_id
+    datetime api_updated_at
   }
   SchoolPartnership }o--|| LeadProviderDeliveryPartnership : belongs_to
   SchoolPartnership }o--|| School : belongs_to
