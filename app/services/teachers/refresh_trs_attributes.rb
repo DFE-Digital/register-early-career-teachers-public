@@ -2,8 +2,9 @@ module Teachers
   class RefreshTRSAttributes
     attr_reader :teacher
 
-    def initialize(teacher)
+    def initialize(teacher, api_client: TRS::APIClient.build)
       @teacher = teacher
+      @api_client = api_client
     end
 
     def refresh!
@@ -11,7 +12,7 @@ module Teachers
       # overwrite existing teacher data, so we skip the refresh.
       return unless Rails.application.config.enable_trs_teacher_refresh
 
-      trs_teacher = TRS::APIClient.build.find_teacher(trn: teacher.trn)
+      trs_teacher = @api_client.find_teacher(trn: teacher.trn)
 
       Teacher.transaction do
         manage_teacher.update_name!(trs_first_name: trs_teacher.first_name, trs_last_name: trs_teacher.last_name)
