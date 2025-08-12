@@ -10,8 +10,9 @@ module Schools
     end
 
     def show
-      # FIXME: restrict this to ECTAtSchoolPeriods belonging to the current school
-      @ect = ::ECTAtSchoolPeriod.find(params[:id])
+      @ect_at_school_period = ::ECTAtSchoolPeriod.find_by!(id: params[:id], school_id: school.id)
+      @training_period = @ect_at_school_period.current_training_period
+      @teacher = @ect_at_school_period.teacher
     end
   end
 end

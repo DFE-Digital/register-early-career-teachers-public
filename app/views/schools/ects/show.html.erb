@@ -1,20 +1,21 @@
 <%
   page_data(
-    title: teacher_full_name(@ect.teacher),
+    title: teacher_full_name(@teacher),
     backlink_href: params[:back_to_mentor] == "true" ? schools_mentor_path(params[:mentor_id]) : schools_ects_home_path,
-    caption: teacher_trn(@ect.teacher),
+    caption: teacher_trn(@teacher),
     caption_size: 'l',
   )
 %>
 
-<%= render Schools::TeacherProfileSummaryListComponent.new(@ect) %>
+<%= render Schools::TeacherProfileSummaryListComponent.new(@ect_at_school_period) %>
 
 <h2 class="govuk-heading-m">ECTE training details</h2>
 
-<%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your school', ect: @ect, data_source: :school) %>
+<%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your school', ect_at_school_period: @ect_at_school_period, training_period: @training_period, data_source: :school) %>
 
-<% if @ect.provider_led? %>
-  <%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your lead provider', ect: @ect, data_source: :lead_provider) %>
+<% if @training_period&.provider_led_training_programme? %>
+  <%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your lead provider', ect_at_school_period: @ect_at_school_period, training_period: @training_period, data_source: :lead_provider) %>
 <% end %>
 
-<%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your appropriate body', ect: @ect, data_source: :appropriate_body) %>
+
+<%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your appropriate body', ect_at_school_period: @ect_at_school_period, training_period: @training_period, data_source: :appropriate_body) %>
