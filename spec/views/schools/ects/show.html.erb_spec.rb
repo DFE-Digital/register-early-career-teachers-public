@@ -2,18 +2,17 @@ RSpec.describe 'schools/ects/show.html.erb' do
   let(:contract_period) { FactoryBot.create(:contract_period) }
   let!(:current_ect_period) do
     FactoryBot.create(:ect_at_school_period,
-                      :with_training_period,
                       :teaching_school_hub_ab,
                       teacher:,
                       started_on: '2025-01-11',
                       finished_on: nil,
-                      lead_provider:,
                       school_reported_appropriate_body: requested_appropriate_body,
                       school: current_school,
                       working_pattern: 'full_time',
                       training_programme:,
                       email: 'love@whale.com')
   end
+  let(:training_period) { FactoryBot.create(:training_period, :provider_led, school_partnership:, started_on: '2025-01-11', finished_on: nil, training_programme:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -33,7 +32,10 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       finished_on: '2025-01-11',
                       school: previous_school,
                       email: 'previous-address@whale.com')
-    assign(:ect, current_ect_period)
+    assign(:ect_at_school_period, current_ect_period)
+    assign(:training_period, training_period)
+    assign(:teacher, teacher)
+
     render
   end
 
