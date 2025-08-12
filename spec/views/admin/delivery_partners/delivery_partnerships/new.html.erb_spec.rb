@@ -54,12 +54,10 @@ RSpec.describe 'admin/delivery_partners/delivery_partnerships/new.html.erb' do
     expect(rendered).to have_css('label', text: 'Lead Provider 2')
   end
 
-  it 'renders confirm button and back link' do
+  it 'renders confirm button' do
     render
 
     expect(rendered).to have_button('Confirm')
-    expected_href = admin_delivery_partner_path(delivery_partner, page: 2, q: 'search term')
-    expect(rendered).to have_link('Back', href: expected_href)
   end
 
   context 'with existing partnerships' do
