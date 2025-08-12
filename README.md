@@ -20,6 +20,7 @@ ECF is a framework of standards to help early career teachers succeed at the sta
 * [State machines](./documentation/state-machines.md)
 * [Parity check](./documentation/parity-check.md)
 * [CSV processing](./documentation/csv-processing.md)
+* [Metadata](./documentation/metadata.md)
 
 ## Repository setup
 
