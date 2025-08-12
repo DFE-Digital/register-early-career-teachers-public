@@ -1,0 +1,49 @@
+<%
+  page_data(
+    title: "Reopen induction for #{teacher_full_name(@teacher)}",
+    backlink_href: admin_teacher_path(@teacher)
+  )
+%>
+
+<%= govuk_warning_text do %>
+  Are you sure you want to reopen this induction?<br>
+  This action cannot be undone.
+<% end %>
+
+<p class="govuk-body">
+  The following data will be deleted from the latest induction period,
+  and the ECT's induction status will be updated to "In Progress".
+</p>
+
+<%= govuk_summary_list do |list| %>
+  <%= list.with_row do |row| %>
+    <%= row.with_key { "End date" } %>
+    <%= row.with_value { @teacher.last_induction_period.finished_on.to_fs(:govuk) } %>
+  <% end %>
+
+  <%= list.with_row do |row| %>
+    <%= row.with_key { "Number of terms" } %>
+    <%= row.with_value { @teacher.last_induction_period.number_of_terms.to_s } %>
+  <% end %>
+
+  <%= list.with_row do |row| %>
+    <%= row.with_key { "Outcome" } %>
+    <%= row.with_value do %>
+      <%= govuk_tag(
+            text: @teacher.last_induction_period.outcome.humanize,
+            colour: @teacher.last_induction_period.outcome == "pass" ? "green" : "red"
+          ) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= form_with url: admin_teacher_reopen_induction_path(@teacher), method: :patch do |f| %>
+  <div class="govuk-button-group">
+    <%= f.govuk_submit "Reopen induction", warning: true %>
+    <%= govuk_button_link_to(
+          "Cancel",
+          admin_teacher_path(@teacher),
+          secondary: true
+        ) %>
+  </div>
+<% end %>

@@ -63,7 +63,7 @@ RSpec.describe 'admin/teachers/show.html.erb' do
     end
 
     it "displays a button to reopen induction" do
-      expect(rendered).to have_button("Reopen induction")
+      expect(rendered).to have_link("Reopen induction")
     end
   end
 
@@ -72,8 +72,8 @@ RSpec.describe 'admin/teachers/show.html.erb' do
       FactoryBot.create(:induction_period, outcome: nil, teacher:)
     end
 
-    it "does not display a button to reopen induction" do
-      expect(rendered).not_to have_button("Reopen induction")
+    it "does not display a link to reopen induction" do
+      expect(rendered).not_to have_link("Reopen induction")
     end
   end
 
@@ -82,8 +82,8 @@ RSpec.describe 'admin/teachers/show.html.erb' do
       FactoryBot.create(:induction_period, :ongoing, teacher:)
     end
 
-    it "does not display a button to reopen induction" do
-      expect(rendered).not_to have_button("Reopen induction")
+    it "does not display a link to reopen induction" do
+      expect(rendered).not_to have_link("Reopen induction")
     end
   end
 end
