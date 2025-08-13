@@ -20,9 +20,10 @@ RSpec.describe Migrators::Teacher do
 
         Migration::TeacherProfile.find_each do |teacher_profile|
           user = teacher_profile.user
-
           teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
-          expect(Teachers::Name.new(teacher).full_name).to eq user.full_name
+          parser = Teachers::FullNameParser.new(full_name: user.full_name)
+
+          expect(Teachers::Name.new(teacher).full_name).to eq [parser.first_name, parser.last_name].join(" ")
           expect(teacher.created_at).to be_within(1.second).of teacher_profile.created_at
           expect(teacher.updated_at).to be_within(1.second).of teacher_profile.updated_at
         end
