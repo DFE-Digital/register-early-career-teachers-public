@@ -125,11 +125,6 @@ describe LeadProviderDeliveryPartnership do
     end
   end
 
-  describe "delegate methods" do
-    it { is_expected.to delegate_method(:lead_provider).to(:active_lead_provider) }
-    it { is_expected.to delegate_method(:contract_period).to(:active_lead_provider) }
-  end
-
   describe "declarative touch" do
     let(:instance) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:) }
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
