@@ -1,4 +1,17 @@
 <%= batch_cards %>
 <%= batch_details %>
-<%= error_details if error_details? %>
-<%= induction_details if induction_details? %>
+
+
+<%=
+  govuk_tabs do |tabs|
+
+    tabs.with_tab(label: "Errors") do %>
+      <%= error_details %>
+    <% end if error_details?
+
+    tabs.with_tab(label: "Inductions") do %>
+      <%= induction_details %>
+    <% end if induction_details?
+
+  end
+%>
