@@ -3,6 +3,9 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   let(:mentor_start_date) { Date.new(2023, 1, 1) }
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: mentor_start_date, finished_on: nil) }
   let(:teacher) { FactoryBot.create(:teacher, mentor_became_ineligible_for_funding_on: nil) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
 
   context 'when teacher is eligible and there is a provider-led ECT with a lead provider' do
     let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Hidden leaf village') }
@@ -14,13 +17,13 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
                         teacher: ect_teacher,
                         school:,
                         lead_provider:,
-                        training_programme: 'provider_led',
                         started_on: ect_start_date,
                         finished_on: nil)
     end
 
     before do
       FactoryBot.create(:mentorship_period, mentor:, mentee: ect, started_on: ect_start_date, finished_on: nil)
+      FactoryBot.create(:training_period, :ongoing, :provider_led, school_partnership:, ect_at_school_period: ect)
     end
 
     it 'renders the summary cards' do
@@ -44,13 +47,13 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
       FactoryBot.create(:ect_at_school_period,
                         teacher: ect_teacher,
                         school:,
-                        training_programme: 'provider_led',
                         started_on: ect_start_date,
                         finished_on: nil)
     end
 
     before do
       FactoryBot.create(:mentorship_period, mentor:, mentee: ect, started_on: ect_start_date, finished_on: nil)
+      FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: ect)
     end
 
     it 'renders the ineligible message' do
@@ -65,7 +68,6 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
       FactoryBot.create(:ect_at_school_period,
                         teacher: ect_teacher,
                         school:,
-                        training_programme: 'school_led',
                         started_on: mentor_start_date + 1.month,
                         finished_on: nil)
     end
