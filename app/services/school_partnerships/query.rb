@@ -23,10 +23,6 @@ module SchoolPartnerships
       scope
     end
 
-    def earliest_school_partnership
-      school_partnerships.first
-    end
-
     def school_partnership_by_api_id(api_id)
       return scope.find_by!(api_id:) if api_id.present?
 
