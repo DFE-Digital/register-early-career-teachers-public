@@ -7,7 +7,8 @@ end
   2022 => false,
   2023 => true,
   2024 => true,
-  2025 => true
+  2025 => true,
+  2026 => false
 }.each do |year, enabled|
   ContractPeriod.create!(
     year:,

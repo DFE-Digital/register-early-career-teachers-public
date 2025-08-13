@@ -1,0 +1,27 @@
+<%= govuk_table do |table|
+  table.with_caption(text: "Lead provider partners")
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Year")
+      row.with_cell(text: "Lead providers")
+      row.with_cell(text: "Action")
+    end
+  end
+
+  table.with_body do |body|
+    contract_period_partnerships.each do |item|
+      contract_period = item[:contract_period]
+      partnerships = item[:partnerships]
+
+      body.with_row do |row|
+        row.with_cell(text: contract_period.year)
+        row.with_cell do
+          lead_provider_names(partnerships)
+        end
+        row.with_cell do
+          govuk_link_to("Change", change_link_path(contract_period))
+        end
+      end
+    end
+  end
+end %>
