@@ -87,8 +87,7 @@ RSpec.describe Schools::Query do
         end
 
         context "when the schools has metadata" do
-          let!(:contract_period_metadata) { FactoryBot.create(:school_contract_period_metadata, school: school1, contract_period: another_contract_period) }
-          let!(:lead_provider_contract_period_metadata) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school: school1, contract_period: another_contract_period) }
+          let!(:school1) { FactoryBot.create(:school, :eligible, :with_metadata, contract_period: another_contract_period, lead_provider: active_lead_provider.lead_provider) }
 
           before do
             ignored_contract_period = FactoryBot.create(:contract_period, year: another_contract_period.year + 1)
@@ -98,8 +97,12 @@ RSpec.describe Schools::Query do
 
           it "returns schools with only the applicable metadata" do
             school = query.school_by_id(school1.id)
-            expect(school.contract_period_metadata).to contain_exactly(contract_period_metadata)
-            expect(school.lead_provider_contract_period_metadata).to contain_exactly(lead_provider_contract_period_metadata)
+
+            expected_contract_period_metadata = school.contract_period_metadata.find { |m| m.contract_period_year == contract_period_year }
+            expect(school.contract_period_metadata).to contain_exactly(expected_contract_period_metadata)
+
+            expected_lead_provider_contract_period_metadata = school.lead_provider_contract_period_metadata.find { |m| m.lead_provider_id == active_lead_provider.lead_provider_id }
+            expect(school.lead_provider_contract_period_metadata).to contain_exactly(expected_lead_provider_contract_period_metadata)
           end
         end
       end
@@ -124,7 +127,7 @@ RSpec.describe Schools::Query do
         end
 
         context "when the schools has metadata" do
-          let!(:lead_provider_contract_period_metadata) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school: school3, contract_period_year:, lead_provider:) }
+          let!(:school3) { FactoryBot.create(:school, :eligible, :with_metadata, contract_period: another_contract_period, lead_provider:) }
 
           before do
             ignored_lead_provider = FactoryBot.create(:lead_provider)
@@ -133,7 +136,8 @@ RSpec.describe Schools::Query do
 
           it "returns schools with only the applicable metadata" do
             school = query.school_by_id(school3.id)
-            expect(school.lead_provider_contract_period_metadata).to contain_exactly(lead_provider_contract_period_metadata)
+            expected_lead_provider_contract_period_metadata = school.lead_provider_contract_period_metadata.find { |m| m.lead_provider_id == lead_provider.id }
+            expect(school.lead_provider_contract_period_metadata).to contain_exactly(expected_lead_provider_contract_period_metadata)
           end
         end
       end
