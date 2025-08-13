@@ -4,11 +4,12 @@ module Migration
   #       multiple places and make it easier to test the code that uses it
   class TrainingPeriodData
     attr_accessor :training_programme, :lead_provider, :delivery_partner, :core_materials, :cohort_year,
-                  :start_date, :end_date, :start_source_id, :end_source_id
+                  :school_urn, :start_date, :end_date, :start_source_id, :end_source_id
 
-    def initialize(training_programme:, lead_provider:, delivery_partner:, core_materials:,
+    def initialize(training_programme:, school_urn:, lead_provider:, delivery_partner:, core_materials:,
                    cohort_year:, start_date:, end_date:, start_source_id:, end_source_id:)
       @training_programme = training_programme
+      @school_urn = school_urn
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
       @core_materials = core_materials
