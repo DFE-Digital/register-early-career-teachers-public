@@ -30,13 +30,13 @@ module SchoolPartnerships
     def school_partnership_by_api_id(api_id)
       return scope.find_by!(api_id:) if api_id.present?
 
-      fail(ArgumentError, "You must specify an api_id")
+      fail(ArgumentError, "api_id needed")
     end
 
     def school_partnership_by_id(id)
       return scope.find(id) if id.present?
 
-      fail(ArgumentError, "You must specify an id")
+      fail(ArgumentError, "id needed")
     end
 
   private
@@ -86,7 +86,7 @@ module SchoolPartnerships
     def default_scope
       SchoolPartnership
         .eager_load(
-          :school,
+          school: :gias_school,
           lead_provider_delivery_partnership: [
             :delivery_partner,
             { active_lead_provider: %i[lead_provider contract_period] }
