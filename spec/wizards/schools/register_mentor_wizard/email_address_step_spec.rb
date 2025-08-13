@@ -31,7 +31,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
     it_behaves_like 'an email step', current_step: :email_address,
                                      previous_step: :review_mentor_details,
                                      next_step: :check_answers do
-      let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led) }
+      let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
     end
   end
 end

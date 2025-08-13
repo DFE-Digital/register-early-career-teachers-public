@@ -100,7 +100,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
 
   context 'when all ECTs are school-led' do
     let(:ect_period) do
-      FactoryBot.create(:ect_at_school_period, :school_led, teacher: ect_teacher, school:, started_on: start_date, finished_on: nil)
+      FactoryBot.create(:ect_at_school_period, teacher: ect_teacher, school:, started_on: start_date, finished_on: nil)
     end
 
     before do

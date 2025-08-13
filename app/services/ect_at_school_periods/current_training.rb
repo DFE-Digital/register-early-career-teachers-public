@@ -11,6 +11,8 @@ module ECTAtSchoolPeriods
       school_partnership.blank? && expression_of_interest.present?
     end
 
+    delegate :provider_led_training_programme?, to: :current_training_period, allow_nil: true
+
     # FIXME: do we need another method here to pick whichever lead provider is present, be it
     #        an EOI or partnership based one?
 

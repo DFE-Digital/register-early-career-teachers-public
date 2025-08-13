@@ -10,7 +10,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
     FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body:)
   end
 
-  let(:school_led_training_period) { FactoryBot.create(:training_period, :school_led, :ongoing, ect_at_school_period: school_led_ect_at_school_period) }
+  let(:school_led_training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period: school_led_ect_at_school_period) }
 
   let(:provider_led_ect_at_school_period) do
     FactoryBot.create(:ect_at_school_period,

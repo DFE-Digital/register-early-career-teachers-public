@@ -2,13 +2,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
   include Interval
   include DeclarativeTouch
 
-  # Enums
-  enum :training_programme,
-       { provider_led: "provider_led",
-         school_led: "school_led" },
-       validate: { message: "Must be provider-led or school-led" },
-       suffix: :training_programme
-
   # Associations
   belongs_to :school, inverse_of: :ect_at_school_periods
   belongs_to :teacher, inverse_of: :ect_at_school_periods
@@ -22,6 +15,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_one :current_training_period, -> { ongoing_today_or_starting_tomorrow_or_after }, class_name: 'TrainingPeriod'
 
   touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+
+  delegate :provider_led_training_programme?, to: :current_training_period, allow_nil: true
+  delegate :school_led_training_programme?, to: :current_training_period, allow_nil: true
 
   # Validations
   validate :appropriate_body_for_independent_school,

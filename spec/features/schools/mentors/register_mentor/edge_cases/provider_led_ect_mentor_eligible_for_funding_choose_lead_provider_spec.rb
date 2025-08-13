@@ -72,7 +72,7 @@ RSpec.describe 'Registering a mentor', :js do
     @another_lead_provider = FactoryBot.create(:lead_provider, name: "Another lead provider")
     FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period:)
 
-    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :provider_led, :ongoing, lead_provider: @lead_provider, school: @school)
+    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :ongoing, lead_provider: @lead_provider, school: @school)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 

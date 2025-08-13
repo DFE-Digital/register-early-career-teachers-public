@@ -54,7 +54,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
       end
 
       context 'when the ect is not provider_led' do
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led, teacher:) }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
 
         it { expect(rendered).not_to have_content("We’ll pass on their details to FraggleRock") }
       end
@@ -71,7 +71,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
       end
 
       context 'when the ect is not provider_led' do
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led, teacher:) }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
 
         it { expect(rendered).not_to have_content('They cannot do mentor training according to our records.') }
       end

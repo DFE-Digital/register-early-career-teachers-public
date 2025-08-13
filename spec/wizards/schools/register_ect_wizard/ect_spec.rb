@@ -377,8 +377,8 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     describe '#previous_training_programme' do
       context 'when the teacher has ECTAtSchoolPeriods' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :school_led, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+          FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns the training programme from the latest ECTAtSchoolPeriod by started_on' do
@@ -396,7 +396,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     describe '#previous_provider_led?' do
       context 'when the latest ECTAtSchoolPeriod is provider-led' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns true' do
@@ -406,7 +406,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
       context 'when the latest ECTAtSchoolPeriod is school-led' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :school_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns false' do

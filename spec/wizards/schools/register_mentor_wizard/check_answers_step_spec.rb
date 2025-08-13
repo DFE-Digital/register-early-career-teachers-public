@@ -24,7 +24,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
         end
 
         context 'when the ect is not provider led' do
-          let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led) }
+          let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
 
           it { expect(subject.previous_step).to eq(:email_address) }
         end
