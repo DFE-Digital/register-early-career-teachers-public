@@ -11,7 +11,7 @@ module Schools
       end
 
       def render?
-        assigned_ects.any?(&:provider_led?)
+        assigned_ects.any?(&:provider_led_training_programme?)
       end
 
       def eligible_for_training?
