@@ -1,5 +1,7 @@
 module Metadata::Handlers
   class School
+    BATCH_SIZE = 100
+
     attr_reader :school
 
     def initialize(school)
@@ -9,6 +11,15 @@ module Metadata::Handlers
     def refresh_metadata!
       upsert_contract_period_metadata!
       upsert_lead_provider_contract_period_metadata!
+    end
+
+    class << self
+      def refresh_all_metadata!(async: false)
+        job_method = async ? :perform_later : :perform_now
+        ::School.order(:created_at).in_batches(of: BATCH_SIZE) do |schools|
+          RefreshMetadataJob.send(job_method, object_type: ::School, object_ids: schools.pluck(:id))
+        end
+      end
     end
 
   private
