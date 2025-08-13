@@ -1,17 +1,23 @@
 <%= batch_cards %>
-<%= batch_details %>
 
+<%= batch_details %>
 
 <%=
   govuk_tabs do |tabs|
-
     tabs.with_tab(label: "Errors") do %>
-      <%= error_details %>
+      <% if error_details.render? %>
+        <%= error_details %>
+      <% else %>
+        <h3 class='govuk-heading-m'>No errors</h3>
+      <% end %>
     <% end if error_details?
 
     tabs.with_tab(label: "Inductions") do %>
-      <%= induction_details %>
+      <% if induction_details.render? %>
+        <%= induction_details %>
+      <% else %>
+        <h3 class='govuk-heading-m'>No inductions</h3>
+      <% end %>
     <% end if induction_details?
-
   end
 %>
