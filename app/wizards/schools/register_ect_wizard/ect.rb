@@ -108,7 +108,7 @@ module Schools
       delegate :name, to: :previous_school, prefix: true, allow_nil: true
 
       def previous_training_programme
-        previous_ect_at_school_period&.training_programme
+        previous_training_period&.training_programme
       end
 
       def provider_led?
