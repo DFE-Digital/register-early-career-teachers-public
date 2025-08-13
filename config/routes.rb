@@ -57,7 +57,9 @@ Rails.application.routes.draw do
         end
 
         resources :lead_providers, only: %i[index], path: 'lead-providers'
-        resources :delivery_partners, only: %i[index show], path: 'delivery-partners'
+        resources :delivery_partners, only: %i[index show], path: 'delivery-partners' do
+          resource :delivery_partnerships, only: %i[new create], path: ':year', as: :delivery_partnership, controller: 'delivery_partners/delivery_partnerships'
+        end
       end
     end
 

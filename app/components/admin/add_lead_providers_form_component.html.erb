@@ -1,0 +1,25 @@
+<%= form_with url: form_url, method: :post, local: true do |f| %>
+  <%= f.hidden_field :year, value: year %>
+  <%= f.hidden_field :page, value: page %>
+  <%= f.hidden_field :q, value: q %>
+
+  <% if current_partnerships.any? %>
+    <div class="govuk-inset-text">
+      <h3 class="govuk-heading-s">Currently working with:</h3>
+      <%= govuk_list(current_partnership_names, type: :bullet) %>
+    </div>
+  <% end %>
+
+  <%= f.govuk_collection_check_boxes(
+    :lead_provider_ids,
+    available_lead_providers,
+    :id,
+    ->(alp) { alp.lead_provider.name },
+    legend: { text: legend_text, size: 'm' },
+    hint: { text: hint_text }
+  ) %>
+
+  <div class="govuk-button-group">
+    <%= f.govuk_submit("Confirm") %>
+  </div>
+<% end %>

@@ -16,10 +16,22 @@ module Admin
       @delivery_partner = DeliveryPartner.find(params[:id])
       @page = params[:page]
       @q = params[:q]
-      @lead_provider_partnerships = @delivery_partner
+
+      # Get existing partnerships
+      existing_partnerships = @delivery_partner
         .lead_provider_delivery_partnerships
         .includes(active_lead_provider: %i[lead_provider contract_period])
-        .merge(ContractPeriod.most_recent_first)
+
+      # Get all contract periods that have available lead providers (including those with existing partnerships)
+      contract_periods_with_providers = ContractPeriod
+        .joins(:active_lead_providers)
+        .distinct
+        .most_recent_first
+
+      @contract_period_partnerships = contract_periods_with_providers.map do |contract_period|
+        partnerships = existing_partnerships.select { |p| p.contract_period.year == contract_period.year }
+        { contract_period:, partnerships: }
+      end
     end
   end
 end
