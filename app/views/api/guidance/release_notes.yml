@@ -28,15 +28,15 @@
   body: |
     We’ve added the GET `/api/v3/schools` and GET `/api/v3/schools/{id}` endpoints in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3). 
 
-    ### New ‘expression_of_interest’ field 
+    ### New `expression_of_interest` field 
 
     Shows as `TRUE` when at least one participant for that cohort is registered with you as the lead provider. Once a partnership is confirmed, it remains `TRUE` even if all participants later leave that school, change lead provider or change to school-led training. 
 
-    ### Updated ‘induction_programme_choice’ logic 
+    ### Updated `induction_programme_choice` logic 
 
     Now shows `provider-led` if any participant in the cohort is on provider-led training. Shows `school-led` if all participants for that cohort are registered for school-led training for the school. Shows `not_yet_known` if no participants have been registered by the school yet. 
 
-    ### Updated ‘in_partnership’ logic 
+    ### Updated `in_partnership` logic 
 
     Now `TRUE` when at least one partnership exists for the school and cohort, and `FALSE` when none exist. We also now allow multiple partnerships per cohort between different lead providers. However, we'll only allow a lead provider to create one partnership per cohort with a school each for our initial release. 
 
