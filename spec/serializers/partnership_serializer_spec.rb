@@ -26,7 +26,7 @@ describe PartnershipSerializer, type: :serializer do
     end
 
     it "serializes `urn`" do
-      expect(attributes["urn"]).to eq(school.urn)
+      expect(attributes["urn"]).to eq(school.urn.to_s)
     end
 
     it "serializes `school_id`" do
