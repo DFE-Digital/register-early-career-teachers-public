@@ -242,7 +242,7 @@ describe SchoolPartnerships::Query do
     end
 
     it "raises an error if an api_id is not supplied" do
-      expect { described_class.new.school_partnership_by_api_id(nil) }.to raise_error(ArgumentError, "You must specify an api_id")
+      expect { described_class.new.school_partnership_by_api_id(nil) }.to raise_error(ArgumentError, "api_id needed")
     end
   end
 
@@ -270,7 +270,7 @@ describe SchoolPartnerships::Query do
     end
 
     it "raises an error if an id is not supplied" do
-      expect { described_class.new.school_partnership_by_id(nil) }.to raise_error(ArgumentError, "You must specify an id")
+      expect { described_class.new.school_partnership_by_id(nil) }.to raise_error(ArgumentError, "id needed")
     end
   end
 
