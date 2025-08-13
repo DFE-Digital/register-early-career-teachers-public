@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :training_period_data, class: "Migration::TrainingPeriodData" do
+    school_urn { FactoryBot.create(:school).urn }
     training_programme { "full_induction_programme" }
     lead_provider { "Ace Provider" }
     delivery_partner { "Whizzy Delivery" }
