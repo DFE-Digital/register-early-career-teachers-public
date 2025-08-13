@@ -97,7 +97,7 @@ runs:
         az config set extension.use_dynamic_install=yes_without_prompt
         az config set core.only_show_errors=true
         az storage azcopy blob download --container database-backup \
-        --source ${{ inputs.backup-file }} --destination ${{ inputs.backup-file }}
+        --name ${{ inputs.backup-file }} --destination ${{ inputs.backup-file }}
 
     - name: Restore backup to aks env database
       shell: bash
