@@ -35,12 +35,13 @@ module Schools
       @matching_partnerships ||= SchoolPartnerships::Query.new(
         school_id: school.id,
         contract_period_years: contract_period.year,
-        lead_provider_id: last_chosen_lead_provider.id
+        lead_provider_id: last_chosen_lead_provider.id,
+        sort: "created_at"
       ).school_partnerships
     end
 
     def first_used_partnership
-      @first_used_partnership ||= matching_partnerships.earliest_first.first
+      @first_used_partnership ||= matching_partnerships.first
     end
 
     def lead_provider_delivery_partnership

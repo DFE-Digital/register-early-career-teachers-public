@@ -19,6 +19,5 @@ class SchoolPartnership < ApplicationRecord
             }
 
   # Scopes
-  scope :earliest_first, -> { order(created_at: 'asc') }
   scope :for_contract_period, ->(year) { joins(:contract_period).where(contract_periods: { year: }) }
 end
