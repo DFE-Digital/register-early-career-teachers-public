@@ -1,0 +1,21 @@
+<% page_data(title: "Select lead providers working with #{@delivery_partner.name} in #{@year}", backlink_href: admin_delivery_partner_path(@delivery_partner, page: @page, q: @q)) %>
+
+<% if @contract_period.started_on_or_before_today? %>
+  <%= render(Admin::AddLeadProvidersFormComponent.new(
+    delivery_partner: @delivery_partner,
+    current_partnerships: @current_partnerships,
+    available_lead_providers: @available_lead_providers,
+    year: @year,
+    page: @page,
+    q: @q
+  )) %>
+<% else %>
+  <%= render(Admin::SelectLeadProvidersFormComponent.new(
+    delivery_partner: @delivery_partner,
+    contract_period: @contract_period,
+    current_partnerships: @current_partnerships,
+    year: @year,
+    page: @page,
+    q: @q
+  )) %>
+<% end %>

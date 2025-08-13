@@ -12,6 +12,7 @@ class Event < ApplicationRecord
     induction_period_updated
     lead_provider_api_token_created
     lead_provider_api_token_revoked
+    lead_provider_delivery_partnership_added
     statement_adjustment_added
     statement_adjustment_deleted
     statement_adjustment_updated
