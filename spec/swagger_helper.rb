@@ -62,6 +62,12 @@ RSpec.configure do |config|
           DeliveryPartnersFilter: DELIVERY_PARTNERS_FILTER,
           DeliveryPartnerResponse: DELIVERY_PARTNER_RESPONSE,
           DeliveryPartnersResponse: DELIVERY_PARTNERS_RESPONSE,
+
+          # Partnerships
+          Partnership: PARTNERSHIP,
+          PartnershipsFilter: PARTNERSHIPS_FILTER,
+          PartnershipResponse: PARTNERSHIP_RESPONSE,
+          PartnershipsResponse: PARTNERSHIPS_RESPONSE,
         }
       }
     }
