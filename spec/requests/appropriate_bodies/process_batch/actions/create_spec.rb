@@ -62,7 +62,7 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
         post ab_batch_actions_path, params: {
           pending_induction_submission_batch: { csv_file: }
         }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include('The selected file must be a CSV')
       end
     end

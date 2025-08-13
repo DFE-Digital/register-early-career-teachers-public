@@ -10,10 +10,10 @@ module AppropriateBodies
       redirect_to ab_teacher_path(@induction_period.teacher), alert: 'Induction period updated successfully'
     rescue InductionPeriods::UpdateInductionPeriod::RecordedOutcomeError => e
       @induction_period.errors.add(:base, e.message)
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     rescue ActiveRecord::RecordInvalid
       @induction_period = service.induction_period
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
 
   private
