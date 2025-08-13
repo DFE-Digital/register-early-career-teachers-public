@@ -10,8 +10,12 @@ module TrainingPeriodSources
   end
 
   def earliest_matching_school_partnership
-    SchoolPartnerships::Query.new(school_id: school.id, lead_provider_id: lead_provider.id, contract_period_years: contract_period.year)
-    .school_partnerships.earliest_first.first
+    SchoolPartnerships::Query.new(
+      school_id: school.id,
+      lead_provider_id: lead_provider.id,
+      contract_period_years: contract_period.year,
+      sort: "created_at"
+    ).school_partnerships.first
   end
 
   def expression_of_interest
