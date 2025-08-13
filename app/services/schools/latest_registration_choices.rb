@@ -15,7 +15,7 @@ module Schools
     def appropriate_body = last_chosen_appropriate_body
 
     def lead_provider_and_delivery_partner
-      return nil unless last_chosen_lead_provider_present
+      return nil if last_chosen_lead_provider.blank?
 
       if matching_partnerships.any?
         Choice.new(
@@ -30,10 +30,6 @@ module Schools
     end
 
   private
-
-    def last_chosen_lead_provider_present
-      last_chosen_lead_provider.present?
-    end
 
     def matching_partnerships
       @matching_partnerships ||= SchoolPartnerships::Query.new(
