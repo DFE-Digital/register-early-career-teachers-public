@@ -31,8 +31,8 @@ module Admin
         # @return [Array<String>]
         def head
           case
-          when claim? then ['Name', 'Induction period start date', 'Induction programme']
-          when action? then ['Name', 'Induction period end date', 'Number of terms', 'Outcome']
+          when claim? then ['TRN', 'Name', 'Induction period start date', 'Induction programme']
+          when action? then ['TRN', 'Name', 'Induction period end date', 'Number of terms', 'Outcome']
           else
             raise StandardError, "Unknown #{batch.class}#batch_type for #{id}"
           end
@@ -55,6 +55,7 @@ module Admin
         # @return [Array<String>]
         def induction_period_row(induction_period)
           row = [
+            induction_period.teacher.trn,
             link_to_teacher(induction_period.teacher)
           ]
 
