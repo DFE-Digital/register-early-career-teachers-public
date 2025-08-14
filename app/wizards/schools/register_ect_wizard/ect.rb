@@ -97,7 +97,7 @@ module Schools
       end
 
       def previous_provider_led?
-        previous_ect_at_school_period&.provider_led_training_programme?
+        previous_training_period&.provider_led_training_programme?
       end
 
       def previous_school
