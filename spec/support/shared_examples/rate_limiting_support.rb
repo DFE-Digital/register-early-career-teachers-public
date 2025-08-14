@@ -1,3 +1,5 @@
+require "dfe/analytics/rspec/matchers"
+
 RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
   describe desc do
     subject { response }
@@ -45,6 +47,16 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
         change_condition
         perform_request
         expect(subject).to have_http_status(:success)
+      end
+
+      context "dfe_analytics by default disabled" do
+        it { expect { perform_request }.not_to have_sent_analytics_event_types(:persist_api_request) }
+      end
+
+      context "dfe_analytics is enabled" do
+        before { stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true") }
+
+        it { expect { perform_request }.to have_sent_analytics_event_types(:persist_api_request) }
       end
     end
   end
