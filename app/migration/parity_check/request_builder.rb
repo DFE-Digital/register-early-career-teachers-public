@@ -82,6 +82,16 @@ module ParityCheck
 
       raise UnrecognizedQueryError, "Query must be a Hash: #{options_query}" unless options_query.is_a?(Hash)
 
+      # If the query contains a filter with symbol values, replace them with dynamic request content.
+      # This allows us to use dynamic values in the query.
+      options_query_filter_symbol_values = options_query[:filter]&.select { |_k, v| v.to_s.match?(/^:.+$/) }
+      return options_query if options_query_filter_symbol_values.blank?
+
+      # Replace symbol values with dynamic request content.
+      options_query_filter_symbol_values.each do |key, value|
+        options_query.deep_merge!(filter: { "#{key}": dynamic_request_content.fetch(value.delete_prefix(":")) })
+      end
+
       options_query
     end
 
