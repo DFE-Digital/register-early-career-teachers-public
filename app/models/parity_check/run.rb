@@ -32,6 +32,10 @@ module ParityCheck
         transition [:pending] => :in_progress
       end
 
+      event :halt do
+        transition [:in_progress] => :failed
+      end
+
       event :complete do
         transition [:in_progress] => :completed
       end
