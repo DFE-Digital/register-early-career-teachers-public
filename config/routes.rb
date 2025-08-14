@@ -74,7 +74,9 @@ Rails.application.routes.draw do
       end
       resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
       resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: 'teachers/record_failed_outcome'
-      resource :reopen_induction, only: %i[update], path: 'reopen-induction', controller: 'teachers/reopen_induction'
+      resource :reopen_induction, only: %i[update], path: 'reopen-induction', controller: 'teachers/reopen_induction' do
+        member { get :confirm }
+      end
       resources :extensions, only: %i[index new create edit update destroy], controller: 'teachers/extensions' do
         member do
           get :confirm_delete
