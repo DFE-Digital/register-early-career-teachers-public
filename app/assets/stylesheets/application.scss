@@ -13,6 +13,7 @@ $govuk-assets-path: "/";
 @import "bulk_upload";
 @import "search";
 @import "admin/filter";
+@import "admin/button-group";
 
 // library styles
 @import "accessible-autocomplete/src/autocomplete";

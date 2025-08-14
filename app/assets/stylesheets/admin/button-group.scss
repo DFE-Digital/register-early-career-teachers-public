@@ -1,0 +1,7 @@
+// when Rails' button_to is used (via govuk_button_to it renders
+// a <form> with a <button> element in it, which breaks alignment.
+//
+// https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Relationship_of_grid_layout_with_other_layout_methods#grid_and_display_contents
+.govuk-button-group > form {
+  display: contents;
+}
