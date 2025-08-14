@@ -120,7 +120,7 @@ RSpec.describe 'AppropriateBodies::InductionPeriodsController', type: :request d
           patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
 
           expect(response).not_to redirect_to(ab_teacher_path(induction_period.teacher))
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.body).to include("Start date cannot overlap another induction period")
         end
       end

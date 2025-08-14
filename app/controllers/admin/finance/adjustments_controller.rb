@@ -16,7 +16,7 @@ module Admin::Finance
           Events::Record.record_statement_adjustment_added_event!(author: current_user, statement_adjustment: @adjustment)
           redirect_to statement_path, alert: "Adjustment added"
         else
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       end
     end
@@ -30,7 +30,7 @@ module Admin::Finance
           Events::Record.record_statement_adjustment_updated_event!(author: current_user, statement_adjustment: @adjustment)
           redirect_to statement_path, alert: "Adjustment changed"
         else
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       end
     end

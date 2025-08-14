@@ -12,7 +12,7 @@ module API
   private
 
     def unpermitted_parameter_response(exception)
-      render json: { errors: API::Errors::Response.new(error: "Unpermitted parameters", params: exception.params).call }, status: :unprocessable_entity
+      render json: { errors: API::Errors::Response.new(error: "Unpermitted parameters", params: exception.params).call }, status: :unprocessable_content
     end
 
     def bad_request_response(exception)

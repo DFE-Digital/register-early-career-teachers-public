@@ -23,11 +23,11 @@ module AppropriateBodies
             @pending_induction_submission_batch.errors.add(error.attribute, error.message)
           end
 
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       rescue ActionController::ParameterMissing
         @pending_induction_submission_batch.errors.add(:csv_file, 'Select a file')
-        render :new, status: :unprocessable_entity
+        render :new, status: :unprocessable_content
       end
 
       def edit

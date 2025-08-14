@@ -15,7 +15,7 @@ module AppropriateBodies
           redirect_to ab_teacher_path(teacher), alert: "Extension was successfully added."
         else
           @extension = manage_extensions.induction_extension
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       end
 
@@ -28,7 +28,7 @@ module AppropriateBodies
           redirect_to ab_teacher_path(teacher), alert: "Extension was successfully updated."
         else
           @extension = manage_extensions.induction_extension
-          render :edit, status: :unprocessable_entity
+          render :edit, status: :unprocessable_content
         end
       end
 
