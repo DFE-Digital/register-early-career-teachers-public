@@ -1,8 +1,9 @@
-name: Directly copy an env main db into the snapshot db, bypassing Azure Storage
+name: "Refresh mermaid ERD"
 
 on:
-  workflow_dispatch:
-    inputs:
+  schedule:
+    - cron: '0 8 * * 1' # Monday at 8am
+  workflow_dispatch: 
 
 jobs:
   refresh_mermaid_erd:
