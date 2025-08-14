@@ -1,6 +1,8 @@
 module Builders
   module ECT
     class TrainingPeriods
+      include Builders::BuilderHelpers
+
       attr_reader :teacher, :training_period_data
 
       def initialize(teacher:, training_period_data:)
@@ -11,7 +13,6 @@ module Builders
       def build
         success = true
         period_date = Data.define(:started_on, :finished_on)
-
         training_period_data.each do |period|
           period_dates = period_date.new(started_on: period.start_date, finished_on: period.end_date)
           school = School.find_by!(urn: period.school_urn)
@@ -30,7 +31,7 @@ module Builders
           training_period.ecf_end_induction_record_id = period.end_source_id
 
           training_period.school_partnership = if period.training_programme == "provider_led"
-                                                 training_period.school_partnership = find_partnership!(period, school)
+                                                 find_school_partnership!(period, school)
                                                else
                                                  nil
                                                end
@@ -40,14 +41,6 @@ module Builders
           success = false
         end
         success
-      end
-
-      def find_partnership!(period, school)
-        lead_provider = ::LeadProvider.find_by!(name: period.lead_provider)
-        active_lead_provider = ::ActiveLeadProvider.find_by!(lead_provider:, contract_period_year: period.cohort_year)
-        delivery_partner = ::DeliveryPartner.find_by!(name: period.delivery_partner)
-        lead_provider_delivery_partnership = ::LeadProviderDeliveryPartnership.find_by!(active_lead_provider:, delivery_partner:)
-        ::SchoolPartnership.find_by!(lead_provider_delivery_partnership:, school:)
       end
     end
   end
