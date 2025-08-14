@@ -2,6 +2,8 @@ module ParityCheck
   class TokenProvider
     include ParityCheck::Configuration
 
+    class TokenNotFoundError < RuntimeError; end
+
     def generate!
       ensure_parity_check_enabled!
 
@@ -13,6 +15,8 @@ module ParityCheck
 
     def token(lead_provider:)
       ensure_parity_check_enabled!
+
+      raise TokenNotFoundError, "Token not found for lead provider: #{lead_provider.ecf_id}" unless known_tokens_by_lead_provider_ecf_id.key?(lead_provider.ecf_id)
 
       known_tokens_by_lead_provider_ecf_id.fetch(lead_provider.ecf_id)
     end
