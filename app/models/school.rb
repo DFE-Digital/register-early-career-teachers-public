@@ -23,6 +23,8 @@ class School < ApplicationRecord
   has_many :mentor_at_school_periods, inverse_of: :school
   has_many :mentor_teachers, -> { distinct }, through: :mentor_at_school_periods, source: :teacher
   has_many :school_partnerships
+  has_many :lead_provider_contract_period_metadata, class_name: "Metadata::SchoolLeadProviderContractPeriod"
+  has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod"
 
   # Validations
   validates :last_chosen_lead_provider_id,
