@@ -35,6 +35,7 @@ RSpec.describe "Partnerships API", type: :request do
     it_behaves_like "a show endpoint"
     it_behaves_like "a does not filter by cohort endpoint"
     it_behaves_like "a does not filter by updated_since endpoint"
+    it_behaves_like "a does not filter by delivery_partner_id endpoint"
   end
 
   describe "# create" do

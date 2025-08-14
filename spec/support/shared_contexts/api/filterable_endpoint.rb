@@ -170,7 +170,7 @@ RSpec.shared_examples "a filter by delivery_partner_id endpoint" do
     # Resource with another delivery_partner_id should not be included.
     create_resource(active_lead_provider:)
 
-    params = { filter: { delivery_partner_id: resource.lead_provider_delivery_partnership.delivery_partner.api_id } }
+    params = { filter: { delivery_partner_id: resource.delivery_partner.api_id } }
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)
@@ -184,11 +184,27 @@ RSpec.shared_examples "a filter by delivery_partner_id endpoint" do
     # Resource with another delivery_partner_id should not be included.
     create_resource(active_lead_provider:)
 
-    params = { filter: { delivery_partner_id: "#{resource.lead_provider_delivery_partnership.delivery_partner.api_id},invalid" } }
+    params = { filter: { delivery_partner_id: "#{resource.delivery_partner.api_id},invalid" } }
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
     expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
+  end
+end
+
+RSpec.shared_examples "a does not filter by delivery_partner_id endpoint" do
+  let(:options) { defined?(serializer_options) ? serializer_options : {} }
+
+  it "returns the resources, ignoring the `delivery_partner_id`" do
+    # Use of a filter with a different delivery_partner_id should not change the resource returned.
+    different_resource = create_resource(active_lead_provider:)
+
+    params = { filter: { delivery_partner_id: different_resource.delivery_partner.api_id } }
+    authenticated_api_get(path, params:)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
   end
 end
