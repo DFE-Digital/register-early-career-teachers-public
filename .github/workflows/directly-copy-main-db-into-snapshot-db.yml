@@ -3,65 +3,82 @@ name: Directly copy an env main db into the snapshot db, bypassing Azure Storage
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        description: GitHub environment to backup
-        type: choice
-        default: production
-        options:
-          - staging
-          - production
-        required: true
-
-env:
-  SERVICE_NAME: cpd-ec2
-  SERVICE_SHORT: cpdec2
-  TF_VARS_PATH: config/terraform/application/config
-
-permissions:
-  id-token: write
 
 jobs:
-  backup-main-db-and-restore-snapshot:
+  refresh_mermaid_erd:
+    name: Refresh mermaid ERD
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment || 'production' }}
+
     env:
-      DEPLOY_ENV: ${{ inputs.environment || 'production'  }}
+      RAILS_ENV: test
+      DB_USERNAME: postgres
+      DB_PASSWORD: ""
+      DB_HOSTNAME: 127.0.0.1
+      DB_PORT: 5432
+      ECF_DB_USERNAME: ${{ env.DB_USERNAME }}
+      ECF_DB_PASSWORD: ${{ env.DB_PASSWORD }}
+      ECF_DB_HOSTNAME: ${{ env.DB_HOSTNAME }}
+      ECF_DB_PORT: ${{ env.DB_PORT }}
+      ANALYTICS_DB_USERNAME: ${{ env.DB_USERNAME }}
+      ANALYTICS_DB_PASSWORD: ${{ env.DB_PASSWORD }}
+      ANALYTICS_DB_HOSTNAME: ${{ env.DB_HOSTNAME }}
+      ANALYTICS_DB_PORT: ${{ env.DB_PORT }}
+      ENCRYPTION_PRIMARY_KEY: test_primary_key
+      ENCRYPTION_DETERMINISTIC_KEY: test_deterministic_key
+      ENCRYPTION_DERIVATION_SALT: test_derivation_salt
+      CI: true
+
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_USER: ${{ env.DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_HOST_AUTH_METHOD: "trust"
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    permissions:
+      contents: read
+      pull-requests: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set Azure environment variables
-        run: |
-          # Load environment-specific configuration
-          source config/global_config/${DEPLOY_ENV}.sh
-          tf_vars_file=${TF_VARS_PATH}/${DEPLOY_ENV}.tfvars.json
-
-          # Set Azure environment variables
-          echo "KEYVAULT_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-inf-kv" >> $GITHUB_ENV
-
-      - name: Fetch secrets from key vault
-        uses: azure/CLI@v2
-        id: key-vault-secrets
+      - uses: ./.github/actions/prepare-app-env
+        id: test
         with:
-          inlineScript: |
-            SLACK_WEBHOOK=$(az keyvault secret show --name "SLACK-WEBHOOK" --vault-name ${KEYVAULT_NAME} --query "value" -o tsv)
-            echo "::add-mask::$SLACK_WEBHOOK"
-            echo "SLACK_WEBHOOK=$SLACK_WEBHOOK" >> $GITHUB_OUTPUT
+          prepare-test-database: "true"
+          prepare-assets: "true"
 
-      - name: Backup and restore snapshot
-        uses: ./.github/actions/directly-backup-and-restore-snapshot-database
+
+      - name: Run mermaid
+        run: bundle exec rake erd:generate
+
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
         with:
-          environment: ${{ inputs.environment || 'production' }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          app-name: ${{ env.SERVICE_NAME }}-${{ inputs.environment || 'production' }}-web
-          slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Create pull request 
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          branch: refresh-mermaid-erd
+          delete-branch: true
+          add-paths: documentation/domain-model.md
+          base: main
+          commit-message: |
+            Refresh mermaid ERD
+
+            We run the mermaid ERD generation in CI on a schedule; once complete
+            it raises this commit in a PR so that we can keep our ERD inline with our models.
+          title: Refresh mermaid ERD
+          body: |
+            We run the mermaid ERD generation in CI on a schedule; once complete 
+            it raises this commit in a PR so that we can keep our ERD inline with our models.
