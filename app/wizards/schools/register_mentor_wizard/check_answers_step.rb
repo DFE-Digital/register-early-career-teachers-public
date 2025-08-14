@@ -6,9 +6,15 @@ module Schools
       end
 
       def previous_step
-        return :review_mentor_eligibility if ect.provider_led_training_programme? && mentor.funding_available?
+        if wizard.store.back_to == 'eligibility_lead_provider'
+          wizard.store.back_to = nil
+          :eligibility_lead_provider
+        else
 
-        :email_address
+          return :review_mentor_eligibility if ect.provider_led_training_programme? && mentor.funding_available?
+
+          :email_address
+        end
       end
 
     private
