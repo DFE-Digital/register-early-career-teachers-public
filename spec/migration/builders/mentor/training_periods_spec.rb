@@ -1,11 +1,14 @@
 describe Builders::Mentor::TrainingPeriods do
+  include SchoolPartnershipHelpers
+
   subject(:service) { described_class.new(teacher:, training_period_data:) }
 
   let(:school_1) { FactoryBot.create(:school, urn: "123456") }
   let(:school_2) { FactoryBot.create(:school, urn: "987654") }
   let(:contract_period) { FactoryBot.create(:contract_period) }
-  let(:partnership_1) { FactoryBot.create(:school_partnership, contract_year: contract_period.year, school: school_1) }
-  let(:partnership_2) { FactoryBot.create(:school_partnership, contract_year: contract_period.year, school: school_2) }
+  let(:partnership_1) { make_partnership_for(school_1, contract_period) }
+  let(:partnership_2) { make_partnership_for(school_2, contract_period) }
+
   let(:teacher) { FactoryBot.create(:teacher) }
   let!(:school_period_1) { FactoryBot.create(:mentor_at_school_period, started_on: 1.year.ago.to_date, finished_on: 1.month.ago.to_date, teacher:, school: school_1) }
   let!(:school_period_2) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago.to_date, finished_on: nil, teacher:, school: school_2) }
