@@ -1,4 +1,21 @@
 describe SchoolPartnership do
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:school_partnership) }
+
+    context "target school_partnership" do
+      let(:target) { instance }
+
+      def generate_new_value(attribute_to_change:)
+        case attribute_to_change
+        when :lead_provider_delivery_partnership_id
+          FactoryBot.create(:lead_provider_delivery_partnership).id
+        end
+      end
+
+      it_behaves_like "a declarative touch model", when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
+    end
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:lead_provider_delivery_partnership).inverse_of(:school_partnerships) }
     it { is_expected.to belong_to(:school) }

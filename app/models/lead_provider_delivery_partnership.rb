@@ -9,7 +9,6 @@ class LeadProviderDeliveryPartnership < ApplicationRecord
   has_one :contract_period, through: :active_lead_provider
 
   touch -> { delivery_partner }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
-  touch -> { school_partnerships }, when_changing: %i[delivery_partner_id], timestamp_attribute: :api_updated_at
 
   delegate :lead_provider, :contract_period, to: :active_lead_provider
 
