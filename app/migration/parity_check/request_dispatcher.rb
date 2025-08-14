@@ -40,10 +40,12 @@ module ParityCheck
     end
 
     def dispatch_requests
-      next_requests_to_dispatch.map do |request|
+      jobs = next_requests_to_dispatch.map do |request|
         request.queue!
-        ParityCheckRequestJob.perform_later(request_id: request.id)
+        ParityCheckRequestJob.new(request_id: request.id)
       end
+
+      jobs.tap { ActiveJob.perform_all_later(it) }
     end
 
     def next_requests_to_dispatch
@@ -51,7 +53,7 @@ module ParityCheck
       # and return the amount we can dispatch based on the run mode.
       REQUEST_PRIORITY_MODE.lazy.map { |method, modes|
         limit = modes[run.mode.to_sym] || raise(RunModeError, "Run mode not recognized: #{run.mode}")
-        run.requests.pending.with_method(method:).limit(limit)
+        run.requests.includes(:endpoint, :lead_provider).pending.with_method(method:).limit(limit)
       }.find(&:present?) || ParityCheck::Request.none
     end
   end
