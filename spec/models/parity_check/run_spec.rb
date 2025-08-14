@@ -131,6 +131,12 @@ describe ParityCheck::Run do
       it { expect { run.in_progress! }.to change(run, :started_at).from(nil).to(be_within(1.second).of(Time.zone.now)) }
     end
 
+    context "when transitioning from in_progress to failed" do
+      let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
+
+      it { expect { run.halt! }.to change(run, :state).from("in_progress").to("failed") }
+    end
+
     context "when transitioning from in_progress to completed" do
       let(:run) { FactoryBot.create(:parity_check_run, :in_progress) }
 
