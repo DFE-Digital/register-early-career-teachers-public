@@ -17,7 +17,7 @@ module Builders
         training_period_data.each do |period|
           period_dates = period_date.new(started_on: period.start_date, finished_on: period.end_date)
           school = School.find_by!(urn: period.school_urn)
-          
+
           mentor_at_school_period = teacher
             .mentor_at_school_periods
             .where(school_id: school.id)
@@ -33,8 +33,6 @@ module Builders
 
           training_period.school_partnership = if period.training_programme == "provider_led"
                                                  find_school_partnership!(period, school)
-                                               else
-                                                 nil
                                                end
 
           training_period.save!

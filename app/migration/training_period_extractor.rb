@@ -71,6 +71,7 @@ private
 
     return false unless last_type == "school_led"
     return false if last_programme.school_cohort.school_id != next_programme.school_cohort.school_id
+
     last_type == next_type
   end
 end

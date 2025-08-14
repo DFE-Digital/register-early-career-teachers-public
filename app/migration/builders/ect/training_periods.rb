@@ -32,8 +32,6 @@ module Builders
 
           training_period.school_partnership = if period.training_programme == "provider_led"
                                                  find_school_partnership!(period, school)
-                                               else
-                                                 nil
                                                end
           training_period.save!
         rescue ActiveRecord::ActiveRecordError => e
