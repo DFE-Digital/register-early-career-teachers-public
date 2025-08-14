@@ -11,11 +11,11 @@ module Admin
         redirect_to admin_teacher_path(teacher), alert: 'Induction period created successfully'
       else
         @induction_period = service.induction_period
-        render :new, status: :unprocessable_entity
+        render :new, status: :unprocessable_content
       end
     rescue ActiveRecord::RecordInvalid, ActiveRecord::Rollback
       @induction_period = service.induction_period
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
 
     def edit
@@ -28,10 +28,10 @@ module Admin
       redirect_to admin_teacher_path(@induction_period.teacher), alert: 'Induction period updated successfully'
     rescue InductionPeriods::UpdateInductionPeriod::RecordedOutcomeError => e
       @induction_period.errors.add(:base, e.message)
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     rescue ActiveRecord::RecordInvalid
       @induction_period = service.induction_period
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
 
     def confirm_delete

@@ -5,8 +5,8 @@ class ErrorsController < ApplicationController
     render 'not_found', status: :not_found
   end
 
-  def unprocessable_entity
-    render 'unprocessable_entity', status: :unprocessable_entity
+  def unprocessable_content
+    render 'unprocessable_content', status: :unprocessable_content
   end
 
   def too_many_requests

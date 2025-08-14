@@ -94,9 +94,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "renders the new template with unprocessable_entity status" do
+      it "renders the new template with unprocessable_content status" do
         post admin_teacher_induction_periods_path(teacher), params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
       end
 
@@ -132,9 +132,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "renders the new template with unprocessable_entity status" do
+      it "renders the new template with unprocessable_content status" do
         post admin_teacher_induction_periods_path(teacher), params: overlapping_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
       end
 
@@ -169,9 +169,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "returns unprocessable_entity status" do
+      it "returns unprocessable_content status" do
         post(admin_teacher_induction_periods_path(teacher), params:)
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
       end
 
@@ -206,9 +206,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "returns unprocessable_entity status" do
+      it "returns unprocessable_content status" do
         post(admin_teacher_induction_periods_path(teacher), params:)
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
       end
 
@@ -243,9 +243,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "returns unprocessable_entity status" do
+      it "returns unprocessable_content status" do
         post(admin_teacher_induction_periods_path(teacher), params:)
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
       end
 
@@ -441,7 +441,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           it "returns error" do
             patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
             expect(response).not_to redirect_to(admin_teacher_path(induction_period.teacher))
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
             expect(response.body).to include("Start date cannot overlap another induction period")
           end
         end
