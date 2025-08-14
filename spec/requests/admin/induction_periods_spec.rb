@@ -94,7 +94,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "renders the new template with unprocessable_entity status" do
+      it "renders the new template with unprocessable_content status" do
         post admin_teacher_induction_periods_path(teacher), params: invalid_params
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
@@ -132,7 +132,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "renders the new template with unprocessable_entity status" do
+      it "renders the new template with unprocessable_content status" do
         post admin_teacher_induction_periods_path(teacher), params: overlapping_params
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
@@ -169,7 +169,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "returns unprocessable_entity status" do
+      it "returns unprocessable_content status" do
         post(admin_teacher_induction_periods_path(teacher), params:)
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
@@ -206,7 +206,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "returns unprocessable_entity status" do
+      it "returns unprocessable_content status" do
         post(admin_teacher_induction_periods_path(teacher), params:)
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
@@ -243,7 +243,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         }.not_to change(InductionPeriod, :count)
       end
 
-      it "returns unprocessable_entity status" do
+      it "returns unprocessable_content status" do
         post(admin_teacher_induction_periods_path(teacher), params:)
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("Add induction period for")
