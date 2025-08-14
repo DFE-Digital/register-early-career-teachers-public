@@ -14,8 +14,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
       finished_on: nil,
       school:,
       teacher:,
-      started_on: Date.new(2023, 9, 1),
-      training_programme: 'provider_led'
+      started_on: Date.new(2023, 9, 1)
     )
   end
 
@@ -40,32 +39,33 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
 
   let(:wizard_ect) { Schools::RegisterECTWizard::ECT.new(store) }
 
-  before do
-    FactoryBot.create(
-      :training_period,
-      ect_at_school_period:,
-      started_on: Date.new(2023, 9, 1),
-      finished_on: Date.new(2024, 7, 31),
-      school_partnership:
-    )
-
-    FactoryBot.create(
-      :induction_period,
-      teacher:,
-      appropriate_body:,
-      started_on: Date.new(2023, 9, 1),
-      finished_on: Date.new(2024, 7, 31)
-    )
-
-    FactoryBot.create(:gias_school, school:, name: "Really cool school")
-
-    assign(:school, school)
-    assign(:ect, wizard_ect)
-    assign(:wizard, wizard)
-    render
-  end
-
   context 'Provider-led' do
+    before do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        ect_at_school_period:,
+        started_on: Date.new(2023, 9, 1),
+        finished_on: Date.new(2024, 7, 31),
+        school_partnership:
+      )
+
+      FactoryBot.create(
+        :induction_period,
+        teacher:,
+        appropriate_body:,
+        started_on: Date.new(2023, 9, 1),
+        finished_on: Date.new(2024, 7, 31)
+      )
+
+      FactoryBot.create(:gias_school, school:, name: "Really cool school")
+
+      assign(:school, school)
+      assign(:ect, wizard_ect)
+      assign(:wizard, wizard)
+      render
+    end
+
     it 'renders the full name in the page title' do
       expect(view.content_for(:page_title)).to include('Konohamaru Sarutobi has been registered before')
     end
@@ -102,15 +102,30 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
   end
 
   context 'School-led' do
-    let(:ect_at_school_period) do
+    before do
       FactoryBot.create(
-        :ect_at_school_period,
+        :training_period,
+        :school_led,
+        ect_at_school_period:,
         started_on: Date.new(2023, 9, 1),
-        finished_on: nil,
-        school:,
-        teacher:,
-        training_programme: 'school_led'
+        finished_on: Date.new(2024, 7, 31),
+        school_partnership:
       )
+
+      FactoryBot.create(
+        :induction_period,
+        teacher:,
+        appropriate_body:,
+        started_on: Date.new(2023, 9, 1),
+        finished_on: Date.new(2024, 7, 31)
+      )
+
+      FactoryBot.create(:gias_school, school:, name: "Really cool school")
+
+      assign(:school, school)
+      assign(:ect, wizard_ect)
+      assign(:wizard, wizard)
+      render
     end
 
     it 'renders the full name in the page title' do
