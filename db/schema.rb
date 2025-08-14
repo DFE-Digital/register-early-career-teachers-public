@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_11_143143) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_14_204257) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -31,9 +31,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_143143) do
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "induction_programme_choice", ["not_yet_known", "provider_led", "school_led"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
-  create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed"]
+  create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed", "failed"]
   create_enum "parity_check_run_modes", ["concurrent", "sequential"]
-  create_enum "parity_check_run_states", ["pending", "in_progress", "completed"]
+  create_enum "parity_check_run_states", ["pending", "in_progress", "completed", "failed"]
   create_enum "request_method_types", ["get", "post", "put"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]

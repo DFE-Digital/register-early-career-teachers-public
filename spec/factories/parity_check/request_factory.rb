@@ -28,6 +28,11 @@ FactoryBot.define do
       state { :pending }
     end
 
+    trait :failed do
+      started_at { Time.current }
+      state { :failed }
+    end
+
     trait :queued do
       association(:run, factory: %i[parity_check_run in_progress])
       state { :queued }
