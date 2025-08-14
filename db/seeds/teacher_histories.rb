@@ -101,9 +101,9 @@ def describe_mentor_at_school_period(sp)
   print_seed_info("* was a mentor at #{sp.school.name} from #{sp.started_on} #{describe_period_duration(sp)} #{suffix}", indent: 4)
 end
 
-ambitious_institute = LeadProvider.find_by!(name: 'Ambitious Institute')
-teach_fast = LeadProvider.find_by!(name: 'Teach Fast')
-better_practice_network = LeadProvider.find_by!(name: 'Better Practice Network')
+ambition_institute = LeadProvider.find_by!(name: 'Ambition Institute')
+teach_first = LeadProvider.find_by!(name: 'Teach First')
+best_practice_network = LeadProvider.find_by!(name: 'Best Practice Network')
 
 abbey_grove_school = School.find_by!(urn: 1_759_427)
 ackley_bridge = School.find_by!(urn: 3_375_958)
@@ -131,29 +131,29 @@ cp_2023 = ContractPeriod.find_by(year: 2023)
 _cp_2024 = ContractPeriod.find_by(year: 2024)
 cp_2025 = ContractPeriod.find_by(year: 2025)
 
-ambitious_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: ambitious_institute)
-ambitious_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: ambitious_institute)
-teach_fast_grain_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: teach_fast)
-teach_fast_grain_2025 = ActiveLeadProvider.find_by!(contract_period: cp_2025, lead_provider: teach_fast)
+ambition_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: ambition_institute)
+ambition_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: ambition_institute)
+teach_first_grain_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: teach_first)
+teach_first_grain_2025 = ActiveLeadProvider.find_by!(contract_period: cp_2025, lead_provider: teach_first)
 
-ambitious_artisan_partnership_2022 = find_school_partnership(
-  lead_provider: ambitious_institute,
+ambition_artisan_partnership_2022 = find_school_partnership(
+  lead_provider: ambition_institute,
   delivery_partner: artisan_education_group,
   contract_period: ContractPeriod.find_by!(year: 2022)
 )
-ambitious_artisan_partnership_2023 = find_school_partnership(
-  lead_provider: ambitious_institute,
+ambition_artisan_partnership_2023 = find_school_partnership(
+  lead_provider: ambition_institute,
   delivery_partner: artisan_education_group,
   contract_period: ContractPeriod.find_by!(year: 2023)
 )
-teach_fast_grain_partnership_2022 = find_school_partnership(
+teach_first_grain_partnership_2022 = find_school_partnership(
   contract_period: ContractPeriod.find_by!(year: 2022),
-  lead_provider: teach_fast,
+  lead_provider: teach_first,
   delivery_partner: grain_teaching_school_hub
 )
-teach_fast_grain_partnership_2025 = find_school_partnership(
+teach_first_grain_partnership_2025 = find_school_partnership(
   contract_period: ContractPeriod.find_by!(year: 2025),
-  lead_provider: teach_fast,
+  lead_provider: teach_first,
   delivery_partner: grain_teaching_school_hub
 )
 
@@ -171,8 +171,8 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 3.years.ago,
   finished_on: 140.weeks.ago,
-  expression_of_interest: ambitious_artisan_2022,
-  school_partnership: ambitious_artisan_partnership_2022,
+  expression_of_interest: ambition_artisan_2022,
+  school_partnership: ambition_artisan_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -182,7 +182,7 @@ TrainingPeriod.create!(
   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
   started_on: 130.weeks.ago,
   finished_on: nil,
-  school_partnership: ambitious_artisan_partnership_2022,
+  school_partnership: ambition_artisan_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -202,8 +202,8 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: kate_winslet_ect_at_ackley_bridge,
   started_on: 1.year.ago,
-  expression_of_interest: ambitious_artisan_2023,
-  school_partnership: ambitious_artisan_partnership_2023,
+  expression_of_interest: ambition_artisan_2023,
+  school_partnership: ambition_artisan_partnership_2023,
   training_programme: 'school_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -238,8 +238,8 @@ hugh_laurie_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: hugh_laurie_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
-  expression_of_interest: teach_fast_grain_2022,
-  school_partnership: teach_fast_grain_partnership_2022,
+  expression_of_interest: teach_first_grain_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -256,14 +256,14 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   training_programme: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-ackley_bridge.update!(last_chosen_lead_provider: better_practice_network,
+ackley_bridge.update!(last_chosen_lead_provider: best_practice_network,
                       last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
                       last_chosen_training_programme: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: alan_rickman_ect_at_ackley_bridge,
   started_on: 2.years.ago + 1.month,
-  school_partnership: teach_fast_grain_partnership_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -352,7 +352,7 @@ abbey_grove_school.update!(last_chosen_lead_provider: nil,
 TrainingPeriod.create!(
   ect_at_school_period: colin_firth_ect_at_abbey_grove,
   started_on: 2.years.ago,
-  school_partnership: ambitious_artisan_partnership_2022,
+  school_partnership: ambition_artisan_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -442,7 +442,7 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: imogen_stubbs_at_malory_towers,
   started_on: 1.year.ago,
-  school_partnership: teach_fast_grain_partnership_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'school_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -473,14 +473,14 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   training_programme: 'provider_led'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-mallory_towers.update!(last_chosen_lead_provider: better_practice_network,
+mallory_towers.update!(last_chosen_lead_provider: best_practice_network,
                        last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
                        last_chosen_training_programme: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: gemma_jones_at_malory_towers,
   started_on: 20.months.ago,
-  school_partnership: teach_fast_grain_partnership_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -502,7 +502,7 @@ andre_roussimoff_mentoring_at_ackley_bridge = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: andre_roussimoff_mentoring_at_ackley_bridge,
   started_on: 1.year.ago,
-  school_partnership: teach_fast_grain_partnership_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -522,7 +522,7 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: anthony_hopkins_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -539,14 +539,14 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
-brookfield_school.update!(last_chosen_lead_provider: teach_fast,
+brookfield_school.update!(last_chosen_lead_provider: teach_first,
                           last_chosen_appropriate_body: south_yorkshire_studio_hub,
                           last_chosen_training_programme: 'provider_led')
 
 TrainingPeriod.create!(
   ect_at_school_period: stephen_fry_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -564,7 +564,7 @@ harriet_walter_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: harriet_walter_ect_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -581,7 +581,7 @@ helen_mirren_mentoring_at_brookfield_school = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: helen_mirren_mentoring_at_brookfield_school,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -598,7 +598,7 @@ john_withers_mentoring_at_abbey_grove = MentorAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
   started_on: 2.years.ago,
-  school_partnership: teach_fast_grain_partnership_2022,
+  school_partnership: teach_first_grain_partnership_2022,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -617,7 +617,7 @@ dominic_west_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: dominic_west_ect_at_brookfield_school,
   started_on: 18.months.ago,
-  expression_of_interest: ambitious_artisan_2023,
+  expression_of_interest: ambition_artisan_2023,
   training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -636,9 +636,9 @@ peter_davison_at_abbey_grove_school = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: peter_davison_at_abbey_grove_school,
   started_on: 2.weeks.from_now,
-  school_partnership: teach_fast_grain_partnership_2025,
+  school_partnership: teach_first_grain_partnership_2025,
   training_programme: 'provider_led',
-  expression_of_interest: teach_fast_grain_2025
+  expression_of_interest: teach_first_grain_2025
 ).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Adding mentorships:")
