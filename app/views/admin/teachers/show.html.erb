@@ -9,7 +9,7 @@
 %>
 
 <% if admin_latest_induction_complete_with_outcome?(@teacher) %>
-  <%= govuk_button_to "Reopen induction", admin_teacher_reopen_induction_path(@teacher), method: :put, warning: true %>
+  <%= govuk_button_link_to "Reopen induction", confirm_admin_teacher_reopen_induction_path(@teacher), warning: true %>
 <% end %>
 
 <%= render Teachers::DetailsComponent.new(mode: :admin, teacher: @teacher) do |component|
