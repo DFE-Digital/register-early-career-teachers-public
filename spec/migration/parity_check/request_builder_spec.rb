@@ -150,6 +150,18 @@ RSpec.describe ParityCheck::RequestBuilder do
 
         it { is_expected.to eq({ filter: { cohort: 2022 }, page: { page: 1, per_page: } }) }
       end
+
+      context "when any query filter has a dynamic value" do
+        let(:options) { { query: { filter: { cohort: ":cohort", delivery_partner_id: ":delivery_partner_id", key: "value" } } } }
+        let(:delivery_partner_id) { SecureRandom.uuid }
+
+        before do
+          allow(dynamic_request_content).to receive(:fetch).with("cohort").and_return(2025)
+          allow(dynamic_request_content).to receive(:fetch).with("delivery_partner_id").and_return(delivery_partner_id)
+        end
+
+        it { is_expected.to eq({ filter: { cohort: 2025, delivery_partner_id:, key: "value" } }) }
+      end
     end
 
     describe "#page" do
