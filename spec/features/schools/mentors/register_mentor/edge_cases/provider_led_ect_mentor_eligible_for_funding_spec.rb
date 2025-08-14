@@ -5,6 +5,7 @@ RSpec.describe 'Registering a mentor', :js do
 
   scenario 'mentor has existing mentorship, mentoring at new school only and is eligible for funding with provider-led ect' do
     given_there_is_a_school_in_the_service
+    and_the_school_is_in_a_partnership_with_a_lead_provider
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
     and_mentor_has_existing_mentorship_at_another_school
     and_i_sign_in_as_that_school_user
@@ -60,10 +61,18 @@ RSpec.describe 'Registering a mentor', :js do
     sign_in_as_school_user(school: @school)
   end
 
-  def and_there_is_an_ect_with_no_mentor_registered_at_the_school
+  def and_the_school_is_in_a_partnership_with_a_lead_provider
+    @contract_period = FactoryBot.create(:contract_period, :current)
     @lead_provider = FactoryBot.create(:lead_provider, name: "Xavier's School for Gifted Youngsters")
+    @active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: @contract_period, lead_provider: @lead_provider)
+    @lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: @active_lead_provider)
+    @school_partnership = FactoryBot.create(:school_partnership, school: @school, lead_provider_delivery_partnership: @lead_provider_delivery_partnership)
+  end
+
+  def and_there_is_an_ect_with_no_mentor_registered_at_the_school
     FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period: FactoryBot.create(:contract_period, year: Date.current.year))
-    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :provider_led, :ongoing, lead_provider: @lead_provider, school: @school)
+    @ect = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
+    @training_period = FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: @ect, school_partnership: @school_partnership)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
