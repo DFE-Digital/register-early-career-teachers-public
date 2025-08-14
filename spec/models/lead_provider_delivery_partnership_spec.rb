@@ -143,7 +143,13 @@ describe LeadProviderDeliveryPartnership do
     context "target school_partnerships" do
       let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: instance) }
       let(:target) { school_partnership }
-      let(:new_value) { FactoryBot.create(:delivery_partner).id }
+
+      def generate_new_value(attribute_to_change:)
+        case attribute_to_change
+        when :delivery_partner_id
+          FactoryBot.create(:delivery_partner).id
+        end
+      end
 
       it_behaves_like "a declarative touch model", when_changing: %i[delivery_partner_id], timestamp_attribute: :api_updated_at
     end
