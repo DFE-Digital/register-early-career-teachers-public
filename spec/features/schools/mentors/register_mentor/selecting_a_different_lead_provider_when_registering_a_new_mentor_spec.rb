@@ -22,9 +22,14 @@ RSpec.describe 'Selecting a different lead provider' do
     when_i_select_a_different_lead_provider
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_all_the_mentor_data_on_the_page
+    and_the_back_link_points_to_the_eligibility_lead_provider_page
 
     when_i_click_confirm_details
     then_i_should_be_taken_to_the_confirmation_page
+  end
+
+  def and_the_back_link_points_to_the_eligibility_lead_provider_page
+    expect(page.get_by_role('link', name: 'Back', exact: true).get_attribute('href')).to end_with('/school/register-mentor/eligibility-lead-provider')
   end
 
   def and_i_choose_that_the_details_are_correct
