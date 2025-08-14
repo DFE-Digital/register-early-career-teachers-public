@@ -106,13 +106,11 @@ describe SchoolPartnerships::Query do
       end
 
       describe "by `updated_since`" do
-        let(:updated_since) { 1.day.ago }
-
         it "filters by `updated_since`" do
           FactoryBot.create(:school_partnership, updated_at: 2.days.ago)
           school_partnership2 = FactoryBot.create(:school_partnership, updated_at: Time.zone.now)
 
-          query = described_class.new(updated_since:)
+          query = described_class.new(updated_since: 1.day.ago)
 
           expect(query.school_partnerships).to eq([school_partnership2])
         end
@@ -140,7 +138,6 @@ describe SchoolPartnerships::Query do
         let!(:school_partnership1) { FactoryBot.create(:school_partnership) }
         let!(:school_partnership2) { FactoryBot.create(:school_partnership) }
         let!(:school_partnership3) { FactoryBot.create(:school_partnership) }
-        let!(:delivery_partner_api_id) { school_partnership2.delivery_partner.api_id }
 
         context "when `delivery_partner_api_ids` param is omitted" do
           it "returns all school partnerships" do
@@ -149,7 +146,7 @@ describe SchoolPartnerships::Query do
         end
 
         it "filters by `delivery_partner_api_ids`" do
-          query = described_class.new(delivery_partner_api_ids: delivery_partner_api_id)
+          query = described_class.new(delivery_partner_api_ids: school_partnership2.delivery_partner.api_id)
 
           expect(query.school_partnerships).to eq([school_partnership2])
         end
