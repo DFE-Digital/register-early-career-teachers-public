@@ -185,14 +185,14 @@ RSpec.describe "Parity check", type: :request do
 
       context "when the request does not exist" do
         it "renders 404 not found" do
-          get migration_parity_check_request_path(run, 99)
+          get migration_parity_check_request_path(run, -1)
           expect(response).to have_http_status(:not_found)
         end
       end
 
       context "when the run does not exist" do
         it "renders 404 not found" do
-          get migration_parity_check_request_path(99, request)
+          get migration_parity_check_request_path(-1, request)
           expect(response).to have_http_status(:not_found)
         end
       end
@@ -243,7 +243,7 @@ RSpec.describe "Parity check", type: :request do
 
       context "when the response does not exist" do
         it "renders 404 not found" do
-          get migration_parity_check_response_path(run, 99)
+          get migration_parity_check_response_path(run, -1)
           expect(response).to have_http_status(:not_found)
         end
       end
@@ -252,14 +252,14 @@ RSpec.describe "Parity check", type: :request do
         let(:parity_check_response) { FactoryBot.create(:parity_check_response, :matching, request:) }
 
         it "renders 404 not found" do
-          get migration_parity_check_response_path(run, 99)
+          get migration_parity_check_response_path(run, -1)
           expect(response).to have_http_status(:not_found)
         end
       end
 
       context "when the run does not exist" do
         it "renders 404 not found" do
-          get migration_parity_check_response_path(99, request)
+          get migration_parity_check_response_path(-1, request)
           expect(response).to have_http_status(:not_found)
         end
       end
