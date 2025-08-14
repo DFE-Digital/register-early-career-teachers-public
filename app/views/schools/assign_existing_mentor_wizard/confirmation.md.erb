@@ -1,0 +1,19 @@
+---
+title: You've assigned <%= @wizard.context.mentor_teacher_full_name %> as a mentor
+header: false
+---
+
+<%= govuk_panel(title_text: "You’ve assigned #{@wizard.context.mentor_teacher_full_name} as a mentor") do %>
+for
+<br>
+<strong><%= @wizard.context.ect_teacher_full_name %></strong>
+<% end %>
+
+You have successfully registered <%= @wizard.context.ect_teacher_full_name %> for training.
+
+They do not need to provide us with any further details.
+
+We'll pass on their details to <%= @wizard.context.user_selected_lead_provider&.name || @wizard.context.ect_lead_provider&.name %> 
+who will contact them to arrange mentor training.
+
+<%= govuk_link_to 'Back to your ECTs', schools_ects_home_path %>
