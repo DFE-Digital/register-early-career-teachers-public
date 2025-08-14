@@ -22,8 +22,9 @@ module Builders
 
           period_dates = period_date.new(started_on: period.start_date, finished_on: period.end_date)
           ect_at_school_period = teacher.ect_at_school_periods.containing_period(period_dates).first
+          school = ect_at_school_period&.school
 
-          school_partnership = ::SchoolPartnership.find_by!(lead_provider_delivery_partnership:, school: ect_at_school_period.school)
+          school_partnership = ::SchoolPartnership.find_by!(lead_provider_delivery_partnership:, school:)
 
           training_period = ::TrainingPeriod.find_or_initialize_by(ecf_start_induction_record_id: period.start_source_id)
           training_period.ect_at_school_period = ect_at_school_period
