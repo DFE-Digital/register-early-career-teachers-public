@@ -46,7 +46,7 @@ RSpec.describe Sessions::Manager do
     context "when the user signs via DfE Sign In but has no 'registerECTsAccess' permissions for their organisation" do
       before { allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_code: 'somethingElse')) }
 
-      it 'raises an MissingAccessLevel error' do
+      it 'raises an MissingAccessLevel error', skip: 'disabled to allow DSI to alter role names' do
         expect { service.begin_session!(user) }.to raise_error(described_class::MissingAccessLevel)
       end
     end
