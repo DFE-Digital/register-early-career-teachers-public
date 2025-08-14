@@ -36,6 +36,20 @@ RSpec.describe 'schools/mentors/show.html.erb' do
     FactoryBot.create(:mentorship_period, mentor: mentor_period, mentee: ect_period, started_on: start_date, finished_on: nil)
   end
 
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
+
+  let!(:training_period) do
+    FactoryBot.create(
+      :training_period,
+      ect_at_school_period: ect_period,
+      started_on: ect_period.started_on,
+      finished_on: nil,
+      school_partnership:
+    )
+  end
+
   before do
     assign(:mentor, mentor_period)
     assign(:teacher, mentor_teacher)
@@ -100,7 +114,11 @@ RSpec.describe 'schools/mentors/show.html.erb' do
 
   context 'when all ECTs are school-led' do
     let(:ect_period) do
-      FactoryBot.create(:ect_at_school_period, :school_led, teacher: ect_teacher, school:, started_on: start_date, finished_on: nil)
+      FactoryBot.create(:ect_at_school_period, teacher: ect_teacher, school:, started_on: start_date, finished_on: nil)
+    end
+
+    let!(:training_period) do
+      FactoryBot.create(:training_period, :school_led, ect_at_school_period: ect_period, started_on: ect_period.started_on)
     end
 
     before do
