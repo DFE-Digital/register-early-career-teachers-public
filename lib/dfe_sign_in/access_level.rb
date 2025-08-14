@@ -28,7 +28,7 @@ module DfESignIn
     end
 
     def has_register_ect_access_role?
-      roles.any? { |r| r.code == 'registerECTsAccess' }
+      roles.any? { |r| %w[registerECTsAccess AppropriateBodyUser].include?(r.code) }
     end
   end
 end

@@ -9,7 +9,7 @@ module Organisation
 
     def can_access?
       Rails.logger.info(access_level)
-      access_level.roles.any?
+      access_level.has_register_ect_access_role?
     end
 
   private
