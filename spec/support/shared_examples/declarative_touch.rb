@@ -1,26 +1,25 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at, target_optional: true|
+  def generate_new_value(attribute_to_change:)
+    column = instance.class.columns_hash[attribute_to_change.to_s]
+    if column.type == :enum
+      instance.class.defined_enums[attribute_to_change.to_s].keys.excluding(instance[attribute_to_change]).sample
+    elsif column.type == :boolean
+      !instance[attribute_to_change]
+    elsif attribute_to_change.match?("email")
+      Faker::Internet.email
+    else
+      Faker::Types.send("rb_#{column.type}")
+    end
+  end
+
   if :update.in?(on_event)
     before { instance } # Ensure its created first.
 
     when_changing.each do |attribute_to_change|
       context "when the #{attribute_to_change} attribute changes" do
-        let(:new_value) do
-          column = instance.class.columns_hash[attribute_to_change.to_s]
-          if column.type == :enum
-            instance.class.defined_enums[attribute_to_change.to_s].keys.excluding(instance[attribute_to_change]).sample
-<<<<<<< HEAD
-          elsif column.type == :boolean
-            !instance[attribute_to_change]
-=======
-          elsif attribute_to_change.match?("email")
-            Faker::Internet.email
->>>>>>> fec8f284 ([2181] touch added to School, DeliveryPartner and LeadProviderDeliveryPartnership, to update SchoolPartnership)
-          else
-            Faker::Types.send("rb_#{column.type}")
-          end
-        end
+        let(:new_value) { generate_new_value(attribute_to_change:) }
 
         before do
           will_change_attribute(attribute_to_change:, new_value:) if defined?(will_change_attribute)
