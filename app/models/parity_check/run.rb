@@ -17,6 +17,7 @@ module ParityCheck
     scope :in_progress, -> { with_states(:in_progress) }
     scope :pending, -> { with_state(:pending) }
     scope :completed, -> { with_state(:completed).order(started_at: :desc) }
+    scope :failed, -> { with_state(:failed).order(started_at: :desc) }
 
     state_machine :state, initial: :pending do
       state :in_progress do
@@ -86,6 +87,7 @@ module ParityCheck
         in_progress_run: ParityCheck::Run.in_progress.first,
         completed_runs: ParityCheck::Run.completed,
         pending_runs: ParityCheck::Run.pending,
+        failed_runs: ParityCheck::Run.failed,
       }
 
       html = ::Migration::ParityChecksController.renderer.render(

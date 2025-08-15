@@ -1,0 +1,9 @@
+<h2 class="govuk-heading-m">Failed runs</h2>
+
+<p>
+  ⚠️ <strong><%= pluralize(number_with_delimiter(failed_runs.count), "run") %> failed</strong>
+  <br>
+  <%= link_to("View failed jobs for more details", admin_mission_control_jobs.application_jobs_path(application_id: :registerearlycareerteachers, status: :failed)) %>
+</p>
+
+<hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
