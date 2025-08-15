@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_15_122130) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_15_142537) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -188,7 +188,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_15_122130) do
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
     t.bigint "school_reported_appropriate_body_id"
-    t.enum "training_programme", enum_type: "training_programme"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
