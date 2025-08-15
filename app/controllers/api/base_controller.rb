@@ -6,5 +6,6 @@ module API
     include DateFilterable
     include ContractPeriodFilterable
     include FilterValidatable
+    include DfEAnalyticsRequests
   end
 end
