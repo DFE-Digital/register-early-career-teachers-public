@@ -3,6 +3,7 @@ class Migration::ParityChecksController < ::AdminController
 
   before_action :load_endpoints, :load_pending_and_in_progress_runs, :load_lead_providers, only: %i[new create]
   before_action :load_completed_runs, only: %i[new create completed]
+  before_action :load_failed_runs, only: %i[new create]
 
   def new
     @runner = ParityCheck::Runner.new
@@ -51,6 +52,10 @@ private
   def load_completed_runs
     completed_runs = ParityCheck::Run.includes(requests: %i[endpoint responses]).completed
     @pagy, @completed_runs = pagy(completed_runs)
+  end
+
+  def load_failed_runs
+    @pagy, @failed_runs = pagy(ParityCheck::Run.failed)
   end
 
   def runner_params

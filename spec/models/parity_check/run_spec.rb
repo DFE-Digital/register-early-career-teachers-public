@@ -48,12 +48,14 @@ describe ParityCheck::Run do
       in_progress_run = FactoryBot.create(:parity_check_run, :in_progress)
       FactoryBot.create_list(:parity_check_run, 3, :completed)
       FactoryBot.create_list(:parity_check_run, 2, :pending)
+      FactoryBot.create_list(:parity_check_run, 1, :failed)
 
       partial = "migration/parity_checks/runs_sidebar"
       locals = {
         in_progress_run:,
         completed_runs: described_class.completed,
         pending_runs: described_class.pending,
+        failed_runs: described_class.failed,
       }
       html = "<div>sidebar content</div>"
       allow(::Migration::ParityChecksController.renderer).to receive(:render).with(partial:, locals:) { html }
@@ -94,6 +96,7 @@ describe ParityCheck::Run do
     let!(:pending_run) { FactoryBot.create(:parity_check_run, :pending) }
     let!(:in_progress_run) { FactoryBot.create(:parity_check_run, :in_progress) }
     let!(:completed_run) { FactoryBot.create(:parity_check_run, :completed) }
+    let!(:failed_run) { FactoryBot.create(:parity_check_run, :failed) }
 
     describe ".pending" do
       subject { described_class.pending }
@@ -111,6 +114,19 @@ describe ParityCheck::Run do
         let!(:completed_run_latest) { FactoryBot.create(:parity_check_run, :completed, started_at: completed_run.started_at + 1.day, completed_at: completed_run.started_at + 2.days) }
 
         it { is_expected.to eq([completed_run_latest, completed_run, completed_run_oldest]) }
+      end
+    end
+
+    describe ".failed" do
+      subject { described_class.failed }
+
+      it { is_expected.to contain_exactly(failed_run) }
+
+      context "when there are multiple failed runs" do
+        let!(:failed_run_oldest) { FactoryBot.create(:parity_check_run, :failed, started_at: failed_run.started_at - 1.day) }
+        let!(:failed_run_latest) { FactoryBot.create(:parity_check_run, :failed, started_at: failed_run.started_at + 1.day, completed_at: failed_run.started_at + 2.days) }
+
+        it { is_expected.to eq([failed_run_latest, failed_run, failed_run_oldest]) }
       end
     end
 
