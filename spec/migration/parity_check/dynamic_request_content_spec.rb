@@ -69,5 +69,19 @@ RSpec.describe ParityCheck::DynamicRequestContent do
         })
       end
     end
+
+    context "when fetching `partnership_id`" do
+      let(:identifier) { :partnership_id }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let!(:partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+
+      before do
+        # Partnership for different lead provider should not be used.
+        FactoryBot.create(:school_partnership)
+      end
+
+      it { is_expected.to eq(partnership.api_id) }
+    end
   end
 end

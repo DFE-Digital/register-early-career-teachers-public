@@ -17,8 +17,8 @@ get:
           cohort: "2022,2023"
           updated_since: "2024-11-13T11:21:55Z"
   - "/api/v3/statements/:id":
-      id: statement_id
-    
+      id: ":statement_id"
+
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -55,7 +55,7 @@ get:
           updated_since: "2025-04-13T11:21:55Z"
   - "/api/v3/schools/:id":
       ecf_path: "/api/v3/schools/ecf/:id"
-      id: school_id
+      id: ":school_id"
 
   - "/api/v3/delivery-partners":
       paginate: true
@@ -75,7 +75,54 @@ get:
           cohort: 2023
         sort: "+created_at"
   - "/api/v3/delivery-partners/:id":
-      id: delivery_partner_id
+      id: ":delivery_partner_id"
+
+  - "/api/v3/partnerships":
+      ecf_path: "/api/v3/partnerships/ecf"
+      paginate: true
+  - "/api/v3/partnerships":
+      ecf_path: "/api/v3/partnerships/ecf"
+      paginate: true
+      query:
+        filter:
+          cohort: 2023
+  - "/api/v3/partnerships":
+      ecf_path: "/api/v3/partnerships/ecf"
+      paginate: true
+      query:
+        sort: "-updated_at"
+  - "/api/v3/partnerships":
+      ecf_path: "/api/v3/partnerships/ecf"
+      paginate: true
+      query:
+        filter:
+          cohort: 2023
+        sort: "+created_at"
+  - "/api/v3/partnerships":
+      ecf_path: "/api/v3/partnerships/ecf"
+      paginate: true
+      query:
+        filter:
+          cohort: "2021,2022"
+          updated_since: "2025-04-13T11:21:55Z"
+  - "/api/v3/partnerships":
+      ecf_path: "/api/v3/partnerships/ecf"
+      paginate: true
+      query:
+        filter:
+          updated_since: "2025-04-13T11:21:55Z"
+          delivery_partner_id: ":delivery_partner_id"
+  - "/api/v3/partnerships":
+      ecf_path: "/api/v3/partnerships/ecf"
+      paginate: true
+      query:
+        filter:
+          cohort: "2023,2024"
+          updated_since: "2025-04-13T11:21:55Z"
+          delivery_partner_id: ":delivery_partner_id"
+  - "/api/v3/partnerships/:id":
+      ecf_path: "/api/v3/partnerships/ecf/:id"
+      id: ":partnership_id"
 
 post:
   - "/api/v3/partnerships/ecf":
@@ -83,6 +130,5 @@ post:
 
 put:
   - "/api/v3/participant-declarations/:id":
-      id: example_id
+      id: ":example_id"
       body: example_body
-
