@@ -2,10 +2,13 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
   let(:already_active_at_school) { false }
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'FraggleRock') }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
 
   let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :with_training_period, :ongoing, teacher:, lead_provider:) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: school_partnership.school) }
 
   let(:store) do
     FactoryBot.build(:session_repository,
@@ -25,55 +28,101 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   let(:mentor) { wizard.mentor }
 
-  before do
+  describe 'page title' do
+    let(:title) { sanitize(view.content_for(:page_title)) }
+
+    it do
+      assign(:wizard, wizard)
+      assign(:mentor, mentor)
+      assign(:ect_name, "Michale Dixon")
+
+      render
+
+      expect(title).to eql("You've assigned #{mentor.full_name} as a mentor")
+    end
+  end
+
+  it 'includes no back link' do
     assign(:wizard, wizard)
     assign(:mentor, mentor)
     assign(:ect_name, "Michale Dixon")
 
     render
-  end
 
-  describe 'page title' do
-    let(:title) { sanitize(view.content_for(:page_title)) }
-
-    it { expect(title).to eql("You've assigned #{mentor.full_name} as a mentor") }
-  end
-
-  it 'includes no back link' do
     expect(view.content_for(:backlink_or_breadcrumb)).to be_blank
   end
 
   it 'links to the school home page' do
+    assign(:wizard, wizard)
+    assign(:mentor, mentor)
+    assign(:ect_name, "Michale Dixon")
+
+    render
+
     expect(rendered).to have_link('Back to ECTs', href: schools_ects_home_path)
   end
 
   describe 'mentor funding' do
     context 'when eligible' do
       context 'when the ect is provider_led' do
-        it { expect(rendered).to have_content("We’ll pass on their details to FraggleRock") }
+        let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
+
+        it do
+          assign(:wizard, wizard)
+          assign(:mentor, mentor)
+          assign(:ect_name, "Michale Dixon")
+
+          render
+
+          expect(rendered).to have_content("We’ll pass on their details to FraggleRock")
+        end
       end
 
       context 'when the ect is not provider_led' do
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led, teacher:) }
+        before { allow(ect).to receive(:provider_led_training_programme?).and_return(false) }
 
-        it { expect(rendered).not_to have_content("We’ll pass on their details to FraggleRock") }
+        it do
+          assign(:wizard, wizard)
+          assign(:mentor, mentor)
+          assign(:ect_name, "Michale Dixon")
+
+          render
+
+          expect(rendered).not_to have_content("We’ll pass on their details to FraggleRock")
+        end
       end
     end
 
     context 'when ineligible' do
-      before do
-        FactoryBot.create(:teacher, :ineligible_for_mentor_funding, trn: '0000007')
-        render
-      end
-
       context 'when the ect is provider_led' do
-        it { expect(rendered).to have_content('They cannot do mentor training according to our records.') }
+        before do
+          allow(wizard.ect).to receive(:provider_led_training_programme?).and_return(true)
+          allow(mentor).to receive(:funding_available?).and_return(false)
+        end
+
+        it do
+          assign(:wizard, wizard)
+          assign(:mentor, mentor)
+          assign(:ect_name, "Michale Dixon")
+
+          render
+
+          expect(rendered).to have_content('They cannot do mentor training according to our records.')
+        end
       end
 
       context 'when the ect is not provider_led' do
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led, teacher:) }
+        before { allow(ect).to receive(:provider_led_training_programme?).and_return(false) }
 
-        it { expect(rendered).not_to have_content('They cannot do mentor training according to our records.') }
+        it do
+          assign(:wizard, wizard)
+          assign(:mentor, mentor)
+          assign(:ect_name, "Michale Dixon")
+
+          render
+
+          expect(rendered).not_to have_content('They cannot do mentor training according to our records.')
+        end
       end
     end
   end
@@ -82,6 +131,12 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
     let(:already_active_at_school) { true }
 
     it 'does not mention an email sent to the mentor' do
+      assign(:wizard, wizard)
+      assign(:mentor, mentor)
+      assign(:ect_name, "Michale Dixon")
+
+      render
+
       expect(rendered).not_to have_content('What happens next')
       expect(rendered).not_to have_content("We'll email #{mentor.full_name} to confirm you have registered them.")
     end
@@ -91,6 +146,12 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
     let(:already_active_at_school) { false }
 
     it 'mentions an email sent to the mentor' do
+      assign(:wizard, wizard)
+      assign(:mentor, mentor)
+      assign(:ect_name, "Michale Dixon")
+
+      render
+
       expect(rendered).to have_content('What happens next')
       expect(rendered).to have_content("We’ll email #{mentor.full_name} to confirm you have registered them.")
     end
