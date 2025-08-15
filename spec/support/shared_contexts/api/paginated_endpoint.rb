@@ -31,4 +31,12 @@ shared_examples "a paginated endpoint" do
     expect(response.content_type).to eql("application/json; charset=utf-8")
     expect(response.body).to eq({ errors: [{ title: "Bad request", detail: "The '#/page[page]' and '#/page[per_page]' parameter values must be a valid positive number" }] }.to_json)
   end
+
+  it "returns error when requesting per_page is invalid" do
+    authenticated_api_get(path, params: { page: { per_page: "abc", page: 1 } })
+
+    expect(response).to have_http_status(:bad_request)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq({ errors: [{ title: "Bad request", detail: "The '#/page[page]' and '#/page[per_page]' parameter values must be a valid positive number" }] }.to_json)
+  end
 end
