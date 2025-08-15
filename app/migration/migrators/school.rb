@@ -35,7 +35,7 @@ module Migrators
 
     def migrate!
       migrate(self.class.schools) do |ecf_school|
-        gias_school = find_gias_school(urn: ecf_school.urn.to_i) || migrate_school!(ecf_school)
+        gias_school = find_gias_school_by_urn(ecf_school.urn.to_i) || migrate_school!(ecf_school)
         if check_gias_school(gias_school:, ecf_school:)
           [
             compare_fields(gias_school:, ecf_school:),
@@ -72,9 +72,11 @@ module Migrators
       false
     end
 
-    def find_gias_school(urn:) = gias_schools.find { |school| school.urn == urn }
+    def find_gias_school_by_urn(urn) = gias_schools_by_urn[urn.to_i]
 
-    def gias_schools = @gias_schools ||= ::GIAS::School.where(urn: self.class.schools.pluck(:urn).sort)
+    def gias_schools_by_urn
+      @gias_schools_by_urn ||= ::GIAS::School.where(urn: self.class.schools.pluck(:urn)).index_by(&:urn)
+    end
 
     def migrate_school!(ecf_school)
       Builders::GIAS::School.new(ecf_school).build if migrateable_school?(ecf_school)
