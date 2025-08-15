@@ -21,7 +21,7 @@
   <div class="govuk-grid-column-one-third">
     <%= turbo_stream_from :run_states %>
 
-    <%= render partial: "runs_sidebar", locals: { in_progress_run: @in_progress_run, completed_runs: @completed_runs, pending_runs: @pending_runs } %>
+    <%= render partial: "runs_sidebar", locals: { in_progress_run: @in_progress_run, completed_runs: @completed_runs, pending_runs: @pending_runs, failed_runs: @failed_runs } %>
   </div>
 </div>
 
