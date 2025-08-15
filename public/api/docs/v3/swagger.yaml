@@ -77,6 +77,76 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
+  "/api/v3/partnerships":
+    get:
+      summary: Retrieve multiple partnerships
+      tags:
+      - Partnerships
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PartnershipsFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      - name: sort
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SortingTimestamps"
+      responses:
+        '200':
+          description: A list of partnerships
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PartnershipsResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+  "/api/v3/partnerships/{id}":
+    get:
+      summary: Retrieve a single partnership
+      tags:
+      - Partnerships
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: A single partnership
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PartnershipResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
   "/api/v3/schools":
     get:
       summary: Retrieve multiple schools scoped to cohort
@@ -547,3 +617,106 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/DeliveryPartner"
+    Partnership:
+      description: A partnership.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: partnership
+          enum:
+          - partnership
+        attributes:
+          properties:
+            cohort:
+              description: The cohort for which you are reporting the partnership
+              type: string
+              example: 2021
+            urn:
+              description: The Unique Reference Number (URN) of the school you are
+                partnered with
+              type: string
+              example: '123456'
+            school_id:
+              description: The unique ID of the school you are partnered with
+              type: string
+              format: uuid
+              example: dd4a11347-7308-4879-942a-c4a70ced400v
+            delivery_partner_id:
+              description: The unique ID of the delivery partner you are working with
+                for this partnership
+              type: string
+              format: uuid
+              example: cd3a12347-7308-4879-942a-c4a70ced400a
+            delivery_partner_name:
+              description: The name of the delivery partner you are working with for
+                this partnership
+              type: string
+              example: Delivery Partner Example
+            induction_tutor_name:
+              description: The name of the induction tutor at the school you are in
+                partnership with
+              type: string
+              nullable: true
+              example: John Doe
+            induction_tutor_email:
+              description: The email address of the induction tutor at the school
+                you are in partnership with
+              type: string
+              nullable: true
+              example: john.doe@example.com
+            updated_at:
+              description: The date the partnership was last updated
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            created_at:
+              description: The date the partnership was reported by you
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    PartnershipsFilter:
+      description: Filter partnerships to return more specific results
+      type: object
+      properties:
+        cohort:
+          description: Return partnerships within the specified cohorts. This is a
+            comma delimited string of years.
+          type: string
+          example: '2021,2022'
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+        delivery_partner_id:
+          description: Return partnerships associated to the specified delivery partner
+            or delivery partners. This is a comma delimited string of delivery partner
+            IDs.
+          type: string
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5,92f6e54b-57fe-4a62-89cc-e83d6b0f734b
+    PartnershipResponse:
+      description: A single partnership.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/Partnership"
+    PartnershipsResponse:
+      description: A list of partnerships.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Partnership"
