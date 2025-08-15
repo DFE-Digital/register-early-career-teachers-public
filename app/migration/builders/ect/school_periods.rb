@@ -13,7 +13,6 @@ module Builders
         school_periods.each do |period|
           school = School.find_by!(urn: period.urn)
           school_period = ::ECTAtSchoolPeriod.find_or_initialize_by(teacher:, school:, started_on: period.start_date)
-          school_period.training_programme = period.training_programme
           school_period.finished_on = period.end_date
           school_period.ecf_start_induction_record_id = period.start_source_id
           school_period.ecf_end_induction_record_id = period.end_source_id
