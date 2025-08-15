@@ -36,7 +36,7 @@
         end
       end
 
-      grouped_requests(@run.requests.with_lead_provider(lead_provider)).each do |group_name, requests|
+      grouped_requests(@run.requests.select { it.lead_provider == lead_provider}).each do |group_name, requests|
         table.with_body do |body|
           requests.each do |request|  
             body.with_row do |row|
