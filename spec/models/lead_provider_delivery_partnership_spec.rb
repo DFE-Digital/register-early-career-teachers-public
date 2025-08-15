@@ -131,9 +131,13 @@ describe LeadProviderDeliveryPartnership do
   end
 
   describe "declarative touch" do
-    let(:instance) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: target) }
-    let(:target) { FactoryBot.create(:delivery_partner) }
+    let(:instance) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:) }
+    let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
 
-    it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+    context "target delivery_partner" do
+      let(:target) { delivery_partner }
+
+      it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+    end
   end
 end
