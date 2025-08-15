@@ -9,7 +9,6 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       school_reported_appropriate_body: requested_appropriate_body,
                       school: current_school,
                       working_pattern: 'full_time',
-                      training_programme:,
                       email: 'love@whale.com')
   end
   let(:training_period) { FactoryBot.create(:training_period, :provider_led, school_partnership:, started_on: '2025-01-11', finished_on: nil, training_programme:) }
