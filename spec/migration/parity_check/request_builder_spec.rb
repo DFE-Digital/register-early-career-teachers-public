@@ -54,10 +54,10 @@ RSpec.describe ParityCheck::RequestBuilder do
 
       context "when the path contains an ID and the options specify an identifier" do
         let(:path) { "/test-path/:id" }
-        let(:options) { { id: "example_id" } }
+        let(:options) { { id: ":example_id" } }
         let(:id) { SecureRandom.uuid }
 
-        before { allow(dynamic_request_content).to receive(:fetch).with(options[:id]).and_return(id) }
+        before { allow(dynamic_request_content).to receive(:fetch).with("example_id").and_return(id) }
 
         it { is_expected.to eq("#{ecf_url}/test-path/#{id}") }
       end
