@@ -11,6 +11,10 @@ on:
           - staging
           - production
         required: true
+      exclude-jobs:
+        description: Exclude jobs tables
+        type: boolean
+        default: false
 
 env:
   SERVICE_NAME: cpd-ec2
@@ -65,3 +69,4 @@ jobs:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           app-name: ${{ env.SERVICE_NAME }}-${{ inputs.environment || 'production' }}-web
           slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+          exclude-jobs: ${{ inputs.exclude-jobs }}
