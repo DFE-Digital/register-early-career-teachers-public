@@ -5,6 +5,10 @@ inputs:
   environment:
     description: The name of the environment
     required: true
+  exclude-jobs:
+    description: Exclude jobs tables
+    type: boolean
+    default: true
   azure-client-id:
     description: Azure Client ID
     required: true
@@ -56,7 +60,22 @@ runs:
     - name: Backup production DB
       shell: bash
       run: |
-        bin/konduit.sh -n ${{ env.NAMESPACE }} cpd-ec2-${{ inputs.environment }}-web -- pg_dump -E utf8 --compress=1 --clean --if-exists --no-privileges --no-owner --verbose -f backup-${{ inputs.environment }}.sql.gz
+        # Build up exclude arguments based on flags
+        EXCLUDE_ARGS=""
+
+        if [ "${{ inputs.exclude-jobs }}" = "true" ]; then
+          EXCLUDE_ARGS="$EXCLUDE_ARGS \
+            --exclude-table-data=solid_queue_jobs \
+            --exclude-table-data=solid_queue_ready_executions \
+            --exclude-table-data=solid_queue_claimed_executions \
+            --exclude-table-data=solid_queue_blocked_executions \
+            --exclude-table-data=solid_queue_failed_executions \
+            --exclude-table-data=solid_queue_processes"
+        fi
+
+        echo "Excluding tables (if any): $EXCLUDE_ARGS"
+
+        bin/konduit.sh -n ${{ env.NAMESPACE }} cpd-ec2-${{ inputs.environment }}-web -- pg_dump -E utf8 --compress=1 --clean --if-exists $EXCLUDE_ARGS --no-privileges --no-owner --verbose -f backup-${{ inputs.environment }}.sql.gz
 
     - name: Restore to migration DB
       shell: bash

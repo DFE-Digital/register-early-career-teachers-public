@@ -9,6 +9,10 @@ on:
         options:
           - production
         required: true
+      exclude-jobs:
+        description: Exclude jobs tables
+        type: boolean
+        default: true
 
 jobs:
   refresh-migration-db:
@@ -28,6 +32,7 @@ jobs:
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          exclude-jobs: ${{ inputs.exclude-jobs }}
 
       - name: Login
         uses: azure/login@v2
