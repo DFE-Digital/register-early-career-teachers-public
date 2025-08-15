@@ -61,7 +61,7 @@ RSpec.describe ParityCheck::TokenProvider do
     context "when the keys are not present" do
       let(:tokens) { nil }
 
-      it { expect { token }.to raise_error(KeyError, /key not found: "#{lead_provider.ecf_id}"/) }
+      it { expect { token }.to raise_error(described_class::TokenNotFoundError, /Token not found for lead provider: #{lead_provider.ecf_id}/) }
     end
 
     context "when the keys are present" do

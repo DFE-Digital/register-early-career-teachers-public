@@ -13,7 +13,8 @@ module ParityCheck
 
     scope :pending, -> { with_state(:pending) }
     scope :completed, -> { with_state(:completed) }
-    scope :incomplete, -> { without_state(:completed) }
+    scope :incomplete, -> { without_state(:completed, :failed) }
+    scope :failed, -> { with_state(:failed) }
     scope :queued_or_in_progress, -> { with_states(:queued, :in_progress) }
     scope :with_method, ->(method:) { joins(:endpoint).where(endpoint: { method: }) }
     scope :with_all_responses_matching, -> { joins(:responses).where.not(id: ParityCheck::Response.different.pluck(:request_id)).distinct }
@@ -33,6 +34,8 @@ module ParityCheck
         validates :responses, presence: true
       end
 
+      state :failed
+
       event :queue do
         transition [:pending] => :queued
       end
@@ -43,6 +46,10 @@ module ParityCheck
 
       event :complete do
         transition [:in_progress] => :completed
+      end
+
+      event :halt do
+        transition [:in_progress] => :failed
       end
 
       before_transition any => :in_progress do |instance|
