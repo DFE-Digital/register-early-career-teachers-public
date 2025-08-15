@@ -10,8 +10,6 @@ class LeadProviderDeliveryPartnership < ApplicationRecord
 
   touch -> { delivery_partner }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
 
-  delegate :lead_provider, :contract_period, to: :active_lead_provider
-
   validates :active_lead_provider_id, presence: { message: 'Select an active lead provider' }
   validates :delivery_partner_id,
             presence: { message: 'Select a delivery partner' },
