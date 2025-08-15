@@ -1,13 +1,23 @@
 describe School do
   describe "declarative touch" do
     let(:instance) { FactoryBot.create(:school) }
-    let(:target) { instance }
 
     def will_change_attribute(attribute_to_change:, new_value:)
       FactoryBot.create(:gias_school, urn: new_value) if attribute_to_change == :urn
     end
 
-    it_behaves_like "a declarative touch model", when_changing: %i[urn], timestamp_attribute: :api_updated_at
+    context "target school" do
+      let(:target) { instance }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[urn], timestamp_attribute: :api_updated_at
+    end
+
+    context "target school_partnerships" do
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, school: instance) }
+      let(:target) { school_partnership }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
+    end
   end
 
   describe "enums" do

@@ -218,6 +218,7 @@
   - lead_provider_delivery_partnership_id
   - school_id
   - api_id
+  - api_updated_at
   :teachers:
   - ecf_user_id
   - ecf_ect_profile_id
