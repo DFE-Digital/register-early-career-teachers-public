@@ -3,6 +3,16 @@ module ParityCheck
     include ActiveModel::Model
     include ActiveModel::Attributes
 
+    class Error < RuntimeError; end
+    class RequestError < Error; end
+
+    REQUEST_ERRORS = [
+      DynamicRequestContent::Error,
+      RequestBuilder::Error,
+      TokenProvider::Error,
+      NoMethodError
+    ].freeze
+
     attribute :request
 
     def perform_requests
@@ -14,23 +24,29 @@ module ParityCheck
           rect_response = perform_request(app: :rect)
         end
 
-        response = Response.new(
-          ecf_body: ecf_response.body,
-          ecf_status_code: ecf_response.status,
-          ecf_time_ms: ecf_response.env[:request_duration_ms],
-          rect_body: rect_response.body,
-          rect_status_code: rect_response.status,
-          rect_time_ms: rect_response.env[:request_duration_ms],
-          page: request_builder.page
-        )
+        response = create_response(ecf_response, rect_response)
 
         yield(response)
 
         break unless request_builder.advance_page(response)
       end
+    rescue *REQUEST_ERRORS => e
+      raise RequestError, e.message
     end
 
   private
+
+    def create_response(ecf_response, rect_response)
+      Response.new(
+        ecf_body: ecf_response.body,
+        ecf_status_code: ecf_response.status,
+        ecf_time_ms: ecf_response.env[:request_duration_ms],
+        rect_body: rect_response.body,
+        rect_status_code: rect_response.status,
+        rect_time_ms: rect_response.env[:request_duration_ms],
+        page: request_builder.page
+      )
+    end
 
     def perform_request(app:)
       connection.send(request_builder.method) do |request|

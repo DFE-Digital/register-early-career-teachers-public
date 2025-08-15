@@ -4,8 +4,9 @@ module ParityCheck
     include ActiveModel::Attributes
     include ParityCheck::Configuration
 
-    class IDOptionMissingError < RuntimeError; end
-    class UnrecognizedQueryError < RuntimeError; end
+    class Error < RuntimeError; end
+    class IDOptionMissingError < Error; end
+    class UnrecognizedQueryError < Error; end
 
     ID_PLACEHOLDER = ":id".freeze
     PAGINATION_PER_PAGE = 100
