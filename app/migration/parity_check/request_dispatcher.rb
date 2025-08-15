@@ -31,8 +31,12 @@ module ParityCheck
   private
 
     def finalise_run
-      run.complete!
+      failed_requests.any? ? run.halt! : run.complete!
       RunDispatcher.new.dispatch
+    end
+
+    def failed_requests
+      run.requests.failed
     end
 
     def queued_or_in_progress_requests?

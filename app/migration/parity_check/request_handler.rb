@@ -18,7 +18,10 @@ module ParityCheck
       client.perform_requests { |response| response.update!(request:) }
 
       request.complete!
-
+    rescue Client::Error
+      request.halt!
+      raise # We want the job to fail to retain the error for debugging.
+    ensure
       RequestDispatcher.new(run:).dispatch
     end
 
