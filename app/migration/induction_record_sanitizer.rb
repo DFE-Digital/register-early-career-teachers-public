@@ -95,7 +95,7 @@ private
         .induction_records
         .eager_load(induction_programme: :partnership)
         .order(:start_date, :created_at)
-        .group_by { |ir| ir.induction_programme.partnership&.lead_provider_id }
+        .group_by { |ir| [rect_training_type(ir.induction_programme.training_programme), ir.induction_programme.partnership&.lead_provider_id] }
     when :none
       participant_profile
         .induction_records
@@ -104,6 +104,10 @@ private
     else
       raise InductionRecordError, "invalid grouping specified [#{group_by}]"
     end
+  end
+
+  def rect_training_type(ecf_training_programme)
+    Mappers::TrainingProgrammeMapper.new(ecf_training_programme).mapped_value
   end
 
   def enumerate_by_provider

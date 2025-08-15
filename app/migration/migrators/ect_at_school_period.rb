@@ -48,7 +48,7 @@ module Migrators
           else
             ::TeacherMigrationFailure.create!(teacher:,
                                               model: :ect_at_school_period,
-                                              message: induction_records.error,
+                                              message: sanitizer.error,
                                               migration_item_id: participant_profile.id,
                                               migration_item_type: participant_profile.class.name)
             result = false
