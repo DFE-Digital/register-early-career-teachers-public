@@ -316,4 +316,14 @@ erDiagram
   }
   Metadata_SchoolContractPeriod }o--|| School : belongs_to
   Metadata_SchoolContractPeriod }o--|| ContractPeriod : belongs_to
+  Metadata_DeliveryPartnerLeadProvider {
+    integer id
+    integer delivery_partner_id
+    integer lead_provider_id
+    array[int] contract_period_years
+    datetime created_at
+    datetime updated_at
+  }
+  Metadata_DeliveryPartnerLeadProvider }o--|| DeliveryPartner : belongs_to
+  Metadata_DeliveryPartnerLeadProvider }o--|| LeadProvider : belongs_to
 ```
