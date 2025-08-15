@@ -6,13 +6,14 @@ RSpec.describe ParityCheck::Client do
   let(:token) { "test_token" }
   let(:per_page) { ParityCheck::RequestBuilder::PAGINATION_PER_PAGE }
   let(:instance) { described_class.new(request:) }
+  let(:tokens) { { request.lead_provider.ecf_id => token }.to_json }
 
   before do
     allow(Rails.application.config).to receive(:parity_check).and_return({
       enabled: true,
       ecf_url:,
       rect_url:,
-      tokens: { request.lead_provider.ecf_id => token }.to_json,
+      tokens:,
     })
   end
 
@@ -114,10 +115,40 @@ RSpec.describe ParityCheck::Client do
   context "when an unsupported request method is used" do
     let(:endpoint) { FactoryBot.build(:parity_check_endpoint, method: :fetch) }
 
-    it "raises an UnsupportedRequestMethodError" do
+    it "raises an RequestError" do
       expect {
         instance.perform_requests {}
-      }.to raise_error(NoMethodError, "undefined method 'fetch' for an instance of Faraday::Connection")
+      }.to raise_error(described_class::RequestError, "undefined method 'fetch' for an instance of Faraday::Connection")
+    end
+  end
+
+  context "when the RequestBuilder raises an error" do
+    let(:endpoint) { FactoryBot.build(:parity_check_endpoint, path: "/with/:id", options: { without: :id }) }
+
+    it "raises an RequestError" do
+      expect {
+        instance.perform_requests {}
+      }.to raise_error(described_class::RequestError, "Path contains ID, but options[:id] is missing")
+    end
+  end
+
+  context "when the DynamicRequestContent raises an error" do
+    let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :post, options: { body: :missing }) }
+
+    it "raises an RequestError" do
+      expect {
+        instance.perform_requests {}
+      }.to raise_error(described_class::RequestError, "Identifier not recognized: missing")
+    end
+  end
+
+  context "when the TokenProvider raises an error" do
+    let(:tokens) { { "other-id": "token" }.to_json }
+
+    it "raises an RequestError" do
+      expect {
+        instance.perform_requests {}
+      }.to raise_error(described_class::RequestError, "Token not found for lead provider: #{request.lead_provider.ecf_id}")
     end
   end
 end

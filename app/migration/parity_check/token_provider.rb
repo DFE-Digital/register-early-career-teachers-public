@@ -2,7 +2,8 @@ module ParityCheck
   class TokenProvider
     include ParityCheck::Configuration
 
-    class TokenNotFoundError < RuntimeError; end
+    class Error < RuntimeError; end
+    class TokenNotFoundError < Error; end
 
     def generate!
       ensure_parity_check_enabled!
