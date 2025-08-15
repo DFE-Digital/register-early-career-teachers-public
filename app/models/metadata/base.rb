@@ -1,5 +1,7 @@
 module Metadata
   class Base < ApplicationRecord
+    include DeclarativeTouch
+
     class UpdateRestrictedError < StandardError; end
 
     self.abstract_class = true
