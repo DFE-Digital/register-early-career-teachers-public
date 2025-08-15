@@ -1,7 +1,7 @@
-RSpec.shared_examples "an email step" do |current_step:, previous_step:, next_step:|
+RSpec.shared_examples "an email step" do |current_step:, previous_step:, next_step:, training_programme: :provider_led|
   subject { described_class.new(wizard:) }
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :provider_led) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
   let(:store) do
     FactoryBot.build(:session_repository,
                      trn: "1234567",
@@ -12,6 +12,8 @@ RSpec.shared_examples "an email step" do |current_step:, previous_step:, next_st
                      email: 'initial@email.com')
   end
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:, ect_id: ect.id) }
+
+  before { FactoryBot.create(:training_period, training_programme, :ongoing, ect_at_school_period: ect) }
 
   describe '#initialize' do
     subject { described_class.new(wizard:, **params) }

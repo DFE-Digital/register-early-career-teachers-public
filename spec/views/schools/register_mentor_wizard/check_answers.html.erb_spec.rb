@@ -1,12 +1,19 @@
 RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'FraggleRock') }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership) }
 
   let(:teacher) do
     FactoryBot.create(:teacher, trn: '1234568')
   end
 
   let(:ect) do
-    FactoryBot.create(:ect_at_school_period, :with_training_period, :ongoing, teacher:, lead_provider:)
+    FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
+  end
+
+  let!(:training_period) do
+    FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect, school_partnership:)
   end
 
   let(:store) do
@@ -45,7 +52,9 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
     context 'without exemption' do
       before { render }
 
-      it { expect(backlink).to have_link('Back', href: schools_register_mentor_wizard_review_mentor_eligibility_path) }
+      it do
+        expect(backlink).to have_link('Back', href: schools_register_mentor_wizard_review_mentor_eligibility_path)
+      end
     end
 
     context 'with legacy exemption' do
@@ -74,7 +83,11 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   describe 'summary' do
     context 'with school led ect' do
       let(:ect) do
-        FactoryBot.create(:ect_at_school_period, :ongoing, :school_led, teacher:)
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
+      end
+
+      let!(:training_period) do
+        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect)
       end
 
       it 'hides lead provider' do

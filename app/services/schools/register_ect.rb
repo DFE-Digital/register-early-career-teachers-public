@@ -95,7 +95,6 @@ module Schools
     def start_at_school!
       teacher.ect_at_school_periods.build(school_reported_appropriate_body:,
                                           email:,
-                                          training_programme:,
                                           school:,
                                           started_on:,
                                           working_pattern:) do |ect|
