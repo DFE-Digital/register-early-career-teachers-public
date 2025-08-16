@@ -26,7 +26,7 @@ module Migrators
       migrate(self.class.statement_adjustments) do |adjustment|
         statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(api_id: adjustment.id)
 
-        statement_adjustment.statement = ::Statement.find_by!(api_id: adjustment.statement_id)
+        statement_adjustment.statement = find_statement_by_api_id!(adjustment.statement_id)
         statement_adjustment.payment_type = adjustment.payment_type
         statement_adjustment.amount = adjustment.amount
         statement_adjustment.created_at = adjustment.created_at
@@ -34,6 +34,12 @@ module Migrators
 
         statement_adjustment.save!
       end
+    end
+
+  private
+
+    def preload_caches
+      cache_manager.cache_statements
     end
   end
 end

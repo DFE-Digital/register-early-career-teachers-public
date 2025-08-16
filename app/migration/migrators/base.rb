@@ -93,6 +93,10 @@ module Migrators
 
       start_migration!(items.count)
 
+      if respond_to?(:preload_caches, true)
+        preload_caches
+      end
+
       # As we're using offset/limit, we can't use find_each!
       items.each do |item|
         success = yield(item)
@@ -117,12 +121,37 @@ module Migrators
       @data_migration ||= DataMigration.find_by(model: self.class.model, worker:)
     end
 
+    def cache_manager
+      @cache_manager ||= CacheManager.instance
+    end
+
     def find_lead_provider_id!(ecf_id:)
       lead_provider_ids_by_ecf_id[ecf_id] || raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProvider")
     end
 
     def find_active_lead_provider_id!(lead_provider_id:, contract_period_year:)
       active_lead_provider_ids_by_lead_provider_and_contract_period["#{lead_provider_id} #{contract_period_year}"] || raise(ActiveRecord::RecordNotFound, "Couldn't find ActiveLeadProvider")
+    end
+
+    def find_school_partnership!(lead_provider_delivery_partnership_id:, school_id:)
+      school_partnership = cache_manager.find_school_partnership(lead_provider_delivery_partnership_id:, school_id:)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find SchoolPartnership") unless school_partnership
+
+      school_partnership
+    end
+
+    def find_teacher_by_trn!(trn)
+      teacher = cache_manager.find_teacher_by_trn(trn)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find Teacher with TRN: #{trn}") unless teacher
+
+      teacher
+    end
+
+    def find_statement_by_api_id!(api_id)
+      statement = cache_manager.find_statement_by_api_id(api_id)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find Statement with API ID: #{api_id}") unless statement
+
+      statement
     end
 
   private
