@@ -1,8 +1,14 @@
 RSpec.describe Admin::ReopenInductionPeriod do
-  subject(:service) { described_class.new(author:, induction_period:) }
+  subject(:service) do
+    described_class.new(author:, induction_period:, note:, zendesk_ticket_id:)
+  end
 
   let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
+
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
+  let(:note) { "Original outcome recorded in error" }
+  let(:zendesk_ticket_id) { 123 }
+
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:outcome) { "pass" }
   let(:number_of_terms) { 4.5 }
@@ -36,7 +42,15 @@ RSpec.describe Admin::ReopenInductionPeriod do
 
       expect(Events::Record)
         .to receive(:record_induction_period_reopened_event!)
-        .with(author:, induction_period:, modifications:, teacher:, appropriate_body:)
+        .with(
+          author:,
+          body: note,
+          zendesk_ticket_id:,
+          induction_period:,
+          modifications:,
+          teacher:,
+          appropriate_body:
+        )
 
       service.reopen_induction_period!
     end
@@ -86,6 +100,27 @@ RSpec.describe Admin::ReopenInductionPeriod do
       it "raises an error" do
         expect { service.reopen_induction_period! }
           .to raise_error(Admin::ReopenInductionPeriod::ReopenInductionError)
+      end
+    end
+
+    context "when the note and Zendesk ticket ID are blank" do
+      let(:note) { "" }
+      let(:zendesk_ticket_id) { "" }
+
+      it "raises an error" do
+        expect { service.reopen_induction_period! }
+          .to raise_error(ActiveModel::ValidationError)
+          .with_message("Validation failed: Enter a Zendesk ID or add a note")
+      end
+    end
+
+    context "when the Zendesk ticket ID is invalid" do
+      let(:zendesk_ticket_id) { "invalid_id" }
+
+      it "raises an error" do
+        expect { service.reopen_induction_period! }
+          .to raise_error(ActiveModel::ValidationError)
+          .with_message("Validation failed: Zendesk ticket ID must be a number")
       end
     end
   end

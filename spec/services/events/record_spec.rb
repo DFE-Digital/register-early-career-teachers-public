@@ -589,7 +589,15 @@ RSpec.describe Events::Record do
         induction_period.number_of_terms = nil
         raw_modifications = induction_period.changes
 
-        Events::Record.record_induction_period_reopened_event!(author:, induction_period:, modifications: raw_modifications, teacher:, appropriate_body:)
+        Events::Record.record_induction_period_reopened_event!(
+          author:,
+          induction_period:,
+          modifications: raw_modifications,
+          teacher:,
+          appropriate_body:,
+          body: "A test note",
+          zendesk_ticket_id: "1234"
+        )
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -600,6 +608,8 @@ RSpec.describe Events::Record do
           happened_at: Time.zone.now,
           modifications: anything,
           metadata: raw_modifications,
+          body: "A test note",
+          zendesk_ticket_id: "1234",
           **author_params
         )
       end
