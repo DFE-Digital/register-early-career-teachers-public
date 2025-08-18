@@ -5,6 +5,7 @@ class DeliveryPartner < ApplicationRecord
   has_many :lead_provider_delivery_partnerships, inverse_of: :delivery_partner
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
   has_many :events
+  has_many :lead_provider_metadata, class_name: "Metadata::DeliveryPartnerLeadProvider"
 
   # Validations
   validates :name,

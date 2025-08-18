@@ -481,3 +481,10 @@
   - induction_programme_choice
   - created_at
   - updated_at
+  :metadata_delivery_partners_lead_providers:
+  - id
+  - delivery_partner_id
+  - lead_provider_id
+  - contract_period_years
+  - created_at
+  - updated_at
