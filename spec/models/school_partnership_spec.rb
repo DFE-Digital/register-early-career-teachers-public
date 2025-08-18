@@ -5,11 +5,8 @@ describe SchoolPartnership do
     context "target school_partnership" do
       let(:target) { instance }
 
-      def generate_new_value(attribute_to_change:)
-        case attribute_to_change
-        when :lead_provider_delivery_partnership_id
-          FactoryBot.create(:lead_provider_delivery_partnership).id
-        end
+      def will_change_attribute(attribute_to_change:, new_value:)
+        FactoryBot.create(:lead_provider_delivery_partnership, id: new_value) if attribute_to_change == :lead_provider_delivery_partnership
       end
 
       it_behaves_like "a declarative touch model", when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
