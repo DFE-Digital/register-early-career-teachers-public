@@ -71,4 +71,7 @@ Rails.application.configure do
   config.enable_migration_testing = false
 
   config.active_job.queue_adapter = :test
+
+  # Custom config
+  config.bypass_filter_parameter_logging = ENV.fetch("ENABLE_BYPASS_FILTER_PARAMETER_LOGGING", false)
 end
