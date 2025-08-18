@@ -1,7 +1,5 @@
 module Metadata::Handlers
-  class School
-    BATCH_SIZE = 100
-
+  class School < Base
     attr_reader :school
 
     def initialize(school)
@@ -11,15 +9,6 @@ module Metadata::Handlers
     def refresh_metadata!
       upsert_contract_period_metadata!
       upsert_lead_provider_contract_period_metadata!
-    end
-
-    class << self
-      def refresh_all_metadata!(async: false)
-        job_method = async ? :perform_later : :perform_now
-        ::School.order(:created_at).in_batches(of: BATCH_SIZE) do |schools|
-          RefreshMetadataJob.send(job_method, object_type: ::School, object_ids: schools.pluck(:id))
-        end
-      end
     end
 
   private
@@ -52,13 +41,8 @@ module Metadata::Handlers
       end
     end
 
-    def upsert(metadata, attributes)
-      metadata.assign_attributes(attributes)
-      metadata.save! if metadata.changed?
-    end
-
     def lead_provider_id_contract_period_years
-      @lead_provider_id_contract_period_years ||= LeadProvider.pluck(:id).product(contract_period_years)
+      @lead_provider_id_contract_period_years ||= lead_provider_ids.product(contract_period_years)
     end
 
     def contract_period_years
