@@ -63,6 +63,8 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
 
         expect(subject.save(author:)).to be_truthy
 
+        ect.reload
+
         expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to eq(mentor)
         expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentorship_period.started_on).to eq(Date.current)
       end
