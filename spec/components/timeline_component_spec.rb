@@ -32,6 +32,19 @@ RSpec.describe TimelineComponent, type: :component do
     end
   end
 
+  context "when the event has a support ticket URL" do
+    let(:one_day_ago) do
+      FactoryBot.build(:event, support_ticket_url: "https://example.com/ticket/123")
+    end
+
+    it "shows the support ticket URL" do
+      expect(rendered_content).to have_css(
+        ".app-timeline__item > .app-timeline__description",
+        text: "Support ticket: https://example.com/ticket/123"
+      )
+    end
+  end
+
   describe 'modifications' do
     context 'when modifications are present' do
       let(:one_day_ago) { FactoryBot.build(:event, :with_body, :with_modifications, created_at: 3.days.ago) }

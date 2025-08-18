@@ -332,6 +332,7 @@
   - updated_at
   - metadata
   - modifications
+  - support_ticket_url
   :ect_at_school_periods:
   - id
   - school_id

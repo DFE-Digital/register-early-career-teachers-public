@@ -45,7 +45,21 @@ class TimelineComponent < ViewComponent::Base
     end
 
     def description
-      tag.div(class: "app-timeline__description") { safe_join([event.body, modifications_list]) }
+      tag.div(class: "app-timeline__description") do
+        safe_join([information, modifications_list].compact_blank)
+      end
+    end
+
+    def information
+      return if event.body.blank? && event.support_ticket_url.blank?
+
+      support_ticket = if event.support_ticket_url.present?
+                         "Support ticket: #{event.support_ticket_url}"
+                       end
+
+      tag.p do
+        safe_join([event.body, tag.br, support_ticket].compact)
+      end
     end
 
     def modifications_list

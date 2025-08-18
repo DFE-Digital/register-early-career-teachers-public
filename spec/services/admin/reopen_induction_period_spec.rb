@@ -1,8 +1,14 @@
 RSpec.describe Admin::ReopenInductionPeriod do
-  subject(:service) { described_class.new(author:, induction_period:) }
+  subject(:service) do
+    described_class.new(author:, induction_period:, note:, support_ticket_url:)
+  end
 
   let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
+
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
+  let(:note) { "Original outcome recorded in error" }
+  let(:support_ticket_url) { "https://example.com/tickets/12345" }
+
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:outcome) { "pass" }
   let(:number_of_terms) { 4.5 }
@@ -36,7 +42,15 @@ RSpec.describe Admin::ReopenInductionPeriod do
 
       expect(Events::Record)
         .to receive(:record_induction_period_reopened_event!)
-        .with(author:, induction_period:, modifications:, teacher:, appropriate_body:)
+        .with(
+          author:,
+          body: note,
+          support_ticket_url:,
+          induction_period:,
+          modifications:,
+          teacher:,
+          appropriate_body:
+        )
 
       service.reopen_induction_period!
     end
@@ -86,6 +100,27 @@ RSpec.describe Admin::ReopenInductionPeriod do
       it "raises an error" do
         expect { service.reopen_induction_period! }
           .to raise_error(Admin::ReopenInductionPeriod::ReopenInductionError)
+      end
+    end
+
+    context "when the note and support ticket URL are blank" do
+      let(:note) { "" }
+      let(:support_ticket_url) { "" }
+
+      it "raises an error" do
+        expect { service.reopen_induction_period! }
+          .to raise_error(ActiveModel::ValidationError)
+          .with_message("Validation failed: Note and support ticket URL cannot both be blank")
+      end
+    end
+
+    context "when the support ticket URL is invalid" do
+      let(:support_ticket_url) { "invalid_url" }
+
+      it "raises an error" do
+        expect { service.reopen_induction_period! }
+          .to raise_error(ActiveModel::ValidationError)
+          .with_message("Validation failed: Support ticket url is invalid")
       end
     end
   end

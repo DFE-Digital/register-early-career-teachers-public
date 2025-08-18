@@ -2,12 +2,9 @@ module Admin
   class ReopenInductionPeriod
     class ReopenInductionError < StandardError; end
 
-    attr_reader :author, :induction_period
+    include Auditable
 
-    def initialize(author:, induction_period:)
-      @author = author
-      @induction_period = induction_period
-    end
+    attribute :induction_period
 
     def reopen_induction_period!
       check_can_reopen_period!
@@ -52,6 +49,8 @@ module Admin
     def record_reopen_event!(modifications)
       Events::Record.record_induction_period_reopened_event!(
         author:,
+        body: note,
+        support_ticket_url:,
         induction_period:,
         modifications:,
         teacher:,

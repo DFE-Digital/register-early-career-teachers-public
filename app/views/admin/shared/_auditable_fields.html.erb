@@ -1,0 +1,9 @@
+<%= form.govuk_fieldset legend: {text: "Explain why you're making this update"} do %>
+  <p class="govuk-hint">
+    You need to add a link to a support ticket or a written note to this update.
+    This is so there is a record of why an update was made.
+  </p>
+
+  <%= form.govuk_url_field :support_ticket_url, label: {text: "Add a Zendesk or Trello link"} %>
+  <%= form.govuk_text_area :note, label: {text: "Add a written note"} %>
+<% end %>

@@ -37,16 +37,15 @@
   <% end %>
 <% end %>
 
-<div class="govuk-button-group">
-  <%= govuk_button_to(
-        "Reopen induction",
-        admin_teacher_reopen_induction_path(@teacher),
-        method: :patch,
-        warning: true
-      ) %>
-  <%= govuk_button_link_to(
-        "Cancel",
-        admin_teacher_path(@teacher),
-        secondary: true
-      ) %>
-</div>
+<%= form_with url: admin_teacher_reopen_induction_path(@teacher), method: :patch do |form| %>
+  <%= render "admin/shared/auditable_fields", form: form %>
+
+  <div class="govuk-button-group">
+    <%= form.govuk_submit "Reopen induction", warning: true %>
+    <%= govuk_button_link_to(
+          "Cancel",
+          admin_teacher_path(@teacher),
+          secondary: true
+        ) %>
+  </div>
+<% end %>

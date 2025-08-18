@@ -1,6 +1,8 @@
 module Admin
   module Teachers
     class ReopenInductionController < AdminController
+      include AuditableParams
+
       before_action :set_teacher
 
       before_action -> do
@@ -11,7 +13,8 @@ module Admin
       def update
         Admin::ReopenInductionPeriod.new(
           author: current_user,
-          induction_period: @teacher.last_induction_period
+          induction_period: @teacher.last_induction_period,
+          **auditable_params
         ).reopen_induction_period!
 
         redirect_to admin_teacher_path(@teacher),
