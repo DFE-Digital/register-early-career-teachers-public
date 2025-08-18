@@ -654,6 +654,12 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
   end
 
   describe "DELETE /admin/induction_periods/:id" do
+    let(:params) do
+      { induction_periods_delete_induction_period: { zendesk_ticket_id:, note: } }
+    end
+    let(:zendesk_ticket_id) { "12345" }
+    let(:note) { "A reason we are deleting this induction period" }
+
     context "when it is the only induction period" do
       let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
       let(:trs_api_client) { instance_double(TRS::APIClient) }
@@ -665,7 +671,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
 
       it "deletes the induction period and redirects with success message" do
         expect {
-          delete admin_teacher_induction_period_path(teacher, induction_period)
+          delete admin_teacher_induction_period_path(teacher, induction_period), params:
         }.to change(InductionPeriod, :count).by(-1)
 
         expect(response).to redirect_to(admin_teacher_path(teacher))
@@ -676,7 +682,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
       it "creates a deletion event" do
         expect {
           perform_enqueued_jobs do
-            delete admin_teacher_induction_period_path(teacher, induction_period)
+            delete admin_teacher_induction_period_path(teacher, induction_period), params:
           end
         }.to change(Event, :count).by(2)
 
@@ -700,7 +706,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
       it "deletes only the specified induction period" do
         expect {
           perform_enqueued_jobs do
-            delete admin_teacher_induction_period_path(teacher, induction_period1)
+            delete admin_teacher_induction_period_path(teacher, induction_period1), params:
           end
         }.to change(InductionPeriod, :count).by(-1)
 
@@ -721,11 +727,40 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
       end
 
       it "redirects with error message" do
-        delete admin_teacher_induction_period_path(teacher, induction_period)
+        delete(admin_teacher_induction_period_path(teacher, induction_period), params:)
 
         expect(response).to redirect_to(admin_teacher_path(teacher))
         expect(flash[:alert]).to match(/Could not delete induction period:/)
         expect { induction_period.reload }.not_to raise_error
+      end
+    end
+
+    context "when no extra information is provided" do
+      let!(:induction_period) do
+        FactoryBot.create(
+          :induction_period,
+          :ongoing,
+          teacher:,
+          appropriate_body:,
+          started_on: 6.months.ago,
+          finished_on: 1.month.ago,
+          number_of_terms: 2
+        )
+      end
+
+      let(:zendesk_ticket_id) { "" }
+      let(:note) { "" }
+
+      it "returns unprocessable_content and displays an error message" do
+        expect {
+          delete(
+            admin_teacher_induction_period_path(teacher, induction_period),
+            params:
+          )
+        }.not_to change(teacher.induction_periods, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include("There is a problem")
       end
     end
   end
