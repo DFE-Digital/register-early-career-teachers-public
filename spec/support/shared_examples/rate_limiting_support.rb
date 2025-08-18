@@ -57,6 +57,22 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
         before { stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true") }
 
         it { expect { perform_request }.to have_sent_analytics_event_types(:persist_api_request) }
+
+        it "sends correct event type" do
+          perform_request
+
+          queue_adapter = ActiveJob::Base.queue_adapter
+          job = queue_adapter.enqueued_jobs.find do |job|
+            job['job_class'] == 'DfE::Analytics::SendEvents' &&
+              job.dig(:args, 0, 0, "event_type") == "persist_api_request"
+          end
+
+          expect(job.dig(:args, 0, 0, "response_status")).to eq(429)
+          expect(job.dig(:args, 0, 0, "request_path")).to eq(path)
+          if path.starts_with?("/api/v3/")
+            expect(job.dig(:args, 0, 0, "user_id")).to eq(lead_provider.id)
+          end
+        end
       end
     end
   end
