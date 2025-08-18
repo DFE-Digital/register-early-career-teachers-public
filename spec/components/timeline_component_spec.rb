@@ -32,6 +32,19 @@ RSpec.describe TimelineComponent, type: :component do
     end
   end
 
+  context "when the event has a zendesk ticket ID" do
+    let(:one_day_ago) do
+      FactoryBot.build(:event, zendesk_ticket_id: "123")
+    end
+
+    it "shows the zendesk URL" do
+      expect(rendered_content).to have_link(
+        "Zendesk ticket (opens in new tab)",
+        href: "https://becomingateacher.zendesk.com/agent/tickets/123"
+      )
+    end
+  end
+
   describe 'modifications' do
     context 'when modifications are present' do
       let(:one_day_ago) { FactoryBot.build(:event, :with_body, :with_modifications, created_at: 3.days.ago) }

@@ -1,6 +1,8 @@
 module Admin
   module Teachers
     class ReopenInductionController < AdminController
+      include AuditableParams
+
       before_action :set_teacher
 
       before_action -> do
@@ -8,14 +10,19 @@ module Admin
                     notice: "No completed induction period found"
       end, unless: :induction_complete_with_outcome?
 
+      def confirm = @reopen_induction = ReopenInductionPeriod.new
+
       def update
-        Admin::ReopenInductionPeriod.new(
-          author: current_user,
-          induction_period: @teacher.last_induction_period
-        ).reopen_induction_period!
+        @reopen_induction = ReopenInductionPeriod.new(
+          induction_period: @teacher.last_induction_period,
+          **auditable_params_for(ReopenInductionPeriod.model_name)
+        )
+        @reopen_induction.reopen_induction_period!
 
         redirect_to admin_teacher_path(@teacher),
                     alert: "Induction was successfully reopened"
+      rescue ActiveModel::ValidationError
+        render :confirm, status: :unprocessable_content
       end
 
     private
