@@ -9,11 +9,13 @@ def describe_lead_provider(lead_provider, years)
 end
 
 lead_providers_data = [
-  { name: 'Ambitious Institute', years: [2022, 2023, 2024, 2025, 2026] },
-  { name: 'Capitan', years: [2021, 2022, 2023] },
-  { name: 'Teach Fast', years: [2022, 2023, 2024, 2025] },
-  { name: 'International Institute of Teaching', years: [2021] },
-  { name: 'Better Practice Network', years: [2022, 2023, 2024, 2025] },
+  { name: 'Ambition Institute', years: [2022, 2023, 2024, 2025, 2026] },
+  { name: 'Best Practice Network', years: [2022, 2023, 2024, 2025] },
+  { name: 'Capita', years: [2021, 2022, 2023] },
+  { name: 'Education Development Trust', years: [2021, 2022, 2023, 2024, 2025] },
+  { name: 'National Institute of Teaching', years: [2021] },
+  { name: 'Teach First', years: [2022, 2023, 2024, 2025] },
+  { name: 'UCL Institute of Education', years: [2021, 2022, 2023, 2024, 2025] },
 ]
 
 lead_providers_data.each do |data|
