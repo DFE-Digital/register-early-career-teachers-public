@@ -71,8 +71,9 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
         end
       end
 
-      context 'when a valid mentor has been selected for the ect mentorship' do
+      context 'when a valid mentor has been selected for the school led ect mentorship' do
         let(:params) { { schools_assign_mentor_form: { mentor_id: mentor.id } } }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led, school:) }
 
         it 'creates the mentorship and redirects the user to the confirmation page' do
           allow(Schools::AssignMentorForm).to receive(:new).and_call_original
@@ -83,6 +84,55 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
           expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to eq(mentor)
           expect(response).to be_redirection
           expect(response.redirect_url).to eq(confirmation_schools_ect_mentorship_url(ect_id: ect.id))
+        end
+      end
+
+      context 'provider led ECT mentorship' do
+        let(:params) { { schools_assign_mentor_form: { mentor_id: mentor.id } } }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :provider_led, school:) }
+
+        context 'when the mentor is eligible for funding' do
+          before do
+            allow(Teachers::MentorFundingEligibility).to receive(:new)
+              .with(trn: mentor.teacher.trn)
+              .and_return(instance_double(Teachers::MentorFundingEligibility, eligible?: true))
+
+            post("/school/ects/#{ect.id}/mentorship", params:)
+          end
+
+          it 'redirects the user to the assign existing mentor wizard' do
+            expect(response).to redirect_to(
+              schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
+            )
+          end
+        end
+
+        context 'when the mentor is not eligible for funding' do
+          before do
+            allow(Schools::AssignMentorForm).to receive(:new).and_call_original
+            allow(Teachers::MentorFundingEligibility).to receive(:new)
+              .with(trn: mentor.teacher.trn)
+              .and_return(instance_double(Teachers::MentorFundingEligibility, eligible?: false))
+
+            post("/school/ects/#{ect.id}/mentorship", params:)
+          end
+
+          it 'creates the mentorship and redirects the user to the confirmation page' do
+            expect(Schools::AssignMentorForm).to have_received(:new).with(ect:, mentor_id: mentor.id.to_s).once
+            expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to eq(mentor)
+            expect(response).to redirect_to(confirmation_schools_ect_mentorship_path(ect_id: ect.id))
+          end
+        end
+
+        context 'when no mentor_at_school_period is found' do
+          let(:params) { { schools_assign_mentor_form: { mentor_id: 'non-existent' } } }
+
+          before { post("/school/ects/#{ect.id}/mentorship", params:) }
+
+          it 'redirects to the new form again' do
+            expect(response).to have_http_status(:ok)
+            expect(response.body).to include('Who will mentor')
+          end
         end
       end
     end
