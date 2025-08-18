@@ -1,5 +1,7 @@
 module Admin
   class InductionPeriodsController < AdminController
+    include AuditableParams
+
     def new
       @induction_period = InductionPeriod.new(teacher:)
     end
@@ -87,7 +89,8 @@ module Admin
     def delete_induction_period_service
       InductionPeriods::DeleteInductionPeriod.new(
         author: current_user,
-        induction_period:
+        induction_period:,
+        **auditable_params
       )
     end
   end

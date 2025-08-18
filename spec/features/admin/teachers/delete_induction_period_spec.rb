@@ -1,5 +1,6 @@
 RSpec.describe "Admin deletes an induction period" do
   include ActiveJob::TestHelper
+
   include_context "test trs api client"
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -18,11 +19,17 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_click_delete_link
       then_i_should_see_the_delete_confirmation_page
 
-      when_i_confirm_deletion
+      when_i_add_a_support_ticket_url("https://example.com/ticket/123")
+      and_i_add_a_note("This is a test reason for deleting")
+      and_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period)
       and_an_event_should_have_been_recorded
       and_trs_status_should_be_reset
+
+      when_i_go_to_the_timeline_page
+      then_i_can_see_the_note("This is a test reason for deleting")
+      and_i_can_see_the_support_ticket_url("https://example.com/ticket/123")
     end
   end
 
@@ -36,11 +43,17 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_click_delete_link_for(induction_period1)
       then_i_should_see_the_delete_confirmation_page
 
-      when_i_confirm_deletion
+      when_i_add_a_support_ticket_url("https://example.com/ticket/123")
+      and_i_add_a_note("This is a test reason for deleting")
+      and_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period1)
       and_an_event_should_have_been_recorded
       and_trs_status_should_not_be_reset
+
+      when_i_go_to_the_timeline_page
+      then_i_can_see_the_note("This is a test reason for deleting")
+      and_i_can_see_the_support_ticket_url("https://example.com/ticket/123")
     end
   end
 
@@ -54,11 +67,17 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_click_delete_link_for(induction_period2)
       then_i_should_see_the_delete_confirmation_page
 
-      when_i_confirm_deletion
+      when_i_add_a_support_ticket_url("https://example.com/ticket/123")
+      and_i_add_a_note("This is a test reason for deleting")
+      and_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period2)
       and_an_event_should_have_been_recorded
       and_trs_status_should_not_be_reset
+
+      when_i_go_to_the_timeline_page
+      then_i_can_see_the_note("This is a test reason for deleting")
+      and_i_can_see_the_support_ticket_url("https://example.com/ticket/123")
     end
   end
 
@@ -89,7 +108,19 @@ RSpec.describe "Admin deletes an induction period" do
     expect(page.get_by_role('button', name: 'Delete induction period')).to be_visible
   end
 
-  def when_i_confirm_deletion
+  def when_i_add_a_support_ticket_url(url)
+    page.locator("fieldset", hasText: "Explain why you're making this update")
+      .get_by_label("Add a Zendesk or Trello link")
+      .fill(url)
+  end
+
+  def and_i_add_a_note(reason)
+    page.locator("fieldset", hasText: "Explain why you're making this update")
+      .get_by_label("Add a written note")
+      .fill(reason)
+  end
+
+  def and_i_confirm_deletion
     perform_enqueued_jobs do
       page.get_by_role('button', name: 'Delete induction period').click
     end
@@ -117,5 +148,23 @@ RSpec.describe "Admin deletes an induction period" do
 
   def and_trs_status_should_not_be_reset
     expect(teacher.induction_periods.count).to eq(1)
+  end
+
+  def when_i_go_to_the_timeline_page
+    page.goto(admin_teacher_timeline_path(teacher))
+  end
+
+  def then_i_can_see_the_note(reason)
+    description = page
+      .locator(".app-timeline__item", hasText: "Induction period deleted")
+      .locator(".app-timeline__description")
+    expect(description).to have_text(reason)
+  end
+
+  def and_i_can_see_the_support_ticket_url(url)
+    description = page
+      .locator(".app-timeline__item", hasText: "Induction period deleted")
+      .locator(".app-timeline__description")
+    expect(description).to have_text("Support ticket: #{url}")
   end
 end

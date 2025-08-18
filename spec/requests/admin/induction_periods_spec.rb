@@ -654,6 +654,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
   end
 
   describe "DELETE /admin/induction_periods/:id" do
+    let(:note) { "A reason we are deleting this induction period" }
+    let(:params) { { note: } }
+
     context "when it is the only induction period" do
       let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 2) }
       let(:trs_api_client) { instance_double(TRS::APIClient) }
@@ -665,7 +668,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
 
       it "deletes the induction period and redirects with success message" do
         expect {
-          delete admin_teacher_induction_period_path(teacher, induction_period)
+          delete admin_teacher_induction_period_path(teacher, induction_period), params:
         }.to change(InductionPeriod, :count).by(-1)
 
         expect(response).to redirect_to(admin_teacher_path(teacher))
@@ -676,7 +679,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
       it "creates a deletion event" do
         expect {
           perform_enqueued_jobs do
-            delete admin_teacher_induction_period_path(teacher, induction_period)
+            delete admin_teacher_induction_period_path(teacher, induction_period), params:
           end
         }.to change(Event, :count).by(2)
 
@@ -700,7 +703,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
       it "deletes only the specified induction period" do
         expect {
           perform_enqueued_jobs do
-            delete admin_teacher_induction_period_path(teacher, induction_period1)
+            delete admin_teacher_induction_period_path(teacher, induction_period1), params:
           end
         }.to change(InductionPeriod, :count).by(-1)
 
