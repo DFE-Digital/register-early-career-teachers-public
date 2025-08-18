@@ -23,7 +23,7 @@ jobs:
     environment: production
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Refresh migration DB
         uses: ./.github/actions/refresh-migration-database
