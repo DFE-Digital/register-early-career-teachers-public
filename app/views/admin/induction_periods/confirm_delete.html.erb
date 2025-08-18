@@ -51,6 +51,8 @@
   method: :delete,
   class: "govuk-!-margin-bottom-8"
 ) do |f| %>
+  <%= render "admin/shared/auditable_fields", form: f %>
+
   <div class="govuk-button-group">
     <%= f.govuk_submit "Delete induction period", warning: true %>
     <%= govuk_button_link_to "Cancel", admin_teacher_path(@induction_period.teacher), secondary: true %>
