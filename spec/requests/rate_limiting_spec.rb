@@ -28,9 +28,11 @@ RSpec.describe "Rack::Attack" do
       set_api_token(API::TokenManager.create_lead_provider_api_token!(lead_provider:).token)
     end
 
+    let(:path) { api_v3_statements_path }
+
     it_behaves_like "a rate limited endpoint", "API requests by auth token" do
       def perform_request
-        authenticated_api_get(api_v3_statements_path, token: api_token, headers: { REMOTE_ADDR: request_ip })
+        authenticated_api_get(path, token: api_token, headers: { REMOTE_ADDR: request_ip })
       end
 
       def change_condition
@@ -59,9 +61,11 @@ RSpec.describe "Rack::Attack" do
   end
 
   context "rate limit all other requests by ip" do
+    let(:path) { ab_landing_path }
+
     it_behaves_like "a rate limited endpoint", "All other requests by ip" do
       def perform_request
-        get(ab_landing_path, headers: { REMOTE_ADDR: request_ip })
+        get(path, headers: { REMOTE_ADDR: request_ip })
       end
 
       def change_condition
