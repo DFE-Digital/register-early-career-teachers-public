@@ -47,10 +47,15 @@
 %>
 
 <%= form_with(
-  url: admin_teacher_induction_period_path(@induction_period.teacher, @induction_period),
-  method: :delete,
-  class: "govuk-!-margin-bottom-8"
-) do |f| %>
+      model: @delete_induction,
+      url: admin_teacher_induction_period_path(@induction_period.teacher, @induction_period),
+      method: :delete,
+      class: "govuk-!-margin-bottom-8"
+    ) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= render "admin/shared/auditable_fields", form: f %>
+
   <div class="govuk-button-group">
     <%= f.govuk_submit "Delete induction period", warning: true %>
     <%= govuk_button_link_to "Cancel", admin_teacher_path(@induction_period.teacher), secondary: true %>

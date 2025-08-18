@@ -1,14 +1,19 @@
 module Admin
   class InductionPeriodsController < AdminController
+    include AuditableParams
+
+    before_action :set_teacher
+    before_action :set_induction_period, except: %i[new create]
+
     def new
-      @induction_period = InductionPeriod.new(teacher:)
+      @induction_period = InductionPeriod.new(teacher: @teacher)
     end
 
     def create
       service = create_induction_period_service
 
       if service.create_induction_period!
-        redirect_to admin_teacher_path(teacher), alert: 'Induction period created successfully'
+        redirect_to admin_teacher_path(@teacher), alert: 'Induction period created successfully'
       else
         @induction_period = service.induction_period
         render :new, status: :unprocessable_content
@@ -18,14 +23,10 @@ module Admin
       render :new, status: :unprocessable_content
     end
 
-    def edit
-      @induction_period = induction_period
-    end
-
     def update
       service = update_induction_period_service
       service.update_induction_period!
-      redirect_to admin_teacher_path(@induction_period.teacher), alert: 'Induction period updated successfully'
+      redirect_to admin_teacher_path(@teacher), alert: 'Induction period updated successfully'
     rescue InductionPeriods::UpdateInductionPeriod::RecordedOutcomeError => e
       @induction_period.errors.add(:base, e.message)
       render :edit, status: :unprocessable_content
@@ -35,19 +36,30 @@ module Admin
     end
 
     def confirm_delete
-      @induction_period = induction_period
+      @delete_induction = InductionPeriods::DeleteInductionPeriod.new(
+        induction_period: @induction_period
+      )
     end
 
     def destroy
-      @induction_period = induction_period
-      service = delete_induction_period_service
-      service.delete_induction_period!
-      redirect_to admin_teacher_path(@induction_period.teacher), alert: 'Induction period deleted successfully'
+      @delete_induction = delete_induction_period_service
+      @delete_induction.delete_induction_period!
+      redirect_to admin_teacher_path(@teacher), alert: 'Induction period deleted successfully'
+    rescue ActiveModel::ValidationError
+      render :confirm_delete, status: :unprocessable_content
     rescue ActiveRecord::RecordInvalid, ActiveRecord::Rollback => e
-      redirect_to admin_teacher_path(@induction_period.teacher), alert: "Could not delete induction period: #{e.message}"
+      redirect_to admin_teacher_path(@teacher), alert: "Could not delete induction period: #{e.message}"
     end
 
   private
+
+    def set_teacher
+      @teacher = Teacher.includes(:induction_periods).find(params[:teacher_id])
+    end
+
+    def set_induction_period
+      @induction_period = @teacher.induction_periods.find(params[:id])
+    end
 
     def induction_period_params
       params.expect(
@@ -62,18 +74,10 @@ module Admin
       )
     end
 
-    def teacher
-      @teacher ||= Teacher.find(params[:teacher_id])
-    end
-
-    def induction_period
-      @induction_period ||= InductionPeriod.find(params[:id])
-    end
-
     def create_induction_period_service
       InductionPeriods::CreateInductionPeriod.new(
         author: current_user,
-        teacher:,
+        teacher: @teacher,
         params: induction_period_params
       )
     end
@@ -81,15 +85,15 @@ module Admin
     def update_induction_period_service
       InductionPeriods::UpdateInductionPeriod.new(
         author: current_user,
-        induction_period:,
+        induction_period: @induction_period,
         params: induction_period_params
       )
     end
 
     def delete_induction_period_service
       InductionPeriods::DeleteInductionPeriod.new(
-        author: current_user,
-        induction_period:
+        induction_period: @induction_period,
+        **auditable_params_for(InductionPeriods::DeleteInductionPeriod.model_name)
       )
     end
   end
