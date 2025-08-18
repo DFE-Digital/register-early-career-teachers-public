@@ -1,5 +1,7 @@
 module Metadata
   class SchoolLeadProviderContractPeriod < Metadata::Base
+    include DeclarativeTouch
+
     self.table_name = :metadata_schools_lead_providers_contract_periods
 
     belongs_to :school

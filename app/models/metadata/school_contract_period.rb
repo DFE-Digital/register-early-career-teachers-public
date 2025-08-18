@@ -1,5 +1,7 @@
 module Metadata
   class SchoolContractPeriod < Metadata::Base
+    include DeclarativeTouch
+
     self.table_name = :metadata_schools_contract_periods
 
     enum :induction_programme_choice, {
