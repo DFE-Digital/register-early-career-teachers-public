@@ -27,13 +27,13 @@ private
     @ect_teacher = FactoryBot.create(:teacher, trs_first_name: 'Boruto', trs_last_name: 'Uzumaki')
     @ect = FactoryBot.create(
       :ect_at_school_period,
-      :provider_led,
       teacher: @ect_teacher,
       school: @school,
       started_on: start_date,
       finished_on: nil
     )
 
+    FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: @ect)
     FactoryBot.create(:mentorship_period, mentor: @mentor, mentee: @ect, started_on: start_date, finished_on: nil)
   end
 

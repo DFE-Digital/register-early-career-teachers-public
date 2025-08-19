@@ -1,15 +1,4 @@
 describe ECTAtSchoolPeriod do
-  describe "enums" do
-    it do
-      is_expected.to define_enum_for(:training_programme)
-                       .with_values({ provider_led: "provider_led",
-                                      school_led: "school_led" })
-                       .validating
-                       .with_suffix(:training_programme)
-                       .backed_by_column_of_type(:enum)
-    end
-  end
-
   describe "associations" do
     it { is_expected.to belong_to(:school).inverse_of(:ect_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:ect_at_school_periods) }
@@ -201,16 +190,6 @@ describe ECTAtSchoolPeriod do
             end
           end
         end
-      end
-    end
-
-    context "training_programme" do
-      subject { FactoryBot.build(:ect_at_school_period) }
-
-      it do
-        is_expected.to validate_inclusion_of(:training_programme)
-                         .in_array(%w[provider_led school_led])
-                         .with_message("Must be provider-led or school-led")
       end
     end
   end
