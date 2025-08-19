@@ -49,7 +49,7 @@ class Rack::Attack
   end
 
   # Throttle /api requests by auth token (1000 requests per 5 minutes)
-  throttle("API requests by auth token", limit: 1000, period: 5.minutes) do |request|
+  throttle("API requests by auth token", limit: 10, period: 5.minutes) do |request|
     if api_request?(request) && !public_api_path?(request)
       auth_token(request)
     end
