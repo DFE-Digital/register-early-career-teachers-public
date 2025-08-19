@@ -1,7 +1,7 @@
 <%
   page_data(
     title: "CSV upload by #{@appropriate_body.name}",
-    backlink_href: admin_appropriate_body_batches_path(@appropriate_body)
+    backlink_href: request.referer || admin_appropriate_body_batches_path(@appropriate_body)
   )
 %>
 
