@@ -1,5 +1,6 @@
 RSpec.describe 'Registering a mentor', :js do
   include_context 'test trs api client'
+  include SchoolPartnershipHelpers
 
   let(:trn) { '3002586' }
 
@@ -63,10 +64,8 @@ RSpec.describe 'Registering a mentor', :js do
 
   def and_the_school_is_in_a_partnership_with_a_lead_provider
     @contract_period = FactoryBot.create(:contract_period, :current)
-    @lead_provider = FactoryBot.create(:lead_provider, name: "Xavier's School for Gifted Youngsters")
-    @active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: @contract_period, lead_provider: @lead_provider)
-    @lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: @active_lead_provider)
-    @school_partnership = FactoryBot.create(:school_partnership, school: @school, lead_provider_delivery_partnership: @lead_provider_delivery_partnership)
+    @school_partnership = make_partnership_for(@school, @contract_period)
+    @lead_provider = @school_partnership.lead_provider_delivery_partnership.lead_provider
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
