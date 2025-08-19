@@ -11,6 +11,12 @@ module ECTAtSchoolPeriods
       school_partnership.blank? && expression_of_interest.present?
     end
 
+    def lead_provider_name_via_school_partnership_or_eoi
+      lead_provider_name || expression_of_interest_lead_provider_name
+
+      # should we fall back to the choice on the school here?
+    end
+
     # FIXME: do we need another method here to pick whichever lead provider is present, be it
     #        an EOI or partnership based one?
 
