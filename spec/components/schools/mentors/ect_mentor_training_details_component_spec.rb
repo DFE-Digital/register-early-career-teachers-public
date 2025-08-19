@@ -74,6 +74,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
 
     before do
       FactoryBot.create(:mentorship_period, mentor:, mentee: school_led_ect, started_on: school_led_ect.started_on, finished_on: nil)
+      FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period: school_led_ect)
     end
 
     it 'does not render' do
