@@ -24,7 +24,7 @@ module Schools
     def rows
       base_rows = [training_programme_row]
 
-      if @ect.provider_led?
+      if training.provider_led?
         base_rows << lead_provider_row
         base_rows << delivery_partner_row
       end
@@ -93,13 +93,13 @@ module Schools
     end
 
     def training_programme_display_name
-      case @ect.training_programme
+      case training.training_programme
       when 'provider_led'
         'Provider-led'
       when 'school_led'
         'School-led'
       else
-        @ect.training_programme&.humanize || 'Unknown'
+        training.training_programme&.humanize || 'Unknown'
       end
     end
   end
