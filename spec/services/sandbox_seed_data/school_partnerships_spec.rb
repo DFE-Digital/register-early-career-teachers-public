@@ -30,6 +30,17 @@ RSpec.describe SandboxSeedData::SchoolPartnerships do
       expect(SchoolPartnership.all.map(&:contract_period).uniq).to eq(ContractPeriod.all)
     end
 
+    it "creates school partnership with same school but different delivery partner" do
+      instance.plant
+
+      count = SchoolPartnership.all.each_with_object({}) do |sp, sum|
+        sum[sp.school_id] ||= []
+        sum[sp.school_id] << sp.delivery_partner.id
+      end
+
+      expect(count.values.any? { |v| v.count > 1 }).to be(true)
+    end
+
     it "logs the creation of school partnerships" do
       instance.plant
 
