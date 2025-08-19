@@ -95,7 +95,7 @@ module Schools
     def training_programme_display_name
       case @ect.training_programme
       when 'provider_led'
-        'Full induction programme'
+        'Provider-led'
       when 'school_led'
         'School-led'
       else
