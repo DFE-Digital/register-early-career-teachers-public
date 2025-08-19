@@ -52,7 +52,7 @@ RSpec.describe 'Add a mentor to a provider led ECT' do
   end
 
   def and_the_back_link_links_to_the_eligibility_page
-    expect(page.get_by_role(:link, name: 'Back').get_attribute('href')).to end_with("/school/assign-existing-mentor/review-mentor-eligibility")
+    expect(page.get_by_role(:link, name: 'Back', exact: true).get_attribute('href')).to end_with('/school/assign-existing-mentor/review-mentor-eligibility')
   end
 
   def and_i_choose_the_lead_provider_vegeta
