@@ -14,7 +14,8 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
   context 'with provider_led ect and without funding exemption' do
     it_behaves_like 'an email step', current_step: :email_address,
                                      previous_step: :review_mentor_details,
-                                     next_step: :review_mentor_eligibility
+                                     next_step: :review_mentor_eligibility,
+                                     training_programme: :provider_led
   end
 
   context 'with funding exemption' do
@@ -30,8 +31,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
   context 'with school_led ect' do
     it_behaves_like 'an email step', current_step: :email_address,
                                      previous_step: :review_mentor_details,
-                                     next_step: :check_answers do
-      let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led) }
-    end
+                                     next_step: :check_answers,
+                                     training_programme: :school_led
   end
 end

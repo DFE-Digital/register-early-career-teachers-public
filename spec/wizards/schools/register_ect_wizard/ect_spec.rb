@@ -12,7 +12,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
                      email: "dusty@rhodes.com",
                      appropriate_body_id: appropriate_body.id,
                      training_programme: "school_led",
-                     start_date: 'January 2025',
+                     start_date: 'January 2025', # FIXME: this should be a Date?
                      trn: "3002586",
                      trs_first_name: "Dusty",
                      trs_last_name: "Rhodes",
@@ -377,8 +377,10 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     describe '#previous_training_programme' do
       context 'when the teacher has ECTAtSchoolPeriods' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :school_led, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          school_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+          FactoryBot.create(:training_period, training_programme: :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+          provider_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          FactoryBot.create(:training_period, training_programme: :provider_led, ect_at_school_period: provider_led_ect_at_school_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns the training programme from the latest ECTAtSchoolPeriod by started_on' do
@@ -396,7 +398,8 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     describe '#previous_provider_led?' do
       context 'when the latest ECTAtSchoolPeriod is provider-led' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :provider_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          provider_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          FactoryBot.create(:training_period, training_programme: :provider_led, ect_at_school_period: provider_led_ect_at_school_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns true' do
@@ -406,7 +409,8 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
       context 'when the latest ECTAtSchoolPeriod is school-led' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, training_programme: :school_led, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          school_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+          FactoryBot.create(:training_period, training_programme: :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
         end
 
         it 'returns false' do
@@ -507,24 +511,38 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     describe '#lead_provider_has_confirmed_partnership_for_contract_period?' do
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Confirmed LP') }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
       let(:school) { FactoryBot.create(:school) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
+
       let(:teacher) { FactoryBot.create(:teacher) }
-      let(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
 
       context 'when everything is valid' do
         let!(:ect_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :provider_led,
             :with_training_period,
             teacher:,
             school:,
-            started_on: Date.new(2025, 3, 10),
-            finished_on: Date.new(2025, 10, 10),
+            started_on: Date.new(2024, 9, 10),
+            finished_on: Date.new(2025, 3, 10),
             lead_provider:,
             delivery_partner:,
             contract_period:
+          )
+        end
+
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :provider_led,
+            started_on: ect_period.started_on,
+            finished_on: ect_period.finished_on,
+            ect_at_school_period: ect_period,
+            school_partnership:
           )
         end
 
@@ -552,7 +570,6 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         let!(:ect_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :provider_led,
             :with_training_period,
             teacher:,
             school:,
@@ -577,7 +594,6 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         let!(:ect_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :provider_led,
             :with_training_period,
             teacher:,
             school:,
@@ -614,7 +630,6 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         let!(:ect_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :provider_led,
             school:,
             teacher:,
             started_on: Date.new(2025, 3, 10)
@@ -648,7 +663,6 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         let!(:ect_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :provider_led,
             school:,
             teacher:,
             started_on: Date.new(2025, 3, 10)
@@ -658,6 +672,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         let!(:training_period) do
           FactoryBot.create(
             :training_period,
+            :provider_led,
             :for_ect,
             ect_at_school_period: ect_period,
             started_on: Date.new(2025, 3, 10),

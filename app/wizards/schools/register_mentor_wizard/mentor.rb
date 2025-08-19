@@ -112,7 +112,7 @@ module Schools
 
       # Is mentor being assigned to a provider-led ECT?
       def provider_led_ect?
-        ect&.provider_led?
+        ect&.provider_led_training_programme?
       end
 
       # Does that mentor have a mentor_became_ineligible_for_funding_on?
