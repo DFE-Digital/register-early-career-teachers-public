@@ -41,9 +41,11 @@ RSpec.describe Metadata::Handlers::DeliveryPartner do
         end
 
         it "updates the metadata when the partnership changes" do
-          Metadata::DeliveryPartnerLeadProvider.bypass_update_restrictions { metadata.update!(contract_period_years: [2022, 2023]) }
+          changed_contract_period = FactoryBot.create(:contract_period, year: 2022)
 
-          expect { refresh_metadata }.to change { metadata.reload.contract_period_years }.from([2022, 2023]).to(contract_period_years)
+          Metadata::DeliveryPartnerLeadProvider.bypass_update_restrictions { metadata.update!(contract_period_years: [changed_contract_period.year]) }
+
+          expect { refresh_metadata }.to change { metadata.reload.contract_period_years }.from([changed_contract_period.year]).to(contract_period_years)
         end
 
         it "does not update the metadata if no changes are made" do
