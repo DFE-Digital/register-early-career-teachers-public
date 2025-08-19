@@ -1,6 +1,8 @@
 require "dfe/analytics/rspec/matchers"
 
 RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
+  include ActiveJob::TestHelper
+
   describe desc do
     subject { response }
 
@@ -59,19 +61,21 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
         it { expect { perform_request }.to have_sent_analytics_event_types(:persist_api_request) }
 
         it "sends correct event type" do
+          allow(DfE::Analytics::SendEvents).to receive(:perform_later)
+
           perform_request
 
-          queue_adapter = ActiveJob::Base.queue_adapter
-          job = queue_adapter.enqueued_jobs.find do |job|
-            job['job_class'] == 'DfE::Analytics::SendEvents' &&
-              job.dig(:args, 0, 0, "event_type") == "persist_api_request"
+          expected_values = {
+            "event_type" => "persist_api_request",
+            "response_status" => 429,
+            "request_path" => path,
+          }
+
+          if path.starts_with?("/api/v3/")
+            expected_values["user_id"] = lead_provider.id
           end
 
-          expect(job.dig(:args, 0, 0, "response_status")).to eq(429)
-          expect(job.dig(:args, 0, 0, "request_path")).to eq(path)
-          if path.starts_with?("/api/v3/")
-            expect(job.dig(:args, 0, 0, "user_id")).to eq(lead_provider.id)
-          end
+          expect(DfE::Analytics::SendEvents).to have_received(:perform_later).with(array_including(a_hash_including(expected_values)))
         end
       end
     end
