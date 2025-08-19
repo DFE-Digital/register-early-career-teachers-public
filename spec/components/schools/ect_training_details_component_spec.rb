@@ -47,10 +47,23 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
       let(:ect) do
         FactoryBot.create(:ect_at_school_period,
                           :ongoing,
-                          :with_eoi_only_training_period,
                           teacher:,
-                          training_programme: 'provider_led',
-                          lead_provider:)
+                          training_programme: 'provider_led')
+      end
+
+      before do
+        # Create an EOI training period that matches the ongoing scope
+        active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:)
+        FactoryBot.create(:training_period,
+                          :provider_led,
+                          :ongoing,
+                          ect_at_school_period: ect,
+                          school_partnership: nil,
+                          expression_of_interest: active_lead_provider,
+                          started_on: Date.current,
+                          finished_on: nil)
+        ect.reload # Ensure association cache is cleared
+        render_inline(described_class.new(ect))
       end
 
       it "shows lead provider information" do
@@ -72,6 +85,17 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
                         training_programme: 'school_led')
     end
 
+    before do
+      # Create a school-led training period since the factory doesn't create one automatically for school-led
+      FactoryBot.create(:training_period,
+                        :school_led,
+                        :ongoing,
+                        ect_at_school_period: ect,
+                        started_on: Date.current,
+                        finished_on: nil)
+      render_inline(described_class.new(ect))
+    end
+
     it "does not show lead provider and delivery partner fields" do
       expect(page).not_to have_selector('.govuk-summary-list__key', text: 'Lead provider')
       expect(page).not_to have_selector('.govuk-summary-list__key', text: 'Delivery partner')
@@ -82,6 +106,8 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     context 'when training programme is provider_led' do
       let(:ect) do
         FactoryBot.create(:ect_at_school_period,
+                          :ongoing,
+                          :with_training_period,
                           teacher:,
                           training_programme: 'provider_led')
       end
@@ -95,10 +121,22 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     context 'when training programme is school_led' do
       let(:ect) do
         FactoryBot.create(:ect_at_school_period,
+                          :ongoing,
                           teacher:,
                           training_programme: 'school_led')
       end
       let(:component) { described_class.new(ect) }
+
+      before do
+        # Create a school-led training period that matches the ongoing scope
+        FactoryBot.create(:training_period,
+                          :school_led,
+                          :ongoing,
+                          ect_at_school_period: ect,
+                          started_on: Date.current,
+                          finished_on: nil)
+        ect.reload # Ensure association cache is cleared
+      end
 
       it 'returns School-led' do
         expect(component.send(:training_programme_display_name)).to eq('School-led')
@@ -108,7 +146,11 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     context 'when training programme is an unknown value' do
       it 'returns the humanized value' do
         ect_double = instance_double(ECTAtSchoolPeriod)
-        allow(ect_double).to receive(:training_programme).and_return('some_other_value')
+        training_period_double = instance_double(TrainingPeriod)
+
+        allow(ect_double).to receive(:current_training_period).and_return(training_period_double)
+        allow(training_period_double).to receive(:training_programme).and_return('some_other_value')
+
         component = described_class.new(ect_double)
 
         expect(component.send(:training_programme_display_name)).to eq('Some other value')
@@ -118,7 +160,9 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     context 'when training programme is nil' do
       it 'returns Unknown' do
         ect_double = instance_double(ECTAtSchoolPeriod)
-        allow(ect_double).to receive(:training_programme).and_return(nil)
+
+        allow(ect_double).to receive(:current_training_period).and_return(nil)
+
         component = described_class.new(ect_double)
 
         expect(component.send(:training_programme_display_name)).to eq('Unknown')
