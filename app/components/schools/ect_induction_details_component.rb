@@ -44,7 +44,7 @@ module Schools
     end
 
     def induction_start_date
-      @ect.teacher.first_induction_period&.started_on&.to_fs(:govuk)
+      Teachers::Induction.new(@ect.teacher).induction_start_date&.to_fs(:govuk)
     end
 
     def induction_start_date_with_suffix(date)
