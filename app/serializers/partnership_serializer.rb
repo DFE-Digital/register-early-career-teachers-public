@@ -7,7 +7,7 @@ class PartnershipSerializer < Blueprinter::Base
     end
 
     field :urn do |partnership, _options|
-      partnership.school.urn
+      partnership.school.urn.to_s
     end
 
     field :school_id do |partnership, _options|
