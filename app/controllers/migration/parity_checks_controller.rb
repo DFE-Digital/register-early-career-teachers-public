@@ -55,7 +55,7 @@ private
   end
 
   def load_failed_runs
-    @pagy, @failed_runs = pagy(ParityCheck::Run.failed)
+    @failed_runs = ParityCheck::Run.failed
   end
 
   def runner_params
