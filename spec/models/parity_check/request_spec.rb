@@ -44,6 +44,7 @@ describe ParityCheck::Request do
     let!(:queued_get_request) { FactoryBot.create(:parity_check_request, :queued, :get, run:) }
     let!(:in_progress_post_request) { FactoryBot.create(:parity_check_request, :in_progress, :post, run:) }
     let!(:completed_put_request) { FactoryBot.create(:parity_check_request, :completed, :put, run:) }
+    let!(:failed_post_request) { FactoryBot.create(:parity_check_request, :failed, :post, run:) }
 
     describe ".pending" do
       subject { described_class.pending }
@@ -55,6 +56,12 @@ describe ParityCheck::Request do
       subject { described_class.completed }
 
       it { is_expected.to contain_exactly(completed_put_request) }
+    end
+
+    describe ".failed" do
+      subject { described_class.failed }
+
+      it { is_expected.to contain_exactly(failed_post_request) }
     end
 
     describe ".incomplete" do
@@ -81,7 +88,7 @@ describe ParityCheck::Request do
       context "when method is :post" do
         let(:method) { :post }
 
-        it { is_expected.to contain_exactly(in_progress_post_request) }
+        it { is_expected.to contain_exactly(in_progress_post_request, failed_post_request) }
       end
 
       context "when method is :put" do
@@ -145,6 +152,12 @@ describe ParityCheck::Request do
 
         request.complete!
       end
+    end
+
+    context "when transitioning from in_progress to failed" do
+      let(:request) { FactoryBot.create(:parity_check_request, :in_progress) }
+
+      it { expect { request.halt! }.to change(request, :state).from("in_progress").to("failed") }
     end
 
     context "when attempting an unsupported transition" do

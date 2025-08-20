@@ -19,10 +19,10 @@ RSpec.describe ParityCheck::RequestHandler do
   describe "#process_request" do
     subject(:process_request) { instance.process_request }
 
+    let(:client) { instance_double(ParityCheck::Client) }
     let(:response) { FactoryBot.build(:parity_check_response, request: nil) }
 
     before do
-      client = instance_double(ParityCheck::Client)
       allow(ParityCheck::Client).to receive(:new).with(request:).and_return(client)
       allow(client).to receive(:perform_requests).and_yield(response)
     end
@@ -46,6 +46,22 @@ RSpec.describe ParityCheck::RequestHandler do
       expect(dispatcher).to receive(:dispatch)
 
       process_request
+    end
+
+    context "when the Client raises an error" do
+      before { allow(response).to receive(:update!).and_raise(ParityCheck::Client::Error, "An error occurred") }
+
+      it "marks the request as failed" do
+        expect { process_request }.to change(request, :state).to("failed").and raise_error(ParityCheck::Client::Error, "An error occurred")
+      end
+
+      it "calls the request dispatcher" do
+        dispatcher = instance_double(ParityCheck::RequestDispatcher)
+        allow(ParityCheck::RequestDispatcher).to receive(:new).with(run: request.run).and_return(dispatcher)
+        expect(dispatcher).to receive(:dispatch)
+
+        expect { process_request }.to raise_error(ParityCheck::Client::Error, "An error occurred")
+      end
     end
 
     context "when parity check is disabled" do
