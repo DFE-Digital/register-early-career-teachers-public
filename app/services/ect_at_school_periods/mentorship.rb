@@ -7,12 +7,11 @@ module ECTAtSchoolPeriods
     end
 
     def current_mentorship_period
-      latest_mentorship_period if latest_mentorship_period&.ongoing?
+      @current_mentorship_period ||= ect_at_school_period.current_mentorship_period
     end
 
     def latest_mentorship_period
       @latest_mentorship_period ||= ect_at_school_period.mentorship_periods
-                                                        .started_before(Date.tomorrow)
                                                         .latest_first
                                                         .first
     end

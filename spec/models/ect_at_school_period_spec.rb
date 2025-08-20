@@ -16,13 +16,65 @@ describe ECTAtSchoolPeriod do
       context 'when there is a current period' do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
-        it 'returns the current ect_at_school_period' do
+        it 'returns the current training_period' do
           expect(ect_at_school_period.current_training_period).to eql(training_period)
         end
       end
 
       context 'when there is no current period' do
         let!(:training_period) { FactoryBot.create(:training_period, :finished, ect_at_school_period:) }
+
+        it 'returns nil' do
+          expect(ect_at_school_period.current_training_period).to be_nil
+        end
+      end
+    end
+
+    describe '.current_mentorship_period' do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+      let(:mentorship_started_on) { 3.weeks.ago }
+      let(:mentorship_finished_on) { nil }
+
+      let!(:mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: mentorship_started_on,
+          finished_on: mentorship_finished_on
+        )
+      end
+
+      it { is_expected.to have_one(:current_mentorship_period).class_name('MentorshipPeriod') }
+
+      context 'when there is a current period' do
+        it 'returns the current mentorship_period' do
+          expect(ect_at_school_period.current_mentorship_period).to eql(mentorship_period)
+        end
+      end
+
+      context 'when there is a current period and a future period' do
+        let(:mentorship_finished_on) { 1.week.from_now }
+
+        let!(:future_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :ongoing,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: mentorship_finished_on,
+            finished_on: nil
+          )
+        end
+
+        it 'returns the current mentorship_period' do
+          expect(ect_at_school_period.current_mentorship_period).to eql(mentorship_period)
+        end
+      end
+
+      context 'when there is no current period' do
+        let(:mentorship_finished_on) { 1.week.ago }
 
         it 'returns nil' do
           expect(ect_at_school_period.current_training_period).to be_nil
