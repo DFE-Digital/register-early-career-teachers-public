@@ -44,6 +44,14 @@ module ParityCheck
         .pick(:api_id)
     end
 
+    def partnership_id
+      SchoolPartnerships::Query.new(lead_provider_id: lead_provider.id)
+        .school_partnerships
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
     # Request body methods
 
     def example_body
