@@ -1,12 +1,11 @@
 module Schools
   class AssignMentor
-    attr_reader :author, :ect, :mentor, :started_on, :mentorship_period
+    attr_reader :author, :ect, :mentor, :mentorship_period
 
-    def initialize(author:, ect:, mentor:, started_on: Date.current)
+    def initialize(author:, ect:, mentor:)
       @author = author
       @ect = ect
       @mentor = mentor
-      @started_on = started_on
     end
 
     def assign!
@@ -24,11 +23,11 @@ module Schools
     end
 
     def earliest_possible_start
-      [ect.started_on, mentor.started_on, started_on].compact.max
+      [ect.started_on, mentor.started_on, Date.current].compact.max
     end
 
     def finish_current_mentorship!
-      ECTAtSchoolPeriods::Mentorship.new(ect).current_mentorship_period&.finish!(started_on)
+      ECTAtSchoolPeriods::Mentorship.new(ect).current_mentorship_period&.finish!(earliest_possible_start)
     end
 
     def record_events!
