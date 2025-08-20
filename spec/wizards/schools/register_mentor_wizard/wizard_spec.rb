@@ -239,6 +239,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                                    review_mentor_details
                                    email_address
                                    started_on
+                                   previous_training_period_details
                                    programme_choices
                                    lead_provider
                                    review_mentor_eligibility
@@ -290,6 +291,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                                    review_mentor_details
                                    email_address
                                    started_on
+                                   previous_training_period_details
                                    programme_choices
                                    lead_provider
                                    review_mentor_eligibility
