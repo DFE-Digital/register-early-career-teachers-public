@@ -82,11 +82,9 @@ module SchoolPartnerships
     def default_scope
       SchoolPartnership
         .eager_load(
+          :delivery_partner,
           school: :gias_school,
-          lead_provider_delivery_partnership: [
-            :delivery_partner,
-            { active_lead_provider: %i[lead_provider contract_period] }
-          ]
+          active_lead_provider: :lead_provider
         )
     end
 
