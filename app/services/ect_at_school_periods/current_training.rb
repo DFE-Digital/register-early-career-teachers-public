@@ -43,12 +43,5 @@ module ECTAtSchoolPeriods
 
     # expression_of_interest_lead_provider_name
     delegate :name, to: :expression_of_interest_lead_provider, allow_nil: true, prefix: :expression_of_interest_lead_provider
-
-    # training_programme
-    delegate :training_programme, to: :current_training_period, allow_nil: true
-
-    def provider_led?
-      current_training_period&.provider_led_training_programme?
-    end
   end
 end
