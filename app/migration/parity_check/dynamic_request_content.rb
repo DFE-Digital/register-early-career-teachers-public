@@ -1,8 +1,10 @@
 module ParityCheck
   class DynamicRequestContent
-    class UnrecognizedIdentifierError < RuntimeError; end
     include ActiveModel::Model
     include ActiveModel::Attributes
+
+    class Error < RuntimeError; end
+    class UnrecognizedIdentifierError < Error; end
 
     attribute :lead_provider
 

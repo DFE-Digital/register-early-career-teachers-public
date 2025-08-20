@@ -59,8 +59,9 @@ if Rails.application.config.parity_check[:enabled]
 
   print_seed_info("Completed runs:", colour: :green, blank_lines_before: 1)
 
-  5.times do
+  10.times do
     in_progress_run = create_in_progress_run
+    fail_run = Faker::Boolean.boolean(true_ratio: 0.3)
 
     rand(1..10).times do
       endpoint = random_endpoint(run: in_progress_run)
@@ -76,12 +77,22 @@ if Rails.application.config.parity_check[:enabled]
         end
 
         request_completed_at = random_time(in_progress_request.started_at, 10.seconds)
-        in_progress_request.update!(state: :completed, completed_at: request_completed_at)
+        fail_request = fail_run && Faker::Boolean.boolean(true_ratio: 0.3)
+
+        if fail_request
+          in_progress_request.halt!
+        else
+          in_progress_request.update!(state: :completed, completed_at: request_completed_at)
+        end
       end
     end
 
-    run_completed_at = random_time(in_progress_run.started_at, 2.hours)
-    in_progress_run.update!(state: :completed, completed_at: run_completed_at)
+    if fail_run
+      in_progress_run.halt!
+    else
+      run_completed_at = random_time(in_progress_run.started_at, 2.hours)
+      in_progress_run.update!(state: :completed, completed_at: run_completed_at)
+    end
 
     describe_run(in_progress_run)
   end
