@@ -60,4 +60,28 @@ describe GIASHelpers do
       it { is_expected.not_to be_state_funded }
     end
   end
+
+  describe "#eligible_for_cip?" do
+    subject(:school) { FactoryBot.create(:school, :cip_only) }
+
+    it { is_expected.to be_eligible_for_cip }
+
+    context 'when the school is not eligible for cip' do
+      subject(:school) { FactoryBot.create(:school, :ineligible) }
+
+      it { is_expected.not_to be_eligible_for_cip }
+    end
+  end
+
+  describe "#eligible_for_fip?" do
+    subject(:school) { FactoryBot.create(:school, :eligible) }
+
+    it { is_expected.to be_eligible_for_fip }
+
+    context 'when the school is not eligible for fip' do
+      subject(:school) { FactoryBot.create(:school, :ineligible) }
+
+      it { is_expected.not_to be_eligible_for_fip }
+    end
+  end
 end

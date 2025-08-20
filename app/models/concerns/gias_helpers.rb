@@ -11,4 +11,8 @@ module GIASHelpers
   def independent? = GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(type_name)
 
   def state_funded? = GIAS::Types::STATE_SCHOOL_TYPES.include?(type_name)
+
+  def eligible_for_cip? = funding_eligibility == "eligible_for_cip"
+
+  def eligible_for_fip? = funding_eligibility == "eligible_for_fip"
 end
