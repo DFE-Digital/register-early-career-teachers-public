@@ -237,7 +237,6 @@ erDiagram
     enum working_pattern
     citext email
     integer school_reported_appropriate_body_id
-    enum training_programme
   }
   ECTAtSchoolPeriod }o--|| School : belongs_to
   ECTAtSchoolPeriod }o--|| Teacher : belongs_to
