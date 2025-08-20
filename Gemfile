@@ -88,7 +88,7 @@ group :development, :test do
   gem 'rubocop-performance', require: false
 end
 
-group :development, :test, :review, :sandbox do
+group :development, :test, :review, :staging, :sandbox do
   gem "factory_bot_rails"
   gem "faker"
 end
