@@ -59,7 +59,7 @@ RSpec.describe "Admin delivery partners", type: :request do
   end
 
   describe "GET /admin/organisations/delivery-partners/:id" do
-    let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+    let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Test College Delivery Partner") }
     let(:show_path) { admin_delivery_partner_path(delivery_partner) }
 
     it "redirects to sign in path" do
