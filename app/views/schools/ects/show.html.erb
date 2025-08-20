@@ -11,4 +11,4 @@
 
 <%= render Schools::ECTInductionDetailsComponent.new(@ect_at_school_period) %>
 
-<%= render Schools::ECTTrainingDetailsComponent.new(@ect_at_school_period) %>
+<%= render Schools::ECTTrainingDetailsComponent.new(ect_at_school_period: @ect_at_school_period, training_period: @training_period) %>

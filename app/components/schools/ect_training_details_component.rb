@@ -4,8 +4,11 @@ module Schools
   class ECTTrainingDetailsComponent < ViewComponent::Base
     include ProgrammeHelper
 
-    def initialize(ect)
-      @ect = ect
+    attr_reader :ect_at_school_period, :training_period
+
+    def initialize(ect_at_school_period:, training_period:)
+      @ect_at_school_period = ect_at_school_period
+      @training_period = training_period
     end
 
     def call
@@ -17,14 +20,10 @@ module Schools
 
   private
 
-    def training
-      @training ||= ECTAtSchoolPeriods::CurrentTraining.new(@ect)
-    end
-
     def rows
       base_rows = [training_programme_row]
 
-      if training.provider_led?
+      if training_period.provider_led_training_programme?
         base_rows << lead_provider_row
         base_rows << delivery_partner_row
       end
@@ -51,13 +50,13 @@ module Schools
     end
 
     def lead_provider_display_text
-      return fallback_lead_provider_name unless partnership_confirmed? || training.expression_of_interest?
+      return fallback_lead_provider_name unless partnership_confirmed? || training_period.expression_of_interest?
 
       if partnership_confirmed?
-        provider_name = training.lead_provider_name
+        provider_name = training_period.lead_provider_name
         status_text = "Confirmed by #{provider_name}"
       else
-        provider_name = training.expression_of_interest_lead_provider_name
+        provider_name = training_period.expression_of_interest_lead_provider_name
         status_text = "Awaiting confirmation by #{provider_name}"
       end
 
@@ -71,21 +70,21 @@ module Schools
     end
 
     def delivery_partner_display_text
-      return yet_to_be_reported_message unless partnership_confirmed? && training.delivery_partner_name.present?
+      return yet_to_be_reported_message unless partnership_confirmed? && training_period.delivery_partner_name.present?
 
       safe_join([
-        training.delivery_partner_name,
+        training_period.delivery_partner_name,
         tag.br,
         tag.span("To change the delivery partner, you must contact the lead provider", class: 'govuk-hint')
       ])
     end
 
     def partnership_confirmed?
-      training.school_partnership.present?
+      training_period.school_partnership.present?
     end
 
     def fallback_lead_provider_name
-      training.lead_provider_name || training.expression_of_interest_lead_provider_name || 'Not available'
+      training_period.lead_provider_name || training_period.expression_of_interest_lead_provider_name || 'Not available'
     end
 
     def yet_to_be_reported_message
@@ -93,13 +92,13 @@ module Schools
     end
 
     def training_programme_display_name
-      case training.training_programme
+      case training_period.training_programme
       when 'provider_led'
         'Provider-led'
       when 'school_led'
         'School-led'
       else
-        training.training_programme&.humanize || 'Unknown'
+        training_period.training_programme&.humanize || 'Unknown'
       end
     end
   end
