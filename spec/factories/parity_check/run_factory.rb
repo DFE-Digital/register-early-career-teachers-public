@@ -20,6 +20,11 @@ FactoryBot.define do
       state { :pending }
     end
 
+    trait :failed do
+      started_at { Time.current }
+      state { :failed }
+    end
+
     trait :in_progress do
       state { :in_progress }
       started_at { Time.current }

@@ -1,0 +1,5 @@
+<h2 class="govuk-heading-m">Completed runs</h2>
+
+<%= tag.p(link_to("View completed runs (#{number_with_delimiter(completed_runs.count)})", completed_migration_parity_checks_path)) if completed_runs.any? %>
+
+<hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">

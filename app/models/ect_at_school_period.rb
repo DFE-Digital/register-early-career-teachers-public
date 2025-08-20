@@ -1,13 +1,6 @@
 class ECTAtSchoolPeriod < ApplicationRecord
   include Interval
 
-  # Enums
-  enum :training_programme,
-       { provider_led: "provider_led",
-         school_led: "school_led" },
-       validate: { message: "Must be provider-led or school-led" },
-       suffix: :training_programme
-
   # Associations
   belongs_to :school, inverse_of: :ect_at_school_periods
   belongs_to :teacher, inverse_of: :ect_at_school_periods
@@ -62,16 +55,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
     .where(expression_of_interest: { lead_provider_id: })
   }
 
-  # Instance methods
-
-  def provider_led?
-    training_programme == 'provider_led'
-  end
-
-  def school_led?
-    training_programme == 'school_led'
-  end
-
   def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
 
   def school_reported_appropriate_body_type = school_reported_appropriate_body&.body_type
@@ -83,6 +66,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
   end
 
   delegate :trn, to: :teacher
+  delegate :provider_led_training_programme?, to: :current_training_period, allow_nil: true
+  delegate :school_led_training_programme?, to: :current_training_period, allow_nil: true
 
 private
 

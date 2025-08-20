@@ -4,6 +4,10 @@ FactoryBot.define do
   factory(:contract_period) do
     year { generate(:base_contract_period) }
 
+    trait :current do
+      year { Time.zone.today.year }
+    end
+
     started_on { Date.new(year, 6, 1) }
     finished_on { Date.new(year.next, 5, 31) }
 

@@ -4,10 +4,11 @@ module ParityCheck
     include ActiveModel::Attributes
     include ParityCheck::Configuration
 
-    class IDOptionMissingError < RuntimeError; end
-    class UnrecognizedQueryError < RuntimeError; end
+    class Error < RuntimeError; end
+    class IDOptionMissingError < Error; end
+    class UnrecognizedQueryError < Error; end
 
-    ID_PLACEHOLDER = ":id".freeze
+    PLACEHOLDER_PATTERN = /:[a-z_]+/
     PAGINATION_PER_PAGE = 100
 
     attribute :request
@@ -55,12 +56,18 @@ module ParityCheck
       options[:"#{app}_path"] || path
     end
 
+    def populate_placeholder(value)
+      return value unless PLACEHOLDER_PATTERN.match?(value.to_s)
+
+      dynamic_request_content.fetch(value.delete_prefix(":"))
+    end
+
     def formatted_path(app:)
       app_specific_path = app_specific_path(app:)
 
-      return app_specific_path unless app_specific_path.include?(ID_PLACEHOLDER)
+      return app_specific_path unless PLACEHOLDER_PATTERN.match?(app_specific_path)
 
-      app_specific_path.sub(ID_PLACEHOLDER, path_id)
+      app_specific_path.sub(":id", path_id)
     end
 
     def path_id
@@ -68,7 +75,7 @@ module ParityCheck
 
       raise IDOptionMissingError, "Path contains ID, but options[:id] is missing" unless identifier
 
-      dynamic_request_content.fetch(identifier)
+      populate_placeholder(identifier)
     end
 
     def token_provider
@@ -82,7 +89,7 @@ module ParityCheck
 
       raise UnrecognizedQueryError, "Query must be a Hash: #{options_query}" unless options_query.is_a?(Hash)
 
-      options_query
+      options_query.deep_transform_values { |v| populate_placeholder(v) }
     end
 
     def pagination_query

@@ -33,10 +33,17 @@ module Migrators
           .ect_or_mentor
           .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
           .find_each do |participant_profile|
-          induction_records = InductionRecordSanitizer.new(participant_profile:)
+          sanitizer = InductionRecordSanitizer.new(participant_profile:, group_by: :provider)
 
-          if induction_records.valid?
-            training_period_data = TrainingPeriodExtractor.new(induction_records:)
+          training_period_data = []
+
+          if sanitizer.valid?
+            sanitizer.induction_records.each_value do |induction_records_group|
+              training_period_data << TrainingPeriodExtractor.new(induction_records: induction_records_group).training_periods
+            end
+
+            training_period_data.flatten!
+
             result = if participant_profile.ect?
                        Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
                      else
@@ -45,7 +52,7 @@ module Migrators
           else
             ::TeacherMigrationFailure.create!(teacher:,
                                               model: :training_period,
-                                              message: induction_records.error,
+                                              message: sanitizer.error,
                                               migration_item_id: participant_profile.id,
                                               migration_item_type: participant_profile.class.name)
             result = false

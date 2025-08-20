@@ -3,6 +3,7 @@ RSpec.describe 'Selecting a different lead provider' do
 
   scenario 'Registering a new mentor' do
     given_there_is_a_school_in_the_service
+    and_the_school_is_in_a_partnership_with_a_lead_provider
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
     and_i_sign_in_as_that_school_user
     and_i_click_to_assign_a_mentor_to_the_ect
@@ -28,6 +29,14 @@ RSpec.describe 'Selecting a different lead provider' do
     then_i_should_be_taken_to_the_confirmation_page
   end
 
+  def and_the_school_is_in_a_partnership_with_a_lead_provider
+    @contract_period = FactoryBot.create(:contract_period, :current)
+    @lead_provider = FactoryBot.create(:lead_provider, name: "Xavier's School for Gifted Youngsters")
+    @active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: @contract_period, lead_provider: @lead_provider)
+    @lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: @active_lead_provider)
+    @school_partnership = FactoryBot.create(:school_partnership, school: @school, lead_provider_delivery_partnership: @lead_provider_delivery_partnership)
+  end
+
   def and_the_back_link_points_to_the_eligibility_lead_provider_page
     expect(page.get_by_role('link', name: 'Back', exact: true).get_attribute('href')).to end_with('/school/register-mentor/eligibility-lead-provider')
   end
@@ -47,13 +56,11 @@ RSpec.describe 'Selecting a different lead provider' do
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
     contract_period = FactoryBot.create(:contract_period, year: Date.current.year)
 
-    @lead_provider = FactoryBot.create(:lead_provider, name: "Xavier's School for Gifted Youngsters")
-    FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period:)
-
     @another_lead_provider = FactoryBot.create(:lead_provider, name: "Another lead provider")
     FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period:)
 
-    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :provider_led, :ongoing, lead_provider: @lead_provider, school: @school)
+    @ect = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
+    @training_period = FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: @ect, school_partnership: @school_partnership)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
