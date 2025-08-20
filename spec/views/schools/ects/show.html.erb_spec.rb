@@ -11,7 +11,6 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       working_pattern: 'full_time',
                       email: 'love@whale.com')
   end
-  let(:training_period) { FactoryBot.create(:training_period, :provider_led, school_partnership:, started_on: '2025-01-11', finished_on: nil, training_programme:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -23,6 +22,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
   let(:current_school) { FactoryBot.create(:school, :state_funded, urn: '987654') }
   let(:requested_appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Requested AB') }
   let(:training_programme) { 'provider_led' }
+  let!(:training_period) { FactoryBot.create(:training_period, :provider_led, ect_at_school_period: current_ect_period, school_partnership:, started_on: '2025-01-11', finished_on: nil, training_programme:) }
 
   before do
     FactoryBot.create(:ect_at_school_period, :state_funded_school,
@@ -98,52 +98,75 @@ RSpec.describe 'schools/ects/show.html.erb' do
       expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Working pattern')
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Full time')
     end
+
+    it 'status' do
+      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Status')
+      expect(rendered).to have_css('dd.govuk-summary-list__value .govuk-tag')
+    end
   end
 
-  describe 'ECTE training details' do
+  describe 'Induction details' do
     before do
       FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
-
+      teacher.reload # Reload to pick up the new induction period
       render
     end
 
-    it 'titles' do
-      expect(rendered).to have_css('h2.govuk-heading-m', text: 'ECTE training details')
-      expect(rendered).to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your school')
-      expect(rendered).to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
-      expect(rendered).to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your appropriate body')
+    it 'has title' do
+      expect(rendered).to have_css('h2.govuk-heading-m', text: 'Induction details')
     end
 
-    it 'keys' do
+    it 'shows appropriate body' do
       expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Appropriate body')
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Training programme')
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Delivery partner')
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Induction start date')
-    end
-
-    it 'values' do
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Alpha Teaching School Hub')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Full induction programme')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Ambition institute')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Provider-led')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 1.year.ago.to_date.to_fs(:govuk))
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Requested AB')
     end
 
-    context 'when school-led' do
-      let(:training_programme) { 'school_led' }
+    it 'shows induction start date' do
+      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Induction start date')
+      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 1.year.ago.to_date.to_fs(:govuk))
+    end
 
-      it 'does not render the lead provider summary card' do
-        expect(rendered).not_to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
+    context 'when no induction start date is available' do
+      before do
+        teacher.induction_periods.destroy_all
+        render
       end
+
+      it 'shows appropriate message' do
+        expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Yet to be reported by the appropriate body')
+      end
+    end
+  end
+
+  describe 'Training details' do
+    before do
+      render
+    end
+
+    it 'has title' do
+      expect(rendered).to have_css('h2.govuk-heading-m', text: 'Training details')
+    end
+
+    it 'shows training programme' do
+      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Training programme')
+      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Provider-led')
     end
 
     context 'when provider-led' do
       let(:training_programme) { 'provider_led' }
 
-      it 'renders the lead provider summary card' do
-        expect(rendered).to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
+      it 'shows lead provider and delivery partner fields' do
+        expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
+        expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Delivery partner')
+      end
+    end
+
+    context 'when school-led' do
+      let(:training_programme) { 'school_led' }
+
+      it 'does not show lead provider and delivery partner fields' do
+        expect(rendered).not_to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
+        expect(rendered).not_to have_css('dt.govuk-summary-list__key', text: 'Delivery partner')
       end
     end
   end
