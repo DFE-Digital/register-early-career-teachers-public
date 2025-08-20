@@ -25,7 +25,7 @@ module API
     def validate_filters
       return unless filter_errors.any?
 
-      render json: { errors: API::Errors::Response.new(error: "Bad parameter", params: filter_errors).call }, status: :bad_request
+      render json: { errors: API::Errors::Response.new(title: "Bad parameter", messages: filter_errors).call }, status: :bad_request
     end
 
     def filter_errors
