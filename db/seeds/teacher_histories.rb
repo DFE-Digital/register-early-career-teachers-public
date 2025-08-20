@@ -195,8 +195,7 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   email: 'kate.winslet@titanic.com',
   started_on: 1.year.ago,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
-  working_pattern: 'full_time',
-  training_programme: 'school_led'
+  working_pattern: 'full_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -252,8 +251,7 @@ alan_rickman_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
   email: 'alan.rickman@diehard.com',
   started_on: 2.years.ago,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
-  working_pattern: 'part_time',
-  training_programme: 'provider_led'
+  working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 ackley_bridge.update!(last_chosen_lead_provider: best_practice_network,
@@ -300,8 +298,7 @@ hugh_grant_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   email: 'hugh.grant@wonka.com',
   started_on: 2.years.ago,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
-  working_pattern: 'part_time',
-  training_programme: 'school_led'
+  working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -341,8 +338,7 @@ colin_firth_ect_at_abbey_grove = ECTAtSchoolPeriod.create!(
   email: 'colin.firth@aol.com',
   started_on: 2.years.ago,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
-  working_pattern: 'full_time',
-  training_programme: 'provider_led'
+  working_pattern: 'full_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 abbey_grove_school.update!(last_chosen_lead_provider: nil,
@@ -435,8 +431,7 @@ imogen_stubbs_at_malory_towers = ECTAtSchoolPeriod.create!(
   email: 'imogen.stubbs@eriktheviking.com',
   started_on: 2.years.ago,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
-  working_pattern: 'full_time',
-  training_programme: 'school_led'
+  working_pattern: 'full_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -469,8 +464,7 @@ gemma_jones_at_malory_towers = ECTAtSchoolPeriod.create!(
   email: 'gemma.jones@rocketman.com',
   started_on: 21.months.ago,
   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
-  working_pattern: 'part_time',
-  training_programme: 'provider_led'
+  working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 mallory_towers.update!(last_chosen_lead_provider: best_practice_network,
@@ -514,7 +508,6 @@ anthony_hopkins_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'anthony.hopkins@favabeans.com',
   school_reported_appropriate_body: umber_teaching_school_hub,
-  training_programme: 'provider_led',
   started_on: 2.years.ago,
   working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
@@ -535,7 +528,6 @@ stephen_fry_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   email: 'stephen.fry@sausage.com',
   started_on: 2.years.ago,
   school_reported_appropriate_body: south_yorkshire_studio_hub,
-  training_programme: 'provider_led',
   working_pattern: 'part_time'
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
@@ -557,8 +549,7 @@ harriet_walter_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'harriet-walter@history.com',
   started_on: 2.years.ago,
-  school_reported_appropriate_body: south_yorkshire_studio_hub,
-  training_programme: 'provider_led'
+  school_reported_appropriate_body: south_yorkshire_studio_hub
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -610,8 +601,7 @@ dominic_west_ect_at_brookfield_school = ECTAtSchoolPeriod.create!(
   school: brookfield_school,
   email: 'harriet-walter@history.com',
   started_on: 18.months.ago,
-  school_reported_appropriate_body: south_yorkshire_studio_hub,
-  training_programme: 'provider_led'
+  school_reported_appropriate_body: south_yorkshire_studio_hub
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(
@@ -629,8 +619,7 @@ peter_davison_at_abbey_grove_school = ECTAtSchoolPeriod.create!(
   school: abbey_grove_school,
   email: 'pd@tardis.bbc',
   started_on: 2.weeks.from_now,
-  school_reported_appropriate_body: south_yorkshire_studio_hub,
-  training_programme: 'provider_led'
+  school_reported_appropriate_body: south_yorkshire_studio_hub
 ).tap { |sp| describe_ect_at_school_period(sp) }
 
 TrainingPeriod.create!(

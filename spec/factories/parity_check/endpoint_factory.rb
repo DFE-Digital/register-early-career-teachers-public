@@ -19,7 +19,7 @@ FactoryBot.define do
     end
 
     trait :with_query_parameters do
-      options { { query: { filter: "value" } } }
+      options { { query: { filter: { key: "value" } } } }
     end
 
     trait :with_pagination do
@@ -27,7 +27,7 @@ FactoryBot.define do
     end
 
     trait :with_query_parameters_and_pagination do
-      options { { paginate: true, query: { filter: "value" } } }
+      options { { paginate: true, query: { filter: { key: "value" } } } }
     end
   end
 end

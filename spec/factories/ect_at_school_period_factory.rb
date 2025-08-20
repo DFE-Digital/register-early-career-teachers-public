@@ -5,7 +5,6 @@ FactoryBot.define do
     association :teacher
 
     independent_school
-    provider_led
 
     started_on { generate(:base_ect_date) }
     finished_on { started_on + 1.day }
@@ -25,14 +24,6 @@ FactoryBot.define do
     trait :ongoing do
       started_on { generate(:base_ect_date) + 1.year }
       finished_on { nil }
-    end
-
-    trait :provider_led do
-      training_programme { 'provider_led' }
-    end
-
-    trait :school_led do
-      training_programme { 'school_led' }
     end
 
     trait :independent_school do

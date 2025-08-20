@@ -15,7 +15,7 @@ RSpec.describe SandboxSeedData::SchoolPartnerships do
     # Ensure there are schools to create partnerships with
     before do
       FactoryBot.create_list(:lead_provider_delivery_partnership, 5, active_lead_provider:)
-      FactoryBot.create_list(:school, 100)
+      FactoryBot.create_list(:school, 10)
     end
 
     it "creates school partnerships for all lead providers" do

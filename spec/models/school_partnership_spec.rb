@@ -18,7 +18,9 @@ describe SchoolPartnership do
     it { is_expected.to belong_to(:school) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_one(:active_lead_provider).through(:lead_provider_delivery_partnership) }
+    it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
+    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
   end
 
   describe "validations" do
@@ -44,11 +46,5 @@ describe SchoolPartnership do
         expect(described_class.for_contract_period(contract_period_2.id)).to contain_exactly(school_partnership_2)
       end
     end
-  end
-
-  describe "delegate methods" do
-    it { is_expected.to delegate_method(:lead_provider).to(:lead_provider_delivery_partnership) }
-    it { is_expected.to delegate_method(:delivery_partner).to(:lead_provider_delivery_partnership) }
-    it { is_expected.to delegate_method(:contract_period).to(:lead_provider_delivery_partnership) }
   end
 end

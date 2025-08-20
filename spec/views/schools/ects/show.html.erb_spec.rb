@@ -9,7 +9,6 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       school_reported_appropriate_body: requested_appropriate_body,
                       school: current_school,
                       working_pattern: 'full_time',
-                      training_programme:,
                       email: 'love@whale.com')
   end
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }

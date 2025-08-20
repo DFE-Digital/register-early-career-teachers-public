@@ -15,6 +15,7 @@ module Metadata
           .constants
           .map { Handlers.const_get(it) }
           .select { it.is_a?(Class) }
+          .reject { it == Metadata::Handlers::Base }
       end
     end
   end

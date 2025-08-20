@@ -1,8 +1,10 @@
 module ParityCheck
   class DynamicRequestContent
-    class UnrecognizedIdentifierError < RuntimeError; end
     include ActiveModel::Model
     include ActiveModel::Attributes
+
+    class Error < RuntimeError; end
+    class UnrecognizedIdentifierError < Error; end
 
     attribute :lead_provider
 
@@ -37,6 +39,14 @@ module ParityCheck
     def delivery_partner_id
       DeliveryPartners::Query.new(lead_provider_id: lead_provider.id)
         .delivery_partners
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
+    def partnership_id
+      SchoolPartnerships::Query.new(lead_provider_id: lead_provider.id)
+        .school_partnerships
         .distinct(false)
         .reorder("RANDOM()")
         .pick(:api_id)
