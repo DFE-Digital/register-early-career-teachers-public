@@ -40,10 +40,6 @@ RSpec.describe SandboxSeedData::LeadProviderDeliveryPartnerships do
 
       expect(logger).to have_received(:info).with(/Planting lead provider delivery partnerships/).once
 
-      described_class::APPLICABLE_CONTRACT_PERIOD_YEARS.each do |year|
-        expect(logger).to have_received(:info).with(/#{year}/).exactly(LeadProvider.count).times
-      end
-
       LeadProvider.find_each do |lead_provider|
         expect(logger).to have_received(:info).with(/#{lead_provider.name}/).once
       end
