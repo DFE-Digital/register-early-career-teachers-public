@@ -659,3 +659,75 @@ MentorshipPeriod.create!(
   started_on: 1.year.ago,
   finished_on: nil
 ).tap { |mp| describe_mentorship_period(mp) }
+
+print_seed_info("Creating ECT school transition test data", blank_lines_before: 1, colour: :yellow)
+
+# Alex Transition moving from Abbey Grove to Brookfield
+alex_transition = Teacher.find_by!(trs_first_name: 'Alex', trs_last_name: 'Transition')
+
+print_seed_info("Alex Transition: Moving from #{abbey_grove_school.gias_school.name} to #{brookfield_school.gias_school.name}", indent: 2, colour: :cyan)
+
+# Step 1: Create current period at Abbey Grove (ongoing)
+alex_current_period = ECTAtSchoolPeriod.create!(
+  teacher: alex_transition,
+  school: abbey_grove_school,
+  started_on: 2.months.ago,
+  finished_on: nil,
+  email: 'alex.transition@abbeygrove.edu',
+  working_pattern: 'full_time',
+  school_reported_appropriate_body: AppropriateBody.first
+).tap { |sp| describe_ect_at_school_period(sp) }
+
+# Create training period for Alex at Abbey Grove
+TrainingPeriod.create!(
+  ect_at_school_period: alex_current_period,
+  started_on: 2.months.ago,
+  finished_on: nil,
+  school_partnership: ambition_artisan_partnership_2022,
+  training_programme: 'provider_led'
+).tap { |tp| describe_training_period(tp) }
+
+# Step 2: End the current period and create future period at Brookfield
+future_start_date = 2.weeks.from_now.to_date
+
+# End the Abbey Grove period on the day before transition
+alex_current_period.update!(finished_on: future_start_date - 1.day)
+
+# Also end the training period at Abbey Grove
+alex_current_period.training_periods.first.update!(finished_on: future_start_date - 1.day)
+
+# Create future period at Brookfield
+alex_future_period = ECTAtSchoolPeriod.create!(
+  teacher: alex_transition,
+  school: brookfield_school,
+  started_on: future_start_date,
+  finished_on: nil,
+  email: 'alex.transition@brookfield.edu',
+  working_pattern: 'full_time',
+  school_reported_appropriate_body: AppropriateBody.first
+).tap { |sp| describe_ect_at_school_period(sp) }
+
+# Create training period for Alex at Brookfield
+TrainingPeriod.create!(
+  ect_at_school_period: alex_future_period,
+  started_on: future_start_date,
+  finished_on: nil,
+  school_partnership: ambition_artisan_partnership_2022,
+  training_programme: 'provider_led'
+).tap { |tp| describe_training_period(tp) }
+
+print_seed_info("✓ Alex Transition periods created (ends at Abbey Grove on #{future_start_date - 1.day}, starts at Brookfield on #{future_start_date})", indent: 4)
+
+print_seed_info("ECT Transition Test Summary:", blank_lines_before: 1, colour: :green)
+print_seed_info("Teacher: Alex Transition (TRN: 9001001)", indent: 2)
+print_seed_info("Current school: #{abbey_grove_school.gias_school.name} (URN: #{abbey_grove_school.urn}) - until #{future_start_date - 1.day}", indent: 2)
+print_seed_info("Future school: #{brookfield_school.gias_school.name} (URN: #{brookfield_school.urn}) - from #{future_start_date}", indent: 2)
+
+print_seed_info("Test the visibility scopes in Rails console:", indent: 2, colour: :yellow)
+print_seed_info("abbey_grove = School.find_by!(urn: #{abbey_grove_school.urn})", indent: 4)
+print_seed_info("brookfield = School.find_by!(urn: #{brookfield_school.urn})", indent: 4)
+print_seed_info("# Before transition: Alex visible at Abbey Grove (current), Brookfield shows future period", indent: 4)
+print_seed_info("ECTAtSchoolPeriod.visible_for_school(abbey_grove)", indent: 4)
+print_seed_info("ECTAtSchoolPeriod.visible_for_school(brookfield)", indent: 4)
+print_seed_info("# After transition: Alex visible at Brookfield only (Abbey Grove period finished)", indent: 4)
+print_seed_info("# Same commands work - scope automatically handles date logic", indent: 4)
