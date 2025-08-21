@@ -14,7 +14,8 @@ module SchoolPartnerships
     validates :school_api_id, presence: { message: "Enter a '#/school_id'." }
     validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
     validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_id'." }
-    validate :enabled_contract_period_year_exists
+    validate :contract_period_exists
+    validate :contract_period_enabled
     validate :lead_provider_exists
     validate :school_exists
     validate :school_is_not_cip_only
@@ -38,7 +39,7 @@ module SchoolPartnerships
   private
 
     def contract_period
-      @contract_period ||= ContractPeriod.enabled.find_by(year: contract_period_year) if contract_period_year
+      @contract_period ||= ContractPeriod.find_by(year: contract_period_year) if contract_period_year
     end
 
     def lead_provider
@@ -53,8 +54,12 @@ module SchoolPartnerships
       @delivery_partner ||= DeliveryPartner.find_by(api_id: delivery_partner_api_id) if delivery_partner_api_id
     end
 
-    def enabled_contract_period_year_exists
+    def contract_period_exists
       errors.add(:contract_period_year, "The '#/cohort' you have entered is invalid. Check cohort details and try again.") unless contract_period
+    end
+
+    def contract_period_enabled
+      errors.add(:contract_period_year, "You cannot create this partnership until the cohort has started.") unless contract_period&.enabled?
     end
 
     def lead_provider_exists

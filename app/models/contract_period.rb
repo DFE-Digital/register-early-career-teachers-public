@@ -10,7 +10,6 @@ class ContractPeriod < ApplicationRecord
 
   # Scopes
   scope :most_recent_first, -> { order(year: :desc, started_on: :desc) }
-  scope :enabled, -> { where(enabled: true) }
 
   # Validations
   validates :year,
