@@ -1,7 +1,7 @@
 module API
   module Guidance
     class SidebarComponent < ViewComponent::Base
-      GUIDANCE_PREFIX = "guidance-for-lead-providers".freeze
+      GUIDANCE_PREFIX = "guidance-for-lead-providers"
       GUIDANCE_PAGES = [
         { title: "API IDs explained", path: "api-ids-explained" },
         { title: "API data states", path: "api-data-states" },

@@ -5,7 +5,7 @@ module RSpecPlaywright
   class PlaywrightMajorVersionMismatch < StandardError; end
 
   DEFAULT_TIMEOUT = 3_000
-  PLAYWRIGHT_CLI_EXECUTABLE_PATH = "./node_modules/.bin/playwright".freeze
+  PLAYWRIGHT_CLI_EXECUTABLE_PATH = "./node_modules/.bin/playwright"
 
   def self.start_browser
     Playwright.create(playwright_cli_executable_path: PLAYWRIGHT_CLI_EXECUTABLE_PATH)

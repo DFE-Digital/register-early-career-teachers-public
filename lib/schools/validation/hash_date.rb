@@ -1,8 +1,8 @@
 module Schools
   module Validation
     class HashDate
-      DATE_MISSING_MESSAGE = "Enter a date".freeze
-      INVALID_FORMAT_MESSAGE = "Enter the date in the correct format, for example 30 06 2001".freeze
+      DATE_MISSING_MESSAGE = "Enter a date"
+      INVALID_FORMAT_MESSAGE = "Enter the date in the correct format, for example 30 06 2001"
 
       attr_reader :date_as_hash, :error_message
 
