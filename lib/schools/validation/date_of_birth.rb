@@ -1,10 +1,10 @@
 module Schools
   module Validation
     class DateOfBirth < HashDate
-      DATE_MISSING_MESSAGE   = "Enter a date of birth".freeze
-      INVALID_FORMAT_MESSAGE = "Enter the date of birth in the correct format, for example 12 03 1998".freeze
-      TOO_OLD_MESSAGE        = "The teacher cannot be more than 100 years old".freeze
-      TOO_YOUNG_MESSAGE      = "The teacher cannot be less than 18 years old".freeze
+      DATE_MISSING_MESSAGE   = "Enter a date of birth"
+      INVALID_FORMAT_MESSAGE = "Enter the date of birth in the correct format, for example 12 03 1998"
+      TOO_OLD_MESSAGE        = "The teacher cannot be more than 100 years old"
+      TOO_YOUNG_MESSAGE      = "The teacher cannot be less than 18 years old"
 
     private
 

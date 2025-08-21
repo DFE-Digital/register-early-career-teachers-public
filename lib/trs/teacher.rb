@@ -1,6 +1,6 @@
 module TRS
   class Teacher
-    PROHIBITED_FROM_TEACHING_CATEGORY_ID = 'b2b19019-b165-47a3-8745-3297ff152581'.freeze
+    PROHIBITED_FROM_TEACHING_CATEGORY_ID = 'b2b19019-b165-47a3-8745-3297ff152581'
 
     attr_reader :trn,
                 :first_name,
