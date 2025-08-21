@@ -97,3 +97,66 @@ erDiagram
 - Prior to release we surfaced database changes to enable better testing and these became the first draft of an admin console.
 - Upon release the feature helped flag that worker queue config and pod resources needed attention.
 - Initial usage highlighted that using the CYA approach needed further consideration as external changes could invalidate rows.
+
+## Status indicators
+
+These are database enforced `enum` values for a batch.
+
+1. **pending**
+
+`pending` is the initial state of a batch record when it is created using the file data uploaded.
+It is a transitory state and should not be seen for long.
+
+2. **processing**
+
+Once the background job responsible for checking each row and converting it into a pending submission record begins,
+it changes the batch status from `pending` to `processing`.
+It is a transitory state and should not be seen for long, depending on the size of the file, no more than 5 minutes.
+
+3. **processed**
+
+Once the background job has converted all rows to pending submission record it changes the batch status from `processing` to `processed`.
+
+This is a stable state.
+
+If any rows were valid and their associated pending submission can be converted into a claim, outcome or release,
+the service waits for the user to confirm before proceeding.
+The length of time depending on the size of the file, no more than 5 minutes.
+
+If all rows are invalid and no actionable data is available `processed` is also the final status for the batch.
+
+4. **completing**
+
+Any valid data once confirmed by the user will cause the background job to run again.
+The background job changes the status from `processed` to `completing`.
+It is a transitory state and should not be seen for long; it will be much quicker than the time taken to process.
+
+5. **completed**
+
+Once the background job has converted all pending submission records to teacher and induction period amendments,
+it changes the batch status from `completing` to `completed`.
+
+This is a stable state and the final state for either partially or completely successful batches.
+
+6. **failed**
+
+This batch status is reserved for internal errors.
+
+It is a stable state and the only state for a batch that cannot be handled by the job.
+
+It should not be seen on production and indicates there has been an issue requiring action from the development team.
+
+
+## Inferred statuses
+
+1. **blocked**
+
+`processed` and every row had an error meaning all the data was invalid and no changes can be made.
+
+No user action is required with this batch. A second upload with a corrected file is necessary.
+
+2. **idle**
+
+`processed` and at least some rows had valid data but the changes have not yet been confirmed.
+
+User action is required.
