@@ -1,5 +1,5 @@
 describe ECTAtSchoolPeriods::CurrentTraining do
-  describe "#training_period" do
+  describe "#current_training_period" do
     subject { described_class.new(ect_at_school_period).current_training_period }
 
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
@@ -21,6 +21,44 @@ describe ECTAtSchoolPeriods::CurrentTraining do
       let!(:ongoing_training) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period:) }
 
       it { is_expected.to eq(ongoing_training) }
+    end
+  end
+
+  describe '#lead_provider_via_school_partnership_or_eoi' do
+    subject { ECTAtSchoolPeriods::CurrentTraining.new(ect_at_school_period).lead_provider_via_school_partnership_or_eoi }
+
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
+
+    context 'when there is a lead provider via school partnership' do
+      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+
+      before { FactoryBot.create(:training_period, :ongoing, school_partnership:, ect_at_school_period:) }
+
+      it 'returns the lead provider connected via school partnership' do
+        expect(subject).to eql(school_partnership.lead_provider)
+      end
+    end
+
+    context 'when there is only a lead provider via expression of interest' do
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+
+      before { FactoryBot.create(:training_period, :ongoing, :with_no_school_partnership, ect_at_school_period:, expression_of_interest: active_lead_provider) }
+
+      it 'returns the lead provider connected via expression of interest' do
+        expect(subject).to eql(active_lead_provider.lead_provider)
+      end
+    end
+
+    context 'when there are both lead provider via school partnership and expression of interest' do
+      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+
+      before { FactoryBot.create(:training_period, :ongoing, expression_of_interest: active_lead_provider, school_partnership:, ect_at_school_period:) }
+
+      it 'returns the lead provider connected via school partnership' do
+        expect(subject).to eql(school_partnership.lead_provider)
+        expect(subject).not_to eql(active_lead_provider.lead_provider)
+      end
     end
   end
 
