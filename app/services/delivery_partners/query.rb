@@ -8,7 +8,7 @@ module DeliveryPartners
 
     def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: nil)
       @scope = DeliveryPartner
-        .select("delivery_partners.*", transient_cohorts_subquery(lead_provider_id:))
+        .includes(:lead_provider_metadata)
         .distinct
 
       where_lead_provider_is(lead_provider_id)
@@ -33,22 +33,6 @@ module DeliveryPartners
     end
 
   private
-
-    def transient_cohorts_subquery(lead_provider_id:)
-      lead_provider_where_clause = %(AND active_lead_providers.lead_provider_id = #{ActiveRecord::Base.connection.quote(lead_provider_id)}) unless ignore?(filter: lead_provider_id)
-
-      <<~SQL.squish
-        (
-          SELECT ARRAY(
-            SELECT DISTINCT active_lead_providers.contract_period_year::text
-            FROM lead_provider_delivery_partnerships
-            INNER JOIN active_lead_providers ON active_lead_providers.id = lead_provider_delivery_partnerships.active_lead_provider_id
-            WHERE lead_provider_delivery_partnerships.delivery_partner_id = delivery_partners.id #{lead_provider_where_clause}
-            ORDER BY active_lead_providers.contract_period_year::text
-          )
-        ) AS transient_cohorts
-      SQL
-    end
 
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)

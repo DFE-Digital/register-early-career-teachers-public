@@ -17,43 +17,6 @@ RSpec.describe DeliveryPartners::Query do
       expect(query.delivery_partners).to eq([delivery_partner1, delivery_partner2, delivery_partner3])
     end
 
-    describe "transient_cohorts" do
-      let(:lead_provider_2024) { FactoryBot.create(:lead_provider) }
-      let(:lead_provider_2025) { FactoryBot.create(:lead_provider) }
-
-      let(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
-      let(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
-
-      let(:active_lead_provider_2024) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2024, contract_period: contract_period_2024) }
-      let(:active_lead_provider_2025) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2025, contract_period: contract_period_2025) }
-
-      let(:lead_provider_delivery_partnership_2024) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2024) }
-      let!(:delivery_partner1) { lead_provider_delivery_partnership_2024.delivery_partner }
-      let!(:lead_provider_delivery_partnership_2025) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner1, active_lead_provider: active_lead_provider_2025) }
-
-      context "when ignoring lead provider" do
-        let(:lead_provider_id) { :ignore }
-
-        it "loads the cohorts for all lead providers" do
-          query = described_class.new(lead_provider_id:)
-
-          expect(query.delivery_partners).to contain_exactly(delivery_partner1)
-          expect(query.delivery_partners.map(&:transient_cohorts)).to contain_exactly(%w[2024 2025])
-        end
-      end
-
-      context "when filter by lead provider" do
-        let(:lead_provider_id) { lead_provider_2024.id }
-
-        it "only includes cohorts for the given lead provider" do
-          query = described_class.new(lead_provider_id:)
-
-          expect(query.delivery_partners).to contain_exactly(delivery_partner1)
-          expect(query.delivery_partners.map(&:transient_cohorts)).to contain_exactly(%w[2024])
-        end
-      end
-    end
-
     describe "filtering" do
       describe "by `lead_provider`" do
         let(:lead_provider_delivery_partnership1) { FactoryBot.create(:lead_provider_delivery_partnership) }
