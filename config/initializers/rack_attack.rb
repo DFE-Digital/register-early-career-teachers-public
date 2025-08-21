@@ -90,7 +90,7 @@ ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start
     user ||= Sessions::User.from_session(request.session["user_session"])
 
     rate_limit_event = DfE::Analytics::Event.new
-      .with_type(:persist_api_request)
+      .with_type(:web_request)
       .with_request_details(request)
       .with_response_details(response)
       .with_request_uuid(request.uuid)
