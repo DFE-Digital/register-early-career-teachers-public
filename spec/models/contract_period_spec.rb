@@ -98,15 +98,6 @@ describe ContractPeriod do
         expect(result.last).to eq(period_2022)
       end
     end
-
-    describe ".enabled" do
-      subject { described_class.enabled }
-
-      let!(:enabled_period) { FactoryBot.create(:contract_period, enabled: true) }
-      let!(:disabled_period) { FactoryBot.create(:contract_period, enabled: false) }
-
-      it { is_expected.to contain_exactly(enabled_period) }
-    end
   end
 
   describe "#started_on_or_before_today?" do
