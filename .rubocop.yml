@@ -16,7 +16,8 @@ inherit_mode:
     - Exclude
 
 AllCops:
-  TargetRubyVersion: 3.4.4
+  TargetRubyVersion: 3.4
+  StringLiteralsFrozenByDefault: true
 
 require:
   - ./.rubocop/cop/rspec_cops
