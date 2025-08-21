@@ -167,6 +167,21 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
       expect(created_school_partnership).to have_attributes(school:, lead_provider_delivery_partnership:)
     end
 
+    it "records a school partnership created event" do
+      allow(Events::Record).to receive(:record_school_partnership_created_event!).once.and_call_original
+
+      school_partnership = create_school_partnership
+
+      expect(Events::Record).to have_received(:record_school_partnership_created_event!).once.with(
+        hash_including(
+          {
+            school_partnership:,
+            author: kind_of(Events::LeadProviderAuthor),
+          }
+        )
+      )
+    end
+
     context "when invalid" do
       let(:school_api_id) { SecureRandom.uuid }
 

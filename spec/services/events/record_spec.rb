@@ -827,6 +827,31 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe '.record_school_partnership_created_event!' do
+    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_school_partnership_created_event!(author:, school_partnership:)
+        metadata = {
+          contract_period_year: school_partnership.contract_period.year,
+        }
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "#{school_partnership.school.name} partnered with #{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) for #{school_partnership.contract_period.year}",
+          school_partnership:,
+          school: school_partnership.school,
+          delivery_partner: school_partnership.delivery_partner,
+          lead_provider: school_partnership.lead_provider,
+          event_type: :school_partnership_created,
+          happened_at: Time.zone.now,
+          metadata:,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe '.record_statement_adjustment_updated_event!' do
     let(:statement) { FactoryBot.create(:statement) }
     let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
