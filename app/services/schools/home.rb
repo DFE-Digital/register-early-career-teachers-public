@@ -8,14 +8,17 @@ module Schools
 
     def ects_with_mentors
       ECTAtSchoolPeriod
-        .where(school:)
+        .visible_for_school(school)
         .eager_load(:teacher, :school, mentors: :teacher)
-        .merge(MentorshipPeriod.ongoing)
+        .joins(:mentorship_periods)
+        .merge(MentorshipPeriod.ongoing_today_or_starting_tomorrow_or_after)
+        .distinct
     end
 
     def mentors_with_ects
       MentorAtSchoolPeriod
         .where(school:)
+        .ongoing_today_or_starting_tomorrow_or_after
         .eager_load(:teacher, :school)
     end
   end

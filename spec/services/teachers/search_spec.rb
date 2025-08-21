@@ -295,6 +295,128 @@ describe Teachers::Search do
           expect(results).to eq([teacher2, teacher1, mentored_teacher2, mentored_teacher1])
         end
       end
+
+      describe "ECT school transitions" do
+        let(:school_a) { FactoryBot.create(:school) }
+        let(:school_b) { FactoryBot.create(:school) }
+        let(:transition_teacher) { FactoryBot.create(:teacher) }
+
+        context "when ECT has ongoing period at school A" do
+          let!(:school_a_period) do
+            FactoryBot.create(:ect_at_school_period,
+                              school: school_a,
+                              teacher: transition_teacher,
+                              started_on: 2.months.ago,
+                              finished_on: nil)
+          end
+
+          it "shows ECT in school A" do
+            search = Teachers::Search.new(ect_at_school: school_a)
+            results = search.search
+
+            expect(results).to include(transition_teacher)
+          end
+
+          it "does not show ECT in school B" do
+            search = Teachers::Search.new(ect_at_school: school_b)
+            results = search.search
+
+            expect(results).not_to include(transition_teacher)
+          end
+        end
+
+        context "when ECT has future period at school B" do
+          let!(:school_b_period) do
+            FactoryBot.create(:ect_at_school_period,
+                              school: school_b,
+                              teacher: transition_teacher,
+                              started_on: 1.week.from_now,
+                              finished_on: nil)
+          end
+
+          it "shows ECT in school B even before start date" do
+            search = Teachers::Search.new(ect_at_school: school_b)
+            results = search.search
+
+            expect(results).to include(transition_teacher)
+          end
+
+          it "does not show ECT in school A" do
+            search = Teachers::Search.new(ect_at_school: school_a)
+            results = search.search
+
+            expect(results).not_to include(transition_teacher)
+          end
+        end
+
+        context "when ECT has transitioned and old period is closed" do
+          let!(:old_school_period) do
+            FactoryBot.create(:ect_at_school_period,
+                              school: school_a,
+                              teacher: transition_teacher,
+                              started_on: 2.months.ago,
+                              finished_on: 1.week.ago)
+          end
+
+          let!(:new_school_period) do
+            FactoryBot.create(:ect_at_school_period,
+                              school: school_b,
+                              teacher: transition_teacher,
+                              started_on: 1.week.ago,
+                              finished_on: nil)
+          end
+
+          it "does not show ECT in old school after transition" do
+            search = Teachers::Search.new(ect_at_school: school_a)
+            results = search.search
+
+            expect(results).not_to include(transition_teacher)
+          end
+
+          it "shows ECT in new school after transition" do
+            search = Teachers::Search.new(ect_at_school: school_b)
+            results = search.search
+
+            expect(results).to include(transition_teacher)
+          end
+        end
+
+        context "when multiple ECTs are at different schools" do
+          let(:teacher_2) { FactoryBot.create(:teacher) }
+
+          let!(:teacher_1_period) do
+            FactoryBot.create(:ect_at_school_period,
+                              school: school_a,
+                              teacher: transition_teacher,
+                              started_on: 2.months.ago,
+                              finished_on: nil)
+          end
+
+          let!(:teacher_2_period) do
+            FactoryBot.create(:ect_at_school_period,
+                              school: school_b,
+                              teacher: teacher_2,
+                              started_on: 1.week.ago,
+                              finished_on: nil)
+          end
+
+          it "shows correct teachers for each school" do
+            search_a = Teachers::Search.new(ect_at_school: school_a)
+            results_a = search_a.search
+
+            search_b = Teachers::Search.new(ect_at_school: school_b)
+            results_b = search_b.search
+
+            # School A should show teacher 1 only
+            expect(results_a).to include(transition_teacher)
+            expect(results_a).not_to include(teacher_2)
+
+            # School B should show teacher 2 only
+            expect(results_b).to include(teacher_2)
+            expect(results_b).not_to include(transition_teacher)
+          end
+        end
+      end
     end
 
     it 'orders results by last name, first name, and id' do

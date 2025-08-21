@@ -11,6 +11,10 @@ class MentorAtSchoolPeriod < ApplicationRecord
            -> { ongoing.includes(:teacher) },
            through: :mentorship_periods,
            source: :mentee
+  has_many :currently_assigned_and_transferring_ects,
+           -> { ongoing_today_or_starting_tomorrow_or_after.includes(:teacher) },
+           through: :mentorship_periods,
+           source: :mentee
 
   # Validations
   validates :email,
