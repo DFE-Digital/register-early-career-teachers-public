@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # rubocop:disable Rails/Output
 module Migration
   # Formats and displays induction sequence analysis results to the console
