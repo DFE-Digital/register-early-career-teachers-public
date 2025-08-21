@@ -14,7 +14,6 @@ describe TrainingPeriod do
     it { is_expected.to belong_to(:ect_at_school_period).class_name("ECTAtSchoolPeriod").inverse_of(:training_periods) }
     it { is_expected.to belong_to(:mentor_at_school_period).inverse_of(:training_periods) }
     it { is_expected.to belong_to(:school_partnership) }
-    it { is_expected.to belong_to(:expression_of_interest).class_name('ActiveLeadProvider') }
     it { is_expected.to have_many(:declarations).inverse_of(:training_period) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_one(:lead_provider_delivery_partnership).through(:school_partnership) }
@@ -22,6 +21,9 @@ describe TrainingPeriod do
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
+    it { is_expected.to belong_to(:expression_of_interest).class_name('ActiveLeadProvider') }
+    it { is_expected.to have_one(:expression_of_interest_lead_provider).through(:expression_of_interest).class_name('LeadProvider').source(:lead_provider) }
+    it { is_expected.to have_one(:expression_of_interest_contract_period).through(:expression_of_interest).class_name('LeadProvider').source(:contract_period) }
   end
 
   describe "validations" do
