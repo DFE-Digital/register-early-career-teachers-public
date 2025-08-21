@@ -34,7 +34,8 @@ teachers = [
   { trs_first_name: 'Peter', trs_last_name: 'Davison', trn: '0011223', trs_induction_status: 'RequiredToComplete' },
   { trs_first_name: 'Robson', trs_last_name: 'Scottie', trn: '3002582', **early_roll_out_mentor_attrs },
   { trs_first_name: 'Muhammed', trs_last_name: 'Ali', trn: '3002580', **early_roll_out_mentor_attrs },
-  { trs_first_name: 'Roy', trs_last_name: 'Dotrice', trn: '7000007', **early_roll_out_mentor_attrs }
+  { trs_first_name: 'Roy', trs_last_name: 'Dotrice', trn: '7000007', **early_roll_out_mentor_attrs },
+  { trs_first_name: 'Alex', trs_last_name: 'Transition', trn: '9001001', trs_induction_status: 'InProgress' }
 ]
 
 teachers.each do |attrs|

@@ -6,6 +6,7 @@ describe MentorAtSchoolPeriod do
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:currently_assigned_ects).through(:mentorship_periods).source(:mentee) }
+    it { is_expected.to have_many(:currently_assigned_and_transferring_ects).through(:mentorship_periods).source(:mentee) }
   end
 
   describe "validations" do
@@ -129,6 +130,228 @@ describe MentorAtSchoolPeriod do
 
       it "returns mentor in training periods only for the specified contract period and lead provider" do
         expect(described_class.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to match_array([period_2])
+      end
+    end
+  end
+
+  describe "#currently_assigned_ects" do
+    let(:school) { FactoryBot.create(:school) }
+    let(:mentor_teacher) { FactoryBot.create(:teacher) }
+    let(:ect_teacher) { FactoryBot.create(:teacher) }
+
+    let(:mentor_period) do
+      FactoryBot.create(:mentor_at_school_period,
+                        school:,
+                        teacher: mentor_teacher,
+                        started_on: 1.month.ago,
+                        finished_on: nil)
+    end
+
+    context "when ECT is currently assigned and active at the school" do
+      let!(:ect_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          school:,
+                          teacher: ect_teacher,
+                          started_on: 1.month.ago,
+                          finished_on: nil)
+      end
+
+      let!(:mentorship_period) do
+        FactoryBot.create(:mentorship_period,
+                          mentor: mentor_period,
+                          mentee: ect_period,
+                          started_on: 1.month.ago,
+                          finished_on: nil)
+      end
+
+      it "returns the currently assigned ECT" do
+        assigned_ects = mentor_period.currently_assigned_ects
+        expect(assigned_ects).to include(ect_period)
+      end
+    end
+
+    context "when ECT is assigned but period has ended" do
+      let!(:ect_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          school:,
+                          teacher: ect_teacher,
+                          started_on: 1.month.ago,
+                          finished_on: nil)
+      end
+
+      let!(:mentorship_period) do
+        FactoryBot.create(:mentorship_period,
+                          mentor: mentor_period,
+                          mentee: ect_period,
+                          started_on: 1.month.ago,
+                          finished_on: 1.week.ago)
+      end
+
+      it "returns the ECT (ECT period is ongoing even though mentorship ended)" do
+        assigned_ects = mentor_period.currently_assigned_ects
+        expect(assigned_ects).to include(ect_period)
+      end
+    end
+
+    context "when ECT is assigned at different school" do
+      let(:different_school) { FactoryBot.create(:school) }
+
+      let!(:ect_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          school: different_school,
+                          teacher: ect_teacher,
+                          started_on: 1.month.ago,
+                          finished_on: nil)
+      end
+
+      let!(:mentorship_period) do
+        FactoryBot.create(:mentorship_period,
+                          mentor: mentor_period,
+                          mentee: ect_period,
+                          started_on: 1.month.ago,
+                          finished_on: nil)
+      end
+
+      it "returns the ECT even from different school (association follows mentorship regardless of school)" do
+        assigned_ects = mentor_period.currently_assigned_ects
+        expect(assigned_ects).to include(ect_period)
+      end
+    end
+
+    context "with future ECT assignment" do
+      let!(:future_ect_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          school:,
+                          teacher: FactoryBot.create(:teacher),
+                          started_on: 1.week.from_now,
+                          finished_on: nil)
+      end
+
+      let!(:future_mentorship_period) do
+        FactoryBot.create(:mentorship_period,
+                          mentor: mentor_period,
+                          mentee: future_ect_period,
+                          started_on: 1.week.from_now,
+                          finished_on: nil)
+      end
+
+      it "returns future ECTs (ongoing includes future periods)" do
+        assigned_ects = mentor_period.currently_assigned_ects
+        expect(assigned_ects).to include(future_ect_period)
+      end
+    end
+
+    context "when mentorship period is finished but ECT period is ongoing" do
+      let!(:finished_mentor_period) do
+        FactoryBot.create(:mentor_at_school_period,
+                          school:,
+                          teacher: FactoryBot.create(:teacher),
+                          started_on: 2.months.ago,
+                          finished_on: 1.week.ago)
+      end
+
+      let!(:ongoing_ect_with_finished_mentorship) do
+        FactoryBot.create(:ect_at_school_period,
+                          school:,
+                          teacher: FactoryBot.create(:teacher),
+                          started_on: 2.months.ago,
+                          finished_on: nil)
+      end
+
+      let!(:finished_mentorship_period) do
+        FactoryBot.create(:mentorship_period,
+                          mentor: finished_mentor_period,
+                          mentee: ongoing_ect_with_finished_mentorship,
+                          started_on: 2.months.ago,
+                          finished_on: 1.week.ago)
+      end
+
+      it "returns ECT even when mentorship has ended (association doesn't filter mentorship status)" do
+        assigned_ects = finished_mentor_period.currently_assigned_ects
+        expect(assigned_ects).to include(ongoing_ect_with_finished_mentorship)
+      end
+    end
+
+    context "when ECT period is finished but mentorship period is ongoing" do
+      let!(:finished_ect_with_ongoing_mentorship) do
+        FactoryBot.create(:ect_at_school_period,
+                          school:,
+                          teacher: FactoryBot.create(:teacher),
+                          started_on: 2.months.ago,
+                          finished_on: 1.week.ago)
+      end
+
+      let!(:finished_mentor_period_2) do
+        FactoryBot.create(:mentor_at_school_period,
+                          school:,
+                          teacher: FactoryBot.create(:teacher),
+                          started_on: 2.months.ago,
+                          finished_on: 1.week.ago)
+      end
+
+      let!(:ongoing_mentorship_period) do
+        FactoryBot.create(:mentorship_period,
+                          mentor: finished_mentor_period_2,
+                          mentee: finished_ect_with_ongoing_mentorship,
+                          started_on: 2.months.ago,
+                          finished_on: 1.week.ago)
+      end
+
+      it "does not return ECT when ECT period has ended" do
+        assigned_ects = finished_mentor_period_2.currently_assigned_ects
+        expect(assigned_ects).not_to include(finished_ect_with_ongoing_mentorship)
+      end
+    end
+  end
+
+  describe "#currently_assigned_and_transferring_ects" do
+    let!(:mentor_period) do
+      FactoryBot.create(:mentor_at_school_period,
+                        started_on: 1.month.ago,
+                        finished_on: nil)
+    end
+
+    context "with future ECT assignment" do
+      let!(:future_ect_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          school: mentor_period.school,
+                          started_on: 1.week.from_now,
+                          finished_on: nil)
+      end
+
+      before do
+        FactoryBot.create(:mentorship_period,
+                          mentor: mentor_period,
+                          mentee: future_ect_period,
+                          started_on: 1.week.from_now,
+                          finished_on: nil)
+      end
+
+      it "returns future ECTs assigned to the mentor" do
+        assigned_ects = mentor_period.currently_assigned_and_transferring_ects
+        expect(assigned_ects).to include(future_ect_period)
+      end
+    end
+
+    context "when ECT is currently assigned and active at the school" do
+      let!(:current_ect_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          school: mentor_period.school,
+                          started_on: 1.month.ago,
+                          finished_on: nil)
+      end
+
+      before do
+        FactoryBot.create(:mentorship_period,
+                          mentor: mentor_period,
+                          mentee: current_ect_period,
+                          started_on: 1.month.ago,
+                          finished_on: nil)
+      end
+
+      it "returns the currently assigned ECT" do
+        assigned_ects = mentor_period.currently_assigned_and_transferring_ects
+        expect(assigned_ects).to include(current_ect_period)
       end
     end
   end

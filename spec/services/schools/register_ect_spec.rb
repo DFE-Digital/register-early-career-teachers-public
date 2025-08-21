@@ -72,6 +72,65 @@ RSpec.describe Schools::RegisterECT do
           end
         end
 
+        describe "ECT school transitions" do
+          let(:transition_teacher) { FactoryBot.create(:teacher) }
+          let!(:transition_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+          let(:transition_service) do
+            described_class.new(school_reported_appropriate_body:,
+                                corrected_name: nil,
+                                email: 'test@example.com',
+                                lead_provider:,
+                                training_programme:,
+                                school:,
+                                started_on:,
+                                trn: transition_teacher.trn,
+                                trs_first_name: 'John',
+                                trs_last_name: 'Doe',
+                                working_pattern: 'full_time',
+                                author:)
+          end
+
+          context "registering ECT with no previous active periods" do
+            it "creates new period successfully" do
+              new_period = transition_service.register!
+
+              expect(new_period).to be_persisted
+              expect(new_period.school).to eq(school)
+              expect(new_period.teacher).to eq(transition_teacher)
+            end
+          end
+
+          context "registering ECT at same school" do
+            let!(:existing_period) do
+              FactoryBot.create(:ect_at_school_period,
+                                school:,
+                                teacher: transition_teacher,
+                                started_on: 1.month.ago,
+                                finished_on: nil)
+            end
+
+            it "prevents duplicate registration at same school" do
+              expect { transition_service.register! }.to raise_error(ActiveRecord::RecordInvalid)
+            end
+          end
+
+          context "business rule validation" do
+            let(:different_school) { FactoryBot.create(:school) }
+
+            let!(:existing_period) do
+              FactoryBot.create(:ect_at_school_period,
+                                school: different_school,
+                                teacher: transition_teacher,
+                                started_on: 1.month.ago,
+                                finished_on: 1.week.ago) # Finished period
+            end
+
+            it "prevents registration when teacher has any existing ECT periods" do
+              expect { transition_service.register! }.to raise_error(ActiveRecord::RecordInvalid)
+            end
+          end
+        end
+
         it 'creates an associated ECTAtSchoolPeriod record' do
           expect { service.register! }.to change(ECTAtSchoolPeriod, :count).from(0).to(1)
           expect(ect_at_school_period.teacher_id).to eq(Teacher.first.id)

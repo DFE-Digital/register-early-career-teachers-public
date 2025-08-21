@@ -56,6 +56,10 @@ class ECTAtSchoolPeriod < ApplicationRecord
     .where(expression_of_interest: { lead_provider_id: })
   }
 
+  scope :visible_for_school, ->(school) {
+    where(school:).ongoing_today_or_starting_tomorrow_or_after
+  }
+
   def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
 
   def school_reported_appropriate_body_type = school_reported_appropriate_body&.body_type

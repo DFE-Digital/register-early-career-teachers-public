@@ -52,7 +52,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
   before do
     assign(:mentor, mentor_period)
     assign(:teacher, mentor_teacher)
-    assign(:ects, mentor_period.currently_assigned_ects)
+    assign(:ects, mentor_period.currently_assigned_and_transferring_ects)
     render
   end
 
@@ -123,7 +123,7 @@ RSpec.describe 'schools/mentors/show.html.erb' do
     before do
       assign(:mentor, mentor_period)
       assign(:teacher, mentor_teacher)
-      assign(:ects, mentor_period.currently_assigned_ects)
+      assign(:ects, mentor_period.currently_assigned_and_transferring_ects)
       render
     end
 
