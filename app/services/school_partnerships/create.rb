@@ -120,7 +120,7 @@ module SchoolPartnerships
     def not_school_led
       return unless metadata&.induction_programme_choice == "school_led"
 
-      errors.add(:induction_programme_choice, "The school you have entered has not yet confirmed they will deliver DfE-funded training. Contact the school for more information.")
+      errors.add(:induction_programme_choice, "This school has only registered school-led participants. Contact the school for more information.")
     end
   end
 end
