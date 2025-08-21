@@ -38,15 +38,35 @@ RSpec.describe "Partnerships API", type: :request do
     it_behaves_like "a does not filter by delivery_partner_id endpoint"
   end
 
-  describe "# create" do
+  describe "#create" do
     let(:path) { api_v3_partnerships_path }
-
-    it_behaves_like "a token authenticated endpoint", :get
-
-    it "returns method not allowed" do
-      authenticated_api_post path
-      expect(response).to be_method_not_allowed
+    let(:service) { SchoolPartnerships::Create }
+    let(:resource_type) { SchoolPartnership }
+    let(:delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+    let(:school) { FactoryBot.create(:school, :eligible) }
+    let(:service_args) do
+      {
+        lead_provider_id: active_lead_provider.lead_provider_id,
+        contract_period_year: active_lead_provider.contract_period_year.to_s,
+        school_api_id: school.api_id,
+        delivery_partner_api_id: delivery_partnership.delivery_partner.api_id,
+      }
     end
+    let(:params) do
+      {
+        data: {
+          type: "partnership",
+          attributes: {
+            school_id: school.api_id,
+            delivery_partner_id: delivery_partnership.delivery_partner.api_id,
+            cohort: active_lead_provider.contract_period_year,
+          }
+        }
+      }
+    end
+
+    it_behaves_like "a token authenticated endpoint", :post
+    it_behaves_like "an API create endpoint"
   end
 
   describe "#update" do
