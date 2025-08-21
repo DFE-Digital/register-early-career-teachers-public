@@ -51,7 +51,7 @@ RSpec.describe "DfE Analytics", type: :request do
     it "sends DFE Analytics web request event" do
       expect {
         get "/api/v3/statements", headers: { Authorization: bearer_token }
-      }.to have_sent_analytics_event_types(:persist_api_request)
+      }.to have_sent_analytics_event_types(:web_request)
     end
   end
 end
