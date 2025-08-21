@@ -92,14 +92,7 @@ module Schools
     end
 
     def training_programme_display_name
-      case training_period.training_programme
-      when 'provider_led'
-        'Provider-led'
-      when 'school_led'
-        'School-led'
-      else
-        training_period.training_programme&.humanize || 'Unknown'
-      end
+      TRAINING_PROGRAMME.fetch(training_period.training_programme, 'Unknown')
     end
   end
 end
