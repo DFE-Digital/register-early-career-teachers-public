@@ -17,7 +17,7 @@ module SandboxSeedData
 
     def create_school(urn:)
       school_type = SCHOOL_TYPES.sample
-      school = FactoryBot.create(:school, school_type, urn:)
+      school = FactoryBot.create(:school, :with_induction_tutor, school_type, urn:)
 
       log_seed_info("#{school.name} - type: #{school_type}", colour: Colourize::COLOURS.keys.sample)
     end

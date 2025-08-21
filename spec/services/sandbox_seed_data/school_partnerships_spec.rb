@@ -36,12 +36,13 @@ RSpec.describe SandboxSeedData::SchoolPartnerships do
     it "creates school partnership with same school but different delivery partner" do
       instance.plant
 
-      count = SchoolPartnership.all.each_with_object({}) do |sp, sum|
-        sum[sp.school_id] ||= []
-        sum[sp.school_id] << sp.delivery_partner.id
-      end
+      schools_with_multiple_delivery_partners = SchoolPartnership
+        .joins(:lead_provider_delivery_partnership)
+        .group(:school_id)
+        .having("COUNT(DISTINCT lead_provider_delivery_partnerships.delivery_partner_id) > 1")
+        .pluck(:school_id)
 
-      expect(count.values.any? { |v| v.count > 1 }).to be(true)
+      expect(schools_with_multiple_delivery_partners).to be_present
     end
 
     it "logs the creation of school partnerships" do
