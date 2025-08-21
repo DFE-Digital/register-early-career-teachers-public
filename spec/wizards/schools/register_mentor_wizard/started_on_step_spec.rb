@@ -13,7 +13,8 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
       'Schools::RegisterMentorWizard::Mentor',
       mentoring_at_new_school_only: mentoring_only,
       became_ineligible_for_funding?: ineligible,
-      provider_led_ect?: provider_led
+      provider_led_ect?: provider_led,
+      previous_training_period:
     )
   end
 
@@ -21,6 +22,7 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
   let(:ineligible) { false }
   let(:provider_led) { true }
   let(:started_on) { { 'day' => '10', 'month' => '9', 'year' => '2025' } }
+  let(:previous_training_period) { FactoryBot.build(:training_period) }
 
   describe '#next_step' do
     context 'when mentor is ineligible for funding' do
@@ -37,6 +39,12 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
 
     context 'when mentor is eligible and ECT is provider-led' do
       it { expect(step.next_step).to eq(:previous_training_period_details) }
+    end
+
+    context 'when there is no previous training period' do
+      let(:previous_training_period) { nil }
+
+      it { expect(step.next_step).to eq(:programme_choices) }
     end
   end
 

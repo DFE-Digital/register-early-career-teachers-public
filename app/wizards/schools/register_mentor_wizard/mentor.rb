@@ -85,6 +85,10 @@ module Schools
         @latest_registration_choice ||= MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn:)
       end
 
+      def previous_training_period
+        latest_registration_choice.training_period
+      end
+
       def lead_providers_within_contract_period
         return [] unless contract_period
 
