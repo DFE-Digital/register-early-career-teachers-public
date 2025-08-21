@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 Rack::Attack.enabled = false
 
 RSpec.configure do |config|

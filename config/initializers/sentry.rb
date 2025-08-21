@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 if Rails.application.config.enable_sentry
   Sentry.init do |config|
     config.dsn = Rails.application.config.sentry_dsn

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module AppropriateBodies
   class ClaimECTActionsComponent < ViewComponent::Base
     def initialize(teacher:, pending_induction_submission:, current_appropriate_body:)

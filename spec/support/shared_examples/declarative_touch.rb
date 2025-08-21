@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at, target_optional: true|
   def generate_new_value(attribute_to_change:)
     column = instance.class.columns_hash[attribute_to_change.to_s]
