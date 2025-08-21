@@ -11,8 +11,9 @@ module Schools
         .visible_for_school(school)
         .eager_load(:teacher, :school, mentors: :teacher)
         .joins(:mentorship_periods)
-        .merge(MentorshipPeriod.ongoing_today_or_starting_tomorrow_or_after)
+        .merge(MentorshipPeriod.ongoing_today.or(MentorshipPeriod.starting_tomorrow_or_after))
         .distinct
+        .order(:started_on)
     end
 
     def mentors_with_ects
