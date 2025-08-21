@@ -6,6 +6,13 @@ module API
     include DateFilterable
     include ContractPeriodFilterable
     include FilterValidatable
-    include DfEAnalyticsRequests
+    include DfE::Analytics::Requests
+
+  private
+
+    # `current_user` needed for DfE::Analytics
+    def current_user
+      current_lead_provider
+    end
   end
 end
