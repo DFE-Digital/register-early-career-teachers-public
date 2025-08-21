@@ -61,6 +61,10 @@ Style/SignalException:
 
 Style/StringConcatenation:
   Enabled: false
+  
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: never
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: always
