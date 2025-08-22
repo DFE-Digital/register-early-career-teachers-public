@@ -43,6 +43,18 @@ describe Event do
     it { is_expected.to validate_inclusion_of(:event_type).in_array(Event::EVENT_TYPES) }
 
     describe '#check_author_present' do
+      context 'when author_type is `system`' do
+        subject { FactoryBot.build(:event, author_email: nil, author_name: nil, author_id: nil, author_type: "system") }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when author_type is `lead_provider_api`' do
+        subject { FactoryBot.build(:event, author_email: nil, author_name: nil, author_id: nil, author_type: "lead_provider_api") }
+
+        it { is_expected.to be_valid }
+      end
+
       context 'when author_id and author_email are missing' do
         subject { FactoryBot.build(:event, author_email: nil, author_name: nil, author_id: nil) }
 

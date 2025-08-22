@@ -176,7 +176,7 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
         hash_including(
           {
             school_partnership:,
-            author: kind_of(Events::LeadProviderAuthor),
+            author: kind_of(Events::LeadProviderAPIAuthor),
           }
         )
       )
