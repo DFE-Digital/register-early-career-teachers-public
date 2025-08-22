@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# frozen_string_literal: true
 
 # This script finds teachers whose latest induction period has a pass/fail outcome
 # but their TRS status is still 'InProgress'. It then:

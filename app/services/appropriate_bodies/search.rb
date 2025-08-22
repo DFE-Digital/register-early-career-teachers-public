@@ -1,6 +1,6 @@
 module AppropriateBodies
   class Search
-    ISTIP = 'Independent Schools Teacher Induction Panel (ISTIP)'.freeze
+    ISTIP = 'Independent Schools Teacher Induction Panel (ISTIP)'
 
     def initialize(query_string = nil)
       @scope = AppropriateBody

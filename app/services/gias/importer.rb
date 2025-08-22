@@ -3,8 +3,8 @@ require "csv"
 
 module GIAS
   class Importer
-    SCHOOLS_FILENAME = "ecf_tech.csv".freeze
-    SCHOOL_LINKS_FILENAME = "links.csv".freeze
+    SCHOOLS_FILENAME = "ecf_tech.csv"
+    SCHOOL_LINKS_FILENAME = "links.csv"
 
     def fetch
       import_only? ? fetch_and_import_only : fetch_and_update
