@@ -9,7 +9,7 @@ module API
       end
 
       def call
-        messages.map { |detail| { title:, detail: }.freeze }
+        messages.map { |detail| mapper.map_error(title:, detail:).freeze }
       end
 
       def self.from(service)
@@ -18,6 +18,12 @@ module API
             new(title:, messages:).call
           end
         }
+      end
+
+    private
+
+      def mapper
+        @mapper ||= API::Errors::Mapper.new
       end
     end
   end

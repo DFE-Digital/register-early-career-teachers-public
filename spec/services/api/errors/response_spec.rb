@@ -34,6 +34,28 @@ RSpec.describe API::Errors::Response do
         expect(result[0][:detail]).to eql("Error 1")
       end
     end
+
+    context "when the errors contain RECT terms" do
+      before { stub_const("API::Errors::Mapper::YAML_FILE_PATH", file_fixture("api_error_mappings.yml")) }
+
+      let(:title) { "a rect_term error title" }
+      let(:messages) do
+        [
+          "a rect_term message",
+          "another rect_term message",
+        ]
+      end
+
+      it "maps the errors using the YAML mappings" do
+        result = subject.call
+
+        expect(result[0][:title]).to eql("a ecf_term error title")
+        expect(result[0][:detail]).to eql("a ecf_term message")
+
+        expect(result[1][:title]).to eql("a ecf_term error title")
+        expect(result[1][:detail]).to eql("another ecf_term message")
+      end
+    end
   end
 
   describe ".from" do
@@ -43,8 +65,8 @@ RSpec.describe API::Errors::Response do
 
     it "returns a hash with formatted errors" do
       expect(response[:errors]).to include(
-        { title: :contract_period_year, detail: "Enter a '#/cohort'." },
-        { title: :school_api_id, detail: "Enter a '#/school_id'." }
+        { title: "cohort", detail: "Enter a '#/cohort'." },
+        { title: "school_id", detail: "Enter a '#/school_id'." }
       )
     end
   end
