@@ -30,7 +30,8 @@ module Schools
                    trs_national_insurance_number: trs_teacher.national_insurance_number,
                    trs_first_name: trs_teacher.first_name,
                    trs_last_name: trs_teacher.last_name,
-                   trs_induction_status: trs_teacher.induction_status)
+                   trs_induction_status: trs_teacher.induction_status,
+                   prohibited_from_teaching: trs_teacher.prohibited_from_teaching?)
       end
 
       def trs_teacher
