@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_15_142537) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_18_120749) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -227,6 +227,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_15_142537) do
     t.bigint "pending_induction_submission_batch_id"
     t.bigint "statement_id"
     t.bigint "statement_adjustment_id"
+    t.integer "zendesk_ticket_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
