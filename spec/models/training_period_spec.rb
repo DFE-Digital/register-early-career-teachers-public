@@ -203,6 +203,69 @@ describe TrainingPeriod do
         it { is_expected.to allow_value('provider_led').for(:training_programme) }
       end
     end
+
+    describe 'absence of expression of interest and school partnership for school-led training' do
+      let(:dates) { { started_on: 3.years.ago.to_date, finished_on: nil } }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **dates) }
+
+      context 'when school-led' do
+        context 'when both expression of interest and school partnership are absent' do
+          subject { FactoryBot.build(:training_period, :school_led, ect_at_school_period:, **dates) }
+
+          it { is_expected.to be_valid }
+        end
+
+        context 'when expression of interest is present' do
+          subject do
+            FactoryBot.build(:training_period, :school_led, :with_expression_of_interest,
+                             ect_at_school_period:, **dates)
+          end
+
+          it 'has an error on expression_of_interest' do
+            subject.valid?
+            expect(subject.errors.messages[:expression_of_interest]).to include('Expression of interest must be absent for school-led training programmes')
+          end
+        end
+
+        context 'when school partnership is present' do
+          subject do
+            FactoryBot.build(:training_period, :school_led, :with_school_partnership,
+                             ect_at_school_period:, **dates)
+          end
+
+          it 'has an error on school_partnership' do
+            subject.valid?
+            expect(subject.errors.messages[:school_partnership]).to include('School partnership must be absent for school-led training programmes')
+          end
+        end
+
+        context 'when both expression of interest and school partnership are present' do
+          subject do
+            FactoryBot.build(:training_period, :school_led, :with_school_partnership, :with_expression_of_interest,
+                             ect_at_school_period:, **dates)
+          end
+
+          it 'has errors on both expression_of_interest and school_partnership' do
+            subject.valid?
+            expect(subject.errors.messages[:expression_of_interest]).to include('Expression of interest must be absent for school-led training programmes')
+            expect(subject.errors.messages[:school_partnership]).to include('School partnership must be absent for school-led training programmes')
+          end
+        end
+      end
+
+      context 'when provider-led' do
+        context 'when both expression of interest and school partnership are present' do
+          subject do
+            FactoryBot.build(:training_period, :provider_led, :with_school_partnership, :with_expression_of_interest,
+                             ect_at_school_period:, **dates)
+          end
+
+          it 'does not validate absence of expression_of_interest and school_partnership' do
+            expect(subject).to be_valid
+          end
+        end
+      end
+    end
   end
 
   describe "scopes" do

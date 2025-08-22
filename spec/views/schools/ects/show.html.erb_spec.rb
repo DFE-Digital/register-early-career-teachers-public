@@ -11,6 +11,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       working_pattern: 'full_time',
                       email: 'love@whale.com')
   end
+
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -162,6 +163,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
     end
 
     context 'when school-led' do
+      let(:training_period) { FactoryBot.create(:training_period, :school_led, ect_at_school_period: current_ect_period, started_on: '2025-01-11', finished_on: nil) }
       let(:training_programme) { 'school_led' }
 
       it 'does not show lead provider and delivery partner fields' do

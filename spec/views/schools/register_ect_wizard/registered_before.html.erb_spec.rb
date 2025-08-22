@@ -108,8 +108,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
         :school_led,
         ect_at_school_period:,
         started_on: Date.new(2023, 9, 1),
-        finished_on: Date.new(2024, 7, 31),
-        school_partnership:
+        finished_on: Date.new(2024, 7, 31)
       )
 
       FactoryBot.create(

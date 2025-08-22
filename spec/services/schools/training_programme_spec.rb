@@ -3,7 +3,7 @@ describe Schools::TrainingProgramme do
 
   let(:school) { FactoryBot.create(:school, urn: "123456") }
   let(:contract_period) { FactoryBot.create(:contract_period) }
-  let(:contract_period_year) { contract_period.id }
+  let(:contract_period_year) { contract_period.year }
 
   describe "#training_programme" do
     context "when no transient values are available" do
@@ -118,7 +118,6 @@ describe Schools::TrainingProgramme do
               FactoryBot.create(:training_period,
                                 :school_led,
                                 ect_at_school_period:,
-                                school_partnership:,
                                 started_on: '2022-01-01',
                                 finished_on: '2022-06-01')
             end
@@ -154,7 +153,6 @@ describe Schools::TrainingProgramme do
               FactoryBot.create(:training_period,
                                 :school_led,
                                 ect_at_school_period: ect_at_school_period_2,
-                                school_partnership:,
                                 started_on: '2022-01-01',
                                 finished_on: '2022-06-01')
             end
@@ -176,8 +174,6 @@ describe Schools::TrainingProgramme do
             FactoryBot.create(:training_period,
                               :for_ect,
                               :school_led,
-                              school_partnership_id: nil,
-                              expression_of_interest: FactoryBot.create(:active_lead_provider, contract_period:),
                               ect_at_school_period:,
                               started_on: ect_at_school_period.started_on)
           end

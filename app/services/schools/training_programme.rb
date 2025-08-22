@@ -41,7 +41,7 @@ module Schools
       return school.transient_ects_at_school_training_programme if school.respond_to?(:transient_ects_at_school_training_programme)
 
       TrainingPeriod
-        .where(ect_at_school_period_id: ects_expressions_of_interest.pluck(:id) + ect_at_school_periods.pluck(:id))
+        .where(ect_at_school_period_id: ects_expressions_of_interest.pluck(:id) + ect_at_school_periods.pluck(:id) + school_led_ect_at_school_periods.pluck(:id))
         .order(training_programme: :asc)
         .pick(:training_programme)
     end
@@ -52,6 +52,13 @@ module Schools
 
     def provider_led
       "provider_led"
+    end
+
+    def school_led_ect_at_school_periods
+      @school_led_ect_at_school_periods ||= school.ect_at_school_periods.joins(:training_periods)
+        .where(training_periods: { training_programme: 'school_led' })
+        .where(training_periods: { expression_of_interest_id: nil, school_partnership_id: nil })
+        .distinct
     end
   end
 end
