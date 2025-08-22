@@ -67,7 +67,7 @@ RSpec.describe Schools::RegisterECT do
           let(:teacher) { FactoryBot.create(:teacher, trn:) }
           let(:other_school) { FactoryBot.create(:school) }
 
-          before { FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: other_school, started_on: Date.current - 6.months, finished_on: Date.current - 1.month) }
+          before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school, started_on: Date.new(2024, 1, 1)) }
 
           it "allows registration (school transfer)" do
             expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
@@ -224,6 +224,49 @@ RSpec.describe Schools::RegisterECT do
         training_period = TrainingPeriod.find_by!(started_on:)
 
         expect(training_period.training_programme).to eql('school_led')
+      end
+    end
+
+    context 'when ECT is transferring from another school' do
+      let(:training_programme) { 'school_led' }
+      let(:lead_provider) { nil }
+      let(:other_school) { FactoryBot.create(:school) }
+      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+
+      let!(:existing_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school: other_school,
+          started_on: Date.new(2024, 1, 1),
+          finished_on: nil
+        )
+      end
+
+      it 'calls Teachers::CloseOldSchoolPeriods to close previous periods' do
+        expect(Teachers::CloseOldSchoolPeriods).to receive(:new).with(
+          teacher:,
+          new_school_start_date: started_on,
+          author:
+        ).and_call_original
+
+        service.register!
+
+        # Verify the old period was closed
+        existing_period.reload
+        expect(existing_period.finished_on).to eq(started_on)
+      end
+
+      it 'allows registration at the new school' do
+        expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+
+        new_period = teacher.ect_at_school_periods.find_by(school:)
+        expect(new_period).to be_present
+        expect(new_period.started_on).to eq(started_on)
+
+        # Verify the old period was closed
+        existing_period.reload
+        expect(existing_period.finished_on).to eq(started_on)
       end
     end
   end
