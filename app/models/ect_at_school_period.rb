@@ -88,6 +88,21 @@ private
   end
 
   def teacher_distinct_period
+    # Allow overlapping periods during school transfers
+    return if school_transfer_in_progress?
+
     overlap_validation(name: 'Teacher ECT')
+  end
+
+  def school_transfer_in_progress?
+    return false unless teacher && started_on
+
+    # Check if there are any ongoing periods at different schools
+    # that would be closed by the transfer
+    teacher.ect_at_school_periods
+           .where.not(school:)
+           .where(finished_on: nil)
+           .where('started_on < ?', started_on)
+           .exists?
   end
 end
