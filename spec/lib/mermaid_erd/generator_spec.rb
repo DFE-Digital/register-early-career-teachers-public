@@ -70,7 +70,7 @@ RSpec.describe MermaidErd::Generator do
       it 'raises an error' do
         expect {
           generator.generate
-        }.to raise_error(/only allowed in development/)
+        }.to raise_error(/only allowed in development and test/)
       end
     end
   end
