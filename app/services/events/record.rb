@@ -499,8 +499,8 @@ module Events
         author.event_author_params
       when Events::SystemAuthor
         author.system_author_params
-      when Events::LeadProviderAuthor
-        author.lead_provider_author_params
+      when Events::LeadProviderAPIAuthor
+        author.lead_provider_api_author_params
       when Events::AppropriateBodyBatchAuthor
         author.event_author_params
       else
