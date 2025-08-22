@@ -32,7 +32,8 @@ module Schools
                    trs_trn: trs_teacher.trn,
                    trs_first_name: trs_teacher.first_name,
                    trs_last_name: trs_teacher.last_name,
-                   trs_induction_status: trs_teacher.induction_status)
+                   trs_induction_status: trs_teacher.induction_status,
+                   prohibited_from_teaching: trs_teacher.prohibited_from_teaching?)
       end
 
       def trs_teacher

@@ -53,6 +53,10 @@ module Schools
         trs_induction_status == 'Failed'
       end
 
+      def prohibited_from_teaching?
+        prohibited_from_teaching == true
+      end
+
       def induction_start_date
         first_induction_period&.started_on
       end
