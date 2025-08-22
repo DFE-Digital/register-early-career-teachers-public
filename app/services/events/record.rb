@@ -343,6 +343,32 @@ module Events
       new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
     end
 
+    # School Partnership Events
+
+    def self.record_school_partnership_created_event!(author:, school_partnership:)
+      event_type = :school_partnership_created
+      school = school_partnership.school
+      delivery_partner = school_partnership.delivery_partner
+      lead_provider = school_partnership.lead_provider
+      contract_period = school_partnership.contract_period
+      heading = "#{school.name} partnered with #{delivery_partner.name} (via #{lead_provider.name}) for #{contract_period.year}"
+      metadata = {
+        contract_period_year: contract_period.year,
+      }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        school_partnership:,
+        delivery_partner:,
+        school:,
+        lead_provider:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
     # Statement Adjustment Events
 
     def self.record_statement_adjustment_added_event!(author:, statement_adjustment:)
@@ -473,6 +499,8 @@ module Events
         author.event_author_params
       when Events::SystemAuthor
         author.system_author_params
+      when Events::LeadProviderAPIAuthor
+        author.lead_provider_api_author_params
       when Events::AppropriateBodyBatchAuthor
         author.event_author_params
       else

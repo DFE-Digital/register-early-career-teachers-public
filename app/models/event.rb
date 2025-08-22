@@ -13,6 +13,7 @@ class Event < ApplicationRecord
     lead_provider_api_token_created
     lead_provider_api_token_revoked
     lead_provider_delivery_partnership_added
+    school_partnership_created
     statement_adjustment_added
     statement_adjustment_deleted
     statement_adjustment_updated
@@ -75,7 +76,7 @@ class Event < ApplicationRecord
 private
 
   def check_author_present
-    return if author_type == 'system'
+    return if author_type.in?(%w[system lead_provider_api])
     return if author_id.present? || author_email.present?
 
     errors.add(:base, 'Author is missing')
