@@ -182,6 +182,16 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
       )
     end
 
+    it "refreshes the school metadata" do
+      metadata_manager = Metadata::Manager.new
+      allow(Metadata::Manager).to receive(:new).and_return(metadata_manager)
+      allow(metadata_manager).to receive(:refresh_metadata!).once.and_call_original
+
+      school_partnership = create_school_partnership
+
+      expect(metadata_manager).to have_received(:refresh_metadata!).once.with(school_partnership.school)
+    end
+
     context "when invalid" do
       let(:school_api_id) { SecureRandom.uuid }
 
