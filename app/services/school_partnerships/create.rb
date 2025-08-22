@@ -10,10 +10,10 @@ module SchoolPartnerships
     attribute :school_api_id
     attribute :delivery_partner_api_id
 
-    validates :contract_period_year, presence: { message: "Enter a '#/cohort'." }
-    validates :school_api_id, presence: { message: "Enter a '#/school_id'." }
+    validates :contract_period_year, presence: { message: "Enter a '#/contract_period_year'." }
+    validates :school_api_id, presence: { message: "Enter a '#/school_api_id'." }
     validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
-    validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_id'." }
+    validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_api_id'." }
     validate :contract_period_exists
     validate :contract_period_enabled
     validate :lead_provider_exists
@@ -62,11 +62,11 @@ module SchoolPartnerships
     end
 
     def contract_period_exists
-      errors.add(:contract_period_year, "The '#/cohort' you have entered is invalid. Check cohort details and try again.") unless contract_period
+      errors.add(:contract_period_year, "The '#/contract_period_year' you have entered is invalid. Check contract period details and try again.") unless contract_period
     end
 
     def contract_period_enabled
-      errors.add(:contract_period_year, "You cannot create this partnership until the cohort has started.") unless contract_period&.enabled?
+      errors.add(:contract_period_year, "You cannot create this partnership until the contract period has started.") unless contract_period&.enabled?
     end
 
     def lead_provider_exists
@@ -74,7 +74,7 @@ module SchoolPartnerships
     end
 
     def school_exists
-      errors.add(:school_api_id, "The '#/school_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_id'.") unless school
+      errors.add(:school_api_id, "The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'.") unless school
     end
 
     def school_is_not_cip_only
@@ -93,11 +93,11 @@ module SchoolPartnerships
         .joins(:lead_provider_delivery_partnership)
         .exists?(lead_provider_delivery_partnerships: { active_lead_provider: })
 
-      errors.add(:school_api_id, "You are already in a confirmed partnership with this school for the entered cohort.") if existing_school_partnership
+      errors.add(:school_api_id, "You are already in a confirmed partnership with this school for the entered contract period.") if existing_school_partnership
     end
 
     def delivery_partner_exists
-      errors.add(:delivery_partner_api_id, "The '#/delivery_partner_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
+      errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
     end
 
     def active_lead_provider
@@ -115,7 +115,7 @@ module SchoolPartnerships
     def lead_provider_delivery_partnership_exists
       return unless lead_provider && delivery_partner
 
-      errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given cohort. Contact the DfE for more information.") unless lead_provider_delivery_partnership
+      errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
     end
 
     def metadata

@@ -6,8 +6,8 @@ module SchoolPartnerships
     attribute :school_partnership_id
     attribute :delivery_partner_api_id
 
-    validates :school_partnership_id, presence: { message: "Enter a '#/partnership'." }
-    validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_id'." }
+    validates :school_partnership_id, presence: { message: "Enter a '#/school_partnership_id'." }
+    validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_api_id'." }
     validate :delivery_partner_exists
     validate :school_partnership_exists
     validate :lead_provider_delivery_partnership_exists
@@ -51,17 +51,17 @@ module SchoolPartnerships
     end
 
     def delivery_partner_exists
-      errors.add(:delivery_partner_api_id, "The '#/delivery_partner_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
+      errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
     end
 
     def school_partnership_exists
-      errors.add(:school_partnership_id, "The '#/partnership' you have entered is invalid. Check partnership details and try again.") unless school_partnership
+      errors.add(:school_partnership_id, "The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again.") unless school_partnership
     end
 
     def lead_provider_delivery_partnership_exists
       return unless active_lead_provider && delivery_partner
 
-      errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given cohort. Contact the DfE for more information.") unless lead_provider_delivery_partnership
+      errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
     end
 
     def does_not_cause_duplicate_school_partnership
