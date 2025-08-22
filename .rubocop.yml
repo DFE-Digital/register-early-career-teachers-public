@@ -16,7 +16,8 @@ inherit_mode:
     - Exclude
 
 AllCops:
-  TargetRubyVersion: 3.4.4
+  TargetRubyVersion: 3.4
+  StringLiteralsFrozenByDefault: true
 
 require:
   - ./.rubocop/cop/rspec_cops
@@ -60,6 +61,10 @@ Style/SignalException:
 
 Style/StringConcatenation:
   Enabled: false
+  
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: never
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: always

@@ -1,8 +1,8 @@
 module Schools
   module Validation
     class ECTStartDate < HashDate
-      DATE_MISSING_MESSAGE = "Enter the date the ECT started or will start teaching at your school".freeze
-      INVALID_FORMAT_MESSAGE = "Enter the start date using the correct format, for example, 17 09 1999".freeze
+      DATE_MISSING_MESSAGE = "Enter the date the ECT started or will start teaching at your school"
+      INVALID_FORMAT_MESSAGE = "Enter the start date using the correct format, for example, 17 09 1999"
 
       def initialize(date_as_hash:, current_date: nil)
         super(date_as_hash)

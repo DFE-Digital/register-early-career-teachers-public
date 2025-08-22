@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
   describe desc do
     subject { response }

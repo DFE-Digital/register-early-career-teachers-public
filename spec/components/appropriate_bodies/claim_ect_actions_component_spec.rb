@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe AppropriateBodies::ClaimECTActionsComponent, type: :component do
   subject(:component) do
     described_class.new(
