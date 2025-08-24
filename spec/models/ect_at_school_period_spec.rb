@@ -272,6 +272,173 @@ describe ECTAtSchoolPeriod do
       end
     end
 
+    describe ".visible_for_school" do
+      let(:school_a) { FactoryBot.create(:school) }
+      let(:school_b) { FactoryBot.create(:school) }
+      let(:transition_teacher) { FactoryBot.create(:teacher) }
+
+      context "when ECT has ongoing period at one school" do
+        let!(:ongoing_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_a,
+                            teacher: transition_teacher,
+                            started_on: 2.months.ago,
+                            finished_on: nil)
+        end
+
+        it "shows ongoing period for the correct school" do
+          visible_periods = described_class.visible_for_school(school_a)
+          expect(visible_periods).to include(ongoing_period)
+        end
+
+        it "does not show period for different school" do
+          visible_periods = described_class.visible_for_school(school_b)
+          expect(visible_periods).not_to include(ongoing_period)
+        end
+      end
+
+      context "when ECT has future period at a school" do
+        let!(:future_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_a,
+                            teacher: transition_teacher,
+                            started_on: 1.week.from_now,
+                            finished_on: nil)
+        end
+
+        it "shows future period for the school even before start date" do
+          visible_periods = described_class.visible_for_school(school_a)
+          expect(visible_periods).to include(future_period)
+        end
+
+        it "does not show future period for different school" do
+          visible_periods = described_class.visible_for_school(school_b)
+          expect(visible_periods).not_to include(future_period)
+        end
+      end
+
+      context "when ECT has finished period at old school and started at new school" do
+        let!(:old_school_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_a,
+                            teacher: transition_teacher,
+                            started_on: 2.months.ago,
+                            finished_on: 1.week.ago)
+        end
+
+        let!(:new_school_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_b,
+                            teacher: transition_teacher,
+                            started_on: 1.week.ago,
+                            finished_on: nil)
+        end
+
+        it "does not show finished old school period" do
+          visible_periods = described_class.visible_for_school(school_a)
+          expect(visible_periods).not_to include(old_school_period)
+        end
+
+        it "shows ongoing new school period" do
+          visible_periods = described_class.visible_for_school(school_b)
+          expect(visible_periods).to include(new_school_period)
+        end
+      end
+
+      context "when ECT starts today" do
+        let!(:starting_today_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_a,
+                            teacher: transition_teacher,
+                            started_on: Date.current,
+                            finished_on: nil)
+        end
+
+        it "shows period starting today" do
+          visible_periods = described_class.visible_for_school(school_a)
+          expect(visible_periods).to include(starting_today_period)
+        end
+      end
+
+      context "when ECT starts tomorrow" do
+        let!(:starting_tomorrow_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_a,
+                            teacher: transition_teacher,
+                            started_on: Date.current + 1.day,
+                            finished_on: nil)
+        end
+
+        it "shows period starting tomorrow" do
+          visible_periods = described_class.visible_for_school(school_a)
+          expect(visible_periods).to include(starting_tomorrow_period)
+        end
+      end
+
+      context "when ECT finished yesterday" do
+        let!(:finished_yesterday_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_a,
+                            teacher: transition_teacher,
+                            started_on: 1.month.ago,
+                            finished_on: Date.current - 1.day)
+        end
+
+        it "does not show period that finished yesterday" do
+          visible_periods = described_class.visible_for_school(school_a)
+          expect(visible_periods).not_to include(finished_yesterday_period)
+        end
+      end
+
+      context "dual visibility during school transitions" do
+        let(:old_end_date) { 1.week.ago }
+        let(:transition_date) { Date.current }
+        let(:old_appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let(:new_appropriate_body) { FactoryBot.create(:appropriate_body) }
+
+        let!(:finished_old_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_a,
+                            teacher: transition_teacher,
+                            started_on: 1.month.ago,
+                            finished_on: old_end_date,
+                            email: 'old@example.com',
+                            working_pattern: 'full_time',
+                            school_reported_appropriate_body: old_appropriate_body)
+        end
+
+        let!(:current_new_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_b,
+                            teacher: transition_teacher,
+                            started_on: transition_date,
+                            finished_on: nil,
+                            email: 'new@example.com',
+                            working_pattern: 'part_time',
+                            school_reported_appropriate_body: new_appropriate_body)
+        end
+
+        it 'old school no longer sees finished period' do
+          old_school_periods = described_class.visible_for_school(school_a)
+          expect(old_school_periods).not_to include(finished_old_period)
+        end
+
+        it 'new school sees current period' do
+          new_school_periods = described_class.visible_for_school(school_b)
+          expect(new_school_periods).to include(current_new_period)
+          expect(new_school_periods).not_to include(finished_old_period)
+        end
+
+        it 'periods maintain their distinct attributes after transition' do
+          expect(finished_old_period.email).to eq('old@example.com')
+          expect(finished_old_period.working_pattern).to eq('full_time')
+
+          expect(current_new_period.email).to eq('new@example.com')
+          expect(current_new_period.working_pattern).to eq('part_time')
+        end
+      end
+    end
+
     describe ".with_expressions_of_interest_for_contract_period" do
       let!(:training_period) do
         FactoryBot.create(:training_period,

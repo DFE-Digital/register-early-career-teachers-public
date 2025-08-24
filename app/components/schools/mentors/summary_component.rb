@@ -36,7 +36,7 @@ module Schools
       end
 
       def assigned_ects
-        @assigned_ects ||= mentor_period_for_school&.currently_assigned_ects
+        @assigned_ects ||= mentor_period_for_school&.currently_assigned_and_transferring_ects || []
       end
 
       def mentor_period_for_school
