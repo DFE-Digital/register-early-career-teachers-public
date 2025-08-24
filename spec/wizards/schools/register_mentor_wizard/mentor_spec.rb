@@ -165,6 +165,16 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
   end
 
+  describe '#previous_training_period' do
+    let(:teacher) { FactoryBot.create(:teacher, trn: mentor.trn) }
+    let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 3, 1)) }
+    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: Date.new(2025, 1, 1)) }
+
+    it 'returns the latest training period for the mentor' do
+      expect(mentor.previous_training_period).to eq(training_period)
+    end
+  end
+
   describe '#register!' do
     let(:teacher) { Teacher.first }
     let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
