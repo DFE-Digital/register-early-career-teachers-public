@@ -389,6 +389,54 @@ describe ECTAtSchoolPeriod do
           expect(visible_periods).not_to include(finished_yesterday_period)
         end
       end
+
+      context "dual visibility during school transitions" do
+        let(:old_end_date) { 1.week.ago }
+        let(:transition_date) { Date.current }
+        let(:old_appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let(:new_appropriate_body) { FactoryBot.create(:appropriate_body) }
+
+        let!(:finished_old_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_a,
+                            teacher: transition_teacher,
+                            started_on: 1.month.ago,
+                            finished_on: old_end_date,
+                            email: 'old@example.com',
+                            working_pattern: 'full_time',
+                            school_reported_appropriate_body: old_appropriate_body)
+        end
+
+        let!(:current_new_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            school: school_b,
+                            teacher: transition_teacher,
+                            started_on: transition_date,
+                            finished_on: nil,
+                            email: 'new@example.com',
+                            working_pattern: 'part_time',
+                            school_reported_appropriate_body: new_appropriate_body)
+        end
+
+        it 'old school no longer sees finished period' do
+          old_school_periods = described_class.visible_for_school(school_a)
+          expect(old_school_periods).not_to include(finished_old_period)
+        end
+
+        it 'new school sees current period' do
+          new_school_periods = described_class.visible_for_school(school_b)
+          expect(new_school_periods).to include(current_new_period)
+          expect(new_school_periods).not_to include(finished_old_period)
+        end
+
+        it 'periods maintain their distinct attributes after transition' do
+          expect(finished_old_period.email).to eq('old@example.com')
+          expect(finished_old_period.working_pattern).to eq('full_time')
+
+          expect(current_new_period.email).to eq('new@example.com')
+          expect(current_new_period.working_pattern).to eq('part_time')
+        end
+      end
     end
 
     describe ".with_expressions_of_interest_for_contract_period" do
