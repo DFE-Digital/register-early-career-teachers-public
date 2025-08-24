@@ -49,7 +49,7 @@ class Rack::Attack
   end
 
   # Throttle /api requests by auth token (1000 requests per 5 minutes)
-  throttle("API requests by auth token", limit: 1000, period: 5.minutes) do |request|
+  throttle("API requests by auth token", limit: 10, period: 5.minutes) do |request|
     if api_request?(request) && !public_api_path?(request)
       auth_token(request)
     end
@@ -71,4 +71,9 @@ ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start
   path = payload.fetch(:request).fullpath
 
   Rails.logger.warn("[rack-attack] Throttled request #{request_id} from #{ip} to '#{path}'")
+
+  # Web requests are sent to BigQuery via a concern in the ApplicationController.
+  # If Rack intercepts the request it won't reach the controller, so we need
+  # to manually send web requests that are rate limited to BigQuery.
+  APIRequest.send_throttled_request(payload[:request].env)
 end
