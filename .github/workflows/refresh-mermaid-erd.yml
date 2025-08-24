@@ -1,0 +1,84 @@
+name: "Refresh mermaid ERD"
+
+on:
+  schedule:
+    - cron: '0 8 * * 1' # Monday at 8am
+  workflow_dispatch: 
+
+jobs:
+  refresh_mermaid_erd:
+    name: Refresh mermaid ERD
+    runs-on: ubuntu-latest
+
+    env:
+      RAILS_ENV: test
+      DB_USERNAME: postgres
+      DB_PASSWORD: ""
+      DB_HOSTNAME: 127.0.0.1
+      DB_PORT: 5432
+      ECF_DB_USERNAME: postgres
+      ECF_DB_PASSWORD: ""
+      ECF_DB_HOSTNAME: 127.0.0.1
+      ECF_DB_PORT: 5432
+      ANALYTICS_DB_USERNAME: postgres
+      ANALYTICS_DB_PASSWORD: ""
+      ANALYTICS_DB_HOSTNAME: 127.0.0.1
+      ANALYTICS_DB_PORT: 5432
+      ENCRYPTION_PRIMARY_KEY: test_primary_key
+      ENCRYPTION_DETERMINISTIC_KEY: test_deterministic_key
+      ENCRYPTION_DERIVATION_SALT: test_derivation_salt
+      CI: true
+
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ""
+          POSTGRES_HOST_AUTH_METHOD: "trust"
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./.github/actions/prepare-app-env
+        id: test
+        with:
+          prepare-test-database: "true"
+          prepare-assets: "true"
+
+      - name: Run mermaid
+        run: bundle exec rake erd:generate
+
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          branch: nightly-refresh-mermaid-erd
+          delete-branch: true
+          add-paths: documentation/domain-model.md
+          base: main
+          commit-message: |
+            Refresh mermaid ERD
+
+            We run the mermaid ERD generation in CI on a schedule; once complete
+            it raises this commit in a PR so that we can keep our ERD inline with our models.
+          title: Refresh mermaid ERD
+          body: |
+            We run the mermaid ERD generation in CI on a schedule; once complete 
+            it raises this commit in a PR so that we can keep our ERD inline with our models.

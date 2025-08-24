@@ -16,7 +16,7 @@ module MermaidErd
     end
 
     def generate
-      raise '[⚠] Mermaid ERD generation is only allowed in development environment' unless Rails.env.development?
+      raise '[⚠] Mermaid ERD generation is only allowed in development and test environments' unless Rails.env.development? || Rails.env.test?
 
       Rails.application.eager_load!
       models = load_models

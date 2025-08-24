@@ -1,8 +1,8 @@
 namespace :erd do
   desc 'Generate Mermaid entity relationship diagram'
   task generate: :environment do
-    unless Rails.env.development?
-      puts '[⚠] Mermaid ERD generation is only allowed in development environment'
+    unless Rails.env.development? || Rails.env.test?
+      puts '[⚠] Mermaid ERD generation is only allowed in development and test environments'
       next
     end
 
