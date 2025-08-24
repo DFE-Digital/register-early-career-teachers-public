@@ -8,6 +8,10 @@ describe Builders::Mentor::SchoolPeriods do
   let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:school_periods) { [period_1, period_2] }
 
+  before do
+    CacheManager.instance.clear_all_caches!
+  end
+
   describe "#build" do
     it "creates MentorAtSchoolPeriod records for the school periods" do
       expect {

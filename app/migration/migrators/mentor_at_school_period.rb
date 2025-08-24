@@ -24,7 +24,7 @@ module Migrators
 
     def migrate!
       migrate(self.class.mentor_teachers.eager_load(:user)) do |teacher_profile|
-        teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+        teacher = find_teacher_by_trn!(teacher_profile.trn)
 
         result = true
 
@@ -57,6 +57,13 @@ module Migrators
 
         result
       end
+    end
+
+  private
+
+    def preload_caches
+      cache_manager.cache_schools
+      cache_manager.cache_teachers
     end
   end
 end
