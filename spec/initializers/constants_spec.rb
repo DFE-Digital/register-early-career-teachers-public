@@ -8,7 +8,7 @@ RSpec.describe "Constants" do
   end
 
   describe "TRAINING_PROGRAMME" do
-    it { expect(TRAINING_PROGRAMME).to eq({ provider_led: 'Provider-led', school_led: 'School-led' }) }
+    it { expect(TRAINING_PROGRAMME).to eq({ 'provider_led' => 'Provider-led', 'school_led' => 'School-led' }) }
   end
 
   describe "INDUCTION_PROGRAMMES" do
