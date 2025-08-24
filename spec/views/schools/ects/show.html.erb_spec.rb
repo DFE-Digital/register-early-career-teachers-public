@@ -11,7 +11,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
                       working_pattern: 'full_time',
                       email: 'love@whale.com')
   end
-  let(:training_period) { FactoryBot.create(:training_period, :provider_led, school_partnership:, started_on: '2025-01-11', finished_on: nil, training_programme:) }
+  let(:training_period) { FactoryBot.create(:training_period, :provider_led, ect_at_school_period: current_ect_period, school_partnership:, started_on: '2025-01-11', finished_on: nil, training_programme:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Ambition institute') }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -133,6 +133,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
 
     context 'when school-led' do
       let(:training_programme) { 'school_led' }
+      let(:training_period) { FactoryBot.create(:training_period, :school_led, ect_at_school_period: current_ect_period, started_on: '2025-01-11', finished_on: nil) }
 
       it 'does not render the lead provider summary card' do
         expect(rendered).not_to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
