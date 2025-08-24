@@ -1,0 +1,41 @@
+<% page_data(
+  title:
+    "Which lead provider would you like to contact your school about training #{@wizard.context.mentor_teacher_full_name}?",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
+) %>
+
+<p class="govuk-body">
+  We’ll let the lead provider know that your school is interested in working
+  with them. They’ll contact your school to discuss this further before you
+  decide if you want to go ahead with the mentor training.
+</p>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+  <%= f.govuk_collection_radio_buttons(
+    :lead_provider_id,
+    @wizard.context.lead_providers_within_contract_period,
+    :id,
+    :name,
+    legend: {
+      text: "Select lead provider",
+      hidden: true,
+    },
+  ) %>
+
+  <%= govuk_details(summary_text: 'What are the roles of an appropriate body, lead provider and delivery partner?') do %>
+    <p class="govuk-body">An appropriate body is responsible for assuring the quality of the
+      statutory induction of ECTs. A lead provider provides the online learning
+      platform used for training ECTs and mentors, while the delivery partner
+      delivers training events.
+    </p>
+
+    <p class="govuk-body">These roles are sometimes undertaken by the same organisation, for
+      example an appropriate body might be the same organisation as the
+      delivery partner.
+    </p>
+  <% end %>
+
+  <%= f.govuk_submit "Continue" %>
+<% end %>

@@ -350,6 +350,16 @@ Rails.application.routes.draw do
 
       get "confirmation", action: :new
     end
+
+    namespace :assign_existing_mentor_wizard, path: 'assign-existing-mentor' do
+      get 'review-mentor-eligibility', action: :new
+      post 'review-mentor-eligibility', action: :create
+
+      get 'lead-provider', action: :new
+      post 'lead-provider', action: :create
+
+      get 'confirmation', action: :new
+    end
   end
 
   constraints -> { Rails.application.config.enable_api } do
