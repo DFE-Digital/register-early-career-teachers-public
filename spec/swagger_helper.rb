@@ -41,6 +41,8 @@ RSpec.configure do |config|
           IDAttribute: ID_ATTRIBUTE,
           UnauthorisedResponse: UNAUTHORISED_RESPONSE,
           NotFoundResponse: NOT_FOUND_RESPONSE,
+          BadRequestResponse: BAD_REQUEST_RESPONSE,
+          UnprocessableContentResponse: UNPROCESSABLE_CONTENT_RESPONSE,
           PaginationFilter: PAGINATION_FILTER,
           SortingTimestamps: SORTING_TIMESTAMPS,
 
@@ -67,6 +69,7 @@ RSpec.configure do |config|
           Partnership: PARTNERSHIP,
           PartnershipsFilter: PARTNERSHIPS_FILTER,
           PartnershipResponse: PARTNERSHIP_RESPONSE,
+          PartnershipRequest: PARTNERSHIP_REQUEST,
           PartnershipsResponse: PARTNERSHIPS_RESPONSE,
         }
       }
