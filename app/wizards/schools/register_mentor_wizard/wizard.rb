@@ -82,7 +82,7 @@ module Schools
                      end
 
             steps << :started_on if mentor.mentoring_at_new_school_only == "yes"
-            steps << :previous_training_period_details if mentor.latest_registration_choice.school_partnership
+            steps << :previous_training_period_details if mentor.eligible_for_funding? || mentor.provider_led_ect?
             steps << :programme_choices unless mentor.became_ineligible_for_funding?
             steps << :lead_provider unless mentor.use_same_programme_choices == "yes"
             steps << :review_mentor_eligibility if mentor.funding_available?

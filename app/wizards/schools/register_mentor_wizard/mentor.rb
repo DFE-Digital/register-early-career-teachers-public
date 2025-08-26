@@ -85,6 +85,10 @@ module Schools
         @latest_registration_choice ||= MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn:)
       end
 
+      def previous_training_period
+        latest_registration_choice.training_period
+      end
+
       def lead_providers_within_contract_period
         return [] unless contract_period
 
@@ -118,6 +122,10 @@ module Schools
       # Does that mentor have a mentor_became_ineligible_for_funding_on?
       def became_ineligible_for_funding?
         ::Teachers::MentorFundingEligibility.new(trn:).ineligible?
+      end
+
+      def eligible_for_funding?
+        ::Teachers::MentorFundingEligibility.new(trn:).eligible?
       end
 
       def ect_lead_provider

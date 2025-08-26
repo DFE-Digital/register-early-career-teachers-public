@@ -12,7 +12,7 @@
           text: "School name",
         },
         value: {
-          text: @mentor.latest_registration_choice.school&.name,
+          text: @mentor.latest_registration_choice.school&.name || 'Not confirmed', # MentorRegistrationFlow: AC 9a
         },
       },
       {
@@ -20,7 +20,7 @@
           text: "Lead provider",
         },
         value: {
-          text: @mentor.latest_registration_choice.lead_provider&.name,
+          text: @mentor.latest_registration_choice.lead_provider&.name || 'Not confirmed',
         },
       },
       {
@@ -28,7 +28,7 @@
           text: "Delivery partner",
         },
         value: {
-          text: @mentor.latest_registration_choice.delivery_partner&.name,
+          text: @mentor.latest_registration_choice.delivery_partner&.name || 'Not confirmed',
         },
       },
     ],
