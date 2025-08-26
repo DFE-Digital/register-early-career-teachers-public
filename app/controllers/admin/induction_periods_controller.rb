@@ -50,13 +50,15 @@ module Admin
   private
 
     def induction_period_params
-      params.require(:induction_period).permit(
-        :started_on,
-        :finished_on,
-        :number_of_terms,
-        :induction_programme,
-        :training_programme,
-        :appropriate_body_id
+      params.expect(
+        induction_period: %i[
+          started_on
+          finished_on
+          number_of_terms
+          induction_programme
+          training_programme
+          appropriate_body_id
+        ]
       )
     end
 

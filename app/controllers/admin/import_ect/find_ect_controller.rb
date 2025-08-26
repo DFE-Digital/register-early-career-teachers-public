@@ -38,7 +38,7 @@ module Admin
     private
 
       def pending_induction_submission_params
-        params.require(:pending_induction_submission).permit(:trn, :date_of_birth)
+        params.expect(pending_induction_submission: %i[trn date_of_birth])
       end
     end
   end

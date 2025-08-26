@@ -29,8 +29,13 @@ module AppropriateBodies
     private
 
       def update_params
-        params.require(:pending_induction_submission).permit(
-          :started_on, :induction_programme, :training_programme, :trs_induction_status
+        params.expect(
+          pending_induction_submission: %i[
+            started_on
+            induction_programme
+            training_programme
+            trs_induction_status
+          ]
         )
       end
 
