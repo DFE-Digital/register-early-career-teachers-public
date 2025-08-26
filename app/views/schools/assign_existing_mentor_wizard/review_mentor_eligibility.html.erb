@@ -13,5 +13,7 @@
   <%= f.govuk_submit "Continue" %>
 <% end %>
 
-<%= govuk_link_to "#{@wizard.context.ect_lead_provider&.name} will not be providing mentor training to #{@wizard.context.mentor_teacher_full_name}",
-schools_assign_existing_mentor_wizard_lead_provider_path %>
+<p class="govuk-body">
+  <%= govuk_link_to "#{@wizard.context.ect_lead_provider&.name} will not be providing mentor training to #{@wizard.context.mentor_teacher_full_name}",
+  schools_assign_existing_mentor_wizard_lead_provider_path %>
+</p>
