@@ -1,7 +1,7 @@
-RSpec.describe 'Add a mentor to an ECT' do
+RSpec.describe 'Add a mentor to a school led ECT' do
   scenario 'happy path' do
     given_there_is_a_school_in_the_service
-    and_there_is_an_ect_with_no_mentor_registered_at_the_school
+    and_there_is_a_school_led_ect_with_no_mentor_registered_at_the_school
     and_there_is_a_mentor_registered_at_the_school_eligible_to_mentor_the_ect
     and_i_sign_in_as_that_school_user
     and_i_am_on_the_schools_landing_page
@@ -24,8 +24,9 @@ RSpec.describe 'Add a mentor to an ECT' do
     sign_in_as_school_user(school: @school)
   end
 
-  def and_there_is_an_ect_with_no_mentor_registered_at_the_school
+  def and_there_is_a_school_led_ect_with_no_mentor_registered_at_the_school
     @ect = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
+    @training_period = FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period: @ect)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
