@@ -35,17 +35,11 @@ module API
     private
 
       def create_partnership_params
-        params
-          .require(:data)
-          .require(:attributes)
-          .permit(:cohort, :school_id, :delivery_partner_id)
+        params.require(:data).expect({ attributes: %i[cohort school_id delivery_partner_id] })
       end
 
       def update_partnership_params
-        params
-          .require(:data)
-          .require(:attributes)
-          .permit(:delivery_partner_id)
+        params.require(:data).expect({ attributes: %i[delivery_partner_id] })
       end
 
       def partnerships_query(conditions: {})
