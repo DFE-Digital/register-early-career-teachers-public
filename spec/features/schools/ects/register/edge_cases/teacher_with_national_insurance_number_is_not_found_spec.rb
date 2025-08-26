@@ -1,6 +1,10 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'test trs api client returns 200 then 400'
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'Teacher with national insurance number is not found' do
     given_i_am_logged_in_as_a_school_user
     and_i_am_on_the_schools_landing_page
