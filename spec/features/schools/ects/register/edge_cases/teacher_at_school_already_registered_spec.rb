@@ -1,6 +1,10 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'test trs api client'
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'Teacher with trn has already registered as an ECT at a school' do
     given_i_am_logged_in_as_a_school_user
     and_an_ect_has_already_registered_at_my_school
