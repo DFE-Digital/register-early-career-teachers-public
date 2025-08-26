@@ -124,6 +124,10 @@ module Schools
         ::Teachers::MentorFundingEligibility.new(trn:).ineligible?
       end
 
+      def eligible_for_funding?
+        ::Teachers::MentorFundingEligibility.new(trn:).eligible?
+      end
+
       def ect_lead_provider
         ect_training_service.lead_provider if ect
       end
