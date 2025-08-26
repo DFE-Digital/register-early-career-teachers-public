@@ -16,7 +16,7 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
 
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: mentor_teacher) }
   let(:ect_at_school_period) do
-    FactoryBot.create(:ect_at_school_period, :provider_led, school:, teacher: ect_teacher, started_on: Date.new(2025, 5, 1))
+    FactoryBot.create(:ect_at_school_period, school:, teacher: ect_teacher, started_on: Date.new(2025, 5, 1))
   end
 
   describe '#ect_teacher_full_name' do
@@ -52,8 +52,27 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
   describe '#ect_lead_provider' do
     let(:started_on) { 2.days.ago.to_date }
     let(:finished_on) { 2.days.from_now.to_date }
+
+    let(:school_partnership) do
+      active_lp = FactoryBot.create(:active_lead_provider, lead_provider:)
+      lpdp = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lp)
+      FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp)
+    end
+
     let(:ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :provider_led, :with_training_period, started_on:, finished_on:, school:, teacher: ect_teacher, lead_provider:)
+      FactoryBot.create(:ect_at_school_period, started_on:, finished_on:, school:, teacher: ect_teacher)
+    end
+
+    let!(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        :ongoing,
+        ect_at_school_period:,
+        started_on:,
+        finished_on:,
+        school_partnership:
+      )
     end
 
     it 'returns the ECT lead provider using CurrentTraining service' do
