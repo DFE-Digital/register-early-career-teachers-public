@@ -7,7 +7,7 @@ describe Builders::Mentor::TrainingPeriods do
   let(:school_2) { FactoryBot.create(:school, urn: "987654") }
   let(:contract_period) { FactoryBot.create(:contract_period) }
   let(:partnership_1) { make_partnership_for(school_1, contract_period) }
-  let(:partnership_2) { make_partnership_for(school_2, contract_period) }
+  let(:partnership_2) { make_partnership_for(school_2, contract_period, lead_provider_name: 'Naruto Ninja Academy ') }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:started_on) { contract_period.started_on }
