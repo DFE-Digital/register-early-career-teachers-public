@@ -19,7 +19,8 @@ module SchoolPartnerships
       school_partnership.tap do |school_partnership|
         previous_delivery_partner = school_partnership.delivery_partner
         school_partnership.update!(lead_provider_delivery_partnership:)
-        Events::Record.record_school_partnership_updated_event!(author: Events::LeadProviderAPIAuthor.new, school_partnership:, previous_delivery_partner:)
+        modifications = school_partnership.saved_changes
+        Events::Record.record_school_partnership_updated_event!(author: Events::LeadProviderAPIAuthor.new, school_partnership:, previous_delivery_partner:, modifications:)
       end
     end
 

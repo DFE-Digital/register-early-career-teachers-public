@@ -369,7 +369,7 @@ module Events
       ).record_event!
     end
 
-    def self.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:)
+    def self.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications:)
       event_type = :school_partnership_updated
       school = school_partnership.school
       delivery_partner = school_partnership.delivery_partner
@@ -378,7 +378,6 @@ module Events
       heading = "#{school.name} changed partnership from #{previous_delivery_partner.name} to #{delivery_partner.name} (via #{lead_provider.name}) for #{contract_period.year}"
       metadata = {
         contract_period_year: contract_period.year,
-        previous_delivery_partner_id: previous_delivery_partner.id,
       }
 
       new(
@@ -390,7 +389,8 @@ module Events
         school:,
         lead_provider:,
         happened_at: Time.zone.now,
-        metadata:
+        metadata:,
+        modifications:
       ).record_event!
     end
 

@@ -857,11 +857,11 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        previous_delivery_partner = FactoryBot.create(:delivery_partner)
-        Events::Record.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:)
+        previous_delivery_partner = school_partnership.delivery_partner
+        school_partnership.update!(lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership))
+        Events::Record.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications: school_partnership.saved_changes)
         metadata = {
           contract_period_year: school_partnership.contract_period.year,
-          previous_delivery_partner_id: previous_delivery_partner.id,
         }
 
         expect(RecordEventJob).to have_received(:perform_later).with(
@@ -873,6 +873,7 @@ RSpec.describe Events::Record do
           event_type: :school_partnership_updated,
           happened_at: Time.zone.now,
           metadata:,
+          modifications: [/Lead provider delivery partnership changed from '\d+' to '\d+'/],
           **author_params
         )
       end
