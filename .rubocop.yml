@@ -61,7 +61,7 @@ Style/SignalException:
 
 Style/StringConcatenation:
   Enabled: false
-  
+
 Style/FrozenStringLiteralComment:
   Enabled: true
   EnforcedStyle: never
@@ -87,15 +87,18 @@ Rails/SkipsModelValidations:
   Exclude:
     - spec/support/shared_examples/declarative_touch.rb
 
+Rails/StrongParametersExpect:
+  Enabled: true
+
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
 
 Rails/Output:
   Exclude:
     - db/seeds*
-    # Excluded because this file intentionally writes a dev-only message to stdout after migrations, which does not 
+    # Excluded because this file intentionally writes a dev-only message to stdout after migrations, which does not
     # impact application behavior and is not intended for production environments.
-    - config/initializers/post_migration_erd_prompt.rb 
+    - config/initializers/post_migration_erd_prompt.rb
 
 Rails/SaveBang:
   Exclude:
