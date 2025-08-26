@@ -20,7 +20,7 @@ module Migration::ParityChecks
     def selected_key_path_params
       return { selected_key_paths: nil } unless params[:parity_check_filter_response_body]
 
-      params.require(:parity_check_filter_response_body).permit(selected_key_paths: [])
+      params.expect(parity_check_filter_response_body: { selected_key_paths: [] })
     end
   end
 end

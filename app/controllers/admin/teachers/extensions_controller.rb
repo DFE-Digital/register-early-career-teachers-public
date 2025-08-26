@@ -63,7 +63,7 @@ module Admin
       end
 
       def extension_params
-        params.require(:induction_extension).permit(:number_of_terms)
+        params.expect(induction_extension: :number_of_terms)
       end
     end
   end

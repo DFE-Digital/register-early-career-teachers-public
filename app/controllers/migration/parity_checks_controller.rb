@@ -59,6 +59,6 @@ private
   end
 
   def runner_params
-    params.require(:parity_check_runner).permit(:mode, endpoint_ids: [])
+    params.expect(parity_check_runner: [:mode, { endpoint_ids: [] }])
   end
 end

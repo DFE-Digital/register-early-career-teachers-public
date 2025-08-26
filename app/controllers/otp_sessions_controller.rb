@@ -59,7 +59,7 @@ private
   end
 
   def permitted_params
-    params.require(:sessions_otp_sign_in_form).permit(:email, :code)
+    params.expect(sessions_otp_sign_in_form: %i[email code])
   end
 
   def session_user
