@@ -1,10 +1,17 @@
-RSpec.shared_context "an API create endpoint documentation", :exceptions_app do |options = {}|
+RSpec.shared_context "an API update endpoint documentation", :exceptions_app do |options = {}|
   path options[:url] do
-    post "Create a #{options[:resource_description]}" do
+    put "Update a #{options[:resource_description]}" do
       tags options[:tag]
       consumes "application/json"
       produces "application/json"
       security [api_key: []]
+
+      parameter name: :id,
+                in: :path,
+                required: true,
+                schema: {
+                  "$ref": "#/components/schemas/IDAttribute",
+                }
 
       parameter name: :params,
                 in: :body,
@@ -14,7 +21,9 @@ RSpec.shared_context "an API create endpoint documentation", :exceptions_app do 
                   "$ref": options[:request_schema_ref],
                 }
 
-      response "200", "The created #{options[:resource_description]}" do
+      let(:id) { resource.api_id }
+
+      response "200", "The updated #{options[:resource_description]}" do
         schema({ "$ref": options[:response_schema_ref] })
 
         run_test!
@@ -40,6 +49,14 @@ RSpec.shared_context "an API create endpoint documentation", :exceptions_app do 
         let(:params) { invalid_params }
 
         schema({ "$ref": "#/components/schemas/UnprocessableContentResponse" })
+
+        run_test!
+      end
+
+      response "404", "Not found" do
+        let(:id) { SecureRandom.uuid }
+
+        schema({ "$ref": "#/components/schemas/NotFoundResponse" })
 
         run_test!
       end
