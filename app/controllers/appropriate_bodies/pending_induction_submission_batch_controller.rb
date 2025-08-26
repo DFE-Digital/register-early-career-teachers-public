@@ -25,7 +25,7 @@ module AppropriateBodies
   private
 
     def import_params
-      params.require(:pending_induction_submission_batch).permit(:csv_file)
+      params.expect(pending_induction_submission_batch: :csv_file)
     end
 
     def csv_data

@@ -45,7 +45,7 @@ module AppropriateBodies
     private
 
       def pending_induction_submission_params
-        params.require(:pending_induction_submission).permit(:finished_on, :number_of_terms)
+        params.expect(pending_induction_submission: %i[finished_on number_of_terms])
       end
 
       def pending_induction_submission_attributes
