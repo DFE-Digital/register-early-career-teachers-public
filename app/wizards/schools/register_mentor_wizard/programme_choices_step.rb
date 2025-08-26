@@ -18,11 +18,7 @@ module Schools
       end
 
       def previous_step
-        if mentor.latest_registration_choice.school_partnership
-          :previous_training_period_details
-        else
-          :started_on
-        end
+        :started_on
       end
 
     private
