@@ -78,7 +78,8 @@ RSpec.describe SchoolPartnerships::Update, type: :model do
           {
             school_partnership:,
             author: kind_of(Events::LeadProviderAPIAuthor),
-            previous_delivery_partner:
+            previous_delivery_partner:,
+            modifications: school_partnership.saved_changes
           }
         )
       )
