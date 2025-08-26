@@ -15,7 +15,6 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
   has_one :lead_provider_delivery_partnership, through: :school_partnership
   has_one :active_lead_provider, through: :lead_provider_delivery_partnership
-  has_one :lead_provider, through: :active_lead_provider
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
   has_one :contract_period, through: :active_lead_provider
 
@@ -61,6 +60,14 @@ class TrainingPeriod < ApplicationRecord
 
   def only_expression_of_interest?
     school_partnership_id.blank? && expression_of_interest.present?
+  end
+
+  def lead_provider
+    if only_expression_of_interest?
+      expression_of_interest.lead_provider
+    else
+      active_lead_provider&.lead_provider
+    end
   end
 
 private

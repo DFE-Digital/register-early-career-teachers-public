@@ -19,7 +19,6 @@ describe TrainingPeriod do
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_one(:lead_provider_delivery_partnership).through(:school_partnership) }
     it { is_expected.to have_one(:active_lead_provider).through(:lead_provider_delivery_partnership) }
-    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
   end
@@ -244,6 +243,66 @@ describe TrainingPeriod do
 
     it "doesn't include periods that belong to other trainee" do
       expect(subject).not_to include(unrelated_training_period)
+    end
+  end
+
+  describe "#lead_provider" do
+    let(:dates) { { started_on: 3.years.ago.to_date, finished_on: nil } }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **dates) }
+
+    context "when training period has expression_of_interest but no school_partnership" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+      let(:training_period) do
+        FactoryBot.create(:training_period, :with_expression_of_interest,
+                          ect_at_school_period:, expression_of_interest:,
+                          school_partnership: nil, **dates)
+      end
+
+      it "returns lead_provider from expression_of_interest" do
+        expect(training_period.lead_provider).to eq(lead_provider)
+      end
+    end
+
+    context "when training period has school_partnership" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:training_period) { FactoryBot.create(:training_period, :with_school_partnership, ect_at_school_period:, **dates) }
+
+      before do
+        training_period.active_lead_provider.update!(lead_provider:)
+      end
+
+      it "returns lead_provider from active_lead_provider through school_partnership" do
+        expect(training_period.lead_provider).to eq(lead_provider)
+      end
+    end
+
+    context "when training period has both expression_of_interest and school_partnership" do
+      let(:expression_lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:partnership_lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, lead_provider: expression_lead_provider) }
+      let(:training_period) do
+        FactoryBot.create(:training_period, :with_school_partnership, :with_expression_of_interest,
+                          ect_at_school_period:, expression_of_interest:, **dates)
+      end
+
+      before do
+        training_period.active_lead_provider.update!(lead_provider: partnership_lead_provider)
+      end
+
+      it "returns lead_provider from active_lead_provider (school_partnership takes precedence)" do
+        expect(training_period.lead_provider).to eq(partnership_lead_provider)
+      end
+    end
+
+    context "when training period has neither expression_of_interest nor school_partnership" do
+      let(:training_period) do
+        FactoryBot.build(:training_period, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates)
+      end
+
+      it "returns nil" do
+        expect(training_period.lead_provider).to be_nil
+      end
     end
   end
 end
