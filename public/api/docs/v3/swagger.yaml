@@ -116,7 +116,7 @@ paths:
               schema:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
     post:
-      summary: Creates a partnership
+      summary: Create a partnership
       tags:
       - Partnerships
       security:
@@ -184,6 +184,54 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
+    put:
+      summary: Update a partnership
+      tags:
+      - Partnerships
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: The updated partnership
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PartnershipResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableContentResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/PartnershipUpdateRequest"
   "/api/v3/schools":
     get:
       summary: Retrieve multiple schools scoped to cohort
@@ -777,7 +825,7 @@ components:
       properties:
         data:
           "$ref": "#/components/schemas/Partnership"
-    PartnershipRequest:
+    PartnershipCreateRequest:
       description: A partnership request
       type: object
       required:
@@ -816,6 +864,38 @@ components:
                   nullable: false
                   type: string
                   example: 24b61d1c-ad95-4000-aee0-afbdd542294a
+                delivery_partner_id:
+                  description: The unique ID of the delivery partner you will work
+                    with for this school partnership
+                  required: true
+                  nullable: false
+                  type: string
+                  example: db2fbf67-b7b7-454f-a1b7-0020411e2314
+    PartnershipUpdateRequest:
+      description: A partnership update request
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: A partnership update
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              type: string
+              required: true
+              enum:
+              - partnership
+              example: partnership
+            attributes:
+              description: A partnership update request attributes
+              type: object
+              required:
+              - delivery_partner_id
+              properties:
                 delivery_partner_id:
                   description: The unique ID of the delivery partner you will work
                     with for this school partnership
