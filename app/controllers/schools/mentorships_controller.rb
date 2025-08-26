@@ -47,7 +47,7 @@ module Schools
     end
 
     def provider_led_and_eligible_for_funding?
-      ect&.provider_led? &&
+      ect&.provider_led_training_programme? &&
         mentor_at_school_period&.teacher &&
         Teachers::MentorFundingEligibility
           .new(trn: mentor_at_school_period.teacher.trn)

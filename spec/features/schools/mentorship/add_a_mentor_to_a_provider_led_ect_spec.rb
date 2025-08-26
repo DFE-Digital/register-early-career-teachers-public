@@ -77,21 +77,22 @@ RSpec.describe 'Add a mentor to a provider led ECT' do
     @lead_provider = FactoryBot.create(:lead_provider, name: "Goku")
     @lead_provider_2 = FactoryBot.create(:lead_provider, name: "Vegeta")
 
-    FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider,   contract_period: @cp_2023)
+    @active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period: @cp_2023)
+    @lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: @active_lead_provider)
+    @school_partnership = FactoryBot.create(:school_partnership, school: @school, lead_provider_delivery_partnership: @lead_provider_delivery_partnership)
+
     FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider_2, contract_period: @cp_2023)
 
     @ect = FactoryBot.create(
       :ect_at_school_period,
-      :provider_led,
       :ongoing,
-      :with_training_period,
       school: @school,
-      started_on: Date.new(2023, 9, 1),
-      lead_provider: @lead_provider,
-      contract_period: @cp_2023
+      started_on: Date.new(2023, 9, 1)
     )
 
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
+
+    FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: @ect, school_partnership: @school_partnership)
   end
 
   def and_the_school_has_a_mentor_eligible_to_mentor_the_ect

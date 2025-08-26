@@ -1,7 +1,11 @@
 RSpec.describe 'Assign existing mentor wizard', type: :request do
   let(:school) { FactoryBot.create(:school) }
-  let(:ect)    { FactoryBot.create(:ect_at_school_period, :ongoing, :provider_led, school:) }
+  let(:ect)    { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
+
+  before do
+    FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: ect)
+  end
 
   def kickoff_wizard!
     allow(Teachers::MentorFundingEligibility).to receive(:new)

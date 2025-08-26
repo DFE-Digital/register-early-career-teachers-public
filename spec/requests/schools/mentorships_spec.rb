@@ -72,8 +72,12 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
       end
 
       context 'when a valid mentor has been selected for the school led ect mentorship' do
+        before do
+          FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period: ect)
+        end
+
         let(:params) { { schools_assign_mentor_form: { mentor_id: mentor.id } } }
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :school_led, school:) }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
 
         it 'creates the mentorship and redirects the user to the confirmation page' do
           allow(Schools::AssignMentorForm).to receive(:new).and_call_original
@@ -88,8 +92,12 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
       end
 
       context 'provider led ECT mentorship' do
+        before do
+          FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: ect)
+        end
+
         let(:params) { { schools_assign_mentor_form: { mentor_id: mentor.id } } }
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, :provider_led, school:) }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
 
         context 'when the mentor is eligible for funding' do
           before do

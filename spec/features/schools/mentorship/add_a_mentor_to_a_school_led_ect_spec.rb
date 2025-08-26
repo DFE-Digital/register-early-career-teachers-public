@@ -25,7 +25,8 @@ RSpec.describe 'Add a mentor to a school led ECT' do
   end
 
   def and_there_is_a_school_led_ect_with_no_mentor_registered_at_the_school
-    @ect = FactoryBot.create(:ect_at_school_period, :school_led, :ongoing, school: @school)
+    @ect = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
+    @training_period = FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period: @ect)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
