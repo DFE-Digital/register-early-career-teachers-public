@@ -1,5 +1,3 @@
-# TODO: error messages are currently consistent with ECF, however we want them to use RECT
-# terminology in the service and will look to map between them somehow in a future PR.
 module SchoolPartnerships
   class Create
     include ActiveModel::Model
