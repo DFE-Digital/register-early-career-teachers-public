@@ -8,7 +8,7 @@ STATUTORY_INDUCTION_ROLLOUT_DATE = Date.new(1999, 9, 1).freeze
 TRAINING_PROGRAMME = {
   provider_led: 'Provider-led',
   school_led: 'School-led'
-}.freeze
+}.with_indifferent_access.freeze
 
 # Old types (induction periods and pending induction submissions) to be deprecated
 INDUCTION_PROGRAMMES = {

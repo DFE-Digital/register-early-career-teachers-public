@@ -9,13 +9,6 @@
 
 <%= render Schools::TeacherProfileSummaryListComponent.new(@ect_at_school_period) %>
 
-<h2 class="govuk-heading-m">ECTE training details</h2>
+<%= render Schools::ECTInductionDetailsComponent.new(@ect_at_school_period) %>
 
-<%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your school', ect_at_school_period: @ect_at_school_period, training_period: @training_period, data_source: :school) %>
-
-<% if @training_period&.provider_led_training_programme? %>
-  <%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your lead provider', ect_at_school_period: @ect_at_school_period, training_period: @training_period, data_source: :lead_provider) %>
-<% end %>
-
-
-<%= render Schools::SummaryCardComponent.new(title: 'Reported to us by your appropriate body', ect_at_school_period: @ect_at_school_period, training_period: @training_period, data_source: :appropriate_body) %>
+<%= render Schools::ECTTrainingDetailsComponent.new(ect_at_school_period: @ect_at_school_period, training_period: @training_period) %>
