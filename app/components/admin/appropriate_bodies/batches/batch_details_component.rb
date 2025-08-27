@@ -52,25 +52,6 @@ module Admin
         def bulk_upload_completed_event
           Event.find_by(pending_induction_submission_batch_id: batch.id, event_type: 'bulk_upload_completed')
         end
-
-        # # @return [Array<String>]
-        # def tally
-        #   case
-        #   when batch.action?
-        #     [
-        #       pluralize(batch.recorded_count, 'closed induction'),
-        #       pluralize(batch.tally[:passed_count], 'pass'),
-        #       pluralize(batch.tally[:failed_count], 'fail'),
-        #       pluralize(batch.tally[:released_count], 'release'),
-        #     ]
-        #   when batch.claim?
-        #     [
-        #       pluralize(batch.recorded_count, 'claimed ECT'),
-        #     ]
-        #   else
-        #     raise StandardError, "Unknown #{batch.class}#batch_type for #{batch.id}"
-        #   end
-        # end
       end
     end
   end
