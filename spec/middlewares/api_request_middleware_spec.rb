@@ -38,16 +38,15 @@ RSpec.describe APIRequestMiddleware do
     end
   end
 
-  # TODO: add this once we have a POST endpoint ready
-  # describe "#call on an API path with POST data" do
-  #   it "fires an APIRequest including post data" do
-  #     request.post "/api/v1/participant-declarations", as: :json, params: { foo: "bar" }.to_json
-  #
-  #     expect(APIRequest).to have_received(:send_persist_api_request).with(
-  #       hash_including("path" => "/api/v1/participant-declarations", "body" => '{"foo":"bar"}', "method" => "POST"), anything, 200, anything, anything
-  #     )
-  #   end
-  # end
+  describe "#call on an API path with POST data" do
+    it "fires an APIRequest including post data" do
+      request.post "/api/v3/partnerships", input: { foo: "bar" }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+      request_data = hash_including("headers", "path" => "/api/v3/partnerships", "method" => "POST", "body" => '{"foo":"bar"}')
+      response_data = hash_including("body", "headers")
+      expect(APIRequest).to have_received(:send_persist_api_request).with(request_data, response_data, status, anything, mock_request_uuid)
+    end
+  end
 
   describe "#call on an API path when an exception happens in the job" do
     it "logs the exception and returns" do
