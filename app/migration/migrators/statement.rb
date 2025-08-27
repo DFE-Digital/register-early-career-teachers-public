@@ -24,24 +24,30 @@ module Migrators
 
     def migrate!
       migrate(self.class.statements) do |ecf_statement|
-        statement = ::Statement.find_or_initialize_by(api_id: ecf_statement.id)
-
-        lead_provider_id = find_lead_provider_id!(ecf_id: ecf_statement.lead_provider.id)
-        contract_period_year = ecf_statement.cohort.start_year
-
-        statement.update!(
-          active_lead_provider_id: find_active_lead_provider_id!(lead_provider_id:, contract_period_year:),
-          month: Date::MONTHNAMES.find_index(ecf_statement.name.split[0]),
-          year: ecf_statement.name.split[1],
-          deadline_date: ecf_statement.deadline_date,
-          payment_date: ecf_statement.payment_date,
-          marked_as_paid_at: ecf_statement.marked_as_paid_at,
-          fee_type: fee_type(ecf_statement),
-          status: status(ecf_statement),
-          created_at: ecf_statement.created_at,
-          updated_at: ecf_statement.updated_at
-        )
+        migrate_one!(ecf_statement)
       end
+    end
+
+    def migrate_one!(ecf_statement)
+      statement = ::Statement.find_or_initialize_by(api_id: ecf_statement.id)
+
+      lead_provider_id = find_lead_provider_id!(ecf_id: ecf_statement.lead_provider.id)
+      contract_period_year = ecf_statement.cohort.start_year
+
+      statement.update!(
+        active_lead_provider_id: find_active_lead_provider_id!(lead_provider_id:, contract_period_year:),
+        month: Date::MONTHNAMES.find_index(ecf_statement.name.split[0]),
+        year: ecf_statement.name.split[1],
+        deadline_date: ecf_statement.deadline_date,
+        payment_date: ecf_statement.payment_date,
+        marked_as_paid_at: ecf_statement.marked_as_paid_at,
+        fee_type: fee_type(ecf_statement),
+        status: status(ecf_statement),
+        created_at: ecf_statement.created_at,
+        updated_at: ecf_statement.updated_at
+      )
+
+      statement
     end
 
   private
