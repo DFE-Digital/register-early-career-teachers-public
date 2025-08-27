@@ -1,18 +1,14 @@
 module InductionPeriods
   class DeleteInductionPeriod
-    attr_reader :author, :induction_period, :teacher
+    include Auditable
 
-    # @param author [Sessions::User]
-    # @param induction_period [InductionPeriod]
-    def initialize(author:, induction_period:)
-      @author = author
-      @induction_period = induction_period
-      @teacher = induction_period.teacher
-    end
+    attribute :induction_period
 
     # @return [true]
     # @raise [ActiveRecord::RecordInvalid, ActiveRecord::Rollback]
     def delete_induction_period!
+      validate!
+
       if induction_period.outcome.present?
         raise ActiveRecord::RecordInvalid, induction_period
       end
@@ -44,6 +40,8 @@ module InductionPeriods
 
   private
 
+    delegate :teacher, to: :induction_period
+
     def update_trs_start_date(next_earliest_period)
       TRS::APIClient.build.begin_induction!(
         trn: teacher.trn,
@@ -67,6 +65,8 @@ module InductionPeriods
     def record_delete_event(modifications, appropriate_body)
       Events::Record.record_induction_period_deleted_event!(
         author:,
+        body: note,
+        zendesk_ticket_id:,
         modifications:,
         teacher:,
         appropriate_body:,
