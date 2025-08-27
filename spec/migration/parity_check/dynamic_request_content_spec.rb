@@ -1,5 +1,6 @@
 RSpec.describe ParityCheck::DynamicRequestContent do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:instance) { described_class.new(lead_provider:) }
 
   describe "#fetch" do
@@ -43,7 +44,6 @@ RSpec.describe ParityCheck::DynamicRequestContent do
 
     context "when fetching delivery_partner_id" do
       let(:identifier) { :delivery_partner_id }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:delivery_partner) { lead_provider_delivery_partnership.delivery_partner }
 
@@ -55,24 +55,8 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       it { is_expected.to eq(delivery_partner.api_id) }
     end
 
-    context "when fetching example_body" do
-      let(:identifier) { :example_body }
-
-      it "returns the example body" do
-        expect(fetch).to eq({
-          data: {
-            type: "statements",
-            attributes: {
-              content: "This is an example request body.",
-            },
-          },
-        })
-      end
-    end
-
     context "when fetching `partnership_id`" do
       let(:identifier) { :partnership_id }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
 
@@ -82,6 +66,92 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       end
 
       it { is_expected.to eq(partnership.api_id) }
+    end
+
+    context "when fetching partnership_create_body" do
+      let(:identifier) { :partnership_create_body }
+      let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let!(:school) { FactoryBot.create(:school, :eligible, :not_cip_only) }
+
+      before do
+        # Different lead provider.
+        FactoryBot.create(:lead_provider_delivery_partnership)
+        # Ineligible school
+        FactoryBot.create(:school, :ineligible)
+        # CIP only school
+        FactoryBot.create(:school, :eligible, :cip_only)
+      end
+
+      it "returns a partnership create body" do
+        expect(fetch).to eq({
+          data: {
+            type: "partnerships",
+            attributes: {
+              cohort: active_lead_provider.contract_period_year,
+              school_id: school.api_id,
+              delivery_partner_id: lead_provider_delivery_partnership.delivery_partner.api_id,
+            },
+          },
+        })
+      end
+
+      context "when a contract period does not exist" do
+        let(:active_lead_provider) {}
+        let(:lead_provider_delivery_partnership) {}
+
+        it { expect(fetch).to be_nil }
+      end
+
+      context "when a lead provider delivery partnership does not exist" do
+        let(:lead_provider_delivery_partnership) {}
+
+        it { expect(fetch).to be_nil }
+      end
+
+      context "when a school does not exist" do
+        let(:school) {}
+
+        it { expect(fetch).to be_nil }
+      end
+    end
+
+    context "when fetching partnership_update_body" do
+      let(:identifier) { :partnership_update_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+      let!(:other_delivery_partner) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:).delivery_partner }
+
+      before do
+        # Different lead provider.
+        FactoryBot.create(:lead_provider_delivery_partnership)
+        # Different contract period.
+        other_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period_year - 1)
+        other_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: other_contract_period)
+        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: other_active_lead_provider)
+      end
+
+      it "returns a partnership update body" do
+        expect(fetch).to eq({
+          data: {
+            type: "partnerships",
+            attributes: {
+              delivery_partner_id: other_delivery_partner.api_id,
+            },
+          },
+        })
+      end
+
+      context "when a school partnership does not exist" do
+        let(:school_partnership) {}
+
+        it { expect(fetch).to be_nil }
+      end
+
+      context "when another delivery partner does not exist" do
+        let(:other_delivery_partner) {}
+
+        it { expect(fetch).to be_nil }
+      end
     end
   end
 end
