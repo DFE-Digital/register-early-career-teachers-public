@@ -1,4 +1,24 @@
 module BatchHelper
+  # @return [Hash{Symbol => String}]
+  BATCH_COLOURS = {
+    draft: 'grey',
+    retry: 'purple',
+    processed: 'yellow',
+    partial: 'blue',
+    completed: 'green',
+    failed: 'red'
+  }.freeze
+
+  # @return [Hash{Symbol => String}]
+  BATCH_LABELS = {
+    draft: 'Uploaded',
+    retry: 'Not successful',
+    processed: 'Action required',
+    partial: 'Partial success',
+    completed: 'Success',
+    failed: 'Error'
+  }.freeze
+
   def batch_example_action
     govuk_table(
       caption: "Your file needs to look like this example",
@@ -24,16 +44,7 @@ module BatchHelper
 
   # @param batch [PendingInductionSubmissionBatch]
   def batch_status_tag(batch)
-    colours = {
-      pending: 'grey',
-      processing: 'blue',
-      processed: 'turquoise',
-      completing: 'purple',
-      completed: 'green',
-      failed: 'red'
-    }
-
-    govuk_tag(text: batch.batch_status.titleize, colour: colours[batch.batch_status.to_sym])
+    govuk_tag(text: BATCH_LABELS[batch.status_tag], colour: BATCH_COLOURS[batch.status_tag])
   end
 
   # @param batch [PendingInductionSubmissionBatch]

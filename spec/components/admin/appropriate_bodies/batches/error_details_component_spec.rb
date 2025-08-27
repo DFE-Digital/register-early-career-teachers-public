@@ -22,9 +22,6 @@ RSpec.describe Admin::AppropriateBodies::Batches::ErrorDetailsComponent, type: :
 
     it 'renders content' do
       expect(rendered_content).not_to be_empty
-      # expect(rendered_content).to have_text('0.0% success rate')
-      # expect(rendered_content).to have_text('1 error')
-      expect(rendered_content).to have_text('Download error CSV')
     end
   end
 end

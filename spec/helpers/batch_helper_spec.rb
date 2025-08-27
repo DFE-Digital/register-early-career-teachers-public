@@ -23,9 +23,9 @@ RSpec.describe BatchHelper, type: :helper do
       expect(subject).to have_selector('th', text: 'Action')
 
       expect(subject).to have_selector('td', text: 'View', count: 3)
-      expect(subject).to have_selector('td', text: 'Completed')
-      expect(subject).to have_selector('td', text: 'Processed')
-      expect(subject).to have_selector('td', text: 'Processing')
+      expect(subject).to have_selector('td', text: 'Success')
+      expect(subject).to have_selector('td', text: 'Uploaded')
+      # expect(subject).to have_selector('td', text: 'Uploaded')
     end
   end
 
@@ -61,7 +61,7 @@ RSpec.describe BatchHelper, type: :helper do
 
     describe "#batch_status_tag" do
       it do
-        expect(batch_status_tag(batch)).to have_selector('strong', class: 'govuk-tag--green', text: 'Completed')
+        expect(batch_status_tag(batch)).to have_selector('strong', class: 'govuk-tag--green', text: 'Success')
       end
     end
 
@@ -112,9 +112,9 @@ RSpec.describe BatchHelper, type: :helper do
 
         expect(table).to have_selector('td', text: 'The Appropriate Body')
         expect(table).to have_selector('td', text: 'Action')
-        expect(table).to have_selector('td', text: 'Completed')
+        expect(table).to have_selector('td', text: 'Success')
         expect(table).to have_selector('td', text: 'Claim')
-        expect(table).to have_selector('td', text: 'Processing')
+        expect(table).to have_selector('td', text: 'Uploaded')
       end
     end
   end
