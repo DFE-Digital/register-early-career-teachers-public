@@ -37,6 +37,15 @@ sandbox:
 
 development:
   <<: *default
+  workers:
+    - queues: [mailers, process_batch, events, metadata, parity_check_requests, trs_sync, dfe_analytics]
+      threads: 3
+      processes: 3
+      polling_interval: 0.1
+    - queues: [migration]
+      threads: 1
+      processes: <%= ENV.fetch('MIGRATION_QUEUE_PROCESSES', 3) %>
+      polling_interval: 0.1
 
 test:
   <<: *default
