@@ -10,10 +10,31 @@ module API
         render json: to_json(partnerships_query.school_partnership_by_api_id(api_id))
       end
 
-      def create = head(:method_not_allowed)
+      def create
+        service = SchoolPartnerships::Create.new({
+          lead_provider_id: current_lead_provider.id,
+          contract_period_year: create_partnership_params[:cohort],
+          school_api_id: create_partnership_params[:school_id],
+          delivery_partner_api_id: create_partnership_params[:delivery_partner_id],
+        })
+
+        if service.valid?
+          render json: to_json(service.create)
+        else
+          render json: API::Errors::Response.from(service), status: :unprocessable_content
+        end
+      end
+
       def update = head(:method_not_allowed)
 
     private
+
+      def create_partnership_params
+        params
+          .require(:data)
+          .require(:attributes)
+          .permit(:cohort, :school_id, :delivery_partner_id)
+      end
 
       def partnerships_query(conditions: {})
         conditions[:lead_provider_id] = current_lead_provider.id

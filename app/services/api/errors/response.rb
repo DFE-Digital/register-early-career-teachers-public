@@ -1,17 +1,23 @@
 module API
   module Errors
     class Response
-      attr_reader :error, :params
+      attr_reader :title, :messages
 
-      def initialize(error:, params:)
-        @params = params
-        @error = error
+      def initialize(title:, messages:)
+        @title = title
+        @messages = Array(messages).uniq
       end
 
       def call
-        Array(params).map do |param|
-          { title: error, detail: param }
-        end
+        messages.map { |detail| { title:, detail: }.freeze }
+      end
+
+      def self.from(service)
+        {
+          errors: service.errors.messages.flat_map do |title, messages|
+            new(title:, messages:).call
+          end
+        }
       end
     end
   end
