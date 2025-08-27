@@ -115,6 +115,43 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/UnauthorisedResponse"
+    post:
+      summary: Creates a partnership
+      tags:
+      - Partnerships
+      security:
+      - api_key: []
+      parameters: []
+      responses:
+        '200':
+          description: The created partnership
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PartnershipResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableContentResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/PartnershipRequest"
   "/api/v3/partnerships/{id}":
     get:
       summary: Retrieve a single partnership
@@ -318,6 +355,36 @@ components:
           description: Resource not found
       example:
         error: Resource not found
+    BadRequestResponse:
+      description: The request body did not match the expected payload.
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                example: Bad request
+              detail:
+                type: string
+                example: correct json data structure required. See API docs for reference
+    UnprocessableContentResponse:
+      description: The payload was not valid. See the errors for more information.
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                example: example_attribute
+              detail:
+                type: string
+                example: An '#/example_attribute' must be specified.
     PaginationFilter:
       description: Pagination options to navigate through the list of results.
       type: object
@@ -710,6 +777,52 @@ components:
       properties:
         data:
           "$ref": "#/components/schemas/Partnership"
+    PartnershipRequest:
+      description: A partnership request
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: A partnership
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              type: string
+              required: true
+              enum:
+              - partnership
+              example: partnership
+            attributes:
+              description: A partnership request attributes
+              type: object
+              required:
+              - cohort
+              - delivery_partner_id
+              - school_id
+              properties:
+                cohort:
+                  description: The cohort for which you are reporting the partnership
+                  required: true
+                  nullable: false
+                  type: string
+                  example: '2022'
+                school_id:
+                  description: The Unique ID of the school you are partnering with
+                  required: true
+                  nullable: false
+                  type: string
+                  example: 24b61d1c-ad95-4000-aee0-afbdd542294a
+                delivery_partner_id:
+                  description: The unique ID of the delivery partner you will work
+                    with for this school partnership
+                  required: true
+                  nullable: false
+                  type: string
+                  example: db2fbf67-b7b7-454f-a1b7-0020411e2314
     PartnershipsResponse:
       description: A list of partnerships.
       type: object
