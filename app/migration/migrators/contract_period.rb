@@ -20,16 +20,22 @@ module Migrators
 
     def migrate!
       migrate(self.class.cohorts) do |cohort|
-        contract_period = ::ContractPeriod.find_or_initialize_by(year: cohort.start_year)
-
-        contract_period.update!(
-          started_on: cohort.registration_start_date,
-          finished_on: finished_on_for(cohort),
-          enabled: contract_period_enabled?(cohort),
-          created_at: cohort.created_at,
-          updated_at: cohort.updated_at
-        )
+        migrate_one!(cohort)
       end
+    end
+
+    def migrate_one!(cohort)
+      contract_period = ::ContractPeriod.find_or_initialize_by(year: cohort.start_year)
+
+      contract_period.update!(
+        started_on: cohort.registration_start_date,
+        finished_on: finished_on_for(cohort),
+        enabled: contract_period_enabled?(cohort),
+        created_at: cohort.created_at,
+        updated_at: cohort.updated_at
+      )
+
+      contract_period
     end
 
   private

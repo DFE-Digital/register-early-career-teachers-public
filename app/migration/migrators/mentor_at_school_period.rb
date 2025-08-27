@@ -24,15 +24,20 @@ module Migrators
 
     def migrate!
       migrate(self.class.mentor_teachers.eager_load(:user)) do |teacher_profile|
-        teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+        migrate_one!(teacher_profile)
+      end
+    end
 
-        result = true
+    def migrate_one!(teacher_profile)
+      teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
 
-        teacher_profile
-          .participant_profiles
-          .mentor
-          .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
-          .find_each do |participant_profile|
+      result = true
+
+      teacher_profile
+        .participant_profiles
+        .mentor
+        .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
+        .find_each do |participant_profile|
           sanitizer = InductionRecordSanitizer.new(participant_profile:, group_by: :school)
 
           school_periods = []
@@ -54,9 +59,7 @@ module Migrators
             result = false
           end
         end
-
-        result
-      end
+      result
     end
   end
 end

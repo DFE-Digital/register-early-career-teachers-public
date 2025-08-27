@@ -24,13 +24,17 @@ module Migrators
 
     def migrate!
       migrate(self.class.active_lead_providers) do |ecf_active_lead_provider|
-        lead_provider_id = find_lead_provider_id!(ecf_id: ecf_active_lead_provider.id)
-
-        ::ActiveLeadProvider.find_or_create_by!(
-          lead_provider_id:,
-          contract_period_year: ecf_active_lead_provider.start_year
-        )
+        migrate_one!(ecf_active_lead_provider)
       end
+    end
+
+    def migrate_one!(ecf_active_lead_provider)
+      lead_provider_id = find_lead_provider_id!(ecf_id: ecf_active_lead_provider.id)
+
+      ::ActiveLeadProvider.find_or_create_by!(
+        lead_provider_id:,
+        contract_period_year: ecf_active_lead_provider.start_year
+      )
     end
   end
 end
