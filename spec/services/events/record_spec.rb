@@ -664,6 +664,30 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe '.record_teacher_left_school_as_ect!' do
+    let(:finished_on) { Date.new(2025, 7, 20) }
+    let(:school) { FactoryBot.create(:school) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: Date.new(2024, 9, 10), finished_on:) }
+    let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on:) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_teacher_left_school_as_ect!(author:, teacher:, ect_at_school_period:, school:, training_period:, happened_at: finished_on)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          school:,
+          ect_at_school_period:,
+          training_period:,
+          heading: "Rhys Ifans left #{school.name}",
+          event_type: :teacher_left_school_as_ect,
+          happened_at: finished_on,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe '.record_teacher_starts_mentoring_event!' do
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }
     let(:school) { FactoryBot.create(:school) }

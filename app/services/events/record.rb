@@ -287,6 +287,14 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
     end
 
+    def self.record_teacher_left_school_as_ect!(author:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:)
+      event_type = :teacher_left_school_as_ect
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name} left #{school.name}"
+
+      new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
+    end
+
     def self.record_teacher_starts_mentoring_event!(author:, mentor:, mentee:, mentor_at_school_period:, mentorship_period:, school:, happened_at: Time.zone.now)
       event_type = :teacher_starts_mentoring
       mentor_name = Teachers::Name.new(mentor).full_name
