@@ -14,7 +14,6 @@ module Schools
             change_email_address: ChangeEmailAddressStep,
             change_lead_provider: ChangeLeadProviderStep,
             change_mentor_details: ChangeMentorDetailsStep,
-            change_mentoring_at_new_school_only: ChangeMentoringAtNewSchoolOnlyStep,
             change_started_on: ChangeStartedOnStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep,
@@ -88,7 +87,6 @@ module Schools
             steps << :review_mentor_eligibility if mentor.funding_available?
             steps << :eligibility_lead_provider if mentor.funding_available?
             steps += %i[change_mentor_details change_email_address check_answers]
-            steps << :change_mentoring_at_new_school_only if mentor.mentoring_at_new_school_only.present?
             steps << :change_started_on if mentor.started_on
             steps << :change_lead_provider if mentor.lead_provider
 

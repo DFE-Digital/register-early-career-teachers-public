@@ -323,8 +323,6 @@ Rails.application.routes.draw do
 
       get "mentoring-at-new-school-only", action: :new
       post "mentoring-at-new-school-only", action: :create
-      get "change-mentoring-at-new-school-only", action: :new
-      post "change-mentoring-at-new-school-only", action: :create
 
       get "started-on", action: :new
       post "started-on", action: :create
