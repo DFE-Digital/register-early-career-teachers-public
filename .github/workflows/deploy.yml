@@ -47,8 +47,12 @@ jobs:
     if: always()
     steps:
       - run: |
-          [[ "${{ contains(needs.*.result, 'failure') }}" == "false" ]]
-      - run: "echo 'Security checks, linting, tests and OpenAPI checks all passed. This branch is ready to be merged'"
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "false" ]]; then
+            echo 'Security checks, linting, tests and OpenAPI checks all passed. This branch is ready to be merged'
+          else
+            echo 'One of the checks failed'
+            exit 1
+          fi
 
   docker:
     name: Build and push Docker image
