@@ -2,7 +2,7 @@ module API
   module V3
     class PartnershipsController < BaseController
       def index
-        conditions = { contract_period_years:, updated_since:, delivery_partner_api_ids:, sort:, ongoing_training_periods_count: false }
+        conditions = { contract_period_years:, updated_since:, delivery_partner_api_ids:, sort: }
         render json: to_json(paginate(partnerships_query(conditions:).school_partnerships))
       end
 
