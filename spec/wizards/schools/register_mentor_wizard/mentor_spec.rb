@@ -265,4 +265,28 @@ describe Schools::RegisterMentorWizard::Mentor do
       end
     end
   end
+
+  describe '#mentoring_at_new_school_only?' do
+    context 'when mentoring_at_new_school_only is not set' do
+      it 'returns true by default' do
+        expect(mentor.mentoring_at_new_school_only?).to be true
+      end
+    end
+
+    context 'when mentoring_at_new_school_only is yes' do
+      before { store.mentoring_at_new_school_only = 'yes' }
+
+      it 'returns true' do
+        expect(mentor.mentoring_at_new_school_only?).to be true
+      end
+    end
+
+    context 'when mentoring_at_new_school_only is no' do
+      before { store.mentoring_at_new_school_only = 'no' }
+
+      it 'returns false' do
+        expect(mentor.mentoring_at_new_school_only?).to be false
+      end
+    end
+  end
 end

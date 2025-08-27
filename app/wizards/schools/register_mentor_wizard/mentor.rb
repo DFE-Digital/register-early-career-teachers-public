@@ -132,6 +132,10 @@ module Schools
         ect_training_service.lead_provider_via_school_partnership_or_eoi
       end
 
+      def mentoring_at_new_school_only?
+        store.fetch("mentoring_at_new_school_only", "yes") == "yes"
+      end
+
     private
 
       def mentor_at_school_periods
