@@ -30,6 +30,10 @@ class PartnershipSerializer < Blueprinter::Base
       partnership.school.induction_tutor_email
     end
 
+    field(:participants_currently_training) do |partnership, _options|
+      partnership.training_periods.ongoing_today.count
+    end
+
     field :created_at
 
     # TODO: Replace with `api_updated_at` when the field is available

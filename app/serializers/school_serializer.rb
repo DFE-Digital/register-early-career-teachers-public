@@ -20,6 +20,12 @@ class SchoolSerializer < Blueprinter::Base
     end
     field :created_at
     field(:api_updated_at, name: :updated_at)
+    field(:participants_currently_training) do |school, options|
+      # lead_provider_contract_period_metadata(school:, options:).participants_currently_training
+      school.school_partnerships.includes(:lead_provider).where(lead_provider: {id: options[:lead_provider_id]}).sum do |school_partnership|
+        school_partnership.training_periods.ongoing_today.count
+      end
+    end
 
     class << self
       def contract_period_metadata(school:, options:)
