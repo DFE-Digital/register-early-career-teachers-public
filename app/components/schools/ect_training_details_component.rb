@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Schools
   class ECTTrainingDetailsComponent < ViewComponent::Base
     include ProgrammeHelper

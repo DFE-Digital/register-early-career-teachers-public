@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Schools
   class ECTInductionDetailsComponent < ViewComponent::Base
     include TeacherHelper
