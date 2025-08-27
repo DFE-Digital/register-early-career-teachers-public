@@ -1,4 +1,8 @@
+require "dfe/analytics/rspec/matchers"
+
 RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
+  include ActiveJob::TestHelper
+
   describe desc do
     subject { response }
 
@@ -45,6 +49,34 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
         change_condition
         perform_request
         expect(subject).to have_http_status(:success)
+      end
+
+      context "dfe_analytics by default disabled" do
+        it { expect { perform_request }.not_to have_sent_analytics_event_types(:web_request) }
+      end
+
+      context "dfe_analytics is enabled" do
+        before { stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true") }
+
+        it { expect { perform_request }.to have_sent_analytics_event_types(:web_request) }
+
+        it "sends correct event type" do
+          allow(DfE::Analytics::SendEvents).to receive(:perform_later)
+
+          perform_request
+
+          expected_values = {
+            "event_type" => "web_request",
+            "response_status" => 429,
+            "request_path" => path,
+          }
+
+          if path.starts_with?("/api/v3/")
+            expected_values["user_id"] = lead_provider.id
+          end
+
+          expect(DfE::Analytics::SendEvents).to have_received(:perform_later).with(array_including(a_hash_including(expected_values)))
+        end
       end
     end
   end

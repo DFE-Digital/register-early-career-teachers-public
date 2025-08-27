@@ -41,4 +41,17 @@ RSpec.describe "DfE Analytics", type: :request do
       expect { get '/healthcheck' }.not_to have_sent_analytics_event_types(:web_request)
     end
   end
+
+  context "with lead provider API requests" do
+    let(:env_var_value) { "true" }
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:token) { API::TokenManager.create_lead_provider_api_token!(lead_provider:).token }
+    let(:bearer_token) { "Bearer #{token}" }
+
+    it "sends DFE Analytics web request event" do
+      expect {
+        get "/api/v3/statements", headers: { Authorization: bearer_token }
+      }.to have_sent_analytics_event_types(:web_request)
+    end
+  end
 end
