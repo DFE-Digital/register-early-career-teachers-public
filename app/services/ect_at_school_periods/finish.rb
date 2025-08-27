@@ -19,12 +19,16 @@ module ECTAtSchoolPeriods
           **event_params
         )
 
-        # set mentorship_period finished_on
+        MentorshipPeriods::Finish.new(author:, mentorship_period:, finished_on:).finish! if mentorship_period.present?
         # set training_period finished_on
       end
     end
 
   private
+
+    def mentorship_period
+      @mentorship_period ||= ect_at_school_period.current_mentorship_period
+    end
 
     def event_params
       {
