@@ -31,11 +31,7 @@ class PartnershipSerializer < Blueprinter::Base
     end
 
     field(:participants_currently_training) do |partnership, _options|
-      if partnership.respond_to?(:transient_ongoing_training_periods_count)
-        partnership.transient_ongoing_training_periods_count
-      else
-        partnership.training_periods.ongoing_today.count
-      end
+      partnership.ongoing_training_periods.size
     end
 
     field :created_at
