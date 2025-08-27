@@ -23,7 +23,7 @@ module API
       end
 
       def delivery_partner_params
-        params.permit(:api_id, :sort)
+        params.expect(:api_id, :sort)
       end
 
       def api_id

@@ -18,7 +18,7 @@ module API
       end
 
       def statement_params
-        params.permit(:api_id)
+        params.expect(:api_id)
       end
 
       def api_id

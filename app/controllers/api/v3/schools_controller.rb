@@ -26,7 +26,7 @@ module API
       end
 
       def school_params
-        params.permit(:api_id, :sort, filter: %i[urn])
+        params.expect(:api_id, :sort, filter: %i[urn])
       end
 
       def api_id

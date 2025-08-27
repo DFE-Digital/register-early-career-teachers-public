@@ -42,7 +42,7 @@ module API
       end
 
       def partnerships_params
-        params.permit(:api_id, :sort, filter: %i[delivery_partner_id])
+        params.expect(:api_id, :sort, filter: %i[delivery_partner_id])
       end
 
       def api_id
