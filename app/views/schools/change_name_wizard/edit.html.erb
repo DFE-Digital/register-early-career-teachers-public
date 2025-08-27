@@ -1,0 +1,29 @@
+<% page_data(
+    title: "Change name for #{@wizard.full_name)}",
+    error: @wizard.ect.errors.present?,
+    backlink_href: schools_ect_path(@wizard.ect),
+) %>
+
+<p class="govuk-body">The name will be used in this service and communications with the ECT.</p>
+
+<p class="govuk-body">The ECT can update their name in their teacher record using the Access your teaching qualifications service.</p>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%=
+    f.govuk_text_field(
+      :name,
+      value: @wizard.full_name,
+      label: { text: "What's the correct full name for #{@wizard.full_name}?",
+               tag: 'h2',
+               size: 'm' }
+    ) do %>
+  <% end %>
+
+  <%= f.govuk_submit 'Continue' %>
+<% end %>
+
+<p class="govuk-body">
+  <%= govuk_link_to "Cancel and go back to #{@wizard.full_name}'s details", schools_ect_path(@wizard.ect) %>
+</p>
