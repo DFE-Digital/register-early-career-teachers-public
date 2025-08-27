@@ -1,0 +1,28 @@
+<%
+  page_data(
+    title: 'Check and confirm change',
+    backlink_href: @wizard.previous_step_path
+  )
+%>
+
+<%= govuk_summary_list do |list| %>
+  <% list.with_row do |row| %>
+    <% row.with_key { 'Early career teacher' } %>
+    <% row.with_value { @wizard.full_name } %>
+  <% end %>
+
+  <% list.with_row do |row| %>
+    <% row.with_key { 'New name' } %>
+    <% row.with_value { @wizard.store.new_name } %>
+  <% end %>
+<% end %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_submit 'Confirm change' %>
+<% end %>
+
+<p class="govuk-body">
+  <%= govuk_link_to "Cancel and go back to #{@wizard.full_name}'s details", schools_ect_path(@wizard.ect) %>
+</p>

@@ -282,6 +282,16 @@ Rails.application.routes.draw do
       resource :mentorship, only: %i[new create] do
         get :confirmation, on: :collection
       end
+
+      namespace :change_name_wizard, path: 'change-name', controller: '/schools/change_name_wizard' do
+        get 'edit', action: :new
+        post 'edit', action: :create
+
+        get 'check-answers', action: :new
+        post 'check-answers', action: :create
+
+        get 'confirmation', action: :new
+      end
     end
 
     resources :mentors, only: %i[index]
