@@ -24,16 +24,21 @@ module Migrators
 
     def migrate!
       migrate(self.class.statement_adjustments) do |adjustment|
-        statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(api_id: adjustment.id)
-
-        statement_adjustment.statement = ::Statement.find_by!(api_id: adjustment.statement_id)
-        statement_adjustment.payment_type = adjustment.payment_type
-        statement_adjustment.amount = adjustment.amount
-        statement_adjustment.created_at = adjustment.created_at
-        statement_adjustment.updated_at = adjustment.updated_at
-
-        statement_adjustment.save!
+        migrate_one!(adjustment)
       end
+    end
+
+    def migrate_one!(ecf_adjustment)
+      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(api_id: ecf_adjustment.id)
+
+      statement_adjustment.statement = ::Statement.find_by!(api_id: ecf_adjustment.statement_id)
+      statement_adjustment.payment_type = ecf_adjustment.payment_type
+      statement_adjustment.amount = ecf_adjustment.amount
+      statement_adjustment.created_at = ecf_adjustment.created_at
+      statement_adjustment.updated_at = ecf_adjustment.updated_at
+
+      statement_adjustment.save!
+      statement_adjustment
     end
   end
 end
