@@ -6,9 +6,10 @@ module SchoolPartnerships
 
     attr_reader :scope
 
-    def initialize(school_id: :ignore, contract_period_years: :ignore, lead_provider_id: :ignore, delivery_partner_api_ids: :ignore, updated_since: :ignore, sort: nil)
+    def initialize(school_id: :ignore, contract_period_years: :ignore, lead_provider_id: :ignore, delivery_partner_api_ids: :ignore, updated_since: :ignore, sort: nil, ongoing_training_periods_count: false)
       @scope = default_scope
 
+      include_ongoing_training_periods_count if ongoing_training_periods_count
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
       where_school_is(school_id)
@@ -90,6 +91,21 @@ module SchoolPartnerships
 
     def set_sort_by(sort)
       @scope = scope.order(sort_order(sort:, model: SchoolPartnership, default: { created_at: :asc }))
+    end
+
+    def transient_ongoing_training_periods_subquery
+      <<~SQL.squish
+        (
+          SELECT COUNT(*)
+          FROM training_periods
+          WHERE training_periods.school_partnership_id = school_partnerships.id
+          AND training_periods.range @> CURRENT_DATE
+        ) AS transient_ongoing_training_periods_count
+      SQL
+    end
+
+    def include_ongoing_training_periods_count
+      @scope = @scope.select("school_partnerships.*", transient_ongoing_training_periods_subquery)
     end
   end
 end
