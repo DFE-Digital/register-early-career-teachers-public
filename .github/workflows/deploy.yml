@@ -42,13 +42,13 @@ jobs:
 
   all-checks-passed:
     name: All checks passed
-    needs: [brakeman, lint, rspec]
+    needs: [openapi, brakeman, lint, rspec]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - run: |
           [[ "${{ contains(needs.*.result, 'failure') }}" == "false" ]]
-      - run: "echo 'Security checks, linting tests passed, this branch is ready to be merged'"
+      - run: "echo 'Security checks, linting, tests and OpenAPI checks all passed. This branch is ready to be merged'"
 
   docker:
     name: Build and push Docker image
