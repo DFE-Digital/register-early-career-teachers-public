@@ -1,5 +1,5 @@
 <% page_data(
-    title: "What training programme will #{@ect.full_name} follow?",
+    title: "Which training programme will #{@ect.full_name} follow?",
     error: @wizard.current_step.errors.present?,
     backlink_href: @wizard.previous_step_path,
 ) %>
@@ -7,16 +7,16 @@
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= f.govuk_radio_buttons_fieldset :training_programme, legend: { text: "What training programme will #{@ect.full_name} follow?", hidden: true} do %>
+  <%= f.govuk_radio_buttons_fieldset :training_programme, legend: { text: "Which training programme will #{@ect.full_name} follow?", hidden: true} do %>
     <%= f.govuk_radio_button :training_programme,
                              :provider_led,
                              label: { text: "Provider-led" },
-                             hint: { text: "Your school will work with providers who will deliver early career framework based training funded by the Department for Education." },
+                             hint: { text: "Your school will use DfE funded providers to design and deliver training based on the initial teacher training and early career framework" },
                              link_errors: true %>
     <%= f.govuk_radio_button :training_programme,
                              :school_led,
                              label: { text: "School-led" },
-                             hint: { text: "Your school will deliver training based on the early career framework." }
+                             hint: { text: "Your school will design and deliver your own training based on the initial teacher training and early career framework" }
     %>
   <% end %>
 
