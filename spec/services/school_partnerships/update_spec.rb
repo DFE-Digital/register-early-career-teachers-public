@@ -16,15 +16,15 @@ RSpec.describe SchoolPartnerships::Update, type: :model do
 
     it { is_expected.to be_valid }
 
-    it { is_expected.to validate_presence_of(:school_partnership_id).with_message("Enter a '#/partnership'.") }
-    it { is_expected.to validate_presence_of(:delivery_partner_api_id).with_message("Enter a '#/delivery_partner_id'.") }
+    it { is_expected.to validate_presence_of(:school_partnership_id).with_message("Enter a '#/school_partnership_id'.") }
+    it { is_expected.to validate_presence_of(:delivery_partner_api_id).with_message("Enter a '#/delivery_partner_api_id'.") }
 
     context "when the delivery partner does not exist" do
       let(:delivery_partner_api_id) { SecureRandom.uuid }
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to include("The '#/delivery_partner_id' you have entered is invalid. Check delivery partner details and try again.")
+        expect(service.errors[:delivery_partner_api_id]).to include("The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.")
       end
     end
 
@@ -33,7 +33,7 @@ RSpec.describe SchoolPartnerships::Update, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:school_partnership_id]).to include("The '#/partnership' you have entered is invalid. Check partnership details and try again.")
+        expect(service.errors[:school_partnership_id]).to include("The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again.")
       end
     end
 
@@ -42,7 +42,7 @@ RSpec.describe SchoolPartnerships::Update, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to include("The entered delivery partner is not recognised to be working in partnership with you for the given cohort. Contact the DfE for more information.")
+        expect(service.errors[:delivery_partner_api_id]).to include("The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.")
       end
     end
 

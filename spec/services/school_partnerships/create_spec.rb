@@ -30,17 +30,17 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
 
     it { is_expected.to be_valid }
 
-    it { is_expected.to validate_presence_of(:contract_period_year).with_message("Enter a '#/cohort'.") }
-    it { is_expected.to validate_presence_of(:school_api_id).with_message("Enter a '#/school_id'.") }
+    it { is_expected.to validate_presence_of(:contract_period_year).with_message("Enter a '#/contract_period_year'.") }
+    it { is_expected.to validate_presence_of(:school_api_id).with_message("Enter a '#/school_api_id'.") }
     it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Enter a '#/lead_provider_id'.") }
-    it { is_expected.to validate_presence_of(:delivery_partner_api_id).with_message("Enter a '#/delivery_partner_id'.") }
+    it { is_expected.to validate_presence_of(:delivery_partner_api_id).with_message("Enter a '#/delivery_partner_api_id'.") }
 
     context "when the contract period year does not exist" do
       let(:contract_period_year) { contract_period.year - 1 }
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:contract_period_year]).to include("The '#/cohort' you have entered is invalid. Check cohort details and try again.")
+        expect(service.errors[:contract_period_year]).to include("The '#/contract_period_year' you have entered is invalid. Check contract period details and try again.")
       end
     end
 
@@ -49,7 +49,7 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:contract_period_year]).to include("You cannot create this partnership until the cohort has started.")
+        expect(service.errors[:contract_period_year]).to include("You cannot create this partnership until the contract period has started.")
       end
     end
 
@@ -67,7 +67,7 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to include("The '#/school_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_id'.")
+        expect(service.errors[:school_api_id]).to include("The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'.")
       end
     end
 
@@ -94,7 +94,7 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to include("You are already in a confirmed partnership with this school for the entered cohort.")
+        expect(service.errors[:school_api_id]).to include("You are already in a confirmed partnership with this school for the entered contract period.")
       end
     end
 
@@ -127,7 +127,7 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to include("The '#/delivery_partner_id' you have entered is invalid. Check delivery partner details and try again.")
+        expect(service.errors[:delivery_partner_api_id]).to include("The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.")
       end
     end
 
@@ -136,7 +136,7 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to include("The entered delivery partner is not recognised to be working in partnership with you for the given cohort. Contact the DfE for more information.")
+        expect(service.errors[:delivery_partner_api_id]).to include("The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.")
       end
     end
 
