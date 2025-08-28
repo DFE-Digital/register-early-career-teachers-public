@@ -1,4 +1,4 @@
-RSpec.describe 'admin/schools/teachers.html.erb', type: :view do
+RSpec.describe 'admin/schools/teachers/show.html.erb', type: :view do
   let(:school) { FactoryBot.create(:school) }
   let(:ect_teacher) { FactoryBot.create(:teacher) }
   let(:mentor_teacher) { FactoryBot.create(:teacher) }
@@ -7,9 +7,9 @@ RSpec.describe 'admin/schools/teachers.html.erb', type: :view do
     assign(:school, school)
     assign(:breadcrumbs, { "Schools" => "/admin/schools", school.name => nil })
     assign(:navigation_items, [
-      { text: "Overview", href: overview_admin_school_path(school.urn), current: false },
-      { text: "Teachers", href: teachers_admin_school_path(school.urn), current: true },
-      { text: "Partnerships", href: partnerships_admin_school_path(school.urn), current: false }
+      { text: "Overview", href: admin_school_overview_path(school.urn), current: false },
+      { text: "Teachers", href: admin_school_teachers_path(school.urn), current: true },
+      { text: "Partnerships", href: admin_school_partnerships_path(school.urn), current: false }
     ])
     allow(view).to receive_messages(params: { urn: school.urn }, request: double(fullpath: "/admin/schools/#{school.urn}/teachers"))
 
