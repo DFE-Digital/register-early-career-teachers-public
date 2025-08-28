@@ -111,8 +111,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   # @return [Symbol]
   def status_tag
     return :draft if pending? || processing?
-    return :retry if processed? && no_valid_data?
-    return :partial if completed? && errored?
+    return :submitted if completing? || completed?
 
     batch_status.to_sym
   end
