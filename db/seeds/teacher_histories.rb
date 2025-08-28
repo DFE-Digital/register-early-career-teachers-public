@@ -141,11 +141,6 @@ ambition_artisan_partnership_2022 = find_school_partnership(
   delivery_partner: artisan_education_group,
   contract_period: ContractPeriod.find_by!(year: 2022)
 )
-ambition_artisan_partnership_2023 = find_school_partnership(
-  lead_provider: ambition_institute,
-  delivery_partner: artisan_education_group,
-  contract_period: ContractPeriod.find_by!(year: 2023)
-)
 teach_first_grain_partnership_2022 = find_school_partnership(
   contract_period: ContractPeriod.find_by!(year: 2022),
   lead_provider: teach_first,
@@ -201,8 +196,8 @@ kate_winslet_ect_at_ackley_bridge = ECTAtSchoolPeriod.create!(
 TrainingPeriod.create!(
   ect_at_school_period: kate_winslet_ect_at_ackley_bridge,
   started_on: 1.year.ago,
-  expression_of_interest: ambition_artisan_2023,
-  school_partnership: ambition_artisan_partnership_2023,
+  expression_of_interest: nil,
+  school_partnership: nil,
   training_programme: 'school_led'
 ).tap { |tp| describe_training_period(tp) }
 
@@ -438,7 +433,7 @@ TrainingPeriod.create!(
   ect_at_school_period: imogen_stubbs_at_malory_towers,
   started_on: 1.year.ago,
   school_partnership: teach_first_grain_partnership_2022,
-  training_programme: 'school_led'
+  training_programme: 'provider_led'
 ).tap { |tp| describe_training_period(tp) }
 
 InductionExtension.create!(
