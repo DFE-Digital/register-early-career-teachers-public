@@ -27,9 +27,6 @@ RSpec.describe 'Registering a mentor', :js do
 
     when_i_enter_the_mentor_email_address
     and_i_click_continue
-    then_i_should_be_taken_to_the_review_mentor_eligibility_page
-    and_i_click_continue
-
     then_i_should_be_taken_to_mentoring_at_your_school_only_page
     when_i_select_yes_they_will_be_mentoring_at_our_school_only
 
@@ -148,10 +145,6 @@ RSpec.describe 'Registering a mentor', :js do
 
   def when_i_enter_the_mentor_email_address
     page.get_by_label('email').fill('example@example.com')
-  end
-
-  def then_i_should_be_taken_to_the_review_mentor_eligibility_page
-    expect(page.url).to end_with('/school/register-mentor/review-mentor-eligibility')
   end
 
   def and_i_click_continue
