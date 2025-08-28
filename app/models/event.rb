@@ -28,6 +28,8 @@ class Event < ApplicationRecord
     teacher_registered_as_mentor
     teacher_starts_being_mentored
     teacher_starts_mentoring
+    teacher_starts_training_period
+    teacher_finishes_training_period
     teacher_finishes_being_mentored
     teacher_finishes_mentoring
     teacher_trs_attributes_updated
