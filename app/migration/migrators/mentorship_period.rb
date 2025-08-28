@@ -24,25 +24,29 @@ module Migrators
 
     def migrate!
       migrate(self.class.ects) do |participant_profile|
-        teacher = ::Teacher.find_by!(ecf_ect_profile_id: participant_profile.id)
-
-        success = true
-        induction_records = InductionRecordSanitizer.new(participant_profile:)
-
-        if induction_records.valid?
-          mentorship_period_data = MentorshipPeriodExtractor.new(induction_records:)
-          success = Builders::MentorshipPeriods.new(teacher:, mentorship_period_data:).build
-        else
-          ::TeacherMigrationFailure.create!(teacher:,
-                                            model: :mentorship_period,
-                                            message: induction_records.error,
-                                            migration_item_id: participant_profile.id,
-                                            migration_item_type: participant_profile.class.name)
-          success = false
-        end
-
-        success
+        migrate_one!(participant_profile)
       end
+    end
+
+    def migrate_one!(participant_profile)
+      teacher = ::Teacher.find_by!(ecf_ect_profile_id: participant_profile.id)
+
+      success = true
+      induction_records = InductionRecordSanitizer.new(participant_profile:)
+
+      if induction_records.valid?
+        mentorship_period_data = MentorshipPeriodExtractor.new(induction_records:)
+        success = Builders::MentorshipPeriods.new(teacher:, mentorship_period_data:).build
+      else
+        ::TeacherMigrationFailure.create!(teacher:,
+                                          model: :mentorship_period,
+                                          message: induction_records.error,
+                                          migration_item_id: participant_profile.id,
+                                          migration_item_type: participant_profile.class.name)
+        success = false
+      end
+
+      success
     end
   end
 end
