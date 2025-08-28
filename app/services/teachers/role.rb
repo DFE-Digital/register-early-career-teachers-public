@@ -1,8 +1,9 @@
 class Teachers::Role
-  attr_reader :teacher
+  attr_reader :teacher, :school
 
-  def initialize(teacher:)
+  def initialize(teacher:, school: nil)
     @teacher = teacher
+    @school = school
   end
 
   def to_s
@@ -18,15 +19,18 @@ private
   def determine_roles
     result = []
 
-    if teacher.ect_at_school_periods.ongoing.any?
+    ect_periods = school ? teacher.ect_at_school_periods.where(school:) : teacher.ect_at_school_periods
+    mentor_periods = school ? teacher.mentor_at_school_periods.where(school:) : teacher.mentor_at_school_periods
+
+    if ect_periods.ongoing.any?
       result << "ECT"
-    elsif teacher.ect_at_school_periods.any?
+    elsif ect_periods.any?
       result << "ECT (Inactive)"
     end
 
-    if teacher.mentor_at_school_periods.ongoing.any?
+    if mentor_periods.ongoing.any?
       result << "Mentor"
-    elsif teacher.mentor_at_school_periods.any?
+    elsif mentor_periods.any?
       result << "Mentor (Inactive)"
     end
 
