@@ -1,0 +1,13 @@
+<% page_data(
+  title: @school.name,
+  caption: "URN: #{@school.urn}",
+  caption_size: "xl",
+  header_size: "xl",
+  breadcrumbs: @breadcrumbs
+) %>
+
+<%= render Navigation::SecondaryNavigationComponent.new(
+  items: @navigation_items
+) %>
+
+<%= render Admin::Schools::TeachersTableComponent.new(school: @school) %>
