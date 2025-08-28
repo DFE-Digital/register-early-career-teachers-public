@@ -75,5 +75,26 @@ describe ECTAtSchoolPeriods::Finish do
         expect(mentorships_finish).to have_received(:finish!).once
       end
     end
+
+    context 'when there is an ongoing training period' do
+      let!(:training_period) do
+        FactoryBot.create(:training_period, ect_at_school_period:, **original_dates)
+      end
+
+      it 'closes the training period' do
+        expect(training_period).to be_ongoing
+        subject.finish!
+        expect(training_period.reload).not_to be_ongoing
+      end
+
+      it 'uses MentorshipPeriods::Finish to close it' do
+        training_periods_finish = double('MentorshipPeriods::Finish', finish!: true)
+        allow(TrainingPeriods::Finish).to receive(:new).with(any_args).and_return(training_periods_finish)
+
+        subject.finish!
+
+        expect(training_periods_finish).to have_received(:finish!).once
+      end
+    end
   end
 end
