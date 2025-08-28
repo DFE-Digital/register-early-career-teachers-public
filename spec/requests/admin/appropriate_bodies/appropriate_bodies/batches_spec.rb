@@ -38,12 +38,8 @@ describe "Admin::AppropriateBodies::BatchesController", type: :request do
         expect(response.body).to include("CSV Uploads for Busy Body")
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Not successful")
-        expect(response.body).to include("Success")
-
-        expect(response.body).not_to include("Uploaded")
-        # expect(response.body).not_to include("Processing")
-        # expect(response.body).not_to include("Completing")
+        expect(response.body).to include("Not yet submitted")
+        expect(response.body).to include("Submitted")
         expect(response.body).not_to include("Failed")
       end
     end

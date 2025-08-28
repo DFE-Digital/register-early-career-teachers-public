@@ -2,20 +2,16 @@ module BatchHelper
   # @return [Hash{Symbol => String}]
   BATCH_COLOURS = {
     draft: 'grey',
-    retry: 'purple',
     processed: 'yellow',
-    partial: 'blue',
-    completed: 'green',
+    submitted: 'green',
     failed: 'red'
   }.freeze
 
   # @return [Hash{Symbol => String}]
   BATCH_LABELS = {
-    draft: 'Uploaded',
-    retry: 'Not successful',
-    processed: 'Action required',
-    partial: 'Partial success',
-    completed: 'Success',
+    draft: 'Draft',
+    processed: 'Not yet submitted',
+    submitted: 'Submitted',
     failed: 'Error'
   }.freeze
 
