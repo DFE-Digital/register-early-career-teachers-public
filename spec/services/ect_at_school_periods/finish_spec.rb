@@ -40,60 +40,126 @@ describe ECTAtSchoolPeriods::Finish do
       )
     end
 
-    describe 'closing the ongoing training_period if there is one' do
-      context 'when there is an ongoing training_period' do
-        it 'closes the training period'
+    describe 'closing mentorship periods' do
+      context 'when there is an ongoing mentorship_period' do
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            **original_dates
+          )
+        end
+
+        it 'closes the mentorship period' do
+          expect(mentorship_period).to be_ongoing
+          subject.finish!
+          expect(mentorship_period.reload).not_to be_ongoing
+        end
+
+        it 'uses MentorshipPeriods::Finish to close it' do
+          mentorships_finish = double('MentorshipPeriods::Finish', finish!: true)
+          allow(MentorshipPeriods::Finish).to receive(:new).with(any_args).and_return(mentorships_finish)
+
+          subject.finish!
+
+          expect(mentorships_finish).to have_received(:finish!).once
+        end
       end
 
-      context 'when there is no ongoing training_period' do
-        it 'does nothing'
+      context 'when there is a mentorship period that is set to finish before the date the ECT leaves the school' do
+        let(:existing_finished_on) { 1.week.ago.to_date }
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on:,
+            finished_on: existing_finished_on
+          )
+        end
+        let(:finished_on) { 1.week.from_now.to_date }
+
+        it 'leaves the mentorship period finished_on untouched' do
+          expect(mentorship_period.reload.finished_on).to eql(existing_finished_on)
+        end
+      end
+
+      context 'when there is a mentorship period that is set to finish after the date the ECT leaves the school' do
+        let(:existing_finished_on) { 1.week.from_now.to_date }
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on:,
+            finished_on: existing_finished_on
+          )
+        end
+        let(:finished_on) { 1.week.ago.to_date }
+
+        it 'brings the menorship period finished_on forward' do
+          subject.finish!
+          expect(mentorship_period.reload.finished_on).to eql(finished_on)
+        end
       end
     end
 
-    context 'when there is an ongoing mentorship_period' do
-      let!(:mentorship_period) do
-        FactoryBot.create(
-          :mentorship_period,
-          mentee: ect_at_school_period,
-          mentor: mentor_at_school_period,
-          **original_dates
-        )
+    describe 'closing training periods' do
+      context 'when there is an ongoing training period' do
+        let!(:training_period) do
+          FactoryBot.create(:training_period, ect_at_school_period:, **original_dates)
+        end
+
+        it 'closes the training period' do
+          expect(training_period).to be_ongoing
+          subject.finish!
+          expect(training_period.reload).not_to be_ongoing
+        end
+
+        it 'uses TrainingPeriods::Finish to close it' do
+          training_periods_finish = double('TrainingPeriods::Finish', finish!: true)
+          allow(TrainingPeriods::Finish).to receive(:new).with(any_args).and_return(training_periods_finish)
+
+          subject.finish!
+
+          expect(training_periods_finish).to have_received(:finish!).once
+        end
       end
 
-      it 'closes the mentorship period' do
-        expect(mentorship_period).to be_ongoing
-        subject.finish!
-        expect(mentorship_period.reload).not_to be_ongoing
+      context 'when there is a training period that is set to finish before the date the ECT leaves the school' do
+        let(:existing_finished_on) { 1.week.ago.to_date }
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            ect_at_school_period:,
+            started_on:,
+            finished_on: existing_finished_on
+          )
+        end
+        let(:finished_on) { 1.week.from_now.to_date }
+
+        it 'leaves the training period finished_on untouched' do
+          expect(training_period.reload.finished_on).to eql(existing_finished_on)
+        end
       end
 
-      it 'uses MentorshipPeriods::Finish to close it' do
-        mentorships_finish = double('MentorshipPeriods::Finish', finish!: true)
-        allow(MentorshipPeriods::Finish).to receive(:new).with(any_args).and_return(mentorships_finish)
+      context 'when there is a training period that is set to finish after the date the ECT leaves the school' do
+        let(:existing_finished_on) { 1.week.from_now.to_date }
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            ect_at_school_period:,
+            started_on:,
+            finished_on: existing_finished_on
+          )
+        end
+        let(:finished_on) { 1.week.ago.to_date }
 
-        subject.finish!
-
-        expect(mentorships_finish).to have_received(:finish!).once
-      end
-    end
-
-    context 'when there is an ongoing training period' do
-      let!(:training_period) do
-        FactoryBot.create(:training_period, ect_at_school_period:, **original_dates)
-      end
-
-      it 'closes the training period' do
-        expect(training_period).to be_ongoing
-        subject.finish!
-        expect(training_period.reload).not_to be_ongoing
-      end
-
-      it 'uses MentorshipPeriods::Finish to close it' do
-        training_periods_finish = double('MentorshipPeriods::Finish', finish!: true)
-        allow(TrainingPeriods::Finish).to receive(:new).with(any_args).and_return(training_periods_finish)
-
-        subject.finish!
-
-        expect(training_periods_finish).to have_received(:finish!).once
+        it 'brings the training period finished_on forward' do
+          subject.finish!
+          expect(training_period.reload.finished_on).to eql(finished_on)
+        end
       end
     end
   end
