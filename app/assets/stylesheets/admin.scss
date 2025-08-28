@@ -118,3 +118,63 @@
   margin: 0;
   padding: govuk-spacing(2) govuk-spacing(3) govuk-spacing(2) 0;
 }
+
+// X-GOVUK Secondary Navigation
+// Based on https://x-govuk.github.io/govuk-prototype-components/secondary-navigation/
+.x-govuk-secondary-navigation {
+  @include govuk-font(19);
+  background-color: govuk-colour("white");
+  border-bottom: 1px solid govuk-colour("mid-grey");
+  margin-bottom: govuk-spacing(4);
+  padding: 0 govuk-spacing(3);
+}
+
+.x-govuk-secondary-navigation__list {
+  @include govuk-clearfix;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.x-govuk-secondary-navigation__list-item {
+  display: block;
+  margin-right: govuk-spacing(6);
+  position: relative;
+}
+
+.x-govuk-secondary-navigation__list-item--current {
+  .x-govuk-secondary-navigation__link {
+    @include govuk-typography-weight-bold;
+    color: $govuk-text-colour;
+    border-bottom: 3px solid $govuk-brand-colour;
+    text-decoration: none;
+
+    &:hover {
+      color: $govuk-text-colour;
+    }
+
+    &:focus {
+      color: $govuk-focus-text-colour;
+    }
+  }
+}
+
+.x-govuk-secondary-navigation__link {
+  @include govuk-link-common;
+  @include govuk-link-style-no-visited-state;
+  display: block;
+  padding: govuk-spacing(3) 0;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-decoration-thickness: max(1px, 0.0625rem);
+    text-underline-offset: 0.1578em;
+  }
+
+  &:focus {
+    @include govuk-focused-text;
+  }
+}
