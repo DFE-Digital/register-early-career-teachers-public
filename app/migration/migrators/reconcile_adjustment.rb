@@ -25,17 +25,22 @@ module Migrators
 
     def migrate!
       migrate(self.class.statements_with_adjustments) do |statement|
-        statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(api_id: statement.id)
-
-        statement_adjustment.statement = ::Statement.find_by!(api_id: statement.id)
-        statement_adjustment.payment_type = "Reconcile amounts pre-adjustments feature"
-        statement_adjustment.amount = statement.reconcile_amount
-
-        statement_adjustment.created_at = statement.created_at
-        statement_adjustment.updated_at = statement.updated_at
-
-        statement_adjustment.save!
+        migrate_one!(statement)
       end
+    end
+
+    def migrate_one!(statement_with_adjustment)
+      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(api_id: statement_with_adjustment.id)
+
+      statement_adjustment.statement = ::Statement.find_by!(api_id: statement_with_adjustment.id)
+      statement_adjustment.payment_type = "Reconcile amounts pre-adjustments feature"
+      statement_adjustment.amount = statement_with_adjustment.reconcile_amount
+
+      statement_adjustment.created_at = statement_with_adjustment.created_at
+      statement_adjustment.updated_at = statement_with_adjustment.updated_at
+
+      statement_adjustment.save!
+      statement_adjustment
     end
   end
 end
