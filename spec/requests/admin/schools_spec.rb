@@ -21,11 +21,11 @@ RSpec.describe 'Admin::Schools', type: :request do
 
       it 'redirects to overview page' do
         get admin_school_path(school.urn)
-        expect(response).to redirect_to(overview_admin_school_path(school.urn))
+        expect(response).to redirect_to(admin_school_overview_path(school.urn))
       end
 
       it 'returns 404 when school not found' do
-        get overview_admin_school_path('nonexistent')
+        get admin_school_overview_path('nonexistent')
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -36,7 +36,7 @@ RSpec.describe 'Admin::Schools', type: :request do
       include_context 'sign in as DfE user'
 
       it 'returns successful response and renders the overview template' do
-        get overview_admin_school_path(school.urn)
+        get admin_school_overview_path(school.urn)
 
         expect(response).to have_http_status(:success)
         expect(response.body).to include(school.name)
@@ -44,7 +44,7 @@ RSpec.describe 'Admin::Schools', type: :request do
       end
 
       it 'includes secondary navigation' do
-        get overview_admin_school_path(school.urn)
+        get admin_school_overview_path(school.urn)
 
         expect(response.body).to include('x-govuk-secondary-navigation')
         expect(response.body).to include('Overview')
@@ -59,7 +59,7 @@ RSpec.describe 'Admin::Schools', type: :request do
       include_context 'sign in as DfE user'
 
       it 'returns successful response and renders the teachers template' do
-        get teachers_admin_school_path(school.urn)
+        get admin_school_teachers_path(school.urn)
 
         expect(response).to have_http_status(:success)
         expect(response.body).to include(school.name)
@@ -74,7 +74,7 @@ RSpec.describe 'Admin::Schools', type: :request do
         end
 
         it 'displays teachers in the teachers section' do
-          get teachers_admin_school_path(school.urn)
+          get admin_school_teachers_path(school.urn)
 
           expect(response.body).to include('Teachers')
           expect(response.body).to include('ECT')
@@ -88,7 +88,7 @@ RSpec.describe 'Admin::Schools', type: :request do
       include_context 'sign in as DfE user'
 
       it 'returns successful response and renders the partnerships template' do
-        get partnerships_admin_school_path(school.urn)
+        get admin_school_partnerships_path(school.urn)
 
         expect(response).to have_http_status(:success)
         expect(response.body).to include(school.name)

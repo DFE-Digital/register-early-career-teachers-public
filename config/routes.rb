@@ -64,10 +64,10 @@ Rails.application.routes.draw do
     end
 
     resources :schools, only: %i[index show], param: :urn do
-      member do
-        get :overview
-        get :teachers
-        get :partnerships
+      scope module: :schools do
+        resource :overview, only: :show
+        resource :teachers, only: :show
+        resource :partnerships, only: :show
       end
     end
 
