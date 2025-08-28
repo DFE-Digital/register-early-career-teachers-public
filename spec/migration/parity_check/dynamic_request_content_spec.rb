@@ -38,6 +38,8 @@ RSpec.describe ParityCheck::DynamicRequestContent do
           .tap { it.gias_school.update!(funding_eligibility: :ineligible) }
         # CIP only school
         FactoryBot.create(:school, :eligible, :cip_only)
+
+        Metadata::Manager.refresh_all_metadata!
       end
 
       it { is_expected.to eq(school.api_id) }
@@ -51,6 +53,8 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       before do
         # Delivery partner for different lead provider should not be used.
         FactoryBot.create(:delivery_partner)
+
+        Metadata::Manager.refresh_all_metadata!
       end
 
       it { is_expected.to eq(delivery_partner.api_id) }
