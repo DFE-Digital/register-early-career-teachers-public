@@ -20,7 +20,7 @@ module ECTAtSchoolPeriods
         )
 
         MentorshipPeriods::Finish.new(author:, mentorship_period:, finished_on:).finish! if mentorship_period.present?
-        # set training_period finished_on
+        TrainingPeriods::Finish.ect_training(author:, training_period:, ect_at_school_period:, finished_on:).finish! if training_period.present?
       end
     end
 
@@ -28,6 +28,10 @@ module ECTAtSchoolPeriods
 
     def mentorship_period
       @mentorship_period ||= ect_at_school_period.current_mentorship_period
+    end
+
+    def training_period
+      @training_period ||= ect_at_school_period.current_training_period
     end
 
     def event_params
