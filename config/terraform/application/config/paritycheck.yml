@@ -1,0 +1,25 @@
+---
+ENVIRONMENT_COLOUR: orange
+ENVIRONMENT_PHASE_BANNER_TAG: Parity check 🔍
+ENVIRONMENT_PHASE_BANNER_CONTENT: This is the parity check environment.
+ENABLE_MIGRATION_TESTING: true
+ENABLE_SCHOOLS_INTERFACE: true
+ENABLE_SENTRY: true
+ENABLE_BLAZER: true
+ENABLE_FAKE_TRS_API: false
+SENTRY_ENVIRONMENT: paritycheck
+ENABLE_PERSONAS: false
+ENABLE_BULK_UPLOAD: true
+ENABLE_BULK_CLAIM: true
+ENABLE_PARITY_CHECK: true
+ENABLE_API: true
+SERVICE_URL: "https://cpd-ec2-parity-check-web.teacherservices.cloud"
+DFE_ANALYTICS_ENABLED: false
+TRS_API_BASE_URL: "https://preprod.teacher-qualifications-api.education.gov.uk"
+TRS_API_VERSION: "20250203"
+ENCRYPTION_PRIMARY_KEY: parity_check_primary_key
+ENCRYPTION_DETERMINISTIC_KEY: paritycheck_deterministic_key
+ENCRYPTION_DERIVATION_SALT: paritycheck_derivation_salt
+RAILS_ENV: paritycheck
+PARITY_CHECK_ECF_URL: https://cpd-ecf-paritycheck-web.teacherservices.cloud
+PARITY_CHECK_RECT_URL: https://cpd-ec2-paritycheck-web.teacherservices.cloud
