@@ -1,6 +1,6 @@
 module SandboxSeedData
   class DeliveryPartners < Base
-    NUMBER_OF_RECORDS = 50
+    NUMBER_OF_RECORDS = 200
 
     def plant
       return unless plantable?
