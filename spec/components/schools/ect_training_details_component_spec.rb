@@ -17,21 +17,47 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
   end
 
   it "renders the training programme row" do
-    expect(page).to have_selector('.govuk-summary-list__key', text: 'Training programme')
+    expect(page).to have_summary_list_row("Training programme")
+  end
+
+  context "when there is no training period" do
+    let(:training_period) { nil }
+
+    it "renders nothing" do
+      expect(page).to have_no_selector("body")
+    end
   end
 
   context 'when provider-led training' do
     let(:training_period) { FactoryBot.build(:training_period, :provider_led, ect_at_school_period:) }
 
-    it "shows lead provider and delivery partner fields" do
-      expect(page).to have_selector('.govuk-summary-list__key', text: 'Lead provider')
-      expect(page).to have_selector('.govuk-summary-list__key', text: 'Delivery partner')
+    it "shows lead provider information" do
+      expect(page).to have_summary_list_row(
+        "Lead provider",
+        value: "Not available"
+      )
+    end
+
+    it "shows delivery partner information" do
+      expect(page).to have_summary_list_row(
+        "Delivery partner",
+        value: "Yet to be reported by the lead provider"
+      )
     end
 
     context 'with confirmed partnership' do
       it "shows lead provider information" do
-        expect(page).to have_selector('.govuk-summary-list__key', text: 'Lead provider')
-        expect(page).to have_selector('.govuk-summary-list__value')
+        expect(page).to have_summary_list_row(
+          "Lead provider",
+          value: "Not available"
+        )
+      end
+
+      it "shows delivery partner information" do
+        expect(page).to have_summary_list_row(
+          "Delivery partner",
+          value: "Yet to be reported by the lead provider"
+        )
       end
     end
 
@@ -39,12 +65,17 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
       let(:training_period) { FactoryBot.build(:training_period, :provider_led, ect_at_school_period:) }
 
       it "shows lead provider information" do
-        expect(page).to have_selector('.govuk-summary-list__key', text: 'Lead provider')
-        expect(page).to have_selector('.govuk-summary-list__value')
+        expect(page).to have_summary_list_row(
+          "Lead provider",
+          value: "Not available"
+        )
       end
 
-      it "shows appropriate message for delivery partner" do
-        expect(page).to have_text('Yet to be reported by the lead provider')
+      it "shows delivery partner information" do
+        expect(page).to have_summary_list_row(
+          "Delivery partner",
+          value: "Yet to be reported by the lead provider"
+        )
       end
     end
   end
@@ -52,9 +83,12 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
   context 'when school-led training' do
     let(:training_period) { FactoryBot.build(:training_period, :school_led, ect_at_school_period:) }
 
-    it "does not show lead provider and delivery partner fields" do
-      expect(page).not_to have_selector('.govuk-summary-list__key', text: 'Lead provider')
-      expect(page).not_to have_selector('.govuk-summary-list__key', text: 'Delivery partner')
+    it "does not show lead provider information" do
+      expect(page).not_to have_summary_list_row("Lead provider")
+    end
+
+    it "does not show delivery partner information" do
+      expect(page).not_to have_summary_list_row("Delivery partner")
     end
   end
 
@@ -62,24 +96,33 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     context 'when training programme is provider_led' do
       let(:training_period) { FactoryBot.build(:training_period, :provider_led, ect_at_school_period:) }
 
-      it 'returns Provider-led' do
-        expect(component.send(:training_programme_display_name)).to eq('Provider-led')
+      it 'displays Provider-led' do
+        expect(page).to have_summary_list_row(
+          "Training programme",
+          value: "Provider-led"
+        )
       end
     end
 
     context 'when training programme is school_led' do
       let(:training_period) { FactoryBot.build(:training_period, :school_led, ect_at_school_period:) }
 
-      it 'returns School-led' do
-        expect(component.send(:training_programme_display_name)).to eq('School-led')
+      it 'displays School-led' do
+        expect(page).to have_summary_list_row(
+          "Training programme",
+          value: "School-led"
+        )
       end
     end
 
     context 'when training programme is nil' do
       let(:training_period) { FactoryBot.build(:training_period, ect_at_school_period:, training_programme: nil) }
 
-      it 'returns Unknown' do
-        expect(component.send(:training_programme_display_name)).to eq('Unknown')
+      it 'displays Unknown' do
+        expect(page).to have_summary_list_row(
+          "Training programme",
+          value: "Unknown"
+        )
       end
     end
   end
