@@ -11,6 +11,7 @@ on:
         options:
         - development
         - migration
+        - paritycheck
         - sandbox
         - staging
         - test
@@ -35,6 +36,7 @@ on:
         options:
           - development,dv
           - migration,mg
+          - paritycheck,pc
           - sandbox,sb
           - staging,st
           - production,pd

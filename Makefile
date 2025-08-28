@@ -34,6 +34,9 @@ staging: test-cluster
 migration: production-cluster
 	$(eval include config/global_config/migration.sh)
 
+paritycheck: production-cluster
+	$(eval include config/global_config/paritycheck.sh)
+
 sandbox: production-cluster
 	$(eval include config/global_config/sandbox.sh)
 
