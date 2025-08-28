@@ -688,6 +688,139 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe '.record_teacher_starts_training_period_event' do
+    let(:started_on) { Date.new(2023, 7, 20) }
+    let(:started_on_param) { { started_on: } }
+    let(:school) { FactoryBot.create(:school) }
+
+    context 'when ECT training' do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, **started_on_param) }
+      let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, **started_on_param) }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period:, school:, training_period:, happened_at: started_on)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            school:,
+            ect_at_school_period:,
+            training_period:,
+            heading: "Rhys Ifans started a new ECT training period",
+            event_type: :teacher_starts_training_period,
+            happened_at: started_on,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when mentor training' do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, **started_on_param) }
+      let(:training_period) { FactoryBot.create(:training_period, mentor_at_school_period:, ect_at_school_period: nil, **started_on_param) }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period:, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            school:,
+            mentor_at_school_period:,
+            training_period:,
+            heading: "Rhys Ifans started a new mentor training period",
+            event_type: :teacher_starts_training_period,
+            happened_at: started_on,
+            **author_params
+          )
+        end
+      end
+    end
+
+    describe 'errors' do
+      let(:training_period) { FactoryBot.build(:training_period) }
+
+      it 'fails when both mentor_at_school_period and ect_at_school_period are passed in' do
+        expect {
+          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: 'a', ect_at_school_period: 'b', school:, training_period:, happened_at: started_on)
+        }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
+      end
+
+      it 'fails when neither mentor_at_school_period or ect_at_school_period are passed in' do
+        expect {
+          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
+        }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
+      end
+    end
+  end
+
+  describe '.record_teacher_finishes_training_period_event' do
+    let(:started_on) { Date.new(2023, 7, 20) }
+    let(:finished_on) { Date.new(2025, 7, 20) }
+    let(:date_params) { { started_on:, finished_on: } }
+    let(:school) { FactoryBot.create(:school) }
+
+    context 'when ECT training' do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, **date_params) }
+      let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, **date_params) }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period:, school:, training_period:, happened_at: finished_on)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            school:,
+            ect_at_school_period:,
+            training_period:,
+            heading: "Rhys Ifans finished their ECT training period",
+            event_type: :teacher_finishes_training_period,
+            happened_at: finished_on,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when mentor training' do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, **date_params) }
+      let(:training_period) { FactoryBot.create(:training_period, mentor_at_school_period:, ect_at_school_period: nil, **date_params) }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period:, ect_at_school_period: nil, school:, training_period:, happened_at: finished_on)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            teacher:,
+            school:,
+            mentor_at_school_period:,
+            training_period:,
+            heading: "Rhys Ifans finished their mentor training period",
+            event_type: :teacher_finishes_training_period,
+            happened_at: finished_on,
+            **author_params
+          )
+        end
+      end
+    end
+
+    describe 'errors' do
+      let(:training_period) { FactoryBot.build(:training_period) }
+
+      it 'fails when both mentor_at_school_period and ect_at_school_period are passed in' do
+        expect {
+          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: 'a', ect_at_school_period: 'b', school:, training_period:, happened_at: started_on)
+        }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
+      end
+
+      it 'fails when neither the mentor_at_school_period or ect_at_school_period are passed in' do
+        expect {
+          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
+        }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
+      end
+    end
+  end
+
   describe '.record_teacher_starts_mentoring_event!' do
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }
     let(:school) { FactoryBot.create(:school) }
