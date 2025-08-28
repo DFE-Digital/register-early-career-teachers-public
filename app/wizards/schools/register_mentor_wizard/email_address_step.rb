@@ -9,23 +9,36 @@ module Schools
         %i[email]
       end
 
+      class IneligibleForReview < StandardError; end
+      class InvalidMentorshipStatus < StandardError; end
+
       def next_step
         return :cant_use_email if mentor.cant_use_email?
-        return :review_mentor_eligibility if ect.provider_led_training_programme? && mentor.funding_available?
-
+        return :review_mentor_eligibility if eligible_for_review?
         return :check_answers unless mentor.previously_registered_as_mentor?
 
-        if mentor.currently_mentor_at_another_school?
-          # Ask school: are they mentoring at new school only?
-          :mentoring_at_new_school_only
+        case mentor.mentorship_status
+        when :currently_a_mentor then :mentoring_at_new_school_only
+        when :previously_a_mentor then :started_on
         else
-          # Ask school: when will mentor start?
-          :started_on
+          raise InvalidMentorshipStatus, "Unexpected status: #{mentor.mentorship_status.inspect}"
         end
       end
 
       def previous_step
         :review_mentor_details
+      end
+
+    private
+
+      def eligible_for_review?
+        ect.provider_led_training_programme? && mentor.funding_available? && !mentor.previously_registered_as_mentor?
+      end
+
+      def persist
+        super
+
+        mentor.update!(lead_provider_id: mentor.ect_lead_provider&.id)
       end
     end
   end

@@ -114,6 +114,16 @@ module Schools
         mentor_at_school_periods.where.not(school:).ongoing.or(finishes_in_the_future_scope)
       end
 
+      def mentorship_status
+        if mentor_at_school_periods.any?(&:ongoing?)
+          :currently_a_mentor
+        elsif mentor_at_school_periods.any?
+          :previously_a_mentor
+        else
+          raise 'Unexpected state: no mentor_at_school_periods found for previously registered mentor'
+        end
+      end
+
       # Is mentor being assigned to a provider-led ECT?
       def provider_led_ect?
         ect&.provider_led_training_programme?
