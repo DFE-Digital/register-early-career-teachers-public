@@ -120,61 +120,70 @@
 }
 
 // X-GOVUK Secondary Navigation
-// Based on https://x-govuk.github.io/govuk-prototype-components/secondary-navigation/
-.x-govuk-secondary-navigation {
-  @include govuk-font(19);
-  background-color: govuk-colour("white");
-  border-bottom: 1px solid govuk-colour("mid-grey");
-  margin-bottom: govuk-spacing(4);
-  padding: 0 govuk-spacing(3);
-}
+$_current-link-border-width: govuk-spacing(1);
 
-.x-govuk-secondary-navigation__list {
-  @include govuk-clearfix;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-}
+@include govuk-exports("govuk-prototype-components/component/secondary-navigation") {
+  .x-govuk-secondary-navigation {
+    border-bottom: 1px solid $govuk-border-colour;
+    margin-bottom: govuk-spacing(4);
+  }
 
-.x-govuk-secondary-navigation__list-item {
-  display: block;
-  margin-right: govuk-spacing(6);
-  position: relative;
-}
-
-.x-govuk-secondary-navigation__list-item--current {
   .x-govuk-secondary-navigation__link {
-    @include govuk-typography-weight-bold;
-    color: $govuk-text-colour;
-    border-bottom: 3px solid $govuk-brand-colour;
-    text-decoration: none;
-
-    &:hover {
-      color: $govuk-text-colour;
-    }
-
-    &:focus {
-      color: $govuk-focus-text-colour;
-    }
-  }
-}
-
-.x-govuk-secondary-navigation__link {
-  @include govuk-link-common;
-  @include govuk-link-style-no-visited-state;
-  display: block;
-  padding: govuk-spacing(3) 0;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-    text-decoration-thickness: max(1px, 0.0625rem);
-    text-underline-offset: 0.1578em;
+    @include govuk-link-common;
+    @include govuk-link-style-no-underline;
+    @include govuk-link-style-no-visited-state;
   }
 
-  &:focus {
-    @include govuk-focused-text;
+  .x-govuk-secondary-navigation__list {
+    @include govuk-font(19);
+    list-style: none;
+    margin: 0;
+    margin-bottom: govuk-spacing(3);
+    padding: 0;
+
+    @include govuk-media-query($from: tablet) {
+      align-items: start;
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 0;
+    }
+
+    // IE11 trips over flexbox and doesn’t wrap anything, making all of the items
+    // into a single, horizontally scrolling row. This CSS hack removes the
+    // flexbox definition for IE 10 & 11, reverting it a non-flexbox version.
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+      display: block;
+    }
+  }
+
+  .x-govuk-secondary-navigation__list-item {
+    border: 0 solid $govuk-link-colour;
+    margin: govuk-spacing(2) 0;
+    position: relative;
+
+    @include govuk-media-query($from: tablet) {
+      margin-bottom: 0;
+      margin-top: 0;
+      padding: govuk-spacing(4) 0;
+
+      &:not(:last-child) {
+        @include govuk-responsive-margin(6, $direction: right);
+      }
+    }
+  }
+
+  .x-govuk-secondary-navigation__list-item--current {
+    @include govuk-media-query($until: tablet) {
+      border-left-width: $_current-link-border-width;
+      // Negative offset the left margin so we can place a current page indicator
+      // to the left without misaligning the list item text.
+      margin-left: ((govuk-spacing(2) + $_current-link-border-width) * -1);
+      padding-left: govuk-spacing(2);
+    }
+
+    @include govuk-media-query($from: tablet) {
+      border-bottom-width: $_current-link-border-width;
+      padding-bottom: govuk-spacing(4) - $_current-link-border-width;
+    }
   }
 }
