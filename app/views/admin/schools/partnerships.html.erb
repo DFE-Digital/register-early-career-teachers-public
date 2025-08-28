@@ -1,0 +1,13 @@
+<% page_data(
+  title: @school.name,
+  caption: "URN: #{@school.urn}",
+  caption_size: "xl",
+  header_size: "xl",
+  breadcrumbs: @breadcrumbs
+) %>
+
+<%= render Navigation::SecondaryNavigationComponent.new(
+  items: @navigation_items
+) %>
+
+<p class="govuk-body">Partnership information will be available here in the future.</p>

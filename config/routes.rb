@@ -63,7 +63,13 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :schools, only: %i[index show], param: :urn
+    resources :schools, only: %i[index show], param: :urn do
+      member do
+        get :overview
+        get :teachers
+        get :partnerships
+      end
+    end
 
     resources :teachers, only: %i[index show] do
       resource :timeline, only: %i[show], controller: 'teachers/timeline'
