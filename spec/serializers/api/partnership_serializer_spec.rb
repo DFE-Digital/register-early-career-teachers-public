@@ -3,7 +3,7 @@ describe API::PartnershipSerializer, type: :serializer do
     JSON.parse(described_class.render(partnership))
   end
 
-  let(:partnership) { FactoryBot.create(:school_partnership) }
+  let!(:partnership) { FactoryBot.create(:school_partnership) }
   let(:school) { partnership.school }
   let(:delivery_partner) { partnership.delivery_partner }
   let(:contract_period) { partnership.contract_period }
@@ -59,5 +59,14 @@ describe API::PartnershipSerializer, type: :serializer do
       # partnership.update!(api_updated_at: 3.days.ago)
       # expect(attributes["updated_at"]).to eq(partnership.api_updated_at.utc.rfc3339)
     end
+  end
+
+  describe ".preload_query" do
+    subject(:result) { described_class.preload_query(SchoolPartnership.all).first }
+
+    it { expect(result.association(:delivery_partner)).to be_loaded }
+    it { expect(result.association(:active_lead_provider)).to be_loaded }
+    it { expect(result.association(:school)).to be_loaded }
+    it { expect(result.school.association(:gias_school)).to be_loaded }
   end
 end

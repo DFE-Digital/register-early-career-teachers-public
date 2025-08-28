@@ -65,4 +65,23 @@ describe API::SchoolSerializer, type: :serializer do
       expect(attributes["updated_at"]).to eq(school.api_updated_at.utc.rfc3339)
     end
   end
+
+  describe ".preload_query" do
+    subject(:result) do
+      described_class.preload_query(
+        School.all,
+        contract_period_year: contract_period.year,
+        lead_provider_id: lead_provider.id
+      ).first
+    end
+
+    it { expect(result.association(:gias_school)).to be_loaded }
+    it { expect(result.association(:contract_period_metadata)).to be_loaded }
+    it { expect(result.association(:lead_provider_contract_period_metadata)).to be_loaded }
+
+    it "only contains relevant metadata" do
+      expect(result.lead_provider_contract_period_metadata).to contain_exactly(lead_provider_contract_period_metadata)
+      expect(result.contract_period_metadata).to contain_exactly(contract_period_metadata)
+    end
+  end
 end

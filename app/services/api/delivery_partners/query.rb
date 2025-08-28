@@ -7,9 +7,7 @@ module API::DeliveryPartners
     attr_reader :scope
 
     def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: nil)
-      @scope = DeliveryPartner
-        .includes(:lead_provider_metadata)
-        .distinct
+      @scope = DeliveryPartner.distinct
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
@@ -49,7 +47,7 @@ module API::DeliveryPartners
 
       delivery_partners_with_contract_periods = DeliveryPartner
         .joins(lead_provider_delivery_partnerships: { active_lead_provider: :contract_period })
-        .where(contract_period: { year: extract_conditions(contract_period_years, integers: true) })
+        .where(active_lead_provider: { contract_period_year: extract_conditions(contract_period_years, integers: true) })
 
       scope.merge!(delivery_partners_with_contract_periods)
     end

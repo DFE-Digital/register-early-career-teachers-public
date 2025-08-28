@@ -6,14 +6,11 @@ module API::Schools
 
     attr_reader :scope, :sort
 
-    def initialize(lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, contract_period_year: :ignore, sort: nil)
+    def initialize(urn: :ignore, updated_since: :ignore, contract_period_year: :ignore, sort: nil)
       @scope = default_scope(contract_period_year)
         .or(schools_with_existing_partnerships(contract_period_year))
-        .includes(:contract_period_metadata, :lead_provider_contract_period_metadata)
         .distinct
 
-      where_metadata_belongs_to_lead_provider(lead_provider_id)
-      where_metadata_belongs_to_contract_period(contract_period_year)
       where_urn_is(urn)
       where_updated_since(updated_since)
       set_sort_by(sort)
@@ -36,23 +33,6 @@ module API::Schools
     end
 
   private
-
-    def where_metadata_belongs_to_lead_provider(lead_provider_id)
-      return if ignore?(filter: lead_provider_id)
-
-      @scope = scope
-        .references(:metadata_schools_lead_providers_contract_periods)
-        .where('metadata_schools_lead_providers_contract_periods.lead_provider_id' => [lead_provider_id, nil])
-    end
-
-    def where_metadata_belongs_to_contract_period(contract_period_year)
-      return if ignore?(filter: contract_period_year)
-
-      @scope = scope
-        .references(:metadata_schools_contract_periods, :metadata_schools_lead_providers_contract_periods)
-        .where('metadata_schools_contract_periods.contract_period_year' => [contract_period_year, nil])
-        .where('metadata_schools_lead_providers_contract_periods.contract_period_year' => [contract_period_year, nil])
-    end
 
     def schools_with_existing_partnerships(contract_period_year)
       School.where(id: School.select("schools.id")
@@ -78,7 +58,6 @@ module API::Schools
       School
         .eligible
         .not_cip_only
-        .eager_load(:gias_school)
     end
 
     def set_sort_by(sort)

@@ -1,4 +1,3 @@
-require 'pagy/extras/countless'
 require 'pagy/extras/array'
 require 'pagy/extras/overflow'
 require 'pagy/extras/size'

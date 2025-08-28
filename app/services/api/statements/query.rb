@@ -9,7 +9,7 @@ module API::Statements
     attr_reader :scope
 
     def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, fee_type: 'output', sort: nil)
-      @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
+      @scope = Statement.distinct
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
@@ -39,19 +39,19 @@ module API::Statements
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
 
-      scope.merge!(Statement.joins(:lead_provider).where(lead_providers: { id: lead_provider_id }))
+      @scope = scope.joins(:lead_provider).where(lead_providers: { id: lead_provider_id })
     end
 
     def where_contract_period_year_in(contract_period_years)
       return if ignore?(filter: contract_period_years)
 
-      scope.merge!(Statement.joins(:contract_period).where(contract_periods: { year: extract_conditions(contract_period_years) }))
+      @scope = scope.joins(:active_lead_provider).where(active_lead_provider: { contract_period_year: extract_conditions(contract_period_years) })
     end
 
     def where_updated_since(updated_since)
       return if ignore?(filter: updated_since)
 
-      scope.merge!(Statement.where(updated_at: updated_since..))
+      @scope = scope.where(updated_at: updated_since..)
     end
 
     def where_fee_type_is(fee_type)
@@ -59,7 +59,7 @@ module API::Statements
 
       fail InvalidFeeTypeError unless fee_type.in?(Statement::VALID_FEE_TYPES)
 
-      scope.merge!(Statement.with_fee_type(fee_type))
+      @scope = scope.with_fee_type(fee_type)
     end
 
     def set_sort_by(sort)
