@@ -86,6 +86,7 @@ Rails/UnknownEnv:
     - sandbox
     - review
     - migration
+    - paritycheck
 
 Rails/SkipsModelValidations:
   Enabled: true
