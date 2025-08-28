@@ -1,4 +1,10 @@
 class DeliveryPartnerSerializer < Blueprinter::Base
+  class << self
+    def preload_query(query)
+      query.includes(:lead_provider_metadata)
+    end
+  end
+
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 

@@ -3,7 +3,10 @@ module API
     class PartnershipsController < BaseController
       def index
         conditions = { contract_period_years:, updated_since:, delivery_partner_api_ids:, sort: }
-        render json: to_json(paginate(partnerships_query(conditions:).school_partnerships))
+        paginated_partnerships = paginate(partnerships_query(conditions:).school_partnerships)
+        partnerships = serializer.preload_query(paginated_partnerships)
+
+        render json: to_json(partnerships)
       end
 
       def show
@@ -37,8 +40,13 @@ module API
       end
 
       def partnerships_query(conditions: {})
-        conditions[:lead_provider_id] = current_lead_provider.id
-        SchoolPartnerships::Query.new(**conditions.compact)
+        SchoolPartnerships::Query.new(**(default_query_conditions.merge(conditions)).compact)
+      end
+
+      def default_query_conditions
+        @default_query_conditions ||= {
+          lead_provider_id: current_lead_provider.id,
+        }
       end
 
       def partnerships_params
@@ -58,7 +66,11 @@ module API
       end
 
       def to_json(obj)
-        PartnershipSerializer.render(obj, root: "data")
+        serializer.render(obj, root: "data")
+      end
+
+      def serializer
+        PartnershipSerializer
       end
     end
   end

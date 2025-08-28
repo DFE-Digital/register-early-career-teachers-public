@@ -1,4 +1,13 @@
 class SchoolSerializer < Blueprinter::Base
+  class << self
+    def preload_query(query, contract_period_year:, lead_provider_id:)
+      query
+        .includes(:gias_school, :contract_period_metadata, :lead_provider_contract_period_metadata)
+        .where(contract_period_metadata: { contract_period_year: })
+        .where(lead_provider_contract_period_metadata: { contract_period_year:, lead_provider_id: })
+    end
+  end
+
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 
