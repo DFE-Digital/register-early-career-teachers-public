@@ -124,6 +124,10 @@ module AppropriateBodies
       rescue StandardError
         "Something went wrong. You’ll need to try again later"
       end
+
+      def track_analytics!
+        AnalyticsBatchJob.perform_later(pending_induction_submission_batch_id: pending_induction_submission_batch.id)
+      end
     end
   end
 end

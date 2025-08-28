@@ -27,6 +27,7 @@ module AppropriateBodies
         pending_induction_submission_batch.tally!
         pending_induction_submission_batch.completed!
         pending_induction_submission_batch.redact!
+        track_analytics!
       end
 
     private
