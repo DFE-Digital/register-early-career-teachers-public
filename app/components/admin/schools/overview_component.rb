@@ -1,4 +1,6 @@
 class Admin::Schools::OverviewComponent < ViewComponent::Base
+  attr_reader :school
+
   def initialize(school:)
     @school = school
   end
@@ -23,8 +25,4 @@ class Admin::Schools::OverviewComponent < ViewComponent::Base
       "Not available"
     end
   end
-
-private
-
-  attr_reader :school
 end

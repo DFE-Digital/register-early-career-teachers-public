@@ -1,15 +1,15 @@
-RSpec.describe 'admin/schools/overview.html.erb', type: :view do
+RSpec.describe 'admin/schools/partnerships/show.html.erb', type: :view do
   let(:school) { FactoryBot.create(:school) }
 
   before do
     assign(:school, school)
     assign(:breadcrumbs, { "Schools" => "/admin/schools", school.name => nil })
     assign(:navigation_items, [
-      { text: "Overview", href: overview_admin_school_path(school.urn), current: true },
-      { text: "Teachers", href: teachers_admin_school_path(school.urn), current: false },
-      { text: "Partnerships", href: partnerships_admin_school_path(school.urn), current: false }
+      { text: "Overview", href: admin_school_overview_path(school.urn), current: false },
+      { text: "Teachers", href: admin_school_teachers_path(school.urn), current: false },
+      { text: "Partnerships", href: admin_school_partnerships_path(school.urn), current: true }
     ])
-    allow(view).to receive_messages(params: { urn: school.urn }, request: double(fullpath: "/admin/schools/#{school.urn}/overview"))
+    allow(view).to receive_messages(params: { urn: school.urn }, request: double(fullpath: "/admin/schools/#{school.urn}/partnerships"))
   end
 
   it 'sets up breadcrumbs in page data' do
@@ -37,21 +37,16 @@ RSpec.describe 'admin/schools/overview.html.erb', type: :view do
     expect(rendered).to have_css('a', text: 'Partnerships')
   end
 
-  it 'renders the overview component with school data' do
+  it 'displays placeholder content' do
     render
 
-    expect(rendered).to have_css('.govuk-summary-list')
-    expect(rendered).to have_css('dt', text: 'Induction tutor')
-    expect(rendered).to have_css('dt', text: 'Induction tutor email')
-    expect(rendered).to have_css('dt', text: 'Local authority')
-    expect(rendered).to have_css('dt', text: 'Address')
-    expect(rendered).to have_css('a', text: 'Change')
+    expect(rendered).to have_css('p', text: 'Partnership information will be available here in the future.')
   end
 
-  it 'marks overview as current in navigation' do
+  it 'marks partnerships as current in navigation' do
     render
 
-    expect(rendered).to have_css('.x-govuk-secondary-navigation__list-item--current a', text: 'Overview')
-    expect(rendered).to have_css('a[aria-current="page"]', text: 'Overview')
+    expect(rendered).to have_css('.x-govuk-secondary-navigation__list-item--current a', text: 'Partnerships')
+    expect(rendered).to have_css('a[aria-current="page"]', text: 'Partnerships')
   end
 end
