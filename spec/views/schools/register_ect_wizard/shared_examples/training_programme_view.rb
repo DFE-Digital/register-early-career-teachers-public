@@ -15,10 +15,10 @@ RSpec.shared_examples "a training programme view" do |current_step:, back_path:,
     assign(:ect, ect)
   end
 
-  it "sets the page title to 'What training programme will John Smith follow?'" do
+  it "sets the page title to 'Which training programme will John Smith follow?'" do
     render
 
-    expect(sanitize(view.content_for(:page_title))).to eql("What training programme will John Smith follow?")
+    expect(sanitize(view.content_for(:page_title))).to eql("Which training programme will John Smith follow?")
   end
 
   context "when the training programme is invalid" do
