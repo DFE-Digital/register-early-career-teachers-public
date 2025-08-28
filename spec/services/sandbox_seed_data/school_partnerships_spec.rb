@@ -3,21 +3,24 @@ RSpec.describe SandboxSeedData::SchoolPartnerships do
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
+  let(:contract_period) { FactoryBot.create(:contract_period) }
+
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
     allow(Rails).to receive(:env) { environment.inquiry }
+
+    stub_const("#{described_class}::SCHOOL_PARTNERSHIPS_PER_ACTIVE_LEAD_PROVIDER", 2)
+    stub_const("#{described_class}::SAME_SCHOOL_DIFFERENT_DELIVERY_PARTNER_PER_ACTIVE_LEAD_PROVIDER", 1)
+
+    FactoryBot.create_list(:active_lead_provider, 2, contract_period:)
+    ActiveLeadProvider.find_each do |active_lead_provider|
+      FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+    end
+    FactoryBot.create_list(:delivery_partner, 2)
+    FactoryBot.create_list(:school, 2)
   end
 
   describe "#plant" do
-    let(:contract_period) { FactoryBot.create(:contract_period) }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
-
-    # Ensure there are schools to create partnerships with
-    before do
-      FactoryBot.create_list(:lead_provider_delivery_partnership, 5, active_lead_provider:)
-      FactoryBot.create_list(:school, 10)
-    end
-
     it "creates school partnerships for all lead providers" do
       instance.plant
 
@@ -28,6 +31,18 @@ RSpec.describe SandboxSeedData::SchoolPartnerships do
       instance.plant
 
       expect(SchoolPartnership.all.map(&:contract_period).uniq).to eq(ContractPeriod.all)
+    end
+
+    it "creates school partnership with same school but different delivery partner" do
+      instance.plant
+
+      schools_with_multiple_delivery_partners = SchoolPartnership
+        .joins(:lead_provider_delivery_partnership)
+        .group(:school_id)
+        .having("COUNT(DISTINCT lead_provider_delivery_partnerships.delivery_partner_id) > 1")
+        .pluck(:school_id)
+
+      expect(schools_with_multiple_delivery_partners).to be_present
     end
 
     it "logs the creation of school partnerships" do

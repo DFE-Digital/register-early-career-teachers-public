@@ -20,13 +20,18 @@ module Migrators
 
     def migrate!
       migrate(self.class.lead_providers) do |lead_provider|
-        lp = ::LeadProvider.find_or_initialize_by(ecf_id: lead_provider.id)
-
-        lp.name = lead_provider.name
-        lp.created_at = lead_provider.created_at
-        lp.updated_at = lead_provider.updated_at
-        lp.save!
+        migrate_one!(lead_provider)
       end
+    end
+
+    def migrate_one!(lead_provider)
+      lp = ::LeadProvider.find_or_initialize_by(ecf_id: lead_provider.id)
+
+      lp.name = lead_provider.name
+      lp.created_at = lead_provider.created_at
+      lp.updated_at = lead_provider.updated_at
+      lp.save!
+      lp
     end
   end
 end
