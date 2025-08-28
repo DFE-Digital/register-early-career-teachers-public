@@ -1,0 +1,9 @@
+<nav class="<%= navigation_classes %>" <%= tag.attributes(navigation_attributes) %>>
+  <ul class="x-govuk-secondary-navigation__list">
+    <% items.each do |item| %>
+      <li class="<%= item_classes(item) %>">
+        <%= link_to item[:text], item[:href], link_attributes(item) %>
+      </li>
+    <% end %>
+  </ul>
+</nav>
