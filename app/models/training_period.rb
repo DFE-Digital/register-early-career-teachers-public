@@ -28,6 +28,8 @@ class TrainingPeriod < ApplicationRecord
 
   validate :one_id_of_trainee_present
   validate :at_least_expression_of_interest_or_school_partnership_present, if: :provider_led_training_programme?
+  validate :expression_of_interest_absent_for_school_led, if: :school_led_training_programme?
+  validate :school_partnership_absent_for_school_led, if: :school_led_training_programme?
   validate :trainee_distinct_period
   validate :enveloped_by_trainee_at_school_period
   validate :only_provider_led_mentor_training
@@ -100,5 +102,17 @@ private
     if mentor_at_school_period.present? && school_led_training_programme?
       errors.add(:training_programme, 'Mentor training periods can only be provider-led')
     end
+  end
+
+  def expression_of_interest_absent_for_school_led
+    return if expression_of_interest.blank?
+
+    errors.add(:expression_of_interest, 'Expression of interest must be absent for school-led training programmes')
+  end
+
+  def school_partnership_absent_for_school_led
+    return if school_partnership.blank?
+
+    errors.add(:school_partnership, 'School partnership must be absent for school-led training programmes')
   end
 end

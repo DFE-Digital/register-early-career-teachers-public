@@ -378,9 +378,9 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       context 'when the teacher has ECTAtSchoolPeriods' do
         before do
           school_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
-          FactoryBot.create(:training_period, training_programme: :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+          FactoryBot.create(:training_period, :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
           provider_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
-          FactoryBot.create(:training_period, training_programme: :provider_led, ect_at_school_period: provider_led_ect_at_school_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
+          FactoryBot.create(:training_period, :provider_led, :with_school_partnership, ect_at_school_period: provider_led_ect_at_school_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
         it 'returns the training programme from the latest ECTAtSchoolPeriod by started_on' do
@@ -410,7 +410,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       context 'when the latest ECTAtSchoolPeriod is school-led' do
         before do
           school_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
-          FactoryBot.create(:training_period, training_programme: :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+          FactoryBot.create(:training_period, :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
         end
 
         it 'returns false' do
