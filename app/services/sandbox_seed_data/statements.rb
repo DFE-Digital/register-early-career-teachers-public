@@ -26,16 +26,15 @@ module SandboxSeedData
           statements += years.product(MONTHS).map do |year, month|
             deadline_date = deadline_date(year, month)
 
-            Statement.find_or_create_by!(
-              active_lead_provider:,
-              month:,
-              year:,
-              deadline_date:
-            ) do |statement|
-              statement.payment_date = payment_date(deadline_date)
-              statement.status = status(statement.payment_date, deadline_date)
-              statement.fee_type = fee_type
-            end
+            Statement.find_by(active_lead_provider:, month:, year:, deadline_date:) ||
+              FactoryBot.create(:statement,
+                                active_lead_provider:,
+                                month:,
+                                year:,
+                                deadline_date:,
+                                payment_date: payment_date(deadline_date),
+                                status: status(payment_date(deadline_date), deadline_date),
+                                fee_type:)
           end
         end
 
@@ -58,15 +57,19 @@ module SandboxSeedData
     end
 
     def payment_date(deadline_date)
-      payment_date_range = deadline_date..(deadline_date + 2.months)
+      @payment_dates ||= {}
 
-      # If the range includes the current date, adjust the window
-      # to ensure we always get a payable statement.
-      if Date.current.in?(payment_date_range)
-        payment_date_range = Date.current..payment_date_range.end
+      @payment_dates[deadline_date] ||= begin
+        payment_date_range = deadline_date..(deadline_date + 2.months)
+
+        # If the range includes the current date, adjust the window
+        # to ensure we always get a payable statement.
+        if Date.current.in?(payment_date_range)
+          payment_date_range = Date.current..payment_date_range.end
+        end
+
+        Time.zone.at(rand(payment_date_range.begin.to_time.to_i..payment_date_range.end.to_time.to_i))
       end
-
-      Time.zone.at(rand(payment_date_range.begin.to_time.to_i..payment_date_range.end.to_time.to_i))
     end
 
     def deadline_date(year, month)
