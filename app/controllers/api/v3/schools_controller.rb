@@ -5,10 +5,9 @@ module API
 
       def index
         conditions = { updated_since:, urn:, sort: }
-        paginated_schools = paginate(schools_query(conditions:).schools)
-        schools = serializer.preload_query(paginated_schools, **serializer_options)
+        paginated_schools = schools_query(conditions:).schools { paginate(it) }
 
-        render json: to_json(schools)
+        render json: to_json(paginated_schools)
       end
 
       def show
@@ -18,12 +17,13 @@ module API
     private
 
       def schools_query(conditions: {})
-        API::Schools::Query.new(**(default_query_conditions.merge(conditions)).compact)
+        API::Schools::API::Query.new(**(default_query_conditions.merge(conditions)).compact)
       end
 
       def default_query_conditions
         @default_query_conditions ||= {
-          contract_period_year: contract_period.year
+          contract_period_year: contract_period.year,
+          lead_provider_id: current_lead_provider.id
         }
       end
 

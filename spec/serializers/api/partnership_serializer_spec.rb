@@ -60,13 +60,4 @@ describe API::PartnershipSerializer, type: :serializer do
       # expect(attributes["updated_at"]).to eq(partnership.api_updated_at.utc.rfc3339)
     end
   end
-
-  describe ".preload_query" do
-    subject(:result) { described_class.preload_query(SchoolPartnership.all).first }
-
-    it { expect(result.association(:delivery_partner)).to be_loaded }
-    it { expect(result.association(:active_lead_provider)).to be_loaded }
-    it { expect(result.association(:school)).to be_loaded }
-    it { expect(result.school.association(:gias_school)).to be_loaded }
-  end
 end

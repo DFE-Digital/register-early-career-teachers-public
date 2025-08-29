@@ -19,22 +19,26 @@ module API::Statements
     end
 
     def statements
-      scope
+      preload_associations(block_given? ? yield(scope) : scope)
     end
 
     def statement_by_api_id(api_id)
-      return scope.find_by!(api_id:) if api_id.present?
+      return preload_associations(scope).find_by!(api_id:) if api_id.present?
 
       fail(ArgumentError, "api_id needed")
     end
 
     def statement_by_id(id)
-      return scope.find(id) if id.present?
+      return preload_associations(scope).find(id) if id.present?
 
       fail(ArgumentError, "id needed")
     end
 
   private
+
+    def preload_associations(results)
+      results.includes(:active_lead_provider)
+    end
 
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)

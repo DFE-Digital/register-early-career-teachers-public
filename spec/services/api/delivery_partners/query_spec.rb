@@ -1,6 +1,53 @@
 RSpec.describe API::DeliveryPartners::Query do
-  it_behaves_like "a query that avoids includes", :delivery_partners do
+  it_behaves_like "a query that avoids includes" do
     before { FactoryBot.create(:delivery_partner) }
+  end
+
+  describe "preloading relationships" do
+    shared_examples "preloaded associations" do
+      it { expect(result.association(:lead_provider_metadata)).to be_loaded }
+
+      context "when a lead_provider_id is specified" do
+        let(:lead_provider_id) { lead_provider.id }
+
+        before { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider:, delivery_partner:) }
+
+        it "only contains relevant metadata" do
+          expect(result.lead_provider_metadata).to contain_exactly(lead_provider_metadata)
+        end
+      end
+    end
+
+    let(:lead_provider_id) { :ignore }
+    let(:instance) { described_class.new(lead_provider_id:) }
+
+    let!(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let!(:lead_provider_metadata) { FactoryBot.create(:delivery_partner_lead_provider_metadata, delivery_partner:, lead_provider:) }
+
+    before do
+      # Ensure other metadata exists.
+      other_lead_provider = FactoryBot.create(:lead_provider)
+      FactoryBot.create(:delivery_partner_lead_provider_metadata, delivery_partner:, lead_provider: other_lead_provider)
+    end
+
+    describe "#delivery_partners" do
+      subject(:result) { instance.delivery_partners.first }
+
+      include_context "preloaded associations"
+    end
+
+    describe "#delivery_partner_by_api_id" do
+      subject(:result) { instance.delivery_partner_by_api_id(delivery_partner.api_id) }
+
+      include_context "preloaded associations"
+    end
+
+    describe "#delivery_partner_by_id" do
+      subject(:result) { instance.delivery_partner_by_id(delivery_partner.id) }
+
+      include_context "preloaded associations"
+    end
   end
 
   describe "#delivery_partners" do
@@ -23,10 +70,10 @@ RSpec.describe API::DeliveryPartners::Query do
 
     describe "filtering" do
       describe "by `lead_provider`" do
-        let(:lead_provider_delivery_partnership1) { FactoryBot.create(:lead_provider_delivery_partnership) }
+        let(:lead_provider_delivery_partnership1) { FactoryBot.create(:lead_provider_delivery_partnership, :with_delivery_partner_metadata) }
         let!(:delivery_partner1) { lead_provider_delivery_partnership1.delivery_partner }
-        let!(:delivery_partner2) { FactoryBot.create(:lead_provider_delivery_partnership).delivery_partner }
-        let!(:delivery_partner3) { FactoryBot.create(:lead_provider_delivery_partnership).delivery_partner }
+        let!(:delivery_partner2) { FactoryBot.create(:lead_provider_delivery_partnership, :with_delivery_partner_metadata).delivery_partner }
+        let!(:delivery_partner3) { FactoryBot.create(:lead_provider_delivery_partnership, :with_delivery_partner_metadata).delivery_partner }
 
         context "when `lead_provider` param is omitted" do
           it "returns all delivery partners" do
