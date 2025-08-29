@@ -47,10 +47,4 @@ describe DeliveryPartnerSerializer, type: :serializer do
       expect(attributes["updated_at"]).to eq(delivery_partner.api_updated_at.utc.rfc3339)
     end
   end
-
-  describe ".preload_query" do
-    subject(:result) { described_class.preload_query(DeliveryPartner.all).first }
-
-    it { expect(result.association(:lead_provider_metadata)).to be_loaded }
-  end
 end

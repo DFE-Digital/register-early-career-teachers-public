@@ -3,10 +3,12 @@ module DeliveryPartners
     include Queries::ConditionFormats
     include Queries::Orderable
     include Queries::FilterIgnorable
+    include Queries::AssociationPreloadable
 
-    attr_reader :scope
+    attr_reader :scope, :lead_provider_id
 
     def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: nil)
+      @lead_provider_id = lead_provider_id
       @scope = DeliveryPartner.distinct
 
       where_lead_provider_is(lead_provider_id)
@@ -15,17 +17,17 @@ module DeliveryPartners
     end
 
     def delivery_partners
-      scope
+      preload_associations(block_given? ? yield(scope) : scope)
     end
 
     def delivery_partner_by_api_id(api_id)
-      return scope.find_by!(api_id:) if api_id.present?
+      return preload_associations(scope).find_by!(api_id:) if api_id.present?
 
       fail(ArgumentError, "api_id needed")
     end
 
     def delivery_partner_by_id(id)
-      return scope.find(id) if id.present?
+      return preload_associations(scope).find(id) if id.present?
 
       fail(ArgumentError, "id needed")
     end

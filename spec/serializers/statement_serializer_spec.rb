@@ -80,10 +80,4 @@ describe StatementSerializer, type: :serializer do
       end
     end
   end
-
-  describe ".preload_query" do
-    subject(:result) { described_class.preload_query(Statement.all).first }
-
-    it { expect(result.association(:active_lead_provider)).to be_loaded }
-  end
 end

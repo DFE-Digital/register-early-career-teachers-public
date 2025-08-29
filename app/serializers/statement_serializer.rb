@@ -1,10 +1,4 @@
 class StatementSerializer < Blueprinter::Base
-  class << self
-    def preload_query(query)
-      query.includes(:active_lead_provider)
-    end
-  end
-
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 

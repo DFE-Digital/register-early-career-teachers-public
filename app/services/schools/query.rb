@@ -3,10 +3,13 @@ module Schools
     include Queries::ConditionFormats
     include Queries::FilterIgnorable
     include Queries::Orderable
+    include Queries::AssociationPreloadable
 
-    attr_reader :scope, :sort
+    attr_reader :scope, :sort, :lead_provider_id, :contract_period_year
 
-    def initialize(urn: :ignore, updated_since: :ignore, contract_period_year: :ignore, sort: nil)
+    def initialize(lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, contract_period_year: :ignore, sort: nil)
+      @lead_provider_id = lead_provider_id
+      @contract_period_year = contract_period_year
       @scope = default_scope(contract_period_year)
         .or(schools_with_existing_partnerships(contract_period_year))
         .distinct
@@ -17,17 +20,17 @@ module Schools
     end
 
     def schools
-      scope
+      preload_associations(block_given? ? yield(scope) : scope)
     end
 
     def school_by_api_id(api_id)
-      return scope.find_by!(gias_school: { api_id: }) if api_id.present?
+      return preload_associations(scope).find_by!(gias_school: { api_id: }) if api_id.present?
 
       fail(ArgumentError, "api_id needed")
     end
 
     def school_by_id(id)
-      return scope.find(id) if id.present?
+      return preload_associations(scope).find(id) if id.present?
 
       fail(ArgumentError, "id needed")
     end

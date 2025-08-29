@@ -3,10 +3,9 @@ module API
     class StatementsController < BaseController
       def index
         conditions = { contract_period_years:, updated_since: }
-        paginated_statements = paginate(statements_query(conditions:).statements)
-        statements = serializer.preload_query(paginated_statements)
+        paginated_statements = statements_query(conditions:).statements { paginate(it) }
 
-        render json: to_json(statements)
+        render json: to_json(paginated_statements)
       end
 
       def show
@@ -16,7 +15,7 @@ module API
     private
 
       def statements_query(conditions: {})
-        Statements::Query.new(**(default_query_conditions.merge(conditions).compact))
+        Statements::API::Query.new(**(default_query_conditions.merge(conditions).compact))
       end
 
       def default_query_conditions

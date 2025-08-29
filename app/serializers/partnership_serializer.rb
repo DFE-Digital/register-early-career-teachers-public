@@ -1,14 +1,4 @@
 class PartnershipSerializer < Blueprinter::Base
-  class << self
-    def preload_query(query)
-      query.includes(
-        :delivery_partner,
-        :active_lead_provider,
-        school: :gias_school
-      )
-    end
-  end
-
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 
