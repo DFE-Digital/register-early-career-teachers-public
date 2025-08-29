@@ -16,11 +16,13 @@ module SandboxSeedData
       log_plant_info("lead providers")
 
       DATA.each.with_index do |(name, active_years), index|
-        lead_provider = LeadProvider.find_or_create_by!(name:)
+        lead_provider = LeadProvider.find_by_name(name) ||
+          FactoryBot.create(:lead_provider, name:)
 
         active_years.each do |year|
           contract_period = ContractPeriod.find_by!(year:)
-          ActiveLeadProvider.find_or_create_by!(contract_period:, lead_provider:)
+          ActiveLeadProvider.find_by(contract_period:, lead_provider:) ||
+            FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
         end
 
         log_seed_info("#{Colourize.text(name, colour(index))} (#{active_years.to_a.join(', ')})")
