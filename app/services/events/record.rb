@@ -287,6 +287,48 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
     end
 
+    def self.record_teacher_left_school_as_ect!(author:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:)
+      event_type = :teacher_left_school_as_ect
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name} left #{school.name}"
+
+      new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_starts_training_period_event!(author:, training_period:, ect_at_school_period:, mentor_at_school_period:, teacher:, school:, happened_at:)
+      if ect_at_school_period.present? && mentor_at_school_period.present?
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
+      end
+
+      if ect_at_school_period.nil? && mentor_at_school_period.nil?
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period is required")
+      end
+
+      event_type = :teacher_starts_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (ect_at_school_period.present?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name} started a new #{training_type} training period"
+
+      new(event_type:, author:, heading:, training_period:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_finishes_training_period_event!(author:, training_period:, ect_at_school_period:, mentor_at_school_period:, teacher:, school:, happened_at:)
+      if ect_at_school_period.present? && mentor_at_school_period.present?
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
+      end
+
+      if ect_at_school_period.nil? && mentor_at_school_period.nil?
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period is required")
+      end
+
+      event_type = :teacher_finishes_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (ect_at_school_period.present?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name} finished their #{training_type} training period"
+
+      new(event_type:, author:, heading:, training_period:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
     def self.record_teacher_starts_mentoring_event!(author:, mentor:, mentee:, mentor_at_school_period:, mentorship_period:, school:, happened_at: Time.zone.now)
       event_type = :teacher_starts_mentoring
       mentor_name = Teachers::Name.new(mentor).full_name
@@ -302,6 +344,26 @@ module Events
       mentor_name = Teachers::Name.new(mentor).full_name
       mentee_name = Teachers::Name.new(mentee).full_name
       heading = "#{mentee_name} is being mentored by #{mentor_name}"
+      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+
+      new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_finishes_mentoring_event!(author:, mentor:, mentee:, mentor_at_school_period:, mentorship_period:, school:, happened_at:)
+      event_type = :teacher_finishes_mentoring
+      mentor_name = Teachers::Name.new(mentor).full_name
+      mentee_name = Teachers::Name.new(mentee).full_name
+      heading = "#{mentor_name} finished mentoring #{mentee_name}"
+      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+
+      new(event_type:, author:, heading:, mentorship_period:, mentor_at_school_period:, teacher: mentor, school:, metadata:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_finishes_being_mentored_event!(author:, mentor:, mentee:, ect_at_school_period:, mentorship_period:, school:, happened_at:)
+      event_type = :teacher_finishes_being_mentored
+      mentor_name = Teachers::Name.new(mentor).full_name
+      mentee_name = Teachers::Name.new(mentee).full_name
+      heading = "#{mentee_name} is no longer being mentored by #{mentor_name}"
       metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
 
       new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
