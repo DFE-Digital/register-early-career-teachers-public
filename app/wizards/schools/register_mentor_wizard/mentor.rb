@@ -129,11 +129,7 @@ module Schools
       end
 
       def ect_lead_provider
-        ect_training_service.lead_provider if ect
-      end
-
-      def ect_eoi_lead_provider
-        ect_training_service.expression_of_interest_lead_provider
+        ect_training_service.lead_provider_via_school_partnership_or_eoi
       end
 
     private
