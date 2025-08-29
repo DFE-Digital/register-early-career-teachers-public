@@ -1,4 +1,8 @@
 RSpec.describe Statements::Query do
+  it_behaves_like "a query that avoids includes", :statements do
+    before { FactoryBot.create(:statement) }
+  end
+
   describe "#statements" do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
 

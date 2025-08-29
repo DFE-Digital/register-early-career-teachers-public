@@ -1,4 +1,8 @@
 RSpec.describe DeliveryPartners::Query do
+  it_behaves_like "a query that avoids includes", :delivery_partners do
+    before { FactoryBot.create(:delivery_partner) }
+  end
+
   describe "#delivery_partners" do
     it "returns all delivery partners" do
       delivery_partners = FactoryBot.create_list(:delivery_partner, 3)
