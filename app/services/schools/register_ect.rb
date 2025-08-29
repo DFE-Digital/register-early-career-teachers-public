@@ -49,6 +49,7 @@ module Schools
       ActiveRecord::Base.transaction do
         update_school_last_choices!
         create_teacher!
+        close_old_school_periods!
         @ect_at_school_period = start_at_school!
         create_training_period!
         record_event!
@@ -60,7 +61,9 @@ module Schools
   private
 
     def already_registered_as_an_ect?
-      ::Teacher.find_by_trn(trn)&.ect_at_school_periods&.exists?
+      # Allow re-registration at different schools for school transfers
+      existing_teacher = ::Teacher.find_by(trn:)
+      existing_teacher&.ect_at_school_periods&.where(school:)&.exists?
     end
 
     def not_registered_as_an_ect!
@@ -110,6 +113,14 @@ module Schools
       }
 
       school.update!(**choices.compact)
+    end
+
+    def close_old_school_periods!
+      Teachers::CloseOldSchoolPeriods.new(
+        teacher:,
+        new_school_start_date: started_on,
+        author:
+      ).call
     end
 
     def record_event!
