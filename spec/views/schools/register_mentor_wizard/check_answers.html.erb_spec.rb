@@ -135,6 +135,103 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
         expect(rendered).not_to have_element(:dd, text: "FraggleRock")
       end
     end
+
+    context 'when mentor is provider-led and mentoring_at_new_school_only? is true' do
+      before do
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: true, lead_provider:)
+        render
+      end
+
+      it 'shows the lead provider row' do
+        expect(rendered).to have_element(:dt, text: 'Lead provider')
+        expect(rendered).to have_element(:dd, text: 'FraggleRock')
+        expect(rendered).to have_link('Change', href: schools_register_mentor_wizard_change_lead_provider_path)
+      end
+    end
+
+    context 'when mentoring_at_new_school_only? is false' do
+      before do
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: false, lead_provider:)
+        render
+      end
+
+      it 'does not show the lead provider row' do
+        expect(rendered).not_to have_element(:dt, text: 'Lead provider')
+        expect(rendered).not_to have_element(:dd, text: 'FraggleRock')
+        expect(rendered).not_to have_link('Change', href: schools_register_mentor_wizard_change_lead_provider_path)
+      end
+    end
+
+    context 'when mentoring_at_new_school_only? is not present' do
+      before do
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: nil, lead_provider:)
+        render
+      end
+
+      it 'does not show the lead provider row' do
+        expect(rendered).not_to have_element(:dt, text: 'Lead provider')
+        expect(rendered).not_to have_element(:dd, text: 'FraggleRock')
+        expect(rendered).not_to have_link('Change', href: schools_register_mentor_wizard_change_lead_provider_path)
+      end
+    end
+
+    context 'when provider_led_ect? is false' do
+      before do
+        allow(mentor).to receive_messages(provider_led_ect?: false, mentoring_at_new_school_only?: true, lead_provider:)
+        render
+      end
+
+      it 'does not show the lead provider row' do
+        expect(rendered).not_to have_element(:dt, text: 'Lead provider')
+      end
+    end
+
+    context 'when mentoring_at_new_school_only is yes' do
+      before do
+        allow(mentor).to receive_messages(mentoring_at_new_school_only: 'yes')
+        render
+      end
+
+      it 'shows the mentoring only at your school row with Yes and a Change link' do
+        expect(rendered).to have_element(:dt, text: 'Mentoring only at your school')
+        expect(rendered).to have_element(:dd, text: 'Yes')
+        expect(rendered).to have_link(
+          'Change mentoring only at your school',
+          href: schools_register_mentor_wizard_mentoring_at_new_school_only_path
+        )
+      end
+    end
+
+    context 'when mentoring_at_new_school_only is no' do
+      before do
+        allow(mentor).to receive_messages(mentoring_at_new_school_only: 'no')
+        render
+      end
+
+      it 'shows the mentoring only at your school row with No and a Change link' do
+        expect(rendered).to have_element(:dt, text: 'Mentoring only at your school')
+        expect(rendered).to have_element(:dd, text: 'No')
+        expect(rendered).to have_link(
+          'Change mentoring only at your school',
+          href: schools_register_mentor_wizard_mentoring_at_new_school_only_path
+        )
+      end
+    end
+
+    context 'when mentoring_at_new_school_only is not present' do
+      before do
+        allow(mentor).to receive_messages(mentoring_at_new_school_only: nil)
+        render
+      end
+
+      it 'does not show the mentoring only at your school row' do
+        expect(rendered).not_to have_element(:dt, text: 'Mentoring only at your school')
+        expect(rendered).not_to have_link(
+          'Change mentoring only at your school',
+          href: schools_register_mentor_wizard_mentoring_at_new_school_only_path
+        )
+      end
+    end
   end
 
   it 'includes an inset with the names of the mentor and ECT associated' do
