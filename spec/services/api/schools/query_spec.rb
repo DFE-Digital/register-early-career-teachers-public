@@ -1,4 +1,10 @@
 RSpec.describe API::Schools::Query do
+  it_behaves_like "a query that avoids includes", :schools do
+    let(:params) { { contract_period_year: FactoryBot.create(:contract_period).year } }
+
+    before { FactoryBot.create(:school, :eligible) }
+  end
+
   describe "#schools" do
     subject(:query) { described_class.new(**query_params) }
 

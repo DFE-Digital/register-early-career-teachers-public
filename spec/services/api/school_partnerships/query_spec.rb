@@ -1,6 +1,10 @@
 describe API::SchoolPartnerships::Query do
+  it_behaves_like "a query that avoids includes", :school_partnerships do
+    before { FactoryBot.create(:school_partnership) }
+  end
+
   describe "#school_partnerships" do
-    it "returns all school parnerships partners" do
+    it "returns all school partnerships" do
       school_partnerships = FactoryBot.create_list(:school_partnership, 3)
       query = described_class.new
 
