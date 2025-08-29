@@ -33,20 +33,25 @@ describe SchoolPartnerships::Query do
         end
 
         it "filters by `lead_provider`" do
-          lead_provider_id = lead_provider.id
-          query = described_class.new(lead_provider_id:)
+          query = described_class.new(lead_provider:)
+
+          expect(query.school_partnerships).to contain_exactly(school_partnership1)
+        end
+
+        it "filters by `lead_provider.id`" do
+          query = described_class.new(lead_provider: lead_provider.id)
 
           expect(query.school_partnerships).to contain_exactly(school_partnership1)
         end
 
         it "returns empty if no school partnerships are found for the given `lead_provider`" do
-          query = described_class.new(lead_provider_id: FactoryBot.create(:lead_provider).id)
+          query = described_class.new(lead_provider: FactoryBot.create(:lead_provider))
 
           expect(query.school_partnerships).to be_empty
         end
 
         it "does not filter by `lead_provider` if an empty string is supplied" do
-          query = described_class.new(lead_provider_id: " ")
+          query = described_class.new(lead_provider: " ")
 
           expect(query.school_partnerships).to contain_exactly(school_partnership1, school_partnership2, school_partnership3)
         end
@@ -72,34 +77,46 @@ describe SchoolPartnerships::Query do
           end
         end
 
-        it "filters by `contract_period_years`" do
-          query = described_class.new(contract_period_years: contract_period2.year.to_s)
+        it "filters by `contract_period`" do
+          query = described_class.new(contract_period: contract_period2)
 
           expect(query.school_partnerships).to eq([school_partnership2])
         end
 
-        it "filters by multiple `contract_period_years`" do
-          query1 = described_class.new(contract_period_years: "#{contract_period1.year},#{contract_period2.year}")
+        it "filters by `contract_period.year`" do
+          query = described_class.new(contract_period: contract_period2.year)
+
+          expect(query.school_partnerships).to eq([school_partnership2])
+        end
+
+        it "filters by `contract_period.year.to_s`" do
+          query = described_class.new(contract_period: contract_period2.year.to_s)
+
+          expect(query.school_partnerships).to eq([school_partnership2])
+        end
+
+        it "filters by multiple `contract_period`" do
+          query1 = described_class.new(contract_period: [contract_period1, contract_period2])
           expect(query1.school_partnerships).to contain_exactly(school_partnership1, school_partnership2)
 
-          query2 = described_class.new(contract_period_years: [contract_period2.year.to_s, contract_period3.year.to_s])
+          query2 = described_class.new(contract_period: [contract_period2, contract_period3])
           expect(query2.school_partnerships).to contain_exactly(school_partnership2, school_partnership3)
         end
 
-        it "returns no school partnerships if no `contract_period_years` are found" do
-          query = described_class.new(contract_period_years: "0000")
+        it "returns no school partnerships if no `contract_period` are found" do
+          query = described_class.new(contract_period: "0000")
 
           expect(query.school_partnerships).to be_empty
         end
 
-        it "ignores invalid `contract_period_years`" do
-          query = described_class.new(contract_period_years: "#{contract_period1.year},invalid_year")
+        it "ignores invalid `contract_period`" do
+          query = described_class.new(contract_period: "#{contract_period1.year},invalid_year")
 
           expect(query.school_partnerships).to contain_exactly(school_partnership1)
         end
 
         it "does not filter by `contract_period_years` if blank" do
-          query = described_class.new(contract_period_years: " ")
+          query = described_class.new(contract_period: " ")
 
           expect(query.school_partnerships).to contain_exactly(school_partnership1, school_partnership2, school_partnership3)
         end
@@ -143,6 +160,18 @@ describe SchoolPartnerships::Query do
           it "returns all school partnerships" do
             expect(described_class.new.school_partnerships).to contain_exactly(school_partnership1, school_partnership2, school_partnership3)
           end
+        end
+
+        it "filters by `delivery_partner`" do
+          query = described_class.new(delivery_partner: school_partnership2.delivery_partner)
+
+          expect(query.school_partnerships).to eq([school_partnership2])
+        end
+
+        it "filters by multiple `delivery_partners`" do
+          query = described_class.new(delivery_partner: [school_partnership1.delivery_partner, school_partnership2.delivery_partner])
+
+          expect(query.school_partnerships).to eq([school_partnership1, school_partnership2])
         end
 
         it "filters by `delivery_partner_api_ids`" do
@@ -233,7 +262,7 @@ describe SchoolPartnerships::Query do
       school_partnership1 = FactoryBot.create(:school_partnership)
       school_partnership2 = FactoryBot.create(:school_partnership)
 
-      query = described_class.new(lead_provider_id: school_partnership1.lead_provider.id)
+      query = described_class.new(lead_provider: school_partnership1.lead_provider.id)
 
       expect { query.school_partnership_by_api_id(school_partnership2.api_id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -261,7 +290,7 @@ describe SchoolPartnerships::Query do
       school_partnership1 = FactoryBot.create(:school_partnership)
       school_partnership2 = FactoryBot.create(:school_partnership)
 
-      query = described_class.new(lead_provider_id: school_partnership1.lead_provider.id)
+      query = described_class.new(lead_provider: school_partnership1.lead_provider.id)
 
       expect { query.school_partnership_by_id(school_partnership2.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -275,27 +304,24 @@ describe SchoolPartnerships::Query do
     subject { SchoolPartnerships::Query.new(**query_params) }
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
-    let!(:lead_provider_id) { lead_provider.id }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2027) }
-    let!(:contract_period_years) { contract_period.year }
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
     let!(:delivery_partner_api_ids) { delivery_partner.api_id }
     let(:school) { FactoryBot.create(:school) }
-    let!(:school_id) { school.id }
 
     let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
     let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
-    let(:query_params) { { lead_provider_id:, school_id:, delivery_partner_api_ids:, contract_period_years: } }
+    let(:query_params) { { lead_provider:, school:, delivery_partner_api_ids:, contract_period: } }
 
-    it 'returns true when a school partnership matches lead provider, delivery partner and school for the given registration period' do
-      expect(SchoolPartnerships::Query.new(lead_provider_id:, school_id:, contract_period_years:)).to exist
+    it 'returns true when a school partnership matches lead provider, delivery partner API ID and school for the given registration period' do
+      expect(SchoolPartnerships::Query.new(lead_provider:, school:, contract_period:, delivery_partner_api_ids:)).to exist
     end
 
     describe 'registration periods' do
       context 'when contract_period differs' do
-        subject { SchoolPartnerships::Query.new(**query_params.merge(contract_period_years: other_contract_period.year)) }
+        subject { SchoolPartnerships::Query.new(**query_params.merge(contract_period: other_contract_period)) }
 
         let(:other_contract_period) { FactoryBot.create(:contract_period, year: 2028) }
 
@@ -311,7 +337,7 @@ describe SchoolPartnerships::Query do
 
     describe 'lead providers' do
       context 'when lead_provider differs' do
-        subject { SchoolPartnerships::Query.new(**query_params.merge(lead_provider_id: other_lead_provider.id)) }
+        subject { SchoolPartnerships::Query.new(**query_params.merge(lead_provider: other_lead_provider)) }
 
         let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
 
@@ -327,7 +353,7 @@ describe SchoolPartnerships::Query do
 
     describe 'schools' do
       context 'when school differs' do
-        subject { SchoolPartnerships::Query.new(**query_params.merge(school_id: other_school.id)) }
+        subject { SchoolPartnerships::Query.new(**query_params.merge(school: other_school)) }
 
         let(:other_school) { FactoryBot.create(:school) }
 
@@ -335,7 +361,7 @@ describe SchoolPartnerships::Query do
       end
 
       context 'when school omitted' do
-        subject { SchoolPartnerships::Query.new(**query_params.except(:school_id)) }
+        subject { SchoolPartnerships::Query.new(**query_params.except(:school)) }
 
         it { is_expected.to(exist) }
       end
