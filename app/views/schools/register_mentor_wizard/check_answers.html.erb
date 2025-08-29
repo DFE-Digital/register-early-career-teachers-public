@@ -34,7 +34,7 @@
       row.with_value(text: @mentor.mentoring_at_new_school_only.capitalize)
       row.with_action(
         text: "Change",
-        href: schools_register_mentor_wizard_change_mentoring_at_new_school_only_path,
+        href: schools_register_mentor_wizard_mentoring_at_new_school_only_path,
         visually_hidden_text: "mentoring only at your school",
       )
     end
@@ -52,7 +52,7 @@
     end
   end
 
-  if @mentor.provider_led_ect?
+  if @mentor.provider_led_ect? && @mentor.mentoring_at_new_school_only?
     summary_list.with_row do |row|
       row.with_key(text: "Lead provider")
       row.with_value(text: @mentor.lead_provider&.name || @mentor.ect_lead_provider&.name)
