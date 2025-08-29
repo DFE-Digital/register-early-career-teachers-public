@@ -18,22 +18,28 @@ module API
           delivery_partner_api_id: create_partnership_params[:delivery_partner_id],
         })
 
-        if service.valid?
-          render json: to_json(service.create)
-        else
-          render json: API::Errors::Response.from(service), status: :unprocessable_content
-        end
+        respond_with_service(service:, action: :create)
       end
 
-      def update = head(:method_not_allowed)
+      def update
+        school_partnership = partnerships_query.school_partnership_by_api_id(api_id)
+
+        service = SchoolPartnerships::Update.new({
+          school_partnership_id: school_partnership.id,
+          delivery_partner_api_id: update_partnership_params[:delivery_partner_id],
+        })
+
+        respond_with_service(service:, action: :update)
+      end
 
     private
 
       def create_partnership_params
-        params
-          .require(:data)
-          .require(:attributes)
-          .permit(:cohort, :school_id, :delivery_partner_id)
+        params.require(:data).expect({ attributes: %i[cohort school_id delivery_partner_id] })
+      end
+
+      def update_partnership_params
+        params.require(:data).expect({ attributes: %i[delivery_partner_id] })
       end
 
       def partnerships_query(conditions: {})
