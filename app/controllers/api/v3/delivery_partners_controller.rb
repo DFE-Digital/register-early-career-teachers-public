@@ -3,7 +3,11 @@ module API
     class DeliveryPartnersController < BaseController
       def index
         conditions = { contract_period_years:, sort: }
-        render json: to_json(paginate(delivery_partners_query(conditions:).delivery_partners))
+        pagingated_results = delivery_partners_query(conditions:).delivery_partners do |scope|
+          paginate(scope)
+        end
+
+        render json: to_json(pagingated_results)
       end
 
       def show

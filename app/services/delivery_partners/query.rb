@@ -7,9 +7,7 @@ module DeliveryPartners
     attr_reader :scope
 
     def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: nil)
-      @scope = DeliveryPartner
-        .includes(:lead_provider_metadata)
-        .distinct
+      @scope = DeliveryPartner.distinct
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
@@ -17,7 +15,9 @@ module DeliveryPartners
     end
 
     def delivery_partners
-      scope
+      relation = scope
+      relation = yield(scope) if block_given?
+      relation.includes(:lead_provider_metadata)
     end
 
     def delivery_partner_by_api_id(api_id)
