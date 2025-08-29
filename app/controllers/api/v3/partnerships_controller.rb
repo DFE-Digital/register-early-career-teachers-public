@@ -2,7 +2,7 @@ module API
   module V3
     class PartnershipsController < BaseController
       def index
-        conditions = { contract_period_years:, updated_since:, delivery_partner_api_ids:, sort: }
+        conditions = { contract_period: contract_period_years, updated_since:, delivery_partner_api_ids:, sort: }
         render json: to_json(paginate(partnerships_query(conditions:).school_partnerships))
       end
 
@@ -43,7 +43,7 @@ module API
       end
 
       def partnerships_query(conditions: {})
-        conditions[:lead_provider_id] = current_lead_provider.id
+        conditions[:lead_provider] = current_lead_provider
         SchoolPartnerships::Query.new(**conditions.compact)
       end
 

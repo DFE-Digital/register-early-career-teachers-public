@@ -6,13 +6,14 @@ module SchoolPartnerships
 
     attr_reader :scope
 
-    def initialize(school_id: :ignore, contract_period_years: :ignore, lead_provider_id: :ignore, delivery_partner_api_ids: :ignore, updated_since: :ignore, sort: nil)
+    def initialize(school: :ignore, contract_period: :ignore, lead_provider: :ignore, delivery_partner: :ignore, delivery_partner_api_ids: :ignore, updated_since: :ignore, sort: nil)
       @scope = default_scope
 
-      where_lead_provider_is(lead_provider_id)
-      where_contract_period_year_in(contract_period_years)
-      where_school_is(school_id)
-      where_delivery_partner_is(delivery_partner_api_ids)
+      where_lead_provider_is(lead_provider)
+      where_contract_period_year_in(contract_period)
+      where_school_is(school)
+      where_delivery_partner_is(delivery_partner)
+      where_delivery_partner_api_ids_are(delivery_partner_api_ids)
       where_updated_since(updated_since)
       set_sort_by(sort)
     end
@@ -37,33 +38,43 @@ module SchoolPartnerships
 
   private
 
-    def where_lead_provider_is(lead_provider_id)
-      return if ignore?(filter: lead_provider_id)
+    def where_lead_provider_is(lead_provider)
+      return if ignore?(filter: lead_provider)
 
       scope.merge!(
         scope.where(
-          lead_provider_delivery_partnership: { active_lead_providers: { lead_provider_id: } }
+          lead_provider_delivery_partnership: { active_lead_providers: { lead_provider: } }
         )
       )
     end
 
-    def where_contract_period_year_in(contract_period_years)
-      return if ignore?(filter: contract_period_years)
+    def where_contract_period_year_in(contract_period)
+      return if ignore?(filter: contract_period)
 
       scope.merge!(
         scope.where(
-          lead_provider_delivery_partnership: { active_lead_providers: { contract_period_year: extract_conditions(contract_period_years) } }
+          lead_provider_delivery_partnership: { active_lead_providers: { contract_period_year: extract_conditions(contract_period) } }
         )
       )
     end
 
-    def where_school_is(school_id)
-      return if ignore?(filter: school_id)
+    def where_school_is(school)
+      return if ignore?(filter: school)
 
-      scope.merge!(scope.where(school_id:))
+      scope.merge!(scope.where(school:))
     end
 
-    def where_delivery_partner_is(delivery_partner_api_ids)
+    def where_delivery_partner_is(delivery_partner)
+      return if ignore?(filter: delivery_partner)
+
+      scope.merge!(
+        scope.where(
+          lead_provider_delivery_partnership: { delivery_partner: }
+        )
+      )
+    end
+
+    def where_delivery_partner_api_ids_are(delivery_partner_api_ids)
       return if ignore?(filter: delivery_partner_api_ids)
 
       scope.merge!(
