@@ -376,7 +376,7 @@ Rails.application.routes.draw do
   constraints -> { Rails.application.config.enable_api } do
     namespace :api do
       get 'guidance', to: 'guidance#show'
-      get 'guidance/release-notes', to: 'guidance#release_notes'
+      resources :release_notes, path: "guidance/release-notes", only: %i[index show], param: :slug, as: :guidance_release_notes
       get 'guidance/*page', to: 'guidance#page', as: :guidance_page
       get "docs/:version", to: "documentation#index", as: :documentation
 
