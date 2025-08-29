@@ -149,11 +149,11 @@ module Schools
       def lead_provider_has_confirmed_partnership_for_contract_period?(school)
         return false unless previous_lead_provider && contract_start_date && school
 
-        SchoolPartnerships::Query
+        SchoolPartnerships::Search
           .new(
-            school_id: school.id,
-            lead_provider_id: previous_lead_provider.id,
-            contract_period_years: contract_start_date.year
+            school:,
+            lead_provider: previous_lead_provider,
+            contract_period: contract_start_date
           )
           .exists?
       end
