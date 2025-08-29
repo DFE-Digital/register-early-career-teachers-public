@@ -20,7 +20,7 @@ module Schools
     private
 
       def persist
-        mentor.update!(lead_provider_id: mentor.ect_lead_provider&.id)
+        mentor.update!(lead_provider_id: mentor.ect_lead_provider.id)
       end
     end
   end
