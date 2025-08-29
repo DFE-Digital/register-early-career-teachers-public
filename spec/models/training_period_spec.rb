@@ -23,7 +23,7 @@ describe TrainingPeriod do
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
     it { is_expected.to belong_to(:expression_of_interest).class_name('ActiveLeadProvider') }
     it { is_expected.to have_one(:expression_of_interest_lead_provider).through(:expression_of_interest).class_name('LeadProvider').source(:lead_provider) }
-    it { is_expected.to have_one(:expression_of_interest_contract_period).through(:expression_of_interest).class_name('LeadProvider').source(:contract_period) }
+    it { is_expected.to have_one(:expression_of_interest_contract_period).through(:expression_of_interest).class_name('ContractPeriod').source(:contract_period) }
   end
 
   describe "validations" do
