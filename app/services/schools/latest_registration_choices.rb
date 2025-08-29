@@ -33,9 +33,9 @@ module Schools
 
     def matching_partnerships
       @matching_partnerships ||= SchoolPartnerships::Query.new(
-        school_id: school.id,
-        contract_period_years: contract_period.year,
-        lead_provider_id: last_chosen_lead_provider.id,
+        school:,
+        contract_period:,
+        lead_provider: last_chosen_lead_provider,
         sort: "created_at"
       ).school_partnerships
     end

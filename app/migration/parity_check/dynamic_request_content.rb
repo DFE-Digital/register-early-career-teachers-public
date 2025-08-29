@@ -45,7 +45,7 @@ module ParityCheck
     end
 
     def partnership_id
-      SchoolPartnerships::Query.new(lead_provider_id: lead_provider.id)
+      SchoolPartnerships::Query.new(lead_provider:)
         .school_partnerships
         .distinct(false)
         .reorder("RANDOM()")
