@@ -1,0 +1,22 @@
+<% page_data(title: "Release notes") %>
+
+<p class="govuk-body">
+  Use this page to find out what's changed in the 'Register early career
+  teachers' API.
+</p>
+<p class="govuk-body">
+  We publish release notes whenever we make updates, including new features,
+  improvements, deprecations or breaking changes. This helps lead providers
+  keep their integration working smoothly and avoid unexpected issues.
+</p>
+
+<% release_notes.each do |release_note| %>
+  <h2 class="govuk-heading-m">
+    <span
+      <%= "id=latest" if release_note.latest? %> class="govuk-caption-m"><%= release_note.date %>
+    </span>
+    <%= link_to release_note.title, api_guidance_release_note_path(release_note.slug) %>
+  </h2>
+  <%= render API::Guidance::ReleaseNotes::TagsComponent.new(tags: release_note.tags) %>
+  <hr/>
+<% end %>

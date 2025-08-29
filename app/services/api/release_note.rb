@@ -1,6 +1,6 @@
 module API
   class ReleaseNote
-    attr_accessor :title, :date, :body, :tags, :latest
+    attr_accessor :title, :date, :body, :tags, :latest, :slug
 
     def initialize(title:, date:, body:, tags:, latest: false)
       @title = title
@@ -8,6 +8,7 @@ module API
       @body = render(body)
       @tags = tags
       @latest = latest
+      @slug = [date.iso8601, title].join("-").parameterize
     end
 
     def latest? = latest

@@ -1,10 +1,10 @@
-RSpec.describe "api/guidance/release_notes.html.erb" do
+RSpec.describe "api/release_notes/index.html.erb" do
   let(:release_note_1) { { title: 'Note 1', date: 1.month.ago, body: 'Note 1 body', tags: %w[bug-fix new-feature] } }
   let(:release_note_2) { { title: 'Note 2', date: 2.weeks.ago, body: 'Note 2 body', tags: %w[breaking-change sandbox-release] } }
+  let(:release_notes) { [API::ReleaseNote.new(**release_note_1), API::ReleaseNote.new(**release_note_2)] }
 
   before do
-    assign(:release_notes, [API::ReleaseNote.new(**release_note_1), API::ReleaseNote.new(**release_note_2)])
-    render
+    render locals: { release_notes: }
   end
 
   it 'shows the correct title' do
@@ -24,9 +24,6 @@ RSpec.describe "api/guidance/release_notes.html.erb" do
 
       expect(rendered).to have_css('.govuk-caption-m', text: release_note_1[:date].to_formatted_s(:govuk))
       expect(rendered).to have_css('.govuk-caption-m', text: release_note_2[:date].to_formatted_s(:govuk))
-
-      expect(rendered).to have_css('p', text: release_note_1[:body])
-      expect(rendered).to have_css('p', text: release_note_2[:body])
 
       expect(rendered).to have_css('.tag-group .govuk-tag--green', text: "New feature")
       expect(rendered).to have_css('.tag-group .govuk-tag--yellow', text: "Bug fix")
