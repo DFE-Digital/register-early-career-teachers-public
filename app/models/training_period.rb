@@ -20,8 +20,8 @@ class TrainingPeriod < ApplicationRecord
   has_one :contract_period, through: :active_lead_provider
 
   belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
-  has_one :expression_of_interest_lead_provider, through: :expression_of_interest, class_name: 'LeadProvider', source: :lead_provider
-  has_one :expression_of_interest_contract_period, through: :expression_of_interest, class_name: 'ContractPeriod', source: :contract_period
+  has_one :expression_of_interest_lead_provider, through: :expression_of_interest, source: :lead_provider
+  has_one :expression_of_interest_contract_period, through: :expression_of_interest, source: :contract_period
 
   has_many :declarations, inverse_of: :training_period
   has_many :events
