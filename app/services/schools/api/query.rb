@@ -3,7 +3,9 @@ module Schools::API
   protected
 
     def preload_associations(results)
-      preloaded_results = results.includes(:gias_school, :contract_period_metadata, :lead_provider_contract_period_metadata)
+      preloaded_results = results
+        .strict_loading
+        .includes(:gias_school, :contract_period_metadata, :lead_provider_contract_period_metadata)
 
       unless ignore?(filter: lead_provider_id)
         preloaded_results = preloaded_results

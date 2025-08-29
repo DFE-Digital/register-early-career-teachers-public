@@ -3,7 +3,9 @@ module Statements::API
   protected
 
     def preload_associations(results)
-      results.includes(:active_lead_provider)
+      results
+        .strict_loading
+        .includes(:active_lead_provider)
     end
   end
 end

@@ -3,7 +3,9 @@ module SchoolPartnerships::API
   protected
 
     def preload_associations(results)
-      results.includes(:delivery_partner, :active_lead_provider, school: :gias_school)
+      results
+        .strict_loading
+        .includes(:delivery_partner, :active_lead_provider, school: :gias_school)
     end
   end
 end

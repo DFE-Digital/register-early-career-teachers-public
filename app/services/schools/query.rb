@@ -38,7 +38,8 @@ module Schools
   private
 
     def schools_with_existing_partnerships(contract_period_year)
-      School.where(id: School.select("schools.id")
+      School
+        .where(id: School.select("schools.id")
         .joins(school_partnerships: { lead_provider_delivery_partnership: { active_lead_provider: :contract_period } })
         .where(contract_periods: { year: contract_period_year }))
     end
