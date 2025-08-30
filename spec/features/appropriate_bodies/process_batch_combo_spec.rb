@@ -36,7 +36,7 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk claim"
     )
 
-    expect(perform_enqueued_jobs).to be(8)
+    expect(perform_enqueued_jobs).to be(9)
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
@@ -97,7 +97,7 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk action"
     )
 
-    expect(perform_enqueued_jobs).to be(4)
+    expect(perform_enqueued_jobs).to be(5)
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
