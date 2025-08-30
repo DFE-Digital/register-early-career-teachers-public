@@ -63,12 +63,57 @@ RSpec.describe Schools::RegisterECT do
         end
 
         context "when a Teacher record with the same TRN exists and has ect records" do
-          let(:teacher) { FactoryBot.create(:teacher, trn:) }
+          let!(:existing_teacher) { FactoryBot.create(:teacher, trn:) }
 
-          before { FactoryBot.create(:ect_at_school_period, teacher:) }
+          context "at the same school" do
+            before { FactoryBot.create(:ect_at_school_period, teacher: existing_teacher, school:) }
 
-          it "raise an exception" do
-            expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
+            it "raises an exception" do
+              expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
+            end
+          end
+
+          context "at a different school" do
+            let(:other_school) { FactoryBot.create(:school) }
+            let!(:old_ect_period) { FactoryBot.create(:ect_at_school_period, teacher: existing_teacher, school: other_school, started_on: 3.months.ago, finished_on: nil) }
+
+            context "when transfer date has arrived (current/past)" do
+              let(:started_on) { Date.current }
+              let!(:contract_period_current) { FactoryBot.create(:contract_period, year: Date.current.year) }
+              let!(:active_lead_provider_current) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_current) }
+
+              it "automatically closes old school periods and allows registration" do
+                expect(old_ect_period.finished_on).to be_nil
+
+                expect { service.register! }.not_to raise_error
+
+                expect(old_ect_period.reload.finished_on).to eq(started_on)
+                expect(existing_teacher.reload.ect_at_school_periods.count).to eq(2)
+                expect(existing_teacher.ect_at_school_periods.where(school:)).to exist
+              end
+
+              it "calls Teachers::CloseOldSchoolPeriods service" do
+                expect(Teachers::CloseOldSchoolPeriods).to receive(:new).with(
+                  teacher: existing_teacher,
+                  new_school_start_date: started_on,
+                  author:
+                ).and_call_original
+
+                service.register!
+              end
+            end
+
+            context "when transfer date is in the future" do
+              let(:started_on) { 1.month.from_now.to_date }
+
+              it "prevents registration due to overlapping periods validation" do
+                expect(old_ect_period.finished_on).to be_nil
+
+                expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid, /Start date cannot overlap/)
+
+                expect(old_ect_period.reload.finished_on).to be_nil
+              end
+            end
           end
         end
 
