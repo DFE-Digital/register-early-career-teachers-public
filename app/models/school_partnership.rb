@@ -9,6 +9,8 @@ class SchoolPartnership < ApplicationRecord
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
   has_one :contract_period, through: :active_lead_provider
   has_one :lead_provider, through: :active_lead_provider
+  has_many :training_periods
+  has_many :ongoing_training_periods, -> { ongoing_today }, class_name: "TrainingPeriod"
 
   touch -> { self }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
 
