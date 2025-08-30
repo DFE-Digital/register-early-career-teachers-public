@@ -1,7 +1,8 @@
 RSpec.describe "Run parity check" do
   let(:ecf_url) { "https://ecf.example.com" }
   let(:rect_url) { "https://rect.example.com" }
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:lead_provider) { active_lead_provider.lead_provider }
   let!(:get_endpoint) { FactoryBot.create(:parity_check_endpoint, :get, path: "/api/v1/statements") }
   let!(:post_endpoint) { FactoryBot.create(:parity_check_endpoint, :post, path: "/api/v1/statements") }
   let!(:put_endpoint) { FactoryBot.create(:parity_check_endpoint, :put, path: "/api/v3/users") }
@@ -71,6 +72,7 @@ RSpec.describe "Run parity check" do
   end
 
   scenario "Running a parity check when there are no lead providers" do
+    ActiveLeadProvider.destroy_all
     LeadProvider.destroy_all
 
     page.goto(new_migration_parity_check_path)
