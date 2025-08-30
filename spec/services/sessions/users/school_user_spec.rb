@@ -1,62 +1,53 @@
-require_relative 'session_user_context'
-
 RSpec.describe Sessions::Users::SchoolUser do
   subject(:school_user) do
-    described_class.new(email:, name:, school_urn: school.urn, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, last_active_at:)
+    described_class.new(
+      email:,
+      name:,
+      school_urn:,
+      dfe_sign_in_organisation_id:,
+      dfe_sign_in_user_id:,
+      dfe_sign_in_roles:,
+      last_active_at:
+    )
   end
 
+  let!(:school) { FactoryBot.create(:school) }
   let(:email) { 'school_user@email.com' }
   let(:last_active_at) { 4.minutes.ago }
   let(:name) { 'Christopher Lee' }
   let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
   let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
-  let(:school) { FactoryBot.create(:school) }
+  let(:dfe_sign_in_roles) { %w[SchoolUser] }
+  let(:school_urn) { school.urn }
 
   it_behaves_like 'a session user' do
-    let(:user_props) { { email:, name:, school_urn: school.urn, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }
-  end
-
-  describe '.PROVIDER' do
-    it 'returns :dfe_sign_in' do
-      expect(described_class::PROVIDER).to be(:dfe_sign_in)
+    let(:user_props) do
+      { email:, name:, school_urn: school.urn, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, dfe_sign_in_roles: }
     end
   end
 
-  describe '.USER_TYPE' do
-    it 'returns :school_user' do
-      expect(described_class::USER_TYPE).to be(:school_user)
+  context 'when no school is found' do
+    let(:school_urn) { 'A123456' }
+
+    it do
+      expect { subject }.to raise_error(described_class::UnknownOrganisationURN, school_urn)
     end
   end
 
-  context 'initialisation' do
-    describe "when there is no school with the given urn" do
-      subject do
-        described_class.new(email:,
-                            name:,
-                            school_urn: unknown_urn,
-                            dfe_sign_in_organisation_id:,
-                            dfe_sign_in_user_id:,
-                            last_active_at:)
-      end
+  describe '#provider' do
+    it { expect(school_user.provider).to be(:dfe_sign_in) }
+  end
 
-      let(:unknown_urn) { 'A123456' }
-
-      it 'fails with an UnknownOrganisationURN error' do
-        expect { subject }.to raise_error(described_class::UnknownOrganisationURN, unknown_urn)
-      end
-    end
+  describe '#user_type' do
+    it { expect(school_user.user_type).to be(:school_user) }
   end
 
   describe '#appropriate_body_user?' do
-    it 'returns false' do
-      expect(school_user).not_to be_appropriate_body_user
-    end
+    it { expect(school_user).not_to be_appropriate_body_user }
   end
 
-  describe '#dfe_sign_in_authorisable?' do
-    it 'returns true' do
-      expect(school_user.dfe_sign_in_authorisable?).to be_truthy
-    end
+  describe '#has_dfe_sign_in_role?' do
+    it { expect(school_user).to have_dfe_sign_in_role }
   end
 
   describe '#dfe_sign_in_organisation_id' do
@@ -72,9 +63,7 @@ RSpec.describe Sessions::Users::SchoolUser do
   end
 
   describe '#dfe_user?' do
-    it 'returns false' do
-      expect(school_user).not_to be_dfe_user
-    end
+    it { expect(school_user).not_to be_dfe_user }
   end
 
   describe '#event_author_params' do
@@ -106,9 +95,7 @@ RSpec.describe Sessions::Users::SchoolUser do
   end
 
   describe '#school_user?' do
-    it 'returns true' do
-      expect(school_user).to be_school_user
-    end
+    it { expect(school_user).to be_school_user }
   end
 
   describe '#school_urn' do
@@ -118,26 +105,22 @@ RSpec.describe Sessions::Users::SchoolUser do
   end
 
   describe '#to_h' do
-    it 'returns a hash including only relevant attributes' do
+    it 'returns attributes for session storage' do
       expect(school_user.to_h).to eql({
         'type' => 'Sessions::Users::SchoolUser',
         'email' => email,
         'name' => name,
         'last_active_at' => last_active_at,
+        'last_active_role' => 'SchoolUser',
         'school_urn' => school.urn,
         'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
-        'dfe_sign_in_user_id' => dfe_sign_in_user_id
+        'dfe_sign_in_user_id' => dfe_sign_in_user_id,
+        'dfe_sign_in_roles' => dfe_sign_in_roles
       })
     end
   end
 
-  describe '#user_type' do
-    it('is :school_user') { expect(school_user.user_type).to be(:school_user) }
-  end
-
   describe '#user' do
-    it 'returns nil' do
-      expect(school_user.user).to be_nil
-    end
+    it { expect(school_user.user).to be_nil }
   end
 end

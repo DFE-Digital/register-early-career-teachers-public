@@ -1,49 +1,43 @@
-require_relative 'session_user_context'
-
 RSpec.describe Sessions::Users::AppropriateBodyUser do
   subject(:appropriate_body_user) do
-    described_class.new(email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, last_active_at:)
+    described_class.new(
+      email:,
+      name:,
+      dfe_sign_in_organisation_id:,
+      dfe_sign_in_user_id:,
+      dfe_sign_in_roles:,
+      last_active_at:
+    )
   end
 
+  let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:email) { 'appropriate_body_user@email.com' }
   let(:name) { 'Christopher Lee' }
-  let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
+  let(:dfe_sign_in_organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
   let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
+  let(:dfe_sign_in_roles) { %w[AppropriateBodyUser] }
   let(:last_active_at) { 4.minutes.ago }
-  let!(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
 
   it_behaves_like 'a session user' do
-    let(:user_props) { { email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id: } }
-  end
-
-  describe '.PROVIDER' do
-    it 'returns :dfe_sign_in' do
-      expect(described_class::PROVIDER).to be(:dfe_sign_in)
+    let(:user_props) do
+      { email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, dfe_sign_in_roles: }
     end
   end
 
-  describe '.USER_TYPE' do
-    it 'returns :appropriate_body_user' do
-      expect(described_class::USER_TYPE).to be(:appropriate_body_user)
+  context 'when no appropriate body is found' do
+    let(:dfe_sign_in_organisation_id) { SecureRandom.uuid }
+
+    it do
+      expect { appropriate_body_user }.to raise_error(described_class::UnknownOrganisationId, dfe_sign_in_organisation_id)
     end
   end
 
-  context 'initialisation' do
-    describe "when an appropriate body can't be found from the given dfe_sign_in_organisation_id" do
-      subject do
-        described_class.new(email:,
-                            name:,
-                            dfe_sign_in_organisation_id: unknown_organisation_id,
-                            dfe_sign_in_user_id:,
-                            last_active_at:)
-      end
+  describe '#provider' do
+    it { expect(appropriate_body_user.provider).to be(:dfe_sign_in) }
+  end
 
-      let(:unknown_organisation_id) { SecureRandom.uuid }
-
-      it 'fails with an UnknownOrganisationId error' do
-        expect { subject }.to raise_error(described_class::UnknownOrganisationId, unknown_organisation_id)
-      end
-    end
+  describe '#user_type' do
+    it { expect(appropriate_body_user.user_type).to be(:appropriate_body_user) }
   end
 
   describe '#appropriate_body' do
@@ -59,9 +53,7 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
   end
 
   describe '#appropriate_body_user?' do
-    it 'returns true' do
-      expect(appropriate_body_user).to be_appropriate_body_user
-    end
+    it { expect(appropriate_body_user).to be_appropriate_body_user }
   end
 
   describe '#dfe_sign_in_organisation_id' do
@@ -77,15 +69,11 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
   end
 
   describe '#dfe_user?' do
-    it 'returns false' do
-      expect(appropriate_body_user).not_to be_dfe_user
-    end
+    it { expect(appropriate_body_user).not_to be_dfe_user }
   end
 
-  describe '#dfe_sign_in_authorisable?' do
-    it 'returns true' do
-      expect(appropriate_body_user.dfe_sign_in_authorisable?).to be_truthy
-    end
+  describe '#has_dfe_sign_in_role?' do
+    it { expect(appropriate_body_user).to have_dfe_sign_in_role }
   end
 
   describe '#event_author_params' do
@@ -111,31 +99,25 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
   end
 
   describe '#school_user?' do
-    it 'returns false' do
-      expect(appropriate_body_user).not_to be_school_user
-    end
+    it { expect(appropriate_body_user).not_to be_school_user }
   end
 
   describe '#to_h' do
-    it 'returns a hash including only relevant attributes' do
+    it 'returns attributes for session storage' do
       expect(appropriate_body_user.to_h).to eql({
         'type' => 'Sessions::Users::AppropriateBodyUser',
         'email' => email,
         'name' => name,
         'last_active_at' => last_active_at,
+        'last_active_role' => 'AppropriateBodyUser',
         'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
-        'dfe_sign_in_user_id' => dfe_sign_in_user_id
+        'dfe_sign_in_user_id' => dfe_sign_in_user_id,
+        'dfe_sign_in_roles' => dfe_sign_in_roles
       })
     end
   end
 
-  describe '#user_type' do
-    it('is :appropriate_body_user') { expect(appropriate_body_user.user_type).to be(:appropriate_body_user) }
-  end
-
   describe '#user' do
-    it 'returns nil' do
-      expect(appropriate_body_user.user).to be_nil
-    end
+    it { expect(appropriate_body_user.user).to be_nil }
   end
 end

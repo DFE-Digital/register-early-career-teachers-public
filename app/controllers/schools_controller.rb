@@ -7,9 +7,18 @@ private
 
   attr_reader :school
 
+  def authorise
+    if current_user&.has_multiple_roles? && current_user.appropriate_body_user?
+      redirect_to ab_teachers_path
+    else
+      super
+    end
+  end
+
   def authorised?
-    # FIXME: make this work with DfE Sign-in
-    current_user.email == 'admin@example.com' || current_user.school_user?
+    return false unless Rails.application.config.enable_schools_interface
+
+    current_user&.school_user?
   end
 
   def set_school

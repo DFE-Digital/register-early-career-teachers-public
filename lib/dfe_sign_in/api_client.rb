@@ -1,6 +1,11 @@
 module DfESignIn
+  # - organisations: organisations associated with a user
+  # - access_levels: a user's access to a service for an organisation
+  # - users: all service users
+  # - roles: service's roles
+  #
   class APIClient
-    class DfESignIn::APIClient::DfESignInDisabled < StandardError; end
+    class DfESignInDisabled < StandardError; end
 
     attr_reader :connection
 
@@ -16,6 +21,7 @@ module DfESignIn
       end
     end
 
+    # @see https://github.com/DFE-Digital/login.dfe.public-api#get-organisations-for-user
     def organisations(user_id:)
       path = %(/users/#{user_id}/organisations)
 
@@ -28,6 +34,7 @@ module DfESignIn
       end
     end
 
+    # @see https://github.com/DFE-Digital/login.dfe.public-api#get-user-access-to-service
     def access_levels(organisation_id:, user_id:, service_id: client_id)
       path = %(services/#{service_id}/organisations/#{organisation_id}/users/#{user_id})
 
@@ -35,6 +42,34 @@ module DfESignIn
 
       if response.success?
         AccessLevel.from_response_body(response.body)
+      else
+        raise "API request failed: #{response.status} #{response.body}"
+      end
+    end
+
+    # TODO: wrap with Data object
+    # @see https://github.com/DFE-Digital/login.dfe.public-api#service-users-without-filters
+    def users
+      path = %(/users)
+
+      response = @connection.get(path)
+
+      if response.success?
+        response.body
+      else
+        raise "API request failed: #{response.status} #{response.body}"
+      end
+    end
+
+    # TODO: integrate with DfESignIn::AccessLevel::Role
+    # @see https://github.com/DFE-Digital/login.dfe.public-api#get-roles-for-service
+    def roles(service_id: client_id)
+      path = %(/services/#{service_id}/roles)
+
+      response = @connection.get(path)
+
+      if response.success?
+        response.body
       else
         raise "API request failed: #{response.status} #{response.body}"
       end
