@@ -9,6 +9,8 @@ module Schools
       @training_period = training_period
     end
 
+    def render? = @training_period.present?
+
     def call
       safe_join([
         tag.h2('Training details', class: 'govuk-heading-m'),

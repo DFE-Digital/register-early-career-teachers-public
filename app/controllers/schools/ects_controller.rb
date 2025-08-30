@@ -10,7 +10,7 @@ module Schools
     end
 
     def show
-      @ect_at_school_period = ::ECTAtSchoolPeriod.find_by!(id: params[:id], school_id: school.id)
+      @ect_at_school_period = @school.ect_at_school_periods.find(params[:id])
       @training_period = @ect_at_school_period.current_training_period
       @teacher = @ect_at_school_period.teacher
     end
