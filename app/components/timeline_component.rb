@@ -45,7 +45,29 @@ class TimelineComponent < ViewComponent::Base
     end
 
     def description
-      tag.div(class: "app-timeline__description") { safe_join([event.body, modifications_list]) }
+      tag.div(class: "app-timeline__description") do
+        safe_join([information, modifications_list].compact_blank)
+      end
+    end
+
+    def information
+      return if event.body.blank? && event.zendesk_ticket_id.blank?
+
+      zendesk_url = if event.zendesk_ticket_id.present?
+                      govuk_link_to(
+                        "Zendesk ticket",
+                        zendesk_url(event.zendesk_ticket_id),
+                        new_tab: true
+                      )
+                    end
+
+      tag.p do
+        safe_join([event.body, tag.br, zendesk_url].compact)
+      end
+    end
+
+    def zendesk_url(ticket_id)
+      "https://becomingateacher.zendesk.com/agent/tickets/#{ticket_id}"
     end
 
     def modifications_list

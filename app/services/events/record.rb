@@ -28,7 +28,8 @@ module Events
                 :statement_adjustment,
                 :user,
                 :modifications,
-                :metadata
+                :metadata,
+                :zendesk_ticket_id
 
     def initialize(
       author:,
@@ -55,7 +56,8 @@ module Events
       statement_adjustment: nil,
       user: nil,
       modifications: nil,
-      metadata: nil
+      metadata: nil,
+      zendesk_ticket_id: nil
     )
       @author = author
       @event_type = event_type
@@ -82,6 +84,7 @@ module Events
       @user = user
       @modifications = DescribeModifications.new(modifications).describe
       @metadata = metadata || modifications
+      @zendesk_ticket_id = zendesk_ticket_id
     end
 
     def record_event!
@@ -260,13 +263,13 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body: nil)
+    def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body:, zendesk_ticket_id:)
       event_type = :induction_period_reopened
       happened_at = Time.zone.now
 
       heading = 'Induction period reopened'
 
-      new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
+      new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
     # ECT and mentor events
@@ -576,6 +579,7 @@ module Events
         heading:,
         body:,
         happened_at:,
+        zendesk_ticket_id:,
       }.compact
     end
 
