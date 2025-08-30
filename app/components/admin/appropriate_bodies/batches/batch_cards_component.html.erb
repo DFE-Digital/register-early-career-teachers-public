@@ -1,0 +1,40 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-7">
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-card govuk-card--contained govuk-card--red">
+      <div class="govuk-card__content">
+        <h3 class="govuk-heading-l">
+          <%= batch.tally[:errored_count] %>
+        </h3>
+        <p class="govuk-body">
+          <%= pluralize(batch.tally[:errored_count], 'error').split.last %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-card govuk-card--contained govuk-card--green">
+      <div class="govuk-card__content">
+        <h3 class="govuk-heading-l">
+          <%= batch.recorded_count %>
+        </h3>
+        <p class="govuk-body">
+          <%= pluralize(batch.recorded_count, 'row').split.last + ' completed' %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-card govuk-card--contained govuk-card--yellow">
+      <div class="govuk-card__content">
+        <h3 class="govuk-heading-l">
+          <%= error_rate %>
+        </h3>
+        <p class="govuk-body">
+          error rate
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -108,6 +108,14 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     update!(data: []) if redactable?
   end
 
+  # @return [Symbol]
+  def status_tag
+    return :draft if pending? || processing?
+    return :submitted if completing? || completed?
+
+    batch_status.to_sym
+  end
+
 private
 
   def update_batch_progress
