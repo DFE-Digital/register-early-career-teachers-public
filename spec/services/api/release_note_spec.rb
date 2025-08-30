@@ -14,6 +14,7 @@ describe API::ReleaseNote do
       expect(release_note.body).to eql(%(<p class="govuk-body-m">#{body}</p>))
       expect(release_note.tags).to eql(tags)
       expect(release_note.latest?).to be(true)
+      expect(release_note.slug).to eq("2024-01-01-a-title")
     end
 
     context "when the body contains markdown" do
