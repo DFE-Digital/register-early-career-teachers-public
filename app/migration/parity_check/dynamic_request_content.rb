@@ -112,6 +112,8 @@ module ParityCheck
     def random_contract_period(lead_provider:)
       lead_provider
         .lead_provider_delivery_partnerships
+        .joins(:contract_period)
+        .where(contract_period: { enabled: true })
         .order("RANDOM()")
         .first
         &.contract_period

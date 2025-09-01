@@ -74,7 +74,11 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       let!(:school) { FactoryBot.create(:school, :eligible, :not_cip_only) }
 
       before do
-        # Different lead provider.
+        # Disabled contract period
+        disabled_contract_period = FactoryBot.create(:contract_period, enabled: false)
+        other_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: disabled_contract_period)
+        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: other_active_lead_provider)
+        # Different lead provider
         FactoryBot.create(:lead_provider_delivery_partnership)
         # Ineligible school
         FactoryBot.create(:school, :ineligible)
