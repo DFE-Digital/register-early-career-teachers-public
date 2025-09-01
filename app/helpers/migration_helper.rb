@@ -84,4 +84,36 @@ module MigrationHelper
       end
     end
   end
+
+  # Cache stats helper methods
+  def combined_cache_stats(data_migrations)
+    return {} if data_migrations.empty?
+
+    # Combine stats from all workers
+    combined = {
+      cache_hits: Hash.new(0),
+      cache_misses: Hash.new(0),
+      cache_loads: Hash.new(0),
+      caches_loaded: Set.new
+    }
+
+    data_migrations.each do |dm|
+      stats = dm.cache_stats.with_indifferent_access
+
+      # Sum up hits and misses
+      (stats[:cache_hits] || {}).each { |cache, hits| combined[:cache_hits][cache] += hits }
+      (stats[:cache_misses] || {}).each { |cache, misses| combined[:cache_misses][cache] += misses }
+
+      # Take maximum for cache loads (we want to see the worst case)
+      (stats[:cache_loads] || {}).each do |cache, loads|
+        combined[:cache_loads][cache] = [combined[:cache_loads][cache], loads].max
+      end
+
+      # Collect all loaded caches
+      (stats[:caches_loaded] || []).each { |cache| combined[:caches_loaded] << cache }
+    end
+
+    combined[:caches_loaded] = combined[:caches_loaded].to_a.sort
+    combined
+  end
 end

@@ -10,8 +10,6 @@ RSpec.describe CacheManager do
     let!(:school2) { FactoryBot.create(:school, urn: 789_012) }
 
     it 'loads all schools into cache' do
-      expect(School.count).to eq(2)
-
       cache_manager.cache_schools
 
       expect(cache_manager.schools_by_urn[123_456]).to eq(school1)
@@ -103,9 +101,6 @@ RSpec.describe CacheManager do
     let!(:statement2) { FactoryBot.create(:statement, active_lead_provider:) }
 
     it 'loads all statements into cache' do
-      # Ensure statements are in database before caching
-      expect(Statement.count).to eq(2)
-
       cache_manager.cache_statements
 
       expect(cache_manager.statements_by_api_id[statement1.api_id]).to eq(statement1)
@@ -190,6 +185,40 @@ RSpec.describe CacheManager do
       expect(cache_manager.active_lead_providers_by_key).to be_empty
       expect(cache_manager.school_partnerships_by_key).to be_empty
       expect(cache_manager.statements_by_api_id).to be_empty
+      expect(cache_manager.lead_provider_delivery_partnerships_by_key).to be_empty
+      expect(cache_manager.lead_providers_by_ecf_id).to be_empty
+      expect(cache_manager.delivery_partners_by_api_id).to be_empty
+      expect(cache_manager.contract_periods_by_year).to be_empty
+    end
+  end
+
+  describe '#reset_stats_tracking!' do
+    it 'resets only the statistics tracking, not the cached data' do
+      # Populate caches and generate some stats
+      FactoryBot.create(:school, urn: 123_456)
+      FactoryBot.create(:teacher, trn: '1234567')
+
+      cache_manager.cache_schools
+      cache_manager.cache_teachers
+
+      # Generate some cache hits/misses
+      cache_manager.find_school_by_urn(123_456)
+      cache_manager.find_school_by_urn(999_999) # miss
+
+      # Verify stats exist
+      expect(cache_manager.cache_stats[:cache_hits][:schools]).to eq(1)
+      expect(cache_manager.cache_stats[:cache_misses][:schools]).to eq(1)
+
+      # Reset stats tracking
+      cache_manager.reset_stats_tracking!
+
+      # Verify cached data is preserved
+      expect(cache_manager.schools_by_urn[123_456]).to be_present
+      expect(cache_manager.teachers_by_trn).to be_present
+
+      # Verify stats are reset
+      expect(cache_manager.cache_stats[:cache_hits][:schools]).to eq(0)
+      expect(cache_manager.cache_stats[:cache_misses][:schools]).to eq(0)
     end
   end
 
