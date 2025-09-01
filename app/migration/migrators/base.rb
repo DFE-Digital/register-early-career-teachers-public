@@ -94,6 +94,10 @@ module Migrators
 
         start_migration!(items.count)
 
+        if respond_to?(:preload_caches, true)
+          preload_caches
+        end
+
         # As we're using offset/limit, we can't use find_each!
         items.each do |item|
           success = yield(item)
@@ -119,12 +123,72 @@ module Migrators
       @data_migration ||= DataMigration.find_by(model: self.class.model, worker:)
     end
 
+    def cache_manager
+      @cache_manager ||= CacheManager.instance
+    end
+
     def find_lead_provider_id!(ecf_id:)
       lead_provider_ids_by_ecf_id[ecf_id] || raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProvider")
     end
 
     def find_active_lead_provider_id!(lead_provider_id:, contract_period_year:)
       active_lead_provider_ids_by_lead_provider_and_contract_period["#{lead_provider_id} #{contract_period_year}"] || raise(ActiveRecord::RecordNotFound, "Couldn't find ActiveLeadProvider")
+    end
+
+    def find_school_partnership!(lead_provider_delivery_partnership_id:, school_id:)
+      school_partnership = cache_manager.find_school_partnership(lead_provider_delivery_partnership_id:, school_id:)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find SchoolPartnership") unless school_partnership
+
+      school_partnership
+    end
+
+    def find_teacher_by_trn!(trn)
+      teacher = cache_manager.find_teacher_by_trn(trn)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find Teacher with TRN: #{trn}") unless teacher
+
+      teacher
+    end
+
+    def find_statement_by_api_id!(api_id)
+      statement = cache_manager.find_statement_by_api_id(api_id)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find Statement with API ID: #{api_id}") unless statement
+
+      statement
+    end
+
+    def find_lead_provider_delivery_partnership_by_key!(active_lead_provider_id:, delivery_partner_id:)
+      lpdp = cache_manager.find_lead_provider_delivery_partnership_by_key(active_lead_provider_id:, delivery_partner_id:)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProviderDeliveryPartnership with active_lead_provider_id #{active_lead_provider_id} and delivery_partner_id #{delivery_partner_id}") unless lpdp
+
+      lpdp
+    end
+
+    def find_lead_provider_by_ecf_id!(ecf_id)
+      lead_provider = cache_manager.find_lead_provider_by_ecf_id(ecf_id)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProvider with ecf_id #{ecf_id}") unless lead_provider
+
+      lead_provider
+    end
+
+    def find_delivery_partner_by_api_id!(api_id)
+      delivery_partner = cache_manager.find_delivery_partner_by_api_id(api_id)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find DeliveryPartner with api_id #{api_id}") unless delivery_partner
+
+      delivery_partner
+    end
+
+    def find_contract_period_by_year!(year)
+      contract_period = cache_manager.find_contract_period_by_year(year)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find ContractPeriod with year #{year}") unless contract_period
+
+      contract_period
+    end
+
+    def find_school_by_urn!(urn)
+      school = cache_manager.find_school_by_urn(urn)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find School with URN #{urn}") unless school
+
+      school
     end
 
   private
