@@ -127,7 +127,7 @@ In the API:
 ### Find schools delivering training 
 
 ```
-GET /schools/filter[cohort]={year}` 
+GET /schools/filter[cohort]={year} 
 ```
 
 This endpoint returns schools eligible for funded training in a given cohort. Check details on the type of training programme schools have chosen to deliver, and whether they have confirmed partnerships in place. 
@@ -153,7 +153,7 @@ For more detailed technical information, see the `GET /schools` [endpoint Swagge
 ### View a specific school 
 
 ```
-GET /schools/{id}?filter[cohort]={year}` 
+GET /schools/{id}?filter[cohort]={year} 
 ```
 
 This endpoint shows the programme type and confirmed partnerships for a single school.  
@@ -169,7 +169,7 @@ For more detailed technical information, view the `GET /schools/{id}` [endpoint 
 ### Find delivery partner IDs 
 
 ```
-GET /delivery-partners` 
+GET /delivery-partners 
 ```
 
 Each delivery partner has a unique `delivery_partner_id`. This ID is required when confirming partnerships with a school and delivery partner. 
@@ -181,7 +181,7 @@ For more detailed technical information, view the GET `delivery-partners` [endpo
 ### View a specific delivery partner 
 
 ```
-GET /delivery-partners/{id}` 
+GET /delivery-partners/{id} 
 ```
 
 Lead providers can use this endpoint to see if a specific delivery partner is registered to deliver training for a cohort. 
@@ -193,7 +193,7 @@ For more detailed technical information, view the `GET /delivery-partners/{id}` 
 ### View all partnerships 
 
 ```
-GET /partnerships` 
+GET /partnerships 
 ```
 
 This endpoint lists all partnerships, with an optional cohort filter. 
@@ -203,7 +203,7 @@ For more detailed technical information, view the `GET /partnerships` [endpoint 
 ### View one partnership 
 
 ```
-GET /partnerships/{id}` 
+GET /partnerships/{id} 
 ```
 
 This endpoint returns details of individual partnerships. 
@@ -213,7 +213,7 @@ For more detailed technical information, view the `GET /partnerships/{id}` [endp
 ## Update a partnership 
 
 ```
-PUT /partnerships/{id}` 
+PUT /partnerships/{id} 
 ```
 
 Lead providers can use this endpoint to update a partnership with a new `delivery_partner_id`. It only works if the partnership status is `active`. 
