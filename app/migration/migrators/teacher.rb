@@ -25,7 +25,7 @@ module Migrators
     end
 
     def migrate_one!(teacher_profile)
-      teacher = cache_manager.find_teacher_by_trn(teacher_profile.trn) || ::Teacher.new(trn: teacher_profile.trn)
+      teacher = ::Teacher.find_or_initialize_by(trn: teacher_profile.trn)
       user = teacher_profile.user
 
       if teacher.persisted? && name_does_not_match?(teacher, user.full_name)
@@ -42,16 +42,10 @@ module Migrators
       teacher.updated_at = user.updated_at
       teacher.save!
 
-      cache_manager.cache_teacher(teacher)
-
       teacher
     end
 
   private
-
-    def preload_caches
-      cache_manager.cache_teachers
-    end
 
     def name_does_not_match?(teacher, full_name)
       [teacher.trs_first_name, teacher.trs_last_name].join(" ") != full_name
