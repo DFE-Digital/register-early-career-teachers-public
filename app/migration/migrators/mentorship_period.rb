@@ -23,13 +23,13 @@ module Migrators
     end
 
     def migrate!
-      migrate(self.class.ects) do |participant_profile|
+      migrate(self.class.ects.eager_load(:teacher_profile)) do |participant_profile|
         migrate_one!(participant_profile)
       end
     end
 
     def migrate_one!(participant_profile)
-      teacher = ::Teacher.find_by!(api_ect_profile_id: participant_profile.id)
+      teacher = find_teacher_by_trn!(participant_profile.teacher_profile.trn)
 
       success = true
       induction_records = InductionRecordSanitizer.new(participant_profile:)
@@ -47,6 +47,12 @@ module Migrators
       end
 
       success
+    end
+
+  private
+
+    def preload_caches
+      cache_manager.cache_teachers
     end
   end
 end

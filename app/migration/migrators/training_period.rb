@@ -29,7 +29,7 @@ module Migrators
     end
 
     def migrate_one!(teacher_profile)
-      teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+      teacher = find_teacher_by_trn!(teacher_profile.trn)
 
       result = true
 
@@ -64,6 +64,18 @@ module Migrators
         end
 
       result
+    end
+
+  private
+
+    def preload_caches
+      cache_manager.cache_teachers
+      cache_manager.cache_schools
+      cache_manager.cache_lead_providers
+      cache_manager.cache_active_lead_providers
+      cache_manager.cache_delivery_partners
+      cache_manager.cache_school_partnerships
+      cache_manager.cache_lead_provider_delivery_partnerships
     end
   end
 end
