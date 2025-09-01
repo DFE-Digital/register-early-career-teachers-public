@@ -153,10 +153,12 @@ get:
       id: ":partnership_id"
 
 post:
-  - "/api/v3/partnerships/ecf":
-      body: example_body
+  - "/api/v3/partnerships":
+      ecf_path: "/api/v3/partnerships/ecf"
+      body: partnership_create_body
 
 put:
-  - "/api/v3/participant-declarations/:id":
-      id: ":example_id"
-      body: example_body
+  - "/api/v3/partnerships/:id":
+      ecf_path: "/api/v3/partnerships/ecf/:id"
+      id: ":partnership_id"
+      body: partnership_update_body
