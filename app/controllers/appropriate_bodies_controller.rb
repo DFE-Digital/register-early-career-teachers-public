@@ -10,11 +10,9 @@ private
   end
 
   def authorise
-    if current_user&.has_multiple_roles? && current_user.school_user?
-      redirect_to schools_ects_home_path
-    else
-      super
-    end
+    return redirect_to schools_ects_home_path if multi_role_user? && current_user.school_user?
+
+    super
   end
 
   def authorised?
