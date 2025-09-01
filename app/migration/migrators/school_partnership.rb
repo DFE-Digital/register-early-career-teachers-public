@@ -35,8 +35,8 @@ module Migrators
       contract_period = find_contract_period_by_year!(partnership.cohort.start_year)
       active_lead_provider_id = find_active_lead_provider_id!(lead_provider_id: lead_provider.id, contract_period_year: contract_period.year)
       lpdp = find_lead_provider_delivery_partnership_by_key!(active_lead_provider_id:, delivery_partner_id: delivery_partner.id)
-
       school_partnership = ::SchoolPartnership.find_or_initialize_by(api_id: partnership.id)
+
       school_partnership.lead_provider_delivery_partnership = lpdp
       school_partnership.school = find_school_by_urn!(partnership.school.urn)
       school_partnership.save!
