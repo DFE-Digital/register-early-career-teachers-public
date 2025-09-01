@@ -8,11 +8,9 @@ private
   attr_reader :school
 
   def authorise
-    if current_user&.has_multiple_roles? && current_user.appropriate_body_user?
-      redirect_to ab_teachers_path
-    else
-      super
-    end
+    return redirect_to ab_teachers_path if multi_role_user? && current_user.appropriate_body_user?
+
+    super
   end
 
   def authorised?
