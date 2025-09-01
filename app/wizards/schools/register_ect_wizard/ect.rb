@@ -150,11 +150,7 @@ module Schools
         return false unless previous_lead_provider && contract_start_date && school
 
         SchoolPartnerships::Search
-          .new(
-            school:,
-            lead_provider: previous_lead_provider,
-            contract_period: contract_start_date
-          )
+          .new(school:, lead_provider: previous_lead_provider, contract_period: contract_start_date)
           .exists?
       end
 

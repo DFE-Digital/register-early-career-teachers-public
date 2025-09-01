@@ -10,12 +10,7 @@ module TrainingPeriodSources
   end
 
   def earliest_matching_school_partnership
-    SchoolPartnerships::Search.new(
-      school:,
-      lead_provider:,
-      contract_period:,
-      sort: "created_at"
-    ).school_partnerships.first
+    SchoolPartnerships::Search.new(school:, lead_provider:, contract_period:).school_partnerships.first
   end
 
   def expression_of_interest
