@@ -46,9 +46,9 @@ module Admin::Finance
         contract_period_years:,
         statement_date:,
         fee_type:,
-        sort: "+year,+month",
+        order_by: :statement_date,
       }
-      Statements::Query.new(**opts.compact)
+      Statements::Search.new(**opts.compact)
     end
 
     def lead_provider
