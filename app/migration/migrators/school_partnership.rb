@@ -30,17 +30,28 @@ module Migrators
     end
 
     def migrate_one!(partnership)
-      lead_provider = ::LeadProvider.find_by!(ecf_id: partnership.lead_provider_id)
-      delivery_partner = ::DeliveryPartner.find_by!(api_id: partnership.delivery_partner_id)
-      contract_period = ::ContractPeriod.find(partnership.cohort.start_year)
-      active_lead_provider = ::ActiveLeadProvider.find_by!(lead_provider:, contract_period:)
-      lpdp = ::LeadProviderDeliveryPartnership.find_by!(active_lead_provider:, delivery_partner:)
-      school_partnership = ::SchoolPartnership.find_or_initialize_by(api_id: partnership.id)
+      lead_provider = find_lead_provider_by_ecf_id!(partnership.lead_provider_id)
+      delivery_partner = find_delivery_partner_by_api_id!(partnership.delivery_partner_id)
+      contract_period = find_contract_period_by_year!(partnership.cohort.start_year)
+      active_lead_provider_id = find_active_lead_provider_id!(lead_provider_id: lead_provider.id, contract_period_year: contract_period.year)
+      lpdp = find_lead_provider_delivery_partnership_by_key!(active_lead_provider_id:, delivery_partner_id: delivery_partner.id)
 
+      school_partnership = ::SchoolPartnership.find_or_initialize_by(api_id: partnership.id)
       school_partnership.lead_provider_delivery_partnership = lpdp
-      school_partnership.school = ::School.find_by!(urn: partnership.school.urn)
+      school_partnership.school = find_school_by_urn!(partnership.school.urn)
       school_partnership.save!
       school_partnership
+    end
+
+  private
+
+    def preload_caches
+      cache_manager.cache_lead_providers_by_ecf_id
+      cache_manager.cache_delivery_partners_by_api_id
+      cache_manager.cache_contract_periods
+      cache_manager.cache_active_lead_providers
+      cache_manager.cache_lead_provider_delivery_partnerships
+      cache_manager.cache_schools
     end
   end
 end
