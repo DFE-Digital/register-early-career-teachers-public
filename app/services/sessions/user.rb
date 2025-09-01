@@ -39,20 +39,29 @@ module Sessions
       raise NotImplementedError, "subclasses must be hashable for session storage"
     end
 
-    # @return [Boolean]
-    def dfe_sign_in?
-      provider == :dfe_sign_in
+    # @return [nil]
+    def last_active_role
+      nil
     end
 
     # @return [Boolean]
     def has_multiple_roles?
-      dfe_sign_in? && dfe_sign_in_roles.count > 1
+      false
     end
 
-    # @see ::Sessions::Manager#check_authorisation!
     # @return [Boolean]
-    def has_dfe_sign_in_role?
-      dfe_sign_in? && (::Organisation::Access::ROLES & dfe_sign_in_roles).any?
+    def has_authorised_role?
+      true
+    end
+
+    # @return [Array]
+    def roles
+      []
+    end
+
+    # @return [Boolean]
+    def dfe_sign_in?
+      provider == :dfe_sign_in
     end
 
     # @return [Boolean]
