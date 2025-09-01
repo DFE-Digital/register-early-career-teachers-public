@@ -10,12 +10,12 @@ FactoryBot.define do
 
     trait :post do
       add_attribute(:method) { :post }
-      options { { body: :example_body } }
+      options { { body: :partnership_create_body } }
     end
 
     trait :put do
       add_attribute(:method) { :put }
-      options { { body: :example_body } }
+      options { { body: :partnership_update_body } }
     end
 
     trait :with_query_parameters do
