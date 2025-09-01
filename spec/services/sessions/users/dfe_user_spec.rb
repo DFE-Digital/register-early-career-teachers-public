@@ -38,8 +38,8 @@ RSpec.describe Sessions::Users::DfEUser do
     it { expect(dfe_user).not_to be_appropriate_body_user }
   end
 
-  describe '#has_dfe_sign_in_role?' do
-    it { expect(dfe_user).not_to have_dfe_sign_in_role }
+  describe '#has_authorised_role?' do
+    it { expect(dfe_user).to have_authorised_role }
   end
 
   describe '#dfe_user?' do

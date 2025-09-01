@@ -83,8 +83,8 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     it { expect(appropriate_body_persona).not_to be_school_user }
   end
 
-  describe '#has_dfe_sign_in_role?' do
-    it { expect(appropriate_body_persona).not_to have_dfe_sign_in_role }
+  describe '#has_authorised_role?' do
+    it { expect(appropriate_body_persona).to have_authorised_role }
   end
 
   describe '#to_h' do

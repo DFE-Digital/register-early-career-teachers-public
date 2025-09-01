@@ -77,10 +77,9 @@ module Sessions
     # @param session_user [Sessions::User]
     # @raise [Sessions::Manager::MissingAccessLevel]
     def check_authorisation!(session_user)
-      return unless session_user.dfe_sign_in?
-      return if session_user.has_dfe_sign_in_role?
+      return if session_user.has_authorised_role?
 
-      fail(MissingAccessLevel, "#{session_user.email} with role(s) #{session_user.dfe_sign_in_roles.to_sentence}")
+      fail(MissingAccessLevel, "#{session_user.email} with role(s) #{session_user.roles.to_sentence}")
     end
 
     def encrypt_token(token)

@@ -67,8 +67,8 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
-  describe '#has_dfe_sign_in_role?' do
-    it { expect(dfe_persona).not_to have_dfe_sign_in_role }
+  describe '#has_authorised_role?' do
+    it { expect(dfe_persona).to have_authorised_role }
   end
 
   describe '#organisation_name' do

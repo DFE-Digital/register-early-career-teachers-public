@@ -46,8 +46,8 @@ RSpec.describe Sessions::Users::SchoolUser do
     it { expect(school_user).not_to be_appropriate_body_user }
   end
 
-  describe '#has_dfe_sign_in_role?' do
-    it { expect(school_user).to have_dfe_sign_in_role }
+  describe '#has_authorised_role?' do
+    it { expect(school_user).to have_authorised_role }
   end
 
   describe '#dfe_sign_in_organisation_id' do

@@ -72,8 +72,8 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     it { expect(appropriate_body_user).not_to be_dfe_user }
   end
 
-  describe '#has_dfe_sign_in_role?' do
-    it { expect(appropriate_body_user).to have_dfe_sign_in_role }
+  describe '#has_authorised_role?' do
+    it { expect(appropriate_body_user).to have_authorised_role }
   end
 
   describe '#event_author_params' do

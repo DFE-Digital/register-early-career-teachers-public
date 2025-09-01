@@ -58,6 +58,19 @@ module Sessions
         }
       end
 
+      # @return [Boolean]
+      def has_multiple_roles?
+        dfe_sign_in_roles.count > 1
+      end
+
+      # @return [Boolean]
+      def has_authorised_role?
+        (::Organisation::Access::ROLES & dfe_sign_in_roles).any?
+      end
+
+      # @return [Array<String>]
+      alias_method :roles, :dfe_sign_in_roles
+
     private
 
       def school_from(urn)

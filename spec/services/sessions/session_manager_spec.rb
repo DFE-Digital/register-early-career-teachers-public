@@ -46,7 +46,7 @@ RSpec.describe Sessions::Manager do
 
     context "when the user signs via DfE Sign In but has no role permissions for their organisation" do
       before do
-        allow(user).to receive_messages(dfe_sign_in?: true, has_dfe_sign_in_role?: false)
+        allow(user).to receive_messages(has_authorised_role?: false)
       end
 
       it 'raises an MissingAccessLevel error' do
