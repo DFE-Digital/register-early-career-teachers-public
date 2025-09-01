@@ -203,6 +203,9 @@ module Migrators
     end
 
     def start_migration!(total_count)
+      # Reset cache stats tracking for this new DataMigration record
+      cache_manager.reset_stats_tracking!
+
       # We reset the processed/failure counts in case this is a retry.
       data_migration.update!(
         started_at: Time.zone.now,
@@ -225,7 +228,8 @@ module Migrators
     end
 
     def finalise_migration!
-      data_migration.update!(completed_at: 1.second.from_now)
+      data_migration.update!(completed_at: 1.second.from_now, cache_stats: cache_manager.cache_stats)
+
       log_info("Migration completed")
 
       return unless DataMigration.incomplete.where(model: self.class.model).none?
