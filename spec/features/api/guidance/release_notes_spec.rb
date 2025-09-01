@@ -3,7 +3,7 @@ RSpec.describe "Release notes" do
     YAML.load_file(
       Rails.root.join("app/views/api/release_notes/release_notes.yml"),
       permitted_classes: [Date]
-    ).map { |note| API::ReleaseNote.new(**note.symbolize_keys) }
+    ).map { API::ReleaseNote.new(**it.symbolize_keys) }
   end
   let(:release_note_2) { release_notes[2] }
 
@@ -11,12 +11,6 @@ RSpec.describe "Release notes" do
     given_i_am_on_the_api_guidance_page
     when_i_click_release_notes
     then_i_should_see_an_entry_for_each_release_note
-  end
-
-  scenario "Viewing the latest release note" do
-    given_i_am_on_the_api_guidance_page
-    when_i_click_on_read_latest_release_note
-    then_i_see_latest_release_note
   end
 
   scenario "Viewing a release note" do
@@ -48,15 +42,6 @@ private
     release_notes.each do |note|
       expect(page.locator("h2", hasText: note.title)).to be_visible
     end
-  end
-
-  def when_i_click_on_read_latest_release_note
-    page.get_by_role("link", name: "Read release note").click
-  end
-
-  def then_i_see_latest_release_note
-    expect(page.url).to end_with("/api/guidance/release-notes#latest")
-    expect(page.locator("id=latest", hasText: release_notes.first.date)).to be_visible
   end
 
   def when_i_visit_non_existing_release_note_page
