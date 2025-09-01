@@ -36,6 +36,9 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk claim"
     )
 
+    expect(AnalyticsBatchJob).to have_been_enqueued
+      .once.with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
+
     expect(perform_enqueued_jobs).to be(9)
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
@@ -96,6 +99,9 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action"
     )
+
+    expect(AnalyticsBatchJob).to have_been_enqueued
+      .once.with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
 
     expect(perform_enqueued_jobs).to be(5)
     expect(Event.all.map(&:heading)).to contain_exactly(
