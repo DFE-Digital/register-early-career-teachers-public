@@ -32,12 +32,9 @@ module Schools
   private
 
     def matching_partnerships
-      @matching_partnerships ||= SchoolPartnerships::Search.new(
-        school:,
-        contract_period:,
-        lead_provider: last_chosen_lead_provider,
-        sort: "created_at"
-      ).school_partnerships
+      @matching_partnerships ||= SchoolPartnerships::Search
+        .new(school:, contract_period:, lead_provider: last_chosen_lead_provider)
+        .school_partnerships
     end
 
     def first_used_partnership
