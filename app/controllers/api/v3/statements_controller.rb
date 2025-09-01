@@ -15,7 +15,7 @@ module API
     private
 
       def statements_query(conditions: {})
-        API::Statements::API::Query.new(**(default_query_conditions.merge(conditions).compact))
+        API::Statements::Query.new(**(default_query_conditions.merge(conditions).compact))
       end
 
       def default_query_conditions
@@ -33,11 +33,7 @@ module API
       end
 
       def to_json(obj)
-        serializer.render(obj, root: "data")
-      end
-
-      def serializer
-        API::StatementSerializer
+        API::StatementSerializer.render(obj, root: "data")
       end
     end
   end

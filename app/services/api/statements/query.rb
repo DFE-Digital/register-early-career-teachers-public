@@ -37,7 +37,9 @@ module API::Statements
   private
 
     def preload_associations(results)
-      results.includes(:active_lead_provider)
+      results
+        .strict_loading
+        .includes(:active_lead_provider)
     end
 
     def where_lead_provider_is(lead_provider_id)

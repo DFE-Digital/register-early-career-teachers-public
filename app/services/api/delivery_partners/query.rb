@@ -34,7 +34,9 @@ module API::DeliveryPartners
   private
 
     def preload_associations(results)
-      preloaded_results = results.includes(:lead_provider_metadata)
+      preloaded_results = results
+        .strict_loading
+        .includes(:lead_provider_metadata)
 
       unless ignore?(filter: lead_provider_id)
         preloaded_results = preloaded_results

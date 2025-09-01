@@ -17,7 +17,7 @@ module API
     private
 
       def schools_query(conditions: {})
-        API::Schools::API::Query.new(**(default_query_conditions.merge(conditions)).compact)
+        API::Schools::Query.new(**(default_query_conditions.merge(conditions)).compact)
       end
 
       def default_query_conditions
@@ -51,11 +51,7 @@ module API
       end
 
       def to_json(obj)
-        serializer.render(obj, root: "data", **serializer_options)
-      end
-
-      def serializer
-        API::SchoolSerializer
+        API::SchoolSerializer.render(obj, root: "data", **serializer_options)
       end
     end
   end

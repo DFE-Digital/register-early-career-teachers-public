@@ -45,7 +45,7 @@ module API
       end
 
       def partnerships_query(conditions: {})
-        API::SchoolPartnerships::API::Query.new(**(default_query_conditions.merge(conditions)).compact)
+        API::SchoolPartnerships::Query.new(**(default_query_conditions.merge(conditions)).compact)
       end
 
       def default_query_conditions
@@ -71,11 +71,7 @@ module API
       end
 
       def to_json(obj)
-        serializer.render(obj, root: "data")
-      end
-
-      def serializer
-        API::PartnershipSerializer
+        API::PartnershipSerializer.render(obj, root: "data")
       end
     end
   end
