@@ -22,7 +22,7 @@ module Interval
     # Date relative scopes
     scope :ongoing_today, -> { ongoing_on(Time.zone.today) }
     scope :starting_tomorrow_or_after, -> { started_on_or_after(Time.zone.tomorrow) }
-    scope :current_or_future, -> { ongoing_today.or(starting_tomorrow_or_after).earliest_first }
+    scope :current_or_future, -> { ongoing_today.or(starting_tomorrow_or_after) }
   end
 
   # Validations
