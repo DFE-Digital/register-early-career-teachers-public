@@ -26,13 +26,13 @@ module Statements
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
 
-      scope.merge!(Statement.joins(:lead_provider).where(lead_providers: { id: lead_provider_id }))
+      @scope = scope.joins(:lead_provider).where(lead_providers: { id: lead_provider_id })
     end
 
     def where_contract_period_year_in(contract_period_years)
       return if ignore?(filter: contract_period_years)
 
-      scope.merge!(Statement.joins(:contract_period).where(contract_periods: { year: extract_conditions(contract_period_years) }))
+      @scope = scope.joins(:contract_period).where(contract_periods: { year: extract_conditions(contract_period_years) })
     end
 
     def where_fee_type_is(fee_type)
@@ -40,7 +40,7 @@ module Statements
 
       fail InvalidFeeTypeError unless fee_type.in?(Statement::VALID_FEE_TYPES)
 
-      scope.merge!(Statement.with_fee_type(fee_type))
+      @scope = scope.with_fee_type(fee_type)
     end
 
     def where_statement_date(statement_date)
@@ -48,7 +48,7 @@ module Statements
       return if statement_date.blank?
 
       year, month = statement_date.split("-").map(&:to_i) # 2025-01 -> 2025 & 1
-      scope.merge!(Statement.with_statement_date(year:, month:))
+      @scope = scope.with_statement_date(year:, month:)
     end
 
     def set_order_by(order_by)
@@ -56,9 +56,9 @@ module Statements
 
       case order_by
       when :statement_date
-        scope.merge!(Statement.order(year: :asc, month: :asc))
+        @scope = scope.order(year: :asc, month: :asc)
       when :payment_date
-        scope.merge!(Statement.order(payment_date: :asc))
+        @scope = scope.order(payment_date: :asc)
       end
     end
   end
