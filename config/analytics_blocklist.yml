@@ -211,6 +211,7 @@
   - urn
   - induction_tutor_name
   - induction_tutor_email
+  - api_id
   :school_partnerships:
   - id
   - created_at
