@@ -1,4 +1,4 @@
-module Statements
+module API::Statements
   class Query
     class InvalidFeeTypeError < StandardError; end
 

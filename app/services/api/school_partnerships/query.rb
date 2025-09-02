@@ -1,4 +1,4 @@
-module SchoolPartnerships
+module API::SchoolPartnerships
   class Query
     include Queries::ConditionFormats
     include Queries::Orderable
