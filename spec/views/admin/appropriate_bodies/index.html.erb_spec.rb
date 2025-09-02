@@ -32,7 +32,7 @@ RSpec.describe 'admin/appropriate_bodies/index.html.erb' do
   it "renders a link to view all bulk uploads" do
     render
 
-    expect(rendered).to have_link("View all bulk uploads", href: admin_bulk_batches_path)
+    expect(rendered).to have_link("View all bulk uploads", href: admin_batches_path)
   end
 
   it 'renders a list of appropriate bodies' do

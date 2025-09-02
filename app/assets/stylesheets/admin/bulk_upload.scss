@@ -1,0 +1,41 @@
+// Red Card
+.govuk-card--red {
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+  background-color: #f6d7d2;  // light
+  border-left: 5px solid #d4351c; // normal
+
+  .govuk-heading-l,
+  .govuk-body {
+    color: #942514;  // dark
+  }
+}
+
+// Green Card
+.govuk-card--green {
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+  background-color: #cce2d8;
+  border-left: 5px solid #00703c;
+
+  .govuk-heading-l,
+  .govuk-body {
+    color: #005a30;
+  }
+}
+
+// Yellow Card
+.govuk-card--yellow {
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+  background-color: #fff2d3;
+  border-left: 5px solid #ffdd00;
+
+  .govuk-heading-l,
+  .govuk-body {
+    color: #594d00;
+  }
+}
