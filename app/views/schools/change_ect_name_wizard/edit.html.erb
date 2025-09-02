@@ -1,7 +1,7 @@
 <% page_data(
     title: "Change name for #{@wizard.full_name}",
-    error: @wizard.ect.errors.present?,
-    backlink_href: schools_ect_path(@wizard.ect),
+    error: @wizard.ect_at_school_period.errors.present?,
+    backlink_href: schools_ect_path(@wizard.ect_at_school_period),
 ) %>
 
 <p class="govuk-body">The name will be used in this service and communications with the ECT.</p>
@@ -14,8 +14,8 @@
   <%=
     f.govuk_text_field(
       :name,
-      value: @wizard.full_name,
-      label: { text: "What's the correct full name for #{@wizard.full_name}?",
+      value: @wizard.store.new_name.presence || @wizard.full_name,
+      label: { text: "What’s the correct full name for #{@wizard.full_name}?",
                tag: 'h2',
                size: 'm' }
     ) do %>
@@ -25,5 +25,5 @@
 <% end %>
 
 <p class="govuk-body">
-  <%= govuk_link_to "Cancel and go back to #{@wizard.full_name}'s details", schools_ect_path(@wizard.ect) %>
+  <%= govuk_link_to "Cancel and go back to #{@wizard.full_name}’s details", schools_ect_path(@wizard.ect_at_school_period) %>
 </p>

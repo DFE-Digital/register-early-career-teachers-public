@@ -1,8 +1,8 @@
-RSpec.describe Schools::ChangeNameWizard::EditStep, type: :model do
+RSpec.describe Schools::ChangeECTNameWizard::EditStep, type: :model do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do
-    FactoryBot.build(:change_name_wizard,
+    FactoryBot.build(:change_ect_name_wizard,
                      current_step: :edit,
                      step_params:)
   end

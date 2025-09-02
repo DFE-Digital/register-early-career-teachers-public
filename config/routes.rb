@@ -283,7 +283,7 @@ Rails.application.routes.draw do
         get :confirmation, on: :collection
       end
 
-      namespace :change_name_wizard, path: 'change-name', controller: '/schools/change_name_wizard' do
+      namespace :change_name_wizard, path: 'change-name', controller: '/schools/change_ect_name_wizard', as: :change_name do
         get 'edit', action: :new
         post 'edit', action: :create
 

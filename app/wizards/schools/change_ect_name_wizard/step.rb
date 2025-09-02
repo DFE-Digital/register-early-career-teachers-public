@@ -1,5 +1,5 @@
 module Schools
-  module ChangeNameWizard
+  module ChangeECTNameWizard
     class Step < ApplicationWizardStep
       def self.permitted_params = []
 
