@@ -3,6 +3,8 @@ module Sessions
     class DfEUser < User
       class UnknownUserEmail < StandardError; end
 
+      include Sessions::ImpersonateSchoolUser
+
       USER_TYPE = :dfe_staff_user
       PROVIDER = :otp
 
