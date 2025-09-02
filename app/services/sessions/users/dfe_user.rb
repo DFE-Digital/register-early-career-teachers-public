@@ -16,6 +16,8 @@ module Sessions
         super(email: user.email, **)
       end
 
+      def dfe_user? = true
+
       def event_author_params
         {
           author_email: email,
