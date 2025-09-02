@@ -54,27 +54,15 @@ module Admin
         # @param induction_period [InductionPeriod]
         # @return [Array<String>]
         def induction_period_row(induction_period)
-          row = [
+          [
             induction_period.teacher.trn,
-            link_to_teacher(induction_period.teacher)
-          ]
-
-          row +
-            case
-            when action?
-              [
-                induction_period.finished_on.to_fs(:govuk),
-                induction_period.number_of_terms.to_s,
-                induction_outcome_tag(induction_period)
-              ]
-            when claim?
-              [
-                induction_period.started_on.to_fs(:govuk),
-                training_programme_name(induction_period.training_programme)
-              ]
-            else
-              raise StandardError, "Unknown #{batch.class}#batch_type for #{id}"
-            end
+            link_to_teacher(induction_period.teacher),
+            (induction_period.finished_on.to_fs(:govuk) if action?),
+            (induction_period.number_of_terms.to_s if action?),
+            (induction_outcome_tag(induction_period) if action?),
+            (induction_period.started_on.to_fs(:govuk) if claim?),
+            (training_programme_name(induction_period.training_programme) if claim?)
+          ].compact
         end
 
         # @param teacher [Teacher]
