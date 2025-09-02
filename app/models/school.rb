@@ -50,8 +50,6 @@ class School < ApplicationRecord
   validate :last_chosen_appropriate_body_for_state_funded_school,
            if: -> { state_funded? }
 
-  validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another school" }
-
   validates :urn,
             presence: true,
             uniqueness: true
@@ -67,6 +65,8 @@ class School < ApplicationRecord
   validates :induction_tutor_email,
             notify_email: true,
             allow_nil: true
+
+  validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another school" }
 
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
