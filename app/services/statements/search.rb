@@ -7,14 +7,14 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, fee_type: 'output', statement_date: :ignore, order_by: :payment_date)
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, fee_type: 'output', statement_date: :ignore, order: :payment_date)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
       where_fee_type_is(fee_type)
       where_statement_date(statement_date)
-      set_order_by(order_by)
+      set_order(order)
     end
 
     def statements
@@ -51,10 +51,10 @@ module Statements
       @scope = scope.with_statement_date(year:, month:)
     end
 
-    def set_order_by(order_by)
-      return if ignore?(filter: order_by)
+    def set_order(order)
+      return if ignore?(filter: order)
 
-      case order_by
+      case order
       when :statement_date
         @scope = scope.order(year: :asc, month: :asc)
       when :payment_date
