@@ -15,4 +15,24 @@ module AdminHelper
     last_induction_period = teacher.last_induction_period
     last_induction_period&.complete? && last_induction_period.outcome?
   end
+
+  def admin_school_navigation_items(school_urn, current_path)
+    [
+      {
+        text: "Overview",
+        href: admin_school_overview_path(school_urn),
+        current: current_path == admin_school_overview_path(school_urn)
+      },
+      {
+        text: "Teachers",
+        href: admin_school_teachers_path(school_urn),
+        current: current_path == admin_school_teachers_path(school_urn)
+      },
+      {
+        text: "Partnerships",
+        href: admin_school_partnerships_path(school_urn),
+        current: current_path == admin_school_partnerships_path(school_urn)
+      }
+    ]
+  end
 end
