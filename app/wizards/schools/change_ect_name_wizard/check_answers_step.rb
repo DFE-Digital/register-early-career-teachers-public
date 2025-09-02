@@ -1,5 +1,5 @@
 module Schools
-  module ChangeNameWizard
+  module ChangeECTNameWizard
     class CheckAnswersStep < Step
       def previous_step
         :edit
@@ -11,7 +11,7 @@ module Schools
 
       def save!
         old_name = persisted_name
-        wizard.ect.teacher.update!(corrected_name:)
+        wizard.ect_at_school_period.teacher.update!(corrected_name:)
         new_name = persisted_name
         record_event(old_name, new_name)
       end
@@ -23,7 +23,7 @@ module Schools
       end
 
       def persisted_name
-        Teachers::Name.new(wizard.ect.teacher).full_name
+        Teachers::Name.new(wizard.ect_at_school_period.teacher.reload).full_name
       end
 
       def record_event(old_name, new_name)
@@ -31,7 +31,7 @@ module Schools
           old_name:,
           new_name:,
           author: wizard.author,
-          teacher: wizard.ect.teacher
+          teacher: wizard.ect_at_school_period.teacher
         )
       end
     end

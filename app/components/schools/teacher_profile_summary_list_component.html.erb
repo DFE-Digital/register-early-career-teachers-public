@@ -6,7 +6,7 @@
     <% row.with_value { teacher_full_name(@ect.teacher) } %>
     <% row.with_action(
       text: 'Change',
-      href: schools_ect_change_name_wizard_edit_path(ect_id: @ect.id),
+      href: schools_ect_change_name_edit_path(ect_id: @ect.id),
       classes: 'govuk-link--no-visited-state',
       visually_hidden_text: 'name')
     %>

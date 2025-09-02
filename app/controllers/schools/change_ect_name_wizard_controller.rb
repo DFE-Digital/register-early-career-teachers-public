@@ -1,8 +1,8 @@
 module Schools
-  class ChangeNameWizardController < SchoolsController
+  class ChangeECTNameWizardController < SchoolsController
     before_action :initialize_wizard, only: %i[new create]
 
-    WIZARD_CLASS = Schools::ChangeNameWizard::Wizard.freeze
+    WIZARD_CLASS = Schools::ChangeECTNameWizard::Wizard.freeze
 
     def new
       render current_step
