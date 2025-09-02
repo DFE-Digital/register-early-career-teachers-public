@@ -1,5 +1,5 @@
 module Schools
-  class TeacherProfileSummaryListComponent < ViewComponent::Base
+  class TeacherProfileSummaryListComponent < ApplicationComponent
     include TeacherHelper
     include ECTHelper
 

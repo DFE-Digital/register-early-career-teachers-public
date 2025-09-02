@@ -1,6 +1,6 @@
 module Schools
   module ECTs
-    class ListingCardComponent < ViewComponent::Base
+    class ListingCardComponent < ApplicationComponent
       include TeacherHelper
       include ECTHelper
 

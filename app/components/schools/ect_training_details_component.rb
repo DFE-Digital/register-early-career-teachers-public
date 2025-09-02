@@ -1,5 +1,5 @@
 module Schools
-  class ECTTrainingDetailsComponent < ViewComponent::Base
+  class ECTTrainingDetailsComponent < ApplicationComponent
     include ProgrammeHelper
 
     NOT_AVAILABLE = 'Not available'

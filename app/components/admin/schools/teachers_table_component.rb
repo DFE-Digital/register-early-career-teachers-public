@@ -1,6 +1,6 @@
 module Admin
   module Schools
-    class TeachersTableComponent < ViewComponent::Base
+    class TeachersTableComponent < ApplicationComponent
       attr_reader :school
 
       def initialize(school:)

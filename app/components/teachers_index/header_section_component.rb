@@ -1,5 +1,5 @@
 module TeachersIndex
-  class HeaderSectionComponent < ViewComponent::Base
+  class HeaderSectionComponent < ApplicationComponent
     include GovukLinkHelper
     include Rails.application.routes.url_helpers
     include ActionView::Helpers::TextHelper

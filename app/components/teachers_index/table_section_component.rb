@@ -1,5 +1,5 @@
 module TeachersIndex
-  class TableSectionComponent < ViewComponent::Base
+  class TableSectionComponent < ApplicationComponent
     include GovukLinkHelper
     include Pagy::Frontend
     include Rails.application.routes.url_helpers

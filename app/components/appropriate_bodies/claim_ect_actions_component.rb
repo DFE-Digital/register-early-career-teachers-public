@@ -1,5 +1,5 @@
 module AppropriateBodies
-  class ClaimECTActionsComponent < ViewComponent::Base
+  class ClaimECTActionsComponent < ApplicationComponent
     def initialize(teacher:, pending_induction_submission:, current_appropriate_body:)
       @teacher = teacher
       @pending_induction_submission = pending_induction_submission

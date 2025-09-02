@@ -1,4 +1,4 @@
-class TestGuidanceComponent < ViewComponent::Base
+class TestGuidanceComponent < ApplicationComponent
   renders_one :trs_example_teacher_details, "TRSExampleTeacherDetails"
   renders_one :trs_fake_api_instructions, "TRSFakeAPIInstructions"
 
@@ -7,7 +7,7 @@ class TestGuidanceComponent < ViewComponent::Base
       (content.present? || trs_example_teacher_details.present? || trs_fake_api_instructions.present?)
   end
 
-  class TRSExampleTeacherDetails < ViewComponent::Base
+  class TRSExampleTeacherDetails < ApplicationComponent
     def head
       ["TRN", "Date of birth", "National Insurance Number", "Notes"]
     end
@@ -58,7 +58,7 @@ class TestGuidanceComponent < ViewComponent::Base
     end
   end
 
-  class TRSFakeAPIInstructions < ViewComponent::Base
+  class TRSFakeAPIInstructions < ApplicationComponent
     def call
       safe_join([
         tag.h3("Information to review this journey", class: "govuk-heading-m"),

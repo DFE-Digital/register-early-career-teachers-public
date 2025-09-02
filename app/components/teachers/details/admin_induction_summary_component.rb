@@ -1,5 +1,5 @@
 module Teachers::Details
-  class AdminInductionSummaryComponent < ViewComponent::Base
+  class AdminInductionSummaryComponent < ApplicationComponent
     attr_reader :teacher, :induction, :induction_periods
 
     def initialize(teacher:)

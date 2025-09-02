@@ -1,4 +1,4 @@
-class TimelineComponent < ViewComponent::Base
+class TimelineComponent < ApplicationComponent
   renders_many :items, "ItemComponent"
 
   attr_reader :events
@@ -13,7 +13,7 @@ class TimelineComponent < ViewComponent::Base
     end
   end
 
-  class ItemComponent < ViewComponent::Base
+  class ItemComponent < ApplicationComponent
     attr_reader :event
 
     def initialize(event)

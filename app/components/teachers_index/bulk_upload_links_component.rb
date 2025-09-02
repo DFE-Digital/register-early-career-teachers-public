@@ -1,4 +1,4 @@
-class TeachersIndex::BulkUploadLinksComponent < ViewComponent::Base
+class TeachersIndex::BulkUploadLinksComponent < ApplicationComponent
   include GovukLinkHelper
   include Rails.application.routes.url_helpers
 

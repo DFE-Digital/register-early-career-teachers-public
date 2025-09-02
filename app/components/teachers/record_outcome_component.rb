@@ -1,5 +1,5 @@
 module Teachers
-  class RecordOutcomeComponent < ViewComponent::Base
+  class RecordOutcomeComponent < ApplicationComponent
     include Rails.application.routes.url_helpers
 
     attr_reader :teacher, :pending_induction_submission, :mode, :outcome_type, :is_admin, :appropriate_body
