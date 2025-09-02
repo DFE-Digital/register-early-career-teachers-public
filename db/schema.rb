@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_01_172046) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -543,6 +543,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.string "induction_tutor_name"
     t.citext "induction_tutor_email"
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["api_id"], name: "index_schools_on_api_id", unique: true
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true
