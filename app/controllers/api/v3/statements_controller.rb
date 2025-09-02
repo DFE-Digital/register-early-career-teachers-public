@@ -26,7 +26,7 @@ module API
       end
 
       def to_json(obj)
-        StatementSerializer.render(obj, root: "data")
+        API::StatementSerializer.render(obj, root: "data")
       end
     end
   end

@@ -64,7 +64,7 @@ module API
       end
 
       def to_json(obj)
-        PartnershipSerializer.render(obj, root: "data")
+        API::PartnershipSerializer.render(obj, root: "data")
       end
     end
   end
