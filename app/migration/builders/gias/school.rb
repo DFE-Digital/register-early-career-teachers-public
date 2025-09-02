@@ -14,7 +14,6 @@ module Builders
             address_line2: ecf_school.address_line2,
             address_line3: ecf_school.address_line3,
             administrative_district_name: ecf_school.administrative_district_name,
-            api_id: ecf_school.id,
             establishment_number: ecf_school.urn,
             funding_eligibility: ecf_school.funding_eligibility,
             induction_eligibility: ecf_school.induction_eligibility,
@@ -31,7 +30,7 @@ module Builders
             ukprn: ecf_school.ukprn,
             urn: ecf_school.urn,
             website: ecf_school.school_website
-          ).tap(&:create_school!)
+          ).tap { |gias_school| gias_school.create_school!(api_id: ecf_school.id) }
         end
       rescue ActiveRecord::ActiveRecordError => e
         @error = e.message

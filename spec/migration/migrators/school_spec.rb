@@ -146,7 +146,8 @@ describe Migrators::School do
 
       it "sets api_id to be the id of the school on ECF" do
         expect(data_migration.reload.failure_count).to eq(0)
-        expect(gias_school.reload.api_id).to eq(ecf_school.id)
+        gias_school.reload
+        expect(gias_school.school.api_id).to eq(ecf_school.id)
       end
 
       it "syncs the timestamps from the ECF school to the RECT school" do
