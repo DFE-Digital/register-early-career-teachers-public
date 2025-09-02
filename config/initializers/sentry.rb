@@ -6,5 +6,6 @@ if Rails.application.config.enable_sentry
     config.traces_sample_rate = 0.1
     config.profiles_sample_rate = 0.1
     config.rails.active_job_report_on_retry_error = true
+    config.excluded_exceptions += ["Signet::AuthorizationError"]
   end
 end
