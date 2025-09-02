@@ -46,5 +46,19 @@ describe SchoolPartnership do
         expect(described_class.for_contract_period(contract_period_2.id)).to contain_exactly(school_partnership_2)
       end
     end
+
+    describe '.earliest_first' do
+      let!(:school_partnership_first) { FactoryBot.create(:school_partnership, created_at: 3.weeks.ago) }
+      let!(:school_partnership_second) { FactoryBot.create(:school_partnership, created_at: 2.weeks.ago) }
+      let!(:school_partnership_third) { FactoryBot.create(:school_partnership, created_at: 1.week.ago) }
+
+      it 'orders with earliest created records first' do
+        expect(SchoolPartnership.earliest_first).to eq([
+          school_partnership_first,
+          school_partnership_second,
+          school_partnership_third,
+        ])
+      end
+    end
   end
 end
