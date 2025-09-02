@@ -74,7 +74,6 @@ class School < ApplicationRecord
            :address_line2,
            :address_line3,
            :administrative_district_name,
-           :api_id,
            :closed_on,
            :establishment_number,
            :funding_eligibility,
