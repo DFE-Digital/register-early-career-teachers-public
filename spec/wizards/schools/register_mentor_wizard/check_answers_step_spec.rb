@@ -32,6 +32,36 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
 
           it { expect(subject.previous_step).to eq(:email_address) }
         end
+
+        context 'when re-registering a mentor' do
+          before do
+            allow(wizard.mentor).to receive(:previously_registered_as_mentor?).and_return(true)
+          end
+
+          context 'when the user has previously chosen no to mentoring_at_new_school_only' do
+            before do
+              allow(store).to receive(:mentoring_at_new_school_only).and_return('no')
+            end
+
+            it { expect(subject.previous_step).to eq(:mentoring_at_new_school_only) }
+          end
+
+          context 'when the user has previously chosen yes to mentoring_at_new_school_only and is using the same programme choices' do
+            before do
+              allow(store).to receive_messages(mentoring_at_new_school_only: 'yes', use_same_programme_choices: 'yes')
+            end
+
+            it { expect(subject.previous_step).to eq(:programme_choices) }
+          end
+
+          context 'when the user has previously chosen yes to mentoring_at_new_school_only and is not using the same programme choices' do
+            before do
+              allow(store).to receive_messages(mentoring_at_new_school_only: 'yes', use_same_programme_choices: 'no')
+            end
+
+            it { expect(subject.previous_step).to eq(:lead_provider) }
+          end
+        end
       end
 
       context 'when the mentor is not available for funding' do
