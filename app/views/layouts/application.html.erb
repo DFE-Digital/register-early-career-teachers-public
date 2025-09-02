@@ -7,6 +7,7 @@
 
     <div class="govuk-width-container">
       <%= environment_specific_phase_banner %>
+      <%= render Admin::ImpersonationBannerComponent.new(user: current_user, school: @school) %>
       <%= yield(:backlink_or_breadcrumb) %>
 
       <main class="govuk-main-wrapper" id="main-content" role="main">
