@@ -5,7 +5,6 @@ RSpec.describe Admin::AppropriateBodies::Batches::BatchCardsComponent, type: :co
     FactoryBot.create(:pending_induction_submission_batch, :claim, :completed,
                       errored_count: 2,
                       uploaded_count: 4)
-    # processed_count: 4
   end
 
   before do
