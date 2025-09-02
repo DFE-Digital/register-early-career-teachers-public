@@ -1,5 +1,5 @@
 RSpec.describe "Partnerships API", type: :request do
-  let(:serializer) { PartnershipSerializer }
+  let(:serializer) { API::PartnershipSerializer }
   let(:serializer_options) { { lead_provider: } }
   let(:query) { API::SchoolPartnerships::Query }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }

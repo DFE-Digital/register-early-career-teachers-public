@@ -1,4 +1,4 @@
-describe StatementSerializer, type: :serializer do
+describe API::StatementSerializer, type: :serializer do
   let(:active_lead_provider) { FactoryBot.build(:active_lead_provider) }
   let(:statement) { FactoryBot.build(:statement, active_lead_provider:) }
 
