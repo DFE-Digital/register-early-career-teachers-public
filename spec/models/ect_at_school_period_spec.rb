@@ -28,6 +28,15 @@ describe ECTAtSchoolPeriod do
         end
       end
 
+      context 'when there is a current period and a future period' do
+        let!(:training_period) { FactoryBot.create(:training_period, started_on: 1.year.ago, finished_on: 2.weeks.from_now, ect_at_school_period:) }
+        let!(:future_training_period) { FactoryBot.create(:training_period, started_on: 2.weeks.from_now, finished_on: nil, ect_at_school_period:) }
+
+        it 'returns the current ect_at_school_period' do
+          expect(ect_at_school_period.current_training_period).to eql(training_period)
+        end
+      end
+
       context 'when there is no current period' do
         let!(:training_period) { FactoryBot.create(:training_period, :finished, ect_at_school_period:) }
 
