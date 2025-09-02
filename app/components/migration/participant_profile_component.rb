@@ -1,5 +1,5 @@
 module Migration
-  class ParticipantProfileComponent < ViewComponent::Base
+  class ParticipantProfileComponent < ApplicationComponent
     attr_reader :participant_profile
 
     def initialize(participant_profile:)

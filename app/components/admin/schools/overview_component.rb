@@ -1,4 +1,4 @@
-class Admin::Schools::OverviewComponent < ViewComponent::Base
+class Admin::Schools::OverviewComponent < ApplicationComponent
   attr_reader :school
 
   def initialize(school:)

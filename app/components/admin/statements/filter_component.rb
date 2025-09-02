@@ -1,6 +1,6 @@
 module Admin
   module Statements
-    class FilterComponent < ViewComponent::Base
+    class FilterComponent < ApplicationComponent
       attr_reader :params
 
       def initialize(filter_params:)

@@ -1,5 +1,5 @@
 module Teachers
-  class OutcomeFormComponent < ViewComponent::Base
+  class OutcomeFormComponent < ApplicationComponent
     attr_reader :form, :teacher, :is_admin, :appropriate_body
 
     # TODO: refactor to use `mode` and `admin_{mode}?` like other components when put to use

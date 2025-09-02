@@ -1,9 +1,8 @@
 module Navigation
-  class SubNavigationComponent < ViewComponent::Base
+  class SubNavigationComponent < ApplicationComponent
     attr_accessor :current_path, :current_section, :structure
 
     def initialize(current_path, structure:)
-      super
       @current_path = current_path
       @structure = structure
     end

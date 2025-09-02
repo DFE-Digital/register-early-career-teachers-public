@@ -1,5 +1,5 @@
 module Admin
-  class ImpersonationBannerComponent < ViewComponent::Base
+  class ImpersonationBannerComponent < ApplicationComponent
     attr_reader :user, :school
 
     def initialize(user:, school:)

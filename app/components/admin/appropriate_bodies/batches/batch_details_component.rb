@@ -1,7 +1,7 @@
 module Admin
   module AppropriateBodies
     module Batches
-      class BatchDetailsComponent < ViewComponent::Base
+      class BatchDetailsComponent < ApplicationComponent
         attr_reader :batch
 
         def initialize(batch:)

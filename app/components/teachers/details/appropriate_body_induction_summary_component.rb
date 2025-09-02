@@ -1,5 +1,5 @@
 module Teachers::Details
-  class AppropriateBodyInductionSummaryComponent < ViewComponent::Base
+  class AppropriateBodyInductionSummaryComponent < ApplicationComponent
     attr_reader :teacher, :induction, :induction_periods
 
     def initialize(teacher:)

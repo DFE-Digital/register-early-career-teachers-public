@@ -1,5 +1,5 @@
 module Admin
-  class SelectLeadProvidersFormComponent < ViewComponent::Base
+  class SelectLeadProvidersFormComponent < ApplicationComponent
     attr_reader :delivery_partner, :contract_period, :current_partnerships, :year, :page, :q
 
     def initialize(delivery_partner:, contract_period:, current_partnerships:, year:, page: nil, q: nil)

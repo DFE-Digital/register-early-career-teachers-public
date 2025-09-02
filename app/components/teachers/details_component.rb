@@ -1,5 +1,5 @@
 module Teachers
-  class DetailsComponent < ViewComponent::Base
+  class DetailsComponent < ApplicationComponent
     MODES = %i[admin appropriate_body school].freeze
 
     renders_one :personal_details, -> {
