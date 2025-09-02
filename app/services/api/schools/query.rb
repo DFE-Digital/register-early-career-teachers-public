@@ -24,7 +24,7 @@ module API::Schools
     end
 
     def school_by_api_id(api_id)
-      return scope.find_by!(gias_school: { api_id: }) if api_id.present?
+      return scope.find_by!(api_id:) if api_id.present?
 
       fail(ArgumentError, "api_id needed")
     end
