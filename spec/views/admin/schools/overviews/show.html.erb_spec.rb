@@ -27,6 +27,12 @@ RSpec.describe 'admin/schools/overviews/show.html.erb', type: :view do
     expect(view.content_for(:page_header)).to include(school.name)
   end
 
+  it 'has an impersonation button' do
+    render
+
+    expect(rendered).to have_css('.govuk-button', text: "Sign in as #{school.name}")
+  end
+
   it 'displays secondary navigation' do
     render
 
