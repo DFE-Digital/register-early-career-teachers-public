@@ -110,12 +110,12 @@ describe Interval do
       end
     end
 
-    describe '.ongoing_today_or_starting_tomorrow_or_after' do
+    describe '.current_or_future' do
       it 'chains together .ongoing_today and .starting_tomorrow_or_after' do
         allow(DummyMentor).to receive(:ongoing_today).and_call_original
         allow(DummyMentor).to receive(:starting_tomorrow_or_after).and_call_original
 
-        DummyMentor.ongoing_today_or_starting_tomorrow_or_after
+        DummyMentor.current_or_future
 
         expect(DummyMentor).to have_received(:ongoing_today).once
         expect(DummyMentor).to have_received(:starting_tomorrow_or_after).once
