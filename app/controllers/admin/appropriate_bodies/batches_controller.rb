@@ -16,7 +16,7 @@ module Admin::AppropriateBodies
     end
 
     def show
-      @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
+      @pending_induction_submission_batch = PendingInductionSubmissionBatch.for_appropriate_body(@appropriate_body).find(params[:id])
     end
 
   private
