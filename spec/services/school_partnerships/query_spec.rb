@@ -290,7 +290,7 @@ describe SchoolPartnerships::Query do
     let(:query_params) { { lead_provider_id:, school_id:, delivery_partner_api_ids:, contract_period_years: } }
 
     it 'returns true when a school partnership matches lead provider, delivery partner and school for the given registration period' do
-      expect(SchoolPartnerships::Query.new(lead_provider_id:, school_id:, contract_period_years:)).to exist
+      expect(SchoolPartnerships::Query.new(**query_params)).to exist
     end
 
     describe 'registration periods' do
