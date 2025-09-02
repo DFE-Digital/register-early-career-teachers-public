@@ -79,7 +79,7 @@ Requests must include:
 * `school_id`
 * `delivery_partner_id` 
 
-For more detailed technical information, view the `POST /partnerships` [endpoint Swagger API documentation](ADD LINK).
+For more detailed technical information, view the `POST /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/post_api_v3_partnerships).
 
 ### When lead providers can confirm a partnership 
  
@@ -148,7 +148,7 @@ The API will not show schools that are ineligible for funding in a given cohort.
  
 If a school’s eligibility changes from one cohort to the next, results will default according to the latest school eligibility. For example, if a school was eligible for funding in the 2025 cohort but becomes ineligible for funding in 2026, the API will not show the school in the 2026 cohort. 
 
-For more detailed technical information, see the `GET /schools` [endpoint Swagger API documentation](ADD LINK). 
+For more detailed technical information, see the `GET /schools` [endpoint Swagger API documentation](/api/docs/v3#/Schools/get_api_v3_schools). 
 
 ### View a specific school 
 
@@ -164,7 +164,7 @@ Requests must include:
 
 * `cohort`
 
-For more detailed technical information, view the `GET /schools/{id}` [endpoint Swagger API documentation](ADD LINK). 
+For more detailed technical information, view the `GET /schools/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Schools/get_api_v3_schools__id_). 
 
 ### Find delivery partner IDs 
 
@@ -176,7 +176,7 @@ Each delivery partner has a unique `delivery_partner_id`. This ID is required wh
 
 Lead providers can filter results by adding a `cohort` filter to the parameter. For example, `GET /delivery-partners?filter[cohort]=2024`. 
 
-For more detailed technical information, view the GET `delivery-partners` [endpoint Swagger API documentation](ADD LINK). 
+For more detailed technical information, view the GET `delivery-partners` [endpoint Swagger API documentation](/api/docs/v3#/Delivery%20Partners/get_api_v3_delivery_partners). 
 
 ### View a specific delivery partner 
 
@@ -186,7 +186,7 @@ GET /delivery-partners/{id}
 
 Lead providers can use this endpoint to see if a specific delivery partner is registered to deliver training for a cohort. 
  
-For more detailed technical information, view the `GET /delivery-partners/{id}` [endpoint Swagger API documentation](ADD LINK). 
+For more detailed technical information, view the `GET /delivery-partners/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Delivery%20Partners/get_api_v3_delivery_partners__id_). 
 
 ## View partnerships 
 
@@ -198,7 +198,7 @@ GET /partnerships
 
 This endpoint lists all partnerships, with an optional cohort filter. 
 
-For more detailed technical information, view the `GET /partnerships` [endpoint Swagger API documentation](ADD LINK). 
+For more detailed technical information, view the `GET /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships). 
 
 ### View one partnership 
 
@@ -208,7 +208,7 @@ GET /partnerships/{id}
 
 This endpoint returns details of individual partnerships. 
 
-For more detailed technical information, view the `GET /partnerships/{id}` [endpoint Swagger API documentation](ADD LINK).
+For more detailed technical information, view the `GET /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships__id_).
 
 ## Update a partnership 
 
@@ -220,7 +220,7 @@ Lead providers can use this endpoint to update a partnership with a new `deliver
 
 If a partnership has been challenged and rejected, lead providers should create a new one using the `POST /partnerships` endpoint. 
 
-For more detailed technical information, view the `PUT /partnerships/{id}` [endpoint Swagger API documentation](ADD LINK). 
+For more detailed technical information, view the `PUT /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/put_api_v3_partnerships__id_). 
 
 ## Partnerships troubleshooting 
 
