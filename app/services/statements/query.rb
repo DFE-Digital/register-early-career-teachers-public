@@ -8,7 +8,7 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', statement_date: :ignore, sort: nil)
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, status: :ignore, fee_type: 'output', sort: nil)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
 
       where_lead_provider_is(lead_provider_id)
@@ -16,7 +16,6 @@ module Statements
       where_updated_since(updated_since)
       where_status_is(status)
       where_fee_type_is(fee_type)
-      where_statement_date(statement_date)
       set_sort_by(sort)
     end
 
@@ -68,14 +67,6 @@ module Statements
       fail InvalidFeeTypeError unless fee_type.in?(Statement::VALID_FEE_TYPES)
 
       scope.merge!(Statement.with_fee_type(fee_type))
-    end
-
-    def where_statement_date(statement_date)
-      return if ignore?(filter: statement_date)
-      return if statement_date.blank?
-
-      year, month = statement_date.split("-").map(&:to_i) # 2025-01 -> 2025 & 1
-      scope.merge!(Statement.with_statement_date(year:, month:))
     end
 
     def set_sort_by(sort)

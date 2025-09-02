@@ -24,11 +24,11 @@ RSpec.describe "Admin finance statements index", type: :request do
       end
 
       it 'retrieves a list of statements' do
-        allow(Statements::Query).to receive(:new).and_call_original
+        allow(Statements::Search).to receive(:new).and_call_original
 
         get "/admin/finance/statements"
 
-        expect(Statements::Query).to have_received(:new).once
+        expect(Statements::Search).to have_received(:new).once
       end
     end
   end
