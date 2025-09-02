@@ -1,4 +1,4 @@
-module DeliveryPartners
+module API::DeliveryPartners
   class Query
     include Queries::ConditionFormats
     include Queries::Orderable

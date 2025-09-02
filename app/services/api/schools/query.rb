@@ -1,4 +1,4 @@
-module Schools
+module API::Schools
   class Query
     include Queries::ConditionFormats
     include Queries::FilterIgnorable

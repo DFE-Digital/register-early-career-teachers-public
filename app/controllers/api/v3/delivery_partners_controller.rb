@@ -13,7 +13,7 @@ module API
     private
 
       def delivery_partners_query(conditions: {})
-        DeliveryPartners::Query.new(**(default_conditions.merge(conditions)).compact)
+        API::DeliveryPartners::Query.new(**(default_conditions.merge(conditions)).compact)
       end
 
       def default_conditions
