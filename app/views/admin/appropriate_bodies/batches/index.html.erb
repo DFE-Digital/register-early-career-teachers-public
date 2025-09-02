@@ -1,0 +1,24 @@
+<%
+  page_data(
+    title: "CSV Uploads for #{@appropriate_body.name}",
+    backlink_href: admin_appropriate_body_path(@appropriate_body)
+  )
+%>
+
+<%=
+  govuk_table(
+    head: ['Batch ID','Type','Status','Filename','Created','Action'],
+    rows: @batches.map do |batch|
+      [
+        batch.id.to_s,
+        batch_type_tag(batch),
+        batch_status_tag(batch),
+        batch.file_name,
+        batch.created_at.to_fs(:govuk),
+        govuk_link_to('View', admin_appropriate_body_batch_path(batch.appropriate_body, batch))
+      ]
+    end
+  )
+%>
+
+<%= govuk_pagination pagy: @pagy %>

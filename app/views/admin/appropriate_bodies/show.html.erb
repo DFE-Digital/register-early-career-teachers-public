@@ -1,14 +1,20 @@
-<% page_data(
-  title: @appropriate_body.name,
-  backlink_href: admin_appropriate_bodies_path
-) %>
+<%
+  page_data(
+    title: @appropriate_body.name,
+    backlink_href: admin_appropriate_bodies_path
+  )
+%>
 
 <%=
   govuk_summary_list do |sl|
     sl.with_row do |row|
       row.with_key(text: "Current ECTs")
       row.with_value(text: @current_ect_count)
-      row.with_action(text: 'View', href: admin_appropriate_body_current_ects_path(@appropriate_body), visually_hidden_text: 'current ECTs')
+      row.with_action(
+        text: 'View',
+        href: admin_appropriate_body_current_ects_path(@appropriate_body),
+        visually_hidden_text: 'current ECTs'
+      )
     end
 
     sl.with_row do |row|
@@ -16,7 +22,7 @@
       row.with_value(text: @bulk_batches_count)
       row.with_action(
         text: "View",
-        href: admin_appropriate_body_bulk_batches_path(@appropriate_body),
+        href: admin_appropriate_body_batches_path(@appropriate_body),
         visually_hidden_text: "bulk uploads"
       )
     end
