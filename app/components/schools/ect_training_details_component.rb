@@ -50,7 +50,7 @@ module Schools
     end
 
     def lead_provider_display_text
-      return fallback_lead_provider_name unless partnership_confirmed? || training_period.expression_of_interest?
+      return fallback_lead_provider_name unless partnership_confirmed? || training_period.only_expression_of_interest?
 
       if partnership_confirmed?
         provider_name = training_period.lead_provider_name
