@@ -19,6 +19,9 @@ module Sessions
         super(email:, **)
       end
 
+      def dfe_sign_in_authorisable? = true
+      def school_user? = true
+
       def event_author_params
         {
           author_email: email,

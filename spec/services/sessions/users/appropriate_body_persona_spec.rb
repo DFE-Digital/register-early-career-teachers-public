@@ -49,12 +49,12 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     end
   end
 
-  describe '#appropriate_body_user?' do
+  describe 'user type methods' do
     it { expect(appropriate_body_persona).to be_appropriate_body_user }
-  end
-
-  describe '#dfe_user?' do
+    it { expect(appropriate_body_persona).not_to be_dfe_sign_in_authorisable }
     it { expect(appropriate_body_persona).not_to be_dfe_user }
+    it { expect(appropriate_body_persona).not_to be_school_user }
+    it { expect(appropriate_body_persona).not_to be_dfe_user_impersonating_school_user }
   end
 
   describe '#event_author_params' do

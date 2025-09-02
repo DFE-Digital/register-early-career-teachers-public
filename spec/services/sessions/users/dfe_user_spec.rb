@@ -34,16 +34,16 @@ RSpec.describe Sessions::Users::DfEUser do
     it { expect(dfe_user.user_type).to be(:dfe_staff_user) }
   end
 
-  describe '#appropriate_body_user?' do
-    it { expect(dfe_user).not_to be_appropriate_body_user }
-  end
-
   describe '#has_authorised_role?' do
     it { expect(dfe_user).to have_authorised_role }
   end
 
-  describe '#dfe_user?' do
+  describe 'user type methods' do
     it { expect(dfe_user).to be_dfe_user }
+    it { expect(dfe_user).not_to be_dfe_sign_in_authorisable }
+    it { expect(dfe_user).not_to be_appropriate_body_user }
+    it { expect(dfe_user).not_to be_school_user }
+    it { expect(dfe_user).not_to be_dfe_user_impersonating_school_user }
   end
 
   describe '#event_author_params' do
@@ -67,10 +67,6 @@ RSpec.describe Sessions::Users::DfEUser do
     it 'returns Department for Education' do
       expect(dfe_user.organisation_name).to eq('Department for Education')
     end
-  end
-
-  describe '#school_user?' do
-    it { expect(dfe_user).not_to be_school_user }
   end
 
   describe '#to_h' do

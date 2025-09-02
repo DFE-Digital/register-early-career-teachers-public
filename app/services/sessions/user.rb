@@ -29,6 +29,13 @@ module Sessions
       @last_active_at = last_active_at.is_a?(String) ? Time.zone.parse(last_active_at) : last_active_at
     end
 
+    # User?
+    def dfe_sign_in_authorisable? = false
+    def appropriate_body_user? = false
+    def dfe_user? = false
+    def school_user? = false
+    def dfe_user_impersonating_school_user? = false
+
     # @return [String] all user types except DfE Sign In
     def sign_out_path
       '/sign-out'
@@ -62,21 +69,6 @@ module Sessions
     # @return [Boolean]
     def dfe_sign_in?
       provider == :dfe_sign_in
-    end
-
-    # @return [Boolean]
-    def dfe_user?
-      user_type == :dfe_staff_user
-    end
-
-    # @return [Boolean]
-    def appropriate_body_user?
-      user_type == :appropriate_body_user
-    end
-
-    # @return [Boolean]
-    def school_user?
-      user_type == :school_user
     end
 
     # @return [Symbol] :dfe_staff_user, :appropriate_body_user, :school_user

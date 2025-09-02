@@ -18,6 +18,8 @@ module Sessions
         super(email:, **)
       end
 
+      def school_user? = true
+
       def event_author_params
         {
           author_email: email,
