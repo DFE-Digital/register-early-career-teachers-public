@@ -8,6 +8,7 @@ module Sessions
     # @raise [Sessions::User::UnrecognisedType]
     #
     # @return [Sessions::Users::DfEUser]
+    # @return [Sessions::Users::DfEUserImpersonatingSchoolUser]
     # @return [Sessions::Users::DfEPersona]
     # @return [Sessions::Users::AppropriateBodyUser]
     # @return [Sessions::Users::AppropriateBodyPersona]

@@ -4,6 +4,8 @@ module Sessions
       class DfEPersonaDisabledError < StandardError; end
       class UnknownUserEmail < StandardError; end
 
+      include Sessions::ImpersonateSchoolUser
+
       USER_TYPE = :dfe_staff_user
       PROVIDER = :persona
 
