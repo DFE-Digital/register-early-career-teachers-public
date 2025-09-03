@@ -1,10 +1,6 @@
 RSpec.describe 'Registering a mentor', :js do
   include_context 'test trs api client'
 
-  before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-  end
-
   scenario 'mentor already active at the school from trn and nino' do
     given_there_is_a_school_in_the_service
     and_there_is_an_ect_with_no_mentor_registered_at_the_school

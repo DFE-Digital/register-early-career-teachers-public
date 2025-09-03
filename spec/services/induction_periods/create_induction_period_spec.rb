@@ -15,8 +15,12 @@ describe InductionPeriods::CreateInductionPeriod do
     }
   end
   let(:author) do
-    FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+    Sessions::Users::AppropriateBodyUser.new(
+      name: 'A user',
+      email: 'ab_user@something.org',
+      dfe_sign_in_user_id: SecureRandom.uuid,
+      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id
+    )
   end
 
   describe '#initialize' do

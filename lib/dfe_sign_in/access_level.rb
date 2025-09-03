@@ -1,5 +1,4 @@
 module DfESignIn
-  # Data wrapper for DfE Sign In API roles
   class AccessLevel
     Role = Data.define(:id, :name, :code, :numeric_id)
 
@@ -26,6 +25,10 @@ module DfESignIn
           )
         end
       )
+    end
+
+    def has_register_ect_access_role?
+      roles.any? { |r| %w[registerECTsAccess AppropriateBodyUser].include?(r.code) }
     end
   end
 end

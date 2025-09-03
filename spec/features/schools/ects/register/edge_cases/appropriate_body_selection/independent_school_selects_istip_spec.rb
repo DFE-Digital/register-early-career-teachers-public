@@ -1,8 +1,4 @@
 RSpec.describe 'Registering an ECT' do
-  before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-  end
-
   scenario 'Independent school selects ISTIP as appropriate body' do
     given_i_am_logged_in_as_an_independent_school_user
     and_i_am_on_the_start_date_step_of_the_register_ect_journey
