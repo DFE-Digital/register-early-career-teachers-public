@@ -1,0 +1,45 @@
+@use "sass:map";
+
+$variants: (
+  red: (
+    background: govuk-tint(govuk-colour('red'), 85),
+    text: govuk-shade(govuk-colour('red'), 40),
+    border: govuk-colour('red'),
+  ),
+  yellow: (
+    background: govuk-tint(govuk-colour('yellow'), 85),
+    text: govuk-shade(govuk-colour('yellow'), 70),
+    border: govuk-colour('yellow'),
+  ),
+  green: (
+    background: govuk-tint(govuk-colour('green'), 85),
+    text: govuk-shade(govuk-colour('green'), 50),
+    border: govuk-colour('green'),
+  ),
+  grey: (
+    background: govuk-colour('light-grey'),
+    text: govuk-colour('black'),
+    border: govuk-colour('mid-grey'),
+  ),
+  blue: (
+    background: govuk-tint(govuk-colour('blue'), 85),
+    text: govuk-colour('black'),
+    border: govuk-colour('blue'),
+  ),
+);
+
+
+@each $name, $colours in $variants {
+  // append the name to an empty string to avoid Sass warnings about incorrectly
+  // interpolating colours here
+  .app-card--#{"" + $name} {
+    background: map.get($colours, background);
+    padding: 20px;
+    border-left: 5px solid map.get($colours, border);
+
+    .govuk-heading-l,
+    .govuk-body {
+      color: map.get($colours, text);
+    }
+  };
+}
