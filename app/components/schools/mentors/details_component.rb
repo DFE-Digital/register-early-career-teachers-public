@@ -35,7 +35,12 @@ module Schools
       def email_row
         {
           key: { text: 'Email address' },
-          value: { text: @mentor.email }
+          value: { text: @mentor.email },
+          actions: [{
+            text: "Change",
+            visually_hidden_text: "email address",
+            href: schools_mentors_change_email_address_wizard_edit_path(@mentor)
+          }]
         }
       end
 
