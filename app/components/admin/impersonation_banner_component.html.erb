@@ -1,7 +1,7 @@
-<% if user&.dfe_user_impersonating_school_user? %>
+<div class='app-card--grey'>
   <p class='govuk-body'>
     <%= "You are signed in as #{@school&.name}" %>
   </p>
 
   <%= govuk_button_to("Sign out from #{@school.name}", admin_impersonate_path, method: :delete) %>
-<% end %>
+</div>
