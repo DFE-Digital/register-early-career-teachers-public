@@ -29,6 +29,16 @@ RSpec.describe Metadata::Manager do
         refresh_metadata
       end
     end
+
+    [nil, [], [nil]].each do |empty_value|
+      context "when given #{empty_value}" do
+        let(:objects) { empty_value }
+
+        it "does not call resolve any handlers" do
+          expect(Metadata::Resolver).not_to receive(:resolve_handler)
+        end
+      end
+    end
   end
 
   describe ".refresh_all_metadata!" do
