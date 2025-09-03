@@ -289,4 +289,40 @@ describe Schools::RegisterMentorWizard::Mentor do
       end
     end
   end
+
+  describe '#mentorship_status' do
+    let(:teacher) { FactoryBot.create(:teacher, trn: mentor.trn) }
+
+    context 'when there is an ongoing mentor_at_school_period' do
+      let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
+
+      it 'returns :currently_a_mentor' do
+        expect(mentor.mentorship_status).to eq(:currently_a_mentor)
+      end
+    end
+
+    context 'when there are past mentor_at_school_periods but none ongoing' do
+      let!(:closed_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
+
+      it 'returns :previously_a_mentor' do
+        expect(mentor.mentorship_status).to eq(:previously_a_mentor)
+      end
+    end
+
+    context 'when there are past mentor_at_school_periods and some ongoing' do
+      let!(:closed_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
+      let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
+
+      it 'returns :currently_a_mentor' do
+        expect(mentor.mentorship_status).to eq(:currently_a_mentor)
+      end
+    end
+
+    context 'when there are no mentor_at_school_periods' do
+      it 'raises an error' do
+        expect { mentor.mentorship_status }
+          .to raise_error(RuntimeError, /no mentor_at_school_periods/)
+      end
+    end
+  end
 end

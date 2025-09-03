@@ -80,7 +80,7 @@ module Schools
                        :started_on
                      end
 
-            steps << :started_on if mentor.mentoring_at_new_school_only == "yes"
+            steps << :started_on if mentor.mentoring_at_new_school_only == "yes" || mentor.previous_school_closed_mentor_at_school_periods?
             steps << :previous_training_period_details if mentor.eligible_for_funding? || mentor.provider_led_ect?
             steps << :programme_choices unless mentor.became_ineligible_for_funding?
             steps << :lead_provider unless mentor.use_same_programme_choices == "yes"
