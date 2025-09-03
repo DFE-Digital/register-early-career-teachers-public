@@ -86,13 +86,13 @@ RSpec.describe API::Schools::Query do
           end
         end
 
-        context "when the schools has metadata" do
-          let!(:school1) { FactoryBot.create(:school, :eligible, :with_metadata, contract_period: another_contract_period, lead_provider: active_lead_provider.lead_provider) }
+        context "when the schools has metadata for other contract periods" do
+          let!(:school1) { FactoryBot.create(:school, :eligible) }
 
           before do
-            ignored_contract_period = FactoryBot.create(:contract_period, year: another_contract_period.year + 1)
-            FactoryBot.create(:school_contract_period_metadata, school: school1, contract_period: ignored_contract_period)
-            FactoryBot.create(:school_lead_provider_contract_period_metadata, school: school1, contract_period: ignored_contract_period)
+            # Other contract period to be ignored.
+            FactoryBot.create(:contract_period, year: another_contract_period.year + 1)
+            Metadata::Manager.refresh_all_metadata!
           end
 
           it "returns schools with only the applicable metadata" do
@@ -126,12 +126,13 @@ RSpec.describe API::Schools::Query do
           }
         end
 
-        context "when the schools has metadata" do
-          let!(:school3) { FactoryBot.create(:school, :eligible, :with_metadata, contract_period: another_contract_period, lead_provider:) }
+        context "when the schools has metadata for other lead providers" do
+          let!(:school3) { FactoryBot.create(:school, :eligible) }
 
           before do
-            ignored_lead_provider = FactoryBot.create(:lead_provider)
-            FactoryBot.create(:school_lead_provider_contract_period_metadata, school: school2, contract_period_year:, lead_provider: ignored_lead_provider)
+            # Other lead provider to be ignored.
+            FactoryBot.create(:lead_provider)
+            Metadata::Manager.refresh_all_metadata!
           end
 
           it "returns schools with only the applicable metadata" do

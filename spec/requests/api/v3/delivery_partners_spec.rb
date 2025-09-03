@@ -6,7 +6,7 @@ RSpec.describe "Delivery partners API", type: :request do
   let(:lead_provider) { active_lead_provider.lead_provider }
 
   def create_resource(active_lead_provider:)
-    FactoryBot.create(:lead_provider_delivery_partnership, :with_delivery_partner_metadata, active_lead_provider:).delivery_partner
+    FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:).delivery_partner
   end
 
   describe "#index" do
