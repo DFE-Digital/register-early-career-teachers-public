@@ -3,7 +3,6 @@ module Statements
     class InvalidFeeTypeError < StandardError; end
 
     include Queries::FilterIgnorable
-    include Queries::ConditionFormats
 
     attr_reader :scope
 
@@ -32,7 +31,7 @@ module Statements
     def where_contract_period_year_in(contract_period_years)
       return if ignore?(filter: contract_period_years)
 
-      @scope = scope.joins(:contract_period).where(contract_periods: { year: extract_conditions(contract_period_years) })
+      @scope = scope.joins(:contract_period).where(contract_periods: { year: contract_period_years })
     end
 
     def where_fee_type_is(fee_type)
