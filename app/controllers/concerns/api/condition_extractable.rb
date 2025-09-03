@@ -1,6 +1,12 @@
-module Queries
-  module ConditionFormats
+module API
+  module ConditionExtractable
+    extend ActiveSupport::Concern
+
+  protected
+
     def extract_conditions(list, allowlist: nil, uuids: false, integers: false)
+      return if list.blank?
+
       conditions = case list
                    when String
                      list.split(",")

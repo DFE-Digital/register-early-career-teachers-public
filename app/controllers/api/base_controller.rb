@@ -7,6 +7,8 @@ module API
     include ContractPeriodFilterable
     include FilterValidatable
     include DfE::Analytics::Requests
+    include Orderable
+    include ConditionExtractable
 
   private
 
