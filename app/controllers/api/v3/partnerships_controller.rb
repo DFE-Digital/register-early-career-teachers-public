@@ -2,7 +2,12 @@ module API
   module V3
     class PartnershipsController < BaseController
       def index
-        conditions = { contract_period_years:, updated_since:, delivery_partner_api_ids:, sort: }
+        conditions = {
+          contract_period_years: extract_conditions(contract_period_years),
+          updated_since:,
+          delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids),
+          sort:
+        }
         render json: to_json(paginate(partnerships_query(conditions:).school_partnerships))
       end
 
@@ -56,7 +61,7 @@ module API
       end
 
       def sort
-        partnerships_params[:sort]
+        sort_order(sort: partnerships_params[:sort], model: SchoolPartnership, default: { created_at: :asc })
       end
 
       def delivery_partner_api_ids

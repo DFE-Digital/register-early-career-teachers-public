@@ -1,12 +1,10 @@
 module API::Schools
   class Query
-    include Queries::ConditionFormats
     include Queries::FilterIgnorable
-    include Queries::Orderable
 
     attr_reader :scope, :sort
 
-    def initialize(lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, contract_period_year: :ignore, sort: nil)
+    def initialize(lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, contract_period_year: :ignore, sort: { created_at: :asc })
       @scope = default_scope(contract_period_year)
         .or(schools_with_existing_partnerships(contract_period_year))
         .includes(:contract_period_metadata, :lead_provider_contract_period_metadata)
@@ -82,7 +80,7 @@ module API::Schools
     end
 
     def set_sort_by(sort)
-      @scope = scope.order(sort_order(sort:, model: School, default: { created_at: :asc }))
+      @scope = scope.order(sort)
     end
   end
 end

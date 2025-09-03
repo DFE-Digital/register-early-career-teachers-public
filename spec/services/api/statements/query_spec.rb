@@ -78,7 +78,7 @@ RSpec.describe API::Statements::Query do
           statement2 = FactoryBot.create(:statement, contract_period: contract_period2)
           statement3 = FactoryBot.create(:statement, contract_period: contract_period3)
 
-          query1 = described_class.new(contract_period_years: "#{contract_period1.year},#{contract_period2.year}")
+          query1 = described_class.new(contract_period_years: [contract_period1.year, contract_period2.year])
           expect(query1.statements).to contain_exactly(statement1, statement2)
 
           query2 = described_class.new(contract_period_years: [contract_period2.year.to_s, contract_period3.year.to_s])
@@ -189,14 +189,14 @@ RSpec.describe API::Statements::Query do
 
       describe "sort by payment_date" do
         it "returns statements in correct order" do
-          query = described_class.new(sort: "+payment_date")
-          expect(query.statements).to eq([statement1, statement2])
+          query = described_class.new(sort: { payment_date: :desc })
+          expect(query.statements).to eq([statement2, statement1])
         end
       end
 
       describe "sort by year and month" do
         it "returns statements in correct order" do
-          query = described_class.new(sort: "+year,+month")
+          query = described_class.new(sort: { year: :asc, month: :asc })
           expect(query.statements).to eq([statement2, statement1])
         end
       end

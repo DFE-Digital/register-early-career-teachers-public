@@ -1,12 +1,10 @@
 module API::SchoolPartnerships
   class Query
-    include Queries::ConditionFormats
-    include Queries::Orderable
     include Queries::FilterIgnorable
 
     attr_reader :scope
 
-    def initialize(school_id: :ignore, contract_period_years: :ignore, lead_provider_id: :ignore, delivery_partner_api_ids: :ignore, updated_since: :ignore, sort: nil)
+    def initialize(school_id: :ignore, contract_period_years: :ignore, lead_provider_id: :ignore, delivery_partner_api_ids: :ignore, updated_since: :ignore, sort: { created_at: :asc })
       @scope = default_scope
 
       where_lead_provider_is(lead_provider_id)
@@ -52,7 +50,7 @@ module API::SchoolPartnerships
 
       scope.merge!(
         scope.where(
-          lead_provider_delivery_partnership: { active_lead_providers: { contract_period_year: extract_conditions(contract_period_years) } }
+          lead_provider_delivery_partnership: { active_lead_providers: { contract_period_year: contract_period_years } }
         )
       )
     end
@@ -68,7 +66,7 @@ module API::SchoolPartnerships
 
       scope.merge!(
         scope.where(
-          lead_provider_delivery_partnership: { delivery_partners: { api_id: extract_conditions(delivery_partner_api_ids) } }
+          lead_provider_delivery_partnership: { delivery_partners: { api_id: delivery_partner_api_ids } }
         )
       )
     end
@@ -89,7 +87,7 @@ module API::SchoolPartnerships
     end
 
     def set_sort_by(sort)
-      @scope = scope.order(sort_order(sort:, model: SchoolPartnership, default: { created_at: :asc }))
+      @scope = scope.order(sort)
     end
   end
 end

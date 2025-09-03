@@ -245,13 +245,13 @@ RSpec.describe API::Schools::Query do
       it { is_expected.to eq([school2, school1, school3]) }
 
       context "when sorting by created at, descending" do
-        let(:sort) { "-created_at" }
+        let(:sort) { { created_at: :desc } }
 
         it { is_expected.to eq([school3, school1, school2]) }
       end
 
       context "when sorting by updated at, ascending" do
-        let(:sort) { "+updated_at" }
+        let(:sort) { { updated_at: :asc } }
 
         before do
           school1.update!(updated_at: 1.day.from_now)
@@ -262,7 +262,7 @@ RSpec.describe API::Schools::Query do
       end
 
       context "when sorting by multiple attributes" do
-        let(:sort) { "+updated_at,-created_at" }
+        let(:sort) { { updated_at: :asc, created_at: :desc } }
 
         before do
           school1.update!(updated_at: 1.day.from_now)
