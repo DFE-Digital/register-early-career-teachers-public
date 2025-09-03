@@ -83,6 +83,7 @@ module SchoolPartnerships
       SchoolPartnership
         .eager_load(
           :delivery_partner,
+          :ongoing_training_periods,
           school: :gias_school,
           active_lead_provider: :lead_provider
         )
