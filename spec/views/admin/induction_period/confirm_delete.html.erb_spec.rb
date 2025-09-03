@@ -4,7 +4,9 @@ RSpec.describe 'admin/induction_periods/confirm_delete.html.erb' do
   let(:induction_period) { FactoryBot.create(:induction_period, teacher:) }
 
   before do
+    assign(:teacher, teacher)
     assign(:induction_period, induction_period)
+    assign(:delete_induction, InductionPeriods::DeleteInductionPeriod.new(induction_period:))
   end
 
   it 'renders a warning' do
