@@ -1,4 +1,11 @@
 describe School do
+  describe "declarative updates" do
+    let(:instance) { FactoryBot.create(:school) }
+    let(:target) { instance }
+
+    it_behaves_like "a declarative metadata model", on_event: %i[create]
+  end
+
   describe "declarative touch" do
     let(:instance) { FactoryBot.create(:school) }
 

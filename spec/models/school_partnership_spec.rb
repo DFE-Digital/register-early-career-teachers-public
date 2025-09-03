@@ -1,8 +1,7 @@
 describe SchoolPartnership do
-  describe "declarative touch" do
-    let(:instance) { FactoryBot.create(:school_partnership) }
-
-    context "target school_partnership" do
+  describe "declarative updates" do
+    describe "declarative touch" do
+      let(:instance) { FactoryBot.create(:school_partnership) }
       let(:target) { instance }
 
       def will_change_attribute(attribute_to_change:, new_value:)
@@ -10,6 +9,13 @@ describe SchoolPartnership do
       end
 
       it_behaves_like "a declarative touch model", when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
+    end
+
+    describe "declarative metadata" do
+      let(:instance) { FactoryBot.create(:school_partnership, school: target) }
+      let!(:target) { FactoryBot.create(:school) }
+
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
     end
   end
 
