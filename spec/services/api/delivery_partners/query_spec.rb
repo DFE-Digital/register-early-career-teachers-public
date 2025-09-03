@@ -1,4 +1,4 @@
-RSpec.describe DeliveryPartners::Query do
+RSpec.describe API::DeliveryPartners::Query do
   describe "#delivery_partners" do
     it "returns all delivery partners" do
       delivery_partners = FactoryBot.create_list(:delivery_partner, 3)

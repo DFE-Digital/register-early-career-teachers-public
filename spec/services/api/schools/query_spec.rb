@@ -1,4 +1,4 @@
-RSpec.describe Schools::Query do
+RSpec.describe API::Schools::Query do
   describe "#schools" do
     subject(:query) { described_class.new(**query_params) }
 

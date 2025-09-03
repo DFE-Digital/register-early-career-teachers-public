@@ -1,4 +1,4 @@
-RSpec.describe Statements::Query do
+RSpec.describe API::Statements::Query do
   describe "#statements" do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
@@ -171,7 +171,7 @@ RSpec.describe Statements::Query do
         end
 
         it 'raises an error when searching by an invalid fee type' do
-          expect { described_class.new(fee_type: "something_else") }.to raise_error(Statements::Query::InvalidFeeTypeError)
+          expect { described_class.new(fee_type: "something_else") }.to raise_error(described_class::InvalidFeeTypeError)
         end
       end
     end
