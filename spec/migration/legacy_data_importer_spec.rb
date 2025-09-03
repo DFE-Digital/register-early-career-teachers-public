@@ -50,5 +50,11 @@ RSpec.describe LegacyDataImporter do
       expect([migrator1, migrator2]).to all(receive(:reset!))
       importer.reset!
     end
+
+    it "calls .destroy_all_metadata! on the manager" do
+      [migrator1, migrator2].each { allow(it).to receive(:reset!) }
+      expect(Metadata::Manager).to receive(:destroy_all_metadata!)
+      importer.reset!
+    end
   end
 end

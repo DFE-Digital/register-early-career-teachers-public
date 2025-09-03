@@ -11,6 +11,12 @@ module Metadata::Handlers
       upsert_lead_provider_contract_period_metadata!
     end
 
+    class << self
+      def destroy_all_metadata!
+        truncate_models!(Metadata::SchoolContractPeriod, Metadata::SchoolLeadProviderContractPeriod)
+      end
+    end
+
   private
 
     def upsert_contract_period_metadata!

@@ -8,6 +8,10 @@ module Metadata
       def refresh_all_metadata!(async: false)
         Resolver.all_handlers.each { it.refresh_all_metadata!(async:) }
       end
+
+      def destroy_all_metadata!
+        Resolver.all_handlers.each(&:destroy_all_metadata!)
+      end
     end
 
   private

@@ -47,7 +47,7 @@ RSpec.describe Metadata::Manager do
     let(:async) { true }
 
     it "calls refresh_metadata! for each handler with async: true" do
-      expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!).with(async:)
+      expect(Metadata::Resolver.all_handlers).to all(receive(:refresh_all_metadata!).with(async:))
 
       refresh_all_metadata
     end
@@ -56,10 +56,20 @@ RSpec.describe Metadata::Manager do
       let(:async) { false }
 
       it "calls refresh_metadata! for each handler with async: false" do
-        expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!).with(async:)
+        expect(Metadata::Resolver.all_handlers).to all(receive(:refresh_all_metadata!).with(async:))
 
         refresh_all_metadata
       end
+    end
+  end
+
+  describe ".destroy_all_metadata!" do
+    subject(:destroy_all_metadata) { described_class.destroy_all_metadata! }
+
+    it "calls destroy_all_metadata! for each handler" do
+      expect(Metadata::Resolver.all_handlers).to all(receive(:destroy_all_metadata!))
+
+      destroy_all_metadata
     end
   end
 end
