@@ -1,13 +1,11 @@
-require_relative 'session_user_context'
-
 RSpec.describe Sessions::Users::AppropriateBodyPersona do
   subject(:appropriate_body_persona) do
     described_class.new(email:, name:, appropriate_body_id:, last_active_at:)
   end
 
+  let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:email) { 'appropriate_body_persona@email.com' }
   let(:name) { 'Christopher Lee' }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:appropriate_body_id) { appropriate_body.id }
   let(:last_active_at) { 4.minutes.ago }
 
@@ -15,34 +13,28 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     let(:user_props) { { email:, name:, appropriate_body_id: } }
   end
 
-  describe '.PROVIDER' do
-    it 'returns :persona' do
-      expect(described_class::PROVIDER).to be(:persona)
+  context 'when personas are disabled' do
+    before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
+
+    it do
+      expect { appropriate_body_persona }.to raise_error(described_class::AppropriateBodyPersonaDisabledError)
     end
   end
 
-  describe '.USER_TYPE' do
-    it 'returns :appropriate_body_user' do
-      expect(described_class::USER_TYPE).to be(:appropriate_body_user)
+  context 'when no appropriate body is found' do
+    let(:appropriate_body_id) { SecureRandom.uuid }
+
+    it do
+      expect { appropriate_body_persona }.to raise_error(described_class::UnknownAppropriateBodyId, appropriate_body_id)
     end
   end
 
-  context 'initialisation' do
-    describe "when personas are disabled" do
-      before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
+  describe '#provider' do
+    it { expect(appropriate_body_persona.provider).to be(:persona) }
+  end
 
-      it 'fails with a DfEPersonaDisabledError' do
-        expect { subject }.to raise_error(described_class::AppropriateBodyPersonaDisabledError)
-      end
-    end
-
-    describe "when an appropriate body can't be found from the given id" do
-      let(:appropriate_body_id) { SecureRandom.uuid }
-
-      it 'fails with an UnknownAppropriateBodyId error' do
-        expect { subject }.to raise_error(described_class::UnknownAppropriateBodyId, appropriate_body_id)
-      end
-    end
+  describe '#user_type' do
+    it { expect(appropriate_body_persona.user_type).to be(:appropriate_body_user) }
   end
 
   describe '#appropriate_body' do
@@ -58,15 +50,11 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
   end
 
   describe '#appropriate_body_user?' do
-    it 'returns true' do
-      expect(appropriate_body_persona).to be_appropriate_body_user
-    end
+    it { expect(appropriate_body_persona).to be_appropriate_body_user }
   end
 
   describe '#dfe_user?' do
-    it 'returns false' do
-      expect(appropriate_body_persona).not_to be_dfe_user
-    end
+    it { expect(appropriate_body_persona).not_to be_dfe_user }
   end
 
   describe '#event_author_params' do
@@ -92,19 +80,15 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
   end
 
   describe '#school_user?' do
-    it 'returns false' do
-      expect(appropriate_body_persona).not_to be_school_user
-    end
+    it { expect(appropriate_body_persona).not_to be_school_user }
   end
 
-  describe '#dfe_sign_in_authorisable?' do
-    it 'returns false' do
-      expect(appropriate_body_persona.dfe_sign_in_authorisable?).to be_falsey
-    end
+  describe '#has_authorised_role?' do
+    it { expect(appropriate_body_persona).to have_authorised_role }
   end
 
   describe '#to_h' do
-    it 'returns a hash including only relevant attributes' do
+    it 'returns attributes for session storage' do
       expect(appropriate_body_persona.to_h).to eql({
         'type' => 'Sessions::Users::AppropriateBodyPersona',
         'email' => email,
@@ -115,13 +99,7 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     end
   end
 
-  describe '#user_type' do
-    it('is :appropriate_body_user') { expect(appropriate_body_persona.user_type).to be(:appropriate_body_user) }
-  end
-
   describe '#user' do
-    it 'returns nil' do
-      expect(appropriate_body_persona.user).to be_nil
-    end
+    it { expect(appropriate_body_persona.user).to be_nil }
   end
 end
