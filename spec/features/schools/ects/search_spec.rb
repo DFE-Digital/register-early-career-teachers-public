@@ -2,7 +2,6 @@ RSpec.describe 'Searching for an ECT', type: :feature do
   include_context 'test trs api client'
 
   before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
     given_there_is_a_school_with_teachers
     and_i_am_logged_in_as_a_school_user
     and_i_am_on_the_ects_list_page

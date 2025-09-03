@@ -53,7 +53,7 @@ private
 
   def sign_in_with_appropriate_body_user(appropriate_body:, email:, first_name:, last_name:, uid:)
     Rails.logger.debug("Signing in with dfe sign in as appropriate body user")
-    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: %w[AppropriateBodyUser]))
+    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
     omniauth_hash = mock_dfe_sign_in_provider!(email:,
                                                uid:,
                                                first_name:,
@@ -68,7 +68,7 @@ private
 
   def sign_in_with_school_user(school:, email:, first_name:, last_name:, uid:)
     Rails.logger.debug("Signing in with dfe sign in as appropriate body user")
-    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: %w[SchoolUser]))
+    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
     omniauth_hash = mock_dfe_sign_in_provider!(email:,
                                                uid:,
                                                first_name:,
