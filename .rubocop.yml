@@ -90,7 +90,7 @@ Rails/UnknownEnv:
 Rails/SkipsModelValidations:
   Enabled: true
   Exclude:
-    - spec/support/shared_examples/declarative_touch.rb
+    - spec/support/shared_examples/declarative_updates.rb
 
 Rails/StrongParametersExpect:
   Enabled: true
