@@ -28,7 +28,8 @@ RSpec.describe ParityCheck::DynamicRequestContent do
 
     context "when fetching school_id" do
       let(:identifier) { :school_id }
-      let!(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, active_lead_provider:) }
       let!(:school) { FactoryBot.create(:school, :eligible, :not_cip_only) }
 
       before do

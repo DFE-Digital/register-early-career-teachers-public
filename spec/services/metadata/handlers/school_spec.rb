@@ -13,6 +13,8 @@ RSpec.describe Metadata::Handlers::School do
     subject(:refresh_metadata) { instance.refresh_metadata! }
 
     describe "SchoolContractPeriod" do
+      before { Metadata::SchoolContractPeriod.destroy_all }
+
       it "creates metadata for the school and contract period" do
         expect { refresh_metadata }.to change(Metadata::SchoolContractPeriod, :count).by(1)
 
@@ -58,6 +60,8 @@ RSpec.describe Metadata::Handlers::School do
     end
 
     describe "SchoolLeadProviderContractPeriod" do
+      before { Metadata::SchoolLeadProviderContractPeriod.destroy_all }
+
       it "creates metadata for the school, lead provider and contract period" do
         expect { refresh_metadata }.to change(Metadata::SchoolLeadProviderContractPeriod, :count).by(1)
 
