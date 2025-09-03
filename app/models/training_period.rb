@@ -46,7 +46,6 @@ class TrainingPeriod < ApplicationRecord
   # Delegations
   delegate :name, to: :delivery_partner, prefix: true, allow_nil: true
   delegate :name, to: :lead_provider, prefix: true, allow_nil: true
-  delegate :name, to: :expression_of_interest_lead_provider, prefix: :expression_of_interest_lead_provider, allow_nil: true
 
   def for_ect?
     ect_at_school_period_id.present?
