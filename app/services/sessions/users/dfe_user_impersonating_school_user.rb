@@ -5,7 +5,7 @@ module Sessions
 
       attr_reader :original_type, :school
 
-      USER_TYPE = :school_user_impersonating_school_user
+      USER_TYPE = :dfe_user_impersonating_school_user
 
       def initialize(email:, school_urn:, original_type:, **)
         @user = user_from(email)

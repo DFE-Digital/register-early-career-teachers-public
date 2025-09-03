@@ -7,6 +7,10 @@ describe 'Sessions::Users::DfEUserImpersonatingSchoolUser' do
   let!(:school) { FactoryBot.create(:school, urn: school_urn) }
   let(:original_type) { 'Sessions::Users::SchoolPersona' }
 
+  it "has user type :dfe_user_impersonating_school_user" do
+    expect(Sessions::Users::DfEUserImpersonatingSchoolUser::USER_TYPE).to be(:dfe_user_impersonating_school_user)
+  end
+
   describe 'initialization' do
     it { expect(dfe_user_impersonating_school_user.user).to eql(user) }
     it { expect(dfe_user_impersonating_school_user.school).to eql(school) }
