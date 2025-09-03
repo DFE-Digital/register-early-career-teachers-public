@@ -30,7 +30,6 @@ RSpec.describe 'Registering a mentor', :js do
 
     then_i_should_be_taken_to_mentoring_at_your_school_only_page
     when_i_select_yes_they_will_be_mentoring_at_our_school_only
-
     then_i_should_be_taken_to_mentor_start_date_page
     when_i_enter_mentor_start_date
     and_i_click_continue
