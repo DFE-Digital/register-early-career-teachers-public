@@ -49,8 +49,7 @@
 <%= form_with(
       model: @delete_induction,
       url: admin_teacher_induction_period_path(@induction_period.teacher, @induction_period),
-      method: :delete,
-      class: "govuk-!-margin-bottom-8"
+      method: :delete
     ) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
