@@ -59,39 +59,4 @@ describe 'DfESignIn::AccessLevel' do
       end
     end
   end
-
-  describe '#has_register_ect_access_role?' do
-    subject { DfESignIn::AccessLevel.from_response_body(role_data).has_register_ect_access_role? }
-
-    let(:role_data) do
-      {
-        "userId" => "user-id",
-        "serviceId" => "service-id",
-        "organisationId" => "organisation-id",
-        "roles" => [
-          {
-            "id" => "role-1",
-            "name" => "Role A",
-            "code" => code,
-            "numericId" => "1234",
-            "status" => {
-              "id" => 1
-            }
-          }
-        ]
-      }
-    end
-
-    context 'when the role is registerECTsAccess' do
-      let(:code) { 'registerECTsAccess' }
-
-      it { is_expected.to be(true) }
-    end
-
-    context 'when the role is registerECTsAccess' do
-      let(:code) { 'somethingElse' }
-
-      it { is_expected.to be(false) }
-    end
-  end
 end

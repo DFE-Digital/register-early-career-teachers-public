@@ -2,6 +2,10 @@ RSpec.describe 'ECT summary' do
   let(:ect) { FactoryBot.create(:ect_at_school_period, school:) }
   let(:school) { FactoryBot.create(:school) }
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   describe "GET #index" do
     context "when not signed in" do
       it "redirects to the rot page" do
