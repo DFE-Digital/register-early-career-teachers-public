@@ -30,7 +30,8 @@ module Sessions
 
       delegate :urn, to: :school, prefix: true, allow_nil: true
 
-      # @return [Hash] session data
+      def sign_out_path = '/sign-out'
+
       def to_h
         {
           "type" => self.class.name,

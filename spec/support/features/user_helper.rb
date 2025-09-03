@@ -1,29 +1,11 @@
 module UserHelper
-  def sign_in_as_multi_role_user(appropriate_body:,
-                                 school:,
-                                 email: Faker::Internet.email,
-                                 first_name: Faker::Name.first_name,
-                                 last_name: Faker::Name.last_name,
-                                 uid: Faker::Internet.uuid)
-    Rails.logger.debug("Signing in with dfe sign in as an SIT from an AB School")
-    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: %w[SchoolUser AppropriateBodyUser]))
-    mock_dfe_sign_in_provider!(email:,
-                               uid:,
-                               first_name:,
-                               last_name:,
-                               organisation_id: appropriate_body.dfe_sign_in_organisation_id,
-                               organisation_urn: school.urn)
-    page.goto("/auth/dfe/callback")
-    stop_mocking_dfe_sign_in_provider!
-  end
-
   def sign_in_as_appropriate_body_user(appropriate_body:,
                                        email: Faker::Internet.email,
                                        first_name: Faker::Name.first_name,
                                        last_name: Faker::Name.last_name,
                                        uid: Faker::Internet.uuid)
     Rails.logger.debug("Signing in with dfe sign in as appropriate body user")
-    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: %w[AppropriateBodyUser]))
+    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
     mock_dfe_sign_in_provider!(email:,
                                uid:,
                                first_name:,
@@ -39,7 +21,7 @@ module UserHelper
                              last_name: Faker::Name.last_name,
                              uid: Faker::Internet.uuid)
     Rails.logger.debug("Signing in with dfe sign in as appropriate body user")
-    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: %w[SchoolUser]))
+    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new)
     mock_dfe_sign_in_provider!(email:,
                                uid:,
                                first_name:,
@@ -55,6 +37,21 @@ module UserHelper
     page.get_by_role("button", name: 'Request code to sign in').click
     page.get_by_label('Sign in code').type(ROTP::TOTP.new(user.reload.otp_secret, issuer: "ECF2").now)
     page.get_by_role("button", name: 'Sign in').click
+  end
+
+  def sign_in_as_appropriate_body_persona
+    page.goto("/personas")
+    page.get_by_role("button", name: 'Sign-in as Fred Jones').click
+  end
+
+  def sign_in_as_school_persona
+    page.goto("/personas")
+    page.get_by_role("button", name: 'Sign-in as Serena Moon').click
+  end
+
+  def sign_in_as_dfe_persona
+    page.goto("/personas")
+    page.get_by_role("button", name: 'Sign-in as Daphne Blake').click
   end
 
   def sign_out

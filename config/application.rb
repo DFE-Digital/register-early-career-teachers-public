@@ -65,7 +65,7 @@ module RegisterEarlyCareerTeachers
       rect_url: ENV['PARITY_CHECK_RECT_URL'],
     }
 
-    config.dfe_sign_in_issuer = ENV.fetch('DFE_SIGN_IN_ISSUER', 'https://test-oidc.signin.education.gov.uk')
+    config.dfe_sign_in_issuer = ENV.fetch('DFE_SIGN_IN_ISSUER', 'https://dev-oidc.signin.education.gov.uk')
     config.dfe_sign_in_client_id = ENV['DFE_SIGN_IN_CLIENT_ID']
     config.dfe_sign_in_secret = ENV['DFE_SIGN_IN_SECRET']
     config.dfe_sign_in_redirect_uri = ENV['DFE_SIGN_IN_REDIRECT_URI']

@@ -4,7 +4,6 @@ RSpec.describe 'Assign existing mentor wizard', type: :request do
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
 
   before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
     FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: ect)
   end
 

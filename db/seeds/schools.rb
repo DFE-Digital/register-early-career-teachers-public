@@ -9,11 +9,6 @@ school_types = {
 
 [
   {
-    urn: 141_666,
-    name: 'Angel Oak Academy', # Used by developers for DfE Sign In
-    school_type: :state,
-  },
-  {
     urn: 3_375_958,
     name: "Ackley Bridge",
     school_type: :state,
