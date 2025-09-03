@@ -9,7 +9,7 @@ RSpec.describe Schools::RegisterMentorWizard::ProgrammeChoicesStep do
   let(:use_same_programme_choices) { 'yes' }
 
   describe '#previous_step' do
-    it { expect(step.previous_step).to eq(:started_on) }
+    it { expect(step.previous_step).to eq(:previous_training_period_details) }
   end
 
   describe '#valid?' do
