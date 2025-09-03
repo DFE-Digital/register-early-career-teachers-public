@@ -1,4 +1,4 @@
-RSpec.describe "Appropriate Body bulk actions upload", type: :request do
+RSpec.describe 'Appropriate Body bulk actions upload', type: :request do
   include AuthHelper
   include ActionDispatch::TestProcess
 
@@ -17,7 +17,7 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
   include_context 'test trs api client'
 
   describe 'POST /appropriate-body/bulk/actions' do
-    it "enqueues a job" do
+    it 'enqueues a job' do
       expect {
         post ab_batch_actions_path, params: {
           pending_induction_submission_batch: { csv_file: }
@@ -25,7 +25,7 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
       }.to have_enqueued_job(ProcessBatchActionJob)
     end
 
-    it "records an upload started event" do
+    it 'records an upload started event' do
       allow(Events::Record).to receive(:record_bulk_upload_started_event!).and_call_original
 
       post ab_batch_actions_path, params: {
@@ -39,11 +39,11 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
 
       perform_enqueued_jobs
 
-      expect(Event.last.event_type).to eq("bulk_upload_started")
+      expect(Event.last.event_type).to eq('bulk_upload_started')
       expect(Event.last.pending_induction_submission_batch.id).to eq(batch.id)
     end
 
-    it "redirects" do
+    it 'redirects' do
       post ab_batch_actions_path, params: {
         pending_induction_submission_batch: { csv_file: }
       }
@@ -53,12 +53,12 @@ RSpec.describe "Appropriate Body bulk actions upload", type: :request do
       expect(response.body).to include("We're processing your CSV file, it could take up to 5 minutes.")
     end
 
-    context "with an unsupported file type" do
+    context 'with an unsupported file type' do
       let(:csv_file) do
         fixture_file_upload('spec/fixtures/invalid_not_a_csv_file.txt', 'text/plain')
       end
 
-      it "shows error message" do
+      it 'shows error message' do
         post ab_batch_actions_path, params: {
           pending_induction_submission_batch: { csv_file: }
         }
