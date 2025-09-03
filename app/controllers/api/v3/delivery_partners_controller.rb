@@ -13,7 +13,7 @@ module API
     private
 
       def delivery_partners_query(conditions: {})
-        DeliveryPartners::Query.new(**(default_conditions.merge(conditions)).compact)
+        API::DeliveryPartners::Query.new(**(default_conditions.merge(conditions)).compact)
       end
 
       def default_conditions
@@ -35,7 +35,7 @@ module API
       end
 
       def to_json(obj)
-        DeliveryPartnerSerializer.render(obj, root: "data", **default_conditions)
+        API::DeliveryPartnerSerializer.render(obj, root: "data", **default_conditions)
       end
     end
   end

@@ -11,7 +11,7 @@ module API
       end
 
       def create
-        service = SchoolPartnerships::Create.new({
+        service = ::SchoolPartnerships::Create.new({
           lead_provider_id: current_lead_provider.id,
           contract_period_year: create_partnership_params[:cohort],
           school_api_id: create_partnership_params[:school_id],
@@ -24,7 +24,7 @@ module API
       def update
         school_partnership = partnerships_query.school_partnership_by_api_id(api_id)
 
-        service = SchoolPartnerships::Update.new({
+        service = ::SchoolPartnerships::Update.new({
           school_partnership_id: school_partnership.id,
           delivery_partner_api_id: update_partnership_params[:delivery_partner_id],
         })
@@ -44,7 +44,7 @@ module API
 
       def partnerships_query(conditions: {})
         conditions[:lead_provider_id] = current_lead_provider.id
-        SchoolPartnerships::Query.new(**conditions.compact)
+        API::SchoolPartnerships::Query.new(**conditions.compact)
       end
 
       def partnerships_params
@@ -64,7 +64,7 @@ module API
       end
 
       def to_json(obj)
-        PartnershipSerializer.render(obj, root: "data")
+        API::PartnershipSerializer.render(obj, root: "data")
       end
     end
   end

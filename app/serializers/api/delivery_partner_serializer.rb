@@ -1,4 +1,4 @@
-class DeliveryPartnerSerializer < Blueprinter::Base
+class API::DeliveryPartnerSerializer < Blueprinter::Base
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 

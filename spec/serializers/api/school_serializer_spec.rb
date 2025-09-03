@@ -1,4 +1,4 @@
-describe SchoolSerializer, type: :serializer do
+describe API::SchoolSerializer, type: :serializer do
   subject(:response) do
     options = { contract_period_year: contract_period.year, lead_provider_id: lead_provider.id }
     JSON.parse(described_class.render(school, **options))

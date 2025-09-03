@@ -14,7 +14,7 @@ module API
 
       def statements_query(conditions: {})
         conditions[:lead_provider_id] = current_lead_provider.id
-        Statements::Query.new(**conditions.compact)
+        API::Statements::Query.new(**conditions.compact)
       end
 
       def statement_params
@@ -26,7 +26,7 @@ module API
       end
 
       def to_json(obj)
-        StatementSerializer.render(obj, root: "data")
+        API::StatementSerializer.render(obj, root: "data")
       end
     end
   end
