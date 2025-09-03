@@ -34,7 +34,9 @@ module Migrators
     end
 
     def migrate!
-      migrate(self.class.schools) do |ecf_school|
+      schools_with_associations = self.class.schools.preload(:partnerships, :induction_records)
+
+      migrate(schools_with_associations) do |ecf_school|
         gias_school = find_gias_school_by_urn(ecf_school.urn.to_i) || migrate_school!(ecf_school)
         if check_gias_school(gias_school:, ecf_school:)
           [
@@ -82,11 +84,11 @@ module Migrators
       Builders::GIAS::School.new(ecf_school).build if migrateable_school?(ecf_school)
     end
 
-    def migrateable_school?(ecf_school) = open_school_with_partnerships?(ecf_school) || not_open_school_with_induction_records?(ecf_school)
+    def migrateable_school?(ecf_school)
+      return ecf_school.partnerships.any? if ecf_school.open?
 
-    def not_open_school_with_induction_records?(ecf_school) = !ecf_school.open? && ecf_school.induction_records.exists?
-
-    def open_school_with_partnerships?(ecf_school) = ecf_school.open? && ecf_school.partnerships.exists?
+      ecf_school.induction_records.any?
+    end
 
     def update_gias_school!(gias_school:, api_id:) = gias_school.update!(api_id:)
 
