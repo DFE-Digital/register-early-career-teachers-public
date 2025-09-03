@@ -4,6 +4,10 @@ RSpec.describe 'Registering a mentor', :js do
 
   let(:trn) { '3002586' }
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'mentor has existing mentorship and is not mentoring at new school only' do
     given_there_is_a_school_in_the_service
     and_the_school_is_in_a_partnership_with_a_lead_provider

@@ -1,6 +1,10 @@
 RSpec.describe 'Registering a mentor', :js do
   include_context 'test trs api client'
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   let(:trn) { '3002586' }
 
   scenario 'Teacher with email in use' do
