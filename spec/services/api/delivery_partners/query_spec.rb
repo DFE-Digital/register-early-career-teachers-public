@@ -81,7 +81,7 @@ RSpec.describe API::DeliveryPartners::Query do
           delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2).delivery_partner
           delivery_partner3 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider3).delivery_partner
 
-          query1 = described_class.new(contract_period_years: "#{contract_period1.year},#{contract_period2.year}")
+          query1 = described_class.new(contract_period_years: [contract_period1.year, contract_period2.year])
           expect(query1.delivery_partners).to contain_exactly(delivery_partner1, delivery_partner2)
 
           query2 = described_class.new(contract_period_years: [contract_period2.year.to_s, contract_period3.year.to_s])
@@ -97,7 +97,7 @@ RSpec.describe API::DeliveryPartners::Query do
         it "ignores invalid `contract_period_years`" do
           delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
 
-          query = described_class.new(contract_period_years: "#{contract_period1.year},invalid_year")
+          query = described_class.new(contract_period_years: [contract_period1.year, "12345678"])
 
           expect(query.delivery_partners).to contain_exactly(delivery_partner1)
         end
@@ -126,21 +126,21 @@ RSpec.describe API::DeliveryPartners::Query do
 
       describe "order by created_at, in descending order" do
         it "returns delivery partners in correct order" do
-          query = described_class.new(sort: "-created_at")
+          query = described_class.new(sort: { created_at: :desc })
           expect(query.delivery_partners).to eq([lead_provider_delivery_partnership1.delivery_partner, lead_provider_delivery_partnership2.delivery_partner])
         end
       end
 
       describe "order by updated_at, in ascending order" do
         it "returns delivery partners in correct order" do
-          query = described_class.new(sort: "+updated_at")
+          query = described_class.new(sort: { updated_at: :asc })
           expect(query.delivery_partners).to eq([lead_provider_delivery_partnership2.delivery_partner, lead_provider_delivery_partnership1.delivery_partner])
         end
       end
 
       describe "order by updated_at, in descending order" do
         it "returns delivery partners in correct order" do
-          query = described_class.new(sort: "-updated_at")
+          query = described_class.new(sort: { updated_at: :desc })
           expect(query.delivery_partners).to eq([lead_provider_delivery_partnership1.delivery_partner, lead_provider_delivery_partnership2.delivery_partner])
         end
       end

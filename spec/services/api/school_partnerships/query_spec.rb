@@ -79,7 +79,7 @@ describe API::SchoolPartnerships::Query do
         end
 
         it "filters by multiple `contract_period_years`" do
-          query1 = described_class.new(contract_period_years: "#{contract_period1.year},#{contract_period2.year}")
+          query1 = described_class.new(contract_period_years: [contract_period1.year, contract_period2.year])
           expect(query1.school_partnerships).to contain_exactly(school_partnership1, school_partnership2)
 
           query2 = described_class.new(contract_period_years: [contract_period2.year.to_s, contract_period3.year.to_s])
@@ -93,7 +93,7 @@ describe API::SchoolPartnerships::Query do
         end
 
         it "ignores invalid `contract_period_years`" do
-          query = described_class.new(contract_period_years: "#{contract_period1.year},invalid_year")
+          query = described_class.new(contract_period_years: [contract_period1.year, "12345678"])
 
           expect(query.school_partnerships).to contain_exactly(school_partnership1)
         end
@@ -152,7 +152,7 @@ describe API::SchoolPartnerships::Query do
         end
 
         it "filters by multiple `delivery_partner_api_ids`" do
-          query1 = described_class.new(delivery_partner_api_ids: "#{school_partnership1.delivery_partner.api_id},#{school_partnership2.delivery_partner.api_id}")
+          query1 = described_class.new(delivery_partner_api_ids: [school_partnership1.delivery_partner.api_id, school_partnership2.delivery_partner.api_id])
           expect(query1.school_partnerships).to contain_exactly(school_partnership1, school_partnership2)
 
           query2 = described_class.new(delivery_partner_api_ids: [school_partnership2.delivery_partner.api_id, school_partnership3.delivery_partner.api_id])
@@ -166,7 +166,7 @@ describe API::SchoolPartnerships::Query do
         end
 
         it "ignores invalid `delivery_partner_api_ids`" do
-          query = described_class.new(delivery_partner_api_ids: "#{school_partnership1.delivery_partner.api_id},invalid_api_id")
+          query = described_class.new(delivery_partner_api_ids: [school_partnership1.delivery_partner.api_id, "invalid_api_id"])
 
           expect(query.school_partnerships).to contain_exactly(school_partnership1)
         end
@@ -192,21 +192,21 @@ describe API::SchoolPartnerships::Query do
 
       describe "order by created_at, in descending order" do
         it "returns school partnerships in correct order" do
-          query = described_class.new(sort: "-created_at")
+          query = described_class.new(sort: { created_at: :desc })
           expect(query.school_partnerships).to eq([school_partnership1, school_partnership2])
         end
       end
 
       describe "order by updated_at, in ascending order" do
         it "returns school partnerships in correct order" do
-          query = described_class.new(sort: "+updated_at")
+          query = described_class.new(sort: { updated_at: :asc })
           expect(query.school_partnerships).to eq([school_partnership2, school_partnership1])
         end
       end
 
       describe "order by updated_at, in descending order" do
         it "returns school partnerships in correct order" do
-          query = described_class.new(sort: "-updated_at")
+          query = described_class.new(sort: { updated_at: :desc })
           expect(query.school_partnerships).to eq([school_partnership1, school_partnership2])
         end
       end
