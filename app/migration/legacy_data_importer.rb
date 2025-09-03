@@ -14,6 +14,8 @@ class LegacyDataImporter
     # we want to do this?
     DataMigration.all.find_each(&:destroy!)
 
+    Metadata::Manager.destroy_all_metadata!
+
     Migrators::Base.migrators_in_dependency_order.reverse.each(&:reset!)
   end
 end
