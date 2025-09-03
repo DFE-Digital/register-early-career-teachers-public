@@ -2,6 +2,10 @@ module Schools
   class ECTTrainingDetailsComponent < ViewComponent::Base
     include ProgrammeHelper
 
+    NOT_AVAILABLE = 'Not available'
+    YET_TO_BE_REPORTED = 'Yet to be reported by the lead provider'
+    DELIVERY_PARTNER_CHANGE_HINT = 'To change the delivery partner, you must contact the lead provider'
+
     attr_reader :ect_at_school_period, :training_period
 
     def initialize(ect_at_school_period:, training_period:)
@@ -32,35 +36,38 @@ module Schools
     end
 
     def training_programme_row
-      { key: { text: 'Training programme' }, value: { text: training_programme_display_name } }
+      summary_list_row('Training programme', training_programme_display_name)
     end
 
     def lead_provider_row
-      {
-        key: { text: 'Lead provider' },
-        value: { text: lead_provider_display_text }
-      }
+      summary_list_row('Lead provider', lead_provider_display_text)
     end
 
     def delivery_partner_row
-      {
-        key: { text: 'Delivery partner' },
-        value: { text: delivery_partner_display_text }
-      }
+      summary_list_row('Delivery partner', delivery_partner_display_text)
+    end
+
+    def summary_list_row(key, value)
+      { key: { text: key }, value: { text: value } }
     end
 
     def lead_provider_display_text
-      return fallback_lead_provider_name unless partnership_confirmed? || training_period.expression_of_interest?
+      return NOT_AVAILABLE if lead_provider_name.blank?
 
-      if partnership_confirmed?
-        provider_name = training_period.lead_provider_name
-        status_text = "Confirmed by #{provider_name}"
+      status_text = lead_provider_status_text(lead_provider_name)
+      provider_display_with_status(lead_provider_name, status_text)
+    end
+
+    def delivery_partner_display_text
+      if partnership_confirmed? && training_period.delivery_partner_name.present?
+        provider_display_with_status(training_period.delivery_partner_name, DELIVERY_PARTNER_CHANGE_HINT)
       else
-        provider_name = training_period.expression_of_interest_lead_provider_name
-        status_text = "Awaiting confirmation by #{provider_name}"
+        YET_TO_BE_REPORTED
       end
+    end
 
-      return 'Not available' if provider_name.blank?
+    def provider_display_with_status(provider_name, status_text)
+      return NOT_AVAILABLE if provider_name.blank?
 
       safe_join([
         provider_name,
@@ -69,26 +76,26 @@ module Schools
       ])
     end
 
-    def delivery_partner_display_text
-      return yet_to_be_reported_message unless partnership_confirmed? && training_period.delivery_partner_name.present?
+    def lead_provider_name
+      case
+      when partnership_confirmed?
+        training_period.lead_provider_name
+      when training_period.only_expression_of_interest?
+        training_period.expression_of_interest_lead_provider&.name
+      end
+    end
 
-      safe_join([
-        training_period.delivery_partner_name,
-        tag.br,
-        tag.span("To change the delivery partner, you must contact the lead provider", class: 'govuk-hint')
-      ])
+    def lead_provider_status_text(provider_name)
+      case
+      when partnership_confirmed?
+        "Confirmed by #{provider_name}"
+      when training_period.only_expression_of_interest?
+        "Awaiting confirmation by #{provider_name}"
+      end
     end
 
     def partnership_confirmed?
       training_period.school_partnership.present?
-    end
-
-    def fallback_lead_provider_name
-      training_period.lead_provider_name || training_period.expression_of_interest_lead_provider_name || 'Not available'
-    end
-
-    def yet_to_be_reported_message
-      'Yet to be reported by the lead provider'
     end
 
     def training_programme_display_name
