@@ -7,6 +7,8 @@ class LegacyDataImporter
     Migrators::Base.migrators_in_dependency_order.each do |migrator|
       migrator.queue if migrator.runnable?
     end
+
+    Metadata::Manager.refresh_all_metadata!(async: true) if DataMigration.incomplete.none?
   end
 
   def reset!
