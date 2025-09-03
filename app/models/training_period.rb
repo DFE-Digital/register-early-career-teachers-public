@@ -1,5 +1,6 @@
 class TrainingPeriod < ApplicationRecord
   include Interval
+  include DeclarativeMetadata
 
   # Enums
   enum :training_programme,
@@ -25,6 +26,8 @@ class TrainingPeriod < ApplicationRecord
 
   has_many :declarations, inverse_of: :training_period
   has_many :events
+
+  refresh_metadata -> { school_partnership&.school }, on_event: %i[create destroy update]
 
   # Validations
   validates :started_on,

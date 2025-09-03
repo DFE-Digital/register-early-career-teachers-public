@@ -1,4 +1,11 @@
 describe DeliveryPartner do
+  describe "declarative updates" do
+    let(:instance) { FactoryBot.create(:delivery_partner) }
+    let(:target) { instance }
+
+    it_behaves_like "a declarative metadata model", on_event: %i[create]
+  end
+
   describe "associations" do
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:lead_provider_delivery_partnerships).inverse_of(:delivery_partner) }

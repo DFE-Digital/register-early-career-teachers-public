@@ -1,4 +1,15 @@
 describe TrainingPeriod do
+  describe "declarative updates" do
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 3.years.ago.to_date, finished_on: nil) }
+    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+    let(:instance) { FactoryBot.create(:training_period, ect_at_school_period:, school_partnership:) }
+    let!(:target) { school_partnership.school }
+
+    describe "declarative metadata" do
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+    end
+  end
+
   describe "enums" do
     it "uses the training programme enum" do
       expect(subject).to define_enum_for(:training_programme)
