@@ -30,7 +30,8 @@ module Sessions
 
       def organisation_name = "Department for Education"
 
-      # @return [Hash] session data
+      def sign_out_path = '/sign-out'
+
       def to_h
         {
           "type" => self.class.name,

@@ -13,8 +13,12 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
   let(:author) do
-    FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+    Sessions::Users::AppropriateBodyUser.new(
+      name: 'A user',
+      email: 'ab_user@something.org',
+      dfe_sign_in_user_id: SecureRandom.uuid,
+      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id
+    )
   end
 
   describe "#initialize" do

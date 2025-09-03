@@ -1,6 +1,6 @@
 RSpec.describe Sessions::Users::Builder do
   describe '#session_user' do
-    subject(:session_user) { described_class.new(omniauth_payload:).session_user }
+    subject { described_class.new(omniauth_payload:).session_user }
 
     let(:email) { Faker::Internet.email }
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -30,63 +30,55 @@ RSpec.describe Sessions::Users::Builder do
       )
     end
 
-    context 'when the provider is DfE Sign In' do
+    context 'when the provider is :dfe_sign_in' do
       let(:provider) { 'dfe_sign_in' }
-      let(:uid) { Faker::Internet.uuid }
-      let(:appropriate_body_id) { nil }
-      let(:school_urn) { nil }
-      let(:dfe_staff) { nil }
-      let(:dfe_sign_in_roles) { [] }
 
-      before do
-        allow_any_instance_of(Organisation::Access).to receive(:roles).and_return(dfe_sign_in_roles)
-      end
-
-      context 'when the AppropriateBody exists and the user has the AppropriateBodyUser role' do
+      context 'when the organisation_id matches an appropriate body record' do
+        let(:uid) { Faker::Internet.uuid }
+        let(:appropriate_body_id) { nil }
+        let(:school_urn) { nil }
+        let(:dfe_staff) { nil }
         let(:organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
         let(:organisation_urn) { nil }
-        let(:dfe_sign_in_roles) { %w[AppropriateBodyUser] }
 
-        it 'returns an appropriate body user session' do
-          expect(session_user).to be_a(Sessions::Users::AppropriateBodyUser)
+        it 'returns an appropriate body user' do
+          expect(subject).to be_a(Sessions::Users::AppropriateBodyUser)
         end
       end
 
-      context 'when the School exists and the user has the SchoolUser role' do
+      context 'when the organisation_urn matches an school record' do
+        let(:uid) { Faker::Internet.uuid }
+        let(:appropriate_body_id) { nil }
+        let(:school_urn) { nil }
+        let(:dfe_staff) { nil }
         let(:organisation_id) { Faker::Internet.uuid }
         let(:organisation_urn) { school.urn }
-        let(:dfe_sign_in_roles) { %w[SchoolUser] }
 
-        it 'returns a school user session' do
-          expect(session_user).to be_a(Sessions::Users::SchoolUser)
+        it 'returns a school user' do
+          expect(subject).to be_a(Sessions::Users::SchoolUser)
         end
       end
 
-      context 'when both the AppropriateBody and School exist and the user has both roles' do
-        let(:organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
-        let(:organisation_urn) { school.urn }
-        let(:dfe_sign_in_roles) { %w[SchoolUser AppropriateBodyUser] }
-
-        it 'defaults to a school user session' do
-          expect(session_user).to be_a(Sessions::Users::SchoolUser)
-        end
-      end
-
-      context 'when neither the AppropriateBody or School exist' do
+      context "when organisation doesn't match an appropriate body or school" do
+        let(:uid) { Faker::Internet.uuid }
+        let(:appropriate_body_id) { nil }
+        let(:school_urn) { nil }
+        let(:dfe_staff) { nil }
         let(:organisation_id) { 'c399f5a7-44e4-4c86-bb4a-e3e2dbe69421' }
         let(:organisation_urn) { nil }
 
-        it do
-          expect { session_user }.to raise_error(described_class::UnknownOrganisation,
-                                                 '#<OmniAuth::AuthHash id="c399f5a7-44e4-4c86-bb4a-e3e2dbe69421" urn=nil>')
+        it 'raises an UnknownOrganisation error' do
+          expect { subject }.to raise_error(described_class::UnknownOrganisation,
+                                            OmniAuth::AuthHash.new(omniauth_payload.extra.raw_info.organisation)
+                                                              .to_s)
         end
       end
     end
 
-    context 'when the provider is a persona' do
+    context 'when the provider is :persona' do
       let(:provider) { 'persona' }
 
-      context 'and personas are not enabled' do
+      context 'when personas are not enabled' do
         let(:uid) { email }
         let(:appropriate_body_id) { nil }
         let(:school_urn) { nil }
@@ -99,12 +91,12 @@ RSpec.describe Sessions::Users::Builder do
           allow(Rails.application.config).to receive(:enable_personas).and_return(false)
         end
 
-        it do
-          expect { session_user }.to raise_error(described_class::UnknownProvider, provider)
+        it 'raises an UnknownProvider error' do
+          expect { subject }.to raise_error(described_class::UnknownProvider, provider)
         end
       end
 
-      context 'and personas are enabled' do
+      context 'when personas are enabled' do
         before do
           allow(Rails.application.config).to receive(:enable_personas).and_return(true)
         end
@@ -119,7 +111,7 @@ RSpec.describe Sessions::Users::Builder do
           let!(:user) { FactoryBot.create(:user, email:) }
 
           it 'returns a dfe persona' do
-            expect(session_user).to be_a(Sessions::Users::DfEPersona)
+            expect(subject).to be_a(Sessions::Users::DfEPersona)
           end
         end
 
@@ -132,7 +124,7 @@ RSpec.describe Sessions::Users::Builder do
           let(:organisation_urn) { nil }
 
           it 'returns a school persona' do
-            expect(session_user).to be_a(Sessions::Users::SchoolPersona)
+            expect(subject).to be_a(Sessions::Users::SchoolPersona)
           end
         end
 
@@ -145,7 +137,7 @@ RSpec.describe Sessions::Users::Builder do
           let(:organisation_urn) { nil }
 
           it 'returns an appropriate body persona' do
-            expect(session_user).to be_a(Sessions::Users::AppropriateBodyPersona)
+            expect(subject).to be_a(Sessions::Users::AppropriateBodyPersona)
           end
         end
 
@@ -157,14 +149,14 @@ RSpec.describe Sessions::Users::Builder do
           let(:organisation_id) { nil }
           let(:organisation_urn) { nil }
 
-          it do
-            expect { session_user }.to raise_error(described_class::UnknownPersonaType)
+          it 'raises an UnknownPersonaType error' do
+            expect { subject }.to raise_error(described_class::UnknownPersonaType)
           end
         end
       end
     end
 
-    context 'with an unknown provider' do
+    context 'when the provider is not :dfe_sign_in or :persona' do
       let(:provider) { 'any_other_provider' }
       let(:uid) { email }
       let(:appropriate_body_id) { nil }
@@ -174,8 +166,8 @@ RSpec.describe Sessions::Users::Builder do
       let(:organisation_urn) { nil }
       let!(:user) { FactoryBot.create(:user, email:) }
 
-      it do
-        expect { session_user }.to raise_error(described_class::UnknownProvider, provider)
+      it 'raises an UnknownProvider error' do
+        expect { subject }.to raise_error(described_class::UnknownProvider, provider)
       end
     end
   end
