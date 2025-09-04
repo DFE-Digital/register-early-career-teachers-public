@@ -21,6 +21,9 @@ module Sessions
 
       delegate :id, to: :appropriate_body, prefix: true, allow_nil: true
 
+      def dfe_sign_in_authorisable? = true
+      def appropriate_body_user? = true
+
       def event_author_params
         {
           author_email: email,

@@ -52,8 +52,12 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     end
   end
 
-  describe '#appropriate_body_user?' do
+  describe 'user type methods' do
     it { expect(appropriate_body_user).to be_appropriate_body_user }
+    it { expect(appropriate_body_user).to be_dfe_sign_in_authorisable }
+    it { expect(appropriate_body_user).not_to be_dfe_user }
+    it { expect(appropriate_body_user).not_to be_school_user }
+    it { expect(appropriate_body_user).not_to be_dfe_user_impersonating_school_user }
   end
 
   describe '#dfe_sign_in_organisation_id' do
@@ -66,10 +70,6 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     it 'returns the id of the user in DfE SignIn' do
       expect(appropriate_body_user.dfe_sign_in_user_id).to eql(dfe_sign_in_user_id)
     end
-  end
-
-  describe '#dfe_user?' do
-    it { expect(appropriate_body_user).not_to be_dfe_user }
   end
 
   describe '#has_authorised_role?' do

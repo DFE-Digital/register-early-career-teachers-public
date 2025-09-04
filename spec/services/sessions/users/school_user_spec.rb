@@ -62,8 +62,12 @@ RSpec.describe Sessions::Users::SchoolUser do
     end
   end
 
-  describe '#dfe_user?' do
+  describe 'user type methods' do
+    it { expect(school_user).to be_school_user }
+    it { expect(school_user).to be_dfe_sign_in_authorisable }
     it { expect(school_user).not_to be_dfe_user }
+    it { expect(school_user).not_to be_appropriate_body_user }
+    it { expect(school_user).not_to be_dfe_user_impersonating_school_user }
   end
 
   describe '#event_author_params' do
@@ -92,10 +96,6 @@ RSpec.describe Sessions::Users::SchoolUser do
     it 'returns the school of the user' do
       expect(school_user.school).to eql(school)
     end
-  end
-
-  describe '#school_user?' do
-    it { expect(school_user).to be_school_user }
   end
 
   describe '#school_urn' do
