@@ -9,8 +9,6 @@ RSpec.describe "Changing an ECT's name" do
 
   let(:school) { FactoryBot.create(:school) }
 
-  let(:invalid_name) { Faker::Lorem.characters(number: 71) }
-
   before do
     given_i_am_logged_in_as_a_school_user
     then_i_should_be_taken_to_the_ects_page
@@ -36,17 +34,41 @@ RSpec.describe "Changing an ECT's name" do
     then_i_should_be_taken_to_the_check_answers_page
     and_i_click_the_back_link
     then_i_should_see_the_change_name_page
-    expect(page.locator('#edit-name-field').input_value).to eq('Professor Sprout')
+    then_the_form_should_be_reset
     when_i_change_the_name_to('Sister Mildred')
     and_i_click_the_continue_button
     and_i_click_the_confirmation_button
     then_the_teacher_name_should_be_corrected
   end
 
-  scenario 'invalid name' do
-    when_i_change_the_name_to(invalid_name)
+  scenario 'cancel and reset' do
+    when_i_change_the_name_to('Professor Sprout')
+    and_i_click_the_continue_button
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_click_the_cancel_link
+    and_i_try_to_change_the_ect_name
+    then_i_should_see_the_change_name_page
+    then_the_form_should_be_reset
+  end
+
+  scenario 'invalid long name' do
+    when_i_change_the_name_to(Faker::Lorem.characters(number: 71))
     and_i_click_the_continue_button
     expect(page.get_by_role('link', name: 'Corrected name must be 70 characters or less')).to be_visible
+    then_i_should_be_taken_to_the_edit_page
+  end
+
+  scenario 'invalid blank name' do
+    when_i_change_the_name_to('')
+    and_i_click_the_continue_button
+    expect(page.get_by_role('link', name: 'Enter the correct full name')).to be_visible
+    then_i_should_be_taken_to_the_edit_page
+  end
+
+  scenario 'invalid same name' do
+    when_i_change_the_name_to('Miriam Margolyes')
+    and_i_click_the_continue_button
+    expect(page.get_by_role('link', name: 'The name must be different from the current name')).to be_visible
     then_i_should_be_taken_to_the_edit_page
   end
 
@@ -62,16 +84,16 @@ RSpec.describe "Changing an ECT's name" do
     page.get_by_role('link', name: 'Miriam Margolyes').click
   end
 
-  def and_i_try_to_change_the_ect_name
-    page.get_by_role('link', name: 'Change').first.click
-  end
-
   def then_i_should_see_the_change_name_page
     expect(page.get_by_text('Change name for Miriam Margolyes')).to be_visible
   end
 
   def when_i_change_the_name_to(name)
     page.get_by_label('What’s the correct full name for Miriam Margolyes?').fill(name)
+  end
+
+  def and_i_try_to_change_the_ect_name
+    page.get_by_role('link', name: 'Change').first.click
   end
 
   def and_i_click_the_continue_button
@@ -84,6 +106,10 @@ RSpec.describe "Changing an ECT's name" do
 
   def and_i_click_the_back_link
     page.get_by_role('link', name: 'Back', exact: true).click
+  end
+
+  def and_i_click_the_cancel_link
+    page.get_by_role('link', name: 'Cancel').click
   end
 
   def then_i_should_be_taken_to_the_edit_page
@@ -104,5 +130,9 @@ RSpec.describe "Changing an ECT's name" do
 
   def then_the_teacher_name_should_be_corrected
     expect(teacher.reload.corrected_name).to eq('Sister Mildred')
+  end
+
+  def then_the_form_should_be_reset
+    expect(page.locator('#edit-name-field').input_value).to eq('Miriam Margolyes')
   end
 end

@@ -29,6 +29,11 @@ RSpec/RequireRailsHelper:
     - "spec/spec_helper.rb"
     - "spec/rails_helper.rb"
 
+# Otherwise it suggests the namespace "ec_ts"
+RSpec/SpecFilePathFormat:
+  CustomTransform:
+    ECTs: ects
+
 Style/StringLiterals:
   EnforcedStyle: single_quotes
 
@@ -114,10 +119,6 @@ Lint/MissingSuper:
 Capybara/CurrentPathExpectation:
   Exclude:
     - "spec/features/**/*" # Excluded in feature specs because we use Playwright (not Capybara) for those. Leaving it enabled elsewhere in case Capybara matchers are used in other test types.
-
-RSpec/SpecFilePathFormat:
-  Exclude:
-    - "spec/components/schools/ects/listing_card_component_spec.rb"
 
 RSpec/EmptyExampleGroup:
   Exclude:
