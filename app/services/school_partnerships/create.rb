@@ -52,7 +52,7 @@ module SchoolPartnerships
     end
 
     def school
-      @school ||= School.joins(:gias_school).find_by(gias_school: { api_id: school_api_id }) if school_api_id
+      @school ||= School.find_by(api_id: school_api_id) if school_api_id
     end
 
     def delivery_partner

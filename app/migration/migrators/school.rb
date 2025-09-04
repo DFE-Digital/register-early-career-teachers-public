@@ -41,7 +41,6 @@ module Migrators
         if check_gias_school(gias_school:, ecf_school:)
           [
             compare_fields(gias_school:, ecf_school:),
-            update_gias_school!(gias_school:, api_id: ecf_school.id),
             update_school!(school: gias_school.school, ecf_school:),
           ].all?
         end
@@ -90,14 +89,13 @@ module Migrators
       ecf_school.induction_records.any?
     end
 
-    def update_gias_school!(gias_school:, api_id:) = gias_school.update!(api_id:)
-
     def update_school!(school:, ecf_school:)
-      timestamp_attrs = {
+      attrs = {
+        api_id: ecf_school.id,
         created_at: ecf_school.created_at,
         updated_at: ecf_school.updated_at
       }
-      school.update_columns(timestamp_attrs)
+      school.update_columns(attrs)
     end
   end
 end

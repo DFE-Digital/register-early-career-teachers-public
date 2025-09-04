@@ -31,9 +31,8 @@ module ParityCheck
       API::Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_year:)
         .schools
         .distinct(false)
-        .includes(:gias_school)
         .reorder("RANDOM()")
-        .pick(gias_school: :api_id)
+        .pick(:api_id)
     end
 
     def delivery_partner_id

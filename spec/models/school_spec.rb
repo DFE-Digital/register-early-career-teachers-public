@@ -51,7 +51,7 @@ describe School do
 
     context "api_id" do
       it "validates uniqueness" do
-        another_school = FactoryBot.create(:school, api_id: subject.api_id)
+        another_school = FactoryBot.build(:school, api_id: subject.api_id)
 
         expect(another_school).to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another school")
       end
