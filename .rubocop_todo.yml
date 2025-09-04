@@ -45,18 +45,18 @@ RSpec/ClassCheck:
     - 'spec/models/induction_period_spec.rb'
     - 'spec/models/pending_induction_submission_spec.rb'
 
-# Offense count: 39
+# Offense count: 41
 # This cop supports safe autocorrection (--autocorrect).
 RSpec/ContextMethod:
   Enabled: false
 
-# Offense count: 169
+# Offense count: 181
 # Configuration parameters: Prefixes, AllowedPatterns.
 # Prefixes: when, with, without
 RSpec/ContextWording:
   Enabled: false
 
-# Offense count: 216
+# Offense count: 231
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: SkipBlocks, EnforcedStyle, OnlyStaticConstants.
 # SupportedStyles: described_class, explicit
@@ -98,23 +98,22 @@ RSpec/ExpectChange:
     - 'spec/migration/legacy_data_importer_spec.rb'
     - 'spec/services/sessions/one_time_password_spec.rb'
 
-# Offense count: 8
+# Offense count: 6
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: single_line_only, single_statement_only, disallow, require_implicit
 RSpec/ImplicitSubject:
   Exclude:
-    - 'spec/models/ect_at_school_period_spec.rb'
     - 'spec/models/gias/school_spec.rb'
     - 'spec/models/school_spec.rb'
     - 'spec/wizards/schools/register_mentor_wizard/shared_examples/review_mentor_details_step.rb'
 
-# Offense count: 313
+# Offense count: 334
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
 RSpec/IndexedLet:
   Enabled: false
 
-# Offense count: 240
+# Offense count: 257
 RSpec/LetSetup:
   Enabled: false
 
@@ -126,7 +125,7 @@ RSpec/MatchArray:
     - 'spec/models/ect_at_school_period_spec.rb'
     - 'spec/models/mentor_at_school_period_spec.rb'
 
-# Offense count: 923
+# Offense count: 973
 # Configuration parameters: EnforcedStyle, IgnoreSharedExamples.
 # SupportedStyles: always, named_only
 RSpec/NamedSubject:
@@ -163,14 +162,13 @@ RSpec/RepeatedExampleGroupDescription:
     - 'spec/views/appropriate_bodies/claim_an_ect/check_ect/edit.html.erb_spec.rb'
     - 'spec/wizards/schools/register_mentor_wizard/national_insurance_number_step_spec.rb'
 
-# Offense count: 7
+# Offense count: 6
 # Configuration parameters: Include, CustomTransform, IgnoreMethods, IgnoreMetadata.
 # Include: **/*_spec.rb
 RSpec/SpecFilePathFormat:
   Exclude:
     - 'spec/lib/dfe_sign_in/api_client_spec.rb'
     - 'spec/models/dfe_role_spec.rb'
-    - 'spec/services/appropriate_bodies/ects_spec.rb'
     - 'spec/services/pending_induction_submissions/build_spec.rb'
     - 'spec/services/sessions/session_manager_spec.rb'
     - 'spec/services/sessions/users/dfe_persona_spec.rb'
@@ -193,7 +191,7 @@ RSpec/SubjectStub:
     - 'spec/wizards/schools/register_ect_wizard/start_date_step_spec.rb'
     - 'spec/wizards/schools/register_ect_wizard/working_pattern_step_spec.rb'
 
-# Offense count: 45
+# Offense count: 51
 # Configuration parameters: IgnoreNameless, IgnoreSymbolicNames.
 RSpec/VerifiedDoubles:
   Enabled: false
@@ -239,7 +237,7 @@ Rails/SaveBang:
   Exclude:
     - 'spec/support/rspec_playwright.rb'
 
-# Offense count: 7860
+# Offense count: 8633
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
 # SupportedStyles: single_quotes, double_quotes
