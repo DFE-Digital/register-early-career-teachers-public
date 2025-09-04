@@ -1,5 +1,4 @@
 class TeachersIndexComponent < ApplicationComponent
-  include GovukLinkHelper
   include Rails.application.routes.url_helpers
   include EmptyStateMessage
 
