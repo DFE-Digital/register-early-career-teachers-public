@@ -8,7 +8,7 @@ module Sessions
 
       attr_reader :appropriate_body, :dfe_sign_in_organisation_id, :dfe_sign_in_user_id, :name, :dfe_sign_in_roles, :last_active_role
 
-      def initialize(email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, dfe_sign_in_roles:, school_urn: nil, last_active_role: self.class.name.demodulize, **)
+      def initialize(email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, dfe_sign_in_roles: nil, school_urn: nil, last_active_role: self.class.name.demodulize, **)
         @name = name
         @appropriate_body = appropriate_body_from(dfe_sign_in_organisation_id)
         @dfe_sign_in_organisation_id = dfe_sign_in_organisation_id
