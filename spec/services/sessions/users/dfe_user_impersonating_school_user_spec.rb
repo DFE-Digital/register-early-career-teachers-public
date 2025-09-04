@@ -46,8 +46,8 @@ describe 'Sessions::Users::DfEUserImpersonatingSchoolUser' do
 
   describe 'user type methods' do
     it { expect(dfe_user_impersonating_school_user).to be_school_user }
-    it { expect(dfe_user_impersonating_school_user).to be_dfe_user }
     it { expect(dfe_user_impersonating_school_user).to be_dfe_user_impersonating_school_user }
+    it { expect(dfe_user_impersonating_school_user).not_to be_dfe_user }
     it { expect(dfe_user_impersonating_school_user).not_to be_dfe_sign_in_authorisable }
     it { expect(dfe_user_impersonating_school_user).not_to be_appropriate_body_user }
   end

@@ -8,7 +8,7 @@ module Admin
     end
 
     def render?
-      user.present? && user.dfe_user_impersonating_school_user?
+      user.present? && school.present? && user.dfe_user_impersonating_school_user?
     end
   end
 end

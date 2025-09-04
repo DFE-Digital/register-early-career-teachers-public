@@ -15,6 +15,17 @@ RSpec.describe 'Impersonating a school user' do
     then_i_should_be_on_the_admin_school_show_page
   end
 
+  scenario 'not being able to access the admin pages while impersonating' do
+    given_i_am_signed_in_as_an_admin_user
+    and_i_am_on_the_admin_show_page_for_a_school
+
+    when_i_click_sign_in_as_school
+    then_i_should_be_on_the_schools_home_page
+
+    when_i_navigate_back_to_the_admin_interface
+    then_i_should_see_an_access_denied_error
+  end
+
 private
 
   def given_i_am_signed_in_as_an_admin_user
@@ -52,5 +63,16 @@ private
     path = "/admin/schools/#{@school.urn}/overview"
 
     expect(page.url).to end_with(path)
+  end
+
+  def when_i_navigate_back_to_the_admin_interface
+    path = "/admin/teachers"
+    page.goto(path)
+
+    expect(page.url).to end_with(path)
+  end
+
+  def then_i_should_see_an_access_denied_error
+    expect(page.get_by_role('heading', name: "You are not authorised to access this page")).to be_visible
   end
 end

@@ -17,7 +17,7 @@ module Sessions
         super(email: user.email)
       end
 
-      def dfe_user? = true
+      def dfe_user? = false
       def dfe_user_impersonating_school_user? = true
       def school_urn = @school.urn
       def school_user? = true
