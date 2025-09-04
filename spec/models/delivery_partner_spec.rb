@@ -11,6 +11,7 @@ describe DeliveryPartner do
 
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name) }
+    it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another delivery partner") }
   end
 
   describe "declarative touch" do
