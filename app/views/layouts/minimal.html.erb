@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<%= govuk_html_element do %>
+  <%= render partial: "layouts/shared/head" %>
+
+  <body class="govuk-template__body" data-turbo="false">
+    <%= render partial: "layouts/shared/header" %>
+
+    <div class="govuk-width-container">
+      <%= environment_specific_phase_banner %>
+
+      <main class="govuk-main-wrapper" id="main-content" role="main">
+        <%= render partial: "layouts/shared/main_preamble" %>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <%= yield(:page_caption) %>
+            <%= yield(:page_header) %>
+          </div>
+        </div>
+
+        <%= yield %>
+      </main>
+    </div>
+
+    <%= render partial: "layouts/shared/footer" %>
+  </body>
+<% end %>

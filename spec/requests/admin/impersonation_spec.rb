@@ -37,6 +37,10 @@ RSpec.describe "Admin delivery partners", type: :request do
       expect(session.dig('user_session', 'original_type')).to be_nil
     end
 
+    it 'errors if a non-impersonating user tries to stop impersonating' do
+      expect { delete admin_impersonate_path, params: { school_urn: school.urn } }.to raise_error(Admin::ImpersonationController::InvalidUserType)
+    end
+
     it 'redirects to the school ects index' do
       post admin_impersonate_path, params: { school_urn: school.urn }
 
