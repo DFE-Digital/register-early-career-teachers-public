@@ -1,9 +1,8 @@
 module Navigation
-  class SecondaryNavigationComponent < ViewComponent::Base
+  class SecondaryNavigationComponent < ApplicationComponent
     attr_accessor :items, :labelled_by, :visually_hidden_title, :html_classes, :html_attributes
 
     def initialize(items:, labelled_by: nil, visually_hidden_title: "Secondary Menu", classes: nil, attributes: {})
-      super
       @items = items
       @labelled_by = labelled_by
       @visually_hidden_title = visually_hidden_title

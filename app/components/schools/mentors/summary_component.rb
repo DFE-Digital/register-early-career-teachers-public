@@ -1,6 +1,6 @@
 module Schools
   module Mentors
-    class SummaryComponent < ViewComponent::Base
+    class SummaryComponent < ApplicationComponent
       include TeacherHelper
 
       def initialize(mentor:, school:)

@@ -1,6 +1,6 @@
 module Admin
   module AppropriateBodies
-    class BulkUploadComponent < ViewComponent::Base
+    class BulkUploadComponent < ApplicationComponent
       renders_one :batch_cards,       -> { Batches::BatchCardsComponent.new(batch:) }         # coloured cards
       renders_one :batch_details,     -> { Batches::BatchDetailsComponent.new(batch:) }       # summary list
       renders_one :error_details,     -> { Batches::ErrorDetailsComponent.new(batch:) }       # table (needs pagination?)

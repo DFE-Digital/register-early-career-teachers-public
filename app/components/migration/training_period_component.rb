@@ -1,5 +1,5 @@
 module Migration
-  class TrainingPeriodComponent < ViewComponent::Base
+  class TrainingPeriodComponent < ApplicationComponent
     attr_reader :training_period
 
     def initialize(training_period:)

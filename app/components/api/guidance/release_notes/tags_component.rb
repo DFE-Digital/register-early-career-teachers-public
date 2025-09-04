@@ -1,7 +1,7 @@
 module API
   module Guidance
     module ReleaseNotes
-      class TagsComponent < ViewComponent::Base
+      class TagsComponent < ApplicationComponent
         class UnknownTagError < StandardError; end
 
         TAG_MAPPINGS = {

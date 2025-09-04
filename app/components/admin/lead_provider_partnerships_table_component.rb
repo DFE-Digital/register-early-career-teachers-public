@@ -1,5 +1,5 @@
 module Admin
-  class LeadProviderPartnershipsTableComponent < ViewComponent::Base
+  class LeadProviderPartnershipsTableComponent < ApplicationComponent
     attr_reader :contract_period_partnerships, :delivery_partner, :page, :q
 
     def initialize(contract_period_partnerships:, delivery_partner:, page: nil, q: nil)

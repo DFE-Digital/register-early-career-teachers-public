@@ -1,6 +1,6 @@
 module API
   module Guidance
-    class SidebarComponent < ViewComponent::Base
+    class SidebarComponent < ApplicationComponent
       GUIDANCE_PREFIX = "guidance-for-lead-providers"
       GUIDANCE_PAGES = [
         { title: "API IDs explained", path: "api-ids-explained" },

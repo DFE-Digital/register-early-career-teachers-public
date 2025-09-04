@@ -1,5 +1,5 @@
 module Shared
-  class TopSearchComponent < ViewComponent::Base
+  class TopSearchComponent < ApplicationComponent
     attr_reader :query_param, :label_text, :hint_text, :submit_text, :url
 
     def initialize(

@@ -1,6 +1,6 @@
 module Schools
   module Mentors
-    class ECTMentorTrainingDetailsComponent < ViewComponent::Base
+    class ECTMentorTrainingDetailsComponent < ApplicationComponent
       include TeacherHelper
 
       attr_reader :teacher, :mentor

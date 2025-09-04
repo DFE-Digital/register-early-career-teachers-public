@@ -1,5 +1,5 @@
 module Migration
-  class SchoolPeriodComponent < ViewComponent::Base
+  class SchoolPeriodComponent < ApplicationComponent
     attr_reader :school_period
 
     delegate :school_name_and_urn, to: :school_period

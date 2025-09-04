@@ -1,10 +1,8 @@
 module Navigation
-  class PrimaryNavigationComponent < ViewComponent::Base
+  class PrimaryNavigationComponent < ApplicationComponent
     attr_accessor :current_path, :current_user_type, :inverse
 
     def initialize(current_path:, current_user_type:, inverse: false)
-      super
-
       @current_path = current_path
       @current_user_type = current_user_type
       @inverse = inverse
