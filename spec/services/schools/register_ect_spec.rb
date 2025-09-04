@@ -43,10 +43,11 @@ RSpec.describe Schools::RegisterECT do
         let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
         context "when a Teacher record with the same TRN don't exist" do
-          let(:teacher) { Teacher.first }
+          let(:teacher) { Teacher.find_by(trn:) }
 
           it 'creates a new Teacher record' do
-            expect { service.register! }.to change(Teacher, :count).from(0).to(1)
+            expect { service.register! }.to change(Teacher, :count).by(1)
+
             expect(teacher.trs_first_name).to eq(trs_first_name)
             expect(teacher.trs_last_name).to eq(trs_last_name)
             expect(teacher.trn).to eq(trn)
@@ -62,19 +63,85 @@ RSpec.describe Schools::RegisterECT do
           end
         end
 
-        context "when a Teacher record with the same TRN exists and has ect records" do
+        context "when a Teacher record with the same TRN exists and has ect records at a different school" do
+          let(:teacher) { FactoryBot.create(:teacher, trn:) }
+          let(:other_school) { FactoryBot.create(:school) }
+
+          before { FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: other_school, started_on: Date.current - 6.months, finished_on: Date.current - 1.month) }
+
+          it "allows registration (school transfer)" do
+            expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+          end
+        end
+
+        context "when a Teacher record with the same TRN exists and has ect records at the same school" do
           let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
-          before { FactoryBot.create(:ect_at_school_period, teacher:) }
+          before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
 
-          it "raise an exception" do
+          it "raises an exception to prevent duplicates" do
             expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
           end
         end
 
+        context "when a Teacher record with the same TRN exists and has multiple ect records at different schools" do
+          let(:teacher) { FactoryBot.create(:teacher, trn:) }
+          let(:school_one) { FactoryBot.create(:school) }
+          let(:school_two) { FactoryBot.create(:school) }
+          let(:started_on) { Date.current + 1.month } # Future date to avoid overlap
+          let!(:future_contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
+          let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
+
+          before do
+            # Create finished periods at two different schools with non-overlapping dates
+            FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: school_one, started_on: Date.current - 2.years, finished_on: Date.current - 18.months)
+            FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: school_two, started_on: Date.current - 12.months, finished_on: Date.current - 6.months)
+          end
+
+          it "allows registration at a third school (multiple transfers)" do
+            expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+
+            expect(teacher.ect_at_school_periods.count).to eq(3) # 2 existing + 1 new
+          end
+        end
+
+        context "when a Teacher record with the same TRN has an ongoing period at different school and finished period at current school" do
+          let(:teacher) { FactoryBot.create(:teacher, trn:) }
+          let(:other_school) { FactoryBot.create(:school) }
+
+          before do
+            # Ongoing at other school
+            FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school, started_on: Date.current - 3.months)
+            # Finished at current school (previous period)
+            FactoryBot.create(:ect_at_school_period, :finished, teacher:, school:, started_on: Date.current - 1.year, finished_on: Date.current - 6.months)
+          end
+
+          it "raises an exception due to overlapping periods validation" do
+            expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
+          end
+        end
+
+        context "when a Teacher record with the same TRN has a future period at different school" do
+          let(:teacher) { FactoryBot.create(:teacher, trn:) }
+          let(:other_school) { FactoryBot.create(:school) }
+          let(:started_on) { Date.current + 3.months } # Future start date after the other school's period
+          let!(:future_contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
+          let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
+
+          before do
+            # Future period at other school
+            FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: Date.current + 1.month, finished_on: Date.current + 2.months)
+          end
+
+          it "allows registration with non-overlapping future date" do
+            expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+          end
+        end
+
         it 'creates an associated ECTAtSchoolPeriod record' do
-          expect { service.register! }.to change(ECTAtSchoolPeriod, :count).from(0).to(1)
-          expect(ect_at_school_period.teacher_id).to eq(Teacher.first.id)
+          expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+
+          expect(ect_at_school_period.teacher_id).to eq(Teacher.find_by(trn:).id)
           expect(ect_at_school_period.started_on).to eq(started_on)
           expect(ect_at_school_period.working_pattern).to eq(working_pattern)
           expect(ect_at_school_period.email).to eq(email)
