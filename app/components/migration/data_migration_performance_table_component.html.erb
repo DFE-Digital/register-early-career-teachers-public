@@ -1,0 +1,31 @@
+<h2 class="govuk-heading-m">DataMigration Cache Performance</h2>
+
+<%= govuk_table do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Model")
+      row.with_cell(text: "Worker")
+      row.with_cell(text: "Hits")
+      row.with_cell(text: "Misses")
+      row.with_cell(text: "Hit Rate")
+      row.with_cell(text: "Caches Hit")
+      row.with_cell(text: "Caches Missed")
+    end
+  end
+
+  table.with_body do |body|
+    data_migrations.each do |dm|
+      stats = migration_stats(dm)
+      
+      body.with_row do |row|
+        row.with_cell(text: dm.model.humanize)
+        row.with_cell(text: "Worker #{dm.worker}")
+        row.with_cell(text: govuk_tag(text: number_with_delimiter(stats[:total_hits]), colour: "green"))
+        row.with_cell(text: govuk_tag(text: number_with_delimiter(stats[:total_misses]), colour: stats[:total_misses].zero? ? "grey" : "red"))
+        row.with_cell(text: govuk_tag(text: "#{stats[:hit_rate]}%", colour: stats[:hit_rate_colour]))
+        row.with_cell(text: stats[:caches_hit])
+        row.with_cell(text: stats[:caches_missed])
+      end
+    end
+  end
+end %>
