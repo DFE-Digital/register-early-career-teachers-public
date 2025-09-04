@@ -142,7 +142,7 @@ RSpec.describe 'Registering an ECT' do
   def and_i_am_on_the_schools_landing_page
     path = '/schools/home/ects'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_start_adding_an_ect
@@ -150,7 +150,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_in_the_requirements_page
-    expect(page.url).to end_with('/schools/register-ect/what-you-will-need')
+    expect(page).to have_path('/schools/register-ect/what-you-will-need')
   end
 
   def when_i_click_continue
@@ -158,7 +158,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_on_the_find_ect_step_page
-    expect(page.url).to end_with('/schools/register-ect/find-ect')
+    expect(page).to have_path('/schools/register-ect/find-ect')
   end
 
   def when_i_submit_the_find_ect_form(trn:, dob_day:, dob_month:, dob_year:)
@@ -170,7 +170,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_review_ect_details_page
-    expect(page.url).to end_with('/schools/register-ect/review-ect-details')
+    expect(page).to have_path('/schools/register-ect/review-ect-details')
   end
 
   def and_i_should_see_the_ect_details_in_the_review_page
@@ -192,7 +192,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_email_address_page
-    expect(page.url).to end_with('/schools/register-ect/email-address')
+    expect(page).to have_path('/schools/register-ect/email-address')
   end
 
   def when_i_enter_the_ect_email_address
@@ -200,7 +200,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_training_programme_page
-    expect(page.url).to end_with('/schools/register-ect/training-programme')
+    expect(page).to have_path('/schools/register-ect/training-programme')
   end
 
   def when_i_select_school_led
@@ -216,7 +216,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_ect_start_date_page
-    expect(page.url).to end_with('/schools/register-ect/start-date')
+    expect(page).to have_path('/schools/register-ect/start-date')
   end
 
   def when_i_enter_a_valid_start_date
@@ -226,7 +226,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_use_previous_ect_choices_page
-    expect(page.url).to end_with('/schools/register-ect/use-previous-ect-choices')
+    expect(page).to have_path('/schools/register-ect/use-previous-ect-choices')
   end
 
   def and_i_should_see_the_previous_programme_choices
@@ -241,7 +241,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_appropriate_body_page
-    expect(page.url).to end_with('/schools/register-ect/state-school-appropriate-body')
+    expect(page).to have_path('/schools/register-ect/state-school-appropriate-body')
   end
 
   def when_i_select_an_appropriate_body
@@ -251,11 +251,11 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_i_should_be_taken_to_the_working_pattern_page
-    expect(page.url).to end_with('/schools/register-ect/working-pattern')
+    expect(page).to have_path('/schools/register-ect/working-pattern')
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
-    expect(page.url).to end_with('/schools/register-ect/check-answers')
+    expect(page).to have_path('/schools/register-ect/check-answers')
   end
 
   def and_i_should_see_all_the_ect_data_on_the_page
@@ -271,7 +271,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_change_name_page
-    expect(page.url).to end_with('/schools/register-ect/change-review-ect-details')
+    expect(page).to have_path('/schools/register-ect/change-review-ect-details')
   end
 
   def when_i_click_the_back_link
@@ -283,7 +283,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_change_email_address_page
-    expect(page.url).to end_with('/schools/register-ect/change-email-address')
+    expect(page).to have_path('/schools/register-ect/change-email-address')
   end
 
   def when_i_enter_a_new_ect_email_address
@@ -299,7 +299,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
-    expect(page.url).to end_with('/schools/register-ect/change-use-previous-ect-choices')
+    expect(page).to have_path('/schools/register-ect/change-use-previous-ect-choices')
   end
 
   def when_i_select_that_i_want_to_use_the_previous_ect_choices
@@ -311,7 +311,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_change_the_appropriate_body_page
-    expect(page.url).to end_with('/schools/register-ect/change-state-school-appropriate-body')
+    expect(page).to have_path('/schools/register-ect/change-state-school-appropriate-body')
   end
 
   def when_i_select_a_different_appropriate_body
@@ -325,7 +325,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_change_training_programme_page
-    expect(page.url).to end_with('/schools/register-ect/change-training-programme')
+    expect(page).to have_path('/schools/register-ect/change-training-programme')
   end
 
   def when_i_select_provider_led
@@ -333,7 +333,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_training_programme_change_lead_provider_page
-    expect(page.url).to end_with('/schools/register-ect/training-programme-change-lead-provider')
+    expect(page).to have_path('/schools/register-ect/training-programme-change-lead-provider')
   end
 
   def when_i_select_a_lead_provider
@@ -361,7 +361,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page.url).to end_with('/schools/register-ect/confirmation')
+    expect(page).to have_path('/schools/register-ect/confirmation')
   end
 
   def when_i_click_on_back_to_your_ects
@@ -369,6 +369,6 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page.url).to end_with('/schools/home/ects')
+    expect(page).to have_path('/schools/home/ects')
   end
 end

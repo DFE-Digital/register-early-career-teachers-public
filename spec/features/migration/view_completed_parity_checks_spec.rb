@@ -64,6 +64,6 @@ RSpec.describe "View completed parity checks" do
 
     breadcrumbs = page.locator(".govuk-breadcrumbs")
     breadcrumbs.get_by_role("link", name: "Run a parity check").click
-    expect(page.url).to end_with(new_migration_parity_check_path)
+    expect(page).to have_path(new_migration_parity_check_path)
   end
 end

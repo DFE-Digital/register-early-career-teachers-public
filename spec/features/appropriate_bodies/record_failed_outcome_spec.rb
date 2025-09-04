@@ -27,7 +27,7 @@ private
     path = "/appropriate-body/teachers/#{teacher.id}"
     page.goto(path)
 
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_link(text)
@@ -35,7 +35,7 @@ private
   end
 
   def then_i_should_be_on_the_record_outcome_page(teacher)
-    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
   end
 
   def when_i_enter_the_finish_date
@@ -56,7 +56,7 @@ private
   end
 
   def then_i_should_be_on_the_success_page
-    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
     expect(page.locator('.govuk-panel')).to be_visible
   end
 

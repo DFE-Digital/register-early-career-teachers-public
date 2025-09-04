@@ -85,7 +85,7 @@ RSpec.describe "List adjustments for statement" do
   end
 
   def then_i_am_redirected_back_to_finance_statement_page
-    expect(page.url).to end_with(admin_finance_statement_path(@statement))
+    expect(page).to have_path(admin_finance_statement_path(@statement))
   end
 
   def summary_list_values

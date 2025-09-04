@@ -38,7 +38,7 @@ private
     path = "/admin/schools/#{@school.urn}/overview"
     page.goto(path)
 
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_sign_in_as_school
@@ -46,7 +46,7 @@ private
   end
 
   def then_i_should_be_on_the_schools_home_page
-    expect(page.url).to end_with('/schools/home/ects')
+    expect(page).to have_path('/schools/home/ects')
   end
 
   def and_i_should_be_impersonating_the_school
@@ -62,14 +62,14 @@ private
   def then_i_should_be_on_the_admin_school_show_page
     path = "/admin/schools/#{@school.urn}/overview"
 
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_navigate_back_to_the_admin_interface
     path = "/admin/teachers"
     page.goto(path)
 
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def then_i_should_see_an_access_denied_error

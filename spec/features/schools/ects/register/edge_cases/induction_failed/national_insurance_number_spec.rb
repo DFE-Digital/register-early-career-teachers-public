@@ -34,7 +34,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_taken_to_the_teacher_has_failed_their_induction_error_page
-    expect(page.url).to end_with('/schools/register-ect/induction-failed')
+    expect(page).to have_path('/schools/register-ect/induction-failed')
   end
 
   def and_i_enter_a_matching_national_insurance_number_but_the_teacher_has_failed_their_induction
@@ -47,6 +47,6 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_taken_to_the_find_ect_step_page
-    expect(page.url).to end_with('/schools/register-ect/find-ect')
+    expect(page).to have_path('/schools/register-ect/find-ect')
   end
 end

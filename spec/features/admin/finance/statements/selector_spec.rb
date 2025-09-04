@@ -77,7 +77,7 @@ RSpec.describe "Admin finance statement selector" do
   end
 
   def then_i_am_redirected_different_statement
-    expect(page.url).to end_with(admin_finance_statement_path(@statement2))
+    expect(page).to have_path(admin_finance_statement_path(@statement2))
   end
 
   def then_i_am_redirected_to_statement_not_found_page

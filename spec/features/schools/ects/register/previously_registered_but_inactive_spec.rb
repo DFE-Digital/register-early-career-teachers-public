@@ -25,7 +25,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_on_the_registered_before_page
-    expect(page.url).to end_with('/schools/register-ect/registered-before')
+    expect(page).to have_path('/schools/register-ect/registered-before')
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user_who_has_previously_registered_an_ect
@@ -90,10 +90,10 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_on_the_email_address_page
-    expect(page.url).to end_with('/schools/register-ect/email-address')
+    expect(page).to have_path('/schools/register-ect/email-address')
   end
 
   def then_i_am_on_the_review_ect_details_page
-    expect(page.url).to end_with('/schools/register-ect/review-ect-details')
+    expect(page).to have_path('/schools/register-ect/review-ect-details')
   end
 end

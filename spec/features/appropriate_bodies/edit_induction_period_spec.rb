@@ -85,13 +85,13 @@ RSpec.describe "Appropriate body editing an induction period" do
 private
 
   def given_i_am_on_the_teacher_page
-    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}")
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}")
   end
 
   alias_method :then_i_should_be_on_the_teacher_page, :given_i_am_on_the_teacher_page
 
   def then_i_should_be_on_the_edit_induction_period_page
-    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/induction-periods/#{induction_period.id}/edit")
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/induction-periods/#{induction_period.id}/edit")
   end
 
   def then_i_should_see_the_edit_link

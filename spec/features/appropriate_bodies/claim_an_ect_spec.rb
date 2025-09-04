@@ -88,7 +88,7 @@ private
   def given_i_am_on_the_claim_an_ect_find_page
     path = '/appropriate-body/claim-an-ect/find-ect/new'
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
@@ -110,12 +110,12 @@ private
   def now_i_should_be_on_the_claim_an_ect_check_page
     @pending_induction_submission = PendingInductionSubmission.last
     path = "/appropriate-body/claim-an-ect/check-ect/#{@pending_induction_submission.id}/edit"
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def now_i_should_be_on_the_claim_an_ect_register_page
     path = "/appropriate-body/claim-an-ect/register-ect/#{@pending_induction_submission.id}/edit"
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   # FIXME: flaky spec, result changes depending on day it is run
@@ -141,7 +141,7 @@ private
 
   def now_i_should_be_on_the_confirmation_page
     path = "/appropriate-body/claim-an-ect/register-ect/#{@pending_induction_submission.id}"
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def and_the_data_i_submitted_should_be_saved_on_the_pending_record
