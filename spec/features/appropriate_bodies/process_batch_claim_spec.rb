@@ -86,7 +86,7 @@ RSpec.describe 'Process bulk claims' do
 private
 
   def given_i_am_on_the_upload_page
-    expect(page.url).to end_with('/appropriate-body/bulk/claims/new')
+    expect(page).to have_path('/appropriate-body/bulk/claims/new')
   end
 
   def when_i_upload_a_file(input_file = file_path)
@@ -95,7 +95,7 @@ private
   end
 
   def then_i_should_see_the_error(error)
-    expect(page.url).to end_with('/appropriate-body/bulk/claims')
+    expect(page).to have_path('/appropriate-body/bulk/claims')
     expect(page.title).to start_with('Error:')
     expect(page.get_by_text("Error: #{error}")).to be_visible
   end

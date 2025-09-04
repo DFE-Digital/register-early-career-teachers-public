@@ -37,17 +37,17 @@ private
   def given_i_am_on_the_api_guidance_page
     path = '/api/guidance'
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_guidance
     page.get_by_role('link', name: 'Guidance', exact: true).click
-    expect(page.url).to end_with('/api/guidance/guidance-for-lead-providers')
+    expect(page).to have_path('/api/guidance/guidance-for-lead-providers')
   end
 
   def when_i_click_view_all_release_notes
     page.get_by_role('link', name: 'View all release notes', exact: true).click
-    expect(page.url).to end_with('/api/guidance/release-notes')
+    expect(page).to have_path('/api/guidance/release-notes')
   end
 
   def when_i_click_on_the_latest_release_note
@@ -80,7 +80,7 @@ private
   def when_i_visit_non_existing_guidance_page
     path = api_guidance_page_path("does-not-exist")
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def then_i_should_see_not_found

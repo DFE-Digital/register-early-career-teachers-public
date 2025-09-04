@@ -86,7 +86,7 @@ RSpec.describe "Admin amending number of terms of an induction period" do
 private
 
   def given_i_am_on_the_teacher_page
-    expect(page.url).to end_with("/admin/teachers/#{teacher.id}")
+    expect(page).to have_path("/admin/teachers/#{teacher.id}")
   end
 
   def then_i_should_see_the_edit_link
@@ -102,7 +102,7 @@ private
   end
 
   def then_i_should_be_on_the_edit_induction_period_page
-    expect(page.url).to end_with("/admin/teachers/#{teacher.id}/induction-periods/#{induction_period.id}/edit")
+    expect(page).to have_path("/admin/teachers/#{teacher.id}/induction-periods/#{induction_period.id}/edit")
   end
 
   def when_i_set_end_date(end_date)
@@ -121,7 +121,7 @@ private
   end
 
   def then_i_should_be_on_the_success_page
-    expect(page.url).to end_with("/admin/teachers/#{teacher.id}")
+    expect(page).to have_path("/admin/teachers/#{teacher.id}")
     expect(page.get_by_text('Induction period updated successfully')).to be_visible
   end
 
