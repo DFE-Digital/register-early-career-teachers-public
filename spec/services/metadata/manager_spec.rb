@@ -34,9 +34,19 @@ RSpec.describe Metadata::Manager do
       context "when given #{empty_value}" do
         let(:objects) { empty_value }
 
-        it "does not call resolve any handlers" do
+        it "does not resolve any handlers" do
           expect(Metadata::Resolver).not_to receive(:resolve_handler)
         end
+      end
+    end
+
+    context "when skipping metadata updates" do
+      around do |example|
+        described_class.skip_metadata_updates { example.run }
+      end
+
+      it "does not resolve any handlers" do
+        expect(Metadata::Resolver).not_to receive(:resolve_handler)
       end
     end
   end
@@ -61,6 +71,16 @@ RSpec.describe Metadata::Manager do
         refresh_all_metadata
       end
     end
+
+    context "when skipping metadata updates" do
+      around do |example|
+        described_class.skip_metadata_updates { example.run }
+      end
+
+      it "does not call any handlers" do
+        expect(Metadata::Resolver).not_to receive(:all_handlers)
+      end
+    end
   end
 
   describe ".destroy_all_metadata!" do
@@ -70,6 +90,16 @@ RSpec.describe Metadata::Manager do
       expect(Metadata::Resolver.all_handlers).to all(receive(:destroy_all_metadata!))
 
       destroy_all_metadata
+    end
+
+    context "when skipping metadata updates" do
+      around do |example|
+        described_class.skip_metadata_updates { example.run }
+      end
+
+      it "does not call any handlers" do
+        expect(Metadata::Resolver).not_to receive(:all_handlers)
+      end
     end
   end
 end
