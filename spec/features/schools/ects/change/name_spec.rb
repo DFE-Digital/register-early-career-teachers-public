@@ -10,6 +10,8 @@ RSpec.describe "Changing an ECT's name" do
   let(:school) { FactoryBot.create(:school) }
 
   before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+
     given_i_am_logged_in_as_a_school_user
     then_i_should_be_taken_to_the_ects_page
     when_i_select_an_ect
