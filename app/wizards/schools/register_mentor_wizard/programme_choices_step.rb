@@ -18,7 +18,7 @@ module Schools
       end
 
       def previous_step
-        :started_on
+        :previous_training_period_details
       end
 
     private
