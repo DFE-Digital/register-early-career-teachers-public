@@ -3,7 +3,7 @@ describe API::PartnershipSerializer, type: :serializer do
     JSON.parse(described_class.render(partnership))
   end
 
-  let(:partnership) { FactoryBot.create(:school_partnership) }
+  let!(:partnership) { FactoryBot.create(:school_partnership) }
   let(:school) { partnership.school }
   let(:delivery_partner) { partnership.delivery_partner }
   let(:contract_period) { partnership.contract_period }

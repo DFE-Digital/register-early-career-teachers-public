@@ -1,6 +1,6 @@
 describe API::StatementSerializer, type: :serializer do
-  let(:active_lead_provider) { FactoryBot.build(:active_lead_provider) }
-  let(:statement) { FactoryBot.build(:statement, active_lead_provider:) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let!(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
 
   describe "core attributes" do
     subject(:response) { JSON.parse(described_class.render(statement)) }
@@ -22,9 +22,10 @@ describe API::StatementSerializer, type: :serializer do
     subject(:attributes) { JSON.parse(described_class.render(statement))["attributes"] }
 
     it "serializes `cohort`" do
-      active_lead_provider.contract_period.year = 2025
+      contract_period = FactoryBot.create(:contract_period, year: 2024)
+      active_lead_provider.update!(contract_period:)
 
-      expect(attributes["cohort"]).to eq("2025")
+      expect(attributes["cohort"]).to eq("2024")
     end
 
     it "serializes `month`" do
