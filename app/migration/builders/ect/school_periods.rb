@@ -18,7 +18,7 @@ module Builders
           school_period.ecf_start_induction_record_id = period.start_source_id
           next_period = school_periods[idx + 1] if idx + 1 < school_periods_count
 
-          if next_period.present? && period.end_date > next_period.start_date
+          if next_period.present? && (period.end_date > next_period.start_date || period.end_date < period.start_date)
             school_period.finished_on = next_period.start_date
             school_period.ecf_end_induction_record_id = next_period.start_source_id
           else
