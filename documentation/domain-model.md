@@ -76,6 +76,7 @@ erDiagram
     datetime api_updated_at
     string induction_tutor_name
     citext induction_tutor_email
+    uuid api_id
   }
   School }o--|| AppropriateBody : belongs_to
   School }o--|| LeadProvider : belongs_to
