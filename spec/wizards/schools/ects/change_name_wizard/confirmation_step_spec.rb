@@ -1,4 +1,4 @@
-RSpec.describe Schools::ChangeECTNameWizard::ConfirmationStep, type: :model do
+RSpec.describe Schools::ECTs::ChangeNameWizard::ConfirmationStep, type: :model do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do
