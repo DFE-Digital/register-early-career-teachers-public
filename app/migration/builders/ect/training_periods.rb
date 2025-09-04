@@ -18,7 +18,7 @@ module Builders
         training_period_data.each_with_index do |period, idx|
           next_period = training_period_data[idx + 1] if idx + 1 < training_periods_count
 
-          if next_period.present? && period.end_date > next_period.start_date
+          if next_period.present? && (period.end_date > next_period.start_date || period.end_date < period.start_date)
             period_end_date = next_period.start_date
             period_end_source_id = next_period.start_source_id
           else
