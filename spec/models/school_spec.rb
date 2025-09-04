@@ -48,14 +48,7 @@ describe School do
 
     it { is_expected.to validate_presence_of(:urn) }
     it { is_expected.to validate_uniqueness_of(:urn) }
-
-    context "api_id" do
-      it "validates uniqueness" do
-        another_school = FactoryBot.build(:school, api_id: subject.api_id)
-
-        expect(another_school).to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another school")
-      end
-    end
+    it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another school") }
 
     context "last_chosen_lead_provider_id" do
       subject { FactoryBot.build(:school) }
