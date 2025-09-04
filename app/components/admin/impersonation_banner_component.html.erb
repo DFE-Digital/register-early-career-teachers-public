@@ -1,7 +1,15 @@
 <div class='app-card--grey'>
   <p class='govuk-body'>
-    <%= "You are signed in as #{@school&.name}" %>
+    <strong>
+      <%= "You are signed in as #{school.name}" %>
+    </strong>
   </p>
 
-  <%= govuk_button_to("Sign out from #{@school.name}", admin_impersonate_path, method: :delete) %>
+  <p class='govuk-body'>
+    <strong>
+      Make any changes with care. Any changes you make will update actual school data.
+    </strong>
+  </p>
+
+  <%= govuk_button_to("Sign out from #{school.name}", admin_impersonate_path, method: :delete) %>
 </div>

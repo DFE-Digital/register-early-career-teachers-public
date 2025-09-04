@@ -25,6 +25,10 @@ describe 'Admin::ImpersonationBannerComponent', type: :component do
       expect(rendered_content).to have_content("You are signed in as #{school.name}")
     end
 
+    it 'renders a warning paragaph' do
+      expect(rendered_content).to have_content(/Make any changes with care/)
+    end
+
     it 'renders a button to finish impersonating' do
       expect(rendered_content).to have_button("Sign out from #{school.name}")
     end
