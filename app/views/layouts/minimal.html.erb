@@ -7,25 +7,18 @@
 
     <div class="govuk-width-container">
       <%= environment_specific_phase_banner %>
-      <%= render Admin::ImpersonationBannerComponent.new(user: current_user, school: @school) %>
-      <%= yield(:backlink_or_breadcrumb) %>
 
       <main class="govuk-main-wrapper" id="main-content" role="main">
         <%= render partial: "layouts/shared/main_preamble" %>
 
         <div class="govuk-grid-row">
-          <% if content_for?(:sidebar) %>
-            <div class="govuk-grid-column-one-third">
-              <%= yield(:sidebar) %>
-            </div>
-          <% end %>
-          <div class="govuk-grid-column-two-thirds">
+          <div class="govuk-grid-column-full">
             <%= yield(:page_caption) %>
             <%= yield(:page_header) %>
-
-            <%= yield %>
           </div>
         </div>
+
+        <%= yield %>
       </main>
     </div>
 

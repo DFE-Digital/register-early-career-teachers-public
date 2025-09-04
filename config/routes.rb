@@ -35,6 +35,8 @@ Rails.application.routes.draw do
   get '/admin', to: redirect('admin/teachers')
 
   namespace :admin do
+    resource :impersonate, only: %i[create destroy], controller: 'impersonation'
+
     constraints -> { Rails.application.config.enable_blazer } do
       mount Blazer::Engine, at: "blazer"
     end

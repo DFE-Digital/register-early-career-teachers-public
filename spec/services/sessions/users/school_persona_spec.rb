@@ -37,16 +37,16 @@ RSpec.describe Sessions::Users::SchoolPersona do
     it { expect(school_persona.user_type).to be(:school_user) }
   end
 
-  describe '#appropriate_body_user?' do
-    it { expect(school_persona).not_to be_appropriate_body_user }
-  end
-
   describe '#has_authorised_role?' do
     it { expect(school_persona).to have_authorised_role }
   end
 
-  describe '#dfe_user?' do
+  describe 'user type methods' do
+    it { expect(school_persona).to be_school_user }
     it { expect(school_persona).not_to be_dfe_user }
+    it { expect(school_persona).not_to be_dfe_sign_in_authorisable }
+    it { expect(school_persona).not_to be_appropriate_body_user }
+    it { expect(school_persona).not_to be_dfe_user_impersonating_school_user }
   end
 
   describe '#event_author_params' do
@@ -81,10 +81,6 @@ RSpec.describe Sessions::Users::SchoolPersona do
     it 'returns the urn of the school of the user' do
       expect(school_persona.school_urn).to eql(school.urn)
     end
-  end
-
-  describe '#school_user?' do
-    it { expect(school_persona).to be_school_user }
   end
 
   describe '#to_h' do
