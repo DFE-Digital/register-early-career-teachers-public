@@ -278,6 +278,16 @@ Rails.application.routes.draw do
   end
 
   namespace :schools, path: :school do
+    scope module: :ects, path: "/ects/:ect_id", as: :ects do
+      namespace :change_name_wizard, path: "change-name" do
+        get "edit", action: :new
+        post "edit", action: :create
+        get "check-answers", action: :new
+        post "check-answers", action: :create
+        get "confirmation", action: :new
+      end
+    end
+
     resources :ects, only: %i[index show] do
       resource :mentorship, only: %i[new create] do
         get :confirmation, on: :collection
