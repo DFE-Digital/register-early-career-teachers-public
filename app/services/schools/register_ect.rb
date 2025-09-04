@@ -60,7 +60,12 @@ module Schools
   private
 
     def already_registered_as_an_ect?
-      ::Teacher.find_by_trn(trn)&.ect_at_school_periods&.exists?
+      # Check if ECT is already registered at this school to prevent duplicates
+      # School transfers to different schools are allowed
+      teacher = ::Teacher.find_by_trn(trn)
+      return false unless teacher
+
+      teacher.ect_at_school_periods.where(school:).ongoing_today.exists?
     end
 
     def not_registered_as_an_ect!
