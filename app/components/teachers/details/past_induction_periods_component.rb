@@ -1,5 +1,5 @@
 module Teachers::Details
-  class PastInductionPeriodsComponent < ViewComponent::Base
+  class PastInductionPeriodsComponent < ApplicationComponent
     attr_reader :teacher, :induction, :enable_edit
 
     def initialize(teacher:, enable_edit: false)

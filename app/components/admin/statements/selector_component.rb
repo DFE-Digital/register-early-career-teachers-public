@@ -1,6 +1,6 @@
 module Admin
   module Statements
-    class SelectorComponent < ViewComponent::Base
+    class SelectorComponent < ApplicationComponent
       def initialize(statement:)
         @statement = statement
       end

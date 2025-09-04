@@ -1,5 +1,5 @@
 module Teachers::Details
-  class CurrentInductionPeriodComponent < ViewComponent::Base
+  class CurrentInductionPeriodComponent < ApplicationComponent
     attr_reader :mode, :teacher, :induction, :enable_release, :enable_edit, :enable_delete
 
     # @param mode [Symbol] either :admin, :appropriate_body, or :school
