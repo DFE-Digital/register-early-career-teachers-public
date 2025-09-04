@@ -486,14 +486,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     end
 
     describe '#lead_providers_within_contract_period' do
-      let(:contract_period) { FactoryBot.build(:contract_period, started_on: Date.new(2027, 1, 1), finished_on: Date.new(2027, 12, 31)) }
+      let!(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
       let!(:lp_in) { FactoryBot.create(:lead_provider) }
       let!(:lp_out) { FactoryBot.create(:lead_provider) }
 
       before do
-        contract_period.save!
         FactoryBot.create(:active_lead_provider, contract_period:, lead_provider: lp_in)
-        store.start_date = "1 March 2027"
+        store.start_date = "1 March 2025"
       end
 
       it 'returns lead providers active in the contract period' do
@@ -589,8 +588,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
       context 'when no school partnership exists in the contract period' do
         let!(:other_contract_period) do
-          cp = FactoryBot.build(:contract_period, started_on: Date.new(2022, 1, 1), finished_on: Date.new(2022, 12, 31))
-          cp.save!
+          FactoryBot.create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 12, 31))
         end
 
         let!(:ect_period) do
