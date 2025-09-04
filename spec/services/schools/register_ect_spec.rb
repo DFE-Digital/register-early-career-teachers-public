@@ -79,7 +79,7 @@ RSpec.describe Schools::RegisterECT do
 
           before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
 
-          it "raises an exception to prevent duplicates" do
+          it "raises an exception" do
             expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
           end
         end
@@ -88,7 +88,7 @@ RSpec.describe Schools::RegisterECT do
           let(:teacher) { FactoryBot.create(:teacher, trn:) }
           let(:school_one) { FactoryBot.create(:school) }
           let(:school_two) { FactoryBot.create(:school) }
-          let(:started_on) { Date.current + 1.month } # Future date to avoid overlap
+          let(:started_on) { Date.current + 1.month }
           let!(:future_contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
           let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
 
@@ -110,14 +110,22 @@ RSpec.describe Schools::RegisterECT do
           let(:other_school) { FactoryBot.create(:school) }
 
           before do
-            # Ongoing at other school
-            FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school, started_on: Date.current - 3.months)
             # Finished at current school (previous period)
-            FactoryBot.create(:ect_at_school_period, :finished, teacher:, school:, started_on: Date.current - 1.year, finished_on: Date.current - 6.months)
+            FactoryBot.create(:ect_at_school_period, :finished, teacher:, school:, started_on: Date.new(2023, 9, 1), finished_on: Date.new(2023, 12, 31))
+            # Ongoing at other school (started after the finished period)
+            FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school, started_on: Date.new(2024, 1, 1))
           end
 
-          it "raises an exception due to overlapping periods validation" do
-            expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
+          it "closes the ongoing period and allows registration at the current school" do
+            expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+
+            # The ongoing period at the other school should be closed
+            ongoing_period = teacher.ect_at_school_periods.find_by(school: other_school)
+            expect(ongoing_period.finished_on).to eq(started_on)
+
+            # New period at current school should be created
+            new_period = teacher.ect_at_school_periods.find_by(school:, finished_on: nil)
+            expect(new_period.started_on).to eq(started_on)
           end
         end
 
@@ -243,16 +251,15 @@ RSpec.describe Schools::RegisterECT do
         )
       end
 
-      it 'calls Teachers::CloseOldSchoolPeriods to close previous periods' do
-        expect(Teachers::CloseOldSchoolPeriods).to receive(:new).with(
-          teacher:,
-          new_school_start_date: started_on,
+      it 'closes the ongoing ECT period at the previous school' do
+        expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
+          ect_at_school_period: existing_period,
+          finished_on: started_on,
           author:
         ).and_call_original
 
         service.register!
 
-        # Verify the old period was closed
         existing_period.reload
         expect(existing_period.finished_on).to eq(started_on)
       end
@@ -261,12 +268,7 @@ RSpec.describe Schools::RegisterECT do
         expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
 
         new_period = teacher.ect_at_school_periods.find_by(school:)
-        expect(new_period).to be_present
         expect(new_period.started_on).to eq(started_on)
-
-        # Verify the old period was closed
-        existing_period.reload
-        expect(existing_period.finished_on).to eq(started_on)
       end
     end
   end

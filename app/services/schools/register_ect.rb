@@ -49,7 +49,7 @@ module Schools
       ActiveRecord::Base.transaction do
         update_school_last_choices!
         create_teacher!
-        close_old_school_periods!
+        close_ongoing_ect_period!
         @ect_at_school_period = start_at_school!
         create_training_period!
         record_event!
@@ -128,7 +128,7 @@ module Schools
         ect_at_school_period: ongoing_period,
         finished_on: started_on,
         author:
-      ).call
+      ).finish!
     end
 
     def record_event!
