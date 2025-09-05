@@ -56,7 +56,8 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
                  :open
                end
 
-      Statement.create!(
+      FactoryBot.create(
+        :statement,
         active_lead_provider: alp,
         month:,
         year:,
