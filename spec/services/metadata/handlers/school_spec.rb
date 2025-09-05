@@ -13,6 +13,14 @@ RSpec.describe Metadata::Handlers::School do
     subject(:refresh_metadata) { instance.refresh_metadata! }
 
     describe "SchoolContractPeriod" do
+      include_context "supports tracking metadata upsert changes", Metadata::SchoolContractPeriod do
+        let(:handler) { instance }
+
+        def perform_refresh_metadata
+          refresh_metadata
+        end
+      end
+
       it "creates metadata for the school and contract period" do
         expect { refresh_metadata }.to change(Metadata::SchoolContractPeriod, :count).by(1)
 
@@ -58,6 +66,14 @@ RSpec.describe Metadata::Handlers::School do
     end
 
     describe "SchoolLeadProviderContractPeriod" do
+      include_context "supports tracking metadata upsert changes", Metadata::SchoolLeadProviderContractPeriod do
+        let(:handler) { instance }
+
+        def perform_refresh_metadata
+          refresh_metadata
+        end
+      end
+
       it "creates metadata for the school, lead provider and contract period" do
         expect { refresh_metadata }.to change(Metadata::SchoolLeadProviderContractPeriod, :count).by(1)
 
