@@ -15,16 +15,16 @@ describe ECTAtSchoolPeriod do
     it { is_expected.to have_many(:mentors).through(:mentorship_periods).source(:mentor) }
     it { is_expected.to have_many(:events) }
 
-    describe '.current_training_period' do
+    describe '.current_or_next_training_period' do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
 
-      it { is_expected.to have_one(:current_training_period).class_name('TrainingPeriod') }
+      it { is_expected.to have_one(:current_or_next_training_period).class_name('TrainingPeriod') }
 
       context 'when there is a current period' do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
         it 'returns the current training_period' do
-          expect(ect_at_school_period.current_training_period).to eql(training_period)
+          expect(ect_at_school_period.current_or_next_training_period).to eql(training_period)
         end
       end
 
@@ -33,7 +33,7 @@ describe ECTAtSchoolPeriod do
         let!(:future_training_period) { FactoryBot.create(:training_period, started_on: 2.weeks.from_now, finished_on: nil, ect_at_school_period:) }
 
         it 'returns the current ect_at_school_period' do
-          expect(ect_at_school_period.current_training_period).to eql(training_period)
+          expect(ect_at_school_period.current_or_next_training_period).to eql(training_period)
         end
       end
 
@@ -41,12 +41,12 @@ describe ECTAtSchoolPeriod do
         let!(:training_period) { FactoryBot.create(:training_period, :finished, ect_at_school_period:) }
 
         it 'returns nil' do
-          expect(ect_at_school_period.current_training_period).to be_nil
+          expect(ect_at_school_period.current_or_next_training_period).to be_nil
         end
       end
     end
 
-    describe '.current_mentorship_period' do
+    describe '.current_or_next_mentorship_period' do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
       let(:mentorship_started_on) { 3.weeks.ago }
@@ -62,11 +62,11 @@ describe ECTAtSchoolPeriod do
         )
       end
 
-      it { is_expected.to have_one(:current_mentorship_period).class_name('MentorshipPeriod') }
+      it { is_expected.to have_one(:current_or_next_mentorship_period).class_name('MentorshipPeriod') }
 
       context 'when there is a current period' do
         it 'returns the current mentorship_period' do
-          expect(ect_at_school_period.current_mentorship_period).to eql(mentorship_period)
+          expect(ect_at_school_period.current_or_next_mentorship_period).to eql(mentorship_period)
         end
       end
 
@@ -85,7 +85,7 @@ describe ECTAtSchoolPeriod do
         end
 
         it 'returns the current mentorship_period' do
-          expect(ect_at_school_period.current_mentorship_period).to eql(mentorship_period)
+          expect(ect_at_school_period.current_or_next_mentorship_period).to eql(mentorship_period)
         end
       end
 
@@ -93,7 +93,7 @@ describe ECTAtSchoolPeriod do
         let(:mentorship_finished_on) { 1.week.ago }
 
         it 'returns nil' do
-          expect(ect_at_school_period.current_training_period).to be_nil
+          expect(ect_at_school_period.current_or_next_training_period).to be_nil
         end
       end
     end
