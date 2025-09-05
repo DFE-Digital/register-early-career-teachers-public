@@ -97,7 +97,7 @@ RSpec.describe API::DeliveryPartners::Query do
         it "ignores invalid `contract_period_years`" do
           delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
 
-          query = described_class.new(contract_period_years: [contract_period1.year, "12345678"])
+          query = described_class.new(contract_period_years: [contract_period1.year, 1099])
 
           expect(query.delivery_partners).to contain_exactly(delivery_partner1)
         end

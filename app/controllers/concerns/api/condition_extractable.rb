@@ -4,7 +4,7 @@ module API
 
   protected
 
-    def extract_conditions(list, allowlist: nil, uuids: false, integers: false)
+    def extract_conditions(list, uuids: false, integers: false)
       return if list.blank?
 
       conditions = case list
@@ -19,14 +19,7 @@ module API
       conditions.select! { |uuid| uuid_valid?(uuid) } if uuids
       conditions.select! { |value| integer_valid?(value) } if integers
 
-      return conditions if allowlist.blank?
-
-      case conditions
-      when Array
-        conditions.intersection(allowlist)
-      else
-        conditions.in?(allowlist) ? conditions : nil
-      end
+      conditions
     end
 
   private

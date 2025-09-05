@@ -29,7 +29,7 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
     next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
     create_resource(active_lead_provider: next_active_lead_provider)
 
-    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort,1099" } })
+    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort,,20A1,nil,null, ,1099,#{SecureRandom.uuid}" } })
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
