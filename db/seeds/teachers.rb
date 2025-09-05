@@ -38,5 +38,5 @@ teachers = [
 ]
 
 teachers.each do |attrs|
-  Teacher.create!(attrs).tap { |teacher| describe_teacher(teacher) }
+  FactoryBot.create(:teacher, attrs).tap { |teacher| describe_teacher(teacher) }
 end
