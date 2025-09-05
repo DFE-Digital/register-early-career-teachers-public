@@ -31,12 +31,19 @@ review: test-cluster ## Specify review AKS environment
 staging: test-cluster
 	$(eval include config/global_config/staging.sh)
 
+.PHONY: migration
 migration: production-cluster
 	$(eval include config/global_config/migration.sh)
 
+.PHONY: paritycheck
+paritycheck: production-cluster
+	$(eval include config/global_config/paritycheck.sh)
+
+.PHONY: sandbox
 sandbox: production-cluster
 	$(eval include config/global_config/sandbox.sh)
 
+.PHONY: production
 production: production-cluster
 	$(if $(or ${SKIP_CONFIRM}, ${CONFIRM_PRODUCTION}), , $(error Missing CONFIRM_PRODUCTION=yes))
 	$(eval include config/global_config/production.sh)
