@@ -16,9 +16,9 @@ RSpec.describe "api/guidance/show.html.erb" do
   context "when a release note is present" do
     let(:release_note_data) do
       YAML.load_file(
-        Rails.root.join("app/views/api/guidance/release_notes.yml"),
+        Rails.root.join("app/views/api/release_notes/release_notes.yml"),
         permitted_classes: [Date]
-      ).map { |note| API::ReleaseNote.new(**note.symbolize_keys) }
+      ).map { API::ReleaseNote.new(**it.symbolize_keys) }
     end
     let!(:release_note) { release_note_data.first }
 
