@@ -66,7 +66,7 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
         ect.reload
 
         expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to eq(mentor)
-        expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentorship_period.started_on).to eq(Date.current)
+        expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_or_next_mentorship_period.started_on).to eq(Date.current)
       end
     end
   end
