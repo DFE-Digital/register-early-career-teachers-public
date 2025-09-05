@@ -13,7 +13,7 @@
 ActiveRecord::Schema[8.0].define(version: 2025_09_01_173600) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
-  enable_extension "pg_catalog.plpgsql"
+  # enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
   enable_extension "unaccent"
 
