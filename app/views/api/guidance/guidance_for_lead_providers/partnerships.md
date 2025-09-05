@@ -149,8 +149,6 @@ GET /schools/{id}?filter[cohort]={year}
 
 This endpoint shows the programme type and confirmed partnerships for a single school in a given cohort.  
 
-Lead providers can check details on the type of training programme the school has chosen to deliver, and whether they have a confirmed partnership in place. 
-
 Requests must include: 
 
 * `cohort`
