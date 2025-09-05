@@ -38,8 +38,7 @@ rising_minds = DeliveryPartner.find_by!(name: "Rising Minds Network")
   { active_lead_provider: best_practice_network_2023, delivery_partner: rising_minds },
   { active_lead_provider: best_practice_network_2024, delivery_partner: rising_minds }
 ].each do |data|
-  LeadProviderDeliveryPartnership.find_or_create_by!(
-    active_lead_provider: data[:active_lead_provider],
-    delivery_partner: data[:delivery_partner]
-  ).tap { |lpdp| describe_lead_provider_delivery_partnership(lpdp) }
+  FactoryBot.create(:lead_provider_delivery_partnership,
+                    active_lead_provider: data[:active_lead_provider],
+                    delivery_partner: data[:delivery_partner]).tap { |lpdp| describe_lead_provider_delivery_partnership(lpdp) }
 end

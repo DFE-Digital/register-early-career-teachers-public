@@ -11,6 +11,6 @@ end
   'Proving Potential Teaching School Hub',
   'Harvest Academy'
 ].each do |name|
-  delivery_partner = DeliveryPartner.create!(name:)
+  delivery_partner = FactoryBot.create(:delivery_partner, name:)
   describe_delivery_partner(delivery_partner)
 end
