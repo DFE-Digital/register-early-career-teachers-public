@@ -12,6 +12,7 @@ RSpec.describe Metadata::Manager do
 
         allow(Metadata::Handlers::School).to receive(:new).with(it) { handler }
         expect(handler).to receive(:refresh_metadata!).once
+        expect(handler).not_to receive(:track_changes!)
       end
 
       refresh_metadata
@@ -25,6 +26,23 @@ RSpec.describe Metadata::Manager do
 
         allow(Metadata::Handlers::School).to receive(:new).with(objects) { handler }
         expect(handler).to receive(:refresh_metadata!).once
+        expect(handler).not_to receive(:track_changes!)
+
+        refresh_metadata
+      end
+    end
+
+    context "when track_changes is true" do
+      subject(:refresh_metadata) { instance.refresh_metadata!(objects, track_changes: true) }
+
+      it "calls track_changes! before running refresh_metadata!" do
+        objects.each do
+          handler = instance_double(Metadata::Handlers::School)
+
+          allow(Metadata::Handlers::School).to receive(:new).with(it) { handler }
+          expect(handler).to receive(:track_changes!).once
+          expect(handler).to receive(:refresh_metadata!).once
+        end
 
         refresh_metadata
       end
@@ -57,7 +75,7 @@ RSpec.describe Metadata::Manager do
     let(:async) { true }
 
     it "calls refresh_metadata! for each handler with async: true" do
-      expect(Metadata::Resolver.all_handlers).to all(receive(:refresh_all_metadata!).with(async:))
+      expect(Metadata::Resolver.all_handlers).to all(receive(:refresh_all_metadata!).with(async:, track_changes: false))
 
       refresh_all_metadata
     end
@@ -66,7 +84,17 @@ RSpec.describe Metadata::Manager do
       let(:async) { false }
 
       it "calls refresh_metadata! for each handler with async: false" do
-        expect(Metadata::Resolver.all_handlers).to all(receive(:refresh_all_metadata!).with(async:))
+        expect(Metadata::Resolver.all_handlers).to all(receive(:refresh_all_metadata!).with(async:, track_changes: false))
+
+        refresh_all_metadata
+      end
+    end
+
+    context "when track_changes is true" do
+      subject(:refresh_all_metadata) { described_class.refresh_all_metadata!(async:, track_changes: true) }
+
+      it "calls refresh_metadata! for each handler with async: false" do
+        expect(Metadata::Resolver.all_handlers).to all(receive(:refresh_all_metadata!).with(async:, track_changes: true))
 
         refresh_all_metadata
       end

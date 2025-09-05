@@ -44,12 +44,14 @@ RSpec.shared_examples "supports refreshing all metadata" do |factory, object_typ
     it "enqueues jobs to refresh metadata for all #{factory} in batches" do
       expect(RefreshMetadataJob).to receive(:perform_later).with(
         object_type:,
-        object_ids: object_ids[0..1]
+        object_ids: object_ids[0..1],
+        track_changes: false
       )
 
       expect(RefreshMetadataJob).to receive(:perform_later).with(
         object_type:,
-        object_ids: object_ids[2..2]
+        object_ids: object_ids[2..2],
+        track_changes: false
       )
 
       refresh_all_metadata
@@ -61,15 +63,39 @@ RSpec.shared_examples "supports refreshing all metadata" do |factory, object_typ
       it "enqueues jobs to refresh metadata for all #{factory} in batches" do
         expect(RefreshMetadataJob).to receive(:perform_now).with(
           object_type:,
-          object_ids: object_ids[0..1]
+          object_ids: object_ids[0..1],
+          track_changes: false
         )
 
         expect(RefreshMetadataJob).to receive(:perform_now).with(
           object_type:,
-          object_ids: object_ids[2..2]
+          object_ids: object_ids[2..2],
+          track_changes: false
         )
 
         refresh_all_metadata
+      end
+    end
+  end
+end
+
+RSpec.shared_examples "supports tracking metadata upsert changes" do |metadata_model|
+  describe "track upsert changes" do
+    context "when track_changes is false" do
+      it "does not track changes" do
+        perform_refresh_metadata
+
+        expect(handler.upsert_changes).to be_empty
+      end
+    end
+
+    context "when track_changes is true" do
+      before { handler.track_changes! }
+
+      it "tracks changes" do
+        perform_refresh_metadata
+
+        expect(handler.upsert_changes).to include(a_hash_including(class: metadata_model.name, id: anything, attributes: anything))
       end
     end
   end
