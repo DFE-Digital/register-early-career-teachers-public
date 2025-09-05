@@ -93,7 +93,7 @@ describe API::SchoolPartnerships::Query do
         end
 
         it "ignores invalid `contract_period_years`" do
-          query = described_class.new(contract_period_years: [contract_period1.year, "12345678"])
+          query = described_class.new(contract_period_years: [contract_period1.year, 1099])
 
           expect(query.school_partnerships).to contain_exactly(school_partnership1)
         end
