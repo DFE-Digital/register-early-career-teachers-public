@@ -20,6 +20,8 @@ RSpec.describe LegacyDataImporter do
   end
 
   describe "#migrate!" do
+    let!(:data_migration) { FactoryBot.create(:data_migration, :in_progress) }
+
     it "queues the next runnable migrator" do
       allow(Migrators::Base).to receive(:migrators_in_dependency_order).and_return [migrator1, migrator2]
 
@@ -29,6 +31,20 @@ RSpec.describe LegacyDataImporter do
       expect(migrator1).not_to receive(:queue)
       expect(migrator2).to receive(:queue)
       importer.migrate!
+    end
+
+    it "does not refresh the metadata when a migration is in progress" do
+      expect(Metadata::Manager).not_to receive(:refresh_all_metadata!)
+      importer.migrate!
+    end
+
+    context "when all migrations have finished" do
+      let!(:data_migration) { FactoryBot.create(:data_migration, :completed) }
+
+      it "initiates an async refresh of the metadata" do
+        expect(Metadata::Manager).to receive(:refresh_all_metadata!).with(async: true)
+        importer.migrate!
+      end
     end
   end
 
@@ -48,6 +64,12 @@ RSpec.describe LegacyDataImporter do
 
     it "calls .reset! on each migrator" do
       expect([migrator1, migrator2]).to all(receive(:reset!))
+      importer.reset!
+    end
+
+    it "calls .destroy_all_metadata! on the manager" do
+      [migrator1, migrator2].each { allow(it).to receive(:reset!) }
+      expect(Metadata::Manager).to receive(:destroy_all_metadata!)
       importer.reset!
     end
   end

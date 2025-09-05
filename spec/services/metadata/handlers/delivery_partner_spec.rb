@@ -11,6 +11,14 @@ RSpec.describe Metadata::Handlers::DeliveryPartner do
     let(:object) { delivery_partner }
   end
 
+  describe ".destroy_all_metadata!" do
+    subject(:destroy_all_metadata) { described_class.destroy_all_metadata! }
+
+    it "destroys all metadata for the delivery partner" do
+      expect { destroy_all_metadata }.to change(Metadata::DeliveryPartnerLeadProvider, :count).from(1).to(0)
+    end
+  end
+
   describe "#refresh_metadata!" do
     subject(:refresh_metadata) { instance.refresh_metadata! }
 
