@@ -15,7 +15,12 @@
   <strong><%= performance_gain(@response.rect_performance_gain_ratio) %></strong> performance when compared to ECF.
 </p>
 
-<% if @response.bodies_different? %>
+<p>
+  The response IDs were <strong><%= comparison_in_words(@response.body_ids_matching?) %></strong>. In total
+  RECT returned <strong><%= id_count_in_words(@response.rect_body_ids) %></strong> and ECF returned <strong><%= id_count_in_words(@response.ecf_body_ids) %></strong>.
+</p>
+
+<% if @response.bodies_different? || @response.body_ids_different? %>
   <% content_for(:head) do %>
     <style type="text/css" nonce="<%= content_security_policy_nonce %>"><%= Diffy::CSS %></style>
   <% end %>
@@ -26,24 +31,51 @@
     </p>
     
     <p>
-      Sections <span class="diff green">in green</span> show content that exists 
-      in the RECT response but is missing from the ECF response.
-    </p>
-
-    <p>
       Sections <span class="diff red">in red</span> show content that exists 
       in the ECF response but is missing from the RECT response.
     </p>
-  <% end %>
 
+    <p>
+      Sections <span class="diff green">in green</span> show content that exists 
+      in the RECT response but is missing from the ECF response.
+    </p>
+  <% end %>
+<% end %>
+
+<% if @response.bodies_different? %>
   <hr class="govuk-section-break govuk-section-break--l">
+
+  <h2 class="govuk-heading-l">Response body</h2>
 
   <div class="govuk-grid-row diff-container">
     <div class="govuk-grid-column-one-third">
       <%= render partial: "filter", locals: { filter: @filter } if @filter.filterable? %>
     </div>
     <div class="govuk-grid-column-two-thirds">
-      <%= render partial: "diff", locals: { response: @filter.filtered_response } %>
+      <%= render partial: "body_diff", locals: { response: @filter.filtered_response } %>
+    </div>
+  </div>
+<% end %>
+
+<% if @response.body_ids_different? %>
+  <hr class="govuk-section-break govuk-section-break--l">
+
+  <h2 class="govuk-heading-l">Response IDs</h2>
+
+  <div class="govuk-grid-row diff-container">
+    <div class="govuk-grid-column-one-third">
+      <p>
+        There <%= "was".pluralize(@response.ecf_only_body_ids.count) %> <span class="diff red"><%= id_count_in_words(@response.ecf_only_body_ids) %></span>
+        returned by ECF that were not returned by RECT.
+      </p>
+
+      <p>
+        There <%= "was".pluralize(@response.rect_only_body_ids.count) %> <span class="diff green"><%= id_count_in_words(@response.rect_only_body_ids) %></span>
+        returned by RECT that were not returned by ECF.
+      </p>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <%= render partial: "body_ids_diff", locals: { response: @response } %>
     </div>
   </div>
 <% end %>

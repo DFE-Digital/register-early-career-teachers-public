@@ -24,6 +24,8 @@ RSpec.describe "View parity check request" do
     expect(page.get_by_text("Overall the request was 50% successful")).to be_visible
     expect(page.get_by_text(/(equal|faster|slower) performance when compared to ECF/)).to be_visible
 
+    expect(page.get_by_text("The response IDs were the same. In total RECT returned 0 IDs and ECF returned 0 IDs.")).to be_visible
+
     table = page.locator("table")
     expect(table.get_by_text("Responses")).to be_visible
 
@@ -45,6 +47,21 @@ RSpec.describe "View parity check request" do
     end
 
     expect(page.locator(".govuk-pagination")).not_to be_visible
+  end
+
+  scenario "Viewing a parity check request with different IDs in the responses" do
+    run = FactoryBot.create(:parity_check_run, :completed)
+    response = FactoryBot.create(:parity_check_response, ecf_body: { data: [{ id: 123 }] }.to_json, rect_body: { data: [{ id: 456 }] }.to_json)
+    request = FactoryBot.create(:parity_check_request, :completed, run:, responses: [response])
+
+    page.goto(migration_parity_check_request_path(run, request))
+
+    expect(page.get_by_text("The response IDs were different. In total RECT returned 1 ID and ECF returned 1 ID.")).to be_visible
+
+    expect(page.get_by_role("heading", name: "Response IDs")).to be_visible
+
+    expect(page.get_by_text("There was 1 ID returned by ECF that were not returned by RECT.")).to be_visible
+    expect(page.get_by_text("There was 1 ID returned by RECT that were not returned by ECF.")).to be_visible
   end
 
   scenario "Paginating the parity check responses when there are many" do

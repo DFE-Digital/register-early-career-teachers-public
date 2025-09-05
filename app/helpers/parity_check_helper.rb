@@ -68,6 +68,10 @@ module ParityCheckHelper
     "🐌 #{formatted_ratio}x slower"
   end
 
+  def id_count_in_words(ids)
+    %(#{number_with_delimiter(ids.count)} #{'ID'.pluralize(ids.count)})
+  end
+
   def comparison_in_words(matching)
     if matching
       "the same"
@@ -77,7 +81,7 @@ module ParityCheckHelper
   end
 
   def sanitize_diff(html)
-    sanitize html, tags: %w[div ul li strong del ins span], attributes: %w[class]
+    sanitize html, tags: %w[div ul li strong del ins span br], attributes: %w[class]
   end
 
   def render_filterable_key_hash(hash, key_path: [], &block)
