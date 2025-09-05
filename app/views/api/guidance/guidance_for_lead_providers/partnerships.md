@@ -90,12 +90,6 @@ Lead providers can correct this using the `POST /partnerships` endpoint.
 
 Confirm with the school first, then submit `school_id` and `delivery_partner_id`. 
 
-### If a school chose `school-led` by mistake 
-
-Lead providers can correct this using the `POST /partnerships` endpoint. 
- 
-Confirm with the school first, then submit `school_id` and `delivery_partner_id`. 
-
 ## Rolling over partnerships 
 
 Schools can roll over their most recent partnership (not only from the previous cohort). 
