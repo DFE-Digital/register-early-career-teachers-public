@@ -294,6 +294,16 @@ Rails.application.routes.draw do
       end
     end
 
+    scope module: :ects, path: "/ects/:ect_id", as: :ects do
+      namespace :change_email_address_wizard, path: "change-email-address" do
+        get :edit, action: :new
+        post :edit, action: :create
+        get "check-answers", action: :new
+        post "check-answers", action: :create
+        get :confirmation, action: :new
+      end
+    end
+
     resources :mentors, only: %i[index]
 
     namespace :register_mentor_wizard, path: "register-mentor" do
