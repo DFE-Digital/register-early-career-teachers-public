@@ -1,12 +1,16 @@
 module Metadata
   class Manager
-    def refresh_metadata!(objects)
-      Array.wrap(objects).each { resolve_handler(it).refresh_metadata! }
+    def refresh_metadata!(objects, track_changes: false)
+      Array.wrap(objects).each do
+        handler = resolve_handler(it)
+        handler.track_changes! if track_changes
+        handler.refresh_metadata!
+      end
     end
 
     class << self
-      def refresh_all_metadata!(async: false)
-        Resolver.all_handlers.each { it.refresh_all_metadata!(async:) }
+      def refresh_all_metadata!(async: false, track_changes: false)
+        Resolver.all_handlers.each { it.refresh_all_metadata!(async:, track_changes:) }
       end
     end
 
