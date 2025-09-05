@@ -1,10 +1,10 @@
 module ECTAtSchoolPeriods
   class CurrentTraining
-    attr_reader :ect_at_school_period, :current_training_period
+    attr_reader :ect_at_school_period, :current_or_next_training_period
 
     def initialize(ect_at_school_period)
       @ect_at_school_period = ect_at_school_period
-      @current_training_period = ect_at_school_period.current_training_period
+      @current_or_next_training_period = ect_at_school_period.current_or_next_training_period
     end
 
     def expression_of_interest?
@@ -16,7 +16,7 @@ module ECTAtSchoolPeriods
     end
 
     # school_partnership
-    delegate :school_partnership, to: :current_training_period, allow_nil: true
+    delegate :school_partnership, to: :current_or_next_training_period, allow_nil: true
 
     # lead_provider_delivery_partnership
     delegate :lead_provider_delivery_partnership, to: :school_partnership, allow_nil: true, private: true
@@ -25,7 +25,7 @@ module ECTAtSchoolPeriods
     delegate :active_lead_provider, to: :lead_provider_delivery_partnership, allow_nil: true, private: true
 
     # expression_of_interest
-    delegate :expression_of_interest, to: :current_training_period, allow_nil: true, private: true
+    delegate :expression_of_interest, to: :current_or_next_training_period, allow_nil: true, private: true
 
     # expression_of_interest_lead_provider
     delegate :lead_provider, to: :expression_of_interest, allow_nil: true, prefix: :expression_of_interest, private: true
@@ -46,10 +46,10 @@ module ECTAtSchoolPeriods
     delegate :name, to: :expression_of_interest_lead_provider, allow_nil: true, prefix: :expression_of_interest_lead_provider
 
     # training_programme
-    delegate :training_programme, to: :current_training_period, allow_nil: true
+    delegate :training_programme, to: :current_or_next_training_period, allow_nil: true
 
     def provider_led?
-      current_training_period&.provider_led_training_programme?
+      current_or_next_training_period&.provider_led_training_programme?
     end
   end
 end

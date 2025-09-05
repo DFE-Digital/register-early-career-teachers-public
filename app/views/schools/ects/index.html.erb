@@ -25,8 +25,8 @@
         <% @filtered_teachers.each do |teacher| %>
           <%= render Schools::ECTs::ListingCardComponent.new(
             teacher:,
-            ect_at_school_period: teacher.current_ect_at_school_period,
-            training_period: teacher.current_ect_at_school_period&.current_training_period)
+            ect_at_school_period: teacher.current_or_next_ect_at_school_period,
+            training_period: teacher.current_or_next_ect_at_school_period&.current_or_next_training_period)
           %>
         <% end %>
       <% end %>

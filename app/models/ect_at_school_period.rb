@@ -11,8 +11,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :training_periods, inverse_of: :ect_at_school_period
   has_many :mentor_at_school_periods, through: :teacher
   has_many :events
-  has_one :current_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
-  has_one :current_mentorship_period, -> { current_or_future.earliest_first }, class_name: 'MentorshipPeriod'
+  has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
+  has_one :current_or_next_mentorship_period, -> { current_or_future.earliest_first }, class_name: 'MentorshipPeriod'
 
   # Validations
   validate :appropriate_body_for_independent_school,
@@ -67,8 +67,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
   end
 
   delegate :trn, to: :teacher
-  delegate :provider_led_training_programme?, to: :current_training_period, allow_nil: true
-  delegate :school_led_training_programme?, to: :current_training_period, allow_nil: true
+  delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
+  delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
 
 private
 
