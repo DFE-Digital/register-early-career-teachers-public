@@ -1,6 +1,6 @@
 describe ECTAtSchoolPeriods::CurrentTraining do
-  describe "#current_training_period" do
-    subject { described_class.new(ect_at_school_period).current_training_period }
+  describe "#current_or_next_training_period" do
+    subject { described_class.new(ect_at_school_period).current_or_next_training_period }
 
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
