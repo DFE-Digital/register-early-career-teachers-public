@@ -2,7 +2,10 @@ module API
   module V3
     class StatementsController < BaseController
       def index
-        conditions = { contract_period_years:, updated_since: }
+        conditions = {
+          contract_period_years: extract_conditions(contract_period_years),
+          updated_since:,
+        }
         render json: to_json(paginate(statements_query(conditions:).statements))
       end
 

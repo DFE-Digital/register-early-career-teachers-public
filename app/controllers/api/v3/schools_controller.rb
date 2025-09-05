@@ -34,7 +34,7 @@ module API
       end
 
       def sort
-        school_params[:sort]
+        sort_order(sort: school_params[:sort], model: School, default: { created_at: :asc })
       end
 
       def urn
