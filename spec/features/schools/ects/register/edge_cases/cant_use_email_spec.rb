@@ -51,7 +51,7 @@ RSpec.describe 'Registering an ECT', :js do
   def and_i_am_on_the_schools_landing_page
     path = '/schools/home/ects'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_start_adding_an_ect
@@ -79,7 +79,7 @@ RSpec.describe 'Registering an ECT', :js do
   end
 
   def then_i_should_be_taken_to_the_email_address_page
-    expect(page.url).to end_with('/schools/register-ect/email-address')
+    expect(page).to have_path('/schools/register-ect/email-address')
   end
 
   def and_i_enter_an_email_address_already_in_use_by_an_ongoing_teacher
@@ -92,7 +92,7 @@ RSpec.describe 'Registering an ECT', :js do
   end
 
   def then_i_should_be_taken_to_the_cant_use_email_page
-    expect(page.url).to end_with('/schools/register-ect/cant-use-email')
+    expect(page).to have_path('/schools/register-ect/cant-use-email')
   end
 
   def when_i_click_try_another_email
@@ -100,6 +100,6 @@ RSpec.describe 'Registering an ECT', :js do
   end
 
   def then_i_should_be_taken_to_the_ect_start_date_page
-    expect(page.url).to end_with('/schools/register-ect/start-date')
+    expect(page).to have_path('/schools/register-ect/start-date')
   end
 end
