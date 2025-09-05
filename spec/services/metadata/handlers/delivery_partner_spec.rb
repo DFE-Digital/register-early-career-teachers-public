@@ -25,6 +25,14 @@ RSpec.describe Metadata::Handlers::DeliveryPartner do
     describe "DeliveryPartnerLeadProvider" do
       before { Metadata::DeliveryPartnerLeadProvider.destroy_all }
 
+      include_context "supports tracking metadata upsert changes", Metadata::DeliveryPartnerLeadProvider do
+        let(:handler) { instance }
+
+        def perform_refresh_metadata
+          refresh_metadata
+        end
+      end
+
       it "creates metadata for the delivery partner and lead provider" do
         expect { refresh_metadata }.to change(Metadata::DeliveryPartnerLeadProvider, :count).by(1)
 
