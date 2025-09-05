@@ -86,7 +86,7 @@ RSpec.describe "View parity check response" do
 
     breadcrumbs = page.locator(".govuk-breadcrumbs")
     breadcrumbs.get_by_role("link", name: response.request.description).click
-    expect(page.url).to end_with(migration_parity_check_request_path(response.run, response.request))
+    expect(page).to have_path(migration_parity_check_request_path(response.run, response.request))
   end
 
   scenario "Navigating back to the parity check run" do
@@ -96,7 +96,7 @@ RSpec.describe "View parity check response" do
 
     breadcrumbs = page.locator(".govuk-breadcrumbs")
     breadcrumbs.get_by_role("link", name: "Parity check run ##{response.run.id}").click
-    expect(page.url).to end_with(migration_parity_check_path(response.run))
+    expect(page).to have_path(migration_parity_check_path(response.run))
   end
 
   scenario "Navigating back to completed parity checks" do
@@ -106,7 +106,7 @@ RSpec.describe "View parity check response" do
 
     breadcrumbs = page.locator(".govuk-breadcrumbs")
     breadcrumbs.get_by_role("link", name: "Completed parity checks").click
-    expect(page.url).to end_with(completed_migration_parity_checks_path)
+    expect(page).to have_path(completed_migration_parity_checks_path)
   end
 
   scenario "Navigating back to run a parity check" do
@@ -116,6 +116,6 @@ RSpec.describe "View parity check response" do
 
     breadcrumbs = page.locator(".govuk-breadcrumbs")
     breadcrumbs.get_by_role("link", name: "Run a parity check").click
-    expect(page.url).to end_with(new_migration_parity_check_path)
+    expect(page).to have_path(new_migration_parity_check_path)
   end
 end

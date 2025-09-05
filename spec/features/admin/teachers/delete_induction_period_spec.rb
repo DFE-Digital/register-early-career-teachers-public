@@ -96,7 +96,7 @@ RSpec.describe "Admin deletes an induction period" do
   def given_i_am_on_the_ect_page(teacher)
     path = "/admin/teachers/#{teacher.id}"
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def then_i_should_see_the_delete_link

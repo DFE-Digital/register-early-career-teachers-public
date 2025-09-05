@@ -14,7 +14,7 @@ RSpec.describe 'Process bulk claims then actions events' do
   scenario 'happy path' do
     # action
     page.goto(new_ab_batch_claim_path)
-    expect(page.url).to end_with('/appropriate-body/bulk/claims/new')
+    expect(page).to have_path('/appropriate-body/bulk/claims/new')
     when_i_upload_a_file('valid_complete_claim.csv')
 
     expect(PendingInductionSubmissionBatch.last).to be_processing
@@ -59,7 +59,7 @@ RSpec.describe 'Process bulk claims then actions events' do
 
     # claim
     page.goto(new_ab_batch_action_path)
-    expect(page.url).to end_with('/appropriate-body/bulk/actions/new')
+    expect(page).to have_path('/appropriate-body/bulk/actions/new')
     when_i_upload_a_file('valid_complete_action.csv')
 
     expect(PendingInductionSubmissionBatch.last).to be_processing

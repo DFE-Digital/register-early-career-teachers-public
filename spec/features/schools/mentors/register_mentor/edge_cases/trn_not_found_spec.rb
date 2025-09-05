@@ -39,7 +39,7 @@ RSpec.describe 'Registering a mentor' do
   def and_i_am_on_the_schools_landing_page
     path = '/schools/home/ects'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
@@ -57,7 +57,7 @@ RSpec.describe 'Registering a mentor' do
 
   def then_i_should_be_taken_to_the_find_mentor_page
     path = '/school/register-mentor/find-mentor'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_submit_a_date_of_birth_and_unknown_trn
@@ -69,7 +69,7 @@ RSpec.describe 'Registering a mentor' do
   end
 
   def then_i_should_be_taken_to_the_teacher_not_found_error_page
-    expect(page.url).to end_with('/school/register-mentor/trn-not-found')
+    expect(page).to have_path('/school/register-mentor/trn-not-found')
   end
 
   def when_i_click_try_again
@@ -78,6 +78,6 @@ RSpec.describe 'Registering a mentor' do
 
   def then_i_should_be_taken_to_the_find_mentor_step_page
     path = '/school/register-mentor/find-mentor'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 end

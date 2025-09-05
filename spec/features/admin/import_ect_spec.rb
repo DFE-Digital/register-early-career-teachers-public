@@ -92,13 +92,13 @@ private
   def given_i_am_on_the_admin_teachers_index_page
     path = '/admin/teachers'
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def given_i_am_on_the_find_ect_page
     path = '/admin/import-ect/find-ect/new'
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def then_i_should_see_the_import_ect_button
@@ -110,7 +110,7 @@ private
   end
 
   def then_i_should_be_on_the_find_ect_page
-    expect(page.url).to end_with('/admin/import-ect/find-ect/new')
+    expect(page).to have_path('/admin/import-ect/find-ect/new')
     expect(page.get_by_text('Find an early career teacher')).to be_visible
   end
 
@@ -142,7 +142,7 @@ private
   def then_i_should_be_on_the_check_ect_page
     @pending_induction_submission = PendingInductionSubmission.last
     path = "/admin/import-ect/check-ect/#{@pending_induction_submission.id}/edit"
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def and_i_should_see_the_ect_details
@@ -157,7 +157,7 @@ private
 
   def then_i_should_be_on_the_register_ect_page
     path = "/admin/import-ect/register-ect/#{@pending_induction_submission.id}"
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def and_i_should_see_the_success_message
@@ -181,7 +181,7 @@ private
 
   def then_i_should_be_redirected_to_the_existing_teacher_page
     teacher = Teacher.find_by(trn: '1234567')
-    expect(page.url).to end_with("/admin/teachers/#{teacher.id}")
+    expect(page).to have_path("/admin/teachers/#{teacher.id}")
   end
 
   def and_i_should_see_the_teacher_already_exists_message
@@ -192,7 +192,7 @@ private
   def then_i_should_be_on_the_no_qts_error_page
     @pending_induction_submission = PendingInductionSubmission.last
     path = "/admin/import-ect/errors/no-qts/#{@pending_induction_submission.id}"
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def and_i_should_see_the_qts_error_message
@@ -203,7 +203,7 @@ private
   def then_i_should_be_on_the_prohibited_error_page
     @pending_induction_submission = PendingInductionSubmission.last
     path = "/admin/import-ect/errors/prohibited-from-teaching/#{@pending_induction_submission.id}"
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def and_i_should_see_the_prohibited_error_message
