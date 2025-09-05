@@ -1,0 +1,8 @@
+<% page_data(
+  title: @release_note.title,
+  caption: @release_note.date,
+  backlink_href: api_guidance_release_notes_path,
+) %>
+
+<%= render API::Guidance::ReleaseNotes::TagsComponent.new(tags: @release_note.tags) %>
+<%== @release_note.body %>
