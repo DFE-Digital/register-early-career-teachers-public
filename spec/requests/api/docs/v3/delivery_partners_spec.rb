@@ -3,7 +3,7 @@ require "swagger_helper"
 RSpec.describe "Delivery partners endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, :with_delivery_partner_metadata, active_lead_provider:) }
+  let(:delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
   let(:resource) { delivery_partnership.delivery_partner }
 
   it_behaves_like "an API index endpoint documentation",

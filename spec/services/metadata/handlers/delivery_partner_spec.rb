@@ -15,6 +15,8 @@ RSpec.describe Metadata::Handlers::DeliveryPartner do
     subject(:refresh_metadata) { instance.refresh_metadata! }
 
     describe "DeliveryPartnerLeadProvider" do
+      before { Metadata::DeliveryPartnerLeadProvider.destroy_all }
+
       it "creates metadata for the delivery partner and lead provider" do
         expect { refresh_metadata }.to change(Metadata::DeliveryPartnerLeadProvider, :count).by(1)
 

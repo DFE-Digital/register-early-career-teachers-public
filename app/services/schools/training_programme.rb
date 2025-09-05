@@ -32,14 +32,10 @@ module Schools
     end
 
     def mentors_at_school?
-      return school.transient_mentors_at_school if school.respond_to?(:transient_mentors_at_school)
-
       mentors_expressions_of_interest.exists? || mentors_at_school_periods.exists?
     end
 
     def ect_training_programme
-      return school.transient_ects_at_school_training_programme if school.respond_to?(:transient_ects_at_school_training_programme)
-
       TrainingPeriod
         .where(ect_at_school_period_id: ects_expressions_of_interest.pluck(:id) + ect_at_school_periods.pluck(:id) + school_led_ect_at_school_periods.pluck(:id))
         .order(training_programme: :asc)

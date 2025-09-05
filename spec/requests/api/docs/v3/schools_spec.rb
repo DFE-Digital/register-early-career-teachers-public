@@ -3,8 +3,8 @@ require "swagger_helper"
 RSpec.describe "Schools endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
-  let(:resource) { FactoryBot.create(:school, :eligible, :with_metadata, contract_period:, lead_provider: active_lead_provider.lead_provider) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, school: resource, lead_provider_delivery_partnership:) }
+  let(:resource) { FactoryBot.create(:school, :eligible) }
+  let!(:school_partnership) { FactoryBot.create(:school_partnership, school: resource, lead_provider_delivery_partnership:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
   let(:contract_period) { lead_provider_delivery_partnership.contract_period }
   let(:"filter[cohort]") { contract_period.year }

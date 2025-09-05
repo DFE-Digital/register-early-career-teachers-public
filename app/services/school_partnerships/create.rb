@@ -31,7 +31,6 @@ module SchoolPartnerships
           school:,
           lead_provider_delivery_partnership:
         ).tap do |school_partnership|
-          metadata_manager.refresh_metadata!(school_partnership.school)
           Events::Record.record_school_partnership_created_event!(author: Events::LeadProviderAPIAuthor.new, school_partnership:)
         end
       end
