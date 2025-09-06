@@ -9,27 +9,19 @@
 
   <%=
     f.govuk_date_field :started_on,
-      legend: { text: "When did #{pending_induction_submission_full_name(@pending_induction_submission)} start their induction with you?" }, 
+      legend: { text: "When did #{pending_induction_submission_full_name(@pending_induction_submission)} start their induction with you?" },
       hint: { text: teacher_induction_date_hint_text }
   %>
 
-  <% if Rails.application.config.enable_bulk_claim %>
-    <%=
-      f.govuk_collection_radio_buttons :training_programme,
-        training_programme_choices,
-        :identifier,
-        :name,
-        legend: { text: "What type of training programme will #{pending_induction_submission_full_name(@pending_induction_submission)} follow?" }
-    %>
-  <% else %>
-    <%=
-      f.govuk_collection_radio_buttons :induction_programme,
-        induction_programme_choices,
-        :identifier,
-        :name,
-        legend: { text: "Which ECF based induction training programme is #{pending_induction_submission_full_name(@pending_induction_submission)} doing?" }
-    %>
-  <% end %>
+
+  <%=
+    f.govuk_collection_radio_buttons :training_programme,
+      training_programme_choices,
+      :identifier,
+      :name,
+      legend: { text: "What type of training programme will #{pending_induction_submission_full_name(@pending_induction_submission)} follow?" }
+  %>
+
 
   <%= f.govuk_submit %>
 <% end %>

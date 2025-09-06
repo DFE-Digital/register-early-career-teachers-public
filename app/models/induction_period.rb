@@ -58,9 +58,7 @@ class InductionPeriod < ApplicationRecord
   end
 
   def training_programme=(value)
-    if Rails.application.config.enable_bulk_claim
-      self.induction_programme = ::PROGRAMME_MAPPER[value]
-    end
+    self.induction_programme = ::PROGRAMME_MAPPER[value]
 
     super
   end

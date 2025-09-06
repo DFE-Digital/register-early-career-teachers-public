@@ -19,11 +19,7 @@ module Teachers::Details
     end
 
     def induction_period_programme(period)
-      if Rails.application.config.enable_bulk_claim
-        helpers.training_programme_name(period.training_programme)
-      else
-        ::INDUCTION_PROGRAMMES[period.induction_programme.to_sym]
-      end
+      helpers.training_programme_name(period.training_programme)
     end
 
     delegate :govuk_link_to, to: :helpers

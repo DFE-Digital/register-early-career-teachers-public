@@ -9,14 +9,6 @@ private
 
   attr_reader :appropriate_body
 
-  def bulk_upload_enabled?
-    Rails.application.config.enable_bulk_upload
-  end
-
-  def bulk_claim_enabled?
-    Rails.application.config.enable_bulk_claim
-  end
-
   def batch_action_path
     if has_existing_bulk_uploads?
       ab_batch_actions_path
