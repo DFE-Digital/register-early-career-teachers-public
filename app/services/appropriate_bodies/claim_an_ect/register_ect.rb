@@ -13,14 +13,8 @@ module AppropriateBodies
       def register(pending_induction_submission_params)
         pending_induction_submission.assign_attributes(**pending_induction_submission_params)
 
-        # Transition induction programme to the new training programme values
-        if Rails.application.config.enable_bulk_claim
-          induction_programme = ::PROGRAMME_MAPPER[pending_induction_submission_params[:training_programme]]
-          pending_induction_submission.assign_attributes(induction_programme:) if induction_programme.present?
-        else
-          training_programme = ::PROGRAMME_MAPPER[pending_induction_submission_params[:induction_programme]]
-          pending_induction_submission.assign_attributes(training_programme:) if training_programme.present?
-        end
+        induction_programme = ::PROGRAMME_MAPPER[pending_induction_submission_params[:training_programme]]
+        pending_induction_submission.assign_attributes(induction_programme:) if induction_programme.present?
 
         # FIXME: I think the behaviour here should be to still allow the AB to claim
         #        the ECT, but we shouldn't report the starting of induction to TRS
