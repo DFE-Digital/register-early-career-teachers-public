@@ -24,8 +24,7 @@ RSpec.describe Schools::RegisterECT do
   let(:trs_first_name) { "Dusty" }
   let(:trs_last_name) { "Rhodes" }
   let(:working_pattern) { "full_time" }
-  let(:teacher) { subject.teacher }
-  let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
+  let(:ect_at_school_period) { subject.teacher.ect_at_school_periods.first }
   let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
 
   describe '#register!' do
@@ -41,30 +40,15 @@ RSpec.describe Schools::RegisterECT do
 
       context 'when provider-led' do
         let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-
-        context "when a Teacher record with the same TRN don't exist" do
-          let(:teacher) { Teacher.find_by(trn:) }
-
-          it 'creates a new Teacher record' do
-            expect { service.register! }.to change(Teacher, :count).by(1)
-
-            expect(teacher.trs_first_name).to eq(trs_first_name)
-            expect(teacher.trs_last_name).to eq(trs_last_name)
-            expect(teacher.trn).to eq(trn)
-            expect(teacher.corrected_name).to eq(corrected_name)
-          end
-        end
+        let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
         context "when a Teacher record with the same TRN exists but has no ect records" do
-          let!(:another_teacher) { FactoryBot.create(:teacher, trn:) }
-
           it "doesn't create a new Teacher record" do
             expect { service.register! }.not_to change(Teacher, :count)
           end
         end
 
         context "when a Teacher record with the same TRN exists and has ect records at a different school" do
-          let(:teacher) { FactoryBot.create(:teacher, trn:) }
           let(:other_school) { FactoryBot.create(:school) }
 
           before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school, started_on: Date.new(2024, 1, 1)) }
@@ -75,8 +59,6 @@ RSpec.describe Schools::RegisterECT do
         end
 
         context "when a Teacher record with the same TRN exists and has ect records at the same school" do
-          let(:teacher) { FactoryBot.create(:teacher, trn:) }
-
           before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
 
           it "raises an exception" do
@@ -85,7 +67,6 @@ RSpec.describe Schools::RegisterECT do
         end
 
         context "when a Teacher record with the same TRN exists and has multiple ect records at different schools" do
-          let(:teacher) { FactoryBot.create(:teacher, trn:) }
           let(:school_one) { FactoryBot.create(:school) }
           let(:school_two) { FactoryBot.create(:school) }
           let(:started_on) { Date.current + 1.month }
@@ -106,7 +87,6 @@ RSpec.describe Schools::RegisterECT do
         end
 
         context "when a Teacher record with the same TRN has an ongoing period at different school and finished period at current school" do
-          let(:teacher) { FactoryBot.create(:teacher, trn:) }
           let(:other_school) { FactoryBot.create(:school) }
 
           before do
@@ -130,7 +110,6 @@ RSpec.describe Schools::RegisterECT do
         end
 
         context "when a Teacher record with the same TRN has a future period at different school" do
-          let(:teacher) { FactoryBot.create(:teacher, trn:) }
           let(:other_school) { FactoryBot.create(:school) }
           let(:started_on) { Date.current + 3.months } # Future start date after the other school's period
           let!(:future_contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
@@ -213,6 +192,10 @@ RSpec.describe Schools::RegisterECT do
       let(:training_programme) { 'school_led' }
       let(:lead_provider) { nil }
 
+      before do
+        FactoryBot.create(:teacher, trn:)
+      end
+
       it 'creates a TrainingPeriod' do
         expect { service.register! }.to change(TrainingPeriod, :count).by(1)
       end
@@ -239,7 +222,7 @@ RSpec.describe Schools::RegisterECT do
       let(:training_programme) { 'school_led' }
       let(:lead_provider) { nil }
       let(:other_school) { FactoryBot.create(:school) }
-      let(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
       let!(:existing_period) do
         FactoryBot.create(

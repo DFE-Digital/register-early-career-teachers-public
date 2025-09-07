@@ -44,11 +44,10 @@ module Schools
     end
 
     def register!
-      not_registered_as_an_ect!
-
       ActiveRecord::Base.transaction do
-        update_school_last_choices!
         create_teacher!
+        not_registered_as_an_ect!
+        update_school_last_choices!
         close_ongoing_ect_period!
         @ect_at_school_period = start_at_school!
         create_training_period!
@@ -63,9 +62,6 @@ module Schools
     def already_registered_as_an_ect?
       # Check if ECT is already registered at THIS school to prevent duplicates
       # School transfers to different schools are allowed
-      teacher = ::Teacher.find_by_trn(trn)
-      return false unless teacher
-
       teacher.ect_at_school_periods.where(school:).ongoing_today.exists?
     end
 
