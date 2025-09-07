@@ -61,7 +61,7 @@ RSpec.describe API::Errors::Response do
   describe ".from" do
     subject(:response) { described_class.from(service) }
 
-    let(:service) { SchoolPartnerships::Create.new.tap(&:valid?) }
+    let(:service) { API::SchoolPartnerships::CreateResource.new.tap(&:valid?) }
 
     it "returns a hash with formatted errors" do
       expect(response[:errors]).to include(
