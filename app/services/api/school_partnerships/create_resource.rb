@@ -1,5 +1,5 @@
 module API::SchoolPartnerships
-  class Resource
+  class CreateResource
     include ActiveModel::Model
     include ActiveModel::Attributes
 
