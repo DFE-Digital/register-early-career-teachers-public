@@ -1005,6 +1005,34 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe '.record_teacher_left_school_as_mentor!' do
+    let(:finished_on) { 1.month.ago.to_date }
+    let(:school) { FactoryBot.create(:school) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:, started_on: 2.years.ago.to_date) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_teacher_left_school_as_mentor!(
+          author:,
+          mentor_at_school_period:,
+          teacher:,
+          school:,
+          happened_at: finished_on
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          school:,
+          mentor_at_school_period:,
+          heading: "Rhys Ifans left #{school.name}",
+          event_type: :teacher_left_school_as_mentor,
+          happened_at: finished_on,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe '.record_bulk_upload_started_event!' do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
 
