@@ -8,7 +8,9 @@ module API
           delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids),
           sort:
         }
-        render json: to_json(paginate(partnerships_query(conditions:).school_partnerships))
+        paginated_school_partnerships = partnerships_query(conditions:).school_partnerships { paginate(it) }
+
+        render json: to_json(paginated_school_partnerships)
       end
 
       def show
@@ -48,8 +50,13 @@ module API
       end
 
       def partnerships_query(conditions: {})
-        conditions[:lead_provider_id] = current_lead_provider.id
-        API::SchoolPartnerships::Query.new(**conditions.compact)
+        API::SchoolPartnerships::Query.new(**(default_query_conditions.merge(conditions)).compact)
+      end
+
+      def default_query_conditions
+        @default_query_conditions ||= {
+          lead_provider_id: current_lead_provider.id,
+        }
       end
 
       def partnerships_params

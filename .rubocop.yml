@@ -109,6 +109,7 @@ Rails/SaveBang:
   Exclude:
     - app/services/**/*
     - spec/support/shared_examples/metadata_support.rb
+    - spec/support/shared_examples/query_avoids_includes.rb
 
 Naming/MethodParameterName:
   Enabled: false
