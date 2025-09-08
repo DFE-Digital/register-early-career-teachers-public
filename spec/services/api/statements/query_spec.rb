@@ -137,8 +137,8 @@ RSpec.describe API::Statements::Query do
         let(:updated_since) { 1.day.ago }
 
         it "filters by `updated_since`" do
-          FactoryBot.create(:statement, lead_provider:, updated_at: 2.days.ago)
-          statement2 = FactoryBot.create(:statement, lead_provider:, updated_at: Time.zone.now)
+          FactoryBot.create(:statement, lead_provider:, api_updated_at: 2.days.ago)
+          statement2 = FactoryBot.create(:statement, lead_provider:, api_updated_at: Time.zone.now)
 
           query = described_class.new(lead_provider_id: lead_provider.id, updated_since:)
 
@@ -147,16 +147,16 @@ RSpec.describe API::Statements::Query do
 
         context "when `updated_since` param is omitted" do
           it "returns all statements" do
-            statement1 = FactoryBot.create(:statement, updated_at: 1.week.ago)
-            statement2 = FactoryBot.create(:statement, updated_at: 2.weeks.ago)
+            statement1 = FactoryBot.create(:statement, api_updated_at: 1.week.ago)
+            statement2 = FactoryBot.create(:statement, api_updated_at: 2.weeks.ago)
 
             expect(described_class.new.statements).to contain_exactly(statement1, statement2)
           end
         end
 
         it "does not filter by `updated_since` if blank" do
-          statement1 = FactoryBot.create(:statement, updated_at: 1.week.ago)
-          statement2 = FactoryBot.create(:statement, updated_at: 2.weeks.ago)
+          statement1 = FactoryBot.create(:statement, api_updated_at: 1.week.ago)
+          statement2 = FactoryBot.create(:statement, api_updated_at: 2.weeks.ago)
 
           query = described_class.new(updated_since: " ")
 
