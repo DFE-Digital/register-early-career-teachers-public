@@ -151,7 +151,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'when mentoring_at_new_school_only? is false' do
       before do
-        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: false, lead_provider:)
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: false, lead_provider:, funding_available?: true)
         render
       end
 
@@ -164,7 +164,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'when mentoring_at_new_school_only? is not present' do
       before do
-        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: nil, lead_provider:)
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: nil, lead_provider:, funding_available?: true)
         render
       end
 
@@ -172,6 +172,32 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
         expect(rendered).not_to have_element(:dt, text: 'Lead provider')
         expect(rendered).not_to have_element(:dd, text: 'FraggleRock')
         expect(rendered).not_to have_link('Change', href: schools_register_mentor_wizard_change_lead_provider_path)
+      end
+    end
+
+    context 'when funding_available? is false' do
+      before do
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: true, lead_provider:, funding_available?: false)
+        render
+      end
+
+      it 'does not show the lead provider row' do
+        expect(rendered).not_to have_element(:dt, text: 'Lead provider')
+        expect(rendered).not_to have_element(:dd, text: 'FraggleRock')
+        expect(rendered).not_to have_link('Change', href: schools_register_mentor_wizard_change_lead_provider_path)
+      end
+    end
+
+    context 'when funding_available? is true' do
+      before do
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: true, lead_provider:, funding_available?: true)
+        render
+      end
+
+      it 'shows the lead provider row' do
+        expect(rendered).to have_element(:dt, text: 'Lead provider')
+        expect(rendered).to have_element(:dd, text: 'FraggleRock')
+        expect(rendered).to have_link('Change', href: schools_register_mentor_wizard_change_lead_provider_path)
       end
     end
 
