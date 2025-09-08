@@ -502,6 +502,23 @@ module Events
       ).record_event!
     end
 
+    # Delivery Partner Events
+
+    def self.record_delivery_partner_name_changed_event!(author:, delivery_partner:, from:, to:, happened_at: Time.zone.now)
+      event_type    = :delivery_partner_name_changed
+      heading       = "Delivery partner name changed"
+      modifications = { "name" => [from, to] }
+
+      new(
+        event_type:,
+        author:,
+        delivery_partner:,
+        heading:,
+        happened_at:,
+        modifications:
+      ).record_event!
+    end
+
   private
 
     def attributes

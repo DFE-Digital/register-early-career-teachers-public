@@ -24,6 +24,12 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
     expect(view.content_for(:page_title)).to eql('Test Delivery Partner')
   end
 
+  it %(renders the link to change the delivery partner name) do
+    render
+
+    expect(rendered).to have_link('Change delivery partner name', href: edit_admin_delivery_partner_path(delivery_partner))
+  end
+
   it 'includes backlink with preserved page and query parameters' do
     render
 
@@ -53,7 +59,7 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
     expect(rendered).to have_css('td', text: partnership.lead_provider.name)
   end
 
-  it 'displays Change links for each year' do
+  it 'displays one change link per year group' do
     render
 
     expected_href = new_admin_delivery_partner_delivery_partnership_path(
@@ -144,10 +150,14 @@ RSpec.describe 'admin/delivery_partners/show.html.erb' do
       expect(rendered).to have_css('td', text: /Lead Provider 1.*Lead Provider 2/m)
     end
 
-    it 'displays one Change link per year group' do
+    it 'displays one change link per year group' do
       render
 
-      expect(rendered).to have_link('Change', count: 1)
+      expect(rendered).to have_css(
+        'table.govuk-table a',
+        text: 'Change',
+        count: 1
+      )
     end
   end
 

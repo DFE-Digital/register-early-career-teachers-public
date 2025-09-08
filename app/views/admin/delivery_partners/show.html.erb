@@ -1,4 +1,8 @@
-<% page_data(title: @delivery_partner.name, backlink_href: admin_delivery_partners_path(page: @page, q: @q)) %>
+<% page_data(title: @delivery_partner.name, breadcrumbs: @breadcrumbs, backlink_href: admin_delivery_partners_path(page: @page, q: @q)) %>
+
+<p class='govuk-body'>
+  <%= govuk_link_to('Change delivery partner name', edit_admin_delivery_partner_path(@delivery_partner)) %>
+</p>
 
 <%= render(Admin::LeadProviderPartnershipsTableComponent.new(
   contract_period_partnerships: @contract_period_partnerships,
