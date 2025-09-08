@@ -27,10 +27,7 @@ module Schools
     end
 
     def latest_possible_finish
-      finish_dates = [ect.finished_on, mentor.finished_on].compact
-      return nil if finish_dates.empty?
-
-      finish_dates.min
+      [ect.finished_on, mentor.finished_on].compact.min
     end
 
     def finish_current_mentorship!
