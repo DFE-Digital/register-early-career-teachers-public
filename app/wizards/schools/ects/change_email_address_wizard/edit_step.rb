@@ -1,7 +1,7 @@
 module Schools
   module ECTs
     module ChangeEmailAddressWizard
-      class EditStep < BaseStep
+      class EditStep < Step
         attribute :email, :string
 
         validates :email,

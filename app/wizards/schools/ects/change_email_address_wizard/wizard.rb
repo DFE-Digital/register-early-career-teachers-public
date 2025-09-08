@@ -9,9 +9,6 @@ module Schools
             confirmation: ConfirmationStep
           }]
         end
-
-        delegate :save!, to: :current_step
-        delegate :reset, to: :store
       end
     end
   end
