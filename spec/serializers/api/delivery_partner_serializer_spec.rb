@@ -8,13 +8,11 @@ describe API::DeliveryPartnerSerializer, type: :serializer do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
   let(:delivery_partner) { lead_provider_delivery_partnership.delivery_partner }
-  let!(:lead_provider_metadata) { FactoryBot.create(:delivery_partner_lead_provider_metadata, delivery_partner:, lead_provider:) }
 
   before do
-    # Ensure other metadata exists.
-    other_lead_provider = FactoryBot.create(:lead_provider)
-
-    FactoryBot.create(:delivery_partner_lead_provider_metadata, delivery_partner:, lead_provider: other_lead_provider)
+    # Ensure other metadata exists for another lead provider.
+    FactoryBot.create(:lead_provider)
+    Metadata::Manager.refresh_all_metadata!
   end
 
   describe "core attributes" do
@@ -35,7 +33,7 @@ describe API::DeliveryPartnerSerializer, type: :serializer do
     end
 
     it "serializes `cohort`" do
-      expect(attributes["cohort"]).to eq(lead_provider_metadata.contract_period_years.map(&:to_s))
+      expect(attributes["cohort"]).to contain_exactly(active_lead_provider.contract_period_year.to_s)
     end
 
     it "serializes `created_at`" do

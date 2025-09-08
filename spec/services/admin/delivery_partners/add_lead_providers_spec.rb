@@ -66,7 +66,8 @@ RSpec.describe Admin::DeliveryPartners::AddLeadProviders do
       let(:lead_provider_ids) { [active_lead_provider_1.id.to_s] }
 
       before do
-        delivery_partner.destroy
+        delivery_partner.lead_provider_metadata.destroy_all
+        delivery_partner.destroy!
       end
 
       it 'raises a ValidationError' do

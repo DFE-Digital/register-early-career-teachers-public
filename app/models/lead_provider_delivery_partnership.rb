@@ -1,5 +1,6 @@
 class LeadProviderDeliveryPartnership < ApplicationRecord
   include DeclarativeTouch
+  include DeclarativeMetadata
 
   belongs_to :active_lead_provider
   belongs_to :delivery_partner
@@ -9,6 +10,7 @@ class LeadProviderDeliveryPartnership < ApplicationRecord
   has_one :contract_period, through: :active_lead_provider
 
   touch -> { delivery_partner }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
+  refresh_metadata -> { delivery_partner }, on_event: %i[create destroy update]
 
   validates :active_lead_provider_id, presence: { message: 'Select an active lead provider' }
   validates :delivery_partner_id,
