@@ -414,6 +414,7 @@
   - status
   - created_at
   - updated_at
+  - api_updated_at
   :api_tokens:
   - id
   - lead_provider_id
