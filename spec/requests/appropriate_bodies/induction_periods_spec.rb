@@ -81,7 +81,6 @@ RSpec.describe 'AppropriateBodies::InductionPeriodsController', type: :request d
         let(:training_programme) { "school_led" }
 
         it "updates the induction period" do
-          allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(true)
           patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
 
           expect(response).to redirect_to(ab_teacher_path(induction_period.teacher))

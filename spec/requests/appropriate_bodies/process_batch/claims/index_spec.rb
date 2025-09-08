@@ -3,17 +3,6 @@ RSpec.describe "Appropriate Body bulk claims index page", type: :request do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   describe 'GET /appropriate-body/bulk/claims' do
-    context 'when bulk upload and claim is disabled (ENABLE_BULK_UPLOAD=false, ENABLE_BULK_CLAIM=false)' do
-      before do
-        allow(Rails.application.config).to receive_messages(enable_bulk_upload: false, enable_bulk_claim: false)
-      end
-
-      it 'is not found' do
-        get("/appropriate-body/bulk/claims")
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
     context 'when not signed in' do
       it 'redirects to the root page' do
         get("/appropriate-body/bulk/claims")
