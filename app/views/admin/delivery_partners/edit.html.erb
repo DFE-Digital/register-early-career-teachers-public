@@ -1,0 +1,17 @@
+<% page_data(
+     title: "Change delivery partner name",
+     breadcrumbs: @breadcrumbs,
+     backlink_href: admin_delivery_partner_path(@delivery_partner, page: @page, q: @q)
+   ) %>
+
+<%= form_with model: @delivery_partner,
+              url: admin_delivery_partner_path(@delivery_partner, page: @page, q: @q),
+              method: :patch do |f| %>
+
+  <%= f.govuk_error_summary %>
+
+  <%= f.govuk_text_field :name,
+        label: { text: "Delivery partner name" } %>
+
+  <%= f.govuk_submit "Save changes" %>
+<% end %>
