@@ -974,6 +974,37 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_working_pattern_updated_event!" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, working_pattern: :full_time)
+    end
+
+    it "enqueues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_working_pattern_updated_event!(
+        old_working_pattern: ect_at_school_period.working_pattern,
+        new_working_pattern: "part_time",
+        author:,
+        ect_at_school_period:,
+        school: ect_at_school_period.school,
+        teacher:,
+        happened_at: 15.seconds.ago
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        teacher:,
+        school: ect_at_school_period.school,
+        ect_at_school_period:,
+        heading: "Working pattern changed from 'full time' to 'part time'",
+        event_type: :teacher_working_pattern_updated,
+        happened_at: 15.seconds.ago,
+        **author_params
+      )
+    end
+  end
+
   describe '.record_bulk_upload_started_event!' do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
 
