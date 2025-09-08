@@ -125,7 +125,7 @@ RSpec/MatchArray:
     - 'spec/models/ect_at_school_period_spec.rb'
     - 'spec/models/mentor_at_school_period_spec.rb'
 
-# Offense count: 973
+# Offense count: 976
 # Configuration parameters: EnforcedStyle, IgnoreSharedExamples.
 # SupportedStyles: always, named_only
 RSpec/NamedSubject:
@@ -179,11 +179,12 @@ RSpec/SubjectDeclaration:
   Exclude:
     - 'spec/mailers/example_mailer_spec.rb'
 
-# Offense count: 14
+# Offense count: 15
 RSpec/SubjectStub:
   Exclude:
     - 'spec/forms/sessions/otp_sign_in_form_spec.rb'
     - 'spec/services/sessions/one_time_password_spec.rb'
+    - 'spec/services/sessions/session_manager_spec.rb'
     - 'spec/wizards/schools/register_ect_wizard/check_answers_step_spec.rb'
     - 'spec/wizards/schools/register_ect_wizard/email_address_step_spec.rb'
     - 'spec/wizards/schools/register_ect_wizard/lead_provider_step_spec.rb'
@@ -237,7 +238,7 @@ Rails/SaveBang:
   Exclude:
     - 'spec/support/rspec_playwright.rb'
 
-# Offense count: 8633
+# Offense count: 8616
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
 # SupportedStyles: single_quotes, double_quotes
