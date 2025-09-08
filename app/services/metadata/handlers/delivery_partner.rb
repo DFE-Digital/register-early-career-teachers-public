@@ -10,6 +10,12 @@ module Metadata::Handlers
       upsert_lead_provider_metadata!
     end
 
+    class << self
+      def destroy_all_metadata!
+        truncate_models!(Metadata::DeliveryPartnerLeadProvider)
+      end
+    end
+
   private
 
     def upsert_lead_provider_metadata!

@@ -89,20 +89,22 @@ module Migrators
   protected
 
     def migrate(collection)
-      items = collection.order(:id).offset(offset).limit(limit)
+      Metadata::Manager.skip_metadata_updates do
+        items = collection.order(:id).offset(offset).limit(limit)
 
-      start_migration!(items.count)
+        start_migration!(items.count)
 
-      # As we're using offset/limit, we can't use find_each!
-      items.each do |item|
-        success = yield(item)
-        DataMigration.update_counters(data_migration.id, processed_count: 1, failure_count: success ? 0 : 1)
-      rescue StandardError => e
-        DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
-        failure_manager.record_failure(item, e.message)
+        # As we're using offset/limit, we can't use find_each!
+        items.each do |item|
+          success = yield(item)
+          DataMigration.update_counters(data_migration.id, processed_count: 1, failure_count: success ? 0 : 1)
+        rescue StandardError => e
+          DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
+          failure_manager.record_failure(item, e.message)
+        end
+
+        finalise_migration!
       end
-
-      finalise_migration!
     end
 
     def run_once
