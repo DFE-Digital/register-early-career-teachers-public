@@ -10,6 +10,16 @@ module Metadata::Handlers
           RefreshMetadataJob.send(job_method, object_type:, object_ids: objects.pluck(:id))
         end
       end
+
+      def destroy_all_metadata!
+        NotImplementedError
+      end
+
+    protected
+
+      def truncate_models!(*models)
+        models.each { it.connection.execute("TRUNCATE #{it.table_name} RESTART IDENTITY") }
+      end
     end
 
   protected

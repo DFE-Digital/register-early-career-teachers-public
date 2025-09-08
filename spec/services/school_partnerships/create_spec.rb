@@ -23,7 +23,7 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
   let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
   let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
 
-  let!(:metadata) { FactoryBot.create(:school_contract_period_metadata, contract_period:, school:, induction_programme_choice: :provider_led) }
+  before { Metadata::Manager.refresh_all_metadata! }
 
   describe "validations" do
     subject { service }
@@ -141,7 +141,7 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
     end
 
     context "when the induction programme choice is school_led" do
-      before { Metadata::SchoolContractPeriod.bypass_update_restrictions { metadata.update!(induction_programme_choice: :school_led) } }
+      before { Metadata::SchoolContractPeriod.bypass_update_restrictions { school.contract_period_metadata.update!(induction_programme_choice: :school_led) } }
 
       it "is invalid" do
         expect(service).to be_invalid
@@ -150,7 +150,7 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
     end
 
     context "when the induction programme choice is not_yet_known" do
-      before { Metadata::SchoolContractPeriod.bypass_update_restrictions { metadata.update!(induction_programme_choice: :not_yet_known) } }
+      before { Metadata::SchoolContractPeriod.bypass_update_restrictions { school.contract_period_metadata.update!(induction_programme_choice: :not_yet_known) } }
 
       it { is_expected.to be_valid }
     end
@@ -180,16 +180,6 @@ RSpec.describe SchoolPartnerships::Create, type: :model do
           }
         )
       )
-    end
-
-    it "refreshes the school metadata" do
-      metadata_manager = Metadata::Manager.new
-      allow(Metadata::Manager).to receive(:new).and_return(metadata_manager)
-      allow(metadata_manager).to receive(:refresh_metadata!).once.and_call_original
-
-      school_partnership = create_school_partnership
-
-      expect(metadata_manager).to have_received(:refresh_metadata!).once.with(school_partnership.school)
     end
 
     context "when invalid" do
