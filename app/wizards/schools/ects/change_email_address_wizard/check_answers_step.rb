@@ -1,7 +1,7 @@
 module Schools
   module ECTs
     module ChangeEmailAddressWizard
-      class CheckAnswersStep < BaseStep
+      class CheckAnswersStep < Step
         def previous_step = :edit
         def next_step = :confirmation
 

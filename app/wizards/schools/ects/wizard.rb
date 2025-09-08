@@ -25,6 +25,9 @@ module Schools
       def current_step_path
         super(default_path_arguments)
       end
+
+      delegate :save!, to: :current_step
+      delegate :reset, to: :store
     end
   end
 end
