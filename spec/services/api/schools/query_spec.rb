@@ -159,12 +159,10 @@ RSpec.describe API::Schools::Query do
       end
 
       describe "by `updated_since`" do
-        before { Metadata::Manager.new.refresh_metadata!([school1, school2, school3]) }
-
         let!(:contract_period) { training_period.contract_period }
 
-        let!(:school1) { FactoryBot.create(:school, :eligible, updated_at: 2.days.ago) }
-        let!(:school2) { FactoryBot.create(:school, :eligible, updated_at: 10.minutes.ago) }
+        let!(:school1) { FactoryBot.create(:school, :eligible) }
+        let!(:school2) { FactoryBot.create(:school, :eligible) }
 
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_ect) }
         let!(:school3) { training_period.school_partnership.school }
@@ -176,6 +174,14 @@ RSpec.describe API::Schools::Query do
             contract_period_year: contract_period.year,
             updated_since:
           }
+        end
+
+        before do
+          Metadata::Manager.new.refresh_metadata!([school1, school2, school3])
+
+          # Needs to happen after metadata refreshes.
+          school1.update!(api_updated_at: 2.days.ago)
+          school2.update!(api_updated_at: 10.minutes.ago)
         end
 
         it "filters by `updated_since`" do

@@ -142,8 +142,8 @@ describe API::SchoolPartnerships::Query do
 
       describe "by `updated_since`" do
         it "filters by `updated_since`" do
-          FactoryBot.create(:school_partnership, updated_at: 2.days.ago)
-          school_partnership2 = FactoryBot.create(:school_partnership, updated_at: Time.zone.now)
+          FactoryBot.create(:school_partnership, api_updated_at: 2.days.ago)
+          school_partnership2 = FactoryBot.create(:school_partnership, api_updated_at: Time.zone.now)
 
           query = described_class.new(updated_since: 1.day.ago)
 
@@ -152,16 +152,16 @@ describe API::SchoolPartnerships::Query do
 
         context "when `updated_since` param is omitted" do
           it "returns all statements" do
-            school_partnership1 = FactoryBot.create(:school_partnership, updated_at: 1.week.ago)
-            school_partnership2 = FactoryBot.create(:school_partnership, updated_at: 2.weeks.ago)
+            school_partnership1 = FactoryBot.create(:school_partnership, api_updated_at: 1.week.ago)
+            school_partnership2 = FactoryBot.create(:school_partnership, api_updated_at: 2.weeks.ago)
 
             expect(described_class.new.school_partnerships).to contain_exactly(school_partnership1, school_partnership2)
           end
         end
 
         it "does not filter by `updated_since` if blank" do
-          school_partnership1 = FactoryBot.create(:school_partnership, updated_at: 1.week.ago)
-          school_partnership2 = FactoryBot.create(:school_partnership, updated_at: 2.weeks.ago)
+          school_partnership1 = FactoryBot.create(:school_partnership, api_updated_at: 1.week.ago)
+          school_partnership2 = FactoryBot.create(:school_partnership, api_updated_at: 2.weeks.ago)
 
           query = described_class.new(updated_since: " ")
 
