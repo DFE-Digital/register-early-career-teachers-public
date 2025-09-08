@@ -1,8 +1,8 @@
-describe Schools::ECTs::ChangeEmailAddressWizard::CheckAnswersStep, type: :model do
+describe Schools::ECTs::ChangeWorkingPatternWizard::CheckAnswersStep, type: :model do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do
-    Schools::ECTs::ChangeEmailAddressWizard::Wizard.new(
+    Schools::ECTs::ChangeWorkingPatternWizard::Wizard.new(
       current_step: :check_answers,
       step_params: ActionController::Parameters.new(check_answers: params),
       author:,
@@ -10,13 +10,11 @@ describe Schools::ECTs::ChangeEmailAddressWizard::CheckAnswersStep, type: :model
       ect_at_school_period:
     )
   end
-  let(:store) do
-    FactoryBot.build(:session_repository, email: "new@example.com")
-  end
+  let(:store) { FactoryBot.build(:session_repository, working_pattern: "part_time") }
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) do
-    FactoryBot.create(:ect_at_school_period, school:, email: "old@example.com")
+    FactoryBot.create(:ect_at_school_period, school:, working_pattern: "full_time")
   end
   let(:params) { {} }
 
@@ -32,33 +30,33 @@ describe Schools::ECTs::ChangeEmailAddressWizard::CheckAnswersStep, type: :model
     end
   end
 
-  describe "#current_email" do
-    it "returns the current email" do
-      expect(current_step.current_email).to eq("old@example.com")
+  describe "#current_working_pattern" do
+    it "returns the ECT's working pattern" do
+      expect(current_step.current_working_pattern).to eq("full_time")
     end
   end
 
-  describe "#new_email" do
-    it "returns the new email" do
-      expect(current_step.new_email).to eq("new@example.com")
+  describe "#new_working_pattern" do
+    it "returns the stored working pattern" do
+      expect(current_step.new_working_pattern).to eq("part_time")
     end
   end
 
-  describe "save!" do
-    it "updates the ECT's email" do
+  describe "#save!" do
+    it "updates the ECT's working pattern" do
       expect { current_step.save! }
-        .to change(ect_at_school_period, :email)
-        .to("new@example.com")
+      .to change(ect_at_school_period, :working_pattern)
+      .to("part_time")
     end
 
-    it "records a `teacher_email_updated` event" do
+    it "records a `teacher_working_pattern_updated` event" do
       freeze_time
 
       expect(Events::Record)
-        .to receive(:record_teacher_email_updated_event!)
+        .to receive(:record_teacher_working_pattern_updated_event!)
         .with(
-          old_email: "old@example.com",
-          new_email: "new@example.com",
+          old_working_pattern: "full_time",
+          new_working_pattern: "part_time",
           author:,
           ect_at_school_period:,
           school:,
