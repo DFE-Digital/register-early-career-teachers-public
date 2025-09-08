@@ -78,7 +78,7 @@ RSpec.describe Statements::Search do
           statement2 = FactoryBot.create(:statement, contract_period: contract_period2)
           statement3 = FactoryBot.create(:statement, contract_period: contract_period3)
 
-          search1 = described_class.new(contract_period_years: "#{contract_period1.year},#{contract_period2.year}")
+          search1 = described_class.new(contract_period_years: [contract_period1.year, contract_period2.year])
           expect(search1.statements).to contain_exactly(statement1, statement2)
 
           search2 = described_class.new(contract_period_years: [contract_period2.year.to_s, contract_period3.year.to_s])
