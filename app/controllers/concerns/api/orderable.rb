@@ -1,8 +1,10 @@
-module Queries
+module API
   module Orderable
     extend ActiveSupport::Concern
 
     SORT_ORDER = { "+" => "ASC", "-" => "DESC" }.freeze
+
+  protected
 
     def sort_order(sort:, model:, default: {})
       return default unless sort

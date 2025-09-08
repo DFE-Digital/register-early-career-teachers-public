@@ -1,12 +1,10 @@
 module API::DeliveryPartners
   class Query
-    include Queries::ConditionFormats
-    include Queries::Orderable
     include Queries::FilterIgnorable
 
     attr_reader :scope
 
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: nil)
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: { created_at: :asc })
       @scope = DeliveryPartner
         .includes(:lead_provider_metadata)
         .distinct
@@ -49,13 +47,13 @@ module API::DeliveryPartners
 
       delivery_partners_with_contract_periods = DeliveryPartner
         .joins(lead_provider_delivery_partnerships: { active_lead_provider: :contract_period })
-        .where(contract_period: { year: extract_conditions(contract_period_years, integers: true) })
+        .where(contract_period: { year: contract_period_years })
 
       scope.merge!(delivery_partners_with_contract_periods)
     end
 
     def set_sort_by(sort)
-      @scope = scope.order(sort_order(sort:, model: DeliveryPartner, default: { created_at: :asc }))
+      @scope = scope.order(sort)
     end
   end
 end
