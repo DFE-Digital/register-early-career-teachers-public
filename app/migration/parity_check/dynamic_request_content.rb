@@ -28,7 +28,7 @@ module ParityCheck
 
     def school_id
       contract_period_year = ContractPeriod.order("RANDOM()").pick(:year)
-      API::Schools::Query.new(lead_provider_id: lead_provider.id, contract_period_year:)
+      API::Schools::Query.new(contract_period_year:)
         .schools
         .distinct(false)
         .reorder("RANDOM()")
