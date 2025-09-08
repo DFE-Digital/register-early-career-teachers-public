@@ -10,6 +10,8 @@ module Sessions
 
     attr_reader :session, :cookies
 
+    # @param session [ActionDispatch::Request::Session]
+    # @param cookies [ActionDispatch::Cookies::CookieJar]
     def initialize(session, cookies)
       @session = session
       @cookies = cookies
@@ -88,6 +90,7 @@ module Sessions
       Base64.strict_encode64(Zlib::Deflate.deflate(encryptor.encrypt_and_sign(token)))
     end
 
+    # @return [Sessions::Users]
     def load_from_session
       Sessions::User.from_session(session['user_session']).tap do |session_user|
         return (nil) if session_user.nil?
@@ -95,6 +98,9 @@ module Sessions
 
         record_new_activity(session_user)
       end
+    rescue ArgumentError => e
+      Sentry.capture_exception(e)
+      end_session!
     end
 
     def record_new_activity(session_user)
