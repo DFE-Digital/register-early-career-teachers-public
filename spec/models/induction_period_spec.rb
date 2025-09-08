@@ -188,42 +188,20 @@ RSpec.describe InductionPeriod do
   describe "training_programme=" do
     subject { FactoryBot.build(:induction_period, appropriate_body_id: 1) }
 
-    context "when `enable_bulk_claim` is true" do
-      before do
-        allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(true)
-      end
+    it "assigns the induction_programme for provider_led and is valid" do
+      subject.induction_programme = nil
+      subject.training_programme = "provider_led"
 
-      it "assigns the induction_programme for provider_led and is valid" do
-        subject.induction_programme = nil
-        subject.training_programme = "provider_led"
-
-        expect(subject.induction_programme).to eq("fip")
-        expect(subject).to be_valid
-      end
-
-      it "assigns the induction_programme for school_led and is valid" do
-        subject.induction_programme = nil
-        subject.training_programme = "school_led"
-
-        expect(subject.induction_programme).to eq("unknown")
-        expect(subject).to be_valid
-      end
+      expect(subject.induction_programme).to eq("fip")
+      expect(subject).to be_valid
     end
 
-    context "when `enable_bulk_claim` is false" do
-      before do
-        allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(false)
-      end
+    it "assigns the induction_programme for school_led and is valid" do
+      subject.induction_programme = nil
+      subject.training_programme = "school_led"
 
-      it "does not assign the induction_programme and is invalid" do
-        subject.induction_programme = nil
-        subject.training_programme = "provider_led"
-
-        expect(subject.induction_programme).to be_nil
-        expect(subject).to be_invalid
-        expect(subject.errors[:induction_programme])
-          .to eq(["Choose an induction programme"])
-      end
+      expect(subject.induction_programme).to eq("unknown")
+      expect(subject).to be_valid
     end
   end
 

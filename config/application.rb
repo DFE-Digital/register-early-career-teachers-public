@@ -51,8 +51,6 @@ module RegisterEarlyCareerTeachers
     config.enable_schools_interface = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_SCHOOLS_INTERFACE', false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_SENTRY', false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BLAZER', false))
-    config.enable_bulk_upload = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BULK_UPLOAD', false))
-    config.enable_bulk_claim = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BULK_CLAIM', false))
     config.enable_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_API', false))
     config.bypass_filter_parameter_logging = false
     config.sentry_dsn = ENV['SENTRY_DSN']
