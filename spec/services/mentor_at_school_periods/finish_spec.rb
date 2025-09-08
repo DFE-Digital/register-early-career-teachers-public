@@ -35,5 +35,32 @@ describe MentorAtSchoolPeriods::Finish do
 
       subject.finish_existing_at_school_periods!
     end
+
+    it "uses MentorshipPeriods::Finish to close mentorship periods" do
+      mentorships_finish = double('MentorshipPeriods::Finish', finish!: true)
+      allow(MentorshipPeriods::Finish).to receive(:new).with(
+        mentorship_period:,
+        finished_on:,
+        author:
+      ).and_return(mentorships_finish)
+
+      subject.finish_existing_at_school_periods!
+
+      expect(mentorships_finish).to have_received(:finish!).once
+    end
+
+    it "uses TrainingPeriods::Finish to close training periods" do
+      training_periods_finish = double('TrainingPeriods::Finish', finish!: true)
+      allow(TrainingPeriods::Finish).to receive(:mentor_training).with(
+        training_period:,
+        mentor_at_school_period:,
+        finished_on:,
+        author:
+      ).and_return(training_periods_finish)
+
+      subject.finish_existing_at_school_periods!
+
+      expect(training_periods_finish).to have_received(:finish!).once
+    end
   end
 end
