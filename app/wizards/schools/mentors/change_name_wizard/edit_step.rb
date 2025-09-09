@@ -1,7 +1,7 @@
 module Schools
-  module ECTs
+  module Mentors
     module ChangeNameWizard
-      class EditStep < ECTs::Step
+      class EditStep < Mentors::Step
         attribute :name, :string
 
         validates :name,
