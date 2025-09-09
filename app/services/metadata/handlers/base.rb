@@ -33,14 +33,14 @@ module Metadata::Handlers
       return unless metadata.changed?
 
       metadata.save!
-      track_changes(metadata:, attributes:)
+      alert_on_changes(metadata:, attributes:)
     end
 
     def lead_provider_ids
       @lead_provider_ids ||= LeadProvider.pluck(:id)
     end
 
-    def track_changes(metadata:, attributes:)
+    def alert_on_changes(metadata:, attributes:)
       return unless @track_changes
 
       attrs = {
