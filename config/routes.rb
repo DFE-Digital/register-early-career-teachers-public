@@ -298,6 +298,16 @@ Rails.application.routes.draw do
       end
     end
 
+    scope module: :mentors, path: "/mentors/:mentor_id", as: :mentors do
+      namespace :change_name_wizard, path: "change-name" do
+        get "edit", action: :new
+        post "edit", action: :create
+        get "check-answers", action: :new
+        post "check-answers", action: :create
+        get "confirmation", action: :new
+      end
+    end
+
     resources :mentors, only: %i[index]
 
     namespace :register_mentor_wizard, path: "register-mentor" do
