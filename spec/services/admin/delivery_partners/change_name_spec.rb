@@ -11,78 +11,60 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
   let(:user)             { FactoryBot.create(:user, :admin) }
   let(:author)           { Sessions::Users::DfEPersona.new(email: user.email) }
 
+  before do
+    allow(Events::Record).to receive(:record_delivery_partner_name_changed_event!)
+  end
+
   describe "#rename!" do
     context "when the proposed name is valid" do
       let(:proposed_name) { "Beta" }
 
-      it "returns the same instance" do
-        expect(service.rename!).to be(delivery_partner)
-      end
-
-      it "enqueues an event" do
-        expect { service.rename! }
-          .to have_enqueued_job(RecordEventJob).with(hash_including(
-                                                       event_type: :delivery_partner_name_changed,
-                                                       delivery_partner:,
-                                                       metadata: include("name" => %w[Alpha Beta])
-                                                     ))
-      end
-    end
-
-    context "when the proposed name is valid and has spaces between words" do
-      let(:proposed_name) { "A Alpha" }
-
-      it "returns the same instance, updated" do
+      it "returns the same instance and records an event" do
         result = service.rename!
 
         expect(result).to be(delivery_partner)
+        expect(Events::Record).to have_received(:record_delivery_partner_name_changed_event!)
+          .with(delivery_partner:, author:, from: "Alpha", to: "Beta")
+      end
+    end
 
+    context "when the proposed name is valid and has extra spaces" do
+      let(:proposed_name) { "A   Alpha" }
+
+      it "updates the record (squished) and returns the same instance" do
+        result = service.rename!
+
+        expect(result).to be(delivery_partner)
         expect(result.name).to eq("A Alpha")
         expect(delivery_partner.reload.name).to eq("A Alpha")
-      end
 
-      it "enqueues an event" do
-        expect { service.rename! }
-          .to have_enqueued_job(RecordEventJob).with(
-            hash_including(
-              event_type: :delivery_partner_name_changed,
-              delivery_partner:,
-              metadata: include("name" => ['Alpha', 'A Alpha'])
-            )
-          )
+        expect(Events::Record).to have_received(:record_delivery_partner_name_changed_event!)
+          .with(delivery_partner:, author:, from: "Alpha", to: "A Alpha")
       end
     end
 
     context "when the proposed name differs only by case/whitespace" do
       let(:proposed_name) { "  alpha " }
 
-      it "returns the same instance, unchanged" do
+      it "returns the same instance, unchanged, and records no event" do
         result = service.rename!
 
         expect(result).to be(delivery_partner)
-
         expect(result.name).to eq("Alpha")
         expect(delivery_partner.reload.name).to eq("Alpha")
-      end
-
-      it "does not enqueue a delivery_partner_name_changed event" do
-        expect { service.rename! }.not_to have_enqueued_job(RecordEventJob)
+        expect(Events::Record).not_to have_received(:record_delivery_partner_name_changed_event!)
       end
     end
 
     context "when the proposed name is blank" do
       let(:proposed_name) { "   " }
 
-      it "adds a model error and raises ValidationError" do
-        expect {
-          service.rename!
-        }.to raise_error(described_class::ValidationError, /Blank/)
+      it "raises and leaves state unchanged" do
+        expect { service.rename! }.to raise_error(ActiveRecord::RecordInvalid)
 
-        expect(delivery_partner.errors[:name])
-          .to include("Enter the new name for #{delivery_partner.name}")
-
+        expect(delivery_partner.errors.added?(:name, :blank)).to be(true)
         expect(delivery_partner.reload.name).to eq("Alpha")
-        expect(Event.where(event_type: "delivery_partner_name_changed")).to be_empty
+        expect(Events::Record).not_to have_received(:record_delivery_partner_name_changed_event!)
       end
     end
 
@@ -90,26 +72,13 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
       let!(:other_dp) { FactoryBot.create(:delivery_partner, name: "Taken") }
       let(:proposed_name) { " taken  " }
 
-      it "raises ValidationError and does not change anything" do
-        expect {
-          expect { service.rename! }.to raise_error(described_class::ValidationError, /Duplicate/)
-        }.to not_change { delivery_partner.reload.name }
-         .and(not_change { Event.count })
-      end
-    end
+      it "raises and does not change anything" do
+        expect { service.rename! }.to raise_error(ActiveRecord::RecordInvalid)
 
-    context "when the proposed name is effectively the same as current (ignore case/whitespace)" do
-      let(:proposed_name) { "  alpha " }
-
-      it "is a no-op: returns the same instance, makes no changes, and enqueues no event" do
-        result = nil
-
-        expect { result = service.rename! }
-         .to not_change { delivery_partner.reload.name }
-         .and(not_change { Event.count })
-
-        expect(result).to be(delivery_partner)
-        expect { service.rename! }.not_to have_enqueued_job(RecordEventJob)
+        expect(delivery_partner.errors[:name])
+          .to include("A delivery partner with this name already exists")
+        expect(delivery_partner.reload.name).to eq("Alpha")
+        expect(Events::Record).not_to have_received(:record_delivery_partner_name_changed_event!)
       end
     end
 
@@ -117,16 +86,14 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
       let(:proposed_name) { "Gamma" }
 
       before do
-        allow(delivery_partner)
-          .to receive(:update!)
-          .and_raise(ActiveRecord::RecordInvalid.new(delivery_partner))
+        allow(delivery_partner).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new(delivery_partner))
+        allow(delivery_partner).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new(delivery_partner))
       end
 
-      it "raises and does not change the record or create an event" do
+      it "raises and does not change the record or record an event" do
         expect { service.rename! }.to raise_error(ActiveRecord::RecordInvalid)
-
         expect(delivery_partner.reload.name).to eq("Alpha")
-        expect(Event.where(event_type: "delivery_partner_name_changed")).to be_empty
+        expect(Events::Record).not_to have_received(:record_delivery_partner_name_changed_event!)
       end
     end
 
@@ -139,10 +106,9 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
       end
 
       it "rolls back the name change" do
-        expect {
-          expect { service.rename! }.to raise_error(StandardError)
-        }.to not_change { delivery_partner.reload.name }
-         .and(not_change { Event.count })
+        expect { service.rename! }.to raise_error(StandardError)
+        expect(delivery_partner.reload.name).to eq("Alpha")
+        expect(Events::Record).to have_received(:record_delivery_partner_name_changed_event!)
       end
     end
   end
