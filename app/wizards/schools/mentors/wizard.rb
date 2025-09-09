@@ -9,7 +9,7 @@ module Schools
 
       # @return [String]
       def teacher_full_name
-        ::Teachers::Name.new(mentor_at_school_period.teacher).full_name
+        ::Teachers::Name.new(mentor_at_school_period.teacher.reload).full_name
       end
 
       # @return [Hash]
