@@ -491,3 +491,10 @@
   - contract_period_years
   - created_at
   - updated_at
+  :schedules:
+  - id
+  - contract_period_year
+  - identifier
+  - schedule_type
+  - created_at
+  - updated_at

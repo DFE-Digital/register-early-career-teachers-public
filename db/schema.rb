@@ -522,6 +522,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
+  create_table "schedules", force: :cascade do |t|
+    t.integer "contract_period_year", null: false
+    t.enum "identifier", null: false, enum_type: "schedule_identifiers"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_period_year", "identifier"], name: "index_schedules_on_contract_period_year_and_identifier", unique: true
+  end
+
   create_table "school_partnerships", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -818,6 +826,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
+  add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
