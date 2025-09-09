@@ -19,7 +19,6 @@ RSpec.describe "Statements API", type: :request do
     it_behaves_like "an index endpoint"
     it_behaves_like "a paginated endpoint"
     it_behaves_like "a filter by multiple cohorts (contract_period year) endpoint"
-    it_behaves_like "a filter by a single cohort (contract_period year) endpoint"
     it_behaves_like "a filter by updated_since endpoint"
   end
 

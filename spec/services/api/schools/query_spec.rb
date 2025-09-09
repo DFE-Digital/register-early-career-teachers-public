@@ -78,12 +78,6 @@ RSpec.describe API::Schools::Query do
       }
     end
 
-    context "when no params is sent" do
-      it "returns no schools" do
-        expect(described_class.new.schools).to be_empty
-      end
-    end
-
     it "returns all eligible schools" do
       contract_period = FactoryBot.create(:contract_period)
       school = FactoryBot.create(:school, :eligible)
@@ -131,17 +125,19 @@ RSpec.describe API::Schools::Query do
           }
         end
 
-        it "filters by `contract_period_year`" do
+        it "includes ineligible schools with partnerships in the `contract_period_year`" do
           expect(query.schools).to contain_exactly(school1, school3)
         end
 
-        context "when `contract_period_year` param is omitted" do
-          it "returns no schools" do
-            expect(described_class.new.schools).to be_empty
+        context "when `contract_period_year` param is :ignore" do
+          let(:contract_period_year) { :ignore }
+
+          it "returns no schools (you must provide a contract period year)" do
+            expect(query.schools).to be_empty
           end
         end
 
-        context "when no `contract_period_year` is found" do
+        context "when `contract_period_year` is not found" do
           let!(:contract_period_year) { "0000" }
 
           it "returns no schools" do
@@ -151,6 +147,14 @@ RSpec.describe API::Schools::Query do
 
         context "when `contract_period_year` param is blank" do
           let!(:contract_period_year) { " " }
+
+          it "returns no schools" do
+            expect(query.schools).to be_empty
+          end
+        end
+
+        context "when `contract_period_year` param is nil" do
+          let!(:contract_period_year) { nil }
 
           it "returns no schools" do
             expect(query.schools).to be_empty
