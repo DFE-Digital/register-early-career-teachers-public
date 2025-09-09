@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_01_173600) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_08_202312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -465,6 +465,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_173600) do
     t.index ["state"], name: "index_parity_check_runs_on_state", unique: true, where: "(state = 'in_progress'::parity_check_run_states)"
   end
 
+  create_table "participant_id_changes", force: :cascade do |t|
+    t.bigint "teacher_id", null: false
+    t.uuid "from_participant_id", null: false
+    t.uuid "to_participant_id", null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["api_id"], name: "index_participant_id_changes_on_api_id", unique: true
+    t.index ["from_participant_id"], name: "index_participant_id_changes_on_from_participant_id"
+    t.index ["teacher_id"], name: "index_participant_id_changes_on_teacher_id"
+    t.index ["to_participant_id"], name: "index_participant_id_changes_on_to_participant_id"
+  end
+
   create_table "pending_induction_submission_batches", force: :cascade do |t|
     t.bigint "appropriate_body_id", null: false
     t.enum "batch_type", null: false, enum_type: "batch_type"
@@ -727,6 +740,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_173600) do
     t.boolean "trs_deactivated", default: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
+    t.index ["ecf_user_id"], name: "index_teachers_on_ecf_user_id", unique: true
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
     t.index ["trs_first_name", "trs_last_name", "corrected_name"], name: "idx_on_trs_first_name_trs_last_name_corrected_name_6d0edad502", opclass: :gin_trgm_ops, using: :gin
@@ -807,6 +821,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_173600) do
   add_foreign_key "parity_check_requests", "parity_check_endpoints", column: "endpoint_id"
   add_foreign_key "parity_check_requests", "parity_check_runs", column: "run_id"
   add_foreign_key "parity_check_responses", "parity_check_requests", column: "request_id"
+  add_foreign_key "participant_id_changes", "teachers"
+  add_foreign_key "participant_id_changes", "teachers", column: "from_participant_id", primary_key: "ecf_user_id"
+  add_foreign_key "participant_id_changes", "teachers", column: "to_participant_id", primary_key: "ecf_user_id"
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
