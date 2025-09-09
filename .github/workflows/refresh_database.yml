@@ -1,4 +1,4 @@
-name: Refresh migration DB from production DB
+name: Refresh DB from production DB
 on:
   workflow_dispatch:
     inputs:
@@ -9,13 +9,21 @@ on:
         options:
           - production
         required: true
+      target_environment:
+        description: GitHub environment to refresh to
+        type: choice
+        default: migration
+        options:
+          - migration
+          - paritycheck
+        required: true
       exclude-jobs:
         description: Exclude jobs tables
         type: boolean
         default: true
 
 jobs:
-  refresh-migration-db:
+  refresh-db:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -25,10 +33,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Refresh migration DB
-        uses: ./.github/actions/refresh-migration-database
+      - name: Refresh DB
+        uses: ./.github/actions/refresh-database
         with:
           environment: production
+          target_environment: ${{ inputs.target_environment }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -50,22 +59,22 @@ jobs:
       - name: Install kubectl
         uses: DFE-Digital/github-actions/set-kubectl@master
 
-      - name: Set AKS credentials (migration)
+      - name: Set AKS credentials
         shell: bash
-        run: make ci migration get-cluster-credentials
+        run: make ci ${{ inputs.target_environment }} get-cluster-credentials
 
       - name: Generate known keys
         shell: bash
         run: |
-          kubectl -n cpd-production exec deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::TokenProvider.new.generate!"
+          kubectl -n cpd-production exec deployment/cpd-ec2-${{ inputs.target_environment }}-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::TokenProvider.new.generate!"
 
       - name: Seed parity check endpoints
         shell: bash
         run: |
-          kubectl -n cpd-production exec deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::SeedEndpoints.new.plant!"
+          kubectl -n cpd-production exec deployment/cpd-ec2-${{ inputs.target_environment }}-web -- /bin/sh -c "cd /app && bundle exec rails runner ParityCheck::SeedEndpoints.new.plant!"
 
       - name: Clear User OTP tokens
         shell: bash
         run: |
-          kubectl -n cpd-production exec deployment/cpd-ec2-migration-web -- /bin/sh -c "cd /app && bundle exec rails runner \"User.update_all(otp_secret: nil)\""
+          kubectl -n cpd-production exec deployment/cpd-ec2-${{ inputs.target_environment }}-web -- /bin/sh -c "cd /app && bundle exec rails runner \"User.update_all(otp_secret: nil)\""
           
