@@ -53,7 +53,7 @@ module Admin
 
       redirect_to admin_delivery_partner_path(@delivery_partner, page: @page, q: @q),
                   alert: "Delivery partner name changed"
-    rescue Admin::DeliveryPartners::ChangeName::ValidationError, ActiveRecord::RecordInvalid
+    rescue ActiveRecord::RecordInvalid
       render :edit, status: :unprocessable_content
     end
 
