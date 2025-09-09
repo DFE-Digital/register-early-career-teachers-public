@@ -83,9 +83,13 @@ RSpec.shared_examples "supports tracking metadata upsert changes" do |metadata_m
   describe "track upsert changes" do
     context "when track_changes is false" do
       it "does not track changes" do
+        allow(Sentry).to receive(:capture_message)
+        allow(Rails.logger).to receive(:warn)
+
         perform_refresh_metadata
 
-        expect(handler.upsert_changes).to be_empty
+        expect(Sentry).not_to have_received(:capture_message).with("[Metadata] #{metadata_model.name} change")
+        expect(Rails.logger).not_to have_received(:warn).with(a_string_starting_with("[Metadata] #{metadata_model.name} change:"))
       end
     end
 
@@ -98,7 +102,6 @@ RSpec.shared_examples "supports tracking metadata upsert changes" do |metadata_m
 
         perform_refresh_metadata
 
-        expect(handler.upsert_changes).to include(a_hash_including(class: metadata_model.name, id: anything, attributes: anything))
         expect(Sentry).to have_received(:capture_message).with("[Metadata] #{metadata_model.name} change")
         expect(Rails.logger).to have_received(:warn).with(a_string_starting_with("[Metadata] #{metadata_model.name} change:"))
       end
