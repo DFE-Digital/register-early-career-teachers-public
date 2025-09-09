@@ -26,10 +26,6 @@ module Metadata::Handlers
       @track_changes = true
     end
 
-    def upsert_changes
-      @upsert_changes ||= []
-    end
-
   protected
 
     def upsert(metadata, attributes)
@@ -52,7 +48,6 @@ module Metadata::Handlers
         id: metadata.id,
         attributes:,
       }
-      upsert_changes << attrs
 
       Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
 
