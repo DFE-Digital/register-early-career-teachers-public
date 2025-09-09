@@ -1,9 +1,12 @@
-name: Refresh migration DB
-description: Backup production DB and restore to migration DB
+name: Refresh DB
+description: Backup production DB and restore to target environment DB
 
 inputs:
   environment:
     description: The name of the environment
+    required: true
+  target_environment:
+    description: The name of the target environment
     required: true
   exclude-jobs:
     description: Exclude jobs tables
@@ -29,7 +32,12 @@ runs:
       run: |
         tf_vars_file=config/terraform/application/config/${{ inputs.environment }}.tfvars.json
         echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
-
+        if [ "${{ inputs.environment }}" = "migration" ]; then
+          echo "DB_INSTANCE=mg" >> $GITHUB_ENV
+        else
+          echo "DB_INSTANCE=pc" >> $GITHUB_ENV
+        fi
+        
     - name: Checkout code
       uses: actions/checkout@v3
 
@@ -77,6 +85,6 @@ runs:
 
         bin/konduit.sh -n ${{ env.NAMESPACE }} cpd-ec2-${{ inputs.environment }}-web -- pg_dump -E utf8 --compress=1 --clean --if-exists $EXCLUDE_ARGS --no-privileges --no-owner --verbose -f backup-${{ inputs.environment }}.sql.gz
 
-    - name: Restore to migration DB
+    - name: Restore to ${{ inputs.target_environment }} DB
       shell: bash
-      run: bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-mg-pg -k s189p01-cpdec2-mg-app-kv -i backup-${{ inputs.environment }}.sql.gz -c -t 7200 cpd-ec2-migration-web -- psql
+      run: bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-${{ env.DB_INSTANCE }}-pg -k s189p01-cpdec2-${{ env.DB_INSTANCE }}-app-kv -i backup-${{ inputs.environment }}.sql.gz -c -t 7200 cpd-ec2-${{ inputs.target_environment }}-web -- psql
