@@ -24,10 +24,26 @@ def create_in_progress_request(run:, lead_provider:, endpoint:)
 end
 
 def create_response(request, response_type, page)
-  options = { key: "Name.first_name", value: "Name.last_name" }
-  ecf_body = Faker::Json.shallow_json(width: 3, options:)
-  different_json = { data: { attributes: { name: Faker::Name.name, address: Faker::Address.full_address }, another: "test" } }.to_json
-  rect_body = response_type == :matching ? ecf_body : different_json
+  generate_response_item = -> {
+    {
+      id: SecureRandom.uuid,
+      attributes: {
+        name: Faker::Name.name,
+        address: Faker::Address.full_address
+      },
+      another: "test"
+    }
+  }
+  num_items = rand(1..5)
+  generate_response = -> {
+    items = Array.new(num_items) { generate_response_item.call }
+    {
+      data: items.size == 1 ? items.first : items
+    }.to_json
+  }
+
+  ecf_body = generate_response.call
+  rect_body = response_type == :matching ? ecf_body : generate_response.call
 
   ParityCheck::Response.create!(
     request:,

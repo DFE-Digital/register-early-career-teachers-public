@@ -59,6 +59,14 @@ module ParityCheck
       !bodies_matching?
     end
 
+    def body_ids_matching?
+      ecf_body_ids == rect_body_ids
+    end
+
+    def body_ids_different?
+      !body_ids_matching?
+    end
+
     def body_diff
       @body_diff ||= Diffy::Diff.new(ecf_body, rect_body, context: 3)
     end
@@ -72,18 +80,45 @@ module ParityCheck
     end
 
     def ecf_body=(value)
-      super(pretty_json(value))
+      super(format_body(value))
     end
 
     def rect_body=(value)
-      super(pretty_json(value))
+      super(format_body(value))
+    end
+
+    def ecf_body_ids
+      return [] unless ecf_body_hash
+
+      Array.wrap(ecf_body_hash[:data]).map { it[:id] }.sort
+    end
+
+    def rect_body_ids
+      return [] unless rect_body_hash
+
+      Array.wrap(rect_body_hash[:data]).map { it[:id] }.sort
+    end
+
+    def ecf_only_body_ids
+      ecf_body_ids - rect_body_ids
+    end
+
+    def rect_only_body_ids
+      rect_body_ids - ecf_body_ids
     end
 
   private
 
-    def pretty_json(value)
-      parsed_json = parse_json_body(value)
-      parsed_json ? JSON.pretty_generate(parsed_json) : value
+    def format_body(body)
+      parsed_json = parse_json_body(body)
+
+      return body unless parsed_json
+
+      pretty_json(parsed_json)
+    end
+
+    def pretty_json(ugly_json)
+      JSON.pretty_generate(ugly_json)
     end
 
     def parse_json_body(body)
