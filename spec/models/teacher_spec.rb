@@ -7,17 +7,26 @@ describe Teacher do
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
 
-    describe '.current_ect_at_school_period' do
+    describe '.current_or_next_ect_at_school_period' do
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      it { is_expected.to have_one(:current_ect_at_school_period).class_name('ECTAtSchoolPeriod') }
+      it { is_expected.to have_one(:current_or_next_ect_at_school_period).class_name('ECTAtSchoolPeriod') }
 
       context 'when there is a current period' do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
         let!(:finished_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 10.years.ago, finished_on: 8.years.ago, teacher:) }
 
         it 'returns the current ect_at_school_period' do
-          expect(teacher.current_ect_at_school_period).to eql(ect_at_school_period)
+          expect(teacher.current_or_next_ect_at_school_period).to eql(ect_at_school_period)
+        end
+      end
+
+      context 'when there is a current period and a future period' do
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 2.weeks.from_now, teacher:) }
+        let!(:future_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.weeks.from_now, finished_on: nil, teacher:) }
+
+        it 'returns the current ect_at_school_period' do
+          expect(teacher.current_or_next_ect_at_school_period).to eql(ect_at_school_period)
         end
       end
 
@@ -25,7 +34,7 @@ describe Teacher do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :finished, teacher:) }
 
         it 'returns nil' do
-          expect(teacher.current_ect_at_school_period).to be_nil
+          expect(teacher.current_or_next_ect_at_school_period).to be_nil
         end
       end
     end
