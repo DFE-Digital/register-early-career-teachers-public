@@ -17,7 +17,6 @@ module AppropriateBodies
         rescue StandardError => e
           Rails.logger.info(e.message)
           Sentry.capture_exception(e)
-          capture_error("Something went wrong. You’ll need to try again later")
 
           next(false)
         end
@@ -25,6 +24,7 @@ module AppropriateBodies
         pending_induction_submission_batch.tally!
         pending_induction_submission_batch.completed!
         pending_induction_submission_batch.redact!
+        track_analytics!
       end
 
     private

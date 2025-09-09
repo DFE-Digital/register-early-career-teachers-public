@@ -57,4 +57,38 @@ RSpec.describe "Partnerships endpoint", openapi_spec: "v3/swagger.yaml", type: :
                       }
                     end
                   end
+
+  it_behaves_like "an API update endpoint documentation",
+                  {
+                    url: "/api/v3/partnerships/{id}",
+                    tag: "Partnerships",
+                    resource_description: "partnership",
+                    request_schema_ref: "#/components/schemas/PartnershipUpdateRequest",
+                    response_schema_ref: "#/components/schemas/PartnershipResponse",
+                  } do
+                    let(:params) do
+                      other_lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+                      other_delivery_partner = other_lead_provider_delivery_partnership.delivery_partner
+
+                      {
+                        data: {
+                          type: "partnership",
+                          attributes: {
+                            delivery_partner_id: other_delivery_partner.api_id,
+                          },
+                        },
+                      }
+                    end
+
+                    let(:invalid_params) do
+                      {
+                        data: {
+                          type: "partnership",
+                          attributes: {
+                            delivery_partner_id: SecureRandom.uuid,
+                          },
+                        },
+                      }
+                    end
+                  end
 end

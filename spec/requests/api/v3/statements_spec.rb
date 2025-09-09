@@ -1,7 +1,7 @@
 RSpec.describe "Statements API", type: :request do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
-  let(:serializer) { StatementSerializer }
+  let(:serializer) { API::StatementSerializer }
   let(:serializer_options) { {} }
 
   def create_resource(active_lead_provider:)

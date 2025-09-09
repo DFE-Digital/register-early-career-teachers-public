@@ -1,5 +1,4 @@
-class TeachersIndex::BulkUploadLinksComponent < ViewComponent::Base
-  include GovukLinkHelper
+class TeachersIndex::BulkUploadLinksComponent < ApplicationComponent
   include Rails.application.routes.url_helpers
 
   def initialize(appropriate_body:)
@@ -9,14 +8,6 @@ class TeachersIndex::BulkUploadLinksComponent < ViewComponent::Base
 private
 
   attr_reader :appropriate_body
-
-  def bulk_upload_enabled?
-    Rails.application.config.enable_bulk_upload
-  end
-
-  def bulk_claim_enabled?
-    Rails.application.config.enable_bulk_claim
-  end
 
   def batch_action_path
     if has_existing_bulk_uploads?

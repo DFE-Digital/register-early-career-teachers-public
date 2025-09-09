@@ -1,6 +1,6 @@
 RSpec.shared_context "an API create endpoint documentation", :exceptions_app do |options = {}|
   path options[:url] do
-    post "Creates a #{options[:resource_description]}" do
+    post "Create a #{options[:resource_description]}" do
       tags options[:tag]
       consumes "application/json"
       produces "application/json"

@@ -1,5 +1,5 @@
 module Schools
-  class ECTInductionDetailsComponent < ViewComponent::Base
+  class ECTInductionDetailsComponent < ApplicationComponent
     include TeacherHelper
 
     def initialize(ect)

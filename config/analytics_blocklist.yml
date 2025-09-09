@@ -150,7 +150,6 @@
   - address_line1
   - address_line2
   - address_line3
-  - api_id
   - postcode
   - primary_contact_email
   - secondary_contact_email
@@ -211,6 +210,7 @@
   - urn
   - induction_tutor_name
   - induction_tutor_email
+  - api_id
   :school_partnerships:
   - id
   - created_at
@@ -332,6 +332,7 @@
   - updated_at
   - metadata
   - modifications
+  - zendesk_ticket_id
   :ect_at_school_periods:
   - id
   - school_id

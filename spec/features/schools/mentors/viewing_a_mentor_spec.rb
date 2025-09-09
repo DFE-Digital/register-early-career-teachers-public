@@ -1,4 +1,8 @@
 RSpec.describe "Viewing a mentor" do
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'Happy path' do
     given_that_i_have_an_active_mentor_with_an_ect
     and_i_sign_in_as_a_school
@@ -46,7 +50,7 @@ private
   end
 
   def then_i_am_back_on_the_mentor_details_page
-    expect(page.url).to end_with(schools_mentor_path(@mentor))
+    expect(page).to have_path(schools_mentor_path(@mentor))
   end
 
   def and_i_sign_in_as_a_school
@@ -62,10 +66,10 @@ private
   end
 
   def then_i_am_on_the_mentor_details_page
-    expect(page.url).to end_with("/schools/mentors/#{@mentor.id}")
+    expect(page).to have_path("/schools/mentors/#{@mentor.id}")
   end
 
   def then_i_am_on_the_mentors_index_page
-    expect(page.url).to end_with('/schools/home/mentors')
+    expect(page).to have_path('/schools/home/mentors')
   end
 end

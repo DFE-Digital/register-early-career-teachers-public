@@ -1,6 +1,6 @@
 module Teachers::Details
   # Pass and Fail induction buttons
-  class InductionOutcomeActionsComponent < ViewComponent::Base
+  class InductionOutcomeActionsComponent < ApplicationComponent
     attr_reader :mode, :teacher
 
     def initialize(mode:, teacher:)

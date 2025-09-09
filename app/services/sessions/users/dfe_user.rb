@@ -3,6 +3,8 @@ module Sessions
     class DfEUser < User
       class UnknownUserEmail < StandardError; end
 
+      include Sessions::ImpersonateSchoolUser
+
       USER_TYPE = :dfe_staff_user
       PROVIDER = :otp
 
@@ -16,6 +18,8 @@ module Sessions
         super(email: user.email, **)
       end
 
+      def dfe_user? = true
+
       def event_author_params
         {
           author_email: email,
@@ -27,8 +31,7 @@ module Sessions
 
       def organisation_name = "Department for Education"
 
-      def sign_out_path = '/sign-out'
-
+      # @return [Hash] session data
       def to_h
         {
           "type" => self.class.name,

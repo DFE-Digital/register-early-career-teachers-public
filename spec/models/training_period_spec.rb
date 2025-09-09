@@ -1,4 +1,15 @@
 describe TrainingPeriod do
+  describe "declarative updates" do
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 3.years.ago.to_date, finished_on: nil) }
+    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+    let(:instance) { FactoryBot.create(:training_period, ect_at_school_period:, school_partnership:) }
+    let!(:target) { school_partnership.school }
+
+    describe "declarative metadata" do
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+    end
+  end
+
   describe "enums" do
     it "uses the training programme enum" do
       expect(subject).to define_enum_for(:training_programme)
@@ -14,7 +25,6 @@ describe TrainingPeriod do
     it { is_expected.to belong_to(:ect_at_school_period).class_name("ECTAtSchoolPeriod").inverse_of(:training_periods) }
     it { is_expected.to belong_to(:mentor_at_school_period).inverse_of(:training_periods) }
     it { is_expected.to belong_to(:school_partnership) }
-    it { is_expected.to belong_to(:expression_of_interest).class_name('ActiveLeadProvider') }
     it { is_expected.to have_many(:declarations).inverse_of(:training_period) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_one(:lead_provider_delivery_partnership).through(:school_partnership) }
@@ -22,6 +32,9 @@ describe TrainingPeriod do
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
+    it { is_expected.to belong_to(:expression_of_interest).class_name('ActiveLeadProvider') }
+    it { is_expected.to have_one(:expression_of_interest_lead_provider).through(:expression_of_interest).source(:lead_provider) }
+    it { is_expected.to have_one(:expression_of_interest_contract_period).through(:expression_of_interest).source(:contract_period) }
   end
 
   describe "validations" do

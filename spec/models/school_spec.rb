@@ -1,4 +1,11 @@
 describe School do
+  describe "declarative updates" do
+    let(:instance) { FactoryBot.create(:school) }
+    let(:target) { instance }
+
+    it_behaves_like "a declarative metadata model", on_event: %i[create]
+  end
+
   describe "declarative touch" do
     let(:instance) { FactoryBot.create(:school) }
 
@@ -44,10 +51,11 @@ describe School do
   end
 
   describe 'validations' do
-    subject { FactoryBot.build(:school) }
+    subject { FactoryBot.create(:school) }
 
     it { is_expected.to validate_presence_of(:urn) }
     it { is_expected.to validate_uniqueness_of(:urn) }
+    it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another school") }
 
     context "last_chosen_lead_provider_id" do
       subject { FactoryBot.build(:school) }

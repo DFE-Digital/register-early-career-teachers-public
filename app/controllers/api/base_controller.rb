@@ -7,12 +7,24 @@ module API
     include ContractPeriodFilterable
     include FilterValidatable
     include DfE::Analytics::Requests
+    include Orderable
+    include ConditionExtractable
 
   private
 
     # `current_user` needed for DfE::Analytics
     def current_user
       current_lead_provider
+    end
+
+  protected
+
+    def respond_with_service(service:, action:)
+      if service.valid?
+        render json: to_json(service.send(action))
+      else
+        render json: API::Errors::Response.from(service), status: :unprocessable_content
+      end
     end
   end
 end

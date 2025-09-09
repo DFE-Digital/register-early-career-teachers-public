@@ -1,0 +1,15 @@
+<%
+  page_data(
+    title: "CSV upload by #{@appropriate_body.name}",
+    backlink_href: request.referer || admin_appropriate_body_batches_path(@appropriate_body)
+  )
+%>
+
+<%=
+  render Admin::AppropriateBodies::BulkUploadComponent.new(batch: @pending_induction_submission_batch) do |component|
+    component.with_batch_cards
+    component.with_batch_details
+    component.with_error_details
+    component.with_induction_details
+  end
+%>

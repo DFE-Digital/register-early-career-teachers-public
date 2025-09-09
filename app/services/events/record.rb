@@ -28,7 +28,8 @@ module Events
                 :statement_adjustment,
                 :user,
                 :modifications,
-                :metadata
+                :metadata,
+                :zendesk_ticket_id
 
     def initialize(
       author:,
@@ -55,7 +56,8 @@ module Events
       statement_adjustment: nil,
       user: nil,
       modifications: nil,
-      metadata: nil
+      metadata: nil,
+      zendesk_ticket_id: nil
     )
       @author = author
       @event_type = event_type
@@ -82,6 +84,7 @@ module Events
       @user = user
       @modifications = DescribeModifications.new(modifications).describe
       @metadata = metadata || modifications
+      @zendesk_ticket_id = zendesk_ticket_id
     end
 
     def record_event!
@@ -121,11 +124,11 @@ module Events
       new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_deleted_event!(author:, modifications:, teacher:, appropriate_body:, body: nil, happened_at: Time.zone.now)
+    def self.record_induction_period_deleted_event!(author:, modifications:, teacher:, appropriate_body:, body: nil, zendesk_ticket_id: nil, happened_at: Time.zone.now)
       event_type = :induction_period_deleted
       heading = 'Induction period deleted by admin'
 
-      new(event_type:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
+      new(event_type:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
     # Teacher Status Events
@@ -260,13 +263,13 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body: nil)
+    def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body:, zendesk_ticket_id:)
       event_type = :induction_period_reopened
       happened_at = Time.zone.now
 
       heading = 'Induction period reopened'
 
-      new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
+      new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
     # ECT and mentor events
@@ -287,6 +290,48 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
     end
 
+    def self.record_teacher_left_school_as_ect!(author:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:)
+      event_type = :teacher_left_school_as_ect
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name} left #{school.name}"
+
+      new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_starts_training_period_event!(author:, training_period:, ect_at_school_period:, mentor_at_school_period:, teacher:, school:, happened_at:)
+      if ect_at_school_period.present? && mentor_at_school_period.present?
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
+      end
+
+      if ect_at_school_period.nil? && mentor_at_school_period.nil?
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period is required")
+      end
+
+      event_type = :teacher_starts_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (ect_at_school_period.present?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name} started a new #{training_type} training period"
+
+      new(event_type:, author:, heading:, training_period:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_finishes_training_period_event!(author:, training_period:, ect_at_school_period:, mentor_at_school_period:, teacher:, school:, happened_at:)
+      if ect_at_school_period.present? && mentor_at_school_period.present?
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
+      end
+
+      if ect_at_school_period.nil? && mentor_at_school_period.nil?
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period is required")
+      end
+
+      event_type = :teacher_finishes_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (ect_at_school_period.present?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name} finished their #{training_type} training period"
+
+      new(event_type:, author:, heading:, training_period:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
     def self.record_teacher_starts_mentoring_event!(author:, mentor:, mentee:, mentor_at_school_period:, mentorship_period:, school:, happened_at: Time.zone.now)
       event_type = :teacher_starts_mentoring
       mentor_name = Teachers::Name.new(mentor).full_name
@@ -302,6 +347,26 @@ module Events
       mentor_name = Teachers::Name.new(mentor).full_name
       mentee_name = Teachers::Name.new(mentee).full_name
       heading = "#{mentee_name} is being mentored by #{mentor_name}"
+      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+
+      new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_finishes_mentoring_event!(author:, mentor:, mentee:, mentor_at_school_period:, mentorship_period:, school:, happened_at:)
+      event_type = :teacher_finishes_mentoring
+      mentor_name = Teachers::Name.new(mentor).full_name
+      mentee_name = Teachers::Name.new(mentee).full_name
+      heading = "#{mentor_name} finished mentoring #{mentee_name}"
+      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+
+      new(event_type:, author:, heading:, mentorship_period:, mentor_at_school_period:, teacher: mentor, school:, metadata:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_finishes_being_mentored_event!(author:, mentor:, mentee:, ect_at_school_period:, mentorship_period:, school:, happened_at:)
+      event_type = :teacher_finishes_being_mentored
+      mentor_name = Teachers::Name.new(mentor).full_name
+      mentee_name = Teachers::Name.new(mentee).full_name
+      heading = "#{mentee_name} is no longer being mentored by #{mentor_name}"
       metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
 
       new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
@@ -531,6 +596,7 @@ module Events
         heading:,
         body:,
         happened_at:,
+        zendesk_ticket_id:,
       }.compact
     end
 

@@ -1,6 +1,10 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'test trs api client that finds nothing'
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'Teacher with TRN is not found' do
     given_i_am_logged_in_as_a_school_user
     when_i_am_on_the_find_ect_step_page
@@ -19,7 +23,7 @@ RSpec.describe 'Registering an ECT' do
   def when_i_am_on_the_find_ect_step_page
     path = '/schools/register-ect/find-ect'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def and_i_submit_a_date_of_birth_and_unknown_trn
@@ -32,7 +36,7 @@ RSpec.describe 'Registering an ECT' do
 
   def then_i_should_be_taken_to_the_teacher_not_found_error_page
     path = '/schools/register-ect/trn-not-found'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_try_again
@@ -41,6 +45,6 @@ RSpec.describe 'Registering an ECT' do
 
   def then_i_should_be_taken_to_the_find_ect_step_page
     path = '/schools/register-ect/find-ect'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 end

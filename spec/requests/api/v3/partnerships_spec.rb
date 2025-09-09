@@ -1,7 +1,7 @@
 RSpec.describe "Partnerships API", type: :request do
-  let(:serializer) { PartnershipSerializer }
+  let(:serializer) { API::PartnershipSerializer }
   let(:serializer_options) { { lead_provider: } }
-  let(:query) { SchoolPartnerships::Query }
+  let(:query) { API::SchoolPartnerships::Query }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
 
@@ -70,13 +70,33 @@ RSpec.describe "Partnerships API", type: :request do
   end
 
   describe "#update" do
-    let(:path) { api_v3_partnership_path(123) }
+    let(:path) { api_v3_partnership_path(resource.api_id) }
+    let(:service) { SchoolPartnerships::Update }
+    let(:resource_type) { SchoolPartnership }
+    let(:resource) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+    let(:other_delivery_partner) do
+      other_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+      other_delivery_partnership.delivery_partner
+    end
+    let(:service_args) do
+      {
+        school_partnership_id: resource.id,
+        delivery_partner_api_id: other_delivery_partner.api_id,
+      }
+    end
+    let(:params) do
+      {
+        data: {
+          type: "partnership",
+          attributes: {
+            delivery_partner_id: other_delivery_partner.api_id,
+          }
+        }
+      }
+    end
 
     it_behaves_like "a token authenticated endpoint", :put
-
-    it "returns method not allowed" do
-      authenticated_api_put path
-      expect(response).to be_method_not_allowed
-    end
+    it_behaves_like "an API update endpoint"
   end
 end

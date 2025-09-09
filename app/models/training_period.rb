@@ -1,5 +1,6 @@
 class TrainingPeriod < ApplicationRecord
   include Interval
+  include DeclarativeMetadata
 
   # Enums
   enum :training_programme,
@@ -12,15 +13,21 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
   belongs_to :school_partnership
-  belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
+
   has_one :lead_provider_delivery_partnership, through: :school_partnership
   has_one :active_lead_provider, through: :lead_provider_delivery_partnership
   has_one :lead_provider, through: :active_lead_provider
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
   has_one :contract_period, through: :active_lead_provider
 
+  belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
+  has_one :expression_of_interest_lead_provider, through: :expression_of_interest, source: :lead_provider
+  has_one :expression_of_interest_contract_period, through: :expression_of_interest, source: :contract_period
+
   has_many :declarations, inverse_of: :training_period
   has_many :events
+
+  refresh_metadata -> { school_partnership&.school }, on_event: %i[create destroy update]
 
   # Validations
   validates :started_on,

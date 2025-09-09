@@ -6,8 +6,8 @@
     "accessible-autocomplete": "^3.0.1",
     "esbuild": "^0.25.9",
     "govuk-frontend": "5.11.2",
-    "sass": "^1.90.0",
-    "swagger-ui-dist": "^5.27.1"
+    "sass": "^1.92.0",
+    "swagger-ui-dist": "^5.28.1"
   },
   "devDependencies": {
     "playwright": "^1.55.0",

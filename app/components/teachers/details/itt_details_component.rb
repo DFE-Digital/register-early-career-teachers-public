@@ -1,5 +1,5 @@
 module Teachers::Details
-  class ITTDetailsComponent < ViewComponent::Base
+  class ITTDetailsComponent < ApplicationComponent
     attr_reader :teacher
 
     def initialize(teacher:)

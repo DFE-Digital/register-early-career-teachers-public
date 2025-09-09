@@ -1,0 +1,17 @@
+<% page_data(
+  title: @school.name,
+  caption: "URN: #{@school.urn}",
+  caption_size: "xl",
+  header_size: "xl",
+  breadcrumbs: @breadcrumbs
+) %>
+
+<%= render 'admin/schools/impersonate_button' %>
+
+<%= render Navigation::SecondaryNavigationComponent.new(
+  items: @navigation_items
+) %>
+
+<h2 class="govuk-heading-m">Overview</h2>
+
+<%= render Admin::Schools::OverviewComponent.new(school: @school) %>
