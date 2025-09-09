@@ -1,0 +1,103 @@
+# Style cops -------------------------------------------------------------------
+
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: no_comma
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: never
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
+
+Style/Lambda:
+  EnforcedStyle: literal
+
+# Rails cops -------------------------------------------------------------------
+
+Rails/UnknownEnv:
+  Environments:
+    - production
+    - staging
+    - development
+    - test
+    - sandbox
+    - review
+    - migration
+
+Rails/SkipsModelValidations:
+  Enabled: true
+  Exclude:
+    - spec/support/shared_examples/declarative_updates.rb
+
+Rails/StrongParametersExpect:
+  Enabled: true
+
+Rails/NotNullColumn:
+  Exclude:
+    - db/migrate/20240904125324_add_establishment_and_la_fields_to_abs.rb
+    - db/migrate/20240905133533_add_trn_to_teachers.rb
+    - db/migrate/20240906122532_add_induction_programme_to_induction_periods.rb
+    - db/migrate/20240920110230_modify_gias_schools.rb
+    - db/migrate/20240924152526_remove_unneeded_roles.rb
+    - db/migrate/20240926131856_refactor_fields_on_gias_school.rb
+    - db/migrate/20240926161243_add_tsvector_column_to_teachers_for_searching.rb
+
+Rails/ReversibleMigration:
+  Exclude:
+    - db/migrate/20240924152526_remove_unneeded_roles.rb
+    - db/migrate/20240926161243_add_tsvector_column_to_teachers_for_searching.rb
+
+Rails/BulkChangeTable:
+  Exclude:
+    - db/migrate/20240904125324_add_establishment_and_la_fields_to_abs.rb
+    - db/migrate/20240920110230_modify_gias_schools.rb
+    - db/migrate/20240926131856_refactor_fields_on_gias_school.rb
+    - db/migrate/20241025151425_remove_establishment_id_and_make_parts_nullable.rb
+    - db/migrate/20241028105436_unaccent_teachers_search.rb
+
+Rails/Output:
+  Exclude:
+    - db/seeds*
+    # Excluded because this file intentionally writes a dev-only message to stdout after migrations, which does not
+    # impact application behavior and is not intended for production environments.
+    - config/initializers/post_migration_erd_prompt.rb
+
+Rails/SaveBang:
+  Exclude:
+    - app/services/**/*
+    - spec/support/shared_examples/metadata_support.rb
+    - spec/support/shared_examples/query_avoids_includes.rb
+
+# RSpec cops -------------------------------------------------------------------
+
+RSpec/EmptyExampleGroup:
+  Exclude:
+    - spec/requests/api/docs/**/*
+
+RSpec/VariableName:
+  Exclude:
+    - spec/requests/api/docs/**/*
+    - spec/support/shared_contexts/api_doc_request_auth.rb
+
+RSpec/RequireRailsHelper:
+  Enabled: true
+  AutoCorrect: false
+  Exclude:
+    - spec/spec_helper.rb
+    - spec/rails_helper.rb
+
+RSpec/SpecFilePathFormat:
+  CustomTransform:
+    # Otherwise it suggests the namespace "ec_ts"
+    ECTs: ects
+
+# Capybara cops ----------------------------------------------------------------
+
+Capybara/CurrentPathExpectation:
+  Exclude:
+    # Excluded in feature specs because we use Playwright (not Capybara) for those. Leaving it enabled elsewhere in case Capybara matchers are used in other test types.
+    - spec/features/**/*
