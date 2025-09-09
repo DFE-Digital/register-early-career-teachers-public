@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_01_173600) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_09_141606) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -154,6 +154,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_173600) do
     t.string "declaration_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "pupil_premium_uplift"
+    t.boolean "sparsity_uplift"
     t.index ["training_period_id"], name: "index_declarations_on_training_period_id"
   end
 
@@ -726,6 +728,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_173600) do
     t.enum "mentor_became_ineligible_for_funding_reason", enum_type: "mentor_became_ineligible_for_funding_reason"
     t.boolean "trs_deactivated", default: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
+    t.boolean "ect_sparsity_uplift", default: false, null: false
+    t.boolean "ect_pupil_premium_uplift", default: false, null: false
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
