@@ -16,7 +16,7 @@ describe ECTAtSchoolPeriod do
     it { is_expected.to have_many(:events) }
 
     describe '.current_or_next_training_period' do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
 
       it { is_expected.to have_one(:current_or_next_training_period).class_name('TrainingPeriod') }
 
