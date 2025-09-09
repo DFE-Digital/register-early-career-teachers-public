@@ -498,3 +498,11 @@
   - schedule_type
   - created_at
   - updated_at
+  :milestones:
+  - id
+  - schedule_id
+  - declaration_type
+  - start_date
+  - milestone_date
+  - created_at
+  - updated_at

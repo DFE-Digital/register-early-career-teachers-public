@@ -421,6 +421,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
 
+  create_table "milestones", force: :cascade do |t|
+    t.bigint "schedule_id"
+    t.enum "declaration_type", null: false, enum_type: "declaration_types"
+    t.date "start_date", null: false
+    t.date "milestone_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["schedule_id", "declaration_type"], name: "index_milestones_on_schedule_id_and_declaration_type", unique: true
+    t.index ["schedule_id"], name: "index_milestones_on_schedule_id"
+  end
+
   create_table "parity_check_endpoints", force: :cascade do |t|
     t.string "path", null: false
     t.enum "method", null: false, enum_type: "request_method_types"
@@ -819,6 +830,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "lead_providers"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "schools"
+  add_foreign_key "milestones", "schedules"
   add_foreign_key "parity_check_requests", "lead_providers"
   add_foreign_key "parity_check_requests", "parity_check_endpoints", column: "endpoint_id"
   add_foreign_key "parity_check_requests", "parity_check_runs", column: "run_id"

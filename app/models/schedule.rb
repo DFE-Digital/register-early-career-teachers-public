@@ -17,6 +17,7 @@ class Schedule < ApplicationRecord
        validate: { message: 'Choose an identifier from the list' }
 
   belongs_to :contract_period, inverse_of: :schedules, foreign_key: :contract_period_year
+  has_many :milestones
 
   validates :contract_period_year, presence: { message: 'Enter a contract period year' }
 end
