@@ -24,7 +24,31 @@ get:
       paginate: true
       query:
         filter:
+          cohort: 2021
+  - "/api/v3/schools":
+      ecf_path: "/api/v3/schools/ecf"
+      paginate: true
+      query:
+        filter:
           cohort: 2022
+  - "/api/v3/schools":
+      ecf_path: "/api/v3/schools/ecf"
+      paginate: true
+      query:
+        filter:
+          cohort: 2023
+  - "/api/v3/schools":
+      ecf_path: "/api/v3/schools/ecf"
+      paginate: true
+      query:
+        filter:
+          cohort: 2024
+  - "/api/v3/schools":
+      ecf_path: "/api/v3/schools/ecf"
+      paginate: true
+      query:
+        filter:
+          cohort: 2025
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -43,8 +67,9 @@ get:
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
       query:
-        cohort: 2021
-        sort: "-updated_at"
+        filter:
+          cohort: 2021
+          sort: "-updated_at"
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -54,6 +79,9 @@ get:
           urn: "102396"
           updated_since: "2025-04-13T11:21:55Z"
   - "/api/v3/schools/:id":
+      query:
+        filter:
+          cohort: 2022
       ecf_path: "/api/v3/schools/ecf/:id"
       id: ":school_id"
 
@@ -125,10 +153,12 @@ get:
       id: ":partnership_id"
 
 post:
-  - "/api/v3/partnerships/ecf":
-      body: example_body
+  - "/api/v3/partnerships":
+      ecf_path: "/api/v3/partnerships/ecf"
+      body: partnership_create_body
 
 put:
-  - "/api/v3/participant-declarations/:id":
-      id: ":example_id"
-      body: example_body
+  - "/api/v3/partnerships/:id":
+      ecf_path: "/api/v3/partnerships/ecf/:id"
+      id: ":partnership_id"
+      body: partnership_update_body

@@ -1,14 +1,13 @@
 RSpec.describe Sessions::User do
   subject(:session_user) { described_class.new(email: 'a@email.com', last_active_at:) }
 
+  let(:fake_user_session) { {} }
   let(:last_active_at) { 4.minutes.ago }
 
   describe '.from_session' do
     subject(:session_user) { described_class.from_session(fake_user_session) }
 
     context 'when the user session stores no user data' do
-      let(:fake_user_session) { {} }
-
       it 'do not instantiate any Sessions::User' do
         expect(session_user).to be_nil
       end
@@ -25,7 +24,8 @@ RSpec.describe Sessions::User do
           'name' => 'Christopher Lee',
           'last_active_at' => last_active_at,
           'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
-          'dfe_sign_in_user_id' => dfe_sign_in_user_id
+          'dfe_sign_in_user_id' => dfe_sign_in_user_id,
+          'dfe_sign_in_roles' => %w[AppropriateBodyUser],
         }
       end
 
@@ -107,7 +107,8 @@ RSpec.describe Sessions::User do
           'last_active_at' => last_active_at,
           'school_urn' => school_urn,
           'dfe_sign_in_organisation_id' => dfe_sign_in_organisation_id,
-          'dfe_sign_in_user_id' => dfe_sign_in_user_id
+          'dfe_sign_in_user_id' => dfe_sign_in_user_id,
+          'dfe_sign_in_roles' => %w[SchoolUser]
         }
       end
 
@@ -120,5 +121,13 @@ RSpec.describe Sessions::User do
         expect(session_user.dfe_sign_in_organisation_id).to eql(dfe_sign_in_organisation_id)
       end
     end
+  end
+
+  describe 'user type methods' do
+    it { expect(session_user).not_to be_dfe_sign_in_authorisable }
+    it { expect(session_user).not_to be_appropriate_body_user }
+    it { expect(session_user).not_to be_dfe_user }
+    it { expect(session_user).not_to be_school_user }
+    it { expect(session_user).not_to be_dfe_user_impersonating_school_user }
   end
 end

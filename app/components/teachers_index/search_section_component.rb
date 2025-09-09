@@ -1,7 +1,6 @@
 module TeachersIndex
-  class SearchSectionComponent < ViewComponent::Base
+  class SearchSectionComponent < ApplicationComponent
     include Rails.application.routes.url_helpers
-    include GovukLinkHelper
 
     def initialize(status:, query:)
       @status = status

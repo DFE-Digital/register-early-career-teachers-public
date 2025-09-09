@@ -1,5 +1,6 @@
 RSpec.describe "Admin deletes an induction period" do
   include ActiveJob::TestHelper
+
   include_context "test trs api client"
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -18,11 +19,21 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_click_delete_link
       then_i_should_see_the_delete_confirmation_page
 
-      when_i_confirm_deletion
+      when_i_do_not_add_any_extra_information
+      and_i_confirm_deletion
+      then_there_is_an_error_message
+
+      when_i_add_a_zendesk_ticket_id
+      and_i_add_a_note("This is a test reason for deleting")
+      and_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period)
       and_an_event_should_have_been_recorded
       and_trs_status_should_be_reset
+
+      when_i_go_to_the_timeline_page
+      then_i_can_see_the_note("This is a test reason for deleting")
+      and_i_can_see_the_zendesk_url
     end
   end
 
@@ -36,11 +47,21 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_click_delete_link_for(induction_period1)
       then_i_should_see_the_delete_confirmation_page
 
-      when_i_confirm_deletion
+      when_i_do_not_add_any_extra_information
+      and_i_confirm_deletion
+      then_there_is_an_error_message
+
+      when_i_add_a_zendesk_ticket_id
+      and_i_add_a_note("This is a test reason for deleting")
+      and_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period1)
       and_an_event_should_have_been_recorded
       and_trs_status_should_not_be_reset
+
+      when_i_go_to_the_timeline_page
+      then_i_can_see_the_note("This is a test reason for deleting")
+      and_i_can_see_the_zendesk_url
     end
   end
 
@@ -54,18 +75,28 @@ RSpec.describe "Admin deletes an induction period" do
       when_i_click_delete_link_for(induction_period2)
       then_i_should_see_the_delete_confirmation_page
 
-      when_i_confirm_deletion
+      when_i_do_not_add_any_extra_information
+      and_i_confirm_deletion
+      then_there_is_an_error_message
+
+      when_i_add_a_zendesk_ticket_id
+      and_i_add_a_note("This is a test reason for deleting")
+      and_i_confirm_deletion
       then_i_should_be_on_the_success_page
       and_the_induction_period_should_be_deleted(induction_period2)
       and_an_event_should_have_been_recorded
       and_trs_status_should_not_be_reset
+
+      when_i_go_to_the_timeline_page
+      then_i_can_see_the_note("This is a test reason for deleting")
+      and_i_can_see_the_zendesk_url
     end
   end
 
   def given_i_am_on_the_ect_page(teacher)
     path = "/admin/teachers/#{teacher.id}"
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def then_i_should_see_the_delete_link
@@ -89,7 +120,26 @@ RSpec.describe "Admin deletes an induction period" do
     expect(page.get_by_role('button', name: 'Delete induction period')).to be_visible
   end
 
-  def when_i_confirm_deletion
+  def when_i_do_not_add_any_extra_information = nil
+
+  def then_there_is_an_error_message
+    expect(page.locator(".govuk-error-summary"))
+      .to have_text("There is a problem")
+  end
+
+  def when_i_add_a_zendesk_ticket_id
+    page.locator("fieldset", hasText: "Explain why you're making this change")
+      .get_by_label("Enter the Zendesk ID")
+      .fill("123")
+  end
+
+  def and_i_add_a_note(reason)
+    page.locator("fieldset", hasText: "Explain why you're making this change")
+      .get_by_label("Add a note to explain why you're making this change")
+      .fill(reason)
+  end
+
+  def and_i_confirm_deletion
     perform_enqueued_jobs do
       page.get_by_role('button', name: 'Delete induction period').click
     end
@@ -117,5 +167,24 @@ RSpec.describe "Admin deletes an induction period" do
 
   def and_trs_status_should_not_be_reset
     expect(teacher.induction_periods.count).to eq(1)
+  end
+
+  def when_i_go_to_the_timeline_page
+    page.goto(admin_teacher_timeline_path(teacher))
+  end
+
+  def then_i_can_see_the_note(reason)
+    description = page
+      .locator(".app-timeline__item", hasText: "Induction period deleted")
+      .locator(".app-timeline__description")
+    expect(description).to have_text(reason)
+  end
+
+  def and_i_can_see_the_zendesk_url
+    description = page
+      .locator(".app-timeline__item", hasText: "Induction period deleted")
+      .locator(".app-timeline__description")
+    expect(description.get_by_role("link", name: "Zendesk ticket (opens in new tab)"))
+      .to be_visible
   end
 end

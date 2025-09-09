@@ -69,7 +69,8 @@ RSpec.configure do |config|
           Partnership: PARTNERSHIP,
           PartnershipsFilter: PARTNERSHIPS_FILTER,
           PartnershipResponse: PARTNERSHIP_RESPONSE,
-          PartnershipRequest: PARTNERSHIP_REQUEST,
+          PartnershipCreateRequest: PARTNERSHIP_CREATE_REQUEST,
+          PartnershipUpdateRequest: PARTNERSHIP_UPDATE_REQUEST,
           PartnershipsResponse: PARTNERSHIPS_RESPONSE,
         }
       }

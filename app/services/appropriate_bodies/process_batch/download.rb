@@ -25,7 +25,15 @@ module AppropriateBodies
         raise MissingCSVDataError, "No persisted CSV data found" if pending_induction_submission_batch.data.blank?
 
         CSV.generate(headers:, write_headers: true, force_quotes: true) do |csv|
-          errored_rows.each { |row| csv << row }
+          to_a.each { |row| csv << row }
+        end
+      end
+
+      # @return [Array<Array>]
+      def to_a
+        pending_induction_submission_batch.rows.filter_map do |row|
+          errors = failed_submissions[row.sanitised_trn]
+          row.with_errors(errors) if errors.present?
         end
       end
 
@@ -39,14 +47,6 @@ module AppropriateBodies
       # @return [Hash{String => Array<String>}]
       def failed_submissions
         @failed_submissions ||= pending_induction_submission_batch.pending_induction_submissions.with_errors.pluck(:trn, :error_messages).to_h
-      end
-
-      # @return [Array<Array>]
-      def errored_rows
-        pending_induction_submission_batch.rows.filter_map do |row|
-          errors = failed_submissions[row.sanitised_trn]
-          row.with_errors(errors) if errors.present?
-        end
       end
     end
   end

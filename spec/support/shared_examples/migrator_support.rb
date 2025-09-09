@@ -159,6 +159,23 @@ RSpec.shared_examples "a migrator" do |model, dependencies|
       migrate!
     end
 
+    it "does not create any metadata" do
+      dump_metadata_database_state = -> {
+        ActiveRecord::Base.connection.tables.select { it.start_with?("metadata_") }.to_h do |table|
+          rows = ActiveRecord::Base.connection.execute("SELECT * FROM #{table}").to_a
+          [table, rows]
+        end
+      }
+
+      # Clear any metadata created via factories.
+      Metadata::Manager.destroy_all_metadata!
+
+      migrate!
+
+      # Ensure the database state doesn't change when we clear all metadata (as there should be none).
+      expect { Metadata::Manager.destroy_all_metadata! }.not_to(change { dump_metadata_database_state.call })
+    end
+
     context "when retrying a migration" do
       before do
         setup_failure_state

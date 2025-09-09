@@ -1,6 +1,10 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'test trs api client that finds teacher prohibited from teaching'
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'The ECT is prohibited from teaching' do
     given_i_am_logged_in_as_a_school_user
     when_i_am_on_the_find_ect_step_page
@@ -19,7 +23,7 @@ RSpec.describe 'Registering an ECT' do
   def when_i_am_on_the_find_ect_step_page
     path = '/schools/register-ect/find-ect'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def and_i_submit_details_of_a_prohibited_teacher
@@ -32,7 +36,7 @@ RSpec.describe 'Registering an ECT' do
 
   def then_i_should_be_taken_to_the_cannot_register_ect_page
     path = '/schools/register-ect/cannot-register-ect'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_back_to_ects
@@ -41,6 +45,6 @@ RSpec.describe 'Registering an ECT' do
 
   def then_i_should_be_taken_to_the_school_ects_page
     path = '/schools/home/ects'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 end

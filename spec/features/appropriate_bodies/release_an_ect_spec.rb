@@ -30,7 +30,7 @@ private
   def given_i_am_on_the_ect_page(teacher)
     path = "/appropriate-body/teachers/#{teacher.id}"
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_link(text)
@@ -38,7 +38,7 @@ private
   end
 
   def then_i_should_be_on_the_release_ect_page(teacher)
-    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/release/new")
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/release/new")
   end
 
   def when_i_submit_the_form_without_filling_anything_in
@@ -70,7 +70,7 @@ private
   end
 
   def then_i_should_be_on_the_success_page
-    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/release")
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/release")
     expect(page.locator('.govuk-panel')).to be_visible
 
     teacher_name = ::Teachers::Name.new(teacher).full_name

@@ -20,6 +20,8 @@ module Sessions
 
       delegate :id, to: :appropriate_body, prefix: true, allow_nil: true
 
+      def appropriate_body_user? = true
+
       def event_author_params
         {
           author_email: email,
@@ -30,8 +32,7 @@ module Sessions
 
       def organisation_name = appropriate_body.name
 
-      def sign_out_path = '/sign-out'
-
+      # @return [Hash] session data
       def to_h
         {
           "type" => self.class.name,

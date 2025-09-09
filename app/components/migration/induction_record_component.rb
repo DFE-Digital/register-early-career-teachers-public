@@ -1,5 +1,5 @@
 module Migration
-  class InductionRecordComponent < ViewComponent::Base
+  class InductionRecordComponent < ApplicationComponent
     attr_reader :induction_record
 
     def initialize(induction_record:)

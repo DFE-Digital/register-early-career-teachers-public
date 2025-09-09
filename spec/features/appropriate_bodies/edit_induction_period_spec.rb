@@ -35,33 +35,7 @@ RSpec.describe "Appropriate body editing an induction period" do
     then_i_should_see_an_error('Start date cannot be before QTS award date')
   end
 
-  scenario 'programme type (old)' do
-    allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(false)
-    given_i_am_on_the_teacher_page
-    then_i_should_see_the_edit_link
-    when_i_click_edit_link
-    then_i_should_be_on_the_edit_induction_period_page
-
-    expect(induction_period.induction_programme).to eq("fip")
-    expect(induction_period.training_programme).to eq("provider_led")
-    page.get_by_label("Core induction programme").check
-    and_i_click_submit
-
-    then_i_should_be_on_the_teacher_page
-    and_i_should_see_success_banner
-
-    induction_period.reload
-    expect(induction_period.induction_programme).to eq("cip")
-    expect(induction_period.training_programme).to eq("school_led")
-
-    and_an_event_should_have_been_recorded(
-      "Induction programme changed from 'fip' to 'cip'",
-      "Training programme changed from 'provider_led' to 'school_led'"
-    )
-  end
-
-  scenario 'programme type (new)' do
-    allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(true)
+  scenario 'programme type' do
     given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
@@ -85,13 +59,13 @@ RSpec.describe "Appropriate body editing an induction period" do
 private
 
   def given_i_am_on_the_teacher_page
-    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}")
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}")
   end
 
   alias_method :then_i_should_be_on_the_teacher_page, :given_i_am_on_the_teacher_page
 
   def then_i_should_be_on_the_edit_induction_period_page
-    expect(page.url).to end_with("/appropriate-body/teachers/#{teacher.id}/induction-periods/#{induction_period.id}/edit")
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/induction-periods/#{induction_period.id}/edit")
   end
 
   def then_i_should_see_the_edit_link

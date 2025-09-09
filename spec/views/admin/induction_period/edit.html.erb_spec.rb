@@ -13,15 +13,7 @@ RSpec.describe 'admin/induction_periods/edit.html.erb' do
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
   end
 
-  it 'renders old or new induction types via feature flag' do
-    allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(false)
-    render
-
-    expect(rendered).to have_text('Full induction programme')
-    expect(rendered).to have_text('Core induction programme')
-    expect(rendered).to have_text('School-based induction programme')
-
-    allow(Rails.application.config).to receive(:enable_bulk_claim).and_return(true)
+  it 'renders induction types' do
     render
 
     expect(rendered).to have_text('Provider-led')

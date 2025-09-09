@@ -1,6 +1,5 @@
 module TeachersIndex
-  class TableSectionComponent < ViewComponent::Base
-    include GovukLinkHelper
+  class TableSectionComponent < ApplicationComponent
     include Pagy::Frontend
     include Rails.application.routes.url_helpers
     include EmptyStateMessage

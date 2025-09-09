@@ -24,7 +24,8 @@ describe Builders::GIAS::School do
       gias_school = subject.build
 
       expect(gias_school.school).to be_present
-      expect(gias_school.api_id).to eq(ecf_school.id)
+      expect(gias_school.school.api_id).to eq(ecf_school.id)
+      expect(gias_school.school.urn.to_s).to eq(ecf_school.urn)
       expect(gias_school.address_line1).to eq(ecf_school.address_line1)
       expect(gias_school.address_line2).to eq(ecf_school.address_line2)
       expect(gias_school.address_line3).to eq(ecf_school.address_line3)

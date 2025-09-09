@@ -29,6 +29,26 @@ RSpec.describe Metadata::Manager do
         refresh_metadata
       end
     end
+
+    [nil, [], [nil]].each do |empty_value|
+      context "when given #{empty_value}" do
+        let(:objects) { empty_value }
+
+        it "does not resolve any handlers" do
+          expect(Metadata::Resolver).not_to receive(:resolve_handler)
+        end
+      end
+    end
+
+    context "when skipping metadata updates" do
+      around do |example|
+        described_class.skip_metadata_updates { example.run }
+      end
+
+      it "does not resolve any handlers" do
+        expect(Metadata::Resolver).not_to receive(:resolve_handler)
+      end
+    end
   end
 
   describe ".refresh_all_metadata!" do
@@ -37,7 +57,7 @@ RSpec.describe Metadata::Manager do
     let(:async) { true }
 
     it "calls refresh_metadata! for each handler with async: true" do
-      expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!).with(async:)
+      expect(Metadata::Resolver.all_handlers).to all(receive(:refresh_all_metadata!).with(async:))
 
       refresh_all_metadata
     end
@@ -46,9 +66,39 @@ RSpec.describe Metadata::Manager do
       let(:async) { false }
 
       it "calls refresh_metadata! for each handler with async: false" do
-        expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!).with(async:)
+        expect(Metadata::Resolver.all_handlers).to all(receive(:refresh_all_metadata!).with(async:))
 
         refresh_all_metadata
+      end
+    end
+
+    context "when skipping metadata updates" do
+      around do |example|
+        described_class.skip_metadata_updates { example.run }
+      end
+
+      it "does not call any handlers" do
+        expect(Metadata::Resolver).not_to receive(:all_handlers)
+      end
+    end
+  end
+
+  describe ".destroy_all_metadata!" do
+    subject(:destroy_all_metadata) { described_class.destroy_all_metadata! }
+
+    it "calls destroy_all_metadata! for each handler" do
+      expect(Metadata::Resolver.all_handlers).to all(receive(:destroy_all_metadata!))
+
+      destroy_all_metadata
+    end
+
+    context "when skipping metadata updates" do
+      around do |example|
+        described_class.skip_metadata_updates { example.run }
+      end
+
+      it "does not call any handlers" do
+        expect(Metadata::Resolver).not_to receive(:all_handlers)
       end
     end
   end

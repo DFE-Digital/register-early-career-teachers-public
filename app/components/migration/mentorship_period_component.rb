@@ -1,5 +1,5 @@
 module Migration
-  class MentorshipPeriodComponent < ViewComponent::Base
+  class MentorshipPeriodComponent < ApplicationComponent
     attr_reader :mentorship_period
 
     def initialize(mentorship_period:)

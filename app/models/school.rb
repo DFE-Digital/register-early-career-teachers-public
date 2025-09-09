@@ -1,9 +1,11 @@
 class School < ApplicationRecord
   include GIASHelpers
   include DeclarativeTouch
+  include DeclarativeMetadata
 
   touch -> { self }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
+  refresh_metadata -> { self }, on_event: %i[create]
 
   # Enums
   enum :last_chosen_training_programme,
@@ -66,6 +68,8 @@ class School < ApplicationRecord
             notify_email: true,
             allow_nil: true
 
+  validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another school" }
+
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
 
@@ -74,7 +78,6 @@ class School < ApplicationRecord
            :address_line2,
            :address_line3,
            :administrative_district_name,
-           :api_id,
            :closed_on,
            :establishment_number,
            :funding_eligibility,

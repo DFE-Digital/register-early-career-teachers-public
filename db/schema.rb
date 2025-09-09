@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_01_173600) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -227,6 +227,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.bigint "pending_induction_submission_batch_id"
     t.bigint "statement_id"
     t.bigint "statement_adjustment_id"
+    t.integer "zendesk_ticket_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
@@ -285,8 +286,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.boolean "induction_eligibility", null: false
     t.boolean "in_england", null: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, ((((COALESCE((name)::text, ''::text) || ' '::text) || COALESCE((postcode)::text, ''::text)) || ' '::text) || COALESCE((urn)::text, ''::text)))", stored: true
-    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["api_id"], name: "index_gias_schools_on_api_id", unique: true
     t.index ["name"], name: "index_gias_schools_on_name"
     t.index ["search"], name: "index_gias_schools_on_search", using: :gin
     t.index ["ukprn"], name: "index_gias_schools_on_ukprn", unique: true
@@ -542,6 +541,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.string "induction_tutor_name"
     t.citext "induction_tutor_email"
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["api_id"], name: "index_schools_on_api_id", unique: true
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true

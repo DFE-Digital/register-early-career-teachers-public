@@ -5,6 +5,10 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
   let(:school) { FactoryBot.create(:school, :independent) }
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   describe 'GET /school/ects/:id/mentorship/new' do
     context 'when not signed in' do
       it 'redirects to the root page' do

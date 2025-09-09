@@ -1,6 +1,10 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'test trs api client'
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'Teacher with trn has already registered as an ECT at a school' do
     given_i_am_logged_in_as_a_school_user
     and_an_ect_has_already_registered_at_my_school
@@ -33,7 +37,7 @@ RSpec.describe 'Registering an ECT' do
   def and_i_am_on_the_find_ect_step_page
     path = '/schools/register-ect/find-ect'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_submit_the_details_of_the_ect_already_registered
@@ -45,7 +49,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_ect_already_registered_error_page
-    expect(page.url).to end_with('/schools/register-ect/already-active_at-school')
+    expect(page).to have_path('/schools/register-ect/already-active_at-school')
   end
 
   def when_i_click_try_again
@@ -54,6 +58,6 @@ RSpec.describe 'Registering an ECT' do
 
   def then_i_should_be_taken_to_the_find_ect_step_page
     path = '/schools/register-ect/find-ect'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 end
