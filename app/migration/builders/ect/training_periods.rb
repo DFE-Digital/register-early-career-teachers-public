@@ -13,8 +13,19 @@ module Builders
       def build
         success = true
         period_date = Data.define(:started_on, :finished_on)
-        training_period_data.each do |period|
-          period_dates = period_date.new(started_on: period.start_date, finished_on: period.end_date)
+
+        training_period_data.each_with_index do |period, idx|
+          next_period = training_period_data[idx + 1]
+
+          if next_period.present? && period.end_date.present? && (period.end_date > next_period.start_date || period.end_date < period.start_date)
+            period_end_date = next_period.start_date
+            period_end_source_id = next_period.start_source_id
+          else
+            period_end_date = period.end_date
+            period_end_source_id = period.end_source_id
+          end
+
+          period_dates = period_date.new(started_on: period.start_date, finished_on: period_end_date)
           school = School.find_by!(urn: period.school_urn)
 
           ect_at_school_period = teacher
@@ -27,8 +38,8 @@ module Builders
           training_period.training_programme = period.training_programme
           training_period.ect_at_school_period = ect_at_school_period
           training_period.started_on = period.start_date
-          training_period.finished_on = period.end_date
-          training_period.ecf_end_induction_record_id = period.end_source_id
+          training_period.finished_on = period_end_date
+          training_period.ecf_end_induction_record_id = period_end_source_id
 
           training_period.school_partnership = if period.training_programme == "provider_led"
                                                  find_school_partnership!(period, school)

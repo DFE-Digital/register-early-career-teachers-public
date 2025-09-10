@@ -58,8 +58,6 @@ RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_even
 
       if when_changing.empty?
         it "touches the #{timestamp_attribute} of the associated model(s) when an attribute changes" do
-          allow(Metadata::Manager).to receive(:new).and_return(manager)
-
           expect {
             instance.update!(updated_at: 1.week.ago)
           }.to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } }.to(all(be_within(5.seconds).of(Time.current))))

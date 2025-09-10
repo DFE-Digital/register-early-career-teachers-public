@@ -57,11 +57,14 @@ describe API::SchoolSerializer, type: :serializer do
     end
 
     it "serializes `created_at`" do
+      school.created_at = Time.utc(2023, 7, 1, 12, 0, 0)
+
       expect(attributes["created_at"]).to eq(school.created_at.utc.rfc3339)
     end
 
-    it "serializes `updated_at`" do
-      school.update!(api_updated_at: 3.days.ago)
+    it "serializes `api_updated_at`" do
+      school.api_updated_at = Time.utc(2023, 7, 2, 12, 0, 0)
+
       expect(attributes["updated_at"]).to eq(school.api_updated_at.utc.rfc3339)
     end
   end

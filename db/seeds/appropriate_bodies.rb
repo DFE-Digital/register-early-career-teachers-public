@@ -2,7 +2,7 @@ def describe_appropriate_body(appropriate_body)
   print_seed_info(appropriate_body.name, indent: 2)
 end
 
-AppropriateBody.create!([
+[
   {
     body_type: 'teaching_school_hub',
     name: 'Angel Oak Academy', # Used by developers for DfE Sign In
@@ -46,8 +46,10 @@ AppropriateBody.create!([
     body_type: 'teaching_school_hub',
     name: 'Vista College',
   }
-]).each do |describe_appropriate|
-  describe_appropriate_body(describe_appropriate)
+].each do |describe_appropriate|
+  FactoryBot.create(:appropriate_body, **describe_appropriate).tap do |appropriate_body|
+    describe_appropriate_body(appropriate_body)
+  end
 end
 
 # - local development environment uses the test UUID

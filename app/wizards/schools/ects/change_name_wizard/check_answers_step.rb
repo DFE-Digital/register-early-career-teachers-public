@@ -2,7 +2,7 @@ module Schools
   module ECTs
     module ChangeNameWizard
       class CheckAnswersStep < Step
-        delegate :ect_at_school_period, :author, :teacher_full_name, to: :wizard
+        delegate :teacher_full_name, to: :wizard
 
         def previous_step
           :edit

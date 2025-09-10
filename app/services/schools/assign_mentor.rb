@@ -27,7 +27,7 @@ module Schools
     end
 
     def finish_current_mentorship!
-      ECTAtSchoolPeriods::Mentorship.new(ect).current_mentorship_period&.finish!(earliest_possible_start)
+      ECTAtSchoolPeriods::Mentorship.new(ect).current_or_next_mentorship_period&.finish!(earliest_possible_start)
     end
 
     def record_events!

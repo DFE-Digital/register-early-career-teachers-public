@@ -70,7 +70,7 @@ module API::Schools
     def where_updated_since(updated_since)
       return if ignore?(filter: updated_since)
 
-      scope.merge!(School.where(updated_at: updated_since..))
+      scope.merge!(School.where(api_updated_at: updated_since..))
     end
 
     def default_scope(contract_period_year)

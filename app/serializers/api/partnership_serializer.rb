@@ -31,10 +31,7 @@ class API::PartnershipSerializer < Blueprinter::Base
     end
 
     field :created_at
-
-    # TODO: Replace with `api_updated_at` when the field is available
-    field :updated_at
-    # field(:api_updated_at, name: :updated_at)
+    field(:api_updated_at, name: :updated_at)
   end
 
   identifier :api_id, name: :id

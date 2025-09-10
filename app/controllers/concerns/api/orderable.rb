@@ -22,10 +22,17 @@ module API
     def convert_sort_part_to_active_record_order(sort_part, model)
       extracted_sort_sign = /\A[+-]/.match?(sort_part) ? sort_part.slice!(0) : "+"
       sort_order = SORT_ORDER[extracted_sort_sign]
+      sort_attribute = transform_sort_attribute(sort_part)
 
-      return unless sort_part.in?(model.attribute_names)
+      return unless sort_attribute.in?(model.attribute_names)
 
-      "#{model.table_name}.#{sort_part} #{sort_order}"
+      "#{model.table_name}.#{sort_attribute} #{sort_order}"
+    end
+
+    def transform_sort_attribute(attribute)
+      return "api_updated_at" if attribute == "updated_at"
+
+      attribute
     end
   end
 end

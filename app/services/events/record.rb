@@ -372,6 +372,13 @@ module Events
       new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
     end
 
+    def self.record_teacher_email_updated_event!(old_email:, new_email:, author:, ect_at_school_period:, school:, teacher:, happened_at:)
+      event_type = :teacher_email_address_updated
+      heading = TransitionDescription.for("email address", from: old_email, to: new_email)
+
+      new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
     # Bulk Upload Events
 
     def self.record_bulk_upload_started_event!(author:, batch:)

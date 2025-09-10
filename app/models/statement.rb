@@ -1,10 +1,14 @@
 class Statement < ApplicationRecord
+  include DeclarativeTouch
+
   VALID_FEE_TYPES = %w[output service].freeze
 
   belongs_to :active_lead_provider
   has_many :adjustments
   has_one :lead_provider, through: :active_lead_provider
   has_one :contract_period, through: :active_lead_provider
+
+  touch -> { self }, timestamp_attribute: :api_updated_at
 
   def self.maximum_year = Date.current.year + 5
 

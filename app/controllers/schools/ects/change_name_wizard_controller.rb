@@ -1,20 +1,18 @@
 module Schools
   module ECTs
-    class ChangeNameWizardController < ECTs::ChangeECTWizardController
-      # @return [Schools::ECTs::ChangeNameWizard::Wizard]
-      def initialize_wizard
-        @wizard = ChangeNameWizard::Wizard.new(
-          store:,
-          current_step:,
-          ect_at_school_period:,
-          author: current_user,
-          step_params: params
-        )
+    class ChangeNameWizardController < SchoolsController
+      include Wizardable
+
+      def new
+        render @current_step
       end
 
-      # @return [SessionRepository]
-      def store
-        @store ||= SessionRepository.new(session:, form_key: :change_name_wizard)
+      def create
+        if @wizard.save!
+          redirect_to @wizard.next_step_path
+        else
+          render @current_step, status: :unprocessable_content
+        end
       end
     end
   end
