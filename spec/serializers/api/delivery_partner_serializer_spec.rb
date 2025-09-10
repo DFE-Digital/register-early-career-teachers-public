@@ -37,11 +37,14 @@ describe API::DeliveryPartnerSerializer, type: :serializer do
     end
 
     it "serializes `created_at`" do
+      delivery_partner.created_at = Time.utc(2023, 7, 1, 12, 0, 0)
+
       expect(attributes["created_at"]).to eq(delivery_partner.created_at.utc.rfc3339)
     end
 
-    it "serializes `updated_at`" do
-      delivery_partner.update!(api_updated_at: 3.days.ago)
+    it "serializes `api_updated_at`" do
+      delivery_partner.api_updated_at = Time.utc(2023, 7, 2, 12, 0, 0)
+
       expect(attributes["updated_at"]).to eq(delivery_partner.api_updated_at.utc.rfc3339)
     end
   end

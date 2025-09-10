@@ -50,14 +50,15 @@ describe API::PartnershipSerializer, type: :serializer do
     end
 
     it "serializes `created_at`" do
+      partnership.created_at = Time.utc(2023, 7, 1, 12, 0, 0)
+
       expect(attributes["created_at"]).to eq(partnership.created_at.utc.rfc3339)
     end
 
-    it "serializes `updated_at`" do
-      # TODO: Replace with `api_updated_at` when the field is available
-      expect(attributes["updated_at"]).to eq(partnership.updated_at.utc.rfc3339)
-      # partnership.update!(api_updated_at: 3.days.ago)
-      # expect(attributes["updated_at"]).to eq(partnership.api_updated_at.utc.rfc3339)
+    it "serializes `api_updated_at`" do
+      partnership.api_updated_at = Time.utc(2023, 7, 2, 12, 0, 0)
+
+      expect(attributes["updated_at"]).to eq(partnership.api_updated_at.utc.rfc3339)
     end
   end
 end
