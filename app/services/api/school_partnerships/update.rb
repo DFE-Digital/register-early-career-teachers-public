@@ -1,5 +1,5 @@
 module API::SchoolPartnerships
-  class UpdateResource
+  class Update
     include ActiveModel::Model
     include ActiveModel::Attributes
 
