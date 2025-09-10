@@ -48,8 +48,3 @@ review:
     class: PurgePendingInductionSubmissionsJob
     queue: default
     schedule: Every hour
-
-  refresh_all_metadata_job:
-    class: RefreshAllMetadataJob
-    queue: metadata
-    schedule: every day at 1am
