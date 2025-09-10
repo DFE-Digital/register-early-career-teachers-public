@@ -943,6 +943,37 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_email_updated_event" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, email: "old@example.com")
+    end
+
+    it "enqueues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_email_updated_event!(
+        old_email: ect_at_school_period.email,
+        new_email: "new@example.com",
+        author:,
+        ect_at_school_period:,
+        school: ect_at_school_period.school,
+        teacher:,
+        happened_at: 5.minutes.ago
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        teacher:,
+        school: ect_at_school_period.school,
+        ect_at_school_period:,
+        heading: "Email address changed from 'old@example.com' to 'new@example.com'",
+        event_type: :teacher_email_address_updated,
+        happened_at: 5.minutes.ago,
+        **author_params
+      )
+    end
+  end
+
   describe '.record_bulk_upload_started_event!' do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
 

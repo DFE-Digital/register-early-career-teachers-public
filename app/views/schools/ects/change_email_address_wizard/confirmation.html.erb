@@ -1,0 +1,27 @@
+<% page_data(
+    title: "Email address updated for #{@wizard.teacher_full_name}",
+    header: false
+) %>
+
+<%= govuk_panel(
+      title_text: <<~TXT
+        You have changed #{@wizard.teacher_full_name}’s email address to
+        #{@wizard.current_step.new_email}
+      TXT
+    ) %>
+
+<h2 class="govuk-heading-m">
+ What happens next?
+</h2>
+
+<p class="govuk-body">
+  We’ll tell the lead provider about this change.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Back to #{@wizard.teacher_full_name}’s details",
+        schools_ect_path(@wizard.ect_at_school_period),
+        no_visited_state: true
+      ) %>
+</p>

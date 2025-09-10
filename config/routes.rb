@@ -282,6 +282,14 @@ Rails.application.routes.draw do
         post "check-answers", action: :create
         get "confirmation", action: :new
       end
+
+      namespace :change_email_address_wizard, path: "change-email-address" do
+        get :edit, action: :new
+        post :edit, action: :create
+        get "check-answers", action: :new
+        post "check-answers", action: :create
+        get :confirmation, action: :new
+      end
     end
 
     resources :ects, only: %i[index show] do

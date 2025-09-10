@@ -22,7 +22,6 @@ private
   def build_school_periods
     periods = build_school_periods_from_induction_records.flatten
     periods = add_school_mentor_periods_to_school_periods(periods) if mentor?
-
     periods
   end
 

@@ -66,18 +66,16 @@ describe API::StatementSerializer, type: :serializer do
       end
     end
 
-    describe "timestamp serialization" do
-      it "serializes `created_at`" do
-        statement.created_at = Time.utc(2023, 7, 1, 12, 0, 0)
+    it "serializes `created_at`" do
+      statement.created_at = Time.utc(2023, 7, 1, 12, 0, 0)
 
-        expect(attributes["created_at"]).to eq("2023-07-01T12:00:00Z")
-      end
+      expect(attributes["created_at"]).to eq(statement.created_at.utc.rfc3339)
+    end
 
-      it "serializes `updated_at`" do
-        statement.updated_at = Time.utc(2023, 7, 2, 12, 0, 0)
+    it "serializes `api_updated_at`" do
+      statement.api_updated_at = Time.utc(2023, 7, 2, 12, 0, 0)
 
-        expect(attributes["updated_at"]).to eq("2023-07-02T12:00:00Z")
-      end
+      expect(attributes["updated_at"]).to eq(statement.api_updated_at.utc.rfc3339)
     end
   end
 end

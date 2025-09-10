@@ -47,4 +47,4 @@ teach_first__grain__2025 = find_lead_provider_delivery_partnership(delivery_part
   { school: ackley_bridge, lead_provider_delivery_partnership: ambition_institute__artisan__2023 },
   { school: mallory_towers, lead_provider_delivery_partnership: teach_first__grain__2022 },
   { school: brookfield_school, lead_provider_delivery_partnership: teach_first__grain__2022 },
-].each { |kwargs| SchoolPartnership.create!(**kwargs).tap { |sp| describe_school_partnership(sp) } }
+].each { |kwargs| FactoryBot.create(:school_partnership, **kwargs).tap { |sp| describe_school_partnership(sp) } }

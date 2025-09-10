@@ -18,6 +18,13 @@ describe Statement do
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another statement") }
   end
 
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:statement) }
+    let(:target) { instance }
+
+    it_behaves_like "a declarative touch model", timestamp_attribute: :api_updated_at
+  end
+
   describe "scopes" do
     describe ".with_status" do
       let!(:statement1) { FactoryBot.create(:statement, :open) }

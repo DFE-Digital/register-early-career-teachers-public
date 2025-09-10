@@ -10,10 +10,7 @@ end
   2025 => true,
   2026 => false
 }.each do |year, enabled|
-  ContractPeriod.create!(
-    year:,
-    started_on: Date.new(year, 6, 1),
-    finished_on: Date.new(year + 1, 5, 31),
-    enabled:
-  ).tap { |rp| describe_contract_period(rp) }
+  FactoryBot.create(:contract_period,
+                    year:,
+                    enabled:).tap { |cp| describe_contract_period(cp) }
 end

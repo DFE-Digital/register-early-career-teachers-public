@@ -1,0 +1,18 @@
+<% if response.body_ids_different? %>
+  <span class="body-ids-diff">
+    <%= govuk_list do %>
+      <% response.ecf_only_body_ids.each do |id| %>
+        <%= tag.li(tag.span(class: "diff red") { id }) %>
+      <% end %>
+    <% end %>
+
+    <%= govuk_list do %>
+      <% response.ecf_only_body_ids.each do |id| %>
+        <%= tag.li(tag.span(class: "diff green") { id }) %>
+      <% end %>
+    <% end %>
+  </span>
+<% else %>
+  <p class="no-differences govuk-!-font-size-27">No differences found 🙌</p>
+<% end %>
+

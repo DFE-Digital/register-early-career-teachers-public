@@ -80,5 +80,33 @@ module ParityCheck
 
       rates.sum.fdiv(rates.size).round
     end
+
+    def pretty_json(ugly_json)
+      JSON.pretty_generate(ugly_json)
+    end
+
+    def response_body_ids_different?
+      responses.any?(&:body_ids_different?)
+    end
+
+    def response_body_ids_matching?
+      !response_body_ids_different?
+    end
+
+    def ecf_response_body_ids
+      responses.map(&:ecf_body_ids).flatten.sort
+    end
+
+    def rect_response_body_ids
+      responses.map(&:rect_body_ids).flatten.sort
+    end
+
+    def ecf_only_response_body_ids
+      ecf_response_body_ids - rect_response_body_ids
+    end
+
+    def rect_only_response_body_ids
+      rect_response_body_ids - ecf_response_body_ids
+    end
   end
 end
