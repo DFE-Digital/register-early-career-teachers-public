@@ -1,0 +1,32 @@
+<% page_data(
+    title: "Working pattern updated for #{@wizard.teacher_full_name}",
+    header: false
+) %>
+
+<%= govuk_panel(
+      title_text: <<~TXT.squish
+        You have changed #{@wizard.teacher_full_name}’s working pattern to
+        #{@wizard.current_step.new_working_pattern.humanize.downcase}
+      TXT
+    ) %>
+
+<h2 class="govuk-heading-m">
+ What happens next?
+</h2>
+
+<%=
+  tag.p(class: "govuk-body") do
+    <<~TXT.squish
+      We’ll pass this information on so adjustments can be made to
+      #{@wizard.teacher_full_name}’s training if needed.
+    TXT
+  end
+%>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Back to #{@wizard.teacher_full_name}’s details",
+        schools_ect_path(@wizard.ect_at_school_period),
+        no_visited_state: true
+      ) %>
+</p>
