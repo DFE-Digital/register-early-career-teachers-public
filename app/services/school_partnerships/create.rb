@@ -17,11 +17,5 @@ module SchoolPartnerships
         end
       end
     end
-
-  private
-
-    def metadata_manager
-      @metadata_manager ||= Metadata::Manager.new
-    end
   end
 end
