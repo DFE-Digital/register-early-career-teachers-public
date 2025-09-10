@@ -1,4 +1,4 @@
-RSpec.describe APIRequestMiddleware do
+RSpec.describe API::RequestMiddleware do
   subject(:middleware) { described_class.new(mock_app) }
 
   let(:request) { Rack::MockRequest.new(middleware) }
