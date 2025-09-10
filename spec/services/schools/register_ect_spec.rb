@@ -253,6 +253,53 @@ RSpec.describe Schools::RegisterECT do
         new_period = teacher.ect_at_school_periods.find_by(school:)
         expect(new_period.started_on).to eq(started_on)
       end
+
+      context 'when transfer happens today' do
+        let(:started_on) { Date.current }
+
+        it 'closes ongoing periods that started on or before today' do
+          expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
+            ect_at_school_period: existing_period,
+            finished_on: started_on,
+            author:
+          ).and_call_original
+
+          service.register!
+
+          existing_period.reload
+          expect(existing_period.finished_on).to eq(started_on)
+        end
+      end
+
+      context 'when period 1 started before today and period 2 starts today' do
+        let!(:existing_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher:,
+            school: other_school,
+            started_on: 3.days.ago,
+            finished_on: nil
+          )
+        end
+        let(:started_on) { Date.current }
+
+        it 'closes the existing period that started before today when new period starts today' do
+          expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
+            ect_at_school_period: existing_period,
+            finished_on: started_on,
+            author:
+          ).and_call_original
+
+          service.register!
+
+          existing_period.reload
+          expect(existing_period.finished_on).to eq(started_on)
+
+          new_period = teacher.ect_at_school_periods.find_by(school:)
+          expect(new_period.started_on).to eq(started_on)
+          expect(new_period.finished_on).to be_nil
+        end
+      end
     end
   end
 end

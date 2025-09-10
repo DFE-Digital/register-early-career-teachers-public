@@ -117,7 +117,7 @@ module Schools
     def close_ongoing_ect_period!
       return unless teacher
 
-      ongoing_period = teacher.ect_at_school_periods.ongoing.started_before(started_on).first
+      ongoing_period = teacher.ect_at_school_periods.ongoing.started_on_or_before(started_on).first
       return unless ongoing_period
 
       ECTAtSchoolPeriods::Finish.new(
