@@ -27,7 +27,13 @@ module MermaidErd
 
         sanitized_name = sanitize(model.name)
         lines << "  #{sanitized_name} {"
-        model.columns.each { |column| lines << "    #{column.type} #{column.name}" }
+
+        model.columns.each do |column|
+          base_type = column.type.to_s
+          type = column.array ? "array[#{base_type}]" : base_type
+          lines << "    #{type} #{column.name}"
+        end
+
         lines << "  }"
 
         model.reflect_on_all_associations(:belongs_to).each do |assoc|

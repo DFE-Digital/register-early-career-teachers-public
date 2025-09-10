@@ -149,7 +149,7 @@ erDiagram
     date trs_qts_awarded_on
     datetime delete_at
     integer pending_induction_submission_batch_id
-    string error_messages
+    array[string] error_messages
     enum training_programme
   }
   PendingInductionSubmission }o--|| AppropriateBody : belongs_to
@@ -320,7 +320,7 @@ erDiagram
     integer id
     integer delivery_partner_id
     integer lead_provider_id
-    array[int] contract_period_years
+    array[integer] contract_period_years
     datetime created_at
     datetime updated_at
   }
