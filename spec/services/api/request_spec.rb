@@ -1,4 +1,4 @@
-RSpec.describe APIRequest do
+RSpec.describe API::Request do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:token) { API::TokenManager.create_lead_provider_api_token!(lead_provider:).token }
 

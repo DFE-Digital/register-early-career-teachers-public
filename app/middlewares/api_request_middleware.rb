@@ -25,10 +25,10 @@ class APIRequestMiddleware
 
     begin
       if trace_request?
-        # dfe_analytics_request_id is explicitly being sent to APIRequest as background jobs does not share the same locals of the main app
+        # dfe_analytics_request_id is explicitly being sent to API::Request as background jobs does not share the same locals of the main app
         # and dfe_analytics_request_id is used to set request_uuid value for analytics events
         request_uuid = RequestLocals.fetch(:dfe_analytics_request_id) { nil } # rubocop:disable Style/RedundantFetchBlock
-        APIRequest.send_persist_api_request(request_data.stringify_keys, response_data.stringify_keys, status, Time.zone.now.to_s, request_uuid)
+        API::Request.send_persist_api_request(request_data.stringify_keys, response_data.stringify_keys, status, Time.zone.now.to_s, request_uuid)
       end
     rescue StandardError => e
       Rails.logger.warn e.message

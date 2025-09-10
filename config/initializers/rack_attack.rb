@@ -75,5 +75,5 @@ ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start
   # Web requests are sent to BigQuery via a concern in the ApplicationController.
   # If Rack intercepts the request it won't reach the controller, so we need
   # to manually send web requests that are rate limited to BigQuery.
-  APIRequest.send_throttled_request(payload[:request].env)
+  API::Request.send_throttled_request(payload[:request].env)
 end
