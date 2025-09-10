@@ -1,4 +1,4 @@
-RSpec.describe API::SchoolPartnerships::CreateResource, type: :model do
+RSpec.describe API::SchoolPartnerships::Create, type: :model do
   let(:service) do
     described_class.new(
       contract_period_year:,

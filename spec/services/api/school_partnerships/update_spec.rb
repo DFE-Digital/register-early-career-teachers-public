@@ -1,4 +1,4 @@
-RSpec.describe API::SchoolPartnerships::UpdateResource, type: :model do
+RSpec.describe API::SchoolPartnerships::Update, type: :model do
   let(:service) do
     described_class.new(
       school_partnership_id:,
