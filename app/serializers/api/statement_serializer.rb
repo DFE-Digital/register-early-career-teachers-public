@@ -9,7 +9,7 @@ class API::StatementSerializer < Blueprinter::Base
     field :payment_date, datetime_format: "%Y-%m-%d"
     field(:paid?, name: :paid)
     field :created_at
-    field :updated_at
+    field(:api_updated_at, name: :updated_at)
   end
 
   identifier :api_id, name: :id

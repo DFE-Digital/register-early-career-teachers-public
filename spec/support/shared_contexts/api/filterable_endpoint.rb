@@ -39,17 +39,18 @@ end
 
 RSpec.shared_examples "a filter by updated_since endpoint" do
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
-  let!(:resource_updated_one_week_ago) { travel_to(1.week.ago) { create_resource(active_lead_provider:) } }
-  let!(:resource_updated_one_month_ago) { travel_to(1.month.ago) { create_resource(active_lead_provider:) } }
+  let!(:resource_updated_one_week_ago) { create_resource(active_lead_provider:).tap { it.update_columns(api_updated_at: 1.week.ago) } }
+  let!(:resource_updated_one_month_ago) { create_resource(active_lead_provider:).tap { it.update_columns(api_updated_at: 1.month.ago) } }
 
   before do
     # Resource updated more than two months ago should not be included.
-    travel_to(3.months.ago) { create_resource(active_lead_provider:) }
+    create_resource(active_lead_provider:).update_columns(api_updated_at: 3.months.ago)
   end
 
   it "returns only resource that have been updated since the provided date" do
     updated_since = 2.months.ago.utc.iso8601
     params = { filter: { updated_since: } }
+
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)
@@ -154,7 +155,7 @@ RSpec.shared_examples "a does not filter by updated_since endpoint" do
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
 
   it "returns the resources, ignoring the `updated_since`" do
-    updated_since_after_resource_updated_at = (resource.updated_at + 1.day).utc.iso8601
+    updated_since_after_resource_updated_at = (resource.api_updated_at + 1.day).utc.iso8601
     authenticated_api_get(path, params: { filter: { updated_since: updated_since_after_resource_updated_at } })
 
     expect(response).to have_http_status(:ok)

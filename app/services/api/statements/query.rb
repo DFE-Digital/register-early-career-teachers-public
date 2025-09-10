@@ -55,7 +55,7 @@ module API::Statements
     def where_updated_since(updated_since)
       return if ignore?(filter: updated_since)
 
-      @scope = scope.where(updated_at: updated_since..)
+      @scope = scope.where(api_updated_at: updated_since..)
     end
 
     def where_fee_type_is(fee_type)
