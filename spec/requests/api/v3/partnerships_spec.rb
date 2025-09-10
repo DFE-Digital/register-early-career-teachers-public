@@ -40,7 +40,7 @@ RSpec.describe "Partnerships API", type: :request do
 
   describe "#create" do
     let(:path) { api_v3_partnerships_path }
-    let(:service) { SchoolPartnerships::Create }
+    let(:service) { API::SchoolPartnerships::Create }
     let(:resource_type) { SchoolPartnership }
     let(:delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
     let(:school) { FactoryBot.create(:school, :eligible) }
@@ -71,7 +71,7 @@ RSpec.describe "Partnerships API", type: :request do
 
   describe "#update" do
     let(:path) { api_v3_partnership_path(resource.api_id) }
-    let(:service) { SchoolPartnerships::Update }
+    let(:service) { API::SchoolPartnerships::Update }
     let(:resource_type) { SchoolPartnership }
     let(:resource) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
