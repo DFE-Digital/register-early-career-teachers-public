@@ -4,7 +4,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:lead_provider_id) { lead_provider.id }
   let(:ect_at_school_period) { instance_double(ECTAtSchoolPeriod) }
-  let(:mentor_at_school_period) { instance_double(MentorAtSchoolPeriod) }
+  let(:mentor_at_school_period) { instance_double(MentorAtSchoolPeriod, started_on: Date.new(2023, 9, 1)) }
   let(:author) { instance_double(User) }
 
   let(:context) do
@@ -51,6 +51,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
   describe '#save' do
     let(:store) { OpenStruct.new(lead_provider_id: nil) }
     let(:assign_mentor_double) { instance_double(Schools::AssignMentor, assign!: true) }
+    let(:create_training_period_double) { instance_double(Schools::CreateMentorTrainingPeriod, create!: true) }
 
     let(:wizard) do
       instance_double(
@@ -64,10 +65,35 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
 
     before do
       allow(Schools::AssignMentor).to receive(:new).and_return(assign_mentor_double)
+      allow(Schools::CreateMentorTrainingPeriod).to receive(:new).and_return(create_training_period_double)
+      allow(LeadProvider).to receive(:find).with(lead_provider_id).and_return(lead_provider)
     end
 
     it 'persists the selected lead_provider_id to the store' do
       expect { step.save! }.to change(store, :lead_provider_id).from(nil).to(lead_provider_id)
+    end
+
+    it 'assigns the mentor to the ECT' do
+      step.save!
+
+      expect(Schools::AssignMentor).to have_received(:new).with(
+        ect: ect_at_school_period,
+        mentor: mentor_at_school_period,
+        author:
+      )
+      expect(assign_mentor_double).to have_received(:assign!)
+    end
+
+    it 'creates a training period for the mentor' do
+      step.save!
+
+      expect(Schools::CreateMentorTrainingPeriod).to have_received(:new).with(
+        mentor_at_school_period:,
+        lead_provider:,
+        author:,
+        started_on: Date.new(2023, 9, 1)
+      )
+      expect(create_training_period_double).to have_received(:create!)
     end
   end
 end

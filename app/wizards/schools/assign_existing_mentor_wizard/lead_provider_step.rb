@@ -24,7 +24,20 @@ module Schools
           author: wizard.author
         ).assign!
 
-        # TODO: Update the LP if there is a confirmed partnership, if not add an EOI
+        create_mentor_training_period!
+      end
+
+      def create_mentor_training_period!
+        Schools::CreateMentorTrainingPeriod.new(
+          mentor_at_school_period: wizard.context.mentor_at_school_period,
+          lead_provider: selected_lead_provider,
+          author: wizard.author,
+          started_on: wizard.context.mentor_at_school_period.started_on
+        ).create!
+      end
+
+      def selected_lead_provider
+        @selected_lead_provider ||= LeadProvider.find(lead_provider_id)
       end
     end
   end
