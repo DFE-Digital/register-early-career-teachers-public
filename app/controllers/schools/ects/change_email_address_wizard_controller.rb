@@ -1,6 +1,6 @@
 module Schools
   module ECTs
-    class ChangeNameWizardController < SchoolsController
+    class ChangeEmailAddressWizardController < SchoolsController
       include Wizardable
 
       def new
