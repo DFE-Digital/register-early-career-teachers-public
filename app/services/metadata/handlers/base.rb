@@ -23,7 +23,7 @@ module Metadata::Handlers
     end
 
     def track_changes!
-      @track_changes = true
+      @alert_on_changes = true
     end
 
   protected
@@ -41,7 +41,7 @@ module Metadata::Handlers
     end
 
     def alert_on_changes(metadata:, attributes:)
-      return unless @track_changes
+      return unless @alert_on_changes
 
       attrs = {
         class: metadata.class.name,
