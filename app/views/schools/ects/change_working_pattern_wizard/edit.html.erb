@@ -1,0 +1,36 @@
+<% page_data(
+  title: "Change #{@wizard.teacher_full_name}’s working pattern to #{@wizard.current_step.new_working_pattern.humanize.downcase}",
+  backlink_href: schools_ect_path(@wizard.ect_at_school_period)
+) %>
+
+<%=
+  tag.p(class: "govuk-body") do
+    <<~TXT.squish
+      You’re changing #{@wizard.teacher_full_name}’s working pattern from
+      #{@wizard.current_step.working_pattern.humanize.downcase} to
+      #{@wizard.current_step.new_working_pattern.humanize.downcase}.
+    TXT
+  end
+%>
+
+<p class="govuk-body">
+  We'll pass this information on so adjustments can be made to their training
+  if needed.
+</p>
+
+<%= form_with model: @wizard.current_step, url: @wizard.current_step_path do |form| %>
+  <%= form.hidden_field(
+        :working_pattern,
+        value: @wizard.current_step.new_working_pattern
+      ) %>
+
+  <%= form.govuk_submit "Change working pattern" %>
+
+  <p class="govuk-body">
+    <%= govuk_link_to(
+          "Cancel and go back to #{@wizard.teacher_full_name}’s details",
+          schools_ect_path(@wizard.ect_at_school_period),
+          no_visited_state: true
+        ) %>
+  </p>
+<% end %>
