@@ -4,7 +4,7 @@ module Schools
       extend ActiveSupport::Concern
 
       included do
-        before_action :set_current_step,
+        before_action :set_steps,
                       :set_store,
                       :set_ect_at_school_period,
                       :set_wizard
@@ -14,12 +14,14 @@ module Schools
 
         before_action -> { @wizard.reset },
                       if: -> { @current_step == :edit },
+                      unless: -> { @previous_step == :check_answers },
                       only: :new
 
       private
 
-        def set_current_step
+        def set_steps
           @current_step = request.path.split("/").last.underscore.to_sym
+          @previous_step = request.referer&.split("/")&.last&.underscore&.to_sym
         end
 
         def set_store
