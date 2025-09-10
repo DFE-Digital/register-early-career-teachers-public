@@ -17,7 +17,10 @@
 
   <%= form.govuk_email_field(
         :email,
-        label: {text: "What’s the correct email address for #{@wizard.teacher_full_name}"},
+        label: {
+          text: "What’s the correct email address for #{@wizard.teacher_full_name}?",
+          size: "m"
+        },
         value: @wizard.current_step.email
       ) %>
 
