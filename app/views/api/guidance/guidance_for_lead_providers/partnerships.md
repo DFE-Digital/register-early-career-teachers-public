@@ -38,7 +38,7 @@ Each partnership record shows one school induction tutor (name and email):
 
 ### Expression of interest records 
 
-The `expression_of_interest` field in the `GET /schools` and `GET /schools/{id}` endpoints shows lead providers whether a school has any participants registered with them. 
+The `expression_of_interest` field in the `GET /schools` and `GET /schools/{id}` endpoints shows lead providers whether a school has any participants registered with them for that cohort. 
 
 Schools now choose lead providers per participant, so this field reflects individual registrations, not a school-wide choice. A school may therefore show `expression_of_interest = TRUE` for more than one lead provider. 
 
