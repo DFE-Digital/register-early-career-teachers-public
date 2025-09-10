@@ -112,6 +112,26 @@ RSpec.describe MermaidErd::Generator do
         expect(File.read(output_path)).to include('array[string] tags')
       end
     end
+
+    context 'when the model has a enum array column' do
+      before do
+        ActiveRecord::Base.connection.create_enum('declaration_types', %w[started retained-1 retained-2 completed])
+        ActiveRecord::Base.connection.create_table(:test_enum_array_models, force: true) do |t|
+          t.enum 'allowed_declaration_types', default: %w[started retained-1 retained-2 completed], array: true, enum_type: 'declaration_types'
+        end
+        define_test_model(model_name: 'TestEnumArrayModel', table_name: 'test_enum_array_models')
+      end
+
+      after do
+        ActiveRecord::Base.connection.drop_table(:test_enum_array_models, if_exists: true)
+        ActiveRecord::Base.connection.execute('DROP TYPE IF EXISTS declaration_types')
+      end
+
+      it 'renders an enum array as array[enum]' do
+        generator.generate
+        expect(File.read(output_path)).to include('array[enum] allowed_declaration_types')
+      end
+    end
   end
 
   def define_test_model(model_name:, table_name:)
