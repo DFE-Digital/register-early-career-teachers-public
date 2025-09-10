@@ -1,16 +1,20 @@
 module Metadata
   class Manager
-    def refresh_metadata!(objects)
+    def refresh_metadata!(objects, track_changes: false)
       return if Thread.current[:skip_metadata_updates]
 
-      Array.wrap(objects).each { resolve_handler(it).refresh_metadata! }
+      Array.wrap(objects).each do
+        handler = resolve_handler(it)
+        handler.track_changes! if track_changes
+        handler.refresh_metadata!
+      end
     end
 
     class << self
-      def refresh_all_metadata!(async: false)
+      def refresh_all_metadata!(async: false, track_changes: false)
         return if Thread.current[:skip_metadata_updates]
 
-        Resolver.all_handlers.each { it.refresh_all_metadata!(async:) }
+        Resolver.all_handlers.each { it.refresh_all_metadata!(async:, track_changes:) }
       end
 
       def destroy_all_metadata!
