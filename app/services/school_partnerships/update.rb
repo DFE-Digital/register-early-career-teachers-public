@@ -13,7 +13,8 @@ module SchoolPartnerships
           previous_delivery_partner = school_partnership.delivery_partner
           school_partnership.update!(lead_provider_delivery_partnership:)
           modifications = school_partnership.saved_changes
-          Events::Record.record_school_partnership_updated_event!(author: Events::LeadProviderAPIAuthor.new, school_partnership:, previous_delivery_partner:, modifications:)
+          lead_provider = school_partnership.lead_provider
+          Events::Record.record_school_partnership_updated_event!(author: Events::LeadProviderAPIAuthor.new(lead_provider:), school_partnership:, previous_delivery_partner:, modifications:)
         end
       end
     end
