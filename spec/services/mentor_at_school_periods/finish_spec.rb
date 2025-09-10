@@ -62,5 +62,26 @@ describe MentorAtSchoolPeriods::Finish do
 
       expect(training_periods_finish).to have_received(:finish!).once
     end
+
+    context 'when there are no ongoing mentor at school periods' do
+      subject { MentorAtSchoolPeriods::Finish.new(teacher: teacher_with_no_periods, finished_on:, author:) }
+
+      let(:teacher_with_no_periods) { FactoryBot.create(:teacher) }
+      let(:school) { FactoryBot.create(:school) }
+      let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
+
+      it 'does not record any events when there are no ongoing periods to finish' do
+        expect(Events::Record).not_to receive(:record_teacher_left_school_as_mentor!)
+
+        subject.finish_existing_at_school_periods!
+      end
+
+      it 'does not call any finishing services when there are no ongoing periods' do
+        expect(MentorshipPeriods::Finish).not_to receive(:new)
+        expect(TrainingPeriods::Finish).not_to receive(:mentor_training)
+
+        subject.finish_existing_at_school_periods!
+      end
+    end
   end
 end
