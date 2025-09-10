@@ -49,6 +49,20 @@ describe API::SchoolPartnershipSerializer, type: :serializer do
       expect(attributes["induction_tutor_email"]).to eq(school.induction_tutor_email)
     end
 
+    describe "participants_currently_training" do
+      subject { attributes["participants_currently_training"] }
+
+      context "when there are no `participants_currently_training`" do
+        it { is_expected.to eq(0) }
+      end
+
+      context "when there are `participants_currently_training`" do
+        before { FactoryBot.create_list(:training_period, 3, :ongoing, school_partnership: partnership) }
+
+        it { is_expected.to eq(3) }
+      end
+    end
+
     it "serializes `created_at`" do
       partnership.created_at = Time.utc(2023, 7, 1, 12, 0, 0)
 

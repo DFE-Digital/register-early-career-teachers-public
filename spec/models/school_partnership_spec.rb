@@ -23,10 +23,29 @@ describe SchoolPartnership do
     it { is_expected.to belong_to(:lead_provider_delivery_partnership).inverse_of(:school_partnerships) }
     it { is_expected.to belong_to(:school) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_many(:ongoing_training_periods).class_name("TrainingPeriod") }
     it { is_expected.to have_one(:active_lead_provider).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
+
+    describe "#ongoing_training_periods" do
+      subject { instance.ongoing_training_periods }
+
+      let(:instance) { FactoryBot.create(:school_partnership) }
+      let(:ongoing_training_period) { FactoryBot.create(:training_period, :ongoing, school_partnership: instance) }
+
+      before do
+        # Different lead provider
+        FactoryBot.create(:training_period, :ongoing, :with_school_partnership)
+        # Not on-going today
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 1.month.ago)
+        FactoryBot.create(:training_period, school_partnership: instance, ect_at_school_period:, started_on: 5.months.ago, finished_on: 2.months.ago)
+        FactoryBot.create(:training_period, school_partnership: instance, started_on: 1.week.from_now, finished_on: nil)
+      end
+
+      it { is_expected.to contain_exactly(ongoing_training_period) }
+    end
   end
 
   describe "validations" do

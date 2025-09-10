@@ -38,7 +38,7 @@ module API::SchoolPartnerships
     def preload_associations(results)
       results
         .strict_loading
-        .includes(:delivery_partner, :active_lead_provider, school: :gias_school)
+        .includes(:delivery_partner, :active_lead_provider, :ongoing_training_periods, school: :gias_school)
     end
 
     def where_lead_provider_is(lead_provider_id)
