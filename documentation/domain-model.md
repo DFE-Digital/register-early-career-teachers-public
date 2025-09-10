@@ -320,7 +320,7 @@ erDiagram
     integer id
     integer delivery_partner_id
     integer lead_provider_id
-    array[int] contract_period_years
+    integer contract_period_years
     datetime created_at
     datetime updated_at
   }
