@@ -17,7 +17,8 @@ module Admin
         from = delivery_partner.name
 
         ActiveRecord::Base.transaction do
-          delivery_partner.update!(name: normalized)
+          delivery_partner.name = normalized
+          delivery_partner.save!(context: :rename)
 
           Events::Record.record_delivery_partner_name_changed_event!(
             delivery_partner:,
