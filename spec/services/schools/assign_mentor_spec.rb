@@ -49,6 +49,79 @@ RSpec.describe Schools::AssignMentor do
       end
     end
 
+    describe 'latest_possible_finish' do
+      context 'when neither ECT nor mentor are scheduled to leave' do
+        it 'sets finished_on to nil' do
+          service.assign!
+
+          expect(service.mentorship_period.finished_on).to be_nil
+        end
+      end
+
+      context 'when only the ECT is scheduled to leave' do
+        let(:ect_finish_date) { 2.months.from_now.to_date }
+        let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: mentee_started_on, finished_on: ect_finish_date) }
+
+        it 'sets finished_on to the ECT finish date' do
+          service.assign!
+
+          expect(service.mentorship_period.finished_on).to eq(ect_finish_date)
+        end
+      end
+
+      context 'when only the mentor is scheduled to leave' do
+        let(:mentor_finish_date) { 3.months.from_now.to_date }
+        let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: mentor_finish_date) }
+
+        it 'sets finished_on to the mentor finish date' do
+          service.assign!
+
+          expect(service.mentorship_period.finished_on).to eq(mentor_finish_date)
+        end
+      end
+
+      context 'when both ECT and mentor are scheduled to leave' do
+        let(:ect_finish_date) { 2.months.from_now.to_date }
+        let(:mentor_finish_date) { 3.months.from_now.to_date }
+        let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: mentee_started_on, finished_on: ect_finish_date) }
+        let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: mentor_finish_date) }
+
+        it 'sets finished_on to the earliest finish date' do
+          service.assign!
+
+          expect(service.mentorship_period.finished_on).to eq(ect_finish_date)
+        end
+      end
+
+      context 'when both ECT and mentor are scheduled to leave and mentor leaves first' do
+        let(:ect_finish_date) { 3.months.from_now.to_date }
+        let(:mentor_finish_date) { 2.months.from_now.to_date }
+        let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: mentee_started_on, finished_on: ect_finish_date) }
+        let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: mentor_finish_date) }
+
+        it 'sets finished_on to the mentor finish date' do
+          service.assign!
+
+          expect(service.mentorship_period.finished_on).to eq(mentor_finish_date)
+        end
+      end
+    end
+
+    describe 'assigning mentor to ECT who is leaving' do
+      let(:ect_finish_date) { 2.months.from_now.to_date }
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: mentee_started_on, finished_on: ect_finish_date) }
+
+      it 'successfully creates mentorship period without validation errors' do
+        expect { service.assign! }.not_to raise_error
+        expect(service.mentorship_period).to be_persisted
+        expect(service.mentorship_period.finished_on).to eq(ect_finish_date)
+      end
+
+      it 'does not raise validation errors' do
+        expect { service.assign! }.not_to raise_error
+      end
+    end
+
     describe 'events' do
       let(:mentorship_period) { MentorshipPeriod.last }
 
