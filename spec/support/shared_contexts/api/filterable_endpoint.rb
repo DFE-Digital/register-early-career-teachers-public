@@ -101,7 +101,7 @@ RSpec.shared_examples "a filter by a single cohort (contract_period year) endpoi
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render([resource.reload], root: "data", **serializer_options))
   end
 
   it "returns no resources if the specified cohort is invalid" do
