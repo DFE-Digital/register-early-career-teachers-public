@@ -1,6 +1,6 @@
 RSpec.describe InductionPeriod do
-  it { is_expected.to be_a_kind_of(Interval) }
-  it { is_expected.to be_a_kind_of(SharedInductionPeriodValidation) }
+  it { is_expected.to be_a(Interval) }
+  it { is_expected.to be_a(SharedInductionPeriodValidation) }
 
   it_behaves_like 'an induction period'
 
@@ -23,7 +23,7 @@ RSpec.describe InductionPeriod do
       let(:finished_on_message) { 'End date cannot overlap another induction period' }
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      context '#teacher_distinct_period' do
+      describe '#teacher_distinct_period' do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             before do

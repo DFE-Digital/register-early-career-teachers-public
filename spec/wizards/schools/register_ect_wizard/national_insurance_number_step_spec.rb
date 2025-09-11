@@ -130,7 +130,7 @@ describe Schools::RegisterECTWizard::NationalInsuranceNumberStep, type: :model d
     end
   end
 
-  context '#save!' do
+  describe '#save!' do
     context 'when the step is not valid' do
       subject { wizard.current_step }
 

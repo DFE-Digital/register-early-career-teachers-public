@@ -36,7 +36,7 @@ describe Events::DescribeModifications do
   end
 
   context 'when a date is changed' do
-    it %(it is formatted in the GOV.UK short date style: Closed on set to '24 Jan 2025') do
+    it %is formatted in the GOV.UK short date style: Closed on set to '24 Jan 2025') do
       school = FactoryBot.create(:gias_school, closed_on: nil)
       school.assign_attributes(closed_on: Date.new(2025, 1, 24))
       description_of_changes = Events::DescribeModifications.new(school.changes).describe

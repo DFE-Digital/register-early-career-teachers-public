@@ -174,7 +174,7 @@ describe Teacher do
           expect(results).to include(target)
         end
 
-        it 'matches when names and search terms both have accents ' do
+        it 'matches when names and search terms both have accents' do
           results = Teacher.search('Stëvìê Kènårbän')
 
           expect(results).to include(target)

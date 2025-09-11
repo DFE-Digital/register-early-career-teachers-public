@@ -6,13 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 2
-# This cop supports safe autocorrection (--autocorrect).
-FactoryBot/FactoryClassName:
-  Exclude:
-    - 'spec/factories/gias/school_factory.rb'
-    - 'spec/factories/gias/school_link_factory.rb'
-
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AutoCorrect, AllowUnusedKeywordArguments, IgnoreEmptyMethods, IgnoreNotImplementedMethods, NotImplementedExceptions.
@@ -36,51 +29,18 @@ RSpec/ChangeByZero:
   Exclude:
     - 'spec/services/appropriate_bodies/claim_an_ect/register_ect_spec.rb'
 
-# Offense count: 4
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: be_a, be_kind_of
-RSpec/ClassCheck:
-  Exclude:
-    - 'spec/models/induction_period_spec.rb'
-    - 'spec/models/pending_induction_submission_spec.rb'
-
-# Offense count: 41
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/ContextMethod:
-  Enabled: false
-
-# Offense count: 177
+# Offense count: 136
 # Configuration parameters: Prefixes, AllowedPatterns.
 # Prefixes: when, with, without
 RSpec/ContextWording:
   Enabled: false
 
-# Offense count: 233
+# Offense count: 229
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: SkipBlocks, EnforcedStyle, OnlyStaticConstants.
 # SupportedStyles: described_class, explicit
 RSpec/DescribedClass:
   Enabled: false
-
-# Offense count: 4
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: CustomTransform, IgnoredWords, DisallowedExamples.
-# DisallowedExamples: works
-RSpec/ExampleWording:
-  Exclude:
-    - 'spec/jobs/begin_ect_induction_job_spec.rb'
-    - 'spec/jobs/fail_ect_induction_job_spec.rb'
-    - 'spec/jobs/pass_ect_induction_job_spec.rb'
-    - 'spec/services/events/describe_modifications_spec.rb'
-
-# Offense count: 3
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/ExcessiveDocstringSpacing:
-  Exclude:
-    - 'spec/migration/builders/ect/school_periods_spec.rb'
-    - 'spec/models/teacher_spec.rb'
-    - 'spec/validators/teacher_reference_number_validator_spec.rb'
 
 # Offense count: 20
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -98,16 +58,6 @@ RSpec/ExpectChange:
     - 'spec/migration/legacy_data_importer_spec.rb'
     - 'spec/services/sessions/one_time_password_spec.rb'
 
-# Offense count: 6
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: single_line_only, single_statement_only, disallow, require_implicit
-RSpec/ImplicitSubject:
-  Exclude:
-    - 'spec/models/gias/school_spec.rb'
-    - 'spec/models/school_spec.rb'
-    - 'spec/wizards/schools/register_mentor_wizard/shared_examples/review_mentor_details_step.rb'
-
 # Offense count: 327
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
 RSpec/IndexedLet:
@@ -117,15 +67,7 @@ RSpec/IndexedLet:
 RSpec/LetSetup:
   Enabled: false
 
-# Offense count: 18
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/MatchArray:
-  Exclude:
-    - 'spec/models/concerns/interval_spec.rb'
-    - 'spec/models/ect_at_school_period_spec.rb'
-    - 'spec/models/mentor_at_school_period_spec.rb'
-
-# Offense count: 946
+# Offense count: 951
 # Configuration parameters: EnforcedStyle, IgnoreSharedExamples.
 # SupportedStyles: always, named_only
 RSpec/NamedSubject:

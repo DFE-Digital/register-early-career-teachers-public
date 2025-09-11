@@ -27,7 +27,7 @@ RSpec.describe TeacherReferenceNumberValidator, type: :model do
                     { trn: "", error_message: "Enter the teacher reference number (TRN)" }]
 
     invalid_trns.each do |item|
-      it "adds an error for trn - #{item[:trn]} " do
+      it "adds an error for trn - #{item[:trn]}" do
         subject = test_class.new(trn: item[:trn])
         subject.valid?
 

@@ -63,7 +63,7 @@ describe Builders::ECT::SchoolPeriods do
       end
     end
 
-    context "when the school period dates cause a validation error " do
+    context "when the school period dates cause a validation error" do
       let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 2.months.ago.to_date, end_date: 6.months.ago.to_date) }
 
       it "creates a TeacherMigrationFailure record" do

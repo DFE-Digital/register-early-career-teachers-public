@@ -34,7 +34,7 @@ describe MentorAtSchoolPeriod do
       let(:teacher) { FactoryBot.create(:teacher) }
       let(:school) { FactoryBot.create(:school) }
 
-      context '#teacher_distinct_period' do
+      describe '#teacher_distinct_period' do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             before do
@@ -87,13 +87,13 @@ describe MentorAtSchoolPeriod do
 
     describe ".for_school" do
       it "returns mentor periods only for the specified school" do
-        expect(described_class.for_school(school_2.id)).to match_array([period_2])
+        expect(described_class.for_school(school_2.id)).to contain_exactly(period_2)
       end
     end
 
     describe ".for_teacher" do
       it "returns mentor periods only for the specified teacher" do
-        expect(described_class.for_teacher(teacher.id)).to match_array([period_1, period_2, period_3])
+        expect(described_class.for_teacher(teacher.id)).to contain_exactly(period_1, period_2, period_3)
       end
     end
 
@@ -105,7 +105,7 @@ describe MentorAtSchoolPeriod do
       end
 
       it "returns mentor in training periods only for the specified contract period" do
-        expect(described_class.with_partnerships_for_contract_period(training_period.school_partnership.contract_period.id)).to match_array([period_2])
+        expect(described_class.with_partnerships_for_contract_period(training_period.school_partnership.contract_period.id)).to contain_exactly(period_2)
       end
     end
 
@@ -120,7 +120,7 @@ describe MentorAtSchoolPeriod do
       end
 
       it "returns mentor in training periods only for the specified contract period" do
-        expect(described_class.with_expressions_of_interest_for_contract_period(training_period.expression_of_interest.contract_period.id)).to match_array([period_2])
+        expect(described_class.with_expressions_of_interest_for_contract_period(training_period.expression_of_interest.contract_period.id)).to contain_exactly(period_2)
       end
     end
 
@@ -135,7 +135,7 @@ describe MentorAtSchoolPeriod do
       end
 
       it "returns mentor in training periods only for the specified contract period and lead provider" do
-        expect(described_class.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to match_array([period_2])
+        expect(described_class.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to contain_exactly(period_2)
       end
     end
   end
@@ -149,7 +149,7 @@ describe MentorAtSchoolPeriod do
     let!(:mentor_at_school_period) { FactoryBot.build(:mentor_at_school_period, teacher:, school: school_2, started_on: "2022-01-01", finished_on: "2023-01-01") }
 
     it "returns mentor periods for the specified instance's teacher and school excluding the instance" do
-      expect(mentor_at_school_period.siblings).to match_array([period_2])
+      expect(mentor_at_school_period.siblings).to contain_exactly(period_2)
     end
   end
 end

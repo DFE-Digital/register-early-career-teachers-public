@@ -36,7 +36,7 @@ RSpec.describe FailECTInductionJob, type: :job do
         )
       end
 
-      it "it sets the delete_at timestamp to 24 hours in the future" do
+      it "sets the delete_at timestamp to 24 hours in the future" do
         freeze_time do
           described_class.perform_now(
             trn:,

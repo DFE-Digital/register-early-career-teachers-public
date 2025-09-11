@@ -220,7 +220,7 @@ describe ECTAtSchoolPeriod do
       let(:finished_on_message) { 'End date cannot overlap another Teacher ECT period' }
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      context '#teacher_distinct_period' do
+      describe '#teacher_distinct_period' do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             before do
@@ -272,7 +272,7 @@ describe ECTAtSchoolPeriod do
 
     describe ".for_teacher" do
       it "returns ect periods only for the specified teacher" do
-        expect(described_class.for_teacher(teacher.id)).to match_array([period_1, period_2, period_3])
+        expect(described_class.for_teacher(teacher.id)).to contain_exactly(period_1, period_2, period_3)
       end
     end
 
@@ -284,7 +284,7 @@ describe ECTAtSchoolPeriod do
       end
 
       it "returns ect in training periods only for the specified contract period" do
-        expect(described_class.with_partnerships_for_contract_period(training_period.school_partnership.contract_period.id)).to match_array([period_2])
+        expect(described_class.with_partnerships_for_contract_period(training_period.school_partnership.contract_period.id)).to contain_exactly(period_2)
       end
     end
 
@@ -299,7 +299,7 @@ describe ECTAtSchoolPeriod do
       end
 
       it "returns ect in training periods only for the specified contract period" do
-        expect(described_class.with_expressions_of_interest_for_contract_period(training_period.expression_of_interest.contract_period.id)).to match_array([period_2])
+        expect(described_class.with_expressions_of_interest_for_contract_period(training_period.expression_of_interest.contract_period.id)).to contain_exactly(period_2)
       end
     end
 
@@ -314,7 +314,7 @@ describe ECTAtSchoolPeriod do
       end
 
       it "returns ect in training periods only for the specified contract period and lead provider" do
-        expect(described_class.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to match_array([period_2])
+        expect(described_class.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to contain_exactly(period_2)
       end
     end
   end
@@ -329,7 +329,7 @@ describe ECTAtSchoolPeriod do
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: '2022-01-01', finished_on: period_1.started_on) }
 
     it "returns ect periods only for the specified instance's teacher excluding the instance" do
-      expect(ect_at_school_period.siblings).to match_array([period_1, period_2, period_3])
+      expect(ect_at_school_period.siblings).to contain_exactly(period_1, period_2, period_3)
     end
   end
 end

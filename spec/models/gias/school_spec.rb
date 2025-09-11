@@ -47,7 +47,7 @@ describe GIAS::School do
 
   describe "enums" do
     it {
-      is_expected.to define_enum_for(:funding_eligibility)
+      expect(subject).to define_enum_for(:funding_eligibility)
                        .with_values(eligible_for_fip: "eligible_for_fip",
                                     eligible_for_cip: "eligible_for_cip",
                                     ineligible: "ineligible")
@@ -57,7 +57,7 @@ describe GIAS::School do
     }
 
     it {
-      is_expected.to define_enum_for(:status)
+      expect(subject).to define_enum_for(:status)
                        .with_values(open: "open",
                                     closed: "closed",
                                     proposed_to_close: "proposed_to_close",
@@ -81,7 +81,7 @@ describe GIAS::School do
     it { is_expected.to validate_numericality_of(:establishment_number).only_integer.allow_nil }
 
     it {
-      is_expected.to validate_inclusion_of(:type_name)
+      expect(subject).to validate_inclusion_of(:type_name)
                        .in_array(GIAS::Types::ALL_TYPES)
                        .with_message("is not a valid school type")
     }
