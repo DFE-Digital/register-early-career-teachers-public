@@ -84,10 +84,10 @@ module RegisterEarlyCareerTeachers
       ActionView::Base.default_form_builder = GOVUKDesignSystemFormBuilder::FormBuilder
     end
 
-    Dir.glob(Rails.root.join("app/middlewares/*.rb")).sort.each do |file|
+    Dir.glob(Rails.root.join("app/middlewares/**/*.rb")).sort.each do |file|
       require file
     end
 
-    config.middleware.use APIRequestMiddleware
+    config.middleware.use API::RequestMiddleware
   end
 end

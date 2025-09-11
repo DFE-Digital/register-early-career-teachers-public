@@ -76,7 +76,7 @@ module API
       end
 
       def to_json(obj)
-        API::PartnershipSerializer.render(obj, root: "data")
+        API::SchoolPartnershipSerializer.render(obj, root: "data")
       end
     end
   end
