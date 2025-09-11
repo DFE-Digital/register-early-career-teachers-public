@@ -54,9 +54,22 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
     context "when the mentor is eligible to mentor the ect at the same school" do
       subject { described_class.new(ect:, mentor_id: mentor.id) }
 
-      let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+      let(:ect) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          :ongoing,
+          started_on: 3.days.ago
+        )
+      end
+      let(:mentor) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          :ongoing,
+          school: ect.school,
+          started_on: 4.weeks.ago
+        )
+      end
       let(:author) { FactoryBot.create(:school_user, school_urn: ect.school.urn) }
-      let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect.school) }
 
       it 'adds a new mentorship for the ect and the mentor starting today' do
         expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to be_nil
