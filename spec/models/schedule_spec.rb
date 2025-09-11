@@ -15,5 +15,13 @@ describe Schedule do
 
       expect(subject).to validate_inclusion_of(:identifier).in_array(valid_identifiers).with_message(message)
     end
+
+    it 'ensures uniqueness of contract years and identifiers' do
+      original = FactoryBot.create(:schedule)
+      duplicate = original.dup
+
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors.messages.fetch(:identifier)).to include('Can be used once per contract period')
+    end
   end
 end

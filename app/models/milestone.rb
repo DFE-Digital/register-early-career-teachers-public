@@ -18,4 +18,10 @@ class Milestone < ApplicationRecord
   validates :schedule_id, presence: { message: 'Choose a schedule' }
   validates :start_date, presence: { message: 'Enter a start date' }
   validates :payment_date, presence: { message: 'Enter a payment date' }
+
+  validates :declaration_type,
+            uniqueness: {
+              message: 'Can be used once per schedule',
+              scope: :schedule_id
+            }
 end
