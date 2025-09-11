@@ -104,11 +104,11 @@ RSpec.describe "Admin: Change delivery partner name" do
 
   def then_i_should_see_the_change_name_form
     expect(page.get_by_role("heading", name: "Change delivery partner name")).to be_visible
-    expect(page.get_by_label("Delivery partner name")).to be_visible
+    expect(page.get_by_label("New name")).to be_visible
   end
 
   def when_i_change_the_name_to(text)
-    page.get_by_label("Delivery partner name").fill(text)
+    page.get_by_label("New name").fill(text)
     page.get_by_role("button", name: "Save changes").click
   end
 
