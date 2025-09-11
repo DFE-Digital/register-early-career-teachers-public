@@ -47,8 +47,20 @@ describe ECTAtSchoolPeriod do
     end
 
     describe '.current_or_next_mentorship_period' do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+      let(:mentor_at_school_period) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          :ongoing,
+          started_on: mentorship_started_on - 5.days
+        )
+      end
+      let(:ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          :ongoing,
+          started_on: mentorship_started_on - 3.days
+        )
+      end
       let(:mentorship_started_on) { 3.weeks.ago }
       let(:mentorship_finished_on) { nil }
 
