@@ -57,6 +57,10 @@ migration:
   <<: *default
   <<: *production_default
 
+paritycheck:
+  <<: *default
+  <<: *production_default
+
 production:
   <<: *default
   <<: *production_default
