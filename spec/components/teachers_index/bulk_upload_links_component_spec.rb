@@ -29,7 +29,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
     end
   end
 
-  context 'with existing bulk claim submissions', skip: 'TODO' do
+  context 'with existing bulk claim submissions' do
     before do
       FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:)
       render_inline(component)

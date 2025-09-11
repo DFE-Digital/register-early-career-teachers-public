@@ -379,6 +379,17 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
     end
 
+    def self.record_teacher_working_pattern_updated_event!(old_working_pattern:, new_working_pattern:, author:, ect_at_school_period:, school:, teacher:, happened_at:)
+      event_type = :teacher_working_pattern_updated
+      heading = TransitionDescription.for(
+        "working pattern",
+        from: old_working_pattern.humanize.downcase,
+        to: new_working_pattern.humanize.downcase
+      )
+
+      new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
     # Bulk Upload Events
 
     def self.record_bulk_upload_started_event!(author:, batch:)

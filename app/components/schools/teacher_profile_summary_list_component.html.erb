@@ -41,5 +41,11 @@
   <% list.with_row do |row| %>
     <% row.with_key { "Working pattern" } %>
     <% row.with_value { @ect.working_pattern&.humanize } %>
+    <% row.with_action(
+        text: "Change",
+        visually_hidden_text: "working pattern",
+        href: schools_ects_change_working_pattern_wizard_edit_path(@ect),
+        classes: "govuk-link--no-visited-state"
+      ) %>
   <% end %>
 <% end %>

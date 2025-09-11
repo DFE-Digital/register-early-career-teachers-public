@@ -13,7 +13,8 @@ module SchoolPartnerships
           school:,
           lead_provider_delivery_partnership:
         ).tap do |school_partnership|
-          Events::Record.record_school_partnership_created_event!(author: Events::LeadProviderAPIAuthor.new, school_partnership:)
+          lead_provider = school_partnership.lead_provider
+          Events::Record.record_school_partnership_created_event!(author: Events::LeadProviderAPIAuthor.new(lead_provider:), school_partnership:)
         end
       end
     end
