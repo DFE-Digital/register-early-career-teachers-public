@@ -47,20 +47,8 @@ describe ECTAtSchoolPeriod do
     end
 
     describe '.current_or_next_mentorship_period' do
-      let(:mentor_at_school_period) do
-        FactoryBot.create(
-          :mentor_at_school_period,
-          :ongoing,
-          started_on: mentorship_started_on - 5.days
-        )
-      end
-      let(:ect_at_school_period) do
-        FactoryBot.create(
-          :ect_at_school_period,
-          :ongoing,
-          started_on: mentorship_started_on - 3.days
-        )
-      end
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: nil) }
       let(:mentorship_started_on) { 3.weeks.ago }
       let(:mentorship_finished_on) { nil }
 
@@ -105,7 +93,7 @@ describe ECTAtSchoolPeriod do
         let(:mentorship_finished_on) { 1.week.ago }
 
         it 'returns nil' do
-          expect(ect_at_school_period.current_or_next_training_period).to be_nil
+          expect(ect_at_school_period.current_or_next_mentorship_period).to be_nil
         end
       end
     end
