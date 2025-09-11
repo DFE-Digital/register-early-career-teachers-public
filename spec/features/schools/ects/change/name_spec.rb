@@ -36,7 +36,7 @@ RSpec.describe "Changing an ECT's name" do
     then_i_should_be_taken_to_the_check_answers_page
     and_i_click_the_back_link
     then_i_should_see_the_change_name_page
-    then_the_form_should_be_reset
+    and_the_name_field_should_be('Professor Sprout')
     when_i_change_the_name_to('Sister Mildred')
     and_i_click_the_continue_button
     and_i_click_the_confirmation_button
@@ -136,5 +136,9 @@ RSpec.describe "Changing an ECT's name" do
 
   def then_the_form_should_be_reset
     expect(page.locator('#edit-name-field').input_value).to eq('Miriam Margolyes')
+  end
+
+  def and_the_name_field_should_be(name)
+    expect(page.locator('#edit-name-field').input_value).to eq(name)
   end
 end

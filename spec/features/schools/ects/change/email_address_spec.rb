@@ -18,7 +18,12 @@ describe "School user can change ECTs email address" do
     and_i_continue
     then_i_am_asked_to_check_and_confirm_the_change
 
-    when_i_confirm_the_change
+    when_i_navigate_back_to_the_form
+    and_i_see_the_change_email_form
+    and_the_email_address_is_the_proposed_change
+
+    when_i_continue
+    and_i_confirm_the_change
     then_i_see_the_confirmation_message
   end
 
@@ -69,14 +74,26 @@ private
     page.get_by_role("button", name: "Continue").click
   end
 
+  def when_i_continue = and_i_continue
+
   def then_i_am_asked_to_check_and_confirm_the_change
     heading = page.locator("h1", hasText: "Check and confirm change")
     expect(heading).to be_visible
   end
 
+  def when_i_navigate_back_to_the_form
+    page.get_by_role("link", name: "Back", exact: true).click
+  end
+
+  def and_the_email_address_is_the_proposed_change
+    expect(page.get_by_label("Email address")).to have_value("new@example.com")
+  end
+
   def when_i_confirm_the_change
     page.get_by_role("button", name: "Confirm change").click
   end
+
+  def and_i_confirm_the_change = when_i_confirm_the_change
 
   def then_i_see_the_confirmation_message
     success_panel = page.locator(".govuk-panel")
