@@ -1,5 +1,5 @@
 <% page_data(
-     title: "Change delivery partner name",
+     title: delivery_partner_title(@delivery_partner),
      breadcrumbs: @breadcrumbs,
      backlink_href: admin_delivery_partner_path(@delivery_partner, page: @page, q: @q)
    ) %>
@@ -11,7 +11,7 @@
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
   <%= f.govuk_text_field :name,
-        label: { text: "Delivery partner name" } %>
+        label: { text: "New name" } %>
 
   <%= f.govuk_submit "Save changes" %>
 <% end %>
