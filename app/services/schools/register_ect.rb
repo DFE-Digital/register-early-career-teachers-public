@@ -47,8 +47,8 @@ module Schools
       ActiveRecord::Base.transaction do
         create_teacher!
         not_registered_as_an_ect!
-        update_school_last_choices!
         close_ongoing_ect_period!
+        update_school_last_choices!
         @ect_at_school_period = start_at_school!
         create_training_period!
         record_event!
@@ -117,7 +117,9 @@ module Schools
     def close_ongoing_ect_period!
       return unless teacher
 
-      ongoing_period = teacher.ect_at_school_periods.ongoing.started_on_or_before(started_on).first
+      # Only close ongoing periods at OTHER schools (for transfers)
+      # Periods at the same school should be caught by the validation
+      ongoing_period = teacher.ect_at_school_periods.ongoing.started_on_or_before(started_on).where.not(school:).first
       return unless ongoing_period
 
       ECTAtSchoolPeriods::Finish.new(
