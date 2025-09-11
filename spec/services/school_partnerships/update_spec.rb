@@ -30,7 +30,10 @@ RSpec.describe SchoolPartnerships::Update do
         hash_including(
           {
             school_partnership:,
-            author: kind_of(Events::LeadProviderAPIAuthor),
+            author: an_object_having_attributes(
+              class: Events::LeadProviderAPIAuthor,
+              lead_provider: school_partnership.lead_provider
+            ),
             previous_delivery_partner:,
             modifications: school_partnership.saved_changes
           }

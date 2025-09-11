@@ -41,6 +41,8 @@ RSpec.describe 'schools/ects/index.html.erb' do
       assign(:ects, [ect_at_school_period])
       assign(:number_of_teachers, 1)
       assign(:school, school)
+      assign(:school_ect_periods, [ect_at_school_period])
+
       render
     end
 
@@ -58,6 +60,7 @@ RSpec.describe 'schools/ects/index.html.erb' do
         assign(:ects, [ect_at_school_period])
         assign(:number_of_teachers, 1)
         assign(:school, school)
+        assign(:school_ect_periods, [])
         render
       end
 

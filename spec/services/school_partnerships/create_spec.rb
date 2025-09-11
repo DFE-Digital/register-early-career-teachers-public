@@ -35,7 +35,10 @@ RSpec.describe SchoolPartnerships::Create do
         hash_including(
           {
             school_partnership:,
-            author: kind_of(Events::LeadProviderAPIAuthor),
+            author: an_object_having_attributes(
+              class: Events::LeadProviderAPIAuthor,
+              lead_provider:
+            ),
           }
         )
       )
