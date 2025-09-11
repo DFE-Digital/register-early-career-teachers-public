@@ -37,7 +37,7 @@ module Migrators
         teacher.trs_last_name = parser.last_name
       end
 
-      teacher.ecf_user_id = user.id
+      teacher.api_user_id = user.id
       teacher.created_at = user.created_at
       teacher.updated_at = user.updated_at
       teacher.save!
