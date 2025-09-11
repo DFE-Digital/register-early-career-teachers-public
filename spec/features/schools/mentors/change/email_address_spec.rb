@@ -1,12 +1,12 @@
-describe "School user can change ECTs email address" do
+describe "School user can change mentor's email address" do
   before { enable_schools_interface }
 
   it "changes the email address" do
     given_there_is_a_school
-    and_there_is_an_ect
+    and_there_is_a_mentor
     and_i_am_logged_in_as_a_school_user
 
-    when_i_visit_the_ect_page
+    when_i_visit_the_mentor_page
     then_i_can_change_the_email_address
     and_i_see_the_change_email_form
 
@@ -35,18 +35,18 @@ private
     @school = FactoryBot.create(:school)
   end
 
-  def and_there_is_an_ect
+  def and_there_is_a_mentor
     @teacher = FactoryBot.create(
       :teacher,
       trs_first_name: "John",
       trs_last_name: "Doe"
     )
-    @ect = FactoryBot.create(
-      :ect_at_school_period,
+    @mentor = FactoryBot.create(
+      :mentor_at_school_period,
       :ongoing,
       teacher: @teacher,
       school: @school,
-      email: "ect@example.com"
+      email: "mentor@example.com"
     )
   end
 
@@ -54,8 +54,8 @@ private
     sign_in_as_school_user(school: @school)
   end
 
-  def when_i_visit_the_ect_page
-    page.goto(schools_ect_path(@ect))
+  def when_i_visit_the_mentor_page
+    page.goto(schools_mentor_path(@mentor))
   end
 
   def then_i_can_change_the_email_address
@@ -100,7 +100,7 @@ private
   def then_i_see_the_confirmation_message
     success_panel = page.locator(".govuk-panel")
     expect(success_panel).to have_text(
-      "You have changed John Doe’s email address to new@example.com"
+      "You have changed the mentor’s email address to new@example.com"
     )
   end
 end
