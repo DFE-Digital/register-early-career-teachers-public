@@ -9,12 +9,12 @@ RSpec.describe Migrators::MentorshipPeriod do
     end
 
     def create_resource(migration_resource)
-      ect = FactoryBot.create(:teacher, trn: migration_resource.teacher_profile.trn, ecf_ect_profile_id: migration_resource.id)
+      ect = FactoryBot.create(:teacher, trn: migration_resource.teacher_profile.trn, api_ect_profile_id: migration_resource.id)
       school = FactoryBot.create(:school, urn: migration_resource.school_cohort.school.urn)
       FactoryBot.create(:ect_at_school_period, teacher: ect, school:, started_on: migration_resource.induction_records.first.start_date, finished_on: nil)
 
       migration_mentor = migration_resource.induction_records.first.mentor_profile
-      mentor = FactoryBot.create(:teacher, trn: migration_mentor.teacher_profile.trn, ecf_mentor_profile_id: migration_mentor.id)
+      mentor = FactoryBot.create(:teacher, trn: migration_mentor.teacher_profile.trn, api_mentor_profile_id: migration_mentor.id)
       FactoryBot.create(:mentor_at_school_period, teacher: mentor, school:, started_on: migration_mentor.induction_records.first.start_date, finished_on: nil)
     end
 

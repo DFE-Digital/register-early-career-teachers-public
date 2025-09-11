@@ -29,7 +29,7 @@ module Migrators
     end
 
     def migrate_one!(participant_profile)
-      teacher = ::Teacher.find_by!(ecf_ect_profile_id: participant_profile.id)
+      teacher = ::Teacher.find_by!(api_ect_profile_id: participant_profile.id)
 
       success = true
       induction_records = InductionRecordSanitizer.new(participant_profile:)

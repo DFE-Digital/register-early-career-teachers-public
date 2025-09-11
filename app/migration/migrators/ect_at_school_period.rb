@@ -49,7 +49,7 @@ module Migrators
 
             school_periods.flatten!
 
-            teacher.update!(ecf_ect_profile_id: participant_profile.id)
+            teacher.update!(api_ect_profile_id: participant_profile.id)
             result = Builders::ECT::SchoolPeriods.new(teacher:, school_periods:).build
           else
             ::TeacherMigrationFailure.create!(teacher:,
