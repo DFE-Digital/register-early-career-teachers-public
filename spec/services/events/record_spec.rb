@@ -1114,55 +1114,64 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_school_partnership_created_event!' do
-    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+  context "when the event author is a lead provider" do
+    let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
+    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
 
-    it 'queues a RecordEventJob with the correct values' do
-      freeze_time do
-        Events::Record.record_school_partnership_created_event!(author:, school_partnership:)
-        metadata = {
-          contract_period_year: school_partnership.contract_period.year,
-        }
+    describe '.record_school_partnership_created_event!' do
+      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+      let(:lead_provider) { school_partnership.lead_provider }
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          heading: "#{school_partnership.school.name} partnered with #{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) for #{school_partnership.contract_period.year}",
-          school_partnership:,
-          school: school_partnership.school,
-          delivery_partner: school_partnership.delivery_partner,
-          lead_provider: school_partnership.lead_provider,
-          event_type: :school_partnership_created,
-          happened_at: Time.zone.now,
-          metadata:,
-          **author_params
-        )
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_school_partnership_created_event!(author:, school_partnership:)
+          metadata = {
+            contract_period_year: school_partnership.contract_period.year,
+          }
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            heading: "#{school_partnership.school.name} partnered with #{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) for #{school_partnership.contract_period.year}",
+            school_partnership:,
+            school: school_partnership.school,
+            delivery_partner: school_partnership.delivery_partner,
+            lead_provider: school_partnership.lead_provider,
+            event_type: :school_partnership_created,
+            happened_at: Time.zone.now,
+            metadata:,
+            **author_params
+          )
+        end
       end
     end
-  end
 
-  describe '.record_school_partnership_updated_event!' do
-    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+    describe '.record_school_partnership_updated_event!' do
+      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+      let(:lead_provider) { school_partnership.lead_provider }
+      let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
+      let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
 
-    it 'queues a RecordEventJob with the correct values' do
-      freeze_time do
-        previous_delivery_partner = school_partnership.delivery_partner
-        school_partnership.update!(lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership))
-        Events::Record.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications: school_partnership.saved_changes)
-        metadata = {
-          contract_period_year: school_partnership.contract_period.year,
-        }
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          previous_delivery_partner = school_partnership.delivery_partner
+          school_partnership.update!(lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership))
+          Events::Record.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications: school_partnership.saved_changes)
+          metadata = {
+            contract_period_year: school_partnership.contract_period.year,
+          }
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          heading: "#{school_partnership.school.name} changed partnership from #{previous_delivery_partner.name} to #{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) for #{school_partnership.contract_period.year}",
-          school_partnership:,
-          school: school_partnership.school,
-          delivery_partner: school_partnership.delivery_partner,
-          lead_provider: school_partnership.lead_provider,
-          event_type: :school_partnership_updated,
-          happened_at: Time.zone.now,
-          metadata:,
-          modifications: [/Lead provider delivery partnership changed from '\d+' to '\d+'/],
-          **author_params
-        )
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            heading: "#{school_partnership.school.name} changed partnership from #{previous_delivery_partner.name} to #{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) for #{school_partnership.contract_period.year}",
+            school_partnership:,
+            school: school_partnership.school,
+            delivery_partner: school_partnership.delivery_partner,
+            lead_provider: school_partnership.lead_provider,
+            event_type: :school_partnership_updated,
+            happened_at: Time.zone.now,
+            metadata:,
+            modifications: [/Lead provider delivery partnership changed from '\d+' to '\d+'/],
+            **author_params
+          )
+        end
       end
     end
   end
