@@ -28,12 +28,13 @@ class API::ParticipantSerializer < Blueprinter::Base
     class << self
       def ecf_enrolment(training_period)
         trainee = training_period.trainee
+        teacher = trainee.teacher
         {
           training_record_id: training_period.id,
           email: trainee.email,
 
-          pupil_premium_uplift: (trainee.pupil_premium_uplift if training_period.for_ect?),
-          sparsity_uplift: (trainee.sparsity_uplift if training_period.for_ect?),
+          pupil_premium_uplift: (teacher.ect_pupil_premium_uplift if training_period.for_ect?),
+          sparsity_uplift: (teacher.ect_sparsity_uplift if training_period.for_ect?),
         }
       end
     end

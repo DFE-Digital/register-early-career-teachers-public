@@ -228,6 +228,8 @@
   - trs_last_name
   - mentor_became_ineligible_for_funding_on
   - mentor_became_ineligible_for_funding_reason
+  - ect_sparsity_uplift
+  - ect_pupil_premium_uplift
   :pending_induction_submissions:
   - id
   - appropriate_body_id
@@ -348,8 +350,6 @@
   - email
   - school_reported_appropriate_body_id
   - training_programme
-  - sparsity_uplift
-  - pupil_premium_uplift
   :dfe_roles:
   - id
   - role_type
