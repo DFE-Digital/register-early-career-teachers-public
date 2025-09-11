@@ -372,11 +372,11 @@ module Events
       new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
     end
 
-    def self.record_teacher_email_updated_event!(old_email:, new_email:, author:, ect_at_school_period:, school:, teacher:, happened_at:)
+    def self.record_teacher_email_updated_event!(old_email:, new_email:, author:, school:, teacher:, happened_at:, ect_at_school_period: nil, mentor_at_school_period: nil)
       event_type = :teacher_email_address_updated
       heading = TransitionDescription.for("email address", from: old_email, to: new_email)
 
-      new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
+      new(event_type:, author:, heading:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
     end
 
     def self.record_teacher_working_pattern_updated_event!(old_working_pattern:, new_working_pattern:, author:, ect_at_school_period:, school:, teacher:, happened_at:)
