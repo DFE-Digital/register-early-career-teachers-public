@@ -1,5 +1,5 @@
 RSpec.describe AppropriateBodies::ECTs do
-  subject { AppropriateBodies::ECTs.new(appropriate_body) }
+  subject { described_class.new(appropriate_body) }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }

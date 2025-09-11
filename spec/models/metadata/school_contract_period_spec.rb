@@ -6,7 +6,7 @@ describe Metadata::SchoolContractPeriod do
     let(:target) { FactoryBot.create(:school) }
 
     around do |example|
-      Metadata::SchoolContractPeriod.bypass_update_restrictions { example.run }
+      described_class.bypass_update_restrictions { example.run }
     end
 
     it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at

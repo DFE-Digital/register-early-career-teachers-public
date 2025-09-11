@@ -208,13 +208,13 @@ RSpec.describe InductionPeriod do
   describe "scopes" do
     describe ".for_teacher" do
       it "returns induction periods only for the specified ect at school period" do
-        expect(InductionPeriod.for_teacher(123).to_sql).to end_with(%(WHERE "induction_periods"."teacher_id" = 123))
+        expect(described_class.for_teacher(123).to_sql).to end_with(%(WHERE "induction_periods"."teacher_id" = 123))
       end
     end
 
     describe ".for_appropriate_body" do
       it "returns induction periods only for the specified appropriate_body" do
-        expect(InductionPeriod.for_appropriate_body(456).to_sql).to end_with(%( WHERE "induction_periods"."appropriate_body_id" = 456))
+        expect(described_class.for_appropriate_body(456).to_sql).to end_with(%( WHERE "induction_periods"."appropriate_body_id" = 456))
       end
     end
   end

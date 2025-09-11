@@ -150,7 +150,7 @@ describe Teacher do
   describe 'scopes' do
     describe '.search' do
       it "searches the 'search' column using a tsquery" do
-        expect(Teacher.search('Joey').to_sql).to end_with(%{WHERE (teachers.search @@ to_tsquery('unaccented', 'Joey:*'))})
+        expect(described_class.search('Joey').to_sql).to end_with(%{WHERE (teachers.search @@ to_tsquery('unaccented', 'Joey:*'))})
       end
 
       describe 'basic matching' do
@@ -158,7 +158,7 @@ describe Teacher do
         let!(:other) { FactoryBot.create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
 
         it "returns only the expected result" do
-          results = Teacher.search('Malcolm')
+          results = described_class.search('Malcolm')
 
           expect(results).to include(target)
           expect(results).not_to include(other)
@@ -169,13 +169,13 @@ describe Teacher do
         let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Stëvìê", trs_last_name: "Kènårbän", corrected_name: nil) }
 
         it 'matches when names have accents but search terms do not' do
-          results = Teacher.search('Stevie Kenarban')
+          results = described_class.search('Stevie Kenarban')
 
           expect(results).to include(target)
         end
 
         it 'matches when names and search terms both have accents' do
-          results = Teacher.search('Stëvìê Kènårbän')
+          results = described_class.search('Stëvìê Kènårbän')
 
           expect(results).to include(target)
         end
@@ -186,19 +186,19 @@ describe Teacher do
         let!(:other) { FactoryBot.create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
 
         it 'matches on the start of a word' do
-          results = Teacher.search('Dew')
+          results = described_class.search('Dew')
 
           expect(results).to include(target)
         end
 
         it 'matches on multiple starts of words' do
-          results = Teacher.search('Dew Wil')
+          results = described_class.search('Dew Wil')
 
           expect(results).to include(target)
         end
 
         it 'only on multiple starts when all match part of the name' do
-          results = Teacher.search('Dew Wil')
+          results = described_class.search('Dew Wil')
 
           expect(results).not_to include(other)
         end
@@ -209,7 +209,7 @@ describe Teacher do
       it 'constructs the query so results are ascending but nulls are placed before the rows with values' do
         expected_clause = %(ORDER BY "teachers"."trs_data_last_refreshed_at" ASC NULLS FIRST)
 
-        expect(Teacher.ordered_by_trs_data_last_refreshed_at_nulls_first.to_sql).to end_with(expected_clause)
+        expect(described_class.ordered_by_trs_data_last_refreshed_at_nulls_first.to_sql).to end_with(expected_clause)
       end
     end
 
@@ -217,7 +217,7 @@ describe Teacher do
       it 'only includes records where trs_deactivated = TRUE' do
         expected_clause = %("teachers"."trs_deactivated" = TRUE)
 
-        expect(Teacher.deactivated_in_trs.to_sql).to end_with(expected_clause)
+        expect(described_class.deactivated_in_trs.to_sql).to end_with(expected_clause)
       end
     end
 
@@ -225,7 +225,7 @@ describe Teacher do
       it 'only includes records where trs_deactivated = FALSE' do
         expected_clause = %("teachers"."trs_deactivated" = FALSE)
 
-        expect(Teacher.active_in_trs.to_sql).to end_with(expected_clause)
+        expect(described_class.active_in_trs.to_sql).to end_with(expected_clause)
       end
     end
   end

@@ -1,5 +1,5 @@
 RSpec.describe TimelineComponent, type: :component do
-  let(:component) { TimelineComponent.new(events) }
+  let(:component) { described_class.new(events) }
 
   let(:one_day_ago) { FactoryBot.build(:event, :with_body, created_at: 1.day.ago) }
   let(:two_days_ago) { FactoryBot.build(:event, :with_body, created_at: 2.days.ago) }

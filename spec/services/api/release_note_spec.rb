@@ -1,6 +1,6 @@
 describe API::ReleaseNote do
   describe "initialization" do
-    subject(:release_note) { API::ReleaseNote.new(title:, date:, body:, tags:) }
+    subject(:release_note) { described_class.new(title:, date:, body:, tags:) }
 
     let(:title) { "A title" }
     let(:date) { Date.new(2024, 1, 1) }

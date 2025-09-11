@@ -1,5 +1,5 @@
 describe Teachers::MentorFundingEligibility do
-  subject { Teachers::MentorFundingEligibility.new(trn:) }
+  subject { described_class.new(trn:) }
 
   let(:trn) { "1234567" }
 

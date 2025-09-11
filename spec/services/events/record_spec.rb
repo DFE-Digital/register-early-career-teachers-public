@@ -25,7 +25,7 @@ RSpec.describe Events::Record do
 
       it 'fails when author object does not respond with necessary params' do
         expect {
-          Events::Record.new(author: non_session_user, event_type:, heading:, body:, happened_at:).record_event!
+          described_class.new(author: non_session_user, event_type:, heading:, body:, happened_at:).record_event!
         }.to raise_error(Events::InvalidAuthor)
       end
     end
@@ -61,7 +61,7 @@ RSpec.describe Events::Record do
         ),
       }
 
-      event_record = Events::Record.new(author:, **attributes)
+      event_record = described_class.new(author:, **attributes)
 
       expect(event_record.author).to eql(author)
 
@@ -96,7 +96,7 @@ RSpec.describe Events::Record do
       mentorship_period: FactoryBot.build(:mentorship_period),
     }.each do |attribute, object|
       describe "when #{attribute} is missing" do
-        subject { Events::Record.new(author:, event_type:, heading:, happened_at:, **attributes_with_unsaved_school) }
+        subject { described_class.new(author:, event_type:, heading:, happened_at:, **attributes_with_unsaved_school) }
 
         let(:attributes_with_unsaved_school) { { attribute => object } }
 
@@ -112,7 +112,7 @@ RSpec.describe Events::Record do
       raw_modifications = induction_period.changes
 
       freeze_time do
-        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
+        described_class.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
@@ -130,7 +130,7 @@ RSpec.describe Events::Record do
 
     it 'fails when induction period is missing' do
       expect {
-        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period: nil, modifications: {})
+        described_class.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period: nil, modifications: {})
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -138,7 +138,7 @@ RSpec.describe Events::Record do
   describe '.record_induction_period_closed_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_induction_period_closed_event!(author:, teacher:, appropriate_body:, induction_period:)
+        described_class.record_induction_period_closed_event!(author:, teacher:, appropriate_body:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
@@ -154,7 +154,7 @@ RSpec.describe Events::Record do
 
     it 'fails when induction period is missing' do
       expect {
-        Events::Record.record_induction_period_closed_event!(author:, teacher:, appropriate_body:, induction_period: nil)
+        described_class.record_induction_period_closed_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -162,7 +162,7 @@ RSpec.describe Events::Record do
   describe '.record_teacher_passes_induction_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body:, induction_period:)
+        described_class.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
@@ -178,7 +178,7 @@ RSpec.describe Events::Record do
 
     it 'fails when induction period is missing' do
       expect {
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period: nil)
+        described_class.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -186,7 +186,7 @@ RSpec.describe Events::Record do
   describe '.record_teacher_fails_induction_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period:)
+        described_class.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
@@ -202,7 +202,7 @@ RSpec.describe Events::Record do
 
     it 'fails when induction period is missing' do
       expect {
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period: nil)
+        described_class.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -210,7 +210,7 @@ RSpec.describe Events::Record do
   describe '.record_admin_passes_teacher_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_admin_passes_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
+        described_class.record_admin_passes_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
@@ -226,7 +226,7 @@ RSpec.describe Events::Record do
 
     it 'fails when induction period is missing' do
       expect {
-        Events::Record.record_admin_passes_teacher_event!(author:, teacher:, appropriate_body:, induction_period: nil)
+        described_class.record_admin_passes_teacher_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -234,7 +234,7 @@ RSpec.describe Events::Record do
   describe '.record_admin_fails_teacher_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_admin_fails_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
+        described_class.record_admin_fails_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
@@ -250,7 +250,7 @@ RSpec.describe Events::Record do
 
     it 'fails when induction period is missing' do
       expect {
-        Events::Record.record_admin_fails_teacher_event!(author:, teacher:, appropriate_body:, induction_period: nil)
+        described_class.record_admin_fails_teacher_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -261,7 +261,7 @@ RSpec.describe Events::Record do
     context 'when induction status was reset on TRS' do
       it 'queues a RecordEventJob with the correct values including body' do
         freeze_time do
-          Events::Record.record_induction_period_deleted_event!(
+          described_class.record_induction_period_deleted_event!(
             author:,
             teacher:,
             appropriate_body:,
@@ -287,7 +287,7 @@ RSpec.describe Events::Record do
     context 'when induction status was not reset on TRS' do
       it 'queues a RecordEventJob with the correct values without body' do
         freeze_time do
-          Events::Record.record_induction_period_deleted_event!(
+          described_class.record_induction_period_deleted_event!(
             author:,
             teacher:,
             appropriate_body:,
@@ -317,7 +317,7 @@ RSpec.describe Events::Record do
       induction_extension.save!
 
       freeze_time do
-        Events::Record.record_induction_extension_created_event!(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
+        described_class.record_induction_extension_created_event!(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_extension:,
@@ -342,7 +342,7 @@ RSpec.describe Events::Record do
       raw_modifications = induction_extension.changes
 
       freeze_time do
-        Events::Record.record_induction_extension_updated_event!(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
+        described_class.record_induction_extension_updated_event!(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_extension:,
@@ -369,7 +369,7 @@ RSpec.describe Events::Record do
       raw_modifications = induction_period.changes
 
       freeze_time do
-        Events::Record.record_induction_period_updated_event!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
+        described_class.record_induction_period_updated_event!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
@@ -392,7 +392,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.teacher_name_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_name:, new_name:)
+        described_class.teacher_name_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_name:, new_name:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -412,7 +412,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.teacher_induction_status_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_induction_status:, new_induction_status:)
+        described_class.teacher_induction_status_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_induction_status:, new_induction_status:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -433,7 +433,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:)
+        described_class.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -451,7 +451,7 @@ RSpec.describe Events::Record do
   describe '.teacher_imported_from_trs_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body:)
+        described_class.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -470,7 +470,7 @@ RSpec.describe Events::Record do
       teacher.assign_attributes(trs_first_name: 'Otto', trs_last_name: 'Hightower')
       modifications = teacher.changes
       freeze_time do
-        Events::Record.teacher_trs_attributes_updated_event!(author:, teacher:, modifications:)
+        described_class.teacher_trs_attributes_updated_event!(author:, teacher:, modifications:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -494,7 +494,7 @@ RSpec.describe Events::Record do
   describe '.record_teacher_trs_deactivated_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_trs_deactivated_event!(author:, teacher:)
+        described_class.record_teacher_trs_deactivated_event!(author:, teacher:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -515,7 +515,7 @@ RSpec.describe Events::Record do
     context 'when induction status was reset on TRS' do
       it 'records an event with the correct values including body' do
         freeze_time do
-          event = Events::Record.new(
+          event = described_class.new(
             author:,
             teacher:,
             appropriate_body:,
@@ -539,7 +539,7 @@ RSpec.describe Events::Record do
     context 'when induction status was not reset on TRS' do
       it 'records an event with the correct values without body' do
         freeze_time do
-          event = Events::Record.new(
+          event = described_class.new(
             author:,
             teacher:,
             appropriate_body:,
@@ -565,7 +565,7 @@ RSpec.describe Events::Record do
   describe '.record_teacher_induction_status_reset_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_induction_status_reset_event!(author:, teacher:, appropriate_body:)
+        described_class.record_teacher_induction_status_reset_event!(author:, teacher:, appropriate_body:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -589,7 +589,7 @@ RSpec.describe Events::Record do
         induction_period.number_of_terms = nil
         raw_modifications = induction_period.changes
 
-        Events::Record.record_induction_period_reopened_event!(
+        described_class.record_induction_period_reopened_event!(
           author:,
           induction_period:,
           modifications: raw_modifications,
@@ -634,7 +634,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_registered_as_mentor_event!(author:, teacher:, mentor_at_school_period:, school:, training_period:, lead_provider:)
+        described_class.record_teacher_registered_as_mentor_event!(author:, teacher:, mentor_at_school_period:, school:, training_period:, lead_provider:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -658,7 +658,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_registered_as_ect_event!(author:, teacher:, ect_at_school_period:, school:, training_period:)
+        described_class.record_teacher_registered_as_ect_event!(author:, teacher:, ect_at_school_period:, school:, training_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -682,7 +682,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_left_school_as_ect!(author:, teacher:, ect_at_school_period:, school:, training_period:, happened_at: finished_on)
+        described_class.record_teacher_left_school_as_ect!(author:, teacher:, ect_at_school_period:, school:, training_period:, happened_at: finished_on)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -709,7 +709,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period:, school:, training_period:, happened_at: started_on)
+          described_class.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period:, school:, training_period:, happened_at: started_on)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             teacher:,
@@ -731,7 +731,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period:, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
+          described_class.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period:, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             teacher:,
@@ -752,13 +752,13 @@ RSpec.describe Events::Record do
 
       it 'fails when both mentor_at_school_period and ect_at_school_period are passed in' do
         expect {
-          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: 'a', ect_at_school_period: 'b', school:, training_period:, happened_at: started_on)
+          described_class.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: 'a', ect_at_school_period: 'b', school:, training_period:, happened_at: started_on)
         }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
       end
 
       it 'fails when neither mentor_at_school_period or ect_at_school_period are passed in' do
         expect {
-          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
+          described_class.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
         }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
       end
     end
@@ -776,7 +776,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period:, school:, training_period:, happened_at: finished_on)
+          described_class.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period:, school:, training_period:, happened_at: finished_on)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             teacher:,
@@ -798,7 +798,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period:, ect_at_school_period: nil, school:, training_period:, happened_at: finished_on)
+          described_class.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period:, ect_at_school_period: nil, school:, training_period:, happened_at: finished_on)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             teacher:,
@@ -819,13 +819,13 @@ RSpec.describe Events::Record do
 
       it 'fails when both mentor_at_school_period and ect_at_school_period are passed in' do
         expect {
-          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: 'a', ect_at_school_period: 'b', school:, training_period:, happened_at: started_on)
+          described_class.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: 'a', ect_at_school_period: 'b', school:, training_period:, happened_at: started_on)
         }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
       end
 
       it 'fails when neither the mentor_at_school_period or ect_at_school_period are passed in' do
         expect {
-          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
+          described_class.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
         }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
       end
     end
@@ -841,7 +841,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_starts_mentoring_event!(author:, mentee:, mentor: teacher, mentorship_period:, mentor_at_school_period:, school:)
+        described_class.record_teacher_starts_mentoring_event!(author:, mentee:, mentor: teacher, mentorship_period:, mentor_at_school_period:, school:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -868,7 +868,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_starts_being_mentored_event!(author:, mentee: teacher, mentor:, mentorship_period:, ect_at_school_period:, school:)
+        described_class.record_teacher_starts_being_mentored_event!(author:, mentee: teacher, mentor:, mentorship_period:, ect_at_school_period:, school:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -897,7 +897,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_finishes_mentoring_event!(author:, mentee:, mentor: teacher, mentorship_period:, mentor_at_school_period:, school:, happened_at: finished_on)
+        described_class.record_teacher_finishes_mentoring_event!(author:, mentee:, mentor: teacher, mentorship_period:, mentor_at_school_period:, school:, happened_at: finished_on)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -926,7 +926,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_finishes_being_mentored_event!(author:, mentee: teacher, mentor:, mentorship_period:, ect_at_school_period:, school:, happened_at: finished_on)
+        described_class.record_teacher_finishes_being_mentored_event!(author:, mentee: teacher, mentor:, mentorship_period:, ect_at_school_period:, school:, happened_at: finished_on)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -952,7 +952,7 @@ RSpec.describe Events::Record do
     it "enqueues a RecordEventJob with the correct values" do
       freeze_time
 
-      Events::Record.record_teacher_email_updated_event!(
+      described_class.record_teacher_email_updated_event!(
         old_email: ect_at_school_period.email,
         new_email: "new@example.com",
         author:,
@@ -983,7 +983,7 @@ RSpec.describe Events::Record do
     it "enqueues a RecordEventJob with the correct values" do
       freeze_time
 
-      Events::Record.record_teacher_working_pattern_updated_event!(
+      described_class.record_teacher_working_pattern_updated_event!(
         old_working_pattern: ect_at_school_period.working_pattern,
         new_working_pattern: "part_time",
         author:,
@@ -1010,7 +1010,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_bulk_upload_started_event!(author:, batch:)
+        described_class.record_bulk_upload_started_event!(author:, batch:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "Burns Slant Drilling Co. started a bulk action",
@@ -1035,7 +1035,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_bulk_upload_completed_event!(author:, batch:)
+        described_class.record_bulk_upload_completed_event!(author:, batch:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "Burns Slant Drilling Co. completed a bulk claim",
@@ -1054,7 +1054,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_lead_provider_api_token_created_event!(author:, api_token:)
+        described_class.record_lead_provider_api_token_created_event!(author:, api_token:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "An API token was created for lead provider: #{api_token.lead_provider.name}",
@@ -1073,7 +1073,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_lead_provider_api_token_revoked_event!(author:, api_token:)
+        described_class.record_lead_provider_api_token_revoked_event!(author:, api_token:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "An API token was revoked for lead provider: #{api_token.lead_provider.name}",
@@ -1093,7 +1093,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_statement_adjustment_added_event!(author:, statement_adjustment:)
+        described_class.record_statement_adjustment_added_event!(author:, statement_adjustment:)
         metadata = {
           payment_type: statement_adjustment.payment_type,
           amount: statement_adjustment.amount,
@@ -1124,7 +1124,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_school_partnership_created_event!(author:, school_partnership:)
+          described_class.record_school_partnership_created_event!(author:, school_partnership:)
           metadata = {
             contract_period_year: school_partnership.contract_period.year,
           }
@@ -1154,7 +1154,7 @@ RSpec.describe Events::Record do
         freeze_time do
           previous_delivery_partner = school_partnership.delivery_partner
           school_partnership.update!(lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership))
-          Events::Record.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications: school_partnership.saved_changes)
+          described_class.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications: school_partnership.saved_changes)
           metadata = {
             contract_period_year: school_partnership.contract_period.year,
           }
@@ -1182,7 +1182,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_statement_adjustment_updated_event!(author:, statement_adjustment:)
+        described_class.record_statement_adjustment_updated_event!(author:, statement_adjustment:)
         metadata = {
           payment_type: statement_adjustment.payment_type,
           amount: statement_adjustment.amount,
@@ -1209,7 +1209,7 @@ RSpec.describe Events::Record do
 
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_statement_adjustment_deleted_event!(author:, statement_adjustment:)
+        described_class.record_statement_adjustment_deleted_event!(author:, statement_adjustment:)
         metadata = {
           payment_type: statement_adjustment.payment_type,
           amount: statement_adjustment.amount,
@@ -1239,11 +1239,11 @@ RSpec.describe Events::Record do
     end
 
     it 'records the event with correct attributes' do
-      event_record_double = instance_double(Events::Record)
-      allow(Events::Record).to receive(:new).and_return(event_record_double)
+      event_record_double = instance_double(described_class)
+      allow(described_class).to receive(:new).and_return(event_record_double)
       expect(event_record_double).to receive(:record_event!)
 
-      Events::Record.record_lead_provider_delivery_partnership_added_event!(
+      described_class.record_lead_provider_delivery_partnership_added_event!(
         author:,
         delivery_partner:,
         lead_provider:,
@@ -1253,7 +1253,7 @@ RSpec.describe Events::Record do
     end
 
     it 'creates an event with the correct heading' do
-      event_record = Events::Record.new(
+      event_record = described_class.new(
         author:,
         event_type: :lead_provider_delivery_partnership_added,
         heading: "#{lead_provider.name} partnered with #{delivery_partner.name} for #{contract_period.year}",
@@ -1263,7 +1263,7 @@ RSpec.describe Events::Record do
         happened_at: anything
       )
 
-      allow(Events::Record).to receive(:new).with(
+      allow(described_class).to receive(:new).with(
         event_type: :lead_provider_delivery_partnership_added,
         author:,
         heading: "#{lead_provider.name} partnered with #{delivery_partner.name} for #{contract_period.year}",
@@ -1273,10 +1273,10 @@ RSpec.describe Events::Record do
         happened_at: anything
       ).and_return(event_record)
 
-      expect(Events::Record).to receive(:new)
+      expect(described_class).to receive(:new)
       allow(event_record).to receive(:record_event!)
 
-      Events::Record.record_lead_provider_delivery_partnership_added_event!(
+      described_class.record_lead_provider_delivery_partnership_added_event!(
         author:,
         delivery_partner:,
         lead_provider:,

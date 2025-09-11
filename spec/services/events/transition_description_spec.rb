@@ -4,7 +4,7 @@ describe Events::TransitionDescription do
     initial_value = "NotStarted"
     transitioned_to_value = "InProgress"
 
-    description = Events::TransitionDescription.for(
+    description = described_class.for(
       attribute_name,
       from: initial_value,
       to: transitioned_to_value
@@ -19,7 +19,7 @@ describe Events::TransitionDescription do
     initial_value = "InProgress"
     transitioned_to_value = nil
 
-    description = Events::TransitionDescription.for(
+    description = described_class.for(
       attribute_name,
       from: initial_value,
       to: transitioned_to_value
@@ -33,7 +33,7 @@ describe Events::TransitionDescription do
     initial_value = nil
     transitioned_to_value = "InProgress"
 
-    description = Events::TransitionDescription.for(
+    description = described_class.for(
       attribute_name,
       from: initial_value,
       to: transitioned_to_value
@@ -47,7 +47,7 @@ describe Events::TransitionDescription do
     initial_value = nil
     transitioned_to_value = nil
 
-    description = Events::TransitionDescription.for(
+    description = described_class.for(
       attribute_name,
       from: initial_value,
       to: transitioned_to_value
@@ -61,7 +61,7 @@ describe Events::TransitionDescription do
     initial_value = "InProgress"
     transitioned_to_value = "InProgress"
 
-    description = Events::TransitionDescription.for(
+    description = described_class.for(
       attribute_name,
       from: initial_value,
       to: transitioned_to_value
@@ -75,7 +75,7 @@ describe Events::TransitionDescription do
     initial_value = nil
     transitioned_to_value = Date.new(2025, 4, 1)
 
-    description = Events::TransitionDescription.for(
+    description = described_class.for(
       attribute_name,
       from: initial_value,
       to: transitioned_to_value

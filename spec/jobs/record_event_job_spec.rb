@@ -7,7 +7,7 @@ RSpec.describe(RecordEventJob) do
 
         allow(Event).to receive(:create!).and_call_original
 
-        expect { RecordEventJob.perform_now(**event_attributes) }.to change { Event.count }.by(1)
+        expect { described_class.perform_now(**event_attributes) }.to change(Event, :count).by(1)
 
         expect(Event).to have_received(:create!).once.with(event_attributes)
       end

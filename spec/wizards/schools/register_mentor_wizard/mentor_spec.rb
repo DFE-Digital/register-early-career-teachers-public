@@ -112,7 +112,7 @@ describe Schools::RegisterMentorWizard::Mentor do
   describe '#in_trs?' do
     context "when trs_first_name has been set" do
       it 'returns true' do
-        expect(mentor.in_trs?).to be_truthy
+        expect(mentor).to be_in_trs
       end
     end
 
@@ -122,7 +122,7 @@ describe Schools::RegisterMentorWizard::Mentor do
       end
 
       it 'returns false' do
-        expect(mentor.in_trs?).to be_falsey
+        expect(mentor).not_to be_in_trs
       end
     end
   end
@@ -134,7 +134,7 @@ describe Schools::RegisterMentorWizard::Mentor do
       end
 
       it 'returns false' do
-        expect(mentor.matches_trs_dob?).to be_falsey
+        expect(mentor).not_to be_matches_trs_dob
       end
     end
 
@@ -144,7 +144,7 @@ describe Schools::RegisterMentorWizard::Mentor do
       end
 
       it 'returns false' do
-        expect(mentor.matches_trs_dob?).to be_falsey
+        expect(mentor).not_to be_matches_trs_dob
       end
     end
 
@@ -154,13 +154,13 @@ describe Schools::RegisterMentorWizard::Mentor do
       end
 
       it 'returns false' do
-        expect(mentor.matches_trs_dob?).to be_falsey
+        expect(mentor).not_to be_matches_trs_dob
       end
     end
 
     context "when date_of_birth and trs_date_of_birth are the same date" do
       it 'returns true' do
-        expect(mentor.matches_trs_dob?).to be_truthy
+        expect(mentor).to be_matches_trs_dob
       end
     end
   end

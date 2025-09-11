@@ -160,13 +160,13 @@ describe MentorshipPeriod do
   describe "scopes" do
     describe ".for_mentee" do
       it "returns only periods for the specified mentee" do
-        expect(MentorshipPeriod.for_mentee(123).to_sql).to end_with(%(WHERE "mentorship_periods"."ect_at_school_period_id" = 123))
+        expect(described_class.for_mentee(123).to_sql).to end_with(%(WHERE "mentorship_periods"."ect_at_school_period_id" = 123))
       end
     end
 
     describe ".for_mentor" do
       it "returns only periods for the specified mentor" do
-        expect(MentorshipPeriod.for_mentor(456).to_sql).to end_with(%(WHERE "mentorship_periods"."mentor_at_school_period_id" = 456))
+        expect(described_class.for_mentor(456).to_sql).to end_with(%(WHERE "mentorship_periods"."mentor_at_school_period_id" = 456))
       end
     end
   end

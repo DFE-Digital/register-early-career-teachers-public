@@ -3,14 +3,14 @@ describe LeadProviders::Active do
 
   describe 'initialization' do
     it 'is initialized with a lead provider' do
-      service = LeadProviders::Active.new(lead_provider)
+      service = described_class.new(lead_provider)
 
       expect(service.lead_provider).to eql(lead_provider)
     end
   end
 
   describe '#active_in_contract_period?' do
-    subject { LeadProviders::Active.new(lead_provider).active_in_contract_period?(contract_period) }
+    subject { described_class.new(lead_provider).active_in_contract_period?(contract_period) }
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period) }

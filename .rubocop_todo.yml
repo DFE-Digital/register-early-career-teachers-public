@@ -35,29 +35,6 @@ RSpec/ChangeByZero:
 RSpec/ContextWording:
   Enabled: false
 
-# Offense count: 229
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: SkipBlocks, EnforcedStyle, OnlyStaticConstants.
-# SupportedStyles: described_class, explicit
-RSpec/DescribedClass:
-  Enabled: false
-
-# Offense count: 20
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: method_call, block
-RSpec/ExpectChange:
-  Exclude:
-    - 'spec/jobs/record_event_job_spec.rb'
-    - 'spec/migration/builders/ect/school_periods_spec.rb'
-    - 'spec/migration/builders/ect/training_periods_spec.rb'
-    - 'spec/migration/builders/mentor/school_periods_spec.rb'
-    - 'spec/migration/builders/mentor/training_periods_spec.rb'
-    - 'spec/migration/builders/mentorship_periods_spec.rb'
-    - 'spec/migration/builders/teacher_spec.rb'
-    - 'spec/migration/legacy_data_importer_spec.rb'
-    - 'spec/services/sessions/one_time_password_spec.rb'
-
 # Offense count: 327
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
 RSpec/IndexedLet:
@@ -79,15 +56,6 @@ RSpec/NamedSubject:
 RSpec/NoExpectationExample:
   Exclude:
     - 'spec/components/navigation/primary_navigation_component_spec.rb'
-
-# Offense count: 20
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: Strict, EnforcedStyle, AllowedExplicitMatchers.
-# SupportedStyles: inflected, explicit
-RSpec/PredicateMatcher:
-  Exclude:
-    - 'spec/wizards/schools/register_ect_wizard/ect_spec.rb'
-    - 'spec/wizards/schools/register_mentor_wizard/mentor_spec.rb'
 
 # Offense count: 10
 RSpec/RepeatedExampleGroupBody:

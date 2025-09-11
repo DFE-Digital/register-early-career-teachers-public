@@ -3,12 +3,12 @@ describe TRS::FakeAPIClient do
     it 'fails when used in production' do
       allow(Rails.env).to receive(:production?).and_return(true)
 
-      expect { TRS::FakeAPIClient.new }.to raise_error(TRS::FakeAPIClient::FakeAPIClientUsedInProduction)
+      expect { described_class.new }.to raise_error(TRS::FakeAPIClient::FakeAPIClientUsedInProduction)
     end
   end
 
   describe '#find_teacher' do
-    subject { TRS::FakeAPIClient.new }
+    subject { described_class.new }
 
     context 'without a special TRN' do
       let(:trn) { 1_234_567 }
@@ -93,7 +93,7 @@ describe TRS::FakeAPIClient do
   end
 
   describe 'Redis data storing functionality', :redis do
-    subject { TRS::FakeAPIClient.new }
+    subject { described_class.new }
 
     let(:teacher) { FactoryBot.build(:teacher) }
     let(:trn) { teacher.trn }

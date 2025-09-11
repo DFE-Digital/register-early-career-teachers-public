@@ -11,7 +11,7 @@ RSpec.describe MarkdownRenderer do
       source = "# Hello World\n\nThis is a test"
       allow(erb_handler).to receive(:call).with(template, source).and_return('"processed markdown"')
 
-      rendered = MarkdownRenderer.call(template, source)
+      rendered = described_class.call(template, source)
       expect(rendered).to eq(%{MarkdownRenderer.render(begin; "processed markdown"; end)})
     end
 
@@ -33,7 +33,7 @@ RSpec.describe MarkdownRenderer do
         .with(template, "# <%= @heading %>\n")
         .and_return('"processed content"')
 
-      rendered = MarkdownRenderer.call(template, source)
+      rendered = described_class.call(template, source)
       expect(rendered).to eq(
         <<~RUBY
           page_data_from_front_matter(begin; "processed frontmatter"; end)
@@ -61,7 +61,7 @@ RSpec.describe MarkdownRenderer do
         .with(template, "# Content\n")
         .and_return('"processed content"')
 
-      rendered = MarkdownRenderer.call(template, source)
+      rendered = described_class.call(template, source)
       expect(rendered).to eq(
         <<~RUBY
           page_data_from_front_matter(begin; "processed invalid frontmatter"; end)
@@ -79,7 +79,7 @@ RSpec.describe MarkdownRenderer do
         .with(template, source)
         .and_return('"processed content with variables"')
 
-      rendered = MarkdownRenderer.call(template, source)
+      rendered = described_class.call(template, source)
       expect(rendered).to eq(%{MarkdownRenderer.render(begin; "processed content with variables"; end)})
     end
   end

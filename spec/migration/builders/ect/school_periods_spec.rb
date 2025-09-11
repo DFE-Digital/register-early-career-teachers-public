@@ -59,7 +59,7 @@ describe Builders::ECT::SchoolPeriods do
       it "creates a TeacherMigrationFailure record" do
         expect {
           service.build
-        }.to change { TeacherMigrationFailure.count }.by(1)
+        }.to change(TeacherMigrationFailure, :count).by(1)
       end
     end
 
@@ -69,7 +69,7 @@ describe Builders::ECT::SchoolPeriods do
       it "creates a TeacherMigrationFailure record" do
         expect {
           service.build
-        }.to change { TeacherMigrationFailure.count }.by(1)
+        }.to change(TeacherMigrationFailure, :count).by(1)
       end
     end
   end

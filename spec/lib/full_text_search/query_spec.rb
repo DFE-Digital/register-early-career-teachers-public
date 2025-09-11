@@ -1,5 +1,5 @@
 describe FullTextSearch::Query do
-  subject { FullTextSearch::Query.new(string).search_by_all_prefixes }
+  subject { described_class.new(string).search_by_all_prefixes }
 
   context 'when the string has no words' do
     let(:string) { '' }

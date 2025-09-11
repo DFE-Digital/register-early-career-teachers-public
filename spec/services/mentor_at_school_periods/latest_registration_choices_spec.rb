@@ -1,5 +1,5 @@
 describe MentorAtSchoolPeriods::LatestRegistrationChoices do
-  subject { MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn: teacher.trn) }
+  subject { described_class.new(trn: teacher.trn) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school_partnership) { FactoryBot.create(:school_partnership) }

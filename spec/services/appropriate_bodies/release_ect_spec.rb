@@ -2,7 +2,7 @@ describe AppropriateBodies::ReleaseECT do
   include ActiveJob::TestHelper
 
   subject do
-    AppropriateBodies::ReleaseECT.new(
+    described_class.new(
       appropriate_body:,
       pending_induction_submission:,
       author:
@@ -28,7 +28,7 @@ describe AppropriateBodies::ReleaseECT do
 
   describe 'initialization' do
     it 'is initialized with an appropriate body and pending induction submission' do
-      expect(subject).to be_a(AppropriateBodies::ReleaseECT)
+      expect(subject).to be_a(described_class)
     end
 
     it 'sets assigns the right teacher' do

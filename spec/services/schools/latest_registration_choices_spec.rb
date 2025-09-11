@@ -1,5 +1,5 @@
 describe Schools::LatestRegistrationChoices do
-  let(:service) { Schools::LatestRegistrationChoices.new(school:, contract_period:) }
+  let(:service) { described_class.new(school:, contract_period:) }
 
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }

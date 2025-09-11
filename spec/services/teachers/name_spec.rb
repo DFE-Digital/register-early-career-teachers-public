@@ -1,5 +1,5 @@
 describe Teachers::Name do
-  subject(:service) { Teachers::Name.new(teacher) }
+  subject(:service) { described_class.new(teacher) }
 
   describe '#full_name' do
     context 'when teacher is missing' do

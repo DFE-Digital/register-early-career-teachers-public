@@ -1,5 +1,5 @@
 describe MentorAtSchoolPeriods::Finish do
-  subject { MentorAtSchoolPeriods::Finish.new(teacher:, finished_on:) }
+  subject { described_class.new(teacher:, finished_on:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:started_on) { 3.months.ago.to_date }

@@ -1,5 +1,5 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::CheckECT do
-  subject { AppropriateBodies::ClaimAnECT::CheckECT.new(appropriate_body:, pending_induction_submission:) }
+  subject { described_class.new(appropriate_body:, pending_induction_submission:) }
 
   let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
