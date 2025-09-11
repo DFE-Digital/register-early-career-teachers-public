@@ -15,16 +15,14 @@
   summary_list.with_row do |row|
     row.with_key(text: "Lead provider")
     row.with_value(
-      text: (@mentor.ect_lead_provider || @mentor.ect_eoi_lead_provider).name,
+      text: @mentor.ect_lead_provider.name,
     )
   end
 end %>
 
-<% unless @mentor.ect_lead_provider %>
+<% if @mentor.expression_of_interest? %>
   <p class="govuk-body">
-    <%= @mentor.ect_eoi_lead_provider.name %>
-    will confirm if they’ll be working with your school and which delivery
-    partner will deliver training events.
+    <%= @mentor.ect_lead_provider.name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.
   </p>
 <% end %>
 
