@@ -142,6 +142,8 @@ module Schools
         ect_training_service.lead_provider_via_school_partnership_or_eoi
       end
 
+      delegate :expression_of_interest?, to: :ect_training_service
+
       def mentoring_at_new_school_only?
         store.fetch("mentoring_at_new_school_only", "yes") == "yes"
       end
