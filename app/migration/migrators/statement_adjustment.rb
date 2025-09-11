@@ -29,7 +29,7 @@ module Migrators
     end
 
     def migrate_one!(ecf_adjustment)
-      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(api_id: ecf_adjustment.id)
+      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(ecf_id: ecf_adjustment.id)
 
       statement_adjustment.statement = ::Statement.find_by!(api_id: ecf_adjustment.statement_id)
       statement_adjustment.payment_type = ecf_adjustment.payment_type
