@@ -1,4 +1,4 @@
-describe API::PartnershipSerializer, type: :serializer do
+describe API::SchoolPartnershipSerializer, type: :serializer do
   subject(:response) do
     JSON.parse(described_class.render(partnership))
   end
