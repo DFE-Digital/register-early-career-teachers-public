@@ -72,6 +72,53 @@ RSpec.describe 'ECT summary' do
 
         it { is_expected.to be_successful }
       end
+
+      context 'when accessing old period ID from different school' do
+        let(:other_school) { FactoryBot.create(:school) }
+        let(:teacher) { ect.teacher }
+        let!(:new_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: other_school) }
+
+        before do
+          sign_in_as(:school_user, school: other_school)
+          get("/school/ects/#{ect.id}")
+        end
+
+        it 'returns not found' do
+          expect(response).to be_not_found
+          expect(response.status).to eq(404)
+        end
+      end
+
+      context 'when accessing future ECT period at current school' do
+        let(:teacher) { FactoryBot.create(:teacher) }
+        let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 1.month.from_now) }
+
+        before do
+          sign_in_as(:school_user, school:)
+          get("/school/ects/#{future_period.id}")
+        end
+
+        it 'allows access to future periods at the same school' do
+          expect(response).to be_successful
+          expect(response.status).to eq(200)
+        end
+      end
+
+      context 'when accessing future ECT period from different school' do
+        let(:other_school) { FactoryBot.create(:school) }
+        let(:teacher) { FactoryBot.create(:teacher) }
+        let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: 1.month.from_now) }
+
+        before do
+          sign_in_as(:school_user, school:)
+          get("/school/ects/#{future_period.id}")
+        end
+
+        it 'returns not found' do
+          expect(response).to be_not_found
+          expect(response.status).to eq(404)
+        end
+      end
     end
   end
 end
