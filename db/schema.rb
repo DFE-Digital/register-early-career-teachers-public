@@ -188,6 +188,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
     t.bigint "school_reported_appropriate_body_id"
+    t.uuid "training_record_id", default: -> { "gen_random_uuid()" }, null: false
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
@@ -347,6 +348,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.citext "email"
+    t.uuid "training_record_id", default: -> { "gen_random_uuid()" }, null: false
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
@@ -728,6 +730,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
     t.uuid "api_user_id", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "api_ect_profile_id", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "api_mentor_profile_id", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["api_ect_profile_id"], name: "index_teachers_on_api_ect_profile_id", unique: true
+    t.index ["api_mentor_profile_id"], name: "index_teachers_on_api_mentor_profile_id", unique: true
+    t.index ["api_user_id"], name: "index_teachers_on_api_user_id", unique: true
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
