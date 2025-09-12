@@ -3,6 +3,8 @@ module Schools
     class ChangeNameWizardController < SchoolsController
       include Wizardable
 
+      wizard_for :ect
+
       def new
         render @current_step
       end
