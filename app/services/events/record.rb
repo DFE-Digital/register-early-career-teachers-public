@@ -390,6 +390,15 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
     end
 
+    def self.record_teacher_left_school_as_mentor!(author:, mentor_at_school_period:, teacher:, school:, happened_at:)
+      event_type = :teacher_left_school_as_mentor
+      teacher_name = Teachers::Name.new(teacher).full_name
+      school_name = school.name
+      heading = "#{teacher_name} left #{school_name}"
+
+      new(event_type:, author:, heading:, mentor_at_school_period:, teacher:, school:, happened_at:).record_event!
+    end
+
     # Bulk Upload Events
 
     def self.record_bulk_upload_started_event!(author:, batch:)
