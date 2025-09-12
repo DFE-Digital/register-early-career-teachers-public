@@ -96,7 +96,7 @@ private
   end
 
   def and_i_should_see_change_link
-    expect(page.get_by_role("link", name: "Change")).to be_visible
+    expect(page.get_by_role("link", name: "Change", exact: true)).to be_visible
   end
 
   def when_i_navigate_to_add_lead_providers_page
@@ -104,7 +104,7 @@ private
   end
 
   def when_i_click_change_link
-    page.get_by_role("link", name: "Change").click
+    page.get_by_role("link", name: "Change", exact: true).click
   end
 
   def then_i_should_see_the_add_lead_providers_form

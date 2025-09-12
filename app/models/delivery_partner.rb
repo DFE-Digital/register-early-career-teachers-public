@@ -12,9 +12,19 @@ class DeliveryPartner < ApplicationRecord
 
   # Validations
   validates :name,
+            uniqueness: { case_sensitive: false,
+                          message: "A delivery partner with this name already exists" }
+
+  validates :name,
             presence: true,
-            uniqueness: true
-  validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another delivery partner" }
+            unless: -> { validation_context == :rename }
+
+  validates :name,
+            presence: { message: ->(dp, _) { "Enter the new name for #{dp.name_was || dp.name}" } },
+            on: :rename
+
+  validates :api_id,
+            uniqueness: { case_sensitive: false, message: "API id already exists for another delivery partner" }
 
   touch -> { self }, when_changing: %i[name], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[name], timestamp_attribute: :api_updated_at
