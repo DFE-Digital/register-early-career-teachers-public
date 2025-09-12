@@ -6,7 +6,7 @@ shared_examples "a show endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(resource, root: "data", **options))
+    expect(response.body).to eq(serializer.render(resource.reload, root: "data", **options))
   end
 
   context "when the resource does not exist" do
