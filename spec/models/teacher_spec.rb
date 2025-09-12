@@ -233,4 +233,12 @@ describe Teacher do
       end
     end
   end
+
+  describe "normalizing" do
+    subject { FactoryBot.build(:teacher, corrected_name: " Tobias Menzies ") }
+
+    it "removes leading and trailing spaces from the corrected name" do
+      expect(subject.corrected_name).to eql("Tobias Menzies")
+    end
+  end
 end
