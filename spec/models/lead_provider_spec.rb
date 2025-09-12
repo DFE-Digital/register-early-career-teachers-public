@@ -23,4 +23,12 @@ describe LeadProvider do
       end
     end
   end
+
+  describe "normalizing" do
+    subject { FactoryBot.build(:lead_provider, name: " Some lead provider ") }
+
+    it "removes leading and trailing spaces from the name" do
+      expect(subject.name).to eql("Some lead provider")
+    end
+  end
 end
