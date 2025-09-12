@@ -728,6 +728,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
     t.uuid "api_user_id", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "api_ect_profile_id", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "api_mentor_profile_id", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["api_ect_profile_id"], name: "index_teachers_on_api_ect_profile_id", unique: true
+    t.index ["api_mentor_profile_id"], name: "index_teachers_on_api_mentor_profile_id", unique: true
+    t.index ["api_user_id"], name: "index_teachers_on_api_user_id", unique: true
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
