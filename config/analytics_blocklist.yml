@@ -396,7 +396,7 @@
   :statement_adjustments:
   - id
   - statement_id
-  - api_id
+  - ecf_id
   - payment_type
   - amount
   - created_at
