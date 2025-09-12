@@ -24,7 +24,7 @@ RSpec.shared_examples "a sortable endpoint" do |additional_sorts = []|
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq(serializer.render(resources, root: "data", **serializer_options))
+      expect(response.body).to eq(serializer.render(resources.map(&:reload), root: "data", **serializer_options))
     end
   end
 end
