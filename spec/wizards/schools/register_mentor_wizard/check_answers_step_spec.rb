@@ -74,7 +74,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
     end
   end
 
-  context '#save!' do
+  describe '#save!' do
     let(:ect) { FactoryBot.create(:ect_at_school_period) }
     let(:ect_id) { ect.id }
 

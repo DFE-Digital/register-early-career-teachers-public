@@ -3,7 +3,7 @@ describe Teachers::InductionPeriod do
 
   let(:teacher) { FactoryBot.create(:teacher) }
 
-  context '#induction_start_date' do
+  describe '#induction_start_date' do
     context 'when teacher does not have induction periods' do
       it { expect(service.induction_start_date).to be_nil }
     end
@@ -25,7 +25,7 @@ describe Teachers::InductionPeriod do
     end
   end
 
-  context '#ongoing_induction_period' do
+  describe '#ongoing_induction_period' do
     context 'without ongoing induction period' do
       before do
         FactoryBot.create(:induction_period, teacher:, started_on: '2023-10-3', finished_on: '2023-12-3')

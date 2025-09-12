@@ -1,6 +1,6 @@
 RSpec.describe PendingInductionSubmission do
-  it { is_expected.to be_a_kind_of(Interval) }
-  it { is_expected.to be_a_kind_of(SharedInductionPeriodValidation) }
+  it { is_expected.to be_a(Interval) }
+  it { is_expected.to be_a(SharedInductionPeriodValidation) }
 
   it_behaves_like 'an induction period'
 

@@ -29,7 +29,7 @@ describe Teachers::Search do
 
     describe 'belonging to appropriate bodies' do
       context 'when one appropriate body is provided' do
-        subject { Teachers::Search.new(appropriate_bodies: ab1) }
+        subject { described_class.new(appropriate_bodies: ab1) }
 
         it 'includes teachers with ongoing induction periods with the specified appropriate bodies' do
           expect(subject.search).to include(teacher1)
@@ -41,7 +41,7 @@ describe Teachers::Search do
       end
 
       context 'when multiple appropriate bodies are provided' do
-        subject { Teachers::Search.new(appropriate_bodies: [ab1, ab3]) }
+        subject { described_class.new(appropriate_bodies: [ab1, ab3]) }
 
         let!(:induction_period3) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher3, appropriate_body: ab3) }
 
@@ -55,7 +55,7 @@ describe Teachers::Search do
       end
 
       context 'when no appropriate bodies are provided' do
-        subject { Teachers::Search.new(appropriate_bodies: []) }
+        subject { described_class.new(appropriate_bodies: []) }
 
         it 'no teachers are returned' do
           expect(subject.search).to be_empty
@@ -63,7 +63,7 @@ describe Teachers::Search do
       end
 
       context 'when no appropriate bodies argument is provided' do
-        subject { Teachers::Search.new }
+        subject { described_class.new }
 
         it 'all teachers are returned' do
           expect(subject.search).to include(teacher1, teacher2)
@@ -80,7 +80,7 @@ describe Teachers::Search do
       let!(:completed_induction_period) { FactoryBot.create(:induction_period, :pass, teacher: teacher_with_completed_induction, appropriate_body: ab1) }
 
       context 'when status is "open"' do
-        subject { Teachers::Search.new(appropriate_bodies: ab1, status: 'open') }
+        subject { described_class.new(appropriate_bodies: ab1, status: 'open') }
 
         it 'returns only teachers with current/ongoing induction periods' do
           expect(subject.search).to include(teacher_with_open_induction)
@@ -100,7 +100,7 @@ describe Teachers::Search do
       end
 
       context 'when status is "closed"' do
-        subject { Teachers::Search.new(appropriate_bodies: ab1, status: 'closed') }
+        subject { described_class.new(appropriate_bodies: ab1, status: 'closed') }
 
         it 'returns only teachers with completed induction periods' do
           expect(subject.search).to include(teacher_with_completed_induction)
@@ -120,7 +120,7 @@ describe Teachers::Search do
       end
 
       context 'when status is nil or any other value' do
-        subject { Teachers::Search.new(appropriate_bodies: ab1, status: nil) }
+        subject { described_class.new(appropriate_bodies: ab1, status: nil) }
 
         it 'returns teachers with both current and completed induction periods' do
           expect(subject.search).to include(teacher_with_open_induction, teacher_with_completed_induction)
@@ -139,7 +139,7 @@ describe Teachers::Search do
       end
 
       context 'when status is an unknown value' do
-        subject { Teachers::Search.new(appropriate_bodies: ab1, status: 'unknown_status') }
+        subject { described_class.new(appropriate_bodies: ab1, status: 'unknown_status') }
 
         it 'defaults to returning teachers with both current and completed induction periods' do
           expect(subject.search).to include(teacher_with_open_induction, teacher_with_completed_induction)
@@ -158,7 +158,7 @@ describe Teachers::Search do
       end
 
       context 'when appropriate_bodies is :ignore' do
-        subject { Teachers::Search.new(appropriate_bodies: :ignore, status: 'open') }
+        subject { described_class.new(appropriate_bodies: :ignore, status: 'open') }
 
         it 'does not filter by appropriate bodies regardless of status' do
           all_teachers = [teacher1, teacher2, teacher3, teacher_with_open_induction, teacher_with_completed_induction, teacher_with_no_induction]
@@ -219,7 +219,7 @@ describe Teachers::Search do
     describe "searching for ECTs at a school" do
       context 'when one school is present' do
         it 'only selects ECTs who are currently at the given school' do
-          query = Teachers::Search.new(ect_at_school: 123).search
+          query = described_class.new(ect_at_school: 123).search
 
           expect(query.to_sql).to include(%("ect_at_school_periods"."school_id" = 123))
         end
@@ -232,7 +232,7 @@ describe Teachers::Search do
             let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :finished, school:, teacher:) }
 
             it 'returns no teachers' do
-              expect(Teachers::Search.new(ect_at_school: school).search).to be_empty
+              expect(described_class.new(ect_at_school: school).search).to be_empty
             end
           end
 
@@ -240,7 +240,7 @@ describe Teachers::Search do
             let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher:) }
 
             it 'returns the teacher' do
-              expect(Teachers::Search.new(ect_at_school: school).search).to include(teacher)
+              expect(described_class.new(ect_at_school: school).search).to include(teacher)
             end
           end
 
@@ -248,7 +248,7 @@ describe Teachers::Search do
             let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :not_started_yet, school:, teacher:) }
 
             it 'returns the teacher' do
-              expect(Teachers::Search.new(ect_at_school: school).search).to include(teacher)
+              expect(described_class.new(ect_at_school: school).search).to include(teacher)
             end
           end
         end
@@ -256,7 +256,7 @@ describe Teachers::Search do
 
       context 'when multiple schools are present' do
         it 'only selects ECTs who are currently at the given school' do
-          query = Teachers::Search.new(ect_at_school: [123, 456]).search
+          query = described_class.new(ect_at_school: [123, 456]).search
 
           expect(query.to_sql).to include(%{"ect_at_school_periods"."school_id" IN (123, 456)})
         end
@@ -264,7 +264,7 @@ describe Teachers::Search do
 
       context 'when absent' do
         it 'does not join ect_at_school_periods' do
-          query = Teachers::Search.new.search
+          query = described_class.new.search
 
           expect(query.to_sql).not_to include('ect_at_school_periods')
         end
@@ -290,7 +290,7 @@ describe Teachers::Search do
         let!(:mentorship_period2) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period4, mentor: mentor_at_school_period1, started_on:) }
 
         it 'orders with unmentored teachers first, then by registration date' do
-          results = Teachers::Search.new(ect_at_school: school1).search
+          results = described_class.new(ect_at_school: school1).search
 
           expect(results).to eq([teacher2, teacher1, mentored_teacher2, mentored_teacher1])
         end

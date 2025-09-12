@@ -2,7 +2,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
   let(:filter_params) { {} }
   let(:component) { described_class.new filter_params: }
 
-  context ".lead_providers" do
+  describe ".lead_providers" do
     let!(:lead_provider1) { FactoryBot.create(:lead_provider, name: "C") }
     let!(:lead_provider2) { FactoryBot.create(:lead_provider, name: "A") }
     let!(:lead_provider3) { FactoryBot.create(:lead_provider, name: "B") }
@@ -12,7 +12,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
     end
   end
 
-  context ".lead_provider_id" do
+  describe ".lead_provider_id" do
     let(:filter_params) { { lead_provider_id: 123 } }
 
     it "returns filter param lead_provider_id" do
@@ -20,7 +20,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
     end
   end
 
-  context ".contract_periods" do
+  describe ".contract_periods" do
     let!(:contract_period1) { FactoryBot.create(:contract_period, year: 2025) }
     let!(:contract_period2) { FactoryBot.create(:contract_period, year: 2021) }
     let!(:contract_period3) { FactoryBot.create(:contract_period, year: 2022) }
@@ -30,7 +30,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
     end
   end
 
-  context ".contract_period_year" do
+  describe ".contract_period_year" do
     let(:filter_params) { { contract_period_year: 2025 } }
 
     it "returns filter param contract_period_year" do
@@ -38,7 +38,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
     end
   end
 
-  context ".statement_dates" do
+  describe ".statement_dates" do
     let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 5) }
     let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 5) }
     let!(:statement3) { FactoryBot.create(:statement, year: 2023, month: 5) }
@@ -56,7 +56,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
     end
   end
 
-  context ".statement_date" do
+  describe ".statement_date" do
     let(:filter_params) { { statement_date: "2025-01" } }
 
     it "returns filter param statement_date" do
@@ -64,7 +64,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
     end
   end
 
-  context ".statement_types" do
+  describe ".statement_types" do
     it "returns statement types" do
       dates = component.statement_types
       expect(dates[0].id).to eq("all")
@@ -78,7 +78,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
     end
   end
 
-  context ".statement_type" do
+  describe ".statement_type" do
     let(:filter_params) { { statement_type: "all" } }
 
     it "returns filter param statement_type" do

@@ -22,30 +22,30 @@ describe DfESignIn::APIClient do
     it 'fails unless config setting dfe_sign_in_enabled is true' do
       allow(Rails.application.config).to receive(:dfe_sign_in_enabled).and_return(false)
 
-      expect { DfESignIn::APIClient.new }.to raise_error(DfESignIn::APIClient::DfESignInDisabled)
+      expect { described_class.new }.to raise_error(DfESignIn::APIClient::DfESignInDisabled)
     end
 
     it 'uses the env var DFE_SIGN_IN_API_BASE_URL as the default url' do
-      api_client = DfESignIn::APIClient.new
+      api_client = described_class.new
 
       expect(api_client.connection.url_prefix.to_s).to eql(fake_base_url)
     end
 
     it 'allows the url to be overridden' do
       replacement = 'https://something-else.com/'
-      api_client = DfESignIn::APIClient.new(url: replacement)
+      api_client = described_class.new(url: replacement)
 
       expect(api_client.connection.url_prefix.to_s).to eql(replacement)
     end
 
     it 'sets the timeout using the DEFAULT_TIMEOUT value by default' do
-      api_client = DfESignIn::APIClient.new
+      api_client = described_class.new
 
       expect(api_client.connection.options.timeout).to eql(DfESignIn::APIClient::DEFAULT_TIMEOUT)
     end
 
     it 'allows the timeout to be overridden' do
-      api_client = DfESignIn::APIClient.new(timeout: 8)
+      api_client = described_class.new(timeout: 8)
 
       expect(api_client.connection.options.timeout).to be(8)
     end
@@ -53,7 +53,7 @@ describe DfESignIn::APIClient do
     it 'constructs the JWT using the correct values' do
       allow(JWT).to receive(:encode).and_return(true)
 
-      DfESignIn::APIClient.new
+      described_class.new
 
       expect(JWT).to have_received(:encode).with(
         { iss: test_client_id, aud: fake_api_audience },
@@ -105,7 +105,7 @@ describe DfESignIn::APIClient do
       ]
     end
 
-    let(:client) { DfESignIn::APIClient.new }
+    let(:client) { described_class.new }
     let(:connection) { client.instance_variable_get(:@connection) }
     let(:user_id) { 'b41b3462-62f8-4b43-8d4b-407f7f115056' }
     let(:expected_path) { %(/users/#{user_id}/organisations) }
@@ -157,7 +157,7 @@ describe DfESignIn::APIClient do
       }
     end
 
-    let(:client) { DfESignIn::APIClient.new }
+    let(:client) { described_class.new }
     let(:connection) { client.instance_variable_get(:@connection) }
     let(:expected_path) { %(services/#{service_id}/organisations/#{organisation_id}/users/#{user_id}) }
     let(:response) { instance_double(Faraday::Response, success?: true, body: response_body) }

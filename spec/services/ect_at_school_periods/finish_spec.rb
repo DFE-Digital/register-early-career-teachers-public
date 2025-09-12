@@ -1,5 +1,5 @@
 describe ECTAtSchoolPeriods::Finish do
-  subject { ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on:, author:) }
+  subject { described_class.new(ect_at_school_period:, finished_on:, author:) }
 
   let(:started_on) { 1.year.ago.to_date }
   let(:original_dates) { { started_on:, finished_on: nil } }

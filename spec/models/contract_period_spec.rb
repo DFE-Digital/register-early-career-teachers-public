@@ -37,11 +37,11 @@ describe ContractPeriod do
     end
 
     it 'returns the contract_period containing the given date' do
-      expect(ContractPeriod.containing_date(Date.new(2025, 1, 1))).to eq(period)
+      expect(described_class.containing_date(Date.new(2025, 1, 1))).to eq(period)
     end
 
     it 'returns nil when no period contains the date' do
-      expect(ContractPeriod.containing_date(Date.new(2023, 1, 1))).to be_nil
+      expect(described_class.containing_date(Date.new(2023, 1, 1))).to be_nil
     end
   end
 
@@ -65,7 +65,7 @@ describe ContractPeriod do
 
       it 'returns the start date of the contract period two periods before the current one' do
         freeze_time do
-          expect(ContractPeriod.earliest_permitted_start_date).to eq(third_oldest.started_on)
+          expect(described_class.earliest_permitted_start_date).to eq(third_oldest.started_on)
         end
       end
     end
@@ -73,8 +73,8 @@ describe ContractPeriod do
     context 'when there are no current contract periods' do
       it 'returns nil' do
         freeze_time do
-          expect(ContractPeriod.earliest_permitted_start_date).to be_nil
-          expect(ContractPeriod.count).to eq(0)
+          expect(described_class.earliest_permitted_start_date).to be_nil
+          expect(described_class.count).to eq(0)
         end
       end
     end
@@ -88,12 +88,12 @@ describe ContractPeriod do
       let!(:period_2025) { FactoryBot.create(:contract_period, year: 2025, started_on: Date.new(2025, 6, 1), finished_on: Date.new(2026, 5, 31)) }
 
       it 'orders contract periods by year in descending order' do
-        result = ContractPeriod.most_recent_first
+        result = described_class.most_recent_first
         expect(result.to_a).to eq([period_2025, period_2024, period_2023, period_2022])
       end
 
       it 'returns contract periods with most recent year first' do
-        result = ContractPeriod.most_recent_first
+        result = described_class.most_recent_first
         expect(result.first).to eq(period_2025)
         expect(result.last).to eq(period_2022)
       end

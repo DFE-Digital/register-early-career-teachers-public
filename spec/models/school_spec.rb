@@ -29,7 +29,7 @@ describe School do
 
   describe "enums" do
     it do
-      is_expected.to define_enum_for(:last_chosen_training_programme)
+      expect(subject).to define_enum_for(:last_chosen_training_programme)
                        .with_values({ provider_led: "provider_led",
                                       school_led: "school_led" })
                        .validating(allowing_nil: true)
@@ -71,7 +71,7 @@ describe School do
       subject { FactoryBot.build(:school) }
 
       it do
-        is_expected.to validate_inclusion_of(:last_chosen_training_programme)
+        expect(subject).to validate_inclusion_of(:last_chosen_training_programme)
                          .in_array(%w[provider_led school_led])
                          .with_message("Must be nil or provider-led or school-led")
                          .allow_nil
@@ -161,8 +161,8 @@ describe School do
       it "stores and queries induction_tutor_email case insensitively" do
         school = FactoryBot.create(:school, induction_tutor_email: "email@address.com", induction_tutor_name: "Test")
 
-        expect(School.find_by(induction_tutor_email: "EMAIL@ADDRESS.COM")).to eq(school)
-        expect(School.find_by(induction_tutor_email: "email@address.com")).to eq(school)
+        expect(described_class.find_by(induction_tutor_email: "EMAIL@ADDRESS.COM")).to eq(school)
+        expect(described_class.find_by(induction_tutor_email: "email@address.com")).to eq(school)
       end
 
       context "when induction_tutor_email and induction_tutor_name is blank" do
@@ -207,7 +207,7 @@ describe School do
     end
   end
 
-  context "#expression_of_interest_for?" do
+  describe "#expression_of_interest_for?" do
     subject(:school) { FactoryBot.create(:school) }
 
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }

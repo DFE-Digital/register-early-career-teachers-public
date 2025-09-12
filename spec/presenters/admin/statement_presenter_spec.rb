@@ -1,5 +1,5 @@
 describe Admin::StatementPresenter do
-  subject { Admin::StatementPresenter.new(statement) }
+  subject { described_class.new(statement) }
 
   describe '#month_and_year' do
     let(:statement) { FactoryBot.build(:statement, month: 6, year: 2023) }

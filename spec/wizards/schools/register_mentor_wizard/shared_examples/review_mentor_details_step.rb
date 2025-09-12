@@ -39,7 +39,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
 
   describe 'validations' do
     it do
-      is_expected.to validate_inclusion_of(:change_name)
+      expect(subject).to validate_inclusion_of(:change_name)
                        .in_array(%w[yes no])
                        .with_message("Select 'Yes' or 'No' to confirm whether the details are correct")
     end
@@ -76,7 +76,7 @@ RSpec.shared_examples "a review mentor details step" do |current_step:, next_ste
     it { expect(subject.next_step).to eq(next_step) }
   end
 
-  context '#save!' do
+  describe '#save!' do
     context 'when the step is not valid' do
       subject { wizard.current_step }
 

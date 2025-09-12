@@ -8,7 +8,7 @@ describe Builders::Teacher do
     it "creates a new Teacher record" do
       expect {
         subject.build
-      }.to change { Teacher.count }.by(1)
+      }.to change(Teacher, :count).by(1)
     end
 
     it "returns the created teacher record" do
@@ -68,7 +68,7 @@ describe Builders::Teacher do
         it "does not change the corrected_name" do
           expect {
             subject.build
-          }.not_to(change { existing_record.corrected_name })
+          }.not_to(change(existing_record, :corrected_name))
         end
       end
     end

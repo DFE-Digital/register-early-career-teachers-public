@@ -1,5 +1,5 @@
 RSpec.describe Sessions::OneTimePassword do
-  subject(:service) { Sessions::OneTimePassword.new(user:) }
+  subject(:service) { described_class.new(user:) }
 
   let(:user) { FactoryBot.create(:user) }
 
@@ -9,7 +9,7 @@ RSpec.describe Sessions::OneTimePassword do
     end
 
     it "sets a secret on the user" do
-      expect { service.generate }.to(change { user.otp_secret })
+      expect { service.generate }.to(change(user, :otp_secret))
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe Sessions::OneTimePassword do
 
       it "updates the otp_verified_at timestamp" do
         code = service.generate
-        expect { service.verify(code:) }.to(change { user.otp_verified_at })
+        expect { service.verify(code:) }.to(change(user, :otp_verified_at))
       end
     end
 
@@ -56,7 +56,7 @@ RSpec.describe Sessions::OneTimePassword do
         code = service.generate
         service.verify(code:)
 
-        expect { service.verify(code:) }.not_to(change { user.otp_verified_at })
+        expect { service.verify(code:) }.not_to(change(user, :otp_verified_at))
       end
     end
 
@@ -72,7 +72,7 @@ RSpec.describe Sessions::OneTimePassword do
         code = service.generate
 
         travel_to 11.minutes.from_now do
-          expect { service.verify(code:) }.not_to(change { user.otp_verified_at })
+          expect { service.verify(code:) }.not_to(change(user, :otp_verified_at))
         end
       end
     end

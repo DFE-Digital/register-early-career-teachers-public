@@ -38,7 +38,7 @@ describe Builders::Mentor::SchoolPeriods do
       it "creates a TeacherMigrationFailure record" do
         expect {
           service.build
-        }.to change { TeacherMigrationFailure.count }.by(1)
+        }.to change(TeacherMigrationFailure, :count).by(1)
       end
     end
 
@@ -48,7 +48,7 @@ describe Builders::Mentor::SchoolPeriods do
       it "does not create a TeacherMigrationFailure record" do
         expect {
           service.build
-        }.not_to(change { TeacherMigrationFailure.count })
+        }.not_to(change(TeacherMigrationFailure, :count))
       end
     end
   end

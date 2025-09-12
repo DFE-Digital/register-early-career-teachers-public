@@ -36,7 +36,7 @@ describe Builders::MentorshipPeriods do
     it "creates MentorshipPeriod records for the mentorship periods" do
       expect {
         service.build
-      }.to change { MentorshipPeriod.count }.by(2)
+      }.to change(MentorshipPeriod, :count).by(2)
     end
 
     it "populates the MentorshipPeriod records with the correct information" do
@@ -62,7 +62,7 @@ describe Builders::MentorshipPeriods do
       it "creates a TeacherMigrationFailure record" do
         expect {
           service.build
-        }.to change { TeacherMigrationFailure.count }.by(1)
+        }.to change(TeacherMigrationFailure, :count).by(1)
       end
 
       it "stores an error message in the failure record" do
@@ -77,7 +77,7 @@ describe Builders::MentorshipPeriods do
       it "creates a TeacherMigrationFailure record" do
         expect {
           service.build
-        }.to change { TeacherMigrationFailure.count }.by(1)
+        }.to change(TeacherMigrationFailure, :count).by(1)
       end
 
       it "stores an error message in the failure record" do
@@ -92,7 +92,7 @@ describe Builders::MentorshipPeriods do
       it "creates a TeacherMigrationFailure record" do
         expect {
           service.build
-        }.to change { TeacherMigrationFailure.count }.by(1)
+        }.to change(TeacherMigrationFailure, :count).by(1)
       end
 
       it "stores an error message in the failure record" do

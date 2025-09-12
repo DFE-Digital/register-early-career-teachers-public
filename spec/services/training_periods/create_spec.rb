@@ -74,11 +74,11 @@ RSpec.describe TrainingPeriods::Create do
     let(:period) { FactoryBot.create(:ect_at_school_period) }
 
     it 'calls new with the school_led arguments' do
-      allow(TrainingPeriods::Create).to receive(:new).and_return(true)
+      allow(described_class).to receive(:new).and_return(true)
 
-      TrainingPeriods::Create.school_led(period:, started_on:)
+      described_class.school_led(period:, started_on:)
 
-      expect(TrainingPeriods::Create).to have_received(:new).with(period:, started_on:, training_programme: 'school_led')
+      expect(described_class).to have_received(:new).with(period:, started_on:, training_programme: 'school_led')
     end
   end
 
@@ -86,11 +86,11 @@ RSpec.describe TrainingPeriods::Create do
     let(:period) { FactoryBot.create(:ect_at_school_period) }
 
     it 'calls new with the provider_led arguments' do
-      allow(TrainingPeriods::Create).to receive(:new).with(any_args).and_call_original
+      allow(described_class).to receive(:new).with(any_args).and_call_original
 
-      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:)
+      described_class.provider_led(period:, started_on:, school_partnership:, expression_of_interest:)
 
-      expect(TrainingPeriods::Create).to have_received(:new).with(
+      expect(described_class).to have_received(:new).with(
         period:,
         started_on:,
         school_partnership:,

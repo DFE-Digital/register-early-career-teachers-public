@@ -8,7 +8,7 @@ RSpec.describe Statements::Period do
         year: date.year
       )
 
-      period = Statements::Period.for(statement)
+      period = described_class.for(statement)
 
       expect(period).to eq "December 2024"
     end
@@ -19,7 +19,7 @@ RSpec.describe Statements::Period do
       year = 2024
       month = 12
 
-      period = Statements::Period.from_year_and_month(year, month)
+      period = described_class.from_year_and_month(year, month)
 
       expect(period).to eq "December 2024"
     end

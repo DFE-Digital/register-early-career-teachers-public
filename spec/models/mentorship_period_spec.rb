@@ -29,7 +29,7 @@ describe MentorshipPeriod do
       let(:started_on_message) { 'Start date cannot overlap another Mentee period' }
       let(:finished_on_message) { 'End date cannot overlap another Mentee period' }
 
-      context '#mentee_distinct_period' do
+      describe '#mentee_distinct_period' do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             let(:mentor) do
@@ -114,7 +114,7 @@ describe MentorshipPeriod do
       end
     end
 
-    context '#not_self_mentoring' do
+    describe '#not_self_mentoring' do
       context 'when mentor and mentee are the same teacher' do
         subject { FactoryBot.build(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
 
@@ -160,13 +160,13 @@ describe MentorshipPeriod do
   describe "scopes" do
     describe ".for_mentee" do
       it "returns only periods for the specified mentee" do
-        expect(MentorshipPeriod.for_mentee(123).to_sql).to end_with(%(WHERE "mentorship_periods"."ect_at_school_period_id" = 123))
+        expect(described_class.for_mentee(123).to_sql).to end_with(%(WHERE "mentorship_periods"."ect_at_school_period_id" = 123))
       end
     end
 
     describe ".for_mentor" do
       it "returns only periods for the specified mentor" do
-        expect(MentorshipPeriod.for_mentor(456).to_sql).to end_with(%(WHERE "mentorship_periods"."mentor_at_school_period_id" = 456))
+        expect(described_class.for_mentor(456).to_sql).to end_with(%(WHERE "mentorship_periods"."mentor_at_school_period_id" = 456))
       end
     end
   end

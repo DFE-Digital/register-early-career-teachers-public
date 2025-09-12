@@ -39,11 +39,11 @@ describe Interval do
 
     describe ".overlapping_with" do
       it "returns periods overlapping with the specified date range" do
-        expect(DummyMentor.overlapping_with(FakePeriod.new('2023-02-01', '2023-10-01'))).to match_array([period_1, period_2, teacher_2_period])
+        expect(DummyMentor.overlapping_with(FakePeriod.new('2023-02-01', '2023-10-01'))).to contain_exactly(period_1, period_2, teacher_2_period)
       end
 
       it "returns periods starting after the specified start date if end date is nil" do
-        expect(DummyMentor.overlapping_with(FakePeriod.new('2024-01-01', nil))).to match_array([period_3])
+        expect(DummyMentor.overlapping_with(FakePeriod.new('2024-01-01', nil))).to contain_exactly(period_3)
       end
 
       it "does not return periods outside the specified date range" do
@@ -59,12 +59,12 @@ describe Interval do
 
     describe ".containing_period" do
       it "returns periods that completely contain the specified period" do
-        expect(DummyMentor.containing_period(FakePeriod.new('2023-8-1', '2023-9-1'))).to match_array([period_2])
+        expect(DummyMentor.containing_period(FakePeriod.new('2023-8-1', '2023-9-1'))).to contain_exactly(period_2)
       end
 
       it 'returns periods where the finished_on date is null' do
-        expect(DummyMentor.containing_period(FakePeriod.new('2024-2-1', '2024-4-23'))).to match_array([period_3])
-        expect(DummyMentor.containing_period(FakePeriod.new('2024-5-1', nil))).to match_array([period_3])
+        expect(DummyMentor.containing_period(FakePeriod.new('2024-2-1', '2024-4-23'))).to contain_exactly(period_3)
+        expect(DummyMentor.containing_period(FakePeriod.new('2024-5-1', nil))).to contain_exactly(period_3)
       end
 
       it "does not return periods that do not completely contain the specified date range" do
@@ -182,7 +182,7 @@ describe Interval do
       let!(:predecessor) { DummyMentor.create(teacher_id:, school_id:, started_on: 2.weeks.ago, finished_on: 5.days.ago) }
 
       it 'returns previous intervals' do
-        expect(interval.predecessors).to match_array([predecessor])
+        expect(interval.predecessors).to contain_exactly(predecessor)
       end
     end
 
@@ -236,7 +236,7 @@ describe Interval do
       let!(:successor) { DummyMentor.create(teacher_id:, school_id:, started_on: 1.day.ago, finished_on: nil) }
 
       it 'returns them' do
-        expect(interval.successors).to match_array([successor])
+        expect(interval.successors).to contain_exactly(successor)
       end
     end
 

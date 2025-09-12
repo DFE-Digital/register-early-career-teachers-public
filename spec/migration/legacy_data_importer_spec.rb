@@ -59,7 +59,7 @@ RSpec.describe LegacyDataImporter do
 
       expect {
         importer.reset!
-      }.to change { DataMigration.count }.by(-2)
+      }.to change(DataMigration, :count).by(-2)
     end
 
     it "calls .reset! on each migrator" do

@@ -69,7 +69,7 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
     end
   end
 
-  context ".adjustment_editable?" do
+  describe ".adjustment_editable?" do
     let!(:adjustment1) { FactoryBot.create :statement_adjustment, statement:, payment_type: "Big amount", amount: 999.99 }
 
     context "non-paid statement" do

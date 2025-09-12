@@ -1,7 +1,7 @@
 RSpec.describe TeachersIndex::SearchSectionComponent, type: :component do
   subject(:rendered) { render_inline(component) }
 
-  let(:component) { TeachersIndex::SearchSectionComponent.new(status:, query:) }
+  let(:component) { described_class.new(status:, query:) }
 
   context 'when viewing open inductions' do
     let(:status) { 'open' }

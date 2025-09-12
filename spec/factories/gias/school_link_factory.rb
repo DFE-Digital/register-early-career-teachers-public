@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory(:gias_school_link, class: GIAS::SchoolLink) do
+  factory(:gias_school_link, class: 'GIAS::SchoolLink') do
     association :from_gias_school, factory: :gias_school
     association :to_gias_school, factory: :gias_school
 
