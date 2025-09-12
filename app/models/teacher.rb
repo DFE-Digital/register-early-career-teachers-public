@@ -61,4 +61,6 @@ class Teacher < ApplicationRecord
 
   scope :deactivated_in_trs, -> { where(trs_deactivated: true) }
   scope :active_in_trs, -> { where(trs_deactivated: false) }
+
+  normalizes :corrected_name, with: -> { it.squish }
 end
