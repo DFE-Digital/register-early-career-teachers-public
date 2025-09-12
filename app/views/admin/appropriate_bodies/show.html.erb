@@ -5,34 +5,7 @@
   )
 %>
 
-<%=
-  govuk_summary_list do |sl|
-    sl.with_row do |row|
-      row.with_key(text: "Current ECTs")
-      row.with_value(text: @current_ect_count)
-      row.with_action(
-        text: 'View',
-        href: admin_appropriate_body_current_ects_path(@appropriate_body),
-        visually_hidden_text: 'current ECTs'
-      )
-    end
-
-    sl.with_row do |row|
-      row.with_key(text: "Number of bulk uploads")
-      row.with_value(text: @bulk_batches_count)
-      row.with_action(
-        text: "View",
-        href: admin_appropriate_body_batches_path(@appropriate_body),
-        visually_hidden_text: "bulk uploads"
-      )
-    end
-
-    sl.with_row do |row|
-      row.with_key(text: "DfE Sign-in organisation ID")
-      row.with_value(text: tag.code(@appropriate_body.dfe_sign_in_organisation_id))
-    end
-  end
-%>
+<%= render Admin::AppropriateBodies::DetailsComponent.new(appropriate_body: @appropriate_body) %>
 
 <p class='govuk-body'>
   <%# govuk_link_to('Timeline of events', admin_appropriate_body_timeline_path(@appropriate_body)) %>
