@@ -25,8 +25,10 @@ class API::TransferSerializer < Blueprinter::Base
       # Mocked result, not yet implemented on RECT
       training_periods.map do |training_period|
         trainee = training_period.trainee
+        teacher = trainee.teacher
+        training_record_id = training_period.for_ect? ? teacher.api_ect_profile_id : teacher.api_mentor_profile_id
         {
-          training_record_id: trainee.training_record_id,
+          training_record_id:,
           transfer_type: "leaving",
           status: "new_provider",
           created_at: trainee.created_at.rfc3339,

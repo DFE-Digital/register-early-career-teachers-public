@@ -28,8 +28,10 @@ class API::ParticipantSerializer < Blueprinter::Base
     class << self
       def ecf_enrolment(training_period)
         trainee = training_period.trainee
+        teacher = trainee.teacher
+        training_record_id = training_period.for_ect? ? teacher.api_ect_profile_id : teacher.api_mentor_profile_id
         {
-          training_record_id: trainee.training_record_id,
+          training_record_id:,
           email: trainee.email,
         }
       end

@@ -294,7 +294,6 @@
   - ecf_start_induction_record_id
   - ecf_end_induction_record_id
   - email
-  - training_record_id
   :lead_providers:
   - id
   - ecf_id
@@ -349,7 +348,6 @@
   - email
   - school_reported_appropriate_body_id
   - training_programme
-  - training_record_id
   :dfe_roles:
   - id
   - role_type
