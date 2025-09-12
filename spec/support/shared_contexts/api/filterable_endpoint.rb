@@ -33,7 +33,17 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([resource]), root: "data", **options))
+    expect(response.body).to eq(serializer.render([resource], root: "data", **options))
+  end
+
+  it "returns all resources when cohort is blank" do
+    resource = create_resource(active_lead_provider:)
+
+    authenticated_api_get(path, params: { filter: { cohort: "" } })
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render([resource], root: "data", **options))
   end
 end
 
@@ -94,19 +104,34 @@ RSpec.shared_examples "a filter by a single cohort (contract_period year) endpoi
     expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
   end
 
-  it "ignores invalid cohorts" do
-    resource = create_resource(active_lead_provider:)
+  it "returns no resources if the specified cohort is invalid" do
+    create_resource(active_lead_provider:)
 
     # Resource for the next contract_period should not be included.
     next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
     next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
     create_resource(active_lead_provider: next_active_lead_provider)
 
-    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort,1099" } })
+    authenticated_api_get(path, params: { filter: { cohort: "invalid" } })
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render([], root: "data", **serializer_options))
+  end
+
+  it "returns no resources if the specified cohort is not found" do
+    create_resource(active_lead_provider:)
+
+    # Resource for the next contract_period should not be included.
+    next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+    next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
+    create_resource(active_lead_provider: next_active_lead_provider)
+
+    authenticated_api_get(path, params: { filter: { cohort: "1999" } })
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render([], root: "data", **serializer_options))
   end
 end
 

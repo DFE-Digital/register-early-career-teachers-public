@@ -17,19 +17,19 @@ module API
     private
 
       def schools_query(conditions: {})
-        API::Schools::Query.new(**(default_query_conditions.merge(conditions)).compact)
+        API::Schools::Query.new(**(default_query_conditions.merge(conditions.compact)))
       end
 
       def default_query_conditions
         @default_query_conditions ||= {
-          contract_period_year: contract_period.year,
+          contract_period_year: contract_period&.year,
           lead_provider_id: current_lead_provider.id
         }
       end
 
       def serializer_options
         @serializer_options ||= {
-          contract_period_year: contract_period.year,
+          contract_period_year: contract_period&.year,
           lead_provider_id: current_lead_provider.id
         }
       end
