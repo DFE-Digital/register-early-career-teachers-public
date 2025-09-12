@@ -95,6 +95,49 @@ RSpec.describe ParityCheck::Client do
         expect(ecf_requests.count).to eq(2)
         expect(rect_requests.count).to eq(2)
       end
+
+      describe "diverging requests" do
+        let(:request_builder) { ParityCheck::RequestBuilder.new(request:) }
+        let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :post) }
+
+        before { allow(ParityCheck::RequestBuilder).to receive(:new).with(request:).and_return(request_builder) }
+
+        context "when the requests have different bodies" do
+          before { allow(request_builder).to receive(:body).and_return({ foo: :bar }.to_json, { foo: :baz }.to_json) }
+
+          it "raises an error" do
+            expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
+          end
+        end
+
+        context "when the requests have different methods" do
+          before do
+            stub_request(:put, %r{#{rect_url + path_without_query_parameters}.*})
+
+            allow(request_builder).to receive(:method).and_return(:post, :put)
+          end
+
+          it "raises an error" do
+            expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
+          end
+        end
+
+        context "when the requests have different headers" do
+          before { allow(request_builder).to receive(:headers).and_return({ "Authorization" => "Bearer token1" }, { "Authorization" => "Bearer token2" }) }
+
+          it "raises an error" do
+            expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
+          end
+        end
+
+        context "when the requests have different query parameters" do
+          before { allow(request_builder).to receive(:query).and_return({ foo: :bar }, { foo: :baz }) }
+
+          it "raises an error" do
+            expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
+          end
+        end
+      end
     end
 
     context "when performing a POST request" do
