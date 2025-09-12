@@ -48,7 +48,7 @@ module Migrators
               school_periods << SchoolPeriodExtractor.new(induction_records: induction_records_group).school_periods
             end
 
-            teacher.update!(ecf_mentor_profile_id: participant_profile.id)
+            teacher.update!(api_mentor_profile_id: participant_profile.id)
             result = Builders::Mentor::SchoolPeriods.new(teacher:, school_periods: school_periods.flatten).build
           else
             ::TeacherMigrationFailure.create!(teacher:,

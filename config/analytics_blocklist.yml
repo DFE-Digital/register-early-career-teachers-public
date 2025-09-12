@@ -220,9 +220,9 @@
   - api_id
   - api_updated_at
   :teachers:
-  - ecf_user_id
-  - ecf_ect_profile_id
-  - ecf_mentor_profile_id
+  - api_user_id
+  - api_ect_profile_id
+  - api_mentor_profile_id
   - corrected_name
   - trs_first_name
   - trs_last_name

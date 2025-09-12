@@ -52,6 +52,7 @@ erDiagram
     datetime created_at
     datetime updated_at
     enum fee_type
+    datetime api_updated_at
   }
   Statement }o--|| ActiveLeadProvider : belongs_to
   SchoolPartnership {
@@ -109,9 +110,6 @@ erDiagram
     string trn
     string trs_first_name
     string trs_last_name
-    uuid ecf_user_id
-    uuid ecf_ect_profile_id
-    uuid ecf_mentor_profile_id
     date trs_qts_awarded_on
     string trs_qts_status_description
     string trs_induction_status
@@ -121,6 +119,9 @@ erDiagram
     date mentor_became_ineligible_for_funding_on
     enum mentor_became_ineligible_for_funding_reason
     boolean trs_deactivated
+    uuid api_user_id
+    uuid api_ect_profile_id
+    uuid api_mentor_profile_id
   }
   PendingInductionSubmission {
     integer id
