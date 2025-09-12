@@ -24,6 +24,8 @@ module ParityCheck
           rect_response = perform_request(app: :rect)
         end
 
+        raise RequestError, "Constructed requests do not match between ECF and RECT" unless requests_consistent?(ecf_response, rect_response)
+
         response = create_response(ecf_response, rect_response)
 
         yield(response)
@@ -35,6 +37,13 @@ module ParityCheck
     end
 
   private
+
+    def requests_consistent?(ecf_response, rect_response)
+      return false unless %i[method request_body request_headers].all? { ecf_response.env[it] == rect_response.env[it] }
+      return false unless ecf_response.env[:url].query == rect_response.env[:url].query
+
+      true
+    end
 
     def create_response(ecf_response, rect_response)
       Response.new(
@@ -51,8 +60,8 @@ module ParityCheck
     def perform_request(app:)
       connection.send(request_builder.method) do |request|
         request.url request_builder.url(app:), request_builder.query
-        request.headers = request_builder.headers
-        request.body = request_builder.body if request_builder.body
+        request_builder.headers.tap { request.headers = it if it.present? }
+        request_builder.body.tap { request.body = it if it.present? }
       end
     end
 
