@@ -59,7 +59,7 @@ RSpec.describe Schools::RegisterECT do
         end
 
         context "when a Teacher record with the same TRN exists and has ect records at the same school" do
-          before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+          before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:, started_on: Date.new(2024, 1, 1)) }
 
           it "raises an exception" do
             expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
