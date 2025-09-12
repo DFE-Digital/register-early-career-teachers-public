@@ -27,10 +27,10 @@ module Migration
     def load_participant_profile
       pid = if teacher_migration_failure.migration_item_type == "Migration::ParticipantProfile"
               teacher_migration_failure.migration_item_id
-            elsif teacher.ecf_ect_profile_id.present?
-              teacher.ecf_ect_profile_id
-            elsif teacher.ecf_mentor_profile_id.present?
-              teacher.ecf_mentor_profile_id
+            elsif teacher.api_ect_profile_id.present?
+              teacher.api_ect_profile_id
+            elsif teacher.api_mentor_profile_id.present?
+              teacher.api_mentor_profile_id
             end
       Migration::ParticipantProfilePresenter.new(Migration::ParticipantProfile.find(pid)) if pid.present?
     end
