@@ -21,7 +21,7 @@ shared_examples "an index endpoint" do
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq(serializer.render(apply_expected_order(resources), root: "data", **options))
+      expect(response.body).to eq(serializer.render(apply_expected_order(resources.map(&:reload)), root: "data", **options))
     end
   end
 
