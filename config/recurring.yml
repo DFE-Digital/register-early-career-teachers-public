@@ -48,3 +48,13 @@ review:
     class: PurgePendingInductionSubmissionsJob
     queue: default
     schedule: Every hour
+
+  blazer_run_checks:
+    command: "Blazer.run_checks(schedule: '5 minutes')"
+    queue: default
+    schedule: every 5 minutes
+
+  blazer_send_failing_checks:
+    command: "Blazer.send_failing_checks"
+    queue: mailers
+    schedule: every 5 minutes

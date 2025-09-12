@@ -3,7 +3,7 @@
 data_sources:
   # http://localhost:3000/admin/blazer/queries/docs?data_source=main
   main:
-    url: <%= ENV["BLAZER_DATABASE_URL"] %>
+    url: <%= ENV.fetch("BLAZER_DATABASE_URL", "postgres://localhost:5432") %>
 
     # https://blazer.dokkuapp.com/queries/1-smart-variable
     smart_variables:
@@ -73,15 +73,14 @@ user_name: name
 before_action_method: require_admin
 
 # email to send checks from
-# from_email: blazer@example.org
+from_email: <%= ENV.fetch("BLAZER_FROM_EMAIL", "blazer@example.org") %>
 
 # webhook for Slack
 # slack_webhook_url: <%= ENV["BLAZER_SLACK_WEBHOOK_URL"] %>
 
 check_schedules:
-# - "1 day"
-# - "1 hour"
-# - "5 minutes"
+  - "1 day"
+  - "1 hour"
 
 # enable anomaly detection
 # note: with trend, time series are sent to https://trendapi.org
