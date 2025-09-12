@@ -30,7 +30,7 @@ module Migrators
     end
 
     def migrate_one!(statement_with_adjustment)
-      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(api_id: statement_with_adjustment.id)
+      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(ecf_id: statement_with_adjustment.id)
 
       statement_adjustment.statement = ::Statement.find_by!(api_id: statement_with_adjustment.id)
       statement_adjustment.payment_type = "Reconcile amounts pre-adjustments feature"

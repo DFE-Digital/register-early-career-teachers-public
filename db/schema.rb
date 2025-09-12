@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_11_135206) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -671,11 +671,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_135206) do
 
   create_table "statement_adjustments", force: :cascade do |t|
     t.bigint "statement_id", null: false
-    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "ecf_id"
     t.string "payment_type", null: false
     t.decimal "amount", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["ecf_id"], name: "index_statement_adjustments_on_ecf_id", unique: true
     t.index ["statement_id"], name: "index_statement_adjustments_on_statement_id"
   end
 

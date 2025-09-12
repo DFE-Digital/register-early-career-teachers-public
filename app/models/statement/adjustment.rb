@@ -7,7 +7,7 @@ class Statement::Adjustment < ApplicationRecord
   validate :amount_min_and_max_values
 
   # Only needed for migrating data from ECF; can be removed later.
-  validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another statement adjustment" }
+  validates :ecf_id, uniqueness: { case_sensitive: false, message: "ECF id already exists for another statement adjustment" }, allow_nil: true
 
 private
 
