@@ -1,6 +1,8 @@
 module Blazer
   # @see https://github.com/dxw/mail-notify/blob/main/lib/mail/notify/mailer.rb#L31C11-L53
   # @see https://github.com/alphagov/notifications-ruby-client/blob/main/lib/notifications/client/request_error.rb#L30
+
+  # rubocop:disable Rails/ApplicationMailer
   class CheckMailer < ActionMailer::Base
     # @return [Mail::Message] with essential Notify param
     def mail(*args)
@@ -10,4 +12,5 @@ module Blazer
       mail_message
     end
   end
+  # rubocop:enable Rails/ApplicationMailer
 end

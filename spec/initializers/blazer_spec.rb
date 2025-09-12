@@ -5,7 +5,7 @@ RSpec.describe 'Blazer' do
     end
 
     let(:notify) do
-      Mail::Notify::DeliveryMethod.new(api_key: ENV.fetch('GOVUK_NOTIFY_API_KEY'))
+      Mail::Notify::DeliveryMethod.new(api_key: "fake-key-#{SecureRandom.uuid}-#{SecureRandom.uuid}")
     end
 
     it 'sends a message with a template_id' do
@@ -15,6 +15,7 @@ RSpec.describe 'Blazer' do
       ).and_return(kind_of(Notifications::Client::ResponseNotification))
 
       notify.deliver!(message)
+      expect(message.template_id).not_to be_nil
     end
   end
 end
