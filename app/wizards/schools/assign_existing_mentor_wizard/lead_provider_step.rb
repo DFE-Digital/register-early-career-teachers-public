@@ -1,6 +1,8 @@
 module Schools
   module AssignExistingMentorWizard
     class LeadProviderStep < Step
+      include TrainingPeriodSources
+
       attr_accessor :lead_provider_id
 
       validates :lead_provider_id,
@@ -28,16 +30,44 @@ module Schools
       end
 
       def create_mentor_training_period!
-        Schools::CreateMentorTrainingPeriod.new(
-          mentor_at_school_period: wizard.context.mentor_at_school_period,
-          lead_provider: selected_lead_provider,
-          author: wizard.author,
-          started_on: wizard.context.mentor_at_school_period.started_on
-        ).create!
+        ActiveRecord::Base.transaction do
+          training_period = TrainingPeriods::Create.provider_led(
+            period: mentor_at_school_period,
+            started_on:,
+            school_partnership: earliest_matching_school_partnership,
+            expression_of_interest:
+          ).call
+
+          record_training_period_event!(training_period)
+        end
       end
 
-      def selected_lead_provider
-        @selected_lead_provider ||= LeadProvider.find(lead_provider_id)
+      def record_training_period_event!(training_period)
+        Events::Record.record_teacher_starts_training_period_event!(
+          author: wizard.author,
+          teacher: mentor_at_school_period.teacher,
+          school: mentor_at_school_period.school,
+          training_period:,
+          mentor_at_school_period:,
+          ect_at_school_period: nil,
+          happened_at: started_on
+        )
+      end
+
+      def mentor_at_school_period
+        wizard.context.mentor_at_school_period
+      end
+
+      def lead_provider
+        @lead_provider ||= LeadProvider.find(lead_provider_id)
+      end
+
+      def started_on
+        mentor_at_school_period.started_on
+      end
+
+      def school
+        mentor_at_school_period.school
       end
     end
   end
