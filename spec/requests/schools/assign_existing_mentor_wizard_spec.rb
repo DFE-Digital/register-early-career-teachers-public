@@ -1,11 +1,21 @@
 RSpec.describe 'Assign existing mentor wizard', type: :request do
   let(:school) { FactoryBot.create(:school) }
-  let(:ect)    { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
-  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
+  let(:started_on) { Date.new(2023, 9, 1) }
+  let(:ect)    { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:) }
+  let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:) }
 
   before do
     allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-    FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: ect)
+    contract_period = FactoryBot.create(:contract_period, year: 2023)
+    school_partnership = FactoryBot.create(:school_partnership)
+    school_partnership.lead_provider_delivery_partnership.active_lead_provider.update!(contract_period:)
+
+    FactoryBot.create(:training_period,
+                      :ongoing,
+                      :provider_led,
+                      ect_at_school_period: ect,
+                      started_on:,
+                      school_partnership:)
   end
 
   def kickoff_wizard!
