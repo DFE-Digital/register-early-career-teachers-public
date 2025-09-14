@@ -98,7 +98,10 @@ For detailed technical information, view the `GET /schools/{id}` [endpoint Swagg
 
 ### Find delivery partners 
 
-Lead providers can use the `GET /delivery-partners`endpoint to get the required `delivery_partner_id` for creating or updating partnerships, and to verify which delivery partners are registered to deliver in a given cohort. This helps providers choose the right partner (for example, by cohort or region), plan coverage, and avoid submission errors when confirming or updating partnerships. 
+Lead providers can use the `GET /delivery-partners`endpoint to:
+
+* get the required `delivery_partner_id` for creating or updating partnerships
+* verify which delivery partners they can contractually work with in a given cohort
 
 For detailed technical information, view the `GET /delivery-partners` [endpoint Swagger API documentation](/api/docs/v3#/Delivery%20Partners/get_api_v3_delivery_partners). 
 
