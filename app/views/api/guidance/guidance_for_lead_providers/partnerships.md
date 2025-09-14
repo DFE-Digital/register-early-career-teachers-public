@@ -4,6 +4,14 @@
 
 Partnerships are agreements between schools, lead providers, and delivery partners to deliver training to early career teachers (ECTs) and mentors for a given cohort.  
 
+## Partnerships process overview 
+
+1. Cohort opens for registrations.
+2. Schools register ECT and mentors, choosing the programme type (provider-led or school-led) for each participant rather than making a schoolwide choice.
+3. Lead providers find schools they want to partner with using `GET /schools` API endpoint.
+4. Lead providers create partnerships via the `POST /partnerships` endpoint.
+5. Other lead providers may also create partnerships with the same school in the same cohort. 
+
 ## Understanding partnerships in the API 
 
 The API allows lead providers to confirm, view, and update these agreements so that participants are correctly assigned to training. 
@@ -25,9 +33,15 @@ Each confirmed partnership has a unique identifier (`id`), returned in the `GET 
 
 We’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`) from partnership responses because schools now make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership. 
 
-If lead providers think a school has assigned the wrong provider to an ECT or mentor, they should ask the school to update the participant’s details in the service as a first step. 
+### When does a participant appear in a provider’s feed? 
 
-Lead providers can check participant records to understand if a school is still working with them. 
+Lead providers can check participant records using the `GET /participants` endpoint to see if a school is still working with them: 
+
+* if the participant appears, they’re the selected lead provider
+* if the school later changes provider, the participant will remain in their feed with a `leaving` or `left` status (including moves to school-led or a different provider)
+* if the participant does not appear, either the school has not selected them as the lead provider or their partnership with the school for that cohort has not been created/rolled over (or both) 
+
+If providers believe a school has assigned the wrong provider to an ECT or mentor, they should ask the school to update the participant’s record in the service first. 
 
 ### School induction tutor details 
 
@@ -47,23 +61,58 @@ Schools now choose lead providers per participant, so this field reflects indivi
 | Scenario |   `expression_of_interest` | 
 | ------------ | ------------- |  
 | School has registered at least one participant with the lead provider for the chosen cohort | `TRUE`|  
-| A partnership is confirmed for the cohort | `TRUE` (stays `TRUE` even if participants later leave, or switch lead provider or programme type) | 
 | No participants registered with the lead provider | `FALSE` |  
 | No partnership for the cohort and the school reports all participants have left or are no longer training with the lead provider | Changes from `TRUE` to `FALSE` |  
 
+#### Why `expression_of_interest` stays `TRUE` after a partnership is confirmed 
+
+Once a partnership is confirmed for a cohort, `expression_of_interest` remains `TRUE` to show that the school is working with the lead provider for that cohort. 
+
+If participants later leave, switch provider, or move to school-led, the flag stays `TRUE`.  
+
+## Find schools and delivery partners 
+
+### Find schools 
+
+Lead providers can use the `GET /schools` endpoint to find schools in a given cohort, check the school’s high-level programme status (school-led vs provider-led), and whether a partnership already exists.  
+
+This will help providers find schools to work with, create or roll over partnerships, and avoid duplicate submissions (422 errors). Since programme choice is now set per participant, this endpoint gives the school-level context needed to plan, while participant endpoints hold individual details. 
+
+For detailed technical information, view the `GET /schools` [endpoint Swagger API documentation](/api/docs/v3#/Schools/get_api_v3_schools). 
+
+#### What the API will show 
+ 
+The API shows schools eligible for funded training in a given cohort or schools with existing partnerships which have become ineligible.  
+
+#### What the API will not show 
+ 
+The API will not show schools that are ineligible for funding in a given cohort. 
+ 
+If a school’s eligibility changes from one cohort to the next, results will default according to the school’s latest eligibility. For example, if a school was eligible for funding in the 2025 cohort but becomes ineligible for funding in 2026, the API will not show the school in the 2026 cohort. 
+
+### View a specific school 
+
+The ` GET /schools/{id}?filter[cohort]={year}` endpoint shows details including the programme type choice and confirmed partnerships for a single school in a given cohort.  
+
+For detailed technical information, view the `GET /schools/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Schools/get_api_v3_schools__id_). 
+
+### Find delivery partners 
+
+Lead providers can use the `GET /delivery-partners`endpoint to get the required `delivery_partner_id` for creating or updating partnerships, and to verify which delivery partners are registered to deliver in a given cohort. This helps providers choose the right partner (for example, by cohort or region), plan coverage, and avoid submission errors when confirming or updating partnerships. 
+
+For detailed technical information, view the `GET /delivery-partners` [endpoint Swagger API documentation](/api/docs/v3#/Delivery%20Partners/get_api_v3_delivery_partners). 
+
+### View a specific delivery partner 
+
+Lead providers can use the `GET /delivery-partners/{id}` endpoint to see if a specific delivery partner is registered to deliver training for a cohort. 
+
+For detailed technical information, view the `GET /delivery-partners/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Delivery%20Partners/get_api_v3_delivery_partners__id_). 
+
 ## Create a partnership 
 
-``` 
-POST /partnerships 
-``` 
+Lead providers can use the `POST /partnerships`endpoint to create partnerships. 
 
-Request bodies must include: 
-
-* `cohort` 
-* `school_id` 
-* `delivery_partner_id` 
- 
-For more detailed technical information, view the `POST /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/post_api_v3_partnerships). 
+For detailed technical information, view the `POST /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/post_api_v3_partnerships). 
 
 ### When lead providers can create a partnership 
 
@@ -75,15 +124,11 @@ During registration, induction tutors confirm whether to continue the partnershi
 
 This reduces the need for lead providers to manually resubmit partnerships each cohort. 
 
-## Roll over partnerships 
-
-Schools can roll over their most recent partnership (not only from the previous cohort). 
-
 ## Multiple partnerships 
 
 Previously, schools had a default partnership with a single lead provider for each cohort. 
 
-We’ve changed this for the 2026 cohort to reflect that some schools need to set up partnerships with more than one lead provider. 
+We’ve changed this to reflect that some schools need to set up partnerships with more than one lead provider. 
 
 The API now supports multiple partnerships for a school in the same cohort: 
 
@@ -96,129 +141,14 @@ In the API:
 * `GET /partnerships` may return more than one partnership for the same school and cohort
 * `in_partnership` will state `TRUE` if any partnership exists and `FALSE` if none exist
 
-## Find schools and delivery partners 
-
-### Find schools delivering training 
-
-``` 
-GET /schools?filter[cohort]=year 
-``` 
-
-This endpoint returns schools eligible for funded training in a given cohort. Lead providers can check details on the type of training programme schools have chosen to deliver, and whether they’ve got confirmed partnerships in place. 
-
-Requests must include: 
-
-* `cohort` 
-
-Lead providers can also filter by URN. For example, `GET /schools?filter[cohort]=2024&filter[urn]=123456`. 
-
-For more detailed technical information, view the `GET /schools` [endpoint Swagger API documentation](/api/docs/v3#/Schools/get_api_v3_schools). 
-
-### What the API will show 
- 
-The API shows schools eligible for funded training in a given cohort or schools with existing partnerships which have become ineligible.  
-
-### What the API will not show 
- 
-The API will not show schools that are ineligible for funding in a given cohort. 
- 
-If a school’s eligibility changes from one cohort to the next, results will default according to the school's latest eligibility. For example, if a school was eligible for funding in the 2025 cohort but becomes ineligible for funding in 2026, the API will not show the school in the 2026 cohort. 
-
-### View a specific school 
-
-``` 
-GET /schools/{id}?filter[cohort]={year} 
-``` 
-
-This endpoint shows details including the programme type choice and confirmed partnerships for a single school in a given cohort.  
-
-Requests must include:  
- 
-* `cohort` 
-
-For more detailed technical information, view the `GET /schools/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Schools/get_api_v3_schools__id_). 
-
-### Find delivery partner IDs 
-
-``` 
-GET /delivery-partners 
-``` 
-
-Each delivery partner has a unique `delivery_partner_id`. This ID is required when creating partnerships with a school and delivery partner. 
-
-Lead providers can filter results by adding a `cohort` filter to the parameter. For example, GET `/api/delivery-partners?filter[cohort]=2024`.  
-
-For more detailed technical information, view the `GET /delivery-partners` [endpoint Swagger API documentation](/api/docs/v3#/Delivery%20Partners/get_api_v3_delivery_partners). 
-
-### View a specific delivery partner 
-
-``` 
-GET /delivery-partners/{id} 
-```  
-
-Lead providers can use this endpoint to see if a specific delivery partner is registered to deliver training for a cohort. 
-
-For more detailed technical information, view the `GET /delivery-partners/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Delivery%20Partners/get_api_v3_delivery_partners__id_). 
-
 ## View partnerships 
 
-### View all partnerships 
+Lead providers can use the `GET /partnerships` endpoint to see all partnerships and the `GET /partnerships/{id}` endpoint to view individual partnerships.
 
-``` 
-GET /partnerships 
-``` 
-
-This endpoint lists all partnerships, with an optional cohort filter. 
-
-For more detailed technical information, view the `GET /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships). 
-
-### View an individual partnership 
-
-``` 
-GET /partnerships/{id} 
-``` 
-
-This endpoint returns details of individual partnerships. 
-
-For more detailed technical information, view the `GET /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships__id_).  
+For detailed technical information, view the `GET /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships) and `GET /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships__id_) 
 
 ## Update a partnership 
 
-``` 
-PUT /partnerships/{id} 
-``` 
+Lead providers can use `PUT /partnerships/{id}` endpoint to update a partnership with a new `delivery_partner_id`. 
 
-Lead providers can use this endpoint to update a partnership with a new `delivery_partner_id`. 
-
-For more detailed technical information, view the `PUT /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/put_api_v3_partnerships__id_). 
-
-## Partnerships troubleshooting 
-
-### Missing participants 
-
-Lead providers should check if the school has them as the lead provider for any ECTs or mentors for that cohort. 
-
-### Receiving data from a non-partnered school 
-
-This can happen if an ECT transfers but continues training with their previous provider. 
-
-## Example partnership response (challenge fields removed) 
-
-```{
-  "data": { 
-    "id": "cd3a12347-7308-4879-942a-c4a70ced400a", 
-    "type": "partnership", 
-    "attributes": { 
-      "cohort": 2024, 
-      "urn": "123456", 
-      "school_id": "24b61d1c-ad95-4000-aee0-afbdd542294a", 
-      "delivery_partner_id": "db2fbf67-b7b7-454f-a1b7-0020411e2314", 
-      "delivery_partner_name": "Delivery Partner Example", 
-      "induction_tutor_name": "John Doe", 
-      "induction_tutor_email": "john.doe@example.com", 
-      "updated_at": "2024-05-31T02:22:32.000Z", 
-      "created_at": "2024-05-31T02:22:32.000Z" 
-    } 
-  } 
-}
-```
+For detailed technical information, view the `PUT /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/put_api_v3_partnerships__id_).
