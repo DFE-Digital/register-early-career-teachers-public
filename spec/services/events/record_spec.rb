@@ -1313,4 +1313,117 @@ RSpec.describe Events::Record do
       )
     end
   end
+
+  describe '.record_training_period_assigned_to_school_partnership_event!' do
+    let(:school) { FactoryBot.create(:school) }
+    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Ichigo', trs_last_name: 'Kurosaki') }
+    let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
+    let(:lead_provider) { school_partnership.lead_provider }
+    let(:delivery_partner) { school_partnership.delivery_partner }
+
+    context 'when ECT training' do
+      let(:ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school:,
+          started_on: Date.new(2025, 1, 1),
+          finished_on: Date.new(2025, 12, 31)
+        )
+      end
+
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :with_only_expression_of_interest,
+          ect_at_school_period:,
+          started_on: Date.new(2025, 3, 1),
+          finished_on: Date.new(2025, 3, 31)
+        )
+      end
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_training_period_assigned_to_school_partnership_event!(
+            author:,
+            school_partnership:,
+            training_period:,
+            ect_at_school_period:,
+            teacher:,
+            lead_provider:,
+            delivery_partner:,
+            school:,
+            mentor_at_school_period: nil
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            school_partnership:,
+            training_period:,
+            ect_at_school_period:,
+            teacher:,
+            lead_provider:,
+            delivery_partner:,
+            school:,
+            heading: "Ichigo Kurosaki’s ECT training period was assigned to a school partnership",
+            event_type: :training_period_assigned_to_school_partnership,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when mentor training' do
+      let(:mentor_at_school_period) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          school:,
+          started_on: Date.new(2025, 1, 1),
+          finished_on: Date.new(2025, 12, 31)
+        )
+      end
+
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          :with_only_expression_of_interest,
+          mentor_at_school_period:,
+          started_on: Date.new(2025, 3, 1),
+          finished_on: Date.new(2025, 3, 31)
+        )
+      end
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_training_period_assigned_to_school_partnership_event!(
+            author:,
+            school_partnership:,
+            training_period:,
+            mentor_at_school_period:,
+            teacher:,
+            lead_provider:,
+            delivery_partner:,
+            school:,
+            ect_at_school_period: nil
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            school_partnership:,
+            training_period:,
+            mentor_at_school_period:,
+            teacher:,
+            lead_provider:,
+            delivery_partner:,
+            school:,
+            heading: "Ichigo Kurosaki’s mentor training period was assigned to a school partnership",
+            event_type: :training_period_assigned_to_school_partnership,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+  end
 end
