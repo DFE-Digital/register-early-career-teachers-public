@@ -457,6 +457,9 @@
   - rect_body
   - ecf_time_ms
   - rect_time_ms
+  - ecf_request_uri
+  - rect_request_uri
+  - request_body
   - page
   - created_at
   - updated_at

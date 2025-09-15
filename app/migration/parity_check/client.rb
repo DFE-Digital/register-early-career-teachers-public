@@ -53,6 +53,9 @@ module ParityCheck
         rect_body: rect_response.body,
         rect_status_code: rect_response.status,
         rect_time_ms: rect_response.env[:request_duration_ms],
+        ecf_request_uri: CGI.unescape(ecf_response.env[:url].request_uri),
+        rect_request_uri: CGI.unescape(rect_response.env[:url].request_uri),
+        request_body: rect_response.env[:request_body],
         page: request_builder.page
       )
     end
