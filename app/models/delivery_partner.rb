@@ -28,4 +28,6 @@ class DeliveryPartner < ApplicationRecord
 
   touch -> { self }, when_changing: %i[name], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[name], timestamp_attribute: :api_updated_at
+
+  normalizes :name, with: -> { it.squish }
 end
