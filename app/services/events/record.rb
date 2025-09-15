@@ -390,6 +390,47 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
     end
 
+    def self.record_training_period_assigned_to_school_partnership_event!(
+      author:,
+      training_period:,
+      ect_at_school_period:,
+      mentor_at_school_period:,
+      school_partnership:,
+      lead_provider:,
+      delivery_partner:,
+      school:,
+      teacher:,
+      happened_at: Time.zone.now
+    )
+      if ect_at_school_period.present? && mentor_at_school_period.present?
+        fail(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
+      end
+
+      if ect_at_school_period.nil? && mentor_at_school_period.nil?
+        fail(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
+      end
+
+      event_type = :training_period_assigned_to_school_partnership
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = ect_at_school_period.present? ? 'ECT' : 'mentor'
+      heading = "#{teacher_name}'s #{training_type} training period was assigned to a school partnership"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        training_period:,
+        ect_at_school_period:,
+        mentor_at_school_period:,
+        school_partnership:,
+        lead_provider:,
+        delivery_partner:,
+        school:,
+        teacher:,
+        happened_at:
+      ).record_event!
+    end
+
     # Bulk Upload Events
 
     def self.record_bulk_upload_started_event!(author:, batch:)

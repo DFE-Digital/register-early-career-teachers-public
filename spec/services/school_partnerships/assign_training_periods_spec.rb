@@ -1,4 +1,6 @@
 RSpec.describe SchoolPartnerships::AssignTrainingPeriods do
+  include ActiveJob::TestHelper
+
   describe '#call' do
     subject(:service) do
       described_class.new(
@@ -100,6 +102,23 @@ RSpec.describe SchoolPartnerships::AssignTrainingPeriods do
 
     it 'does not link tp with different contract periods' do
       expect { service.call }.not_to(change { wrong_year_tp.reload.school_partnership })
+    end
+
+    it 'records a training_period_assigned_to_school_partnership event for each newly linked training period' do
+      perform_enqueued_jobs do
+        expect {
+          service.call
+        }.to change { Event.where(event_type: 'training_period_assigned_to_school_partnership').count }.by(1)
+      end
+
+      expect(Event.last).to have_attributes(
+        event_type: 'training_period_assigned_to_school_partnership',
+        school_partnership:,
+        training_period: linkable_tp,
+        lead_provider:,
+        delivery_partner: school_partnership.delivery_partner,
+        school:
+      )
     end
   end
 end
