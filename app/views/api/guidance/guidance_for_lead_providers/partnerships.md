@@ -98,7 +98,7 @@ For detailed technical information, view the `GET /schools/{id}` [endpoint Swagg
 
 ### Find delivery partners 
 
-Lead providers can use the `GET /delivery-partners`endpoint to:
+Lead providers can use the `GET /delivery-partners` endpoint to:
 
 * get the required `delivery_partner_id` for creating or updating partnerships
 * verify which delivery partners they can contractually work with in a given cohort
@@ -113,7 +113,7 @@ For detailed technical information, view the `GET /delivery-partners/{id}` [endp
 
 ## Create a partnership 
 
-Lead providers can use the `POST /partnerships`endpoint to create partnerships. 
+Lead providers can use the `POST /partnerships` endpoint to create partnerships. 
 
 For detailed technical information, view the `POST /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/post_api_v3_partnerships). 
 
