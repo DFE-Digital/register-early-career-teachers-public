@@ -7,10 +7,9 @@ Partnerships are agreements between schools, lead providers, and delivery partne
 ## Partnerships process overview 
 
 1. Cohort opens for registrations.
-2. Schools register ECT and mentors, choosing the programme type (provider-led or school-led) for each participant rather than making a schoolwide choice.
+2. Schools register ECTs and mentors, choosing the programme type (`provider-led` or `school-led`) for each participant rather than making a schoolwide choice.
 3. Lead providers find schools they want to partner with using `GET /schools` API endpoint.
 4. Lead providers create partnerships via the `POST /partnerships` endpoint.
-5. Other lead providers may also create partnerships with the same school in the same cohort. 
 
 ## Understanding partnerships in the API 
 
@@ -35,7 +34,7 @@ We’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`
 
 ### When does a participant appear in a provider’s feed? 
 
-Lead providers can check participant records using the `GET /participants` endpoint to see if a school is still working with them: 
+Lead providers can check participant records using the `GET /participants` endpoint to see if a school is working with them: 
 
 * if the participant appears, they’re the selected lead provider
 * if the school later changes provider, the participant will remain in their feed with a `leaving` or `left` status (including moves to school-led or a different provider)
@@ -76,7 +75,7 @@ If participants later leave, switch provider, or move to school-led, the flag st
 
 Lead providers can use the `GET /schools` endpoint to find schools in a given cohort, check the school’s high-level programme status (school-led vs provider-led), and whether a partnership already exists.  
 
-This will help providers find schools to work with, create or roll over partnerships, and avoid duplicate submissions (422 errors). Since programme choice is now set per participant, this endpoint gives the school-level context needed to plan, while participant endpoints hold individual details. 
+This will help providers find schools to work with, create or roll over partnerships, and avoid duplicate submissions. Since programme choice is now set per participant, this endpoint gives the school-level context needed to plan, while participant endpoints hold individual details. 
 
 For detailed technical information, view the `GET /schools` [endpoint Swagger API documentation](/api/docs/v3#/Schools/get_api_v3_schools). 
 
@@ -92,7 +91,7 @@ If a school’s eligibility changes from one cohort to the next, results will de
 
 ### View a specific school 
 
-The ` GET /schools/{id}?filter[cohort]={year}` endpoint shows details including the programme type choice and confirmed partnerships for a single school in a given cohort.  
+The `GET /schools/{id}?filter[cohort]={year}` endpoint shows details including the programme type choice and confirmed partnerships for a single school in a given cohort.  
 
 For detailed technical information, view the `GET /schools/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Schools/get_api_v3_schools__id_). 
 
