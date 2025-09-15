@@ -14,7 +14,16 @@ module SchoolPartnerships
           lead_provider_delivery_partnership:
         ).tap do |school_partnership|
           lead_provider = school_partnership.lead_provider
+          contract_period = school_partnership.contract_period
+
           Events::Record.record_school_partnership_created_event!(author: Events::LeadProviderAPIAuthor.new(lead_provider:), school_partnership:)
+
+          SchoolPartnerships::AssignTrainingPeriods.new(
+            school_partnership:,
+            school:,
+            lead_provider:,
+            contract_period:
+          ).call
         end
       end
     end
