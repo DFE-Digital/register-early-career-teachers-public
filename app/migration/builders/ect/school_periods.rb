@@ -12,7 +12,7 @@ module Builders
         success = true
 
         school_periods.each_with_index do |period, idx|
-          school = School.find_by!(urn: period.urn)
+          school = find_school_by_urn!(period.urn)
           school_period = ::ECTAtSchoolPeriod.find_or_initialize_by(teacher:, school:, started_on: period.start_date)
           school_period.ecf_start_induction_record_id = period.start_source_id
           next_period = school_periods[idx + 1]
@@ -31,6 +31,15 @@ module Builders
         end
 
         success
+      end
+
+    private
+
+      def find_school_by_urn!(urn)
+        school = CacheManager.instance.find_school_by_urn(urn)
+        raise(ActiveRecord::RecordNotFound, "Couldn't find School with URN: #{urn}") unless school
+
+        school
       end
     end
   end

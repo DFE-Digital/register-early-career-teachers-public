@@ -1,0 +1,29 @@
+<h2 class="govuk-heading-m">Cache Performance</h2>
+
+<%= govuk_table(html_attributes: { class: "govuk-!-margin-bottom-9" }) do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Cache")
+      row.with_cell(text: "Total Requests")
+      row.with_cell(text: "Cache Hits")
+      row.with_cell(text: "Cache Misses")
+      row.with_cell(text: "Hit Rate")
+      row.with_cell(text: "Times Loaded")
+    end
+  end
+
+  table.with_body do |body|
+    all_cache_types.each do |cache_type|
+      stats = cache_stats_for(cache_type)
+      
+      body.with_row do |row|
+        row.with_cell(text: cache_type.to_s)
+        row.with_cell(text: cache_total_requests_tag(stats[:hits], stats[:misses]))
+        row.with_cell(text: govuk_tag(text: number_with_delimiter(stats[:hits]), colour: "green"))
+        row.with_cell(text: govuk_tag(text: number_with_delimiter(stats[:misses]), colour: stats[:misses].zero? ? "green" : "red"))
+        row.with_cell(text: cache_hit_rate_tag(stats[:hits], stats[:misses]))
+        row.with_cell(text: govuk_tag(text: stats[:loads].to_s, colour: "blue"))
+      end
+    end
+  end
+end %>

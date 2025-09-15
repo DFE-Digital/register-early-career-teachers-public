@@ -147,6 +147,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
     t.integer "worker"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "cache_stats"
   end
 
   create_table "declarations", force: :cascade do |t|
