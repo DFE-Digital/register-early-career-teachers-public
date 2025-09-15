@@ -68,5 +68,13 @@ RSpec.describe SchoolPartnerships::Create do
       }.to change { training_period.school_partnership }
         .from(nil).to(created_school_partnership)
     end
+
+    it 'raises an error if the school and delivery partnership are already linked' do
+      FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
+
+      expect {
+        service.create
+      }.to raise_error(ActiveRecord::RecordInvalid, /must be unique/)
+    end
   end
 end
