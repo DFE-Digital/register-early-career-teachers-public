@@ -21,6 +21,14 @@ describe DeliveryPartner do
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another delivery partner") }
   end
 
+  describe "normalizing" do
+    subject { FactoryBot.build(:delivery_partner, name: " Some delivery partner ") }
+
+    it "removes leading and trailing spaces from the name" do
+      expect(subject.name).to eql("Some delivery partner")
+    end
+  end
+
   describe "declarative touch" do
     let(:instance) { FactoryBot.create(:delivery_partner) }
 

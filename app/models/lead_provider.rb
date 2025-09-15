@@ -10,4 +10,6 @@ class LeadProvider < ApplicationRecord
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
 
   scope :alphabetical, -> { order(name: :asc) }
+
+  normalizes :name, with: -> { it.squish }
 end

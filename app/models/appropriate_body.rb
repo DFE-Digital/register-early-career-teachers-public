@@ -15,4 +15,6 @@ class AppropriateBody < ApplicationRecord
   validates :name,
             presence: true,
             uniqueness: true
+
+  normalizes :name, with: -> { it.squish }
 end
