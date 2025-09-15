@@ -41,6 +41,7 @@ module Migrators
       teacher.created_at = user.created_at
       teacher.updated_at = user.updated_at
       teacher.save!
+
       teacher
     end
 

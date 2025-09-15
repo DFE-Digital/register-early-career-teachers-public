@@ -16,7 +16,7 @@ module Builders
 
         training_period_data.each do |period|
           period_dates = period_date.new(started_on: period.start_date, finished_on: period.end_date)
-          school = School.find_by!(urn: period.school_urn)
+          school = find_school_by_urn!(period.school_urn)
 
           mentor_at_school_period = teacher
             .mentor_at_school_periods
@@ -42,6 +42,15 @@ module Builders
         end
 
         success
+      end
+
+    private
+
+      def find_school_by_urn!(urn)
+        school = CacheManager.instance.find_school_by_urn(urn)
+        raise(ActiveRecord::RecordNotFound, "Couldn't find School with URN: #{urn}") unless school
+
+        school
       end
     end
   end

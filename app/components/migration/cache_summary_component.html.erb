@@ -1,0 +1,25 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-column-one-half">
+    <div class="govuk-panel govuk-panel--confirmation govuk-!-text-align-centre">
+      <h2 class="govuk-panel__title govuk-!-font-size-24">Total Cache Hits</h2>
+      <div class="govuk-panel__body govuk-!-font-size-36">
+        <%= number_with_delimiter(total_hits) %>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-column-one-half">
+    <div class="govuk-panel govuk-panel--confirmation govuk-!-text-align-centre">
+      <h2 class="govuk-panel__title govuk-!-font-size-24">Total Cache Misses</h2>
+      <div class="govuk-panel__body govuk-!-font-size-36">
+        <%= number_with_delimiter(total_misses) %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="govuk-!-text-align-centre govuk-!-margin-bottom-9">
+  <span class="govuk-body govuk-!-font-size-24">
+    Overall Cache Hit Rate: 
+    <%= govuk_tag(text: "#{overall_hit_rate}%", colour: hit_rate_colour(overall_hit_rate)) %>
+  </span>
+</div>

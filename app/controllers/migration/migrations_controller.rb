@@ -17,6 +17,12 @@ class Migration::MigrationsController < ::AdminController
     redirect_to migration_migrations_path
   end
 
+  def cache_stats
+    @data_migrations = DataMigration.complete.where.not(cache_stats: nil).order(:id)
+
+    render layout: "full"
+  end
+
   def download_report
     data_migrations = DataMigration.complete.where(model: params[:model])
     failures = FailureManager.combine_failures(data_migrations)

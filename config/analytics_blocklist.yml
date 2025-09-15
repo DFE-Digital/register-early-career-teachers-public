@@ -379,6 +379,7 @@
   - worker
   - created_at
   - updated_at
+  - cache_stats
   :contract_periods:
   - year
   - created_at

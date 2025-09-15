@@ -1,0 +1,13 @@
+<%= govuk_back_link(text: "Back to migrations", href: migration_migrations_path) %>
+
+<h1 class="govuk-heading-xl">Migration Cache Statistics</h1>
+
+<% if @data_migrations.any? %>
+  <% combined_stats = combined_cache_stats(@data_migrations) %>
+
+  <%= render Migration::CacheSummaryComponent.new(combined_stats: combined_stats) %>
+  <%= render Migration::CachePerformanceTableComponent.new(combined_stats: combined_stats) %>
+  <%= render Migration::DataMigrationPerformanceTableComponent.new(data_migrations: @data_migrations) %>
+<% else %>
+  <%= render Migration::NoCacheStatsWarningComponent.new %>
+<% end %>
