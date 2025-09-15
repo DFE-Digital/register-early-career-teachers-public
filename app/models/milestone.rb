@@ -23,4 +23,6 @@ class Milestone < ApplicationRecord
               message: 'Can be used once per schedule',
               scope: :schedule_id
             }
+
+  scope :in_declaration_order, -> { order(declaration_type: 'asc') }
 end
