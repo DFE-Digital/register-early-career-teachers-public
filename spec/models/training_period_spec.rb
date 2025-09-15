@@ -284,13 +284,13 @@ describe TrainingPeriod do
   describe "scopes" do
     describe ".for_ect" do
       it "returns training periods only for the specified ect at school period" do
-        expect(TrainingPeriod.for_ect(123).to_sql).to end_with(%(WHERE "training_periods"."ect_at_school_period_id" = 123))
+        expect(described_class.for_ect(123).to_sql).to end_with(%(WHERE "training_periods"."ect_at_school_period_id" = 123))
       end
     end
 
     describe ".for_mentor" do
       it "returns training periods only for the specified mentor at school period" do
-        expect(TrainingPeriod.for_mentor(456).to_sql).to end_with(%(WHERE "training_periods"."mentor_at_school_period_id" = 456))
+        expect(described_class.for_mentor(456).to_sql).to end_with(%(WHERE "training_periods"."mentor_at_school_period_id" = 456))
       end
     end
   end

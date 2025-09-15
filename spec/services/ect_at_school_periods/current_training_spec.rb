@@ -25,7 +25,7 @@ describe ECTAtSchoolPeriods::CurrentTraining do
   end
 
   describe '#lead_provider_via_school_partnership_or_eoi' do
-    subject { ECTAtSchoolPeriods::CurrentTraining.new(ect_at_school_period).lead_provider_via_school_partnership_or_eoi }
+    subject { described_class.new(ect_at_school_period).lead_provider_via_school_partnership_or_eoi }
 
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 

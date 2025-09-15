@@ -27,7 +27,7 @@ RSpec.describe PendingInductionSubmissionBatch do
       subject(:claim) { described_class.new_claim_for(appropriate_body:) }
 
       it 'creates a batch claim' do
-        expect(claim).to be_a(PendingInductionSubmissionBatch)
+        expect(claim).to be_a(described_class)
         expect(claim).to be_claim
         expect(claim).to be_pending
         expect(claim.appropriate_body).to eq(appropriate_body)
@@ -38,7 +38,7 @@ RSpec.describe PendingInductionSubmissionBatch do
       subject(:action) { described_class.new_action_for(appropriate_body:) }
 
       it 'creates a batch action' do
-        expect(action).to be_a(PendingInductionSubmissionBatch)
+        expect(action).to be_a(described_class)
         expect(action).to be_action
         expect(action).to be_pending
         expect(action.appropriate_body).to eq(appropriate_body)

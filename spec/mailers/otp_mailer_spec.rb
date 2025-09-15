@@ -4,7 +4,7 @@ RSpec.describe OTPMailer, type: :mailer do
     let(:recipient_email) { "chester@example.com" }
     let(:recipient_name) { "Chester Thompson" }
     let(:code) { "123456" }
-    let(:mail) { OTPMailer.with(recipient_email:, recipient_name:, code:).otp_code_email }
+    let(:mail) { described_class.with(recipient_email:, recipient_name:, code:).otp_code_email }
 
     it "renders the headers" do
       expect(mail.subject).to eq("Sign in to Register ECTs with this one time password")

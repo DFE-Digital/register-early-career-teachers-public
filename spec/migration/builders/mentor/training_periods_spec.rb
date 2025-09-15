@@ -26,7 +26,7 @@ describe Builders::Mentor::TrainingPeriods do
     it "creates TrainingPeriod records for the school periods" do
       expect {
         service.build
-      }.to change { TrainingPeriod.count }.by(2)
+      }.to change(TrainingPeriod, :count).by(2)
     end
 
     it "populates the TrainingPeriod records with the correct information" do
@@ -52,7 +52,7 @@ describe Builders::Mentor::TrainingPeriods do
       it "creates a TeacherMigrationFailure record" do
         expect {
           service.build
-        }.to change { TeacherMigrationFailure.count }.by(1)
+        }.to change(TeacherMigrationFailure, :count).by(1)
       end
     end
   end

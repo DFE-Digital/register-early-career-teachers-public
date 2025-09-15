@@ -1,5 +1,5 @@
 RSpec.describe Sessions::Manager do
-  subject(:service) { Sessions::Manager.new(session, cookies) }
+  subject(:service) { described_class.new(session, cookies) }
 
   let(:session) { HashWithIndifferentAccess.new }
   let(:cookies) { HashWithIndifferentAccess.new }

@@ -2,7 +2,7 @@ RSpec.describe TeachersIndex::HeaderSectionComponent, type: :component do
   include Rails.application.routes.url_helpers
 
   subject(:component) do
-    TeachersIndex::HeaderSectionComponent.new(status:, current_count:, open_count:, closed_count:)
+    described_class.new(status:, current_count:, open_count:, closed_count:)
   end
 
   let(:open_count) { 5 }

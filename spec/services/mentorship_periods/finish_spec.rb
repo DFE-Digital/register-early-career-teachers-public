@@ -1,7 +1,7 @@
 describe MentorshipPeriods::Finish do
   include ActiveJob::TestHelper
 
-  subject { MentorshipPeriods::Finish.new(mentorship_period:, finished_on:, author:) }
+  subject { described_class.new(mentorship_period:, finished_on:, author:) }
 
   let(:started_on) { 1.year.ago.to_date }
   let(:existing_dates) { { started_on:, finished_on: nil } }

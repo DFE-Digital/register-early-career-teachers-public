@@ -11,7 +11,7 @@ describe Teachers::RefreshTRSAttributes do
 
     it 'updates the relevant TRS attributes' do
       freeze_time do
-        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+        described_class.new(teacher).refresh!
 
         teacher.reload
 
@@ -37,13 +37,13 @@ describe Teachers::RefreshTRSAttributes do
       end
 
       it 'uses Teachers::Manage#update_name! to update the name' do
-        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+        described_class.new(teacher).refresh!
 
         expect(fake_manage).to have_received(:update_name!).once.with(trs_first_name: 'Kirk', trs_last_name: 'Van Houten')
       end
 
       it 'uses Teachers::Manage#update_trs_induction_status! to update the induction status' do
-        Teachers::RefreshTRSAttributes.new(teacher).refresh!
+        described_class.new(teacher).refresh!
 
         expect(fake_manage).to have_received(:update_trs_induction_status!).once.with(trs_induction_status: 'Passed')
       end
@@ -52,7 +52,7 @@ describe Teachers::RefreshTRSAttributes do
     it 'adds a teacher_name_updated_by_trs event' do
       expect(teacher.events).to be_empty
 
-      Teachers::RefreshTRSAttributes.new(teacher).refresh!
+      described_class.new(teacher).refresh!
 
       perform_enqueued_jobs
 
@@ -74,7 +74,7 @@ describe Teachers::RefreshTRSAttributes do
 
       it "marks the teacher as deactivated when the TRS reports the teacher as 'gone'" do
         freeze_time do
-          Teachers::RefreshTRSAttributes.new(teacher).refresh!
+          described_class.new(teacher).refresh!
 
           expect(fake_manage).to have_received(:mark_teacher_as_deactivated!).once.with(trs_data_last_refreshed_at: Time.zone.now)
         end
@@ -85,7 +85,7 @@ describe Teachers::RefreshTRSAttributes do
       let(:enable_trs_teacher_refresh) { false }
 
       it "does not refresh the teacher's TRS attributes" do
-        service = Teachers::RefreshTRSAttributes.new(teacher)
+        service = described_class.new(teacher)
 
         expect { service.refresh! }.not_to(change { teacher.reload.attributes })
       end

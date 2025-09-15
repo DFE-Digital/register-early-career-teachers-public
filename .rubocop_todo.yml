@@ -6,13 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 2
-# This cop supports safe autocorrection (--autocorrect).
-FactoryBot/FactoryClassName:
-  Exclude:
-    - 'spec/factories/gias/school_factory.rb'
-    - 'spec/factories/gias/school_link_factory.rb'
-
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AutoCorrect, AllowUnusedKeywordArguments, IgnoreEmptyMethods, IgnoreNotImplementedMethods, NotImplementedExceptions.
@@ -36,96 +29,22 @@ RSpec/ChangeByZero:
   Exclude:
     - 'spec/services/appropriate_bodies/claim_an_ect/register_ect_spec.rb'
 
-# Offense count: 4
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: be_a, be_kind_of
-RSpec/ClassCheck:
-  Exclude:
-    - 'spec/models/induction_period_spec.rb'
-    - 'spec/models/pending_induction_submission_spec.rb'
-
-# Offense count: 41
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/ContextMethod:
-  Enabled: false
-
-# Offense count: 181
+# Offense count: 136
 # Configuration parameters: Prefixes, AllowedPatterns.
 # Prefixes: when, with, without
 RSpec/ContextWording:
   Enabled: false
 
-# Offense count: 231
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: SkipBlocks, EnforcedStyle, OnlyStaticConstants.
-# SupportedStyles: described_class, explicit
-RSpec/DescribedClass:
-  Enabled: false
-
-# Offense count: 4
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: CustomTransform, IgnoredWords, DisallowedExamples.
-# DisallowedExamples: works
-RSpec/ExampleWording:
-  Exclude:
-    - 'spec/jobs/begin_ect_induction_job_spec.rb'
-    - 'spec/jobs/fail_ect_induction_job_spec.rb'
-    - 'spec/jobs/pass_ect_induction_job_spec.rb'
-    - 'spec/services/events/describe_modifications_spec.rb'
-
-# Offense count: 3
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/ExcessiveDocstringSpacing:
-  Exclude:
-    - 'spec/migration/builders/ect/school_periods_spec.rb'
-    - 'spec/models/teacher_spec.rb'
-    - 'spec/validators/teacher_reference_number_validator_spec.rb'
-
-# Offense count: 20
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: method_call, block
-RSpec/ExpectChange:
-  Exclude:
-    - 'spec/jobs/record_event_job_spec.rb'
-    - 'spec/migration/builders/ect/school_periods_spec.rb'
-    - 'spec/migration/builders/ect/training_periods_spec.rb'
-    - 'spec/migration/builders/mentor/school_periods_spec.rb'
-    - 'spec/migration/builders/mentor/training_periods_spec.rb'
-    - 'spec/migration/builders/mentorship_periods_spec.rb'
-    - 'spec/migration/builders/teacher_spec.rb'
-    - 'spec/migration/legacy_data_importer_spec.rb'
-    - 'spec/services/sessions/one_time_password_spec.rb'
-
-# Offense count: 6
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: single_line_only, single_statement_only, disallow, require_implicit
-RSpec/ImplicitSubject:
-  Exclude:
-    - 'spec/models/gias/school_spec.rb'
-    - 'spec/models/school_spec.rb'
-    - 'spec/wizards/schools/register_mentor_wizard/shared_examples/review_mentor_details_step.rb'
-
-# Offense count: 334
+# Offense count: 327
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
 RSpec/IndexedLet:
   Enabled: false
 
-# Offense count: 257
+# Offense count: 264
 RSpec/LetSetup:
   Enabled: false
 
-# Offense count: 18
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/MatchArray:
-  Exclude:
-    - 'spec/models/concerns/interval_spec.rb'
-    - 'spec/models/ect_at_school_period_spec.rb'
-    - 'spec/models/mentor_at_school_period_spec.rb'
-
-# Offense count: 976
+# Offense count: 951
 # Configuration parameters: EnforcedStyle, IgnoreSharedExamples.
 # SupportedStyles: always, named_only
 RSpec/NamedSubject:
@@ -137,15 +56,6 @@ RSpec/NamedSubject:
 RSpec/NoExpectationExample:
   Exclude:
     - 'spec/components/navigation/primary_navigation_component_spec.rb'
-
-# Offense count: 20
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: Strict, EnforcedStyle, AllowedExplicitMatchers.
-# SupportedStyles: inflected, explicit
-RSpec/PredicateMatcher:
-  Exclude:
-    - 'spec/wizards/schools/register_ect_wizard/ect_spec.rb'
-    - 'spec/wizards/schools/register_mentor_wizard/mentor_spec.rb'
 
 # Offense count: 10
 RSpec/RepeatedExampleGroupBody:
@@ -192,44 +102,10 @@ RSpec/SubjectStub:
     - 'spec/wizards/schools/register_ect_wizard/start_date_step_spec.rb'
     - 'spec/wizards/schools/register_ect_wizard/working_pattern_step_spec.rb'
 
-# Offense count: 51
+# Offense count: 53
 # Configuration parameters: IgnoreNameless, IgnoreSymbolicNames.
 RSpec/VerifiedDoubles:
   Enabled: false
-
-# Offense count: 6
-# Configuration parameters: Database, Include.
-# SupportedDatabases: mysql, postgresql
-# Include: db/**/*.rb
-Rails/BulkChangeTable:
-  Exclude:
-    - 'db/migrate/20240904125324_add_establishment_and_la_fields_to_abs.rb'
-    - 'db/migrate/20240920110230_modify_gias_schools.rb'
-    - 'db/migrate/20240926131856_refactor_fields_on_gias_school.rb'
-    - 'db/migrate/20241025151425_remove_establishment_id_and_make_parts_nullable.rb'
-    - 'db/migrate/20241028105436_unaccent_teachers_search.rb'
-
-# Offense count: 24
-# Configuration parameters: Database, Include.
-# SupportedDatabases: mysql
-# Include: db/**/*.rb
-Rails/NotNullColumn:
-  Exclude:
-    - 'db/migrate/20240904125324_add_establishment_and_la_fields_to_abs.rb'
-    - 'db/migrate/20240905133533_add_trn_to_teachers.rb'
-    - 'db/migrate/20240906122532_add_induction_programme_to_induction_periods.rb'
-    - 'db/migrate/20240920110230_modify_gias_schools.rb'
-    - 'db/migrate/20240924152526_remove_unneeded_roles.rb'
-    - 'db/migrate/20240926131856_refactor_fields_on_gias_school.rb'
-    - 'db/migrate/20240926161243_add_tsvector_column_to_teachers_for_searching.rb'
-
-# Offense count: 7
-# Configuration parameters: Include.
-# Include: db/**/*.rb
-Rails/ReversibleMigration:
-  Exclude:
-    - 'db/migrate/20240924152526_remove_unneeded_roles.rb'
-    - 'db/migrate/20240926161243_add_tsvector_column_to_teachers_for_searching.rb'
 
 # Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -237,10 +113,3 @@ Rails/ReversibleMigration:
 Rails/SaveBang:
   Exclude:
     - 'spec/support/rspec_playwright.rb'
-
-# Offense count: 8616
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
-  Enabled: false

@@ -44,7 +44,7 @@ end
 RSpec.describe Navigation::SubNavigationComponent, type: :component do
   describe "a nested navigation structure with two levels" do
     subject do
-      Navigation::SubNavigationComponent.new(current_path, structure: structure.get)
+      described_class.new(current_path, structure: structure.get)
     end
 
     let(:current_path) { "/some-path" }
@@ -82,7 +82,7 @@ RSpec.describe Navigation::SubNavigationComponent, type: :component do
 
   describe "a navigation structure with only one level" do
     subject do
-      Navigation::SubNavigationComponent.new(current_path, structure: structure.get)
+      described_class.new(current_path, structure: structure.get)
     end
 
     let(:structure) { TestSubNavigationStructureOneLevel.new }
@@ -100,7 +100,7 @@ RSpec.describe Navigation::SubNavigationComponent, type: :component do
   describe "highlighting the current top level nav item" do
     context "when the prefix matches the start of the current path" do
       subject do
-        Navigation::SubNavigationComponent.new(current_path, structure: structure.get)
+        described_class.new(current_path, structure: structure.get)
       end
 
       let(:current_path) { "/sub-nav-1" }
@@ -120,7 +120,7 @@ RSpec.describe Navigation::SubNavigationComponent, type: :component do
   describe "highlighting the current second level nav item" do
     context "when the prefix matches the start of the current path" do
       subject do
-        Navigation::SubNavigationComponent.new(current_path, structure: structure.get)
+        described_class.new(current_path, structure: structure.get)
       end
 
       let(:current_path) { "/sub-nav-1.1" }

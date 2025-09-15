@@ -93,7 +93,7 @@ RSpec.describe Schools::RegisterECTWizard::TrainingProgrammeStep, type: :model d
     end
   end
 
-  context '#save!' do
+  describe '#save!' do
     subject { wizard.current_step }
 
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :training_programme, step_params:) }

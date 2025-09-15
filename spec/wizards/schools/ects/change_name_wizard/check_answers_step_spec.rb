@@ -22,7 +22,7 @@ RSpec.describe Schools::ECTs::ChangeNameWizard::CheckAnswersStep, type: :model d
     it { expect(current_step.previous_step).to eq(:edit) }
   end
 
-  context '#save!' do
+  describe '#save!' do
     it 'persists the corrected name' do
       expect { current_step.save! }.to change(wizard.ect_at_school_period.teacher, :corrected_name).from(nil).to('Terry Pratchett')
     end

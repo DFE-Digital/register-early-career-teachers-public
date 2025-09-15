@@ -128,7 +128,7 @@ describe Statement do
     end
   end
 
-  context ".adjustment_editable?" do
+  describe ".adjustment_editable?" do
     context "paid statement" do
       subject { FactoryBot.build(:statement, :paid) }
 
@@ -160,7 +160,7 @@ describe Statement do
     end
   end
 
-  context ".can_authorise_payment?" do
+  describe ".can_authorise_payment?" do
     context "open statement" do
       subject { FactoryBot.build(:statement, :open) }
 

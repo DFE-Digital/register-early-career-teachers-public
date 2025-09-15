@@ -3,12 +3,12 @@ describe TRS::TestAPIClient do
     it 'fails when used in production' do
       allow(Rails.env).to receive(:production?).and_return(true)
 
-      expect { TRS::TestAPIClient.new }.to raise_error(TRS::TestAPIClient::TestAPIClientUsedInProduction)
+      expect { described_class.new }.to raise_error(TRS::TestAPIClient::TestAPIClientUsedInProduction)
     end
   end
 
   describe '#find_teacher' do
-    subject { TRS::TestAPIClient.new(**kwargs) }
+    subject { described_class.new(**kwargs) }
 
     let(:trn) { '1234567' }
 
@@ -49,7 +49,7 @@ describe TRS::TestAPIClient do
     end
 
     describe 'induction_statuses' do
-      subject { TRS::TestAPIClient.new(**kwargs).find_teacher(trn:).induction_status }
+      subject { described_class.new(**kwargs).find_teacher(trn:).induction_status }
 
       context 'when initialized induction_status: InProgress' do
         let(:kwargs) { { induction_status: 'InProgress' } }

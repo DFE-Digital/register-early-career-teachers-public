@@ -1,6 +1,6 @@
 RSpec.describe TeachersIndexComponent, type: :component do
   subject(:component) do
-    TeachersIndexComponent.new(
+    described_class.new(
       appropriate_body:,
       teachers:,
       pagy:,
@@ -291,7 +291,7 @@ RSpec.describe TeachersIndexComponent, type: :component do
     end
 
     it 'correctly counts closed inductions for the appropriate body' do
-      component_closed = TeachersIndexComponent.new(
+      component_closed = described_class.new(
         appropriate_body:,
         teachers: [],
         pagy:,

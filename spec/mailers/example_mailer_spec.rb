@@ -4,7 +4,7 @@ RSpec.describe ExampleMailer, type: :mailer do
     let(:to) { "test@example.com" }
     let(:subject) { "Hello world" }
     let(:salutation) { "Most excellent to see you!" }
-    let(:mail) { ExampleMailer.with(from:, to:, subject:, salutation:).hello_world }
+    let(:mail) { described_class.with(from:, to:, subject:, salutation:).hello_world }
 
     it "renders the headers" do
       expect(mail.subject).to eq(subject)
@@ -19,7 +19,7 @@ RSpec.describe ExampleMailer, type: :mailer do
     context "when :salutation is missing" do
       it "raises an error" do
         expect {
-          ExampleMailer.with(from:, to:, subject:).hello_world.deliver_now!
+          described_class.with(from:, to:, subject:).hello_world.deliver_now!
         }.to raise_error(KeyError).with_message("key not found: :salutation")
       end
     end

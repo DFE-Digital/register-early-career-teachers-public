@@ -57,7 +57,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
     it { expect(subject.previous_step).to eq(:working_pattern) }
   end
 
-  context '#save!' do
+  describe '#save!' do
     let(:step_params) do
       ActionController::Parameters.new(
         "use_previous_ect_choices" => {

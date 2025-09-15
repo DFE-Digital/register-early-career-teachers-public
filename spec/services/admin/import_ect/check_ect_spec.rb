@@ -1,5 +1,5 @@
 RSpec.describe Admin::ImportECT::CheckECT do
-  subject { Admin::ImportECT::CheckECT.new(pending_induction_submission:) }
+  subject { described_class.new(pending_induction_submission:) }
 
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body: nil) }
 

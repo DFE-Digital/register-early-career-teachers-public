@@ -3,7 +3,7 @@ RSpec.describe Sessions::OTPSignInForm, type: :model do
   it { is_expected.to validate_presence_of(:code).on(:verify).with_message("Enter the 6-digit code from the email") }
 
   describe "#code_is_verified" do
-    subject(:form) { Sessions::OTPSignInForm.new(email:, code:) }
+    subject(:form) { described_class.new(email:, code:) }
 
     let(:email) { "bob@example.com" }
     let(:code) { "123456" }

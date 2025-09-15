@@ -25,11 +25,11 @@ describe LeadProviderDeliveryPartnership do
       let(:other_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
 
       it 'returns the lead provider delivery partnership belonging to the delivery partner' do
-        expect(LeadProviderDeliveryPartnership.with_delivery_partner(delivery_partner)).to include(lead_provider_delivery_partnership)
+        expect(described_class.with_delivery_partner(delivery_partner)).to include(lead_provider_delivery_partnership)
       end
 
       it 'does not return lead provider delivery partnerships belonging to other delivery partners' do
-        expect(LeadProviderDeliveryPartnership.with_delivery_partner(delivery_partner)).not_to include(other_lead_provider_delivery_partnership)
+        expect(described_class.with_delivery_partner(delivery_partner)).not_to include(other_lead_provider_delivery_partnership)
       end
     end
 
@@ -37,11 +37,11 @@ describe LeadProviderDeliveryPartnership do
       let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 
       it 'returns the lead provider delivery partnership belonging to the delivery partner' do
-        expect(LeadProviderDeliveryPartnership.with_active_lead_provider(active_lead_provider)).to include(lead_provider_delivery_partnership)
+        expect(described_class.with_active_lead_provider(active_lead_provider)).to include(lead_provider_delivery_partnership)
       end
 
       it 'does not return lead provider delivery partnerships belonging to other delivery partners' do
-        expect(LeadProviderDeliveryPartnership.with_active_lead_provider(active_lead_provider)).not_to include(other_active_lead_provider)
+        expect(described_class.with_active_lead_provider(active_lead_provider)).not_to include(other_active_lead_provider)
       end
     end
 
@@ -54,15 +54,15 @@ describe LeadProviderDeliveryPartnership do
       let!(:partnership_2026) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2026) }
 
       it 'returns partnerships for the specified contract period' do
-        expect(LeadProviderDeliveryPartnership.for_contract_period(contract_period_2025)).to include(partnership_2025)
+        expect(described_class.for_contract_period(contract_period_2025)).to include(partnership_2025)
       end
 
       it 'does not return partnerships from other contract periods' do
-        expect(LeadProviderDeliveryPartnership.for_contract_period(contract_period_2025)).not_to include(partnership_2026)
+        expect(described_class.for_contract_period(contract_period_2025)).not_to include(partnership_2026)
       end
 
       it 'includes the lead provider relationship' do
-        result = LeadProviderDeliveryPartnership.for_contract_period(contract_period_2025).first
+        result = described_class.for_contract_period(contract_period_2025).first
         expect(result.association(:active_lead_provider)).to be_loaded
         expect(result.active_lead_provider.association(:lead_provider)).to be_loaded
       end
@@ -98,27 +98,27 @@ describe LeadProviderDeliveryPartnership do
       end
 
       it 'returns active lead provider IDs for the specified delivery partner and contract period' do
-        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        result = described_class.active_lead_provider_ids_for(delivery_partner, contract_period)
         expect(result.pluck(:active_lead_provider_id)).to contain_exactly(alp_with_partnership.id)
       end
 
       it 'excludes partnerships with other delivery partners' do
-        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        result = described_class.active_lead_provider_ids_for(delivery_partner, contract_period)
         expect(result.pluck(:active_lead_provider_id)).not_to include(alp_other_delivery_partner.id)
       end
 
       it 'excludes partnerships from other contract periods' do
-        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        result = described_class.active_lead_provider_ids_for(delivery_partner, contract_period)
         expect(result.pluck(:active_lead_provider_id)).not_to include(alp_other_contract_period.id)
       end
 
       it 'excludes active lead providers with no partnerships' do
-        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        result = described_class.active_lead_provider_ids_for(delivery_partner, contract_period)
         expect(result.pluck(:active_lead_provider_id)).not_to include(alp_no_partnership.id)
       end
 
       it 'returns a select query that can be used in subqueries' do
-        result = LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)
+        result = described_class.active_lead_provider_ids_for(delivery_partner, contract_period)
         expect(result.to_sql).to include('SELECT')
         expect(result.to_sql).to include('active_lead_provider_id')
       end

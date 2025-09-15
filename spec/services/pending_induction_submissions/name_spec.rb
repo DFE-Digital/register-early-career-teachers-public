@@ -1,6 +1,6 @@
 describe PendingInductionSubmissions::Name do
   describe '#full_name' do
-    subject { PendingInductionSubmissions::Name.new(pending_induction_submission) }
+    subject { described_class.new(pending_induction_submission) }
 
     context 'when pending_induction_submission is missing' do
       let(:pending_induction_submission) { nil }

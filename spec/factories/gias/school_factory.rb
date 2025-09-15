@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory(:gias_school, class: GIAS::School) do
+  factory(:gias_school, class: 'GIAS::School') do
     eligible_for_registration
     eligible_for_fip
     induction_eligible

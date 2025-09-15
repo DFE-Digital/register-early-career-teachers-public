@@ -41,7 +41,7 @@ describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
     end
   end
 
-  context '#save!' do
+  describe '#save!' do
     context 'when the step is not valid' do
       before do
         allow(subject).to receive(:valid?).and_return(false)

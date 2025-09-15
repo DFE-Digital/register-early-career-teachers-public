@@ -1,6 +1,6 @@
 RSpec.describe Events::AppropriateBodyBatchAuthor do
   subject(:author) do
-    Events::AppropriateBodyBatchAuthor.new(
+    described_class.new(
       email: 'test@test.org',
       name: 'Mr Test',
       appropriate_body_id: batch.appropriate_body.id,

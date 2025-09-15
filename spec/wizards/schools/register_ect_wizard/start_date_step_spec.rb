@@ -226,7 +226,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
   end
 
-  context '#save!' do
+  describe '#save!' do
     let(:step_params) do
       ActionController::Parameters.new(
         "start_date" => { "start_date(1i)" => "2024", "start_date(2i)" => "07", "start_date(3i)" => "01" }

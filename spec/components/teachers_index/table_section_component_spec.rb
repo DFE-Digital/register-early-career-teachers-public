@@ -2,7 +2,7 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
   subject(:rendered) { render_inline(component) }
 
   let(:component) do
-    TeachersIndex::TableSectionComponent.new(
+    described_class.new(
       teachers:,
       pagy:,
       status:,

@@ -28,7 +28,7 @@ RSpec.describe BeginECTInductionJob, type: :job do
         )
       end
 
-      it "it adds a delete_at timestamp 24 hours in the future to the pending induction submission" do
+      it "adds a delete_at timestamp 24 hours in the future to the pending induction submission" do
         freeze_time do
           described_class.perform_now(
             trn:,
