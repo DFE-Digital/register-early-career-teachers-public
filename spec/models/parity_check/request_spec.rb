@@ -10,6 +10,7 @@ describe ParityCheck::Request do
 
   describe "delegate methods" do
     it { is_expected.to delegate_method(:description).to(:endpoint) }
+    it { is_expected.to delegate_method(:method).to(:endpoint) }
   end
 
   describe "validations" do
