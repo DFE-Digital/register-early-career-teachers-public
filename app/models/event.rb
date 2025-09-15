@@ -29,6 +29,7 @@ class Event < ApplicationRecord
     teacher_registered_as_ect
     teacher_left_school_as_ect
     teacher_registered_as_mentor
+    teacher_left_school_as_mentor
     teacher_starts_being_mentored
     teacher_starts_mentoring
     teacher_starts_training_period

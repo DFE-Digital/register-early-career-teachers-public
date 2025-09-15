@@ -82,7 +82,7 @@ module Schools
     end
 
     def finish_existing_at_school_periods!
-      MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: started_on.prev_day).finish_existing_at_school_periods!
+      MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: started_on.prev_day, author:).finish_existing_at_school_periods!
     end
 
     def start_at_school!
