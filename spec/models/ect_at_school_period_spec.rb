@@ -270,6 +270,12 @@ describe ECTAtSchoolPeriod do
     let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
     let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
 
+    describe '.for_school' do
+      it 'returns only ect periods for the specified school' do
+        expect(described_class.for_school(period_1.school_id)).to match_array([period_1, period_3, teacher_2_period])
+      end
+    end
+
     describe ".for_teacher" do
       it "returns ect periods only for the specified teacher" do
         expect(described_class.for_teacher(teacher.id)).to match_array([period_1, period_2, period_3])
