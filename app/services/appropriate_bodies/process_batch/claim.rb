@@ -80,19 +80,19 @@ module AppropriateBodies
           else
             false # can be claimed
           end
-        elsif trs_passed?
+        elsif pending_induction_submission.passed?
           capture_error("#{name} has already passed their induction")
           true
-        elsif trs_failed?
+        elsif pending_induction_submission.failed?
           capture_error("#{name} has already failed their induction")
           true
-        elsif trs_exempt?
+        elsif pending_induction_submission.exempt?
           capture_error("#{name} is exempt from completing their induction")
           true
-        elsif prohibited_from_teaching?
+        elsif pending_induction_submission.prohibited_from_teaching?
           capture_error("#{name} is prohibited from teaching")
           true
-        elsif no_qts?
+        elsif pending_induction_submission.no_qts?
           capture_error("#{name} does not have their qualified teacher status (QTS)")
           true
         elsif predates_qts_award?
@@ -101,26 +101,6 @@ module AppropriateBodies
         else
           false # can be claimed
         end
-      end
-
-      # @return [Boolean]
-      def trs_passed?
-        pending_induction_submission.trs_induction_status.eql?('Passed')
-      end
-
-      # @return [Boolean]
-      def trs_failed?
-        pending_induction_submission.trs_induction_status.eql?('Failed')
-      end
-
-      # @return [Boolean]
-      def trs_exempt?
-        pending_induction_submission.trs_induction_status.eql?('Exempt')
-      end
-
-      # @return [Boolean]
-      def no_qts?
-        pending_induction_submission.trs_qts_awarded_on.blank?
       end
 
       # @return [Boolean]
@@ -145,12 +125,6 @@ module AppropriateBodies
         Date.parse(row.started_on.to_s) <= ::ECF_ROLLOUT_DATE
       rescue Date::Error
         true
-      end
-
-      # @see TRS::Teacher#prohibited_from_teaching?
-      # @return [Boolean]
-      def prohibited_from_teaching?
-        pending_induction_submission.trs_alerts&.any? { |alert| alert.dig('alertType', 'alertCategory', 'alertCategoryId') == ::TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID }
       end
 
       # @return [Boolean]

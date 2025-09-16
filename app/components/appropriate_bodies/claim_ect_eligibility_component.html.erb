@@ -1,0 +1,17 @@
+<% if blocked_message.present? %>
+
+  <%= govuk_inset_text do %>
+    <%= blocked_message %>
+  <% end %>
+
+  <p class="govuk-body">
+    <%= govuk_link_to('Find and claim another ECT', new_ab_claim_an_ect_find_path, no_visited_state: true) %>
+  </p>
+
+<% else %>
+
+  <%= form_with(model: pending_induction_submission, url: ab_claim_an_ect_check_path(pending_induction_submission, method: 'patch')) do |f| %>
+    <%= f.govuk_submit('Claim induction') %>
+  <% end %>
+
+<% end %>
