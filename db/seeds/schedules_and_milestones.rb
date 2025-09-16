@@ -52,81 +52,28 @@ end
 
 def schedule_and_milestone_data
   [
-    build(identifier: "ecf-extended-september", contract_period_year: 2023, start_date: "2023-09-01"),
-    build(identifier: "ecf-extended-january", contract_period_year: 2023, start_date: "2024-01-01"),
-    build(identifier: "ecf-reduced-april", contract_period_year: 2021, start_date: "2022-04-01"),
-    build(identifier: "ecf-reduced-september", contract_period_year: 2022, start_date: "2022-09-01"),
-    build(identifier: "ecf-reduced-january", contract_period_year: 2022, start_date: "2023-01-01"),
-    build(identifier: "ecf-reduced-april", contract_period_year: 2022, start_date: "2023-04-01"),
-    build(identifier: "ecf-extended-september", contract_period_year: 2022, start_date: "2022-09-01"),
-    build(identifier: "ecf-extended-january", contract_period_year: 2022, start_date: "2023-01-01"),
-    build(identifier: "ecf-extended-april", contract_period_year: 2022, start_date: "2023-04-01"),
-    build(identifier: "ecf-replacement-september", contract_period_year: 2022, start_date: "2022-09-01"),
-    build(identifier: "ecf-replacement-january", contract_period_year: 2022, start_date: "2023-01-01"),
-    {
-      identifier: "ecf-standard-january",
-      contract_period_year: 2022,
-      milestones: [
-        { declaration_type: "started", start_date: "2023-04-30", milestone_date: "2023-03-31" },
-        { declaration_type: "retained-1", start_date: "2023-08-31", milestone_date: "2023-07-31" },
-        { declaration_type: "retained-2", start_date: "2024-01-31", milestone_date: "2023-12-31" },
-        { declaration_type: "retained-3", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-        { declaration_type: "retained-4", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-        { declaration_type: "completed", start_date: "2025-01-31", milestone_date: "2024-12-31" }
-      ]
-    },
-    build(identifier: "ecf-replacement-april", contract_period_year: 2022, start_date: "2023-04-01"),
-    build(identifier: "ecf-replacement-january", contract_period_year: 2021, start_date: "2022-01-01"),
-    {
-      identifier: "ecf-standard-april",
-      contract_period_year: 2022,
-      milestones: [
-        { declaration_type: "started", start_date: "2023-08-31", milestone_date: "2023-07-31" },
-        { declaration_type: "retained-1", start_date: "2024-01-31", milestone_date: "2023-12-31" },
-        { declaration_type: "retained-2", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-        { declaration_type: "retained-3", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-        { declaration_type: "retained-4", start_date: "2025-01-31", milestone_date: "2024-12-31" },
-        { declaration_type: "completed", start_date: "2025-04-30", milestone_date: "2025-03-31" }
-      ]
-    },
-    build(identifier: "ecf-extended-april", contract_period_year: 2021, start_date: "2022-04-01"),
-    build(identifier: "ecf-reduced-january", contract_period_year: 2021, start_date: "2022-01-01"),
-    {
-      identifier: "ecf-standard-september",
-      contract_period_year: 2022,
-      milestones: [
-        { declaration_type: "started", start_date: "2022-11-30", milestone_date: "2022-12-31" },
-        { declaration_type: "retained-1", start_date: "2023-04-30", milestone_date: "2023-03-31" },
-        { declaration_type: "retained-2", start_date: "2023-08-31", milestone_date: "2023-07-31" },
-        { declaration_type: "retained-3", start_date: "2024-01-31", milestone_date: "2023-12-31" },
-        { declaration_type: "retained-4", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-        { declaration_type: "completed", start_date: "2024-08-31", milestone_date: "2024-07-31" }
-      ]
-    },
-    build(identifier: "ecf-reduced-september", contract_period_year: 2021, start_date: "2021-09-01"),
-    {
-      identifier: "ecf-standard-april",
-      contract_period_year: 2021,
-      milestones: [
-        { declaration_type: "started", start_date: "2022-05-31", milestone_date: "2022-05-31" },
-        { declaration_type: "retained-1", start_date: "2022-10-31", milestone_date: "2022-09-30" },
-        { declaration_type: "retained-2", start_date: "2023-02-28", milestone_date: "2023-01-31" },
-        { declaration_type: "retained-3", start_date: "2023-05-31", milestone_date: "2023-04-30" },
-        { declaration_type: "retained-4", start_date: "2023-11-30", milestone_date: "2023-09-30" },
-        { declaration_type: "completed", start_date: "2024-02-28", milestone_date: "2024-01-31" }
-      ]
-    },
+    # 2021
+
+    ## Extended
+
     build(identifier: "ecf-extended-september", contract_period_year: 2021, start_date: "2021-09-01"),
     build(identifier: "ecf-extended-january", contract_period_year: 2021, start_date: "2022-01-01"),
-    build(identifier: "ecf-replacement-april", contract_period_year: 2021, start_date: "2022-04-01"),
+    build(identifier: "ecf-extended-april", contract_period_year: 2021, start_date: "2022-04-01"),
+
+    ## Reduced
+
+    build(identifier: "ecf-reduced-september", contract_period_year: 2021, start_date: "2021-09-01"),
+    build(identifier: "ecf-reduced-january", contract_period_year: 2021, start_date: "2022-01-01"),
+    build(identifier: "ecf-reduced-april", contract_period_year: 2021, start_date: "2022-04-01"),
+
+    ## Replacement
+
     build(identifier: "ecf-replacement-september", contract_period_year: 2021, start_date: "2021-09-01"),
-    build(identifier: "ecf-extended-april", contract_period_year: 2023, start_date: "2024-04-01"),
-    build(identifier: "ecf-reduced-september", contract_period_year: 2023, start_date: "2023-09-01"),
-    build(identifier: "ecf-reduced-january", contract_period_year: 2023, start_date: "2024-01-01"),
-    build(identifier: "ecf-reduced-april", contract_period_year: 2023, start_date: "2024-04-01"),
-    build(identifier: "ecf-replacement-september", contract_period_year: 2023, start_date: "2023-09-01"),
-    build(identifier: "ecf-replacement-january", contract_period_year: 2023, start_date: "2024-01-01"),
-    build(identifier: "ecf-replacement-april", contract_period_year: 2023, start_date: "2024-04-01"),
+    build(identifier: "ecf-replacement-january", contract_period_year: 2021, start_date: "2022-01-01"),
+    build(identifier: "ecf-replacement-april", contract_period_year: 2021, start_date: "2022-04-01"),
+
+    ## Standard
+
     {
       identifier: "ecf-standard-september",
       contract_period_year: 2021,
@@ -139,6 +86,110 @@ def schedule_and_milestone_data
         { declaration_type: "completed", start_date: "2023-05-31", milestone_date: "2023-04-30" }
       ]
     },
+    {
+      identifier: "ecf-standard-january",
+      contract_period_year: 2021,
+      milestones: [
+        { declaration_type: "started", start_date: "2022-02-28", milestone_date: "2022-01-31" },
+        { declaration_type: "retained-1", start_date: "2022-05-31", milestone_date: "2022-04-30" },
+        { declaration_type: "retained-2", start_date: "2022-10-31", milestone_date: "2022-09-30" },
+        { declaration_type: "retained-3", start_date: "2023-02-28", milestone_date: "2023-01-31" },
+        { declaration_type: "retained-4", start_date: "2023-05-31", milestone_date: "2023-04-30" },
+        { declaration_type: "completed", start_date: "2023-11-30", milestone_date: "2023-09-30" }
+      ]
+    },
+    {
+      identifier: "ecf-standard-april",
+      contract_period_year: 2021,
+      milestones: [
+        { declaration_type: "started", start_date: "2022-05-31", milestone_date: "2022-05-31" },
+        { declaration_type: "retained-1", start_date: "2022-10-31", milestone_date: "2022-09-30" },
+        { declaration_type: "retained-2", start_date: "2023-02-28", milestone_date: "2023-01-31" },
+        { declaration_type: "retained-3", start_date: "2023-05-31", milestone_date: "2023-04-30" },
+        { declaration_type: "retained-4", start_date: "2023-11-30", milestone_date: "2023-09-30" },
+        { declaration_type: "completed", start_date: "2024-02-28", milestone_date: "2024-01-31" }
+      ]
+    },
+
+    # 2022
+
+    ## Reduced
+
+    build(identifier: "ecf-reduced-september", contract_period_year: 2022, start_date: "2022-09-01"),
+    build(identifier: "ecf-reduced-january", contract_period_year: 2022, start_date: "2023-01-01"),
+    build(identifier: "ecf-reduced-april", contract_period_year: 2022, start_date: "2023-04-01"),
+
+    ## Extended
+
+    build(identifier: "ecf-extended-september", contract_period_year: 2022, start_date: "2022-09-01"),
+    build(identifier: "ecf-extended-january", contract_period_year: 2022, start_date: "2023-01-01"),
+    build(identifier: "ecf-extended-april", contract_period_year: 2022, start_date: "2023-04-01"),
+
+    ## Replacement
+
+    build(identifier: "ecf-replacement-september", contract_period_year: 2022, start_date: "2022-09-01"),
+    build(identifier: "ecf-replacement-january", contract_period_year: 2022, start_date: "2023-01-01"),
+    build(identifier: "ecf-replacement-april", contract_period_year: 2022, start_date: "2023-04-01"),
+
+    ## Standard
+
+    {
+      identifier: "ecf-standard-september",
+      contract_period_year: 2022,
+      milestones: [
+        { declaration_type: "started", start_date: "2022-11-30", milestone_date: "2022-12-31" },
+        { declaration_type: "retained-1", start_date: "2023-04-30", milestone_date: "2023-03-31" },
+        { declaration_type: "retained-2", start_date: "2023-08-31", milestone_date: "2023-07-31" },
+        { declaration_type: "retained-3", start_date: "2024-01-31", milestone_date: "2023-12-31" },
+        { declaration_type: "retained-4", start_date: "2024-04-30", milestone_date: "2024-03-31" },
+        { declaration_type: "completed", start_date: "2024-08-31", milestone_date: "2024-07-31" }
+      ]
+    },
+    {
+      identifier: "ecf-standard-january",
+      contract_period_year: 2022,
+      milestones: [
+        { declaration_type: "started", start_date: "2023-04-30", milestone_date: "2023-03-31" },
+        { declaration_type: "retained-1", start_date: "2023-08-31", milestone_date: "2023-07-31" },
+        { declaration_type: "retained-2", start_date: "2024-01-31", milestone_date: "2023-12-31" },
+        { declaration_type: "retained-3", start_date: "2024-04-30", milestone_date: "2024-03-31" },
+        { declaration_type: "retained-4", start_date: "2024-08-31", milestone_date: "2024-07-31" },
+        { declaration_type: "completed", start_date: "2025-01-31", milestone_date: "2024-12-31" }
+      ]
+    },
+    {
+      identifier: "ecf-standard-april",
+      contract_period_year: 2022,
+      milestones: [
+        { declaration_type: "started", start_date: "2023-08-31", milestone_date: "2023-07-31" },
+        { declaration_type: "retained-1", start_date: "2024-01-31", milestone_date: "2023-12-31" },
+        { declaration_type: "retained-2", start_date: "2024-04-30", milestone_date: "2024-03-31" },
+        { declaration_type: "retained-3", start_date: "2024-08-31", milestone_date: "2024-07-31" },
+        { declaration_type: "retained-4", start_date: "2025-01-31", milestone_date: "2024-12-31" },
+        { declaration_type: "completed", start_date: "2025-04-30", milestone_date: "2025-03-31" }
+      ]
+    },
+
+    # 2023
+
+    ## Extended
+    build(identifier: "ecf-extended-september", contract_period_year: 2023, start_date: "2023-09-01"),
+    build(identifier: "ecf-extended-january", contract_period_year: 2023, start_date: "2024-01-01"),
+    build(identifier: "ecf-extended-april", contract_period_year: 2023, start_date: "2024-04-01"),
+
+    ## Reduced
+    build(identifier: "ecf-reduced-september", contract_period_year: 2023, start_date: "2023-09-01"),
+    build(identifier: "ecf-reduced-january", contract_period_year: 2023, start_date: "2024-01-01"),
+    build(identifier: "ecf-reduced-april", contract_period_year: 2023, start_date: "2024-04-01"),
+
+    ## Replacement
+
+    build(identifier: "ecf-replacement-september", contract_period_year: 2023, start_date: "2023-09-01"),
+    build(identifier: "ecf-replacement-january", contract_period_year: 2023, start_date: "2024-01-01"),
+    build(identifier: "ecf-replacement-april", contract_period_year: 2023, start_date: "2024-04-01"),
+
+    ## Standard
+
     {
       identifier: "ecf-standard-september",
       contract_period_year: 2023,
@@ -175,27 +226,28 @@ def schedule_and_milestone_data
         { declaration_type: "completed", start_date: "2026-04-30", milestone_date: "2026-03-31" }
       ]
     },
-    {
-      identifier: "ecf-standard-january",
-      contract_period_year: 2021,
-      milestones: [
-        { declaration_type: "started", start_date: "2022-02-28", milestone_date: "2022-01-31" },
-        { declaration_type: "retained-1", start_date: "2022-05-31", milestone_date: "2022-04-30" },
-        { declaration_type: "retained-2", start_date: "2022-10-31", milestone_date: "2022-09-30" },
-        { declaration_type: "retained-3", start_date: "2023-02-28", milestone_date: "2023-01-31" },
-        { declaration_type: "retained-4", start_date: "2023-05-31", milestone_date: "2023-04-30" },
-        { declaration_type: "completed", start_date: "2023-11-30", milestone_date: "2023-09-30" }
-      ]
-    },
+
+    # 2024
+
+    ## Extended
+
     build(identifier: "ecf-extended-september", contract_period_year: 2024, start_date: "2024-09-01"),
     build(identifier: "ecf-extended-january", contract_period_year: 2024, start_date: "2025-01-01"),
     build(identifier: "ecf-extended-april", contract_period_year: 2024, start_date: "2025-04-01"),
+
+    ## Reduced
     build(identifier: "ecf-reduced-september", contract_period_year: 2024, start_date: "2024-09-01"),
     build(identifier: "ecf-reduced-january", contract_period_year: 2024, start_date: "2025-01-01"),
     build(identifier: "ecf-reduced-april", contract_period_year: 2024, start_date: "2025-04-01"),
+
+    ## Replacement
+
     build(identifier: "ecf-replacement-september", contract_period_year: 2024, start_date: "2024-09-01"),
     build(identifier: "ecf-replacement-january", contract_period_year: 2024, start_date: "2025-01-01"),
     build(identifier: "ecf-replacement-april", contract_period_year: 2024, start_date: "2025-04-01"),
+
+    ## Standard
+
     {
       identifier: "ecf-standard-september",
       contract_period_year: 2024,
@@ -232,18 +284,32 @@ def schedule_and_milestone_data
         { declaration_type: "completed", start_date: "2027-04-30", milestone_date: "2027-03-31" }
       ]
     },
-    build(identifier: "ecf-standard-january", contract_period_year: 2025, start_date: "2026-01-01"),
-    build(identifier: "ecf-standard-april", contract_period_year: 2025, start_date: "2026-04-01"),
-    build(identifier: "ecf-standard-september", contract_period_year: 2025, start_date: "2025-06-01"),
-    build(identifier: "ecf-replacement-april", contract_period_year: 2025, start_date: "2026-04-01"),
-    build(identifier: "ecf-replacement-january", contract_period_year: 2025, start_date: "2026-01-01"),
+
+    # 2025
+
+    ## Extended
+
     build(identifier: "ecf-extended-september", contract_period_year: 2025, start_date: "2025-09-01"),
     build(identifier: "ecf-extended-january", contract_period_year: 2025, start_date: "2026-01-01"),
     build(identifier: "ecf-extended-april", contract_period_year: 2025, start_date: "2026-04-01"),
+
+    ## Reduced
+
     build(identifier: "ecf-reduced-september", contract_period_year: 2025, start_date: "2025-09-01"),
     build(identifier: "ecf-reduced-january", contract_period_year: 2025, start_date: "2026-01-01"),
     build(identifier: "ecf-reduced-april", contract_period_year: 2025, start_date: "2026-04-01"),
-    build(identifier: "ecf-replacement-september", contract_period_year: 2025, start_date: "2025-09-01")
+
+    ## Replacement
+
+    build(identifier: "ecf-replacement-september", contract_period_year: 2025, start_date: "2025-09-01"),
+    build(identifier: "ecf-replacement-january", contract_period_year: 2025, start_date: "2026-01-01"),
+    build(identifier: "ecf-replacement-april", contract_period_year: 2025, start_date: "2026-04-01"),
+
+    ## Standard
+
+    build(identifier: "ecf-standard-september", contract_period_year: 2025, start_date: "2025-06-01"),
+    build(identifier: "ecf-standard-january", contract_period_year: 2025, start_date: "2026-01-01"),
+    build(identifier: "ecf-standard-april", contract_period_year: 2025, start_date: "2026-04-01"),
   ]
 end
 
