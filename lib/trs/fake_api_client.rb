@@ -1,5 +1,5 @@
 module TRS
-  # 7000001 - 7000009 are special TRNs that mimic:
+  # 7000001 - 7000010 are special TRNs that mimic:
   #
   # 1. Missing QTS
   # 2. Not found
@@ -10,6 +10,8 @@ module TRS
   # 7. Passed induction
   # 8. Failed induction
   # 9. Exempt
+  # 10. Failed induction in Wales
+  #
   class FakeAPIClient
     class FakeAPIClientUsedInProduction < StandardError; end
 
@@ -135,6 +137,8 @@ module TRS
     end
 
     def override_data_for_special_trns(trn)
+      @has_qts = true
+
       case trn.to_i
       when 7_000_001 then @has_qts = false
       when 7_000_002 then raise(TRS::Errors::TeacherNotFound)
@@ -145,8 +149,8 @@ module TRS
       when 7_000_007 then @induction_status = 'Passed'
       when 7_000_008 then @induction_status = 'Failed'
       when 7_000_009 then @induction_status = 'Exempt'
+      when 7_000_010 then @induction_status = 'FailedInWales'
       else
-        @has_qts = true
         @has_itt = true
         @is_prohibited_from_teaching = false
         @has_alerts_but_not_prohibited = false

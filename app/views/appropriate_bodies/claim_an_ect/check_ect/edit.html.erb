@@ -1,15 +1,18 @@
-<% page_data(
-  title: "Check details for #{pending_induction_submission_full_name(@pending_induction_submission)}",
-  caption: "TRN: #{@pending_induction_submission.trn}",
-  header: "View #{pending_induction_submission_full_name(@pending_induction_submission)}'s details",
-  backlink_href: new_ab_claim_an_ect_find_path)
+<%
+  page_data(
+    title: "Check details for #{pending_induction_submission_full_name(@pending_induction_submission)}",
+    caption: "TRN: #{@pending_induction_submission.trn}",
+    header: "View #{pending_induction_submission_full_name(@pending_induction_submission)}'s details",
+    backlink_href: new_ab_claim_an_ect_find_path
+  )
 %>
-
-<%= render AppropriateBodies::ClaimECTActionsComponent.new(
-  teacher: @teacher,
-  pending_induction_submission: @pending_induction_submission,
-  current_appropriate_body: @current_appropriate_body
-) %>
+<%=
+  render AppropriateBodies::ClaimECTEligibilityComponent.new(
+    pending_induction_submission: @pending_induction_submission,
+    appropriate_body: @current_appropriate_body,
+    teacher: @teacher
+  )
+%>
 
 <h2 class="govuk-heading-m">Personal details</h2>
 

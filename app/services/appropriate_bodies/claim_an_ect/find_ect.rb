@@ -28,10 +28,11 @@ module AppropriateBodies
 
         pending_induction_submission.assign_attributes(
           appropriate_body:,
-          **trs_teacher.present.except(:trs_national_insurance_number)
+          **trs_teacher.to_h.except(:trs_national_insurance_number)
         )
 
         check_if_teacher_has_ongoing_induction_period_with_appropriate_body!
+
         trs_teacher.check_eligibility!
 
         pending_induction_submission.save(context: :find_ect)

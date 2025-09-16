@@ -1,9 +1,11 @@
 <% page_data(
-  title: "Check details for #{@pending_induction_submission.trs_first_name} #{@pending_induction_submission.trs_last_name}",
+  title: "Check details for #{pending_induction_submission_full_name(@pending_induction_submission)}",
   caption: "TRN: #{@pending_induction_submission.trn}",
-  header: "View #{@pending_induction_submission.trs_first_name} #{@pending_induction_submission.trs_last_name}'s details",
+  header: "View #{pending_induction_submission_full_name(@pending_induction_submission)}'s details",
   backlink_href: new_admin_import_ect_find_path)
 %>
+
+<%= render Admin::ImportECTEligibilityComponent.new(pending_induction_submission: @pending_induction_submission) %>
 
 <h2 class="govuk-heading-m">Personal details</h2>
 
@@ -68,7 +70,14 @@
 
     sl.with_row do |r|
       r.with_key(text: "Induction status")
-      r.with_value(text: @pending_induction_submission.trs_induction_status)
+      r.with_value(
+        text: govuk_tag(
+          **induction_status_from(
+            teacher: @teacher,
+            pending_induction_submission: @pending_induction_submission
+          ).status_tag_kwargs
+        )
+      )
     end if @pending_induction_submission.trs_induction_status.present?
   end
 %>
@@ -76,17 +85,14 @@
 <%= form_with(model: @pending_induction_submission, url: admin_import_ect_check_path(@pending_induction_submission)) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= f.govuk_check_boxes_fieldset(
-    :confirmed,
-    legend: { text: "Confirm if these details are correct or try your search again" }
-  ) do %>
-    <%= f.govuk_check_box(
-      :confirmed,
-      "1",
-      0,
-      label: { text: "Yes, these details are correct" }
-    ) %>
+  <%= f.govuk_check_boxes_fieldset(:confirmed, legend: {
+    text: "Confirm if these details are correct or try your search again"
+    }) do %>
+
+    <%= f.govuk_check_box(:confirmed, "1", 0, label: {
+      text: "Yes, these details are correct"
+    }) %>
   <% end %>
 
   <%= f.govuk_submit %>
-<% end %>
+<% end unless @pending_induction_submission.ineligible? %>

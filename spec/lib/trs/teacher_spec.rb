@@ -80,15 +80,15 @@ RSpec.describe TRS::Teacher do
     }
   end
 
-  describe '#present' do
-    it 'returns a hash with flattened attributes' do
-      expected_hash = {
+  describe '#to_h' do
+    it 'returns a hash of attributes' do
+      expect(service.to_h).to eq({
         trn: '1234567',
         date_of_birth: '1980-01-01',
         trs_first_name: 'John',
         trs_last_name: 'Doe',
         trs_email_address: 'john.doe@example.com',
-        trs_alerts: data['alerts'],
+        trs_alerts: %w[3fa85f64-5717-4562-b3fc-2c963f66afa6],
         trs_induction_start_date: '2024-09-18',
         trs_induction_status: 'Exempt',
         trs_induction_status_description: 'Induction Status Description',
@@ -97,9 +97,8 @@ RSpec.describe TRS::Teacher do
         trs_qts_awarded_on: '2024-09-18',
         trs_qts_status_description: 'qts_status',
         trs_national_insurance_number: "AB123456C",
-      }
-
-      expect(service.present).to eq(expected_hash)
+        trs_prohibited_from_teaching: false,
+      })
     end
   end
 
