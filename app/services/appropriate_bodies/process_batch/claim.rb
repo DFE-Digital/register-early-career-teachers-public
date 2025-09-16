@@ -80,6 +80,15 @@ module AppropriateBodies
           else
             false # can be claimed
           end
+        elsif trs_passed?
+          capture_error("#{name} has already passed their induction")
+          true
+        elsif trs_failed?
+          capture_error("#{name} has already failed their induction")
+          true
+        elsif trs_exempt?
+          capture_error("#{name} is exempt from completing their induction")
+          true
         elsif prohibited_from_teaching?
           capture_error("#{name} is prohibited from teaching")
           true
@@ -92,6 +101,21 @@ module AppropriateBodies
         else
           false # can be claimed
         end
+      end
+
+      # @return [Boolean]
+      def trs_passed?
+        pending_induction_submission.trs_induction_status.eql?('Passed')
+      end
+
+      # @return [Boolean]
+      def trs_failed?
+        pending_induction_submission.trs_induction_status.eql?('Failed')
+      end
+
+      # @return [Boolean]
+      def trs_exempt?
+        pending_induction_submission.trs_induction_status.eql?('Exempt')
       end
 
       # @return [Boolean]
