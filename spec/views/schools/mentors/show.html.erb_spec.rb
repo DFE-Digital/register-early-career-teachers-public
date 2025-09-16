@@ -22,47 +22,49 @@ RSpec.describe 'schools/mentors/show.html.erb' do
   let(:ect_period) do
     FactoryBot.create(
       :ect_at_school_period,
-      :with_training_period,
       teacher: ect_teacher,
       school:,
       started_on: start_date,
-      finished_on: nil,
-      lead_provider:
+      finished_on: nil
     )
   end
 
   let!(:mentorship_period) do
-    FactoryBot.create(:mentorship_period, mentor: mentor_period, mentee: ect_period, started_on: start_date, finished_on: nil)
+    FactoryBot.create(
+      :mentorship_period,
+      mentor: mentor_period,
+      mentee: ect_period,
+      started_on: start_date,
+      finished_on: nil
+    )
   end
 
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
-  let!(:training_period) do
-    FactoryBot.create(
-      :training_period,
-      ect_at_school_period: ect_period,
-      started_on: ect_period.started_on,
-      finished_on: nil,
-      school_partnership:
-    )
-  end
-
-  before do
-    assign(:mentor, mentor_period)
-    assign(:teacher, mentor_teacher)
-    assign(:ects, mentor_period.currently_assigned_ects)
-    render
-  end
-
   context 'when mentor is eligible (no completion date)' do
-    it 'renders the ECT mentor training details H2' do
-      expect(rendered).to have_css('h2.govuk-heading-m', text: 'ECTE mentor training details')
+    let!(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        :for_mentor,
+        mentor_at_school_period: mentor_period,
+        school_partnership:,
+        started_on: start_date,
+        finished_on: nil
+      )
     end
 
-    it 'renders the school summary card' do
-      expect(rendered).to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your school')
+    before do
+      assign(:mentor, mentor_period)
+      assign(:teacher, mentor_teacher)
+      assign(:ects, mentor_period.currently_assigned_ects)
+      render
+    end
+
+    it 'renders the ECTE mentor training details H2' do
+      expect(rendered).to have_css('h2.govuk-heading-m', text: 'ECTE mentor training details')
     end
 
     it 'renders the lead provider row with the correct label' do
@@ -72,30 +74,21 @@ RSpec.describe 'schools/mentors/show.html.erb' do
     it 'renders the lead provider row with a value' do
       expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Hidden leaf village')
     end
-
-    it 'renders the lead provider summary card' do
-      expect(rendered).to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
-    end
-
-    it 'shows the text that no information has been reported by the lead provider' do
-      expect(rendered).to have_text('Your lead provider has not reported any information to us yet')
-    end
   end
 
   context 'when mentor is not eligible (i.e has a `mentor_became_ineligible_for_funding_on` date)' do
     let(:mentor_became_ineligible_for_funding_on) { Date.new(2024, 1, 1) }
     let(:mentor_became_ineligible_for_funding_reason) { 'completed_declaration_received' }
 
+    before do
+      assign(:mentor, mentor_period)
+      assign(:teacher, mentor_teacher)
+      assign(:ects, mentor_period.currently_assigned_ects)
+      render
+    end
+
     it 'renders the ineligible message' do
-      expect(rendered).to have_css('.govuk-body', text: /Naruto Uzumaki cannot do ECTE mentor training/)
-    end
-
-    it 'does not render the school summary card' do
-      expect(rendered).not_to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your school')
-    end
-
-    it 'does not render the lead provider summary card' do
-      expect(rendered).not_to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your lead provider')
+      expect(rendered).to have_css('.govuk-body', text: /Naruto Uzumaki completed mentor training on 1 January 2024/)
     end
 
     it 'does not render the lead provider row with the correct label' do
@@ -127,16 +120,13 @@ RSpec.describe 'schools/mentors/show.html.erb' do
       render
     end
 
-    it 'does not render the ECT mentor training details H2' do
-      expect(rendered).not_to have_css('h2.govuk-heading-m', text: 'ECT mentor training details')
+    it 'does not render the ECTE mentor training details H2' do
+      expect(rendered).not_to have_css('h2.govuk-heading-m', text: 'ECTE mentor training details')
     end
 
-    it 'does not render the school summary card' do
-      expect(rendered).not_to have_css('h2.govuk-summary-card__title', text: 'Reported to us by your school')
-    end
-
-    it 'does not render the lead provider row' do
+    it 'does not render the lead provider/delivery partner row' do
       expect(rendered).not_to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
     end
   end
 end
