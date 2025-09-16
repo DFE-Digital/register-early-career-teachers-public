@@ -105,13 +105,9 @@ module Schools
     end
 
     def update_school_last_choices!
-      choices = {
-        last_chosen_appropriate_body: school_reported_appropriate_body,
-        last_chosen_lead_provider: lead_provider,
-        last_chosen_training_programme: training_programme
-      }
-
-      school.update!(**choices.compact)
+      school.update!(last_chosen_appropriate_body: school_reported_appropriate_body,
+                     last_chosen_lead_provider: lead_provider,
+                     last_chosen_training_programme: training_programme)
     end
 
     def close_ongoing_ect_period!
