@@ -27,7 +27,7 @@ RSpec.describe TRS::APIClient do
         teacher = client.find_teacher(trn:, date_of_birth:)
 
         expect(teacher).to be_a(TRS::Teacher)
-        expect(teacher.present.compact).to eq({ trn: "1234567", trs_first_name: "John" })
+        expect(teacher.present.compact).to eq({ trn: "1234567", trs_alerts: [], trs_first_name: "John" })
       end
     end
 
@@ -49,7 +49,7 @@ RSpec.describe TRS::APIClient do
         teacher = client.find_teacher(trn:, national_insurance_number:)
 
         expect(teacher).to be_a(TRS::Teacher)
-        expect(teacher.present.compact).to eq({ trn: "1234567", trs_first_name: "John" })
+        expect(teacher.present.compact).to eq({ trn: "1234567", trs_alerts: [], trs_first_name: "John" })
       end
     end
 

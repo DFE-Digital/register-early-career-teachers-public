@@ -109,15 +109,10 @@ class PendingInductionSubmission < ApplicationRecord
 
   # Instance methods
 
-  # @return [Boolean]
-  def exempt?
-    trs_induction_status.eql?('Exempt')
-  end
-
-  # @return [Boolean]
-  def release?
-    outcome.nil?
-  end
+  def exempt? = trs_induction_status.eql?('Exempt')
+  def passed? = trs_induction_status.eql?('Passed')
+  def failed? = trs_induction_status.eql?('Failed')
+  def release? = outcome.nil?
 
   # @return [Boolean] capture multiple error messages and reset before saving
   def playback_errors
