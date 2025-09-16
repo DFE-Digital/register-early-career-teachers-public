@@ -1,9 +1,9 @@
 module Admin
   module ImportECT
     class RegisterECTController < AdminController
-      def show
-        @pending_induction_submission = find_pending_induction_submission
+      before_action :find_pending_induction_submission, only: %i[show]
 
+      def show
         register_ect = Admin::ImportECT::RegisterECT.new(
           pending_induction_submission: @pending_induction_submission,
           author: current_user
@@ -16,13 +16,13 @@ module Admin
         end
       rescue Admin::Errors::TeacherAlreadyExists
         existing_teacher = Teacher.find_by(trn: @pending_induction_submission.trn)
-        redirect_to(admin_teacher_path(existing_teacher), notice: "Teacher #{existing_teacher.trn} already exists in the system")
+        redirect_to admin_teacher_path(existing_teacher), notice: "Teacher #{existing_teacher.trn} already exists in the system"
       end
 
     private
 
       def find_pending_induction_submission
-        PendingInductionSubmission.find(params[:id])
+        @pending_induction_submission = PendingInductionSubmission.find(params[:id])
       end
     end
   end

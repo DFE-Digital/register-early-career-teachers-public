@@ -32,7 +32,7 @@ describe TRS::FakeAPIClient do
       let(:trn) { 7_000_001 }
 
       it 'returns a teacher who is not QTS awarded' do
-        expect(trs_teacher).not_to be_qts_awarded
+        expect(trs_teacher).to be_no_qts
       end
 
       it 'returns a teacher without a qts_awarded_on date' do
