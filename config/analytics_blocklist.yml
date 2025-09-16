@@ -491,3 +491,18 @@
   - contract_period_years
   - created_at
   - updated_at
+  :schedules:
+  - id
+  - contract_period_year
+  - identifier
+  - schedule_type
+  - created_at
+  - updated_at
+  :milestones:
+  - id
+  - schedule_id
+  - declaration_type
+  - start_date
+  - milestone_date
+  - created_at
+  - updated_at

@@ -22,6 +22,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
+  create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api"]
   create_enum "fee_types", ["output", "service"]
@@ -35,6 +36,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
   create_enum "parity_check_run_modes", ["concurrent", "sequential"]
   create_enum "parity_check_run_states", ["pending", "in_progress", "completed", "failed"]
   create_enum "request_method_types", ["get", "post", "put"]
+  create_enum "schedule_identifiers", ["ecf-extended-april", "ecf-extended-january", "ecf-extended-september", "ecf-reduced-april", "ecf-reduced-january", "ecf-reduced-september", "ecf-replacement-april", "ecf-replacement-january", "ecf-replacement-september", "ecf-standard-april", "ecf-standard-january", "ecf-standard-september"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]
   create_enum "working_pattern", ["part_time", "full_time"]
@@ -419,6 +421,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
 
+  create_table "milestones", force: :cascade do |t|
+    t.bigint "schedule_id"
+    t.enum "declaration_type", null: false, enum_type: "declaration_types"
+    t.date "start_date", null: false
+    t.date "milestone_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["schedule_id", "declaration_type"], name: "index_milestones_on_schedule_id_and_declaration_type", unique: true
+    t.index ["schedule_id"], name: "index_milestones_on_schedule_id"
+  end
+
   create_table "parity_check_endpoints", force: :cascade do |t|
     t.string "path", null: false
     t.enum "method", null: false, enum_type: "request_method_types"
@@ -518,6 +531,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
     t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
+  end
+
+  create_table "schedules", force: :cascade do |t|
+    t.integer "contract_period_year", null: false
+    t.enum "identifier", null: false, enum_type: "schedule_identifiers"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_period_year", "identifier"], name: "index_schedules_on_contract_period_year_and_identifier", unique: true
   end
 
   create_table "school_partnerships", force: :cascade do |t|
@@ -809,6 +830,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "lead_providers"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "schools"
+  add_foreign_key "milestones", "schedules"
   add_foreign_key "parity_check_requests", "lead_providers"
   add_foreign_key "parity_check_requests", "parity_check_endpoints", column: "endpoint_id"
   add_foreign_key "parity_check_requests", "parity_check_runs", column: "run_id"
@@ -816,6 +838,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_11_141514) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
+  add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
