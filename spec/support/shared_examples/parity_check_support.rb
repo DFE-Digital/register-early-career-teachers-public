@@ -53,10 +53,12 @@ RSpec.shared_examples "client performs requests with body" do
     ecf_body = ecf_requests.first.body
     rect_body = rect_requests.first.body
 
-    expect(ecf_body).to be_present
-    expect(rect_body).to be_present
-
     expect { JSON.parse(ecf_body) }.not_to raise_error
     expect { JSON.parse(rect_body) }.not_to raise_error
+
+    expect(JSON.parse(ecf_body)["data"]).to be_present
+    expect(JSON.parse(rect_body)["data"]).to be_present
+
+    expect(ecf_body).to eq(rect_body)
   end
 end
