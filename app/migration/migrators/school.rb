@@ -90,8 +90,12 @@ module Migrators
     end
 
     def update_school!(school:, ecf_school:)
+      induction_coordinator = ecf_school.induction_coordinators.first
+
       attrs = {
         api_id: ecf_school.id,
+        induction_tutor_name: induction_coordinator&.full_name,
+        induction_tutor_email: induction_coordinator&.email,
         created_at: ecf_school.created_at,
         updated_at: ecf_school.updated_at
       }

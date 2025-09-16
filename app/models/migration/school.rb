@@ -10,6 +10,9 @@ module Migration
     has_many :induction_programmes, through: :school_cohorts
     has_many :induction_records, through: :induction_programmes
     has_many :partnerships
+    has_many :induction_coordinator_profiles_schools, dependent: :destroy
+    has_many :induction_coordinator_profiles, through: :induction_coordinator_profiles_schools
+    has_many :induction_coordinators, through: :induction_coordinator_profiles, source: :user
 
     has_many :school_local_authorities
     has_many :local_authorities, through: :school_local_authorities
