@@ -28,7 +28,12 @@ module Schools
       def name_row
         {
           key: { text: 'Name' },
-          value: { text: teacher_full_name(@teacher) }
+          value: { text: teacher_full_name(@teacher) },
+          actions: [{
+            text: "Change",
+            visually_hidden_text: "name",
+            href: schools_mentors_change_name_wizard_edit_path(@mentor)
+          }]
         }
       end
 
