@@ -228,6 +228,8 @@
   - trs_last_name
   - mentor_became_ineligible_for_funding_on
   - mentor_became_ineligible_for_funding_reason
+  - ect_payments_frozen_year
+  - mentor_payments_frozen_year
   :pending_induction_submissions:
   - id
   - appropriate_body_id

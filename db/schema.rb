@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_15_065439) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_16_071240) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -753,6 +753,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_15_065439) do
     t.uuid "api_user_id", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "api_ect_profile_id", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "api_mentor_profile_id", default: -> { "gen_random_uuid()" }, null: false
+    t.integer "ect_payments_frozen_year"
+    t.integer "mentor_payments_frozen_year"
     t.index ["api_ect_profile_id"], name: "index_teachers_on_api_ect_profile_id", unique: true
     t.index ["api_mentor_profile_id"], name: "index_teachers_on_api_mentor_profile_id", unique: true
     t.index ["api_user_id"], name: "index_teachers_on_api_user_id", unique: true
@@ -855,6 +857,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_15_065439) do
   add_foreign_key "statement_adjustments", "statements"
   add_foreign_key "statements", "active_lead_providers"
   add_foreign_key "teacher_migration_failures", "teachers"
+  add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
+  add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
   add_foreign_key "training_periods", "active_lead_providers", column: "expression_of_interest_id"
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "mentor_at_school_periods"
