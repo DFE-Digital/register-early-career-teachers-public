@@ -1,11 +1,10 @@
 module AppropriateBodies
   module ClaimAnECT
     class FindECTController < AppropriateBodiesController
+      layout 'full'
+
       def new
         @pending_induction_submission = PendingInductionSubmission.new
-      end
-
-      def not_found
       end
 
       def create
@@ -14,29 +13,23 @@ module AppropriateBodies
         if find_ect.import_from_trs!
           redirect_to edit_ab_claim_an_ect_check_path(@pending_induction_submission)
         else
-          render(:new)
+          render :new
         end
 
-        # FIXME: I'm not especially fond of saving these throwaway pending induction
-        #        submissions, can we not make the error pages generic and flash the
-        #        details through instead?
-      rescue TRS::Errors::QTSNotAwarded
-        @pending_induction_submission.save!
-        redirect_to ab_claim_an_ect_errors_no_qts_path(@pending_induction_submission)
-      rescue TRS::Errors::ProhibitedFromTeaching
-        @pending_induction_submission.save!
-        redirect_to ab_claim_an_ect_errors_prohibited_path(@pending_induction_submission)
-      rescue TRS::Errors::InductionAlreadyCompleted
-        @pending_induction_submission.save!
-        redirect_to edit_ab_claim_an_ect_check_path(@pending_induction_submission)
+      # Not in TRS
       rescue TRS::Errors::TeacherNotFound, TRS::Errors::TeacherDeactivated
         @pending_induction_submission.errors.add(:base, "No teacher with this TRN and date of birth was found")
+        render :new
 
-        render(:new)
+      # Not claimable
+      rescue TRS::Errors::InductionAlreadyCompleted, TRS::Errors::QTSNotAwarded, TRS::Errors::ProhibitedFromTeaching
+        @pending_induction_submission.save!
+        redirect_to edit_ab_claim_an_ect_check_path(@pending_induction_submission)
+
+      # Already claimed by another AB
       rescue AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB => e
         teacher_id = Teacher.find_by!(trn: @pending_induction_submission.trn).id
-
-        redirect_to(ab_teacher_path(teacher_id), notice: e.message)
+        redirect_to ab_teacher_path(teacher_id), notice: e.message
       end
 
     private

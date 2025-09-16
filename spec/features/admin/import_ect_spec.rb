@@ -3,10 +3,15 @@ RSpec.describe 'Admin importing an ECT' do
 
   before { sign_in_as_dfe_user(role: :admin, user: admin_user) }
 
-  describe "Happy path - importing a valid teacher" do
+  scenario '"Import TRS record" button is available on Admin homepage' do
+    given_i_am_on_the_admin_teachers_index_page
+    then_i_should_see_the_import_ect_button
+  end
+
+  describe 'eligible import' do
     include_context 'test trs api client'
 
-    scenario 'Successfully import an ECT from TRS' do
+    scenario 'the teacher can be imported' do
       given_i_am_on_the_admin_teachers_index_page
       when_i_click_the_import_ect_button
 
@@ -25,65 +30,108 @@ RSpec.describe 'Admin importing an ECT' do
     end
   end
 
-  describe "Error cases" do
-    context "when teacher not found in TRS" do
+  describe 'ineligible import' do
+    context 'when teacher is not found in TRS' do
       include_context 'test trs api client that finds nothing'
 
-      scenario 'Shows teacher not found error' do
+      scenario 'displays an error' do
         given_i_am_on_the_find_ect_page
         when_i_enter_a_trn_and_date_of_birth_that_do_not_exist_in_trs
         and_i_click_continue
-
         then_i_should_see_the_teacher_not_found_error
       end
     end
 
-    context "when teacher already exists in RIAB" do
+    context 'when teacher already exists in the service' do
       include_context 'test trs api client'
 
       let!(:existing_teacher) { FactoryBot.create(:teacher, trn: '1234567') }
 
-      scenario 'Redirects to existing teacher page' do
+      scenario 'redirects to existing teacher page' do
         given_i_am_on_the_find_ect_page
         when_i_enter_a_trn_for_existing_teacher
         and_i_click_continue
-
         then_i_should_be_redirected_to_the_existing_teacher_page
         and_i_should_see_the_teacher_already_exists_message
       end
     end
 
-    context "when teacher does not have QTS" do
+    context 'when teacher does not have QTS' do
       include_context 'test trs api client that finds teacher without QTS'
 
-      scenario 'Shows QTS not awarded error page' do
+      scenario 'the teacher cannot be imported' do
         given_i_am_on_the_find_ect_page
         when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
         and_i_click_continue
-
-        then_i_should_be_on_the_no_qts_error_page
-        and_i_should_see_the_qts_error_message
+        then_i_should_be_on_the_check_ect_page
+        and_i_should_see_the_error_message('Kirk Van Houten does not have their qualified teacher status (QTS).')
+        and_i_should_not_see_the_continue_button
       end
     end
 
-    context "when teacher is prohibited from teaching" do
+    context 'when teacher is prohibited from teaching' do
       include_context 'test trs api client that finds teacher prohibited from teaching'
 
-      scenario 'Shows prohibited from teaching error page' do
+      scenario 'the teacher cannot be imported' do
         given_i_am_on_the_find_ect_page
         when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
         and_i_click_continue
-
-        then_i_should_be_on_the_prohibited_error_page
-        and_i_should_see_the_prohibited_error_message
+        then_i_should_be_on_the_check_ect_page
+        and_i_should_see_the_error_message('Kirk Van Houten is prohibited from teaching.')
+        and_i_should_not_see_the_continue_button
       end
     end
-  end
 
-  describe "Navigation and UI" do
-    scenario 'Import TRS record button is available on admin console homepage' do
-      given_i_am_on_the_admin_teachers_index_page
-      then_i_should_see_the_import_ect_button
+    context 'when the teacher is exempt' do
+      include_context 'test trs api client that finds teacher with specific induction status', 'Exempt'
+
+      scenario 'the teacher cannot be imported' do
+        given_i_am_on_the_find_ect_page
+        when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
+        and_i_click_continue
+        then_i_should_be_on_the_check_ect_page
+        and_i_should_see_the_error_message('Kirk Van Houten is exempt from completing their induction.')
+        and_i_should_not_see_the_continue_button
+      end
+    end
+
+    context 'when the teacher has passed their induction' do
+      include_context 'test trs api client that finds teacher with specific induction status', 'Passed'
+
+      scenario 'the teacher cannot be imported' do
+        given_i_am_on_the_find_ect_page
+        when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
+        and_i_click_continue
+        then_i_should_be_on_the_check_ect_page
+        and_i_should_see_the_error_message('Kirk Van Houten has already passed their induction.')
+        and_i_should_not_see_the_continue_button
+      end
+    end
+
+    context 'when the teacher has failed their induction' do
+      include_context 'test trs api client that finds teacher with specific induction status', 'Failed'
+
+      scenario 'the teacher cannot be imported' do
+        given_i_am_on_the_find_ect_page
+        when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
+        and_i_click_continue
+        then_i_should_be_on_the_check_ect_page
+        and_i_should_see_the_error_message('Kirk Van Houten has already failed their induction.')
+        and_i_should_not_see_the_continue_button
+      end
+    end
+
+    context 'when the teacher has failed their induction (in Wales)' do
+      include_context 'test trs api client that finds teacher with specific induction status', 'FailedInWales'
+
+      scenario 'the teacher cannot be imported' do
+        given_i_am_on_the_find_ect_page
+        when_i_enter_a_trn_and_date_of_birth_that_exist_in_trs
+        and_i_click_continue
+        then_i_should_be_on_the_check_ect_page
+        and_i_should_see_the_error_message('Kirk Van Houten has already failed their induction.')
+        and_i_should_not_see_the_continue_button
+      end
     end
   end
 
@@ -189,25 +237,12 @@ private
     expect(page.get_by_text("Teacher #{teacher.trn} already exists in the system")).to be_visible
   end
 
-  def then_i_should_be_on_the_no_qts_error_page
-    @pending_induction_submission = PendingInductionSubmission.last
-    path = "/admin/import-ect/errors/no-qts/#{@pending_induction_submission.id}"
-    expect(page).to have_path(path)
+  def and_i_should_see_the_error_message(message)
+    expect(page.get_by_text('You cannot register Kirk Van Houten.')).to be_visible
+    expect(page.get_by_text(message)).to be_visible
   end
 
-  def and_i_should_see_the_qts_error_message
-    expect(page.get_by_text('You cannot register')).to be_visible
-    expect(page.get_by_text('does not have their qualified teacher status')).to be_visible
-  end
-
-  def then_i_should_be_on_the_prohibited_error_page
-    @pending_induction_submission = PendingInductionSubmission.last
-    path = "/admin/import-ect/errors/prohibited-from-teaching/#{@pending_induction_submission.id}"
-    expect(page).to have_path(path)
-  end
-
-  def and_i_should_see_the_prohibited_error_message
-    expect(page.get_by_text('You cannot register')).to be_visible
-    expect(page.get_by_text('is prohibited from teaching')).to be_visible
+  def and_i_should_not_see_the_continue_button
+    expect(page.get_by_role('button', name: 'Continue')).not_to be_visible
   end
 end
