@@ -122,6 +122,8 @@ erDiagram
     uuid api_user_id
     uuid api_ect_profile_id
     uuid api_mentor_profile_id
+    integer ect_payments_frozen_year
+    integer mentor_payments_frozen_year
   }
   PendingInductionSubmission {
     integer id
