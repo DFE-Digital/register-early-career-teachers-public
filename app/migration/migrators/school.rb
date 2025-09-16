@@ -93,7 +93,7 @@ module Migrators
       attrs = {
         api_id: ecf_school.id,
         created_at: ecf_school.created_at,
-        updated_at: ecf_school.updated_at
+        api_updated_at: ecf_school.updated_at
       }
       school.update_columns(attrs)
     end

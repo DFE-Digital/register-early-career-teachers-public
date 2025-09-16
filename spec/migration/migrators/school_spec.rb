@@ -154,7 +154,7 @@ describe Migrators::School do
         expect(data_migration.reload.failure_count).to eq(0)
         gias_school.reload
         expect(gias_school.school.created_at).to eq(ecf_school.created_at)
-        expect(gias_school.school.updated_at).to eq(ecf_school.updated_at)
+        expect(gias_school.school.api_updated_at).to eq(ecf_school.updated_at)
       end
     end
   end
