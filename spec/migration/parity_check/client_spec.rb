@@ -1,12 +1,15 @@
 RSpec.describe ParityCheck::Client do
   let(:ecf_url) { "https://ecf.example.com" }
   let(:rect_url) { "https://rect.example.com" }
-  let(:endpoint) { FactoryBot.build(:parity_check_endpoint) }
-  let(:request) { FactoryBot.build(:parity_check_request, endpoint:) }
+  let(:endpoint) { FactoryBot.create(:parity_check_endpoint) }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+  let(:request) { FactoryBot.create(:parity_check_request, endpoint:, lead_provider:) }
   let(:token) { "test_token" }
   let(:per_page) { ParityCheck::RequestBuilder::PAGINATION_PER_PAGE }
   let(:instance) { described_class.new(request:) }
-  let(:tokens) { { request.lead_provider.ecf_id => token }.to_json }
+  let(:tokens) { { lead_provider.ecf_id => token }.to_json }
 
   before do
     allow(Rails.application.config).to receive(:parity_check).and_return({
@@ -97,18 +100,27 @@ RSpec.describe ParityCheck::Client do
       end
     end
 
-    context "when performing a POST request" do
-      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :post) }
+    context "with body" do
+      before do
+        # Create some data to be used in the request body
+        FactoryBot.create_list(:lead_provider_delivery_partnership, 2, active_lead_provider:)
+        FactoryBot.create_list(:school, 2, :eligible)
+        FactoryBot.create_list(:school_partnership, 2, lead_provider_delivery_partnership:)
+      end
 
-      include_examples "client performs requests"
-      include_examples "client performs requests with body"
-    end
+      context "when performing a POST request" do
+        let(:endpoint) { FactoryBot.create(:parity_check_endpoint, :post) }
 
-    context "when performing a PUT request" do
-      let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :put) }
+        include_examples "client performs requests"
+        include_examples "client performs requests with body"
+      end
 
-      include_examples "client performs requests"
-      include_examples "client performs requests with body"
+      context "when performing a PUT request" do
+        let(:endpoint) { FactoryBot.create(:parity_check_endpoint, :put) }
+
+        include_examples "client performs requests"
+        include_examples "client performs requests with body"
+      end
     end
   end
 

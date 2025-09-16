@@ -11,7 +11,8 @@ module ParityCheck
     def fetch(identifier)
       raise UnrecognizedIdentifierError, "Identifier not recognized: #{identifier}" unless respond_to?(identifier, true)
 
-      send(identifier)
+      @fetch ||= {}
+      @fetch[identifier] ||= send(identifier)
     end
 
   private
@@ -131,7 +132,7 @@ module ParityCheck
         .pluck(:school_id)
         .uniq
 
-      School.where.not(id: existing_school_ids).eligible.not_cip_only.first
+      School.where.not(id: existing_school_ids).eligible.not_cip_only.order("RANDOM()").first
     end
   end
 end

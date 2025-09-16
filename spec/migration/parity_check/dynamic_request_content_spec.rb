@@ -162,5 +162,16 @@ RSpec.describe ParityCheck::DynamicRequestContent do
         it { expect(fetch).to be_nil }
       end
     end
+
+    context "when fetching the same identifier more than once" do
+      let(:identifier) { :statement_id }
+      let!(:statement) { FactoryBot.create(:statement, :output_fee, lead_provider:) }
+
+      it "memoises the returned value for the same identifier in subsequent calls" do
+        expect(API::Statements::Query).to receive(:new).once.and_call_original
+
+        2.times { instance.fetch(identifier) }
+      end
+    end
   end
 end
