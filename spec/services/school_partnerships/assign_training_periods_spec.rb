@@ -7,10 +7,12 @@ RSpec.describe SchoolPartnerships::AssignTrainingPeriods do
         school_partnership:,
         school:,
         lead_provider:,
-        contract_period:
+        contract_period:,
+        author:
       )
     end
 
+    let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
     let(:school) { FactoryBot.create(:school) }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
