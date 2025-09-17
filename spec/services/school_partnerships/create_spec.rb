@@ -69,6 +69,23 @@ RSpec.describe SchoolPartnerships::Create do
         .from(nil).to(created_school_partnership)
     end
 
+    it 'delegates training period assignment to AssignTrainingPeriods' do
+      assign_service = instance_double(SchoolPartnerships::AssignTrainingPeriods, call: true)
+
+      allow(SchoolPartnerships::AssignTrainingPeriods).to receive(:new)
+        .with(
+          school_partnership: an_instance_of(SchoolPartnership),
+          school:,
+          lead_provider:,
+          contract_period:
+        )
+        .and_return(assign_service)
+
+      service.create
+
+      expect(assign_service).to have_received(:call).once
+    end
+
     it 'raises an error if the school and delivery partnership are already linked' do
       FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
 
