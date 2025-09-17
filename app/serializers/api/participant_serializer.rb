@@ -26,11 +26,13 @@ class API::ParticipantSerializer < Blueprinter::Base
         teacher = trainee.teacher
         training_record_id = training_period.for_ect? ? teacher.api_ect_profile_id : teacher.api_mentor_profile_id
         {
+          school_period_id: trainee.id,
           training_record_id:,
           email: trainee.email,
           participant_type: training_period.for_ect? ? "ect" : "mentor",
-          started_on: training_period.started_on,
-          finished_on: training_period.finished_on,
+          started_on: training_period.started_on&.iso8601,
+          finished_on: training_period.finished_on&.iso8601,
+          lead_provider: training_period.lead_provider.name,
         }
       end
     end
