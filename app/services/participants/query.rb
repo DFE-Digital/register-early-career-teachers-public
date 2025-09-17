@@ -23,23 +23,23 @@ module Participants
         .select("teachers.*")
         .from("(#{ect_teachers.to_sql} UNION #{mentor_teachers.to_sql}) as teachers")
         .includes(
-          ect_at_school_periods: { training_periods: :lead_provider },
-          mentor_at_school_periods: { training_periods: :lead_provider }
+          ect_at_school_periods: { latest_training_period: :lead_provider },
+          mentor_at_school_periods: { latest_training_period: :lead_provider }
         )
     end
 
     def ect_teachers
       Teacher
         .select("teachers.*")
-        .joins(ect_at_school_periods: { training_periods: :lead_provider })
-        .where(lead_providers: { id: lead_provider.id })
+        .joins(ect_at_school_periods: { latest_training_period: :lead_provider })
+        .where(lead_provider: { id: lead_provider.id })
     end
 
     def mentor_teachers
       Teacher
         .select("teachers.*")
-        .joins(mentor_at_school_periods: { training_periods: :lead_provider })
-        .where(lead_providers: { id: lead_provider.id })
+        .joins(mentor_at_school_periods: { latest_training_period: :lead_provider })
+        .where(lead_provider: { id: lead_provider.id })
     end
   end
 end

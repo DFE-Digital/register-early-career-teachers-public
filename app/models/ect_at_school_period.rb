@@ -15,6 +15,11 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
   has_one :current_or_next_mentorship_period, -> { current_or_future.earliest_first }, class_name: 'MentorshipPeriod'
 
+  has_one :latest_training_period,
+          -> { latest_first },
+          class_name: "TrainingPeriod",
+          inverse_of: :ect_at_school_period
+
   refresh_metadata -> { school }, on_event: %i[create destroy update]
 
   # Validations
