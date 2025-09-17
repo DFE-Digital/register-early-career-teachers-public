@@ -101,6 +101,7 @@ module Migrators
         end
 
         migration_counters = { processed: 0, failures: 0 }
+        batched_failures = []
 
         # As we're using offset/limit, we can't use find_each!
         items.each do |item|
@@ -110,7 +111,7 @@ module Migrators
             success = yield(item)
           rescue StandardError => e
             success = false
-            failure_manager.record_failure(item, e.message)
+            batched_failures << { item:, failure_message: e.message }
           end
 
           migration_counters[:processed] += 1
@@ -119,9 +120,11 @@ module Migrators
           next unless migration_counters[:processed] >= COUNTER_UPDATE_BATCH_SIZE
 
           update_and_reset_migration_counters(migration_counters)
+          flush_and_clear_failure_batch(batched_failures)
         end
 
         update_and_reset_migration_counters(migration_counters)
+        flush_and_clear_failure_batch(batched_failures)
 
         finalise_migration!
       end
@@ -261,6 +264,13 @@ module Migrators
 
     def active_lead_provider_ids_by_lead_provider_and_contract_period
       @active_lead_provider_ids_by_lead_provider_and_contract_period ||= ::ActiveLeadProvider.pluck(:lead_provider_id, :contract_period_year, :id).to_h { |s| ["#{s[0]} #{s[1]}", s[2]] }
+    end
+
+    def flush_and_clear_failure_batch(failures)
+      return if failures.empty?
+
+      failure_manager.record_failures(failures.dup)
+      failures.clear
     end
 
     def update_and_reset_migration_counters(counters)
