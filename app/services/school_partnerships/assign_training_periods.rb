@@ -1,10 +1,11 @@
 module SchoolPartnerships
   class AssignTrainingPeriods
-    def initialize(school_partnership:, school:, lead_provider:, contract_period:)
+    def initialize(school_partnership:, school:, lead_provider:, contract_period:, author:)
       @school_partnership = school_partnership
       @school = school
       @lead_provider = lead_provider
       @contract_period = contract_period
+      @author = author
     end
 
     def call
@@ -18,7 +19,7 @@ module SchoolPartnerships
           tp.update!(school_partnership: @school_partnership)
 
           Events::Record.record_training_period_assigned_to_school_partnership_event!(
-            author: Events::LeadProviderAPIAuthor.new(lead_provider: @lead_provider),
+            author: @author,
             training_period: tp,
             ect_at_school_period: tp.ect_at_school_period,
             mentor_at_school_period: tp.mentor_at_school_period,
