@@ -221,18 +221,20 @@ RSpec.describe Schools::RegisterECT do
     context 'when switching from provider-led to school-led' do
       let(:training_programme) { 'school_led' }
       let(:lead_provider) { nil }
-      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
       before do
         school.update!(
+          last_chosen_lead_provider: FactoryBot.create(:lead_provider),
           last_chosen_training_programme: 'provider_led',
-          last_chosen_lead_provider: FactoryBot.create(:lead_provider)
+          last_chosen_appropriate_body: nil
         )
       end
 
-      it 'clears the last chosen lead provider' do
+      it 'updates the last chosen fields correctly' do
         expect { service.register! }
-          .to change(school, :last_chosen_lead_provider_id).to(nil)
+          .to change { school.reload.last_chosen_lead_provider_id }.to(nil)
+           .and change { school.reload.last_chosen_training_programme }.to('school_led')
+           .and change { school.reload.last_chosen_appropriate_body }.to(school_reported_appropriate_body)
       end
     end
 
