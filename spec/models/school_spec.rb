@@ -207,7 +207,7 @@ describe School do
     end
   end
 
-  context "#expression_of_interest_for?" do
+  describe "#expression_of_interest_for?" do
     subject(:school) { FactoryBot.create(:school) }
 
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }

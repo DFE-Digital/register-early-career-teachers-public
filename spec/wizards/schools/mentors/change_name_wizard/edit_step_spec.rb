@@ -45,7 +45,7 @@ RSpec.describe Schools::Mentors::ChangeNameWizard::EditStep, type: :model do
     it { expect { current_step.previous_step }.to raise_error(NotImplementedError) }
   end
 
-  context '#save!' do
+  describe '#save!' do
     context 'when the step is not valid' do
       let(:params) do
         { "name" => '' }
