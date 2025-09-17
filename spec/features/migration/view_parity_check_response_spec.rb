@@ -24,6 +24,12 @@ RSpec.describe "View parity check response" do
 
     expect(page.get_by_text("The response IDs were the same. In total RECT returned 0 IDs and ECF returned 0 IDs.")).to be_visible
 
+    expect(page.get_by_role("heading", name: "Request details")).to be_visible
+    expect(page.get_by_text("The request to ECF was made to: GET /path/to/ecf/endpoint")).to be_visible
+    expect(page.get_by_text("The request to RECT was made to: GET /path/to/rect/endpoint")).to be_visible
+    expect(page.get_by_text("The request body sent to both services was:")).to be_visible
+    expect(page.get_by_text(JSON.pretty_generate(response.request_body))).to be_visible
+
     expect(page.get_by_text(/The diff below highlights/)).not_to be_visible
     page.get_by_text("Understanding the differences").click
     expect(page.get_by_text(/The diff below highlights/)).to be_visible

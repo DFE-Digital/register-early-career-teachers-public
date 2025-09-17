@@ -40,7 +40,10 @@ RSpec.shared_examples "client performs requests" do
         ecf_time_ms: be >= 0,
         rect_body:,
         rect_status_code: 201,
-        rect_time_ms: be >= 0
+        rect_time_ms: be >= 0,
+        ecf_request_uri: CGI.unescape(ecf_requests.first.uri.request_uri),
+        rect_request_uri: CGI.unescape(rect_requests.first.uri.request_uri),
+        request_body: (rect_requests + ecf_requests).sample.body,
       })
     end
   end
