@@ -20,7 +20,33 @@
   RECT returned <strong><%= id_count_in_words(@response.rect_body_ids) %></strong> and ECF returned <strong><%= id_count_in_words(@response.ecf_body_ids) %></strong>.
 </p>
 
-<% if @response.bodies_different? || @response.body_ids_different? %>
+<hr class="govuk-section-break govuk-section-break--m">
+
+<h2 class="govuk-heading-m">Request details</h2>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <p class="response-details">
+      The request to <strong>ECF</strong> was made to: <code><%= "#{@response.request.method.upcase} #{@response.ecf_request_uri}" %></code>
+    </p>
+
+    <p class="response-details">
+      The request to <strong>RECT</strong> was made to: <code><%= "#{@response.request.method.upcase} #{@response.rect_request_uri}" %></code>
+    </p>
+
+    <% if @response.request_body %>
+      <p>The request body sent to both services was:</p>
+
+      <pre><%= JSON.pretty_generate(@response.request_body) %></pre>
+    <% end %>
+  </div>  
+</div>
+
+<% if @response.bodies_different? %>
+  <hr class="govuk-section-break govuk-section-break--m">
+
+  <h2 class="govuk-heading-m">Response body</h2>
+
   <% content_for(:head) do %>
     <style type="text/css" nonce="<%= content_security_policy_nonce %>"><%= Diffy::CSS %></style>
   <% end %>
@@ -40,12 +66,6 @@
       in the RECT response but is missing from the ECF response.
     </p>
   <% end %>
-<% end %>
-
-<% if @response.bodies_different? %>
-  <hr class="govuk-section-break govuk-section-break--l">
-
-  <h2 class="govuk-heading-l">Response body</h2>
 
   <div class="govuk-grid-row diff-container">
     <div class="govuk-grid-column-one-third">
@@ -58,9 +78,9 @@
 <% end %>
 
 <% if @response.body_ids_different? %>
-  <hr class="govuk-section-break govuk-section-break--l">
+  <hr class="govuk-section-break govuk-section-break--m">
 
-  <h2 class="govuk-heading-l">Response IDs</h2>
+  <h2 class="govuk-heading-m">Response IDs</h2>
 
   <div class="govuk-grid-row diff-container">
     <div class="govuk-grid-column-one-third">
