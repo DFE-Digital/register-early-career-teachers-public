@@ -20,7 +20,7 @@ describe 'Terraform versions' do
     end
   end
 
-  context '.tool-versions' do
+  describe '.tool-versions' do
     version_in_tool_versions = File.open(Rails.root.join('.tool-versions')).then { |v| extract_terraform_version(v, /terraform/) }
 
     it "is at version #{version_in_tool_versions}" do
