@@ -26,7 +26,7 @@ RSpec.describe Migrators::DeliveryPartner do
           source_record = Migration::DeliveryPartner.find(delivery_partner.api_id)
           expect(delivery_partner.name).to eq source_record.name
           expect(delivery_partner.created_at).to eq source_record.created_at
-          expect(delivery_partner.updated_at).to eq source_record.updated_at
+          expect(delivery_partner.api_updated_at).to eq source_record.updated_at
         end
       end
     end
