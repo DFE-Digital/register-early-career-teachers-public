@@ -23,7 +23,7 @@ RSpec.describe InductionPeriod do
       let(:finished_on_message) { 'End date cannot overlap another induction period' }
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      context '#teacher_distinct_period' do
+      describe '#teacher_distinct_period' do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             before do

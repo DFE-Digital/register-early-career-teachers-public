@@ -78,7 +78,7 @@ RSpec.describe Schools::RegisterECTWizard::EmailAddressStep, type: :model do
     end
   end
 
-  context '#save!' do
+  describe '#save!' do
     subject { wizard.current_step }
 
     let(:step_params) do
