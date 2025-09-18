@@ -768,6 +768,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
     t.uuid "api_mentor_training_record_id", default: -> { "gen_random_uuid()" }, null: false
     t.integer "ect_payments_frozen_year"
     t.integer "mentor_payments_frozen_year"
+    t.boolean "ect_pupil_premium_uplift", default: false, null: false
+    t.boolean "ect_sparsity_uplift", default: false, null: false
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
     t.index ["api_user_id"], name: "index_teachers_on_api_user_id", unique: true

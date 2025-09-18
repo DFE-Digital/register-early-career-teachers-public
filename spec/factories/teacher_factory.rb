@@ -8,6 +8,19 @@ FactoryBot.define do
       corrected_name { [trs_first_name, Faker::Name.middle_name, trs_last_name].join(' ') }
     end
 
+    trait :with_sparsity_uplift do
+      ect_sparsity_uplift { true }
+    end
+
+    trait :with_pupil_premium_uplift do
+      ect_pupil_premium_uplift { true }
+    end
+
+    trait :with_uplifts do
+      with_sparsity_uplift
+      with_pupil_premium_uplift
+    end
+
     trait :deactivated_in_trs do
       trs_deactivated { true }
     end
