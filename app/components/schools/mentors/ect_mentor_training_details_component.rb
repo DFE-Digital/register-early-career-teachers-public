@@ -4,7 +4,7 @@ module Schools
       include TeacherHelper
 
       COMPLETED_REASONS = %w[
-        completed_during-early_roll_out
+        completed_during_early_roll_out
         completed_declaration_received
       ].freeze
 
@@ -12,15 +12,11 @@ module Schools
 
       def initialize(teacher:, mentor:)
         @teacher = teacher
-        @mentor = mentor
+        @mentor  = mentor
       end
 
       def render?
         ineligible_for_training? || mentor_training_period.present?
-      end
-
-      def eligible_for_training?
-        teacher.mentor_became_ineligible_for_funding_on.nil?
       end
 
       def ineligible_for_training?
@@ -41,15 +37,15 @@ module Schools
 
       def mentor_training_period
         @mentor_training_period ||= TrainingPeriod
-                                      .current_or_future
-                                      .provider_led_training_programme
-                                      .for_mentor(@mentor.id)
-                                      .order(:started_on)
-                                      .first
+          .current_or_future
+          .provider_led_training_programme
+          .for_mentor(@mentor.id)
+          .order(:started_on)
+          .first
       end
 
       def partnership_confirmed?
-        mentor_training_period&.school_partnership.present?
+        @partnership_confirmed ||= mentor_training_period&.school_partnership.present?
       end
 
       def lead_provider_name
@@ -62,15 +58,6 @@ module Schools
 
       def delivery_partner_name
         mentor_training_period&.delivery_partner_name
-      end
-
-    private
-
-      def provider_led_registered?
-        TrainingPeriod.current_or_future
-                      .provider_led_training_programme
-                      .for_mentor(@mentor.id)
-                      .exists?
       end
     end
   end
