@@ -48,6 +48,13 @@ FactoryBot.define do
       association :school_reported_appropriate_body, :teaching_school_hub, factory: :appropriate_body
     end
 
+    trait :with_teacher_payments_frozen_year do
+      after(:create) do |record|
+        ect_payments_frozen_year = FactoryBot.create(:contract_period, year: [2021, 2022].sample).year
+        record.teacher.update!(ect_payments_frozen_year:)
+      end
+    end
+
     trait :with_training_period do
       transient do
         lead_provider { nil }
