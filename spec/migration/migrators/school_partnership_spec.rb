@@ -38,6 +38,8 @@ describe Migrators::SchoolPartnership do
           expect(delivery_partner.api_id).to eq partnership.delivery_partner_id
           expect(year).to eq partnership.cohort.start_year
           expect(school.urn.to_s).to eq partnership.school.urn
+          expect(school_partnership.created_at).to eq partnership.created_at
+          expect(school_partnership.api_updated_at).to eq partnership.updated_at
         end
       end
     end
