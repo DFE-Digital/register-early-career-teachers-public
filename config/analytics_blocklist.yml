@@ -511,3 +511,11 @@
   - milestone_date
   - created_at
   - updated_at
+  :teacher_id_changes:
+  - id
+  - teacher_id
+  - from_teacher_id
+  - to_teacher_id
+  - ecf_id
+  - created_at
+  - updated_at
