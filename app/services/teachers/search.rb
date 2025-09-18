@@ -12,7 +12,7 @@ module Teachers
     end
 
     def search
-      scope.order(order)
+      scope.reorder(order)
     end
 
     delegate :count, to: :scope
@@ -66,9 +66,9 @@ module Teachers
       return if school == :ignore
 
       @scope.merge!(
-        @scope.eager_load(ect_at_school_periods: [:school, { mentorship_periods: { mentor: :teacher } }])
-              .where(ect_at_school_periods: { school: })
-              .merge(ECTAtSchoolPeriod.current_or_future)
+        @scope
+          .eager_load(current_or_next_ect_at_school_period: :mentorship_periods)
+          .where(ect_at_school_periods: { school: })
       )
 
       @sort_order = :mentorless_first_then_by_registration_date
