@@ -142,6 +142,8 @@ erDiagram
     uuid api_mentor_training_record_id
     integer ect_payments_frozen_year
     integer mentor_payments_frozen_year
+    boolean ect_pupil_premium_uplift
+    boolean ect_sparsity_uplift
   }
   PendingInductionSubmission {
     integer id
