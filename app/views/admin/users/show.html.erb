@@ -1,0 +1,32 @@
+<%
+  page_data(
+    title: @user.name,
+    caption: 'DfE staff',
+    caption_size: 'm',
+    error: false,
+    backlink_href: admin_users_path
+  )
+%>
+
+<%=
+  govuk_summary_list do |component|
+    component.with_row do |row|
+      row.with_key(text: 'Name')
+      row.with_value(text: @user.name)
+    end
+
+    component.with_row do |row|
+      row.with_key(text: 'Email address')
+      row.with_value(text: @user.email)
+    end
+
+    component.with_row do |row|
+      row.with_key(text: 'Created on')
+      row.with_value { @user.created_at.to_date.to_fs(:govuk) }
+    end
+  end
+%>
+
+<p class="govuk-body">
+  <%= govuk_button_link_to 'Edit', edit_admin_user_path(@user), visually_hidden_suffix: @user.name, secondary: true %>
+<p>

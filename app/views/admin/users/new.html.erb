@@ -1,0 +1,13 @@
+<%
+  page_data(
+    title: 'Add a new DfE staff member',
+    error: @user.errors.any?,
+    backlink_href: admin_users_path
+  )
+%>
+
+<%= form_for(@user, url: admin_users_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+  <%= render partial: 'form', locals: { f: } %>
+  <%= f.govuk_submit('Add user') %>
+<% end %>
