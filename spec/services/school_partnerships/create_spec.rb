@@ -84,7 +84,7 @@ RSpec.describe SchoolPartnerships::Create do
         )
         .and_return(assign_service)
 
-      service.create
+      create_school_partnership
 
       expect(assign_service).to have_received(:call).once
     end
@@ -93,7 +93,7 @@ RSpec.describe SchoolPartnerships::Create do
       FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
 
       expect {
-        service.create
+        create_school_partnership
       }.to raise_error(ActiveRecord::RecordInvalid, /must be unique/)
     end
   end
