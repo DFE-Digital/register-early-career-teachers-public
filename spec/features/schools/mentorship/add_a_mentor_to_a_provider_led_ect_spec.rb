@@ -48,6 +48,32 @@ RSpec.describe 'Add a mentor to a provider led ECT' do
     and_the_ect_is_shown_linked_to_the_mentor_just_registered
   end
 
+  scenario 'Mentor already has an ongoing training period' do
+    given_the_mentor_already_has_an_ongoing_training_period
+    and_i_select_the_mentor
+    and_i_click_continue
+    then_i_should_be_taken_straight_to_the_mentorship_confirmation_page
+
+    given_i_click_on_back_to_your_ects
+    then_i_should_be_taken_to_the_ects_page
+    and_the_ect_is_shown_linked_to_the_mentor_just_registered
+  end
+
+  def given_the_mentor_already_has_an_ongoing_training_period
+    FactoryBot.create(
+      :training_period,
+      :ongoing,
+      :provider_led,
+      :for_mentor,
+      mentor_at_school_period: @mentor,
+      school_partnership: @school_partnership
+    )
+  end
+
+  def then_i_should_be_taken_straight_to_the_mentorship_confirmation_page
+    expect(page).to have_path("/school/ects/#{@ect.id}/mentorship/confirmation")
+  end
+
   def and_the_back_link_links_to_the_who_will_mentor_page
     expect(page.get_by_role(:link, name: 'Back').get_attribute('href')).to end_with("/school/ects/#{@ect.id}/mentorship/new")
   end
@@ -124,6 +150,8 @@ RSpec.describe 'Add a mentor to a provider led ECT' do
   def given_i_select_the_mentor
     page.get_by_role(:radio, name: @mentor_name).check
   end
+
+  alias_method :and_i_select_the_mentor, :given_i_select_the_mentor
 
   def then_the_mentor_i_previously_selected_is_still_selected
     expect(page.get_by_role(:radio, name: @mentor_name)).to be_checked
