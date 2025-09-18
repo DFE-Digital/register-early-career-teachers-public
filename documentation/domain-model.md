@@ -39,6 +39,16 @@ erDiagram
     string model
   }
   TeacherMigrationFailure }o--|| Teacher : belongs_to
+  TeacherIdChange {
+    integer id
+    integer teacher_id
+    uuid from_teacher_id
+    uuid to_teacher_id
+    uuid ecf_id
+    datetime created_at
+    datetime updated_at
+  }
+  TeacherIdChange }o--|| Teacher : belongs_to
   Statement {
     integer id
     integer active_lead_provider_id
