@@ -11,6 +11,7 @@ describe Migrators::School do
                       school_status_name: 'Open',
                       school_type_name: 'Academy converter').tap do |ecf_school|
       FactoryBot.create(:ecf_migration_school_local_authority, school: ecf_school)
+      FactoryBot.create(:migration_induction_coordinator_profile, schools: [ecf_school])
     end
   end
 
@@ -155,6 +156,12 @@ describe Migrators::School do
         gias_school.reload
         expect(gias_school.school.created_at).to eq(ecf_school.created_at)
         expect(gias_school.school.api_updated_at).to eq(ecf_school.updated_at)
+      end
+
+      it "syncs the induction coordinator details" do
+        gias_school.reload
+        expect(gias_school.school.induction_tutor_name).to eq(ecf_school.induction_coordinators.first.full_name)
+        expect(gias_school.school.induction_tutor_email).to eq(ecf_school.induction_coordinators.first.email)
       end
     end
   end
