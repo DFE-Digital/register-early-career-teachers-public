@@ -39,6 +39,8 @@ module Migrators
 
       school_partnership.lead_provider_delivery_partnership = lpdp
       school_partnership.school = find_school_by_urn!(partnership.school.urn)
+      school_partnership.created_at = partnership.created_at
+      school_partnership.api_updated_at = partnership.updated_at
       school_partnership.save!
       school_partnership
     end
