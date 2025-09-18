@@ -63,4 +63,19 @@ class Teacher < ApplicationRecord
   scope :active_in_trs, -> { where(trs_deactivated: false) }
 
   normalizes :corrected_name, with: -> { it.squish }
+
+  def induction_started_on
+    induction_periods
+      .order(started_on: :asc)
+      .limit(1)
+      .pick(:started_on)
+  end
+
+  def induction_finished_on
+    induction_periods
+      .where.not(outcome: nil)
+      .order(finished_on: :desc)
+      .limit(1)
+      .pick(:finished_on)
+  end
 end
