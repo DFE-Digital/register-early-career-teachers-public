@@ -25,6 +25,8 @@ class Teacher < ApplicationRecord
   has_many :appropriate_bodies, through: :induction_periods
   has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body
   has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: 'ECTAtSchoolPeriod'
+  has_one :started_induction_period, -> { where.not(started_on: nil).order(started_on: :asc) }, class_name: 'InductionPeriod'
+  has_one :finished_induction_period, -> { where.not(outcome: nil).where.not(finished_on: nil).order(finished_on: :desc) }, class_name: 'InductionPeriod'
 
   has_many :events
 
