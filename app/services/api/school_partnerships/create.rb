@@ -27,6 +27,7 @@ module API::SchoolPartnerships
       return false unless valid?
 
       SchoolPartnerships::Create.new(
+        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
         school:,
         lead_provider_delivery_partnership:
       ).create

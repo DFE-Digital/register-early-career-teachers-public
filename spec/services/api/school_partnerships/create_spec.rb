@@ -161,8 +161,10 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
     it "creates a school partnership via create service" do
       school_partnership_service = double("SchoolPartnerships::Create")
-      allow(SchoolPartnerships::Create).to receive(:new).with(school:, lead_provider_delivery_partnership:).and_return(school_partnership_service)
-      allow(school_partnership_service).to receive(:create).once
+      author = an_instance_of(Events::LeadProviderAPIAuthor)
+
+      allow(SchoolPartnerships::Create).to receive(:new).with(author:, school:, lead_provider_delivery_partnership:).and_return(school_partnership_service)
+      allow(school_partnership_service).to receive(:create)
 
       create_school_partnership
 
