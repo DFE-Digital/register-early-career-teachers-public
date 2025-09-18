@@ -13,5 +13,12 @@ FactoryBot.define do
       started_on { generate(:base_mentor_date) + 1.year }
       finished_on { nil }
     end
+
+    trait :with_teacher_payments_frozen_year do
+      after(:create) do |record|
+        mentor_payments_frozen_year = FactoryBot.create(:contract_period, year: [2021, 2022].sample).year
+        record.teacher.update!(mentor_payments_frozen_year:)
+      end
+    end
   end
 end
