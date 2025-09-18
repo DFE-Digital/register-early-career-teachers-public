@@ -23,26 +23,6 @@ class FailureManager
     write_failure(item, failure_message)
   end
 
-  def record_failures(failure_entries)
-    return if failure_entries.blank?
-
-    rows = failure_entries.filter_map do |entry|
-      item = entry[:item]
-      failure_message = entry[:failure_message]
-      next if item.blank? || failure_message.blank?
-
-      {
-        data_migration_id: data_migration.id,
-        item: item.serializable_hash,
-        failure_message:,
-        parent_id: entry[:parent_id],
-        parent_type: entry[:parent_type]
-      }
-    end
-
-    MigrationFailure.insert_all!(rows)
-  end
-
   def all_failures
     failures
   end

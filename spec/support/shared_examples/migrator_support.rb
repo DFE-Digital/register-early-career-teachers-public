@@ -2,7 +2,7 @@ RSpec.shared_examples "a migrator" do |model, dependencies|
   let(:worker) { 0 }
   let(:instance) { described_class.new(worker:) }
   let(:data_migration) { FactoryBot.create(:data_migration, model:, worker: 0) }
-  let(:failure_manager) { instance_double(FailureManager, record_failure: nil, record_failures: nil) }
+  let(:failure_manager) { instance_double(FailureManager, record_failure: nil) }
   let(:migration_resource1) { create_migration_resource }
   let(:migration_resource2) { create_migration_resource }
   let(:migration_class) { migration_resource1.class }
@@ -195,7 +195,7 @@ RSpec.shared_examples "a migrator" do |model, dependencies|
 
       it "increments the failure/processed counts and logs the failure" do
         expect { migrate! }.to change { data_migration.reload.failure_count }.by(1).and(change(data_migration, :processed_count).by(3))
-        expect(failure_manager).to have_received(:record_failures).with(array_including(hash_including(item: be_a(migration_class), failure_message: be_a(String))))
+        expect(failure_manager).to have_received(:record_failure).with(be_a(migration_class), be_a(String))
       end
     end
 
