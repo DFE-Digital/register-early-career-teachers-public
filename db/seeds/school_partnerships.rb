@@ -2,7 +2,7 @@ def describe_school_partnership(sp)
   delivery_partner_name = sp.lead_provider_delivery_partnership.delivery_partner.name
   lead_provider_name = sp.lead_provider_delivery_partnership.active_lead_provider.lead_provider.name
   contract_period_year = sp.lead_provider_delivery_partnership.active_lead_provider.contract_period.year
-  school_name = "Some School" # sp.school.gias_school.name
+  school_name = sp.school.gias_school.name
 
   print_seed_info("#{school_name} has partnered with:")
   print_seed_info("🤝 lead provider: #{lead_provider_name}", indent: 4)
