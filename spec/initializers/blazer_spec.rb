@@ -11,10 +11,7 @@ RSpec.describe 'Blazer' do
     let(:mail_subject) { '0 Checks Failing' }
 
     let(:mail_body) do
-      <<~MD
-        [Manage checks](http://example.com/admin/blazer/checks)
-
-      MD
+      "[Manage checks](http://example.com/admin/blazer/checks)"
     end
 
     before do

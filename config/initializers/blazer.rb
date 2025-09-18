@@ -12,7 +12,7 @@ module Blazer
       mail_message.from = ::Blazer.from_email
       mail_message.personalisation = {
         subject: mail_message.subject,
-        body: ::ReverseMarkdown.convert(mail_message.body.to_s)
+        body: "[Manage checks](#{root_url}checks)",
       }
       mail_message
     end
