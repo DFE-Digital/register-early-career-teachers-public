@@ -52,7 +52,7 @@ module Migrators
     def check_gias_school(gias_school:, ecf_school:)
       return true if gias_school
 
-      record_failure(item: ecf_school, failure_message: MISSING_SCHOOL_MESSAGE.call(ecf_school.urn, ecf_school.name))
+      failure_manager.record_failure(ecf_school, MISSING_SCHOOL_MESSAGE.call(ecf_school.urn, ecf_school.name))
 
       false
     end
@@ -68,7 +68,7 @@ module Migrators
     end
 
     def field_mismatch(school, field, gias_value, ecf_value)
-      record_failure(item: school, failure_message: MISMATCH_FIELD_MESSAGE.call(school, field, gias_value, ecf_value))
+      failure_manager.record_failure(school, MISMATCH_FIELD_MESSAGE.call(school, field, gias_value, ecf_value))
 
       false
     end
@@ -96,10 +96,6 @@ module Migrators
         updated_at: ecf_school.updated_at
       }
       school.update_columns(attrs)
-    end
-
-    def record_failure(item:, failure_message:)
-      failure_manager.record_failures([{ item:, failure_message: }])
     end
   end
 end
