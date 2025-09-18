@@ -1,20 +1,19 @@
-<h2 class="govuk-heading-m">ECTE mentor training details</h2>
-
 <% if ineligible_for_training? %>
+  <h2 class="govuk-heading-m">ECTE mentor training details</h2>
+
   <% if completed_reason? %>
     <p class="govuk-body">
       <%= teacher_full_name(teacher) %> completed mentor training on <%= ineligible_date_govuk %>.
     </p>
   <% elsif started_not_completed_reason? %>
-    <p class="govuk-body">
-      Our records show that <%= teacher_full_name(teacher) %> cannot do further mentor training.
-      This might be because they’ve completed it before or started but not completed it.
-      We’ve passed <%= teacher_full_name(teacher) %>’s details to their ECTs’ lead provider so they can access ECT training materials.
-      Speak to the lead provider if <%= teacher_full_name(teacher) %> cannot access them.
-    </p>
+    <p class="govuk-body">Our records show that <%= teacher.trs_first_name %> cannot do further mentor training.</p>
+    <p class="govuk-body">This might be because they’ve completed it before, or started but not completed it.</p>
+    <p class="govuk-body">We’ve passed <%= teacher.trs_first_name %>’s details to their ECTs’ lead provider so they can access ECT training materials. Speak to the lead provider if <%= teacher.trs_first_name %> cannot access them.</p>
   <% end %>
 
 <% elsif mentor_training_period.present? %>
+  <h2 class="govuk-heading-m">ECTE mentor training details</h2>
+
   <%= govuk_summary_list do |list| %>
     <% list.with_row do |row| %>
       <% row.with_key { "Lead provider" } %>
@@ -43,4 +42,3 @@
     <% end %>
   <% end %>
 <% end %>
-

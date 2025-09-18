@@ -1,11 +1,16 @@
-RSpec.describe 'schools/mentors/show.html.erb' do
-  let(:school) { FactoryBot.create(:school) }
-  let(:start_date) { Date.new(2023, 9, 1) }
+RSpec.describe "schools/mentors/show.html.erb" do
+  let(:school)      { FactoryBot.create(:school) }
+  let(:start_date)  { Date.new(2023, 9, 1) }
 
   let(:mentor_teacher) do
-    FactoryBot.create(:teacher, trs_first_name: 'Naruto', trs_last_name: 'Uzumaki', mentor_became_ineligible_for_funding_on:, mentor_became_ineligible_for_funding_reason:)
+    FactoryBot.create(
+      :teacher,
+      trs_first_name: "Naruto",
+      trs_last_name: "Uzumaki",
+      mentor_became_ineligible_for_funding_on:,
+      mentor_became_ineligible_for_funding_reason:
+    )
   end
-
   let(:mentor_became_ineligible_for_funding_on) { nil }
   let(:mentor_became_ineligible_for_funding_reason) { nil }
 
@@ -13,119 +18,90 @@ RSpec.describe 'schools/mentors/show.html.erb' do
     FactoryBot.create(:mentor_at_school_period, teacher: mentor_teacher, school:, started_on: start_date, finished_on: nil)
   end
 
-  let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Hidden leaf village') }
+  let(:ects) { [] }
 
-  let(:ect_teacher) do
-    FactoryBot.create(:teacher, trs_first_name: 'Konohamaru', trs_last_name: 'Sarutobi')
+  let(:lead_provider)                  { FactoryBot.create(:lead_provider, name: "Hidden leaf village") }
+  let(:active_lead_provider)           { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:lead_provider_delivery_partner) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+  let(:school_partnership)             { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partner, school:) }
+
+  def render_view
+    assign(:mentor, mentor_period)
+    assign(:teacher, mentor_teacher)
+    assign(:ects, ects)
+    render
   end
 
-  let(:ect_period) do
-    FactoryBot.create(
-      :ect_at_school_period,
-      teacher: ect_teacher,
-      school:,
-      started_on: start_date,
-      finished_on: nil
-    )
-  end
-
-  let!(:mentorship_period) do
-    FactoryBot.create(
-      :mentorship_period,
-      mentor: mentor_period,
-      mentee: ect_period,
-      started_on: start_date,
-      finished_on: nil
-    )
-  end
-
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
-
-  context 'when mentor is eligible (no completion date)' do
-    let!(:training_period) do
+  context "when mentor is eligible via EOI (awaiting confirmation)" do
+    before do
       FactoryBot.create(
-        :training_period,
-        :provider_led,
-        :for_mentor,
+        :training_period, :provider_led, :for_mentor,
         mentor_at_school_period: mentor_period,
-        school_partnership:,
-        started_on: start_date,
-        finished_on: nil
+        started_on: start_date, finished_on: nil,
+        school_partnership: nil,
+        expression_of_interest: active_lead_provider
       )
+      render_view
     end
 
-    before do
-      assign(:mentor, mentor_period)
-      assign(:teacher, mentor_teacher)
-      assign(:ects, mentor_period.currently_assigned_ects)
-      render
+    it "shows the ECTE mentor training details heading" do
+      expect(rendered).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
     end
 
-    it 'renders the ECTE mentor training details H2' do
-      expect(rendered).to have_css('h2.govuk-heading-m', text: 'ECTE mentor training details')
+    it "shows the lead provider and 'Awaiting confirmation' hint" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).to have_text("Hidden leaf village")
+      expect(rendered).to have_css(".govuk-hint", text: /Awaiting confirmation by Hidden leaf village/)
     end
 
-    it 'renders the lead provider row with the correct label' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
-    end
-
-    it 'renders the lead provider row with a value' do
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Hidden leaf village')
+    it "shows the delivery partner as 'Yet to be reported by the lead provider'" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+      expect(rendered).to have_text("Yet to be reported by the lead provider")
     end
   end
 
-  context 'when mentor is not eligible (i.e has a `mentor_became_ineligible_for_funding_on` date)' do
+  context "when mentor has a confirmed partnership" do
+    before do
+      FactoryBot.create(
+        :training_period, :provider_led, :for_mentor,
+        mentor_at_school_period: mentor_period,
+        started_on: start_date, finished_on: nil,
+        school_partnership:
+      )
+      render_view
+    end
+
+    it "shows the lead provider with a 'Confirmed by' hint" do
+      expect(rendered).to have_css(".govuk-hint", text: /Confirmed by Hidden leaf village/)
+    end
+
+    it "shows the delivery partner and the change-DP hint" do
+      dp_name = lead_provider_delivery_partner.delivery_partner.name
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+      expect(rendered).to have_text(dp_name)
+      expect(rendered).to have_css(".govuk-hint", text: /To change the delivery partner, you must contact the lead provider/)
+    end
+  end
+
+  context "when mentor is not eligible (completed)" do
     let(:mentor_became_ineligible_for_funding_on) { Date.new(2024, 1, 1) }
-    let(:mentor_became_ineligible_for_funding_reason) { 'completed_declaration_received' }
+    let(:mentor_became_ineligible_for_funding_reason) { "completed_declaration_received" }
 
-    before do
-      assign(:mentor, mentor_period)
-      assign(:teacher, mentor_teacher)
-      assign(:ects, mentor_period.currently_assigned_ects)
-      render
-    end
+    before { render_view }
 
-    it 'renders the ineligible message' do
-      expect(rendered).to have_css('.govuk-body', text: /Naruto Uzumaki completed mentor training on 1 January 2024/)
-    end
-
-    it 'does not render the lead provider row with the correct label' do
-      expect(rendered).not_to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
-    end
-
-    it 'does not render the lead provider row with a value' do
-      expect(rendered).not_to have_css('dd.govuk-summary-list__value', text: 'Hidden leaf village')
-    end
-
-    it 'does not show the no info text' do
-      expect(rendered).not_to have_text('Your lead provider has not reported any information to us yet')
+    it "shows the completed message with GOV.UK date and hides the summary list" do
+      expect(rendered).to have_css(".govuk-body", text: "Naruto Uzumaki completed mentor training on 1 January 2024.")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
     end
   end
 
-  context 'when all ECTs are school-led' do
-    let(:ect_period) do
-      FactoryBot.create(:ect_at_school_period, teacher: ect_teacher, school:, started_on: start_date, finished_on: nil)
-    end
+  context "when nothing should render (no mentor training and not ineligible)" do
+    before { render_view }
 
-    let!(:training_period) do
-      FactoryBot.create(:training_period, :school_led, ect_at_school_period: ect_period, started_on: ect_period.started_on)
-    end
-
-    before do
-      assign(:mentor, mentor_period)
-      assign(:teacher, mentor_teacher)
-      assign(:ects, mentor_period.currently_assigned_ects)
-      render
-    end
-
-    it 'does not render the ECTE mentor training details H2' do
-      expect(rendered).not_to have_css('h2.govuk-heading-m', text: 'ECTE mentor training details')
-    end
-
-    it 'does not render the lead provider/delivery partner row' do
-      expect(rendered).not_to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
+    it "does not render the section" do
+      expect(rendered).not_to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
       expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
     end
   end
