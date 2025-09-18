@@ -49,5 +49,9 @@ teachers = [
 ]
 
 teachers.each do |attrs|
-  FactoryBot.create(:teacher, attrs).tap { |teacher| describe_teacher(teacher) }
+  FactoryBot.create(:teacher, attrs).tap do |teacher|
+    FactoryBot.create(:teacher_id_change, teacher:) if Faker::Boolean.boolean(true_ratio: 0.2)
+
+    describe_teacher(teacher)
+  end
 end
