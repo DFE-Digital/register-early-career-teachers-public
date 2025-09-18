@@ -45,11 +45,6 @@ RSpec/ClassCheck:
     - 'spec/models/induction_period_spec.rb'
     - 'spec/models/pending_induction_submission_spec.rb'
 
-# Offense count: 41
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/ContextMethod:
-  Enabled: false
-
 # Offense count: 181
 # Configuration parameters: Prefixes, AllowedPatterns.
 # Prefixes: when, with, without
