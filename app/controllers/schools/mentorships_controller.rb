@@ -12,7 +12,7 @@ module Schools
     def create
       @mentor_form = AssignMentorForm.new(ect:, mentor_id:)
 
-      if mentor_at_school_period.present? && provider_led_and_eligible_for_funding?
+      if mentor_at_school_period&.eligible_for_funding_and_first_provider_led_assignment?(ect)
         kickoff_assign_existing_wizard!(ect_id: ect.id, mentor_period_id: mentor_at_school_period.id)
         return redirect_to schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
       end
@@ -44,14 +44,6 @@ module Schools
 
     def mentor_at_school_period
       @mentor_at_school_period ||= school.mentor_at_school_periods.find_by(id: mentor_id)
-    end
-
-    def provider_led_and_eligible_for_funding?
-      ect&.provider_led_training_programme? &&
-        mentor_at_school_period&.teacher &&
-        Teachers::MentorFundingEligibility
-          .new(trn: mentor_at_school_period.teacher.trn)
-          .eligible?
     end
 
     def register_mentor
