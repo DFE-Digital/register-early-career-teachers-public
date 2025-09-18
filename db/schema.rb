@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_16_071240) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_17_185258) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -721,6 +721,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_16_071240) do
     t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
   end
 
+  create_table "teacher_id_changes", force: :cascade do |t|
+    t.bigint "teacher_id", null: false
+    t.uuid "from_teacher_id", null: false
+    t.uuid "to_teacher_id", null: false
+    t.uuid "ecf_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ecf_id"], name: "index_teacher_id_changes_on_ecf_id", unique: true
+    t.index ["from_teacher_id"], name: "index_teacher_id_changes_on_from_teacher_id"
+    t.index ["teacher_id"], name: "index_teacher_id_changes_on_teacher_id"
+    t.index ["to_teacher_id"], name: "index_teacher_id_changes_on_to_teacher_id"
+  end
+
   create_table "teacher_migration_failures", force: :cascade do |t|
     t.bigint "teacher_id"
     t.string "message", null: false
@@ -856,6 +869,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_16_071240) do
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "statement_adjustments", "statements"
   add_foreign_key "statements", "active_lead_providers"
+  add_foreign_key "teacher_id_changes", "teachers"
+  add_foreign_key "teacher_id_changes", "teachers", column: "from_teacher_id", primary_key: "api_user_id"
+  add_foreign_key "teacher_id_changes", "teachers", column: "to_teacher_id", primary_key: "api_user_id"
   add_foreign_key "teacher_migration_failures", "teachers"
   add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
   add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
