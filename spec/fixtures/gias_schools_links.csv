@@ -1,0 +1,5 @@
+"URN","LinkURN","LinkName","LinkType","LinkEstablishedDate"
+20001,20002,"School 1 Centre","Other","07-03-2016"
+20002,20003,"School 2 Centre","Other","06-09-2017"
+20003,20004,"School 3 Centre","Other","01-01-1900"
+20004,20001,"School 4 Centre","Other","01-01-1900"
