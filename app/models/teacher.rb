@@ -1,4 +1,6 @@
 class Teacher < ApplicationRecord
+  include DeclarativeMetadata
+
   TRN_FORMAT = %r{\A\d{7}\z}
 
   self.ignored_columns = %i[search]
@@ -13,6 +15,7 @@ class Teacher < ApplicationRecord
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
   has_many :induction_extensions, inverse_of: :teacher
+  has_one :metadata, class_name: "Metadata::Teacher"
 
   has_many :induction_periods
   has_one :first_induction_period, -> { order(started_on: :asc) }, class_name: "InductionPeriod"
@@ -24,6 +27,8 @@ class Teacher < ApplicationRecord
   has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: 'ECTAtSchoolPeriod'
 
   has_many :events
+
+  refresh_metadata -> { self }, on_event: %i[create]
 
   # TODO: remove after migration complete
   has_many :teacher_migration_failures
