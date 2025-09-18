@@ -24,13 +24,13 @@ RSpec.describe SandboxSeedData::SchoolPartnerships do
     it "creates school partnerships for all lead providers" do
       instance.plant
 
-      expect(SchoolPartnership.all.map(&:lead_provider).uniq).to eq(LeadProvider.all)
+      expect(SchoolPartnership.all.map(&:lead_provider).uniq).to match_array(LeadProvider.all)
     end
 
     it "creates school partnerships for all contract periods" do
       instance.plant
 
-      expect(SchoolPartnership.all.map(&:contract_period).uniq).to eq(ContractPeriod.all)
+      expect(SchoolPartnership.all.map(&:contract_period).uniq).to match_array(ContractPeriod.all)
     end
 
     it "creates school partnership with same school but different delivery partner" do
