@@ -81,6 +81,14 @@ erDiagram
   }
   School }o--|| AppropriateBody : belongs_to
   School }o--|| LeadProvider : belongs_to
+  Schedule {
+    integer id
+    integer contract_period_year
+    enum identifier
+    datetime created_at
+    datetime updated_at
+  }
+  Schedule }o--|| ContractPeriod : belongs_to
   PendingInductionSubmissionBatch {
     integer id
     integer appropriate_body_id
@@ -124,6 +132,8 @@ erDiagram
     uuid api_mentor_profile_id
     integer ect_payments_frozen_year
     integer mentor_payments_frozen_year
+    boolean pupil_premium_uplift
+    boolean sparsity_uplift
   }
   PendingInductionSubmission {
     integer id
@@ -157,6 +167,16 @@ erDiagram
   }
   PendingInductionSubmission }o--|| AppropriateBody : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
+  Milestone {
+    integer id
+    integer schedule_id
+    enum declaration_type
+    date start_date
+    date milestone_date
+    datetime created_at
+    datetime updated_at
+  }
+  Milestone }o--|| Schedule : belongs_to
   MentorshipPeriod {
     integer id
     integer ect_at_school_period_id
