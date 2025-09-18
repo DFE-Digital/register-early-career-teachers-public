@@ -4,6 +4,7 @@ ruby "3.4.4"
 
 gem "rails", "~> 8.0.2"
 
+gem "blazer"
 gem "bootsnap", require: false
 gem "cssbundling-rails"
 gem "csv"
@@ -28,10 +29,6 @@ gem "sentry-rails"
 gem "sentry-ruby"
 gem "stackprof"
 gem "state_machines-activerecord"
-
-# Dashboard
-gem "blazer"
-gem "reverse_markdown"
 
 # Background jobs
 gem "mission_control-jobs"

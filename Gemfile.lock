@@ -621,8 +621,6 @@ GEM
     request_store_rails (2.0.0)
       concurrent-ruby (~> 1.0)
     retriable (3.1.2)
-    reverse_markdown (3.0.0)
-      nokogiri
     rexml (3.4.2)
     rotp (6.3.0)
     rouge (4.5.1)
@@ -858,7 +856,6 @@ DEPENDENCIES
   rack-attack
   rails (~> 8.0.2)
   redis
-  reverse_markdown
   rotp
   rspec
   rspec-rails
