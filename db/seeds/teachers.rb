@@ -18,7 +18,14 @@ def describe_teacher(teacher)
       Colourize.text('no', :red)
     end
 
-  print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status}, payments frozen: #{payments_frozen})", indent: 2)
+  uplift =
+    if teacher.pupil_premium_uplift || teacher.sparsity_uplift
+      Colourize.text('yes', :green)
+    else
+      Colourize.text('no', :red)
+    end
+
+  print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status}, payments frozen: #{payments_frozen}, uplift: #{uplift})", indent: 2)
 end
 
 early_roll_out_mentor_attrs = {
@@ -26,9 +33,14 @@ early_roll_out_mentor_attrs = {
   mentor_became_ineligible_for_funding_on: Date.new(2021, 4, 19)
 }
 
+uplift_attrs = {
+  sparsity_uplift: true,
+  pupil_premium_uplift: true,
+}
+
 teachers = [
-  { trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456', trs_induction_status: 'InProgress' },
-  { trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', trs_induction_status: 'Passed' },
+  { trs_first_name: 'Emma', trs_last_name: 'Thompson', trn: '1023456', trs_induction_status: 'InProgress', **uplift_attrs },
+  { trs_first_name: 'Kate', trs_last_name: 'Winslet', trn: '1023457', trs_induction_status: 'Passed', **uplift_attrs },
   { trs_first_name: 'Alan', trs_last_name: 'Rickman', trn: '2084589', trs_induction_status: 'RequiredToComplete' },
   { trs_first_name: 'Hugh', trs_last_name: 'Grant', trn: '3657894', trs_induction_status: 'Failed' },
   { trs_first_name: 'Colin', trs_last_name: 'Firth', trn: '1237894', trs_induction_status: 'Exempt' },
