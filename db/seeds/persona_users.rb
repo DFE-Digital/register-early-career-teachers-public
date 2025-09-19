@@ -7,6 +7,5 @@ YAML.load_file(Rails.root.join('config/personas.yml'))
     .map { |p| { name: p['name'], email: p['email'] } }
     .each do |user_params|
   FactoryBot.create(:user, **user_params)
-     .tap { |user| user.dfe_roles.create! }
      .then { |user| describe_user(user) }
 end
