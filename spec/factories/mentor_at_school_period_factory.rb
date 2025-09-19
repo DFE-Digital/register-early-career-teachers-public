@@ -6,7 +6,7 @@ FactoryBot.define do
     association :teacher
 
     started_on { generate(:base_mentor_date) }
-    finished_on { started_on + 1.day }
+    finished_on { started_on + 1.year }
     email { Faker::Internet.email }
 
     trait :ongoing do
