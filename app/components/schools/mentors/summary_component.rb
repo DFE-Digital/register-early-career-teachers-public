@@ -3,6 +3,8 @@ module Schools
     class SummaryComponent < ApplicationComponent
       include TeacherHelper
 
+      with_collection_parameter :mentor
+
       def initialize(mentor:, school:)
         @mentor = mentor
         @school = school
@@ -35,19 +37,20 @@ module Schools
         @mentor.trn
       end
 
-      def assigned_ects
-        @assigned_ects ||= mentor_period_for_school&.currently_assigned_ects
-      end
-
       def mentor_period_for_school
         @mentor.mentor_at_school_periods.find_by(school: @school)
       end
 
-      def assigned_ects_summary
-        return "No ECTs assigned" if assigned_ects.empty?
-        return "#{assigned_ects.count} assigned ECTs" if assigned_ects.count > 5
+      def assigned_ects
+        @assigned_ects ||= (mentor_period_for_school&.currently_assigned_ects).to_a
+      end
 
-        safe_join(assigned_ects.map { |ect| teacher_full_name(ect.teacher) }, tag.br)
+      def assigned_ects_summary
+        ects = assigned_ects
+        return "No ECTs assigned" if ects.empty?
+        return "#{ects.length} assigned ECTs" if ects.length > 5
+
+        safe_join(ects.map { |ect| teacher_full_name(ect.teacher) }, tag.br)
       end
     end
   end
