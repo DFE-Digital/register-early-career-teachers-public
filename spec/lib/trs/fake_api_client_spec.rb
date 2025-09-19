@@ -1,24 +1,30 @@
 describe TRS::FakeAPIClient do
+  subject(:client) { TRS::FakeAPIClient.new }
+
   describe 'initializing' do
     it 'fails when used in production' do
       allow(Rails.env).to receive(:production?).and_return(true)
 
-      expect { TRS::FakeAPIClient.new }.to raise_error(TRS::FakeAPIClient::FakeAPIClientUsedInProduction)
+      expect { client }.to raise_error(TRS::FakeAPIClient::FakeAPIClientUsedInProduction)
     end
   end
 
   describe '#find_teacher' do
-    subject { TRS::FakeAPIClient.new }
+    let(:trs_teacher) { client.find_teacher(trn:) }
 
     context 'without a special TRN' do
       let(:trn) { 1_234_567 }
 
+      it 'returns a teacher' do
+        expect(trs_teacher).to be_a(TRS::Teacher)
+      end
+
       it 'returns a teacher with a qts_awarded_on date' do
-        expect(subject.find_teacher(trn:).qts_awarded_on).not_to be_nil
+        expect(trs_teacher.qts_awarded_on).not_to be_nil
       end
 
       it 'returns a teacher who is not prohibited from teaching' do
-        expect(subject.find_teacher(trn:)).not_to be_prohibited_from_teaching
+        expect(trs_teacher).not_to be_prohibited_from_teaching
       end
     end
 
@@ -26,35 +32,35 @@ describe TRS::FakeAPIClient do
       let(:trn) { 7_000_001 }
 
       it 'returns a teacher who is not QTS awarded' do
-        expect(subject.find_teacher(trn:)).not_to be_qts_awarded
+        expect(trs_teacher).not_to be_qts_awarded
       end
 
       it 'returns a teacher without a qts_awarded_on date' do
-        expect(subject.find_teacher(trn:).qts_awarded_on).to be_nil
+        expect(trs_teacher.qts_awarded_on).to be_nil
       end
     end
 
     context 'when TRN is 7_000_002' do
       let(:trn) { 7_000_002 }
 
-      it 'raises a TRS::Errors::TeacherNotFound error' do
-        expect { subject.find_teacher(trn:) }.to raise_error(TRS::Errors::TeacherNotFound)
+      it do
+        expect { trs_teacher }.to raise_error(TRS::Errors::TeacherNotFound)
       end
     end
 
     context 'when TRN is 7_000_003' do
       let(:trn) { 7_000_003 }
 
-      it 'returns a teacher with a prhohibited from teaching alert' do
-        expect(subject.find_teacher(trn:)).to be_prohibited_from_teaching
+      it 'returns a teacher with a prohibited from teaching alert' do
+        expect(trs_teacher).to be_prohibited_from_teaching
       end
     end
 
     context 'when TRN is 7_000_004' do
       let(:trn) { 7_000_004 }
 
-      it 'raises a TRS::Errors::TeacherNotFound error' do
-        expect { subject.find_teacher(trn:) }.to raise_error(TRS::Errors::TeacherDeactivated)
+      it do
+        expect { trs_teacher }.to raise_error(TRS::Errors::TeacherDeactivated)
       end
     end
 
@@ -62,11 +68,11 @@ describe TRS::FakeAPIClient do
       let(:trn) { 7_000_005 }
 
       it 'returns a teacher who has alerts' do
-        expect(subject.find_teacher(trn:)).to have_alerts
+        expect(trs_teacher).to have_alerts
       end
 
-      it 'returns a teacher is not prohibited from teaching' do
-        expect(subject.find_teacher(trn:)).not_to be_prohibited_from_teaching
+      it 'returns a teacher who is not prohibited from teaching' do
+        expect(trs_teacher).not_to be_prohibited_from_teaching
       end
     end
 
@@ -74,18 +80,42 @@ describe TRS::FakeAPIClient do
       let(:trn) { 7_000_006 }
 
       it 'returns a teacher (this teacher should be seeded with early_roll_out_mentor_attrs, see db/seeds/teachers.rb)' do
-        expect(subject.find_teacher(trn:)).to be_present
+        expect(trs_teacher).to be_present
+      end
+    end
+
+    context "when TRN is 7_000_007" do
+      let(:trn) { 7_000_007 }
+
+      it 'returns a teacher who has passed' do
+        expect(trs_teacher.induction_status).to eql('Passed')
+      end
+    end
+
+    context "when TRN is 7_000_008" do
+      let(:trn) { 7_000_008 }
+
+      it 'returns a teacher who has failed' do
+        expect(trs_teacher.induction_status).to eql('Failed')
+      end
+    end
+
+    context "when TRN is 7_000_009" do
+      let(:trn) { 7_000_009 }
+
+      it 'returns a teacher who is exempt' do
+        expect(trs_teacher.induction_status).to eql('Exempt')
       end
     end
 
     context 'when the teacher already exists in the database' do
       let(:trn) { 1_112_222 }
 
-      before { FactoryBot.create(:teacher, trn:, trs_first_name: 'Christopher', trs_last_name: 'Eccleston') }
+      before do
+        FactoryBot.create(:teacher, trn:, trs_first_name: 'Christopher', trs_last_name: 'Eccleston')
+      end
 
       it 'returns the TRS teacher with name of the existing teacher' do
-        trs_teacher = subject.find_teacher(trn:)
-
         expect(trs_teacher.first_name).to eql('Christopher')
         expect(trs_teacher.last_name).to eql('Eccleston')
       end
@@ -93,18 +123,17 @@ describe TRS::FakeAPIClient do
   end
 
   describe 'Redis data storing functionality', :redis do
-    subject { TRS::FakeAPIClient.new }
-
     let(:teacher) { FactoryBot.build(:teacher) }
     let(:trn) { teacher.trn }
     let(:key) { trn + ':induction' }
     let(:start_date) { 3.months.ago.to_date }
     let(:redis_client) { Redis.new }
+    let(:trs_teacher) { client.find_teacher(trn:) }
 
     before { redis_client.del(key) }
 
     describe '#begin_induction!' do
-      before { subject.begin_induction!(trn: teacher.trn, start_date:) }
+      before { client.begin_induction!(trn: teacher.trn, start_date:) }
 
       it 'writes the in progress status to Redis' do
         expect(redis_client.hgetall(key)).to match(
@@ -116,8 +145,6 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        trs_teacher = subject.find_teacher(trn:)
-
         expect(trs_teacher.induction_status).to eql('InProgress')
       end
     end
@@ -138,8 +165,6 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        trs_teacher = subject.find_teacher(trn:)
-
         expect(trs_teacher.induction_status).to eql('Passed')
       end
     end
@@ -160,8 +185,6 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        trs_teacher = subject.find_teacher(trn:)
-
         expect(trs_teacher.induction_status).to eql('Failed')
       end
     end
@@ -182,8 +205,6 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        trs_teacher = subject.find_teacher(trn:)
-
         expect(trs_teacher.induction_status).to eql('RequiredToComplete')
       end
     end
@@ -204,8 +225,6 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        trs_teacher = subject.find_teacher(trn:)
-
         expect(trs_teacher.induction_status).to eql('InProgress')
       end
     end
