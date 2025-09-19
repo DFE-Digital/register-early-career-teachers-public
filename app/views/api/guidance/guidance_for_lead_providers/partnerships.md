@@ -8,8 +8,9 @@ Partnerships are agreements between schools, lead providers, and delivery partne
 
 1. Cohort opens for registrations.
 2. Schools register ECTs and mentors, choosing the programme type (`provider-led` or `school-led`) for each participant rather than making a schoolwide choice.
-3. Lead providers find schools they want to partner with using `GET /schools` API endpoint.
-4. Lead providers create partnerships via the `POST /partnerships` endpoint.
+3. If the school chooses the provider-led option, they also tell us which lead provider will be training the participant. 
+4. Lead providers find schools they want to partner with using `GET /schools` API endpoint. Schools that have selected them will show as `expression_of_interest = TRUE`. 
+5. Lead providers create partnerships via the `POST /partnerships` endpoint. They’ll then see any participants the school has assigned to them in `GET /participants`.
 
 ## Understanding partnerships in the API 
 
@@ -32,15 +33,11 @@ Each confirmed partnership has a unique identifier (`id`), returned in the `GET 
 
 We’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`) from partnership responses because schools now make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership. 
 
-### When does a participant appear in a provider’s feed? 
+To see if a school has any ECTs training with you, we've introduced a new field, `participants_currently_training` in the `GET /partnerships` endpoint. This will show the number of ECTs or mentors training with you currently for that partnership. It will show `0` when: 
 
-Lead providers can check participant records using the `GET /participants` endpoint to see if a school is working with them: 
-
-* if the participant appears, they’re the selected lead provider
-* if the school later changes provider, the participant will remain in their feed with a `leaving` or `left` status (including moves to school-led or a different provider)
-* if the participant does not appear, either the school has not selected them as the lead provider or their partnership with the school for that cohort has not been created/rolled over (or both) 
-
-If providers believe a school has assigned the wrong provider to an ECT or mentor, they should ask the school to update the participant’s record in the service first. 
+* no participants are registered for training with you for training
+* all participants complete training
+* all participants are moved to another lead provider or school-led training
 
 ### School induction tutor details 
 
@@ -48,6 +45,16 @@ Each partnership record shows one school induction tutor (name and email):
 
 * schools may have multiple users in the service, but only one induction tutor is surfaced to lead providers via the API 
 * when schools first sign in after registration opens, they must provide the name and email of the induction tutor. That is what the API returns 
+
+### When does a participant appear in a provider’s feed? 
+
+Lead providers can check participant records using the `GET /participants` endpoint to see if a school is working with them: 
+
+* if the participant appears, they’re the selected lead provider
+* if the school later changes provider, the participant will remain in their feed with a `leaving` or `left` status (including moves to school-led or a different provider)
+* if the participant does not appear, either the school has not selected them as the lead provider or their partnership with the school for that cohort has not been created or rolled over (or both) 
+
+If providers believe a school has assigned the wrong provider to an ECT or mentor, they should ask the school to update the participant’s record in the service first. If they think they should be the provider, they can create a partnership to view the school induction tutor’s details. 
 
 ### Expression of interest records 
 
