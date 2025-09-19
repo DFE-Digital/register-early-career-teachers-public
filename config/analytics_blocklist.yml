@@ -514,8 +514,8 @@
   :teacher_id_changes:
   - id
   - teacher_id
-  - from_teacher_id
-  - to_teacher_id
+  - api_from_teacher_id
+  - api_to_teacher_id
   - ecf_id
   - created_at
   - updated_at
