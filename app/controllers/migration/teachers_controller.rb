@@ -42,17 +42,17 @@ private
   end
 
   def ect_profile
-    @ect_profile = if teacher.api_ect_profile_id.present?
+    @ect_profile = if teacher.api_ect_training_record_id.present?
                      Migration::ParticipantProfilePresenter.new(
-                       Migration::ParticipantProfile.find(teacher.api_ect_profile_id)
+                       Migration::ParticipantProfile.find(teacher.api_ect_training_record_id)
                      )
                    end
   end
 
   def mentor_profile
-    @mentor_profile = if teacher.api_mentor_profile_id.present?
+    @mentor_profile = if teacher.api_mentor_training_record_id.present?
                         Migration::ParticipantProfilePresenter.new(
-                          Migration::ParticipantProfile.find(teacher.api_mentor_profile_id)
+                          Migration::ParticipantProfile.find(teacher.api_mentor_training_record_id)
                         )
                       end
   end

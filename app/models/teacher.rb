@@ -45,8 +45,8 @@ class Teacher < ApplicationRecord
             presence: { message: 'Choose the reason why the mentor became ineligible for funding' },
             if: -> { mentor_became_ineligible_for_funding_on.present? }
   validates :api_user_id, uniqueness: { case_sensitive: false, message: "API user id already exists for another teacher" }
-  validates :api_ect_profile_id, uniqueness: { case_sensitive: false, message: "API ect profile id already exists for another teacher" }
-  validates :api_mentor_profile_id, uniqueness: { case_sensitive: false, message: "API mentor profile id already exists for another teacher" }
+  validates :api_ect_training_record_id, uniqueness: { case_sensitive: false, message: "API ect training record id already exists for another teacher" }
+  validates :api_mentor_training_record_id, uniqueness: { case_sensitive: false, message: "API mentor training record id already exists for another teacher" }
 
   # Scopes
   scope :search, ->(query_string) {
