@@ -1,14 +1,17 @@
 module AppropriateBodies
   class ClaimECTActionsComponent < ApplicationComponent
+    attr_reader :pending_induction_submission
+
     def initialize(teacher:, pending_induction_submission:, current_appropriate_body:)
       @teacher = teacher
       @pending_induction_submission = pending_induction_submission
       @current_appropriate_body = current_appropriate_body
-      @induction = teacher ? ::Teachers::Induction.new(teacher) : nil
     end
 
+    delegate :exempt?, :passed?, :failed?, to: :pending_induction_submission
+
     def registration_blocked?
-      pending_induction_submission.exempt? || (teacher && induction&.current_induction_period && !claiming_body?(teacher, current_appropriate_body))
+      passed? || failed? || exempt? || claimed_by_another_ab?
     end
 
     def show_claim_form?
@@ -16,20 +19,20 @@ module AppropriateBodies
     end
 
     def blocked_registration_message
-      if pending_induction_submission.exempt?
+      if passed?
+        "You cannot register #{name}. Our records show that #{name} has already passed their induction."
+      elsif failed?
+        "You cannot register #{name}. Our records show that #{name} has already failed their induction."
+      elsif exempt?
         "You cannot register #{name}. Our records show that #{name} is exempt from completing their induction."
-      else
+      elsif claimed_by_another_ab?
         "You cannot register #{name}. Our records show that #{name} is completing their induction with another appropriate body."
       end
     end
 
-    def name
-      pending_induction_submission_full_name(pending_induction_submission)
-    end
-
   private
 
-    attr_reader :teacher, :pending_induction_submission, :current_appropriate_body, :induction
+    attr_reader :teacher, :current_appropriate_body
 
     include InductionHelper
 
@@ -41,8 +44,12 @@ module AppropriateBodies
       )
     end
 
-    def pending_induction_submission_full_name(pending_induction_submission)
+    def name
       PendingInductionSubmissions::Name.new(pending_induction_submission).full_name
+    end
+
+    def claimed_by_another_ab?
+      teacher&.ongoing_induction_period && !claiming_body?(teacher, current_appropriate_body)
     end
   end
 end

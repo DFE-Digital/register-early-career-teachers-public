@@ -2,7 +2,6 @@ RSpec.describe "Appropriate body editing an induction period" do
   include ActiveJob::TestHelper
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  # let(:teacher) { FactoryBot.create(:teacher) }
   let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
 
   let!(:induction_period) do
