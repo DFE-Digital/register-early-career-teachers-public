@@ -221,8 +221,8 @@
   - api_updated_at
   :teachers:
   - api_user_id
-  - api_ect_profile_id
-  - api_mentor_profile_id
+  - api_ect_training_record_id
+  - api_mentor_training_record_id
   - corrected_name
   - trs_first_name
   - trs_last_name
