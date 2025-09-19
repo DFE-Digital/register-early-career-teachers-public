@@ -2,8 +2,7 @@ RSpec.describe 'schools/ects/index.html.erb' do
   let(:school) { FactoryBot.create(:school) }
 
   before do
-    assign(:filtered_teachers, [])
-    assign(:ects, [])
+    assign(:teachers, [])
     assign(:number_of_teachers, 0)
     assign(:school, school)
     render
@@ -37,8 +36,7 @@ RSpec.describe 'schools/ects/index.html.erb' do
     let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
     before do
-      assign(:filtered_teachers, [teacher])
-      assign(:ects, [ect_at_school_period])
+      assign(:teachers, [teacher])
       assign(:number_of_teachers, 1)
       assign(:school, school)
       assign(:school_ect_periods, [ect_at_school_period])
@@ -54,13 +52,9 @@ RSpec.describe 'schools/ects/index.html.erb' do
       expect(rendered).to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
     end
 
-    context 'when the filtered teachers is empty' do
+    context 'when there are no matching teachers' do
       before do
-        assign(:filtered_teachers, [])
-        assign(:ects, [ect_at_school_period])
-        assign(:number_of_teachers, 1)
-        assign(:school, school)
-        assign(:school_ect_periods, [])
+        assign(:teachers, [])
         render
       end
 
