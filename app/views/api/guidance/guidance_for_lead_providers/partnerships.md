@@ -154,7 +154,7 @@ In the API:
 
 Lead providers can use the `GET /partnerships` endpoint to see all partnerships and the `GET /partnerships/{id}` endpoint to view individual partnerships.
 
-For detailed technical information, view the `GET /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships) and `GET /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships__id_) 
+For detailed technical information, view the `GET /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships) and `GET /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships__id_). 
 
 ## Update a partnership 
 
