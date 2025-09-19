@@ -22,4 +22,12 @@ describe AppropriateBody do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name) }
   end
+
+  describe "normalizing" do
+    subject { FactoryBot.build(:appropriate_body, name: " Some appropriate body ") }
+
+    it "removes leading and trailing spaces from the name" do
+      expect(subject.name).to eql("Some appropriate body")
+    end
+  end
 end

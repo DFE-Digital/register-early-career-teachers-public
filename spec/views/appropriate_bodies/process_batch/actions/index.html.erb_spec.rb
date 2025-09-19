@@ -30,8 +30,8 @@ RSpec.describe "appropriate_bodies/process_batch/actions/index.html.erb" do
     expect(rendered).to have_selector('th', text: 'Action')
 
     expect(rendered).to have_selector('td', text: 'View', count: 3)
-    expect(rendered).to have_selector('td', text: 'Completed')
-    expect(rendered).to have_selector('td', text: 'Processed')
-    expect(rendered).to have_selector('td', text: 'Processing')
+    expect(rendered).to have_selector('td', text: 'Submitted')
+    expect(rendered).to have_selector('td', text: 'Not yet submitted')
+    expect(rendered).to have_selector('td', text: 'Draft')
   end
 end

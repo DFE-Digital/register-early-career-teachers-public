@@ -30,9 +30,9 @@ module Migrators
     end
 
     def migrate_one!(statement_with_adjustment)
-      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(api_id: statement_with_adjustment.id)
+      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(ecf_id: statement_with_adjustment.id)
 
-      statement_adjustment.statement = ::Statement.find_by!(api_id: statement_with_adjustment.id)
+      statement_adjustment.statement = find_statement_by_api_id!(statement_with_adjustment.id)
       statement_adjustment.payment_type = "Reconcile amounts pre-adjustments feature"
       statement_adjustment.amount = statement_with_adjustment.reconcile_amount
 
@@ -41,6 +41,12 @@ module Migrators
 
       statement_adjustment.save!
       statement_adjustment
+    end
+
+  private
+
+    def preload_caches
+      cache_manager.cache_statements
     end
   end
 end

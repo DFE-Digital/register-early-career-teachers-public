@@ -40,7 +40,10 @@ RSpec.shared_examples "client performs requests" do
         ecf_time_ms: be >= 0,
         rect_body:,
         rect_status_code: 201,
-        rect_time_ms: be >= 0
+        rect_time_ms: be >= 0,
+        ecf_request_uri: CGI.unescape(ecf_requests.first.uri.request_uri),
+        rect_request_uri: CGI.unescape(rect_requests.first.uri.request_uri),
+        request_body: (rect_requests + ecf_requests).sample.body,
       })
     end
   end
@@ -53,10 +56,12 @@ RSpec.shared_examples "client performs requests with body" do
     ecf_body = ecf_requests.first.body
     rect_body = rect_requests.first.body
 
-    expect(ecf_body).to be_present
-    expect(rect_body).to be_present
-
     expect { JSON.parse(ecf_body) }.not_to raise_error
     expect { JSON.parse(rect_body) }.not_to raise_error
+
+    expect(JSON.parse(ecf_body)["data"]).to be_present
+    expect(JSON.parse(rect_body)["data"]).to be_present
+
+    expect(ecf_body).to eq(rect_body)
   end
 end

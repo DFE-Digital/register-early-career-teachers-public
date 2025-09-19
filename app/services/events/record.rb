@@ -28,7 +28,8 @@ module Events
                 :statement_adjustment,
                 :user,
                 :modifications,
-                :metadata
+                :metadata,
+                :zendesk_ticket_id
 
     def initialize(
       author:,
@@ -55,7 +56,8 @@ module Events
       statement_adjustment: nil,
       user: nil,
       modifications: nil,
-      metadata: nil
+      metadata: nil,
+      zendesk_ticket_id: nil
     )
       @author = author
       @event_type = event_type
@@ -82,6 +84,7 @@ module Events
       @user = user
       @modifications = DescribeModifications.new(modifications).describe
       @metadata = metadata || modifications
+      @zendesk_ticket_id = zendesk_ticket_id
     end
 
     def record_event!
@@ -121,11 +124,11 @@ module Events
       new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_deleted_event!(author:, modifications:, teacher:, appropriate_body:, body: nil, happened_at: Time.zone.now)
+    def self.record_induction_period_deleted_event!(author:, modifications:, teacher:, appropriate_body:, body: nil, zendesk_ticket_id: nil, happened_at: Time.zone.now)
       event_type = :induction_period_deleted
       heading = 'Induction period deleted by admin'
 
-      new(event_type:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
+      new(event_type:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
     # Teacher Status Events
@@ -260,13 +263,13 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body: nil)
+    def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body:, zendesk_ticket_id:)
       event_type = :induction_period_reopened
       happened_at = Time.zone.now
 
       heading = 'Induction period reopened'
 
-      new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:).record_event!
+      new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
     # ECT and mentor events
@@ -367,6 +370,74 @@ module Events
       metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
 
       new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_email_updated_event!(old_email:, new_email:, author:, school:, teacher:, happened_at:, ect_at_school_period: nil, mentor_at_school_period: nil)
+      event_type = :teacher_email_address_updated
+      heading = TransitionDescription.for("email address", from: old_email, to: new_email)
+
+      new(event_type:, author:, heading:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_working_pattern_updated_event!(old_working_pattern:, new_working_pattern:, author:, ect_at_school_period:, school:, teacher:, happened_at:)
+      event_type = :teacher_working_pattern_updated
+      heading = TransitionDescription.for(
+        "working pattern",
+        from: old_working_pattern.humanize.downcase,
+        to: new_working_pattern.humanize.downcase
+      )
+
+      new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_left_school_as_mentor!(author:, mentor_at_school_period:, teacher:, school:, happened_at:)
+      event_type = :teacher_left_school_as_mentor
+      teacher_name = Teachers::Name.new(teacher).full_name
+      school_name = school.name
+      heading = "#{teacher_name} left #{school_name}"
+
+      new(event_type:, author:, heading:, mentor_at_school_period:, teacher:, school:, happened_at:).record_event!
+    end
+
+    def self.record_training_period_assigned_to_school_partnership_event!(
+      author:,
+      training_period:,
+      ect_at_school_period:,
+      mentor_at_school_period:,
+      school_partnership:,
+      lead_provider:,
+      delivery_partner:,
+      school:,
+      teacher:,
+      happened_at: Time.zone.now
+    )
+      if ect_at_school_period.present? && mentor_at_school_period.present?
+        fail(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
+      end
+
+      if ect_at_school_period.nil? && mentor_at_school_period.nil?
+        fail(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
+      end
+
+      event_type = :training_period_assigned_to_school_partnership
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = ect_at_school_period.present? ? 'ECT' : 'mentor'
+      heading = "#{teacher_name}’s #{training_type} training period was assigned to a school partnership"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        training_period:,
+        ect_at_school_period:,
+        mentor_at_school_period:,
+        school_partnership:,
+        lead_provider:,
+        delivery_partner:,
+        school:,
+        teacher:,
+        happened_at:
+      ).record_event!
     end
 
     # Bulk Upload Events
@@ -564,6 +635,23 @@ module Events
       ).record_event!
     end
 
+    # Delivery Partner Events
+
+    def self.record_delivery_partner_name_changed_event!(author:, delivery_partner:, from:, to:, happened_at: Time.zone.now)
+      event_type    = :delivery_partner_name_changed
+      heading       = "Delivery partner name changed"
+      modifications = { "name" => [from, to] }
+
+      new(
+        event_type:,
+        author:,
+        delivery_partner:,
+        heading:,
+        happened_at:,
+        modifications:
+      ).record_event!
+    end
+
   private
 
     def attributes
@@ -576,6 +664,7 @@ module Events
         heading:,
         body:,
         happened_at:,
+        zendesk_ticket_id:,
       }.compact
     end
 

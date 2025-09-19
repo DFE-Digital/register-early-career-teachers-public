@@ -1,6 +1,6 @@
 describe ECTAtSchoolPeriods::Mentorship do
-  describe "#current_mentorship_period" do
-    subject { described_class.new(mentee).current_mentorship_period }
+  describe "#current_or_next_mentorship_period" do
+    subject { described_class.new(mentee).current_or_next_mentorship_period }
 
     let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
     let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.years.ago) }

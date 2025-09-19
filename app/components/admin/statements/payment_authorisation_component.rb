@@ -1,6 +1,6 @@
 module Admin
   module Statements
-    class PaymentAuthorisationComponent < ViewComponent::Base
+    class PaymentAuthorisationComponent < ApplicationComponent
       delegate :can_authorise_payment?,
                to: :statement
 

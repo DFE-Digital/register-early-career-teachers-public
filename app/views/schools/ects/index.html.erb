@@ -22,11 +22,11 @@
       <% if @filtered_teachers.count.zero? %>
         <p class="govuk-body">There are no ECTs that match your search.</p>
       <% else %>
-        <% @filtered_teachers.each do |teacher| %>
+        <% @school_ect_periods.each do |school_ect_period| %>
           <%= render Schools::ECTs::ListingCardComponent.new(
-            teacher:,
-            ect_at_school_period: teacher.current_ect_at_school_period,
-            training_period: teacher.current_ect_at_school_period&.current_training_period)
+            teacher: school_ect_period.teacher,
+            ect_at_school_period: school_ect_period,
+            training_period: school_ect_period.current_or_next_training_period)
           %>
         <% end %>
       <% end %>

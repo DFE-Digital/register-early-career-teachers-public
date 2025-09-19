@@ -11,6 +11,7 @@ describe Migrators::School do
                       school_status_name: 'Open',
                       school_type_name: 'Academy converter').tap do |ecf_school|
       FactoryBot.create(:ecf_migration_school_local_authority, school: ecf_school)
+      FactoryBot.create(:migration_induction_coordinator_profile, schools: [ecf_school])
     end
   end
 
@@ -146,14 +147,21 @@ describe Migrators::School do
 
       it "sets api_id to be the id of the school on ECF" do
         expect(data_migration.reload.failure_count).to eq(0)
-        expect(gias_school.reload.api_id).to eq(ecf_school.id)
+        gias_school.reload
+        expect(gias_school.school.api_id).to eq(ecf_school.id)
       end
 
       it "syncs the timestamps from the ECF school to the RECT school" do
         expect(data_migration.reload.failure_count).to eq(0)
         gias_school.reload
         expect(gias_school.school.created_at).to eq(ecf_school.created_at)
-        expect(gias_school.school.updated_at).to eq(ecf_school.updated_at)
+        expect(gias_school.school.api_updated_at).to eq(ecf_school.updated_at)
+      end
+
+      it "syncs the induction coordinator details" do
+        gias_school.reload
+        expect(gias_school.school.induction_tutor_name).to eq(ecf_school.induction_coordinators.first.full_name)
+        expect(gias_school.school.induction_tutor_email).to eq(ecf_school.induction_coordinators.first.email)
       end
     end
   end

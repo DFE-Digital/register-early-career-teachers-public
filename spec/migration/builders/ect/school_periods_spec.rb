@@ -8,6 +8,10 @@ describe Builders::ECT::SchoolPeriods do
   let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:school_periods) { [period_1, period_2] }
 
+  before do
+    CacheManager.instance.clear_all_caches!
+  end
+
   describe "#build" do
     it "creates ECTAtSchoolPeriod records for the school periods" do
       expect {
@@ -32,6 +36,27 @@ describe Builders::ECT::SchoolPeriods do
       expect(periods.last.ecf_end_induction_record_id).to eq period_2.end_source_id
     end
 
+    context "when the school periods overlap" do
+      let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 2.months.ago.to_date, end_date: nil) }
+
+      it "replaces the end date with the next period start date" do
+        service.build
+        periods = teacher.ect_at_school_periods.order(:started_on)
+
+        expect(periods.first.school).to eq school_1
+        expect(periods.first.started_on).to eq period_1.start_date
+        expect(periods.first.finished_on).to eq period_2.start_date
+        expect(periods.first.ecf_start_induction_record_id).to eq period_1.start_source_id
+        expect(periods.first.ecf_end_induction_record_id).to eq period_2.start_source_id
+
+        expect(periods.last.school).to eq school_2
+        expect(periods.last.started_on).to eq period_2.start_date
+        expect(periods.last.finished_on).to be_blank
+        expect(periods.last.ecf_start_induction_record_id).to eq period_2.start_source_id
+        expect(periods.last.ecf_end_induction_record_id).to eq period_2.end_source_id
+      end
+    end
+
     context "when the school does not exist" do
       let(:period_1) { FactoryBot.build(:school_period, urn: "12121", start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
 
@@ -43,7 +68,7 @@ describe Builders::ECT::SchoolPeriods do
     end
 
     context "when the school period dates cause a validation error " do
-      let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 2.months.ago.to_date, end_date: nil) }
+      let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 2.months.ago.to_date, end_date: 6.months.ago.to_date) }
 
       it "creates a TeacherMigrationFailure record" do
         expect {

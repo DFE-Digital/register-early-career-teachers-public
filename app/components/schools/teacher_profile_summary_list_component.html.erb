@@ -4,11 +4,23 @@
   <% list.with_row do |row| %>
     <% row.with_key { "Name" } %>
     <% row.with_value { teacher_full_name(@ect.teacher) } %>
+    <% row.with_action(
+      text: 'Change',
+      href: schools_ects_change_name_wizard_edit_path(@ect),
+      classes: 'govuk-link--no-visited-state',
+      visually_hidden_text: 'name')
+    %>
   <% end %>
 
   <% list.with_row do |row| %>
     <% row.with_key { "Email address" } %>
     <% row.with_value { @ect.email } %>
+    <% row.with_action(
+        text: "Change",
+        visually_hidden_text: "email address",
+        href: schools_ects_change_email_address_wizard_edit_path(@ect),
+        classes: "govuk-link--no-visited-state"
+      ) %>
   <% end %>
 
   <% list.with_row do |row| %>
@@ -29,5 +41,11 @@
   <% list.with_row do |row| %>
     <% row.with_key { "Working pattern" } %>
     <% row.with_value { @ect.working_pattern&.humanize } %>
+    <% row.with_action(
+        text: "Change",
+        visually_hidden_text: "working pattern",
+        href: schools_ects_change_working_pattern_wizard_edit_path(@ect),
+        classes: "govuk-link--no-visited-state"
+      ) %>
   <% end %>
 <% end %>

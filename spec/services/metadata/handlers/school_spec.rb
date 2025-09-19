@@ -9,10 +9,32 @@ RSpec.describe Metadata::Handlers::School do
     let(:object) { school }
   end
 
+  describe ".destroy_all_metadata!" do
+    subject(:destroy_all_metadata) { described_class.destroy_all_metadata! }
+
+    it "destroys all contract period metadata for the school" do
+      expect { destroy_all_metadata }.to change(Metadata::SchoolContractPeriod, :count).from(1).to(0)
+    end
+
+    it "destroys all lead provider contract period metadata for the school" do
+      expect { destroy_all_metadata }.to change(Metadata::SchoolLeadProviderContractPeriod, :count).from(1).to(0)
+    end
+  end
+
   describe "#refresh_metadata!" do
     subject(:refresh_metadata) { instance.refresh_metadata! }
 
     describe "SchoolContractPeriod" do
+      before { Metadata::SchoolContractPeriod.destroy_all }
+
+      include_context "supports tracking metadata upsert changes", Metadata::SchoolContractPeriod do
+        let(:handler) { instance }
+
+        def perform_refresh_metadata
+          refresh_metadata
+        end
+      end
+
       it "creates metadata for the school and contract period" do
         expect { refresh_metadata }.to change(Metadata::SchoolContractPeriod, :count).by(1)
 
@@ -58,6 +80,16 @@ RSpec.describe Metadata::Handlers::School do
     end
 
     describe "SchoolLeadProviderContractPeriod" do
+      before { Metadata::SchoolLeadProviderContractPeriod.destroy_all }
+
+      include_context "supports tracking metadata upsert changes", Metadata::SchoolLeadProviderContractPeriod do
+        let(:handler) { instance }
+
+        def perform_refresh_metadata
+          refresh_metadata
+        end
+      end
+
       it "creates metadata for the school, lead provider and contract period" do
         expect { refresh_metadata }.to change(Metadata::SchoolLeadProviderContractPeriod, :count).by(1)
 

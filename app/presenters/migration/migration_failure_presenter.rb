@@ -41,14 +41,14 @@ module Migration
     end
 
     def profile_id_from_parent
-      return parent.ecf_ect_profile_id if parent.ecf_ect_profile_id.present?
-      return parent.ecf_mentor_profile_id if parent.ecf_mentor_profile_id.present?
+      return parent.api_ect_profile_id if parent.api_ect_profile_id.present?
+      return parent.api_mentor_profile_id if parent.api_mentor_profile_id.present?
 
-      if parent.ecf_user_id.present?
+      if parent.api_user_id.present?
         # NOTE: if they have both ECT and Mentor profiles we don't know which had the issue
         #       and we're only returning the first from the DB but it feels that might be better
         #       than nothing.
-        Migration::User.find(parent.ecf_user_id).teacher_profile.participant_profiles.ect_or_mentor.first&.id
+        Migration::User.find(parent.api_user_id).teacher_profile.participant_profiles.ect_or_mentor.first&.id
       end
     end
 

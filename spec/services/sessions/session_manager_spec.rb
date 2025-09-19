@@ -7,17 +7,19 @@ RSpec.describe Sessions::Manager do
   let(:name) { 'Christopher Lee' }
   let(:school_urn) { FactoryBot.create(:school).urn }
   let(:last_active_at) { 4.minutes.ago }
+  let(:roles) { %w[SchoolUser] }
   let(:user) do
     Sessions::Users::SchoolUser.new(email:,
                                     name:,
                                     school_urn:,
-                                    dfe_sign_in_organisation_id: '1',
+                                    dfe_sign_in_organisation_id: SecureRandom.uuid,
                                     dfe_sign_in_user_id: '1',
+                                    dfe_sign_in_roles: roles,
                                     last_active_at:)
   end
 
   before do
-    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_code: 'registerECTsAccess'))
+    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: roles))
   end
 
   describe '#begin_session!' do
@@ -34,7 +36,7 @@ RSpec.describe Sessions::Manager do
       expect(session['user_session']['name']).to eql(name)
       expect(session['user_session']['school_urn']).to eql(school_urn)
       expect(session['user_session']['last_active_at']).to be_within(1.second).of(last_active_at)
-      expect(session['user_session']['dfe_sign_in_organisation_id']).to eql('1')
+      expect(session['user_session']['dfe_sign_in_organisation_id']).to eql(user.dfe_sign_in_organisation_id)
       expect(session['user_session']['dfe_sign_in_user_id']).to eql('1')
     end
 
@@ -43,8 +45,10 @@ RSpec.describe Sessions::Manager do
       expect(cookies['id_token']).to be_present
     end
 
-    context "when the user signs via DfE Sign In but has no 'registerECTsAccess' permissions for their organisation" do
-      before { allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_code: 'somethingElse')) }
+    context "when the user signs via DfE Sign In but has no role permissions for their organisation" do
+      before do
+        allow(user).to receive_messages(has_authorised_role?: false)
+      end
 
       it 'raises an MissingAccessLevel error' do
         expect { service.begin_session!(user) }.to raise_error(described_class::MissingAccessLevel)
@@ -53,11 +57,11 @@ RSpec.describe Sessions::Manager do
   end
 
   describe '#current_user' do
-    context 'when the session began' do
-      before do
-        service.begin_session!(user)
-      end
+    before do
+      service.begin_session!(user)
+    end
 
+    context 'when the session began' do
       it 'is kind of a Sessions::User' do
         expect(service.current_user).to be_a(Sessions::User)
       end
@@ -75,11 +79,23 @@ RSpec.describe Sessions::Manager do
         expect(new_user.last_active_at).to be_within(1.second).of(Time.zone.now)
       end
     end
+
+    context 'when the session cannot be loaded' do
+      before do
+        session['user_session']['unknown_param'] = 'new feature value'
+        allow(service).to receive(:end_session!).and_return(nil)
+        allow(Sentry).to receive(:capture_exception)
+      end
+
+      it 'does not raise an error, reports to Sentry and ends the session' do
+        expect { service.current_user }.not_to raise_error
+      end
+    end
   end
 
   describe '#end_session!' do
-    let(:session) { double('Session', destroy: nil) }
-    let(:cookies) { double('Cookies', delete: nil) }
+    let(:session) { double('ActionDispatch::Request::Session', destroy: nil) }
+    let(:cookies) { double('ActionDispatch::Cookies::CookieJar', delete: nil) }
 
     before { service.end_session! }
 
@@ -115,6 +131,22 @@ RSpec.describe Sessions::Manager do
     it 'removes the requested path from the session' do
       service.requested_path
       expect(session.keys.map(&:to_s)).not_to include 'requested_path'
+    end
+  end
+
+  describe '#switch_role!' do
+    let(:roles) { %w[SchoolUser AppropriateBodyUser] }
+
+    before do
+      school = FactoryBot.create(:school, :eligible)
+      FactoryBot.create(:appropriate_body, name: school.name, dfe_sign_in_organisation_id: user.dfe_sign_in_organisation_id)
+      service.begin_session!(user)
+    end
+
+    it 'is kind of a Sessions::User' do
+      expect(service.current_user).to be_a(Sessions::Users::SchoolUser)
+      service.switch_role!
+      expect(service.current_user).to be_a(Sessions::Users::AppropriateBodyUser)
     end
   end
 end

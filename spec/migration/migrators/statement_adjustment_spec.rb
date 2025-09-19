@@ -26,10 +26,10 @@ describe Migrators::StatementAdjustment do
         instance.migrate!
 
         Migration::FinanceAdjustment.find_each do |finance_adjustment|
-          adjustment = ::Statement::Adjustment.find_by!(api_id: finance_adjustment.id)
+          adjustment = ::Statement::Adjustment.find_by!(ecf_id: finance_adjustment.id)
           adjustment.statement
 
-          expect(adjustment.api_id).to eq finance_adjustment.id
+          expect(adjustment.ecf_id).to eq finance_adjustment.id
           expect(adjustment.payment_type).to eq finance_adjustment.payment_type
           expect(adjustment.amount).to eq finance_adjustment.amount
           expect(adjustment.created_at).to eq finance_adjustment.created_at

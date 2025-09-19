@@ -10,6 +10,11 @@
   <strong><%= performance_gain(@request.rect_performance_gain_ratio) %></strong> performance when compared to ECF.
 </p>
 
+<p>
+  The response IDs were <strong><%= comparison_in_words(@request.response_body_ids_matching?) %></strong>. In total  
+  RECT returned <strong><%= id_count_in_words(@request.rect_response_body_ids) %></strong> and ECF returned <strong><%= id_count_in_words(@request.ecf_response_body_ids) %></strong>.
+</p>
+
 <hr class="govuk-section-break govuk-section-break--l">
 
 <%= govuk_table(classes: %w[parity-check-responses-table]) do |table|
@@ -71,3 +76,30 @@
 end %>
 
 <%= govuk_pagination(pagy: @pagy) %>
+
+<% if @request.response_body_ids_different? %>
+  <% content_for(:head) do %>
+    <style type="text/css" nonce="<%= content_security_policy_nonce %>"><%= Diffy::CSS %></style>
+  <% end %>
+  
+  <hr class="govuk-section-break govuk-section-break--m">
+
+  <h2 class="govuk-heading-m">Response IDs</h2>
+
+  <div class="govuk-grid-row diff-container">
+    <div class="govuk-grid-column-one-third">
+      <p>
+        There <%= "was".pluralize(@request.ecf_only_response_body_ids.count) %> <span class="diff red"><%= id_count_in_words(@request.ecf_only_response_body_ids) %></span>
+        returned by ECF that were not returned by RECT.
+      </p>
+
+      <p>
+        There <%= "was".pluralize(@request.rect_only_response_body_ids.count) %> <span class="diff green"><%= id_count_in_words(@request.rect_only_response_body_ids) %></span>
+        returned by RECT that were not returned by ECF.
+      </p>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <%= render partial: "response_body_ids_diff", locals: { request: @request } %>
+    </div>
+  </div>
+<% end %>

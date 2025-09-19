@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   post '/auth/:provider/callback', to: 'sessions#create'
   get '/sign-in', to: 'sessions#new'
   get '/sign-out', to: 'sessions#destroy'
+  get '/switch-role', to: 'sessions#update', as: 'switch_role'
 
   # one time password
   get '/otp-sign-in', to: 'otp_sessions#new'
@@ -34,6 +35,8 @@ Rails.application.routes.draw do
   get '/admin', to: redirect('admin/teachers')
 
   namespace :admin do
+    resource :impersonate, only: %i[create destroy], controller: 'impersonation'
+
     constraints -> { Rails.application.config.enable_blazer } do
       mount Blazer::Engine, at: "blazer"
     end
@@ -42,6 +45,7 @@ Rails.application.routes.draw do
     mount MissionControl::Jobs::Engine, at: "jobs"
 
     resources :users, only: %i[index]
+    resources :batches, only: %i[index], path: 'bulk' # all activity
 
     resources :organisations, only: %i[index] do
       collection do
@@ -49,21 +53,24 @@ Rails.application.routes.draw do
           scope module: :appropriate_bodies do
             resource :timeline, only: :show
             resources :current_ects, only: :index, path: 'current-ects'
-
-            namespace :bulk do
-              resources :batches, only: :index
-            end
+            resources :batches, only: %i[index show]
           end
         end
 
         resources :lead_providers, only: %i[index], path: 'lead-providers'
-        resources :delivery_partners, only: %i[index show], path: 'delivery-partners' do
+        resources :delivery_partners, only: %i[index show edit update], path: 'delivery-partners' do
           resource :delivery_partnerships, only: %i[new create], path: ':year', as: :delivery_partnership, controller: 'delivery_partners/delivery_partnerships'
         end
       end
     end
 
-    resources :schools, only: %i[index show], param: :urn
+    resources :schools, only: %i[index show], param: :urn do
+      scope module: :schools do
+        resource :overview, only: :show
+        resource :teachers, only: :show
+        resource :partnerships, only: :show
+      end
+    end
 
     resources :teachers, only: %i[index show] do
       resource :timeline, only: %i[show], controller: 'teachers/timeline'
@@ -113,10 +120,6 @@ Rails.application.routes.draw do
         end
       end
     end
-
-    namespace :bulk do
-      resources :batches, only: %i[index show]
-    end
   end
 
   resource :appropriate_bodies, only: %i[show], path: 'appropriate-body', as: 'ab_landing', controller: 'appropriate_bodies/landing'
@@ -147,19 +150,16 @@ Rails.application.routes.draw do
       end
     end
 
-    constraints -> { Rails.application.config.enable_bulk_upload } do
-      namespace :process_batch, path: 'bulk', as: 'batch' do
-        constraints -> { Rails.application.config.enable_bulk_claim } do
-          resources :claims, format: %i[html csv]
-        end
-        resources :actions, format: %i[html csv]
-      end
+    namespace :process_batch, path: 'bulk', as: 'batch' do
+      resources :claims, format: %i[html csv]
+      resources :actions, format: %i[html csv]
     end
   end
 
   namespace :migration do
     resources :migrations, only: %i[index create], path: "/" do
       collection do
+        get "cache_stats", action: :cache_stats, as: :cache_stats
         get "download_report/:model", action: :download_report, as: :download_report
         post "reset", action: :reset, as: :reset
       end
@@ -275,6 +275,32 @@ Rails.application.routes.draw do
   end
 
   namespace :schools, path: :school do
+    scope module: :ects, path: "/ects/:ect_id", as: :ects do
+      namespace :change_name_wizard, path: "change-name" do
+        get "edit", action: :new
+        post "edit", action: :create
+        get "check-answers", action: :new
+        post "check-answers", action: :create
+        get "confirmation", action: :new
+      end
+
+      namespace :change_email_address_wizard, path: "change-email-address" do
+        get :edit, action: :new
+        post :edit, action: :create
+        get "check-answers", action: :new
+        post "check-answers", action: :create
+        get :confirmation, action: :new
+      end
+
+      namespace :change_working_pattern_wizard, path: "change-working-pattern" do
+        get :edit, action: :new
+        post :edit, action: :create
+        get "check-answers", action: :new
+        post "check-answers", action: :create
+        get :confirmation, action: :new
+      end
+    end
+
     resources :ects, only: %i[index show] do
       resource :mentorship, only: %i[new create] do
         get :confirmation, on: :collection
@@ -358,12 +384,30 @@ Rails.application.routes.draw do
 
       get 'confirmation', action: :new
     end
+
+    scope module: :mentors, path: "/mentors/:mentor_id", as: :mentors do
+      namespace :change_name_wizard, path: "change-name" do
+        get "edit", action: :new
+        post "edit", action: :create
+        get "check-answers", action: :new
+        post "check-answers", action: :create
+        get "confirmation", action: :new
+      end
+
+      namespace :change_email_address_wizard, path: "change-email-address" do
+        get :edit, action: :new
+        post :edit, action: :create
+        get "check-answers", action: :new
+        post "check-answers", action: :create
+        get :confirmation, action: :new
+      end
+    end
   end
 
   constraints -> { Rails.application.config.enable_api } do
     namespace :api do
       get 'guidance', to: 'guidance#show'
-      get 'guidance/release-notes', to: 'guidance#release_notes'
+      resources :release_notes, path: "guidance/release-notes", only: %i[index show], param: :slug, as: :guidance_release_notes
       get 'guidance/*page', to: 'guidance#page', as: :guidance_page
       get "docs/:version", to: "documentation#index", as: :documentation
 

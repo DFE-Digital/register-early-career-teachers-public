@@ -27,7 +27,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1.256.0
+        uses: ruby/setup-ruby@v1.258.0
         with:
           ruby-version: ${{ inputs.ruby-version }}
           bundler-cache: true
@@ -48,7 +48,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Node
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version: ${{ inputs.node-version }}
           cache: npm
@@ -73,7 +73,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Node
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version: ${{ inputs.node-version }}
 
@@ -97,7 +97,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1.256.0
+        uses: ruby/setup-ruby@v1.258.0
         with:
           ruby-version: ${{ inputs.ruby-version }}
           bundler-cache: true

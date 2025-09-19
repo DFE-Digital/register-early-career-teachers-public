@@ -3,21 +3,11 @@
   <%= render partial: "layouts/shared/head" %>
 
   <body class="govuk-template__body" data-turbo="false">
-    <%= render partial: "layouts/shared/js_enabled" %>
-
-    <%= govuk_skip_link %>
-    <%= govuk_header(full_width_border: true, html_attributes: { class: [environment_specific_header_colour_class] }) do |header| %>
-      <%= header.with_navigation_item(text: current_user.organisation_name) if current_user %>
-      <%= header.with_navigation_item(text: "Sign out", href: current_user.sign_out_path) if current_user %>
-    <% end %>
-
-    <%= render Navigation::PrimaryNavigationComponent.new(
-      current_path: request.fullpath,
-      current_user_type: current_user&.user_type
-    ) %>
+    <%= render partial: "layouts/shared/header" %>
 
     <div class="govuk-width-container">
       <%= environment_specific_phase_banner %>
+      <%= render Admin::ImpersonationBannerComponent.new(user: current_user, school: @school) %>
       <%= yield(:backlink_or_breadcrumb) %>
 
       <main class="govuk-main-wrapper" id="main-content" role="main">

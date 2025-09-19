@@ -96,6 +96,8 @@ module AppropriateBodies
 
       # @return [TRS::Teacher]
       # @raise [TRS::Errors::TeacherNotFound]
+      # @raise [TRS::Errors::TeacherDeactivated]
+      # @raise [TRS::Errors::APIRequestError]
       def trs_teacher
         api_client.find_teacher(
           trn: pending_induction_submission.trn,
@@ -115,14 +117,14 @@ module AppropriateBodies
         )
 
         nil
-      rescue TRS::Errors::TeacherNotFound
+      rescue TRS::Errors::TeacherNotFound, TRS::Errors::TeacherDeactivated
         'TRN and date of birth do not match'
-      rescue TRS::Errors::ProhibitedFromTeaching
-        "#{name} is prohibited from teaching"
-      rescue TRS::Errors::QTSNotAwarded
-        "#{name} does not have their qualified teacher status (QTS)"
-      rescue StandardError
-        "Something went wrong. You’ll need to try again later"
+      rescue TRS::Errors::APIRequestError
+        "TRS could not be contacted. You’ll need to try again later"
+      end
+
+      def track_analytics!
+        AnalyticsBatchJob.perform_later(pending_induction_submission_batch_id: pending_induction_submission_batch.id)
       end
     end
   end

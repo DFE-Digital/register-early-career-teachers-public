@@ -52,14 +52,14 @@ module ECTAtSchoolPeriods
     end
 
     def training_period
-      @training_period ||= ect_at_school_period.current_training_period
+      @training_period ||= ect_at_school_period.current_or_next_training_period
     end
 
     def event_params
       {
         teacher: ect_at_school_period.teacher,
         school: ect_at_school_period.school,
-        training_period: ect_at_school_period.current_training_period
+        training_period: ect_at_school_period.current_or_next_training_period
       }
     end
   end

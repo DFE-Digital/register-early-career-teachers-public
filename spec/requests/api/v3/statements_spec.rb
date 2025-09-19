@@ -1,7 +1,7 @@
 RSpec.describe "Statements API", type: :request do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
-  let(:serializer) { StatementSerializer }
+  let(:serializer) { API::StatementSerializer }
   let(:serializer_options) { {} }
 
   def create_resource(active_lead_provider:)
@@ -19,7 +19,6 @@ RSpec.describe "Statements API", type: :request do
     it_behaves_like "an index endpoint"
     it_behaves_like "a paginated endpoint"
     it_behaves_like "a filter by multiple cohorts (contract_period year) endpoint"
-    it_behaves_like "a filter by a single cohort (contract_period year) endpoint"
     it_behaves_like "a filter by updated_since endpoint"
   end
 

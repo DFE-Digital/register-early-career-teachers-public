@@ -169,67 +169,60 @@ describe ParityCheck::Response do
     end
   end
 
-  describe ".matching?" do
+  describe "#matching?/#different?" do
     subject { response }
 
     context "when the response is matching" do
       let(:response) { FactoryBot.build(:parity_check_response, :matching) }
 
       it { is_expected.to be_matching }
+      it { is_expected.not_to be_different }
     end
 
     context "when the response is different" do
       let(:response) { FactoryBot.build(:parity_check_response, :different) }
 
       it { is_expected.not_to be_matching }
-    end
-  end
-
-  describe ".different?" do
-    subject { response }
-
-    context "when the response is different" do
-      let(:response) { FactoryBot.build(:parity_check_response, :different) }
-
       it { is_expected.to be_different }
     end
-
-    context "when the response is matching" do
-      let(:response) { FactoryBot.build(:parity_check_response, :matching) }
-
-      it { is_expected.not_to be_different }
-    end
   end
 
-  describe "#bodies_matching?" do
+  describe "#bodies_matching?/#bodies_different?" do
     subject { response }
 
     context "when the ECF and RECT bodies are the same" do
       let(:response) { FactoryBot.build(:parity_check_response, ecf_body: "body", rect_body: "body") }
 
       it { is_expected.to be_bodies_matching }
-    end
-
-    context "when the ECF and RECT bodies are different" do
-      let(:response) { FactoryBot.build(:parity_check_response, ecf_body: "ecf body", rect_body: "rect body") }
-
-      it { is_expected.not_to be_bodies_matching }
-    end
-  end
-
-  describe "#bodies_different?" do
-    subject { response }
-
-    context "when the ECF and RECT bodies are the same" do
-      let(:response) { FactoryBot.build(:parity_check_response, ecf_body: "body", rect_body: "body") }
-
       it { is_expected.not_to be_bodies_different }
     end
 
     context "when the ECF and RECT bodies are different" do
       let(:response) { FactoryBot.build(:parity_check_response, ecf_body: "ecf body", rect_body: "rect body") }
 
+      it { is_expected.not_to be_bodies_matching }
       it { is_expected.to be_bodies_different }
+    end
+  end
+
+  describe "#body_ids_matching?/#body_ids_different?" do
+    subject { response }
+
+    context "when the ECF and RECT ids are the same" do
+      let(:body) { { data: { id: 123 } }.to_json }
+      let(:response) { FactoryBot.build(:parity_check_response, ecf_body: body, rect_body: body) }
+
+      it { is_expected.to be_body_ids_matching }
+      it { is_expected.not_to be_body_ids_different }
+    end
+
+    context "when the ECF and RECT bodies are different" do
+      let(:ecf_body) { { data: { id: 123 } }.to_json }
+      let(:rect_body) { { data: { id: 456 } }.to_json }
+      let(:response) { FactoryBot.build(:parity_check_response, ecf_body:, rect_body:) }
+
+      it { is_expected.not_to be_body_ids_matching }
+      it { is_expected.to be_body_ids_different }
     end
   end
 
@@ -298,5 +291,85 @@ describe ParityCheck::Response do
 
       it { is_expected.to be_nil }
     end
+  end
+
+  describe "#ecf_body_ids" do
+    subject { response.ecf_body_ids }
+
+    let(:response) { FactoryBot.build(:parity_check_response, ecf_body:) }
+
+    context "when the ECF body is valid JSON (single response)" do
+      let(:ecf_body) { { data: { id: 123, foo: :bar } }.to_json }
+
+      it { is_expected.to contain_exactly(123) }
+    end
+
+    context "when the ECF body is valid JSON (multiple response)" do
+      let(:ecf_body) { { data: [{ id: 456, foo: :bar }, { id: 123, foo: :baz }] }.to_json }
+
+      it { is_expected.to contain_exactly(123, 456) }
+    end
+
+    context "when the ECF body is not valid JSON" do
+      let(:ecf_body) { "not json" }
+
+      it { is_expected.to be_empty }
+    end
+
+    context "when the ECF body is nil" do
+      let(:ecf_body) { nil }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe "#rect_body_ids" do
+    subject { response.rect_body_ids }
+
+    let(:response) { FactoryBot.build(:parity_check_response, rect_body:) }
+
+    context "when the RECT body is valid JSON (single response)" do
+      let(:rect_body) { { data: { id: 123, foo: :bar } }.to_json }
+
+      it { is_expected.to contain_exactly(123) }
+    end
+
+    context "when the RECT body is valid JSON (multiple response)" do
+      let(:rect_body) { { data: [{ id: 456, foo: :bar }, { id: 123, foo: :baz }] }.to_json }
+
+      it { is_expected.to contain_exactly(123, 456) }
+    end
+
+    context "when the RECT body is not valid JSON" do
+      let(:rect_body) { "not json" }
+
+      it { is_expected.to be_empty }
+    end
+
+    context "when the RECT body is nil" do
+      let(:rect_body) { nil }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe "#ecf_only_body_ids" do
+    subject { response.ecf_only_body_ids }
+
+    let(:ecf_body) { { data: [{ id: 123 }, { id: 456 }] }.to_json }
+    let(:rect_body) { { data: [{ id: 123 }] }.to_json }
+    let(:response) { FactoryBot.build(:parity_check_response, ecf_body:, rect_body:) }
+
+    it { is_expected.to contain_exactly(456) }
+  end
+
+  describe "#rect_only_body_ids" do
+    subject { response.rect_only_body_ids }
+
+    let(:ecf_body) { { data: [{ id: 456 }] }.to_json }
+    let(:rect_body) { { data: [{ id: 123 }, { id: 456 }] }.to_json }
+    let(:response) { FactoryBot.build(:parity_check_response, ecf_body:, rect_body:) }
+
+    it { is_expected.to contain_exactly(123) }
   end
 end

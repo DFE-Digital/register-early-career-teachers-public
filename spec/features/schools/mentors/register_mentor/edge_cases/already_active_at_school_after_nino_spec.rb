@@ -1,6 +1,10 @@
 RSpec.describe 'Registering a mentor', :js do
   include_context 'test trs api client'
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'mentor already active at the school from trn and nino' do
     given_there_is_a_school_in_the_service
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
@@ -54,7 +58,7 @@ RSpec.describe 'Registering a mentor', :js do
   def then_i_am_on_the_schools_landing_page
     path = '/schools/home/ects'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
@@ -63,7 +67,7 @@ RSpec.describe 'Registering a mentor', :js do
 
   def then_i_am_in_the_who_will_mentor_page
     expect(page.get_by_text("Who will mentor #{@ect_name}?")).to be_visible
-    expect(page.url).to end_with("/school/ects/#{@ect.id}/mentorship/new")
+    expect(page).to have_path("/school/ects/#{@ect.id}/mentorship/new")
   end
 
   def when_i_select_register_a_new_mentor
@@ -82,7 +86,7 @@ RSpec.describe 'Registering a mentor', :js do
 
   def then_i_should_be_taken_to_the_find_mentor_page
     path = '/school/register-mentor/find-mentor'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_submit_a_trn_and_a_date_of_birth_that_does_not_match
@@ -94,7 +98,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_the_national_insurance_number_step
-    expect(page.url).to end_with('/school/register-mentor/national-insurance-number')
+    expect(page).to have_path('/school/register-mentor/national-insurance-number')
   end
 
   def when_i_enter_a_matching_national_insurance_number_for_the_existing_mentor
@@ -103,7 +107,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_the_already_active_at_school_page
-    expect(page.url).to end_with('/school/register-mentor/already-active-at-school')
+    expect(page).to have_path('/school/register-mentor/already-active-at-school')
   end
 
   def when_i_click_to_assign_the_existing_mentor_to_the_ect
@@ -111,7 +115,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page.url).to end_with('/school/register-mentor/confirmation')
+    expect(page).to have_path('/school/register-mentor/confirmation')
   end
 
   def when_i_click_on_back_to_ects
@@ -119,7 +123,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page.url).to end_with('/schools/home/ects')
+    expect(page).to have_path('/schools/home/ects')
   end
 
   def and_the_ect_is_shown_linked_to_the_existing_mentor

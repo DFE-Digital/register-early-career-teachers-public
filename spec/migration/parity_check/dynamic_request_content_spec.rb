@@ -28,7 +28,8 @@ RSpec.describe ParityCheck::DynamicRequestContent do
 
     context "when fetching school_id" do
       let(:identifier) { :school_id }
-      let!(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, active_lead_provider:) }
       let!(:school) { FactoryBot.create(:school, :eligible, :not_cip_only) }
 
       before do
@@ -37,6 +38,8 @@ RSpec.describe ParityCheck::DynamicRequestContent do
           .tap { it.gias_school.update!(funding_eligibility: :ineligible) }
         # CIP only school
         FactoryBot.create(:school, :eligible, :cip_only)
+
+        Metadata::Manager.refresh_all_metadata!
       end
 
       it { is_expected.to eq(school.api_id) }
@@ -50,6 +53,8 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       before do
         # Delivery partner for different lead provider should not be used.
         FactoryBot.create(:delivery_partner)
+
+        Metadata::Manager.refresh_all_metadata!
       end
 
       it { is_expected.to eq(delivery_partner.api_id) }
@@ -155,6 +160,17 @@ RSpec.describe ParityCheck::DynamicRequestContent do
         let(:other_delivery_partner) {}
 
         it { expect(fetch).to be_nil }
+      end
+    end
+
+    context "when fetching the same identifier more than once" do
+      let(:identifier) { :statement_id }
+      let!(:statement) { FactoryBot.create(:statement, :output_fee, lead_provider:) }
+
+      it "memoises the returned value for the same identifier in subsequent calls" do
+        expect(API::Statements::Query).to receive(:new).once.and_call_original
+
+        2.times { instance.fetch(identifier) }
       end
     end
   end

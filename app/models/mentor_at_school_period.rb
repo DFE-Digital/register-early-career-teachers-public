@@ -1,5 +1,6 @@
 class MentorAtSchoolPeriod < ApplicationRecord
   include Interval
+  include DeclarativeMetadata
 
   # Associations
   belongs_to :school, inverse_of: :mentor_at_school_periods
@@ -11,6 +12,8 @@ class MentorAtSchoolPeriod < ApplicationRecord
            -> { ongoing.includes(:teacher) },
            through: :mentorship_periods,
            source: :mentee
+
+  refresh_metadata -> { school }, on_event: %i[create destroy update]
 
   # Validations
   validates :email,

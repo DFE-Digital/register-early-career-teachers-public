@@ -1,5 +1,5 @@
 module Teachers::Details
-  class CurrentInductionPeriodComponent < ViewComponent::Base
+  class CurrentInductionPeriodComponent < ApplicationComponent
     attr_reader :mode, :teacher, :induction, :enable_release, :enable_edit, :enable_delete
 
     # @param mode [Symbol] either :admin, :appropriate_body, or :school
@@ -89,11 +89,7 @@ module Teachers::Details
 
     # @return [String]
     def training_programme
-      if Rails.application.config.enable_bulk_claim
-        training_programme_name(current_period.training_programme)
-      else
-        ::INDUCTION_PROGRAMMES[current_period.induction_programme.to_sym]
-      end
+      training_programme_name(current_period.training_programme)
     end
   end
 end

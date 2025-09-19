@@ -1,6 +1,10 @@
 RSpec.describe 'Registering a mentor', :js do
   include_context 'test trs api client'
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   let(:trn) { '3002586' }
 
   scenario 'mentor has existing mentorship and mentoring at new school only with school-led ect' do
@@ -66,7 +70,7 @@ RSpec.describe 'Registering a mentor', :js do
   def and_i_am_on_the_schools_landing_page
     path = '/schools/home/ects'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
@@ -84,7 +88,7 @@ RSpec.describe 'Registering a mentor', :js do
 
   def then_i_should_be_taken_to_the_find_mentor_page
     path = '/school/register-mentor/find-mentor'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_submit_the_find_mentor_form
@@ -100,7 +104,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_the_review_mentor_details_page
-    expect(page.url).to end_with('/school/register-mentor/review-mentor-details')
+    expect(page).to have_path('/school/register-mentor/review-mentor-details')
   end
 
   def and_i_should_see_the_mentor_details_in_the_review_page
@@ -122,7 +126,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_the_email_address_page
-    expect(page.url).to end_with('/school/register-mentor/email-address')
+    expect(page).to have_path('/school/register-mentor/email-address')
   end
 
   def when_i_enter_the_mentor_email_address
@@ -134,7 +138,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_mentoring_at_your_school_only_page
-    expect(page.url).to end_with('/school/register-mentor/mentoring-at-new-school-only')
+    expect(page).to have_path('/school/register-mentor/mentoring-at-new-school-only')
   end
 
   def when_i_select_yes_they_will_be_mentoring_at_our_school_only
@@ -143,7 +147,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_mentor_start_date_page
-    expect(page.url).to end_with('/school/register-mentor/started-on')
+    expect(page).to have_path('/school/register-mentor/started-on')
   end
 
   def when_i_enter_mentor_start_date
@@ -154,7 +158,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
-    expect(page.url).to end_with('/school/register-mentor/check-answers')
+    expect(page).to have_path('/school/register-mentor/check-answers')
   end
 
   def and_i_should_see_all_the_mentor_data_on_the_page
@@ -175,7 +179,7 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page.url).to end_with('/school/register-mentor/confirmation')
+    expect(page).to have_path('/school/register-mentor/confirmation')
   end
 
   def and_mentor_has_mentorship_with_new_school

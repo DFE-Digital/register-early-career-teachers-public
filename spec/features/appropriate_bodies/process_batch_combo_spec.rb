@@ -14,11 +14,11 @@ RSpec.describe 'Process bulk claims then actions events' do
   scenario 'happy path' do
     # action
     page.goto(new_ab_batch_claim_path)
-    expect(page.url).to end_with('/appropriate-body/bulk/claims/new')
+    expect(page).to have_path('/appropriate-body/bulk/claims/new')
     when_i_upload_a_file('valid_complete_claim.csv')
 
-    expect(PendingInductionSubmissionBatch.last).to be_pending
-    expect(perform_enqueued_jobs).to be(2) # processing
+    expect(PendingInductionSubmissionBatch.last).to be_processing
+    expect(perform_enqueued_jobs).to be(2)
     expect(PendingInductionSubmissionBatch.last).to be_processed
     expect(Event.all.map(&:heading)).to eq([
       "The Appropriate Body started a bulk claim"
@@ -29,14 +29,18 @@ RSpec.describe 'Process bulk claims then actions events' do
     expect(page.get_by_text("Your CSV named 'valid_complete_claim.csv' has 2 ECT records that you can claim.")).to be_visible
     page.get_by_role('button', name: 'Claim ECTs').click
 
-    expect(perform_enqueued_jobs).to be(2) # completing
+    expect(PendingInductionSubmissionBatch.last).to be_completing
+    expect(perform_enqueued_jobs).to be(2)
     expect(PendingInductionSubmissionBatch.last).to be_completed
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim"
     )
 
-    expect(perform_enqueued_jobs).to be(8)
+    expect(AnalyticsBatchJob).to have_been_enqueued
+      .once.with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
+
+    expect(perform_enqueued_jobs).to be(9)
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
@@ -55,11 +59,11 @@ RSpec.describe 'Process bulk claims then actions events' do
 
     # claim
     page.goto(new_ab_batch_action_path)
-    expect(page.url).to end_with('/appropriate-body/bulk/actions/new')
+    expect(page).to have_path('/appropriate-body/bulk/actions/new')
     when_i_upload_a_file('valid_complete_action.csv')
 
-    expect(PendingInductionSubmissionBatch.last).to be_pending
-    expect(perform_enqueued_jobs).to be(2) # processing
+    expect(PendingInductionSubmissionBatch.last).to be_processing
+    expect(perform_enqueued_jobs).to be(2)
     expect(PendingInductionSubmissionBatch.last).to be_processed
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
@@ -82,7 +86,8 @@ RSpec.describe 'Process bulk claims then actions events' do
     expect(page.get_by_text("0 ECTs with a released outcome")).to be_visible
     page.get_by_role('button', name: 'Record outcomes').click
 
-    expect(perform_enqueued_jobs).to be(2) # completing
+    expect(PendingInductionSubmissionBatch.last).to be_completing
+    expect(perform_enqueued_jobs).to be(2)
     expect(PendingInductionSubmissionBatch.last).to be_completed
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
@@ -97,7 +102,10 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk action"
     )
 
-    expect(perform_enqueued_jobs).to be(4)
+    expect(AnalyticsBatchJob).to have_been_enqueued
+      .once.with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
+
+    expect(perform_enqueued_jobs).to be(5)
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",

@@ -21,7 +21,7 @@ class Teacher < ApplicationRecord
 
   has_many :appropriate_bodies, through: :induction_periods
   has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body
-  has_one :current_ect_at_school_period, -> { ongoing_today_or_starting_tomorrow_or_after }, class_name: 'ECTAtSchoolPeriod'
+  has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: 'ECTAtSchoolPeriod'
 
   has_many :events
 
@@ -43,6 +43,9 @@ class Teacher < ApplicationRecord
   validates :mentor_became_ineligible_for_funding_reason,
             presence: { message: 'Choose the reason why the mentor became ineligible for funding' },
             if: -> { mentor_became_ineligible_for_funding_on.present? }
+  validates :api_user_id, uniqueness: { case_sensitive: false, message: "API user id already exists for another teacher" }
+  validates :api_ect_profile_id, uniqueness: { case_sensitive: false, message: "API ect profile id already exists for another teacher" }
+  validates :api_mentor_profile_id, uniqueness: { case_sensitive: false, message: "API mentor profile id already exists for another teacher" }
 
   # Scopes
   scope :search, ->(query_string) {
@@ -58,4 +61,6 @@ class Teacher < ApplicationRecord
 
   scope :deactivated_in_trs, -> { where(trs_deactivated: true) }
   scope :active_in_trs, -> { where(trs_deactivated: false) }
+
+  normalizes :corrected_name, with: -> { it.squish }
 end

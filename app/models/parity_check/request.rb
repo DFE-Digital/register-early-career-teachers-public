@@ -20,7 +20,7 @@ module ParityCheck
     scope :with_all_responses_matching, -> { joins(:responses).where.not(id: ParityCheck::Response.different.pluck(:request_id)).distinct }
     scope :with_lead_provider, ->(lead_provider) { where(lead_provider:) }
 
-    delegate :description, to: :endpoint
+    delegate :description, :method, to: :endpoint
 
     state_machine :state, initial: :pending do
       state :queued
@@ -79,6 +79,34 @@ module ParityCheck
       return if rates.empty?
 
       rates.sum.fdiv(rates.size).round
+    end
+
+    def pretty_json(ugly_json)
+      JSON.pretty_generate(ugly_json)
+    end
+
+    def response_body_ids_different?
+      responses.any?(&:body_ids_different?)
+    end
+
+    def response_body_ids_matching?
+      !response_body_ids_different?
+    end
+
+    def ecf_response_body_ids
+      responses.map(&:ecf_body_ids).flatten.sort
+    end
+
+    def rect_response_body_ids
+      responses.map(&:rect_body_ids).flatten.sort
+    end
+
+    def ecf_only_response_body_ids
+      ecf_response_body_ids - rect_response_body_ids
+    end
+
+    def rect_only_response_body_ids
+      rect_response_body_ids - ecf_response_body_ids
     end
   end
 end

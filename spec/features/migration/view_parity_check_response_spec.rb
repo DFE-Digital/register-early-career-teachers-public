@@ -8,7 +8,7 @@ RSpec.describe "View parity check response" do
 
   scenario "Viewing a parity check response" do
     run = FactoryBot.create(:parity_check_run, :completed)
-    response = FactoryBot.create(:parity_check_response, :different)
+    response = FactoryBot.create(:parity_check_response, :different, page: 1)
     request = FactoryBot.create(:parity_check_request, :completed, run:, responses: [response])
 
     page.goto(migration_parity_check_request_path(run, request))
@@ -22,6 +22,14 @@ RSpec.describe "View parity check response" do
     expect(page.get_by_text("The response bodies were different")).to be_visible
     expect(page.get_by_text(/(equal|faster|slower) performance when compared to ECF/)).to be_visible
 
+    expect(page.get_by_text("The response IDs were the same. In total RECT returned 0 IDs and ECF returned 0 IDs.")).to be_visible
+
+    expect(page.get_by_role("heading", name: "Request details")).to be_visible
+    expect(page.get_by_text("The request to ECF was made to: GET /path/to/ecf/endpoint")).to be_visible
+    expect(page.get_by_text("The request to RECT was made to: GET /path/to/rect/endpoint")).to be_visible
+    expect(page.get_by_text("The request body sent to both services was:")).to be_visible
+    expect(page.get_by_text(JSON.pretty_generate(response.request_body))).to be_visible
+
     expect(page.get_by_text(/The diff below highlights/)).not_to be_visible
     page.get_by_text("Understanding the differences").click
     expect(page.get_by_text(/The diff below highlights/)).to be_visible
@@ -33,12 +41,31 @@ RSpec.describe "View parity check response" do
     expect(page.locator(".diff-filter")).not_to be_visible
   end
 
+  scenario "Viewing a parity check response with different IDs" do
+    run = FactoryBot.create(:parity_check_run, :completed)
+    rect_body = { data: { id: 456 } }.to_json
+    ecf_body = { data: { id: 123 } }.to_json
+    response = FactoryBot.create(:parity_check_response, ecf_body:, rect_body:)
+    FactoryBot.create(:parity_check_request, :completed, run:, responses: [response])
+
+    page.goto(migration_parity_check_response_path(response.run, response))
+
+    expect(page.get_by_text("The response IDs were different. In total RECT returned 1 ID and ECF returned 1 ID.")).to be_visible
+
+    expect(page.get_by_role("heading", name: "Response IDs")).to be_visible
+
+    expect(page.get_by_text("There was 1 ID returned by ECF that were not returned by RECT.")).to be_visible
+    expect(page.get_by_text("There was 1 ID returned by RECT that were not returned by ECF.")).to be_visible
+  end
+
   scenario "Viewing a parity check response where the bodies are filterable", :js do
     ecf_body = { key: { nested: :value, additional_nested: :nested_data } }.to_json
     rect_body = { key: { nested: :different_value }, additional: :data }.to_json
     response = FactoryBot.create(:parity_check_response, ecf_body:, rect_body:)
 
     page.goto(migration_parity_check_response_path(response.run, response))
+
+    expect(page.get_by_role("heading", name: "Response IDs")).not_to be_visible
 
     diff = page.locator(".diff")
     expect(diff.locator(".del").get_by_text(%("nested": "value"))).to be_visible
@@ -86,7 +113,7 @@ RSpec.describe "View parity check response" do
 
     breadcrumbs = page.locator(".govuk-breadcrumbs")
     breadcrumbs.get_by_role("link", name: response.request.description).click
-    expect(page.url).to end_with(migration_parity_check_request_path(response.run, response.request))
+    expect(page).to have_path(migration_parity_check_request_path(response.run, response.request))
   end
 
   scenario "Navigating back to the parity check run" do
@@ -96,7 +123,7 @@ RSpec.describe "View parity check response" do
 
     breadcrumbs = page.locator(".govuk-breadcrumbs")
     breadcrumbs.get_by_role("link", name: "Parity check run ##{response.run.id}").click
-    expect(page.url).to end_with(migration_parity_check_path(response.run))
+    expect(page).to have_path(migration_parity_check_path(response.run))
   end
 
   scenario "Navigating back to completed parity checks" do
@@ -106,7 +133,7 @@ RSpec.describe "View parity check response" do
 
     breadcrumbs = page.locator(".govuk-breadcrumbs")
     breadcrumbs.get_by_role("link", name: "Completed parity checks").click
-    expect(page.url).to end_with(completed_migration_parity_checks_path)
+    expect(page).to have_path(completed_migration_parity_checks_path)
   end
 
   scenario "Navigating back to run a parity check" do
@@ -116,6 +143,6 @@ RSpec.describe "View parity check response" do
 
     breadcrumbs = page.locator(".govuk-breadcrumbs")
     breadcrumbs.get_by_role("link", name: "Run a parity check").click
-    expect(page.url).to end_with(new_migration_parity_check_path)
+    expect(page).to have_path(new_migration_parity_check_path)
   end
 end

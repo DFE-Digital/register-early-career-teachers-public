@@ -1,5 +1,5 @@
 RSpec.describe TRS::Teacher do
-  subject { described_class.new(data) }
+  subject(:service) { described_class.new(data) }
 
   let(:data) do
     {
@@ -99,16 +99,38 @@ RSpec.describe TRS::Teacher do
         trs_national_insurance_number: "AB123456C",
       }
 
-      expect(subject.present).to eq(expected_hash)
+      expect(service.present).to eq(expected_hash)
     end
   end
 
   describe "#check_eligibility!" do
+    context "when the teacher is exempt" do
+      it do
+        expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
+      end
+    end
+
+    context "when the teacher has passed their induction" do
+      let(:data) { { 'induction' => { 'status' => 'Passed' } } }
+
+      it do
+        expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
+      end
+    end
+
+    context "when the teacher has failed their induction" do
+      let(:data) { { 'induction' => { 'status' => 'Failed' } } }
+
+      it do
+        expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
+      end
+    end
+
     context "when the teacher has not been awarded QTS" do
       let(:data) { { 'qts' => { 'awarded' => nil } } }
 
-      it "raises TRS::Errors::QTSNotAwarded" do
-        expect { subject.check_eligibility! }.to raise_error(TRS::Errors::QTSNotAwarded)
+      it do
+        expect { service.check_eligibility! }.to raise_error(TRS::Errors::QTSNotAwarded)
       end
     end
 
@@ -124,8 +146,8 @@ RSpec.describe TRS::Teacher do
         }
       end
 
-      it "raises TRS::Errors::ProhibitedFromTeaching" do
-        expect { subject.check_eligibility! }.to raise_error(TRS::Errors::ProhibitedFromTeaching)
+      it do
+        expect { service.check_eligibility! }.to raise_error(TRS::Errors::ProhibitedFromTeaching)
       end
     end
   end

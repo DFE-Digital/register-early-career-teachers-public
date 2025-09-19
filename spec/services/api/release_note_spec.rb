@@ -1,19 +1,18 @@
 describe API::ReleaseNote do
   describe "initialization" do
-    subject(:release_note) { API::ReleaseNote.new(title:, date:, body:, tags:, latest:) }
+    subject(:release_note) { API::ReleaseNote.new(title:, date:, body:, tags:) }
 
     let(:title) { "A title" }
     let(:date) { Date.new(2024, 1, 1) }
     let(:body) { "Some body text" }
     let(:tags) { %w[bug-fix new-feature] }
-    let(:latest) { true }
 
-    it "is initialized with title, date, body, tags and latest" do
+    it "is initialized with title, date, body and tags" do
       expect(release_note.title).to eql(title)
       expect(release_note.date).to eql(date.to_formatted_s(:govuk))
       expect(release_note.body).to eql(%(<p class="govuk-body-m">#{body}</p>))
       expect(release_note.tags).to eql(tags)
-      expect(release_note.latest?).to be(true)
+      expect(release_note.slug).to eq("2024-01-01-a-title")
     end
 
     context "when the body contains markdown" do
