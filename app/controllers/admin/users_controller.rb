@@ -13,12 +13,13 @@ module Admin
     end
 
     def create
-      @user = User.new(user_params)
+      dfe_users = DfEUsers.new(author: current_user)
 
-      if @user.save
-        flash[:notice] = "#{@user.name} added"
+      if dfe_users.create_user(user_params)
+        flash[:notice] = "#{dfe_users.user_name} added"
         redirect_to admin_users_path
       else
+        @user = dfe_users.user
         render :new
       end
     end
@@ -28,14 +29,13 @@ module Admin
     end
 
     def update
-      @user = User.find(params[:id])
+      dfe_users = DfEUsers.new(author: current_user)
 
-      @user.assign_attributes(user_params)
-
-      if @user.save
-        flash[:notice] = "#{@user.name} updated"
+      if dfe_users.update_user(params[:id], user_params)
+        flash[:notice] = "#{dfe_users.user_name} updated"
         redirect_to admin_users_path
       else
+        @user = dfe_users.user
         render :edit
       end
     end
