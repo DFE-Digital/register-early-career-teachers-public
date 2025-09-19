@@ -1,11 +1,13 @@
 module TRS
+  # Unpack API response and validate eligibility
   class Teacher
     PROHIBITED_FROM_TEACHING_CATEGORY_ID = 'b2b19019-b165-47a3-8745-3297ff152581'
+    INELIGIBLE_INDUCTION_STATUSES = %w[Passed Failed FailedInWales Exempt].freeze
 
     attr_reader :trn,
+                :date_of_birth,
                 :first_name,
                 :last_name,
-                :date_of_birth,
                 :email_address,
                 :national_insurance_number,
                 :alerts,
@@ -17,14 +19,15 @@ module TRS
                 :initial_teacher_training_provider_name,
                 :initial_teacher_training_end_date
 
+    # @param data [Hash{String=>Mixed}] TRS API response
     def initialize(data)
       @trn = data['trn']
+      @date_of_birth = data['dateOfBirth']
       @first_name = data['firstName']
       @last_name = data['lastName']
-      @date_of_birth = data['dateOfBirth']
       @email_address = data['emailAddress']
       @national_insurance_number = data['nationalInsuranceNumber']
-      @alerts = data.fetch('alerts', [])
+      @alerts = data.fetch('alerts', []).map { |a| a.dig(*%w[alertType alertCategory alertCategoryId]) }
       @induction_start_date = data.dig('induction', 'startDate')
       @induction_status = data.dig('induction', 'status')
       @induction_status_description = data.dig('induction', 'statusDescription')
@@ -34,7 +37,38 @@ module TRS
       @initial_teacher_training_end_date = data.dig('initialTeacherTraining', -1, 'endDate')
     end
 
-    def present
+    # @return [Boolean]
+    def prohibited_from_teaching?
+      PROHIBITED_FROM_TEACHING_CATEGORY_ID.in?(alerts)
+    end
+
+    # @return [Boolean]
+    def no_qts?
+      qts_awarded_on.blank?
+    end
+
+    # @return [Boolean]
+    def already_completed?
+      INELIGIBLE_INDUCTION_STATUSES.include?(induction_status)
+    end
+
+    # @return [Boolean]
+    def has_alerts?
+      alerts.any?
+    end
+
+    # @raise [Errors::InductionAlreadyCompleted, Errors::ProhibitedFromTeaching, Errors::QTSNotAwarded]
+    # @return [true]
+    def check_eligibility!
+      raise Errors::InductionAlreadyCompleted if already_completed?
+      raise Errors::ProhibitedFromTeaching if prohibited_from_teaching?
+      raise Errors::QTSNotAwarded if no_qts?
+
+      true
+    end
+
+    # @return [Hash] saved to PendingInductionSubmission record
+    def to_h
       {
         trn:,
         date_of_birth:,
@@ -50,41 +84,8 @@ module TRS
         trs_qts_status_description: qts_status_description,
         trs_initial_teacher_training_provider_name: initial_teacher_training_provider_name,
         trs_initial_teacher_training_end_date: initial_teacher_training_end_date,
+        trs_prohibited_from_teaching: prohibited_from_teaching?,
       }
-    end
-
-    def check_eligibility!
-      raise TRS::Errors::InductionAlreadyCompleted if already_completed?
-      raise TRS::Errors::ProhibitedFromTeaching if prohibited_from_teaching?
-      raise TRS::Errors::QTSNotAwarded unless qts_awarded?
-
-      true
-    end
-
-    def prohibited_from_teaching?
-      PROHIBITED_FROM_TEACHING_CATEGORY_ID.in?(alert_codes)
-    end
-
-    def has_alerts?
-      alert_codes.any?
-    end
-
-    def qts_awarded?
-      qts_awarded_on.present?
-    end
-
-    def already_completed?
-      %w[Passed Failed Exempt].include?(induction_status)
-    end
-
-  private
-
-    def api_client
-      @api_client ||= TRS::APIClient.build
-    end
-
-    def alert_codes
-      alerts.map { |a| a.dig(*%w[alertType alertCategory alertCategoryId]) }
     end
   end
 end

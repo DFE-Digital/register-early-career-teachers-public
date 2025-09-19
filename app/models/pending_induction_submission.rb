@@ -108,10 +108,13 @@ class PendingInductionSubmission < ApplicationRecord
            on: %i[release_ect record_outcome]
 
   # Instance methods
-
   def exempt? = trs_induction_status.eql?('Exempt')
   def passed? = trs_induction_status.eql?('Passed')
-  def failed? = trs_induction_status.eql?('Failed')
+  def failed? = %w[Failed FailedInWales].include?(trs_induction_status)
+  def no_qts? = trs_qts_awarded_on.blank?
+  def prohibited_from_teaching? = trs_prohibited_from_teaching
+  def already_completed? = passed? || failed? || exempt?
+  def ineligible? = already_completed? || prohibited_from_teaching? || no_qts?
   def release? = outcome.nil?
 
   # @return [Boolean] capture multiple error messages and reset before saving
