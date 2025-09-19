@@ -42,8 +42,8 @@ erDiagram
   TeacherIdChange {
     integer id
     integer teacher_id
-    uuid from_teacher_id
-    uuid to_teacher_id
+    uuid api_from_teacher_id
+    uuid api_to_teacher_id
     uuid ecf_id
     datetime created_at
     datetime updated_at
