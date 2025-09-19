@@ -528,7 +528,7 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
-    prosopite (2.1.1)
+    prosopite (2.1.2)
     protocol-hpack (1.5.1)
     protocol-http (0.51.0)
     protocol-http1 (0.34.1)
