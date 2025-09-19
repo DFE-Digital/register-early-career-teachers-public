@@ -35,7 +35,7 @@ We’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`
 
 To see if a school has any ECTs training with you, we've introduced a new field, `participants_currently_training` in the `GET /partnerships` endpoint. This will show the number of ECTs or mentors training with you currently for that partnership. It will show `0` when: 
 
-* no participants are registered for training with you for training
+* no participants are registered for training with you by the school
 * all participants complete training
 * all participants are moved to another lead provider or school-led training
 
