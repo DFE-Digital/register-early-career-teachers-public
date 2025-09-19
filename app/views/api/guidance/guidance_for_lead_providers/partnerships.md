@@ -29,15 +29,16 @@ Additional partnerships by different lead providers for the same school and coho
 
 Each confirmed partnership has a unique identifier (`id`), returned in the `GET /partnerships` response. This ID represents the agreement between a school, delivery partner, and lead provider for a given cohort. 
 
-### Programme choices now set per participant 
+### How providers can find out if they’ve got participants training with them 
 
-We’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`) from partnership responses because schools now make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership. 
-
-To see if a school has any ECTs training with you, we've introduced a new field, `participants_currently_training` in the `GET /partnerships` endpoint. This will show the number of ECTs or mentors training with you currently for that partnership. It will show `0` when: 
+To see if a school has any ECTs training with them, we've introduced a new field, `participants_currently_training` in the `GET /partnerships` endpoint. This’ll show the number of ECTs or mentors currently training with a provider for that partnership. It’ll show `0` when: 
 
 * no participants are registered for training with you by the school
 * all participants complete training
 * all participants are moved to another lead provider or school-led training
+* there's any combination of the above 
+
+Because schools now make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership, we’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`) from partnership responses. 
 
 ### School induction tutor details 
 
