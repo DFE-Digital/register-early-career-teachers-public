@@ -12,6 +12,8 @@ module Migrators
     include ActiveModel::Model
     include ActiveModel::Attributes
 
+    COUNTER_UPDATE_BATCH_SIZE = 1_000
+
     attribute :worker
 
     class << self
@@ -98,14 +100,28 @@ module Migrators
           preload_caches
         end
 
+        migration_counters = { processed: 0, failures: 0 }
+
         # As we're using offset/limit, we can't use find_each!
         items.each do |item|
-          success = yield(item)
-          DataMigration.update_counters(data_migration.id, processed_count: 1, failure_count: success ? 0 : 1)
-        rescue StandardError => e
-          DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
-          failure_manager.record_failure(item, e.message)
+          success = true
+
+          begin
+            success = yield(item)
+          rescue StandardError => e
+            success = false
+            failure_manager.record_failure(item, e.message)
+          end
+
+          migration_counters[:processed] += 1
+          migration_counters[:failures] += success ? 0 : 1
+
+          next unless migration_counters[:processed] >= COUNTER_UPDATE_BATCH_SIZE
+
+          update_and_reset_migration_counters(migration_counters)
         end
+
+        update_and_reset_migration_counters(migration_counters)
 
         finalise_migration!
       end
@@ -245,6 +261,18 @@ module Migrators
 
     def active_lead_provider_ids_by_lead_provider_and_contract_period
       @active_lead_provider_ids_by_lead_provider_and_contract_period ||= ::ActiveLeadProvider.pluck(:lead_provider_id, :contract_period_year, :id).to_h { |s| ["#{s[0]} #{s[1]}", s[2]] }
+    end
+
+    def update_and_reset_migration_counters(counters)
+      return if counters[:processed].zero?
+
+      DataMigration.update_counters(
+        data_migration.id,
+        processed_count: counters[:processed],
+        failure_count: counters[:failures]
+      )
+
+      counters.replace(processed: 0, failures: 0)
     end
   end
 end
