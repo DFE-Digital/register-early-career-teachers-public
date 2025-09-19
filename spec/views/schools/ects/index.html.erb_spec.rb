@@ -55,9 +55,6 @@ RSpec.describe 'schools/ects/index.html.erb' do
     context 'when there are no matching teachers' do
       before do
         assign(:teachers, [])
-        assign(:number_of_teachers, 1)
-        assign(:school, school)
-        assign(:school_ect_periods, [])
         render
       end
 
