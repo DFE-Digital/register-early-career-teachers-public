@@ -10,21 +10,17 @@ module Admin
       end
 
       def rename!
-        normalized = proposed_name.to_s.squish
+        current  = delivery_partner.name
+        proposed = proposed_name.squish
+        return delivery_partner if current.casecmp?(proposed)
 
-        return delivery_partner if delivery_partner.name.to_s.squish.casecmp?(normalized)
-
-        from = delivery_partner.name
-
+        from = current
         ActiveRecord::Base.transaction do
-          delivery_partner.name = normalized
+          delivery_partner.name = proposed
           delivery_partner.save!(context: :rename)
 
           Events::Record.record_delivery_partner_name_changed_event!(
-            delivery_partner:,
-            author:,
-            from:,
-            to: delivery_partner.name
+            delivery_partner:, author:, from:, to: delivery_partner.name
           )
         end
 
