@@ -511,3 +511,10 @@
   - milestone_date
   - created_at
   - updated_at
+  :metadata_teachers:
+  - id
+  - teacher_id
+  - induction_started_on
+  - induction_finished_on
+  - created_at
+  - updated_at

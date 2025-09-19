@@ -4,6 +4,7 @@ class InductionPeriod < ApplicationRecord
   include Interval
   include SharedInductionPeriodValidation
   include SharedNumberOfTermsValidation
+  include DeclarativeMetadata
 
   # Associations
   belongs_to :appropriate_body
@@ -21,6 +22,9 @@ class InductionPeriod < ApplicationRecord
               in: %w[fip cip diy unknown pre_september_2021],
               message: "Choose an induction programme"
             }
+
+  refresh_metadata -> { teacher }, on_event: %i[create destroy]
+  refresh_metadata -> { teacher }, when_changing: %i[started_on finished_on outcome], on_event: %i[update]
 
   # TODO: add null: false to the database column after populating old records
   validates :training_programme,

@@ -1,4 +1,6 @@
 class Teacher < ApplicationRecord
+  include DeclarativeMetadata
+
   TRN_FORMAT = %r{\A\d{7}\z}
 
   self.ignored_columns = %i[search]
@@ -13,6 +15,7 @@ class Teacher < ApplicationRecord
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
   has_many :induction_extensions, inverse_of: :teacher
+  has_one :metadata, class_name: "Metadata::Teacher"
 
   has_many :induction_periods
   has_one :first_induction_period, -> { order(started_on: :asc) }, class_name: "InductionPeriod"
@@ -22,8 +25,12 @@ class Teacher < ApplicationRecord
   has_many :appropriate_bodies, through: :induction_periods
   has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body
   has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: 'ECTAtSchoolPeriod'
+  has_one :started_induction_period, -> { where.not(started_on: nil).order(started_on: :asc) }, class_name: 'InductionPeriod'
+  has_one :finished_induction_period, -> { where.not(outcome: nil).where.not(finished_on: nil).order(finished_on: :desc) }, class_name: 'InductionPeriod'
 
   has_many :events
+
+  refresh_metadata -> { self }, on_event: %i[create]
 
   # TODO: remove after migration complete
   has_many :teacher_migration_failures
@@ -63,4 +70,19 @@ class Teacher < ApplicationRecord
   scope :active_in_trs, -> { where(trs_deactivated: false) }
 
   normalizes :corrected_name, with: -> { it.squish }
+
+  def induction_started_on
+    induction_periods
+      .order(started_on: :asc)
+      .limit(1)
+      .pick(:started_on)
+  end
+
+  def induction_finished_on
+    induction_periods
+      .where.not(outcome: nil)
+      .order(finished_on: :desc)
+      .limit(1)
+      .pick(:finished_on)
+  end
 end

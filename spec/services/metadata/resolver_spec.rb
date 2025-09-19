@@ -18,6 +18,6 @@ RSpec.describe Metadata::Resolver do
   describe ".all_handlers" do
     subject { described_class.all_handlers }
 
-    it { is_expected.to contain_exactly(Metadata::Handlers::School, Metadata::Handlers::DeliveryPartner) }
+    it { is_expected.to contain_exactly(Metadata::Handlers::School, Metadata::Handlers::DeliveryPartner, Metadata::Handlers::Teacher) }
   end
 end
