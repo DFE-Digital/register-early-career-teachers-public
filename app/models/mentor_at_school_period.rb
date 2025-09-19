@@ -13,6 +13,11 @@ class MentorAtSchoolPeriod < ApplicationRecord
            through: :mentorship_periods,
            source: :mentee
 
+  has_one :latest_training_period,
+          -> { latest_first },
+          class_name: "TrainingPeriod",
+          inverse_of: :mentor_at_school_period
+
   refresh_metadata -> { school }, on_event: %i[create destroy update]
 
   # Validations

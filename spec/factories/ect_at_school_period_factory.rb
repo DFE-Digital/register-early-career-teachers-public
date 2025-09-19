@@ -7,7 +7,7 @@ FactoryBot.define do
     independent_school
 
     started_on { generate(:base_ect_date) }
-    finished_on { started_on + 1.day }
+    finished_on { started_on + 1.year }
     email { Faker::Internet.email }
     working_pattern { WORKING_PATTERNS.keys.sample }
 
