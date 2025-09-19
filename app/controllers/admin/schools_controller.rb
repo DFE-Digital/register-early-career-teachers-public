@@ -5,11 +5,12 @@ module Admin
     layout "full"
 
     def index
-      @pagy, @schools = pagy(Schools::Search.new(params[:q]).call)
+      schools = params[:q].present? ? School.search(params[:q]) : School.includes(:gias_school)
+      @pagy, @schools = pagy(schools)
     end
 
     def show
-      @school = School.includes(:gias_school).find_by!(urn: params[:urn])
+      redirect_to admin_school_overview_path(params[:urn])
     end
   end
 end

@@ -29,7 +29,7 @@ module Migrators
     end
 
     def migrate_one!(teacher_profile)
-      teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+      teacher = find_teacher_by_trn!(teacher_profile.trn)
 
       result = true
 
@@ -38,22 +38,21 @@ module Migrators
         .ect_or_mentor
         .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
         .find_each do |participant_profile|
-          sanitizer = InductionRecordSanitizer.new(participant_profile:, group_by: :provider)
-
-          training_period_data = []
+          sanitizer = InductionRecordSanitizer.new(participant_profile:, group_by: :school)
 
           if sanitizer.valid?
             sanitizer.induction_records.each_value do |induction_records_group|
-              training_period_data << TrainingPeriodExtractor.new(induction_records: induction_records_group).training_periods
+              next if result == false
+
+              training_period_data = TrainingPeriodExtractor.new(induction_records: induction_records_group).training_periods
+
+              result = if participant_profile.ect?
+                         Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
+                       else
+                         Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
+                       end
             end
 
-            training_period_data.flatten!
-
-            result = if participant_profile.ect?
-                       Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
-                     else
-                       Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
-                     end
           else
             ::TeacherMigrationFailure.create!(teacher:,
                                               model: :training_period,
@@ -65,6 +64,18 @@ module Migrators
         end
 
       result
+    end
+
+  private
+
+    def preload_caches
+      cache_manager.cache_teachers
+      cache_manager.cache_schools
+      cache_manager.cache_lead_providers
+      cache_manager.cache_active_lead_providers
+      cache_manager.cache_delivery_partners
+      cache_manager.cache_school_partnerships
+      cache_manager.cache_lead_provider_delivery_partnerships
     end
   end
 end

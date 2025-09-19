@@ -1,3 +1,4 @@
 ---
 shared:
   - persist_api_request
+  - bulk_upload_action

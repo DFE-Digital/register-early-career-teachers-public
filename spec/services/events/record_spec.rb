@@ -589,7 +589,15 @@ RSpec.describe Events::Record do
         induction_period.number_of_terms = nil
         raw_modifications = induction_period.changes
 
-        Events::Record.record_induction_period_reopened_event!(author:, induction_period:, modifications: raw_modifications, teacher:, appropriate_body:)
+        Events::Record.record_induction_period_reopened_event!(
+          author:,
+          induction_period:,
+          modifications: raw_modifications,
+          teacher:,
+          appropriate_body:,
+          body: "A test note",
+          zendesk_ticket_id: "1234"
+        )
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
@@ -600,6 +608,8 @@ RSpec.describe Events::Record do
           happened_at: Time.zone.now,
           modifications: anything,
           metadata: raw_modifications,
+          body: "A test note",
+          zendesk_ticket_id: "1234",
           **author_params
         )
       end
@@ -933,6 +943,96 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_email_updated_event" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, email: "old@example.com")
+    end
+
+    it "enqueues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_email_updated_event!(
+        old_email: ect_at_school_period.email,
+        new_email: "new@example.com",
+        author:,
+        ect_at_school_period:,
+        school: ect_at_school_period.school,
+        teacher:,
+        happened_at: 5.minutes.ago
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        teacher:,
+        school: ect_at_school_period.school,
+        ect_at_school_period:,
+        heading: "Email address changed from 'old@example.com' to 'new@example.com'",
+        event_type: :teacher_email_address_updated,
+        happened_at: 5.minutes.ago,
+        **author_params
+      )
+    end
+  end
+
+  describe ".record_teacher_working_pattern_updated_event!" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, working_pattern: :full_time)
+    end
+
+    it "enqueues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_working_pattern_updated_event!(
+        old_working_pattern: ect_at_school_period.working_pattern,
+        new_working_pattern: "part_time",
+        author:,
+        ect_at_school_period:,
+        school: ect_at_school_period.school,
+        teacher:,
+        happened_at: 15.seconds.ago
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        teacher:,
+        school: ect_at_school_period.school,
+        ect_at_school_period:,
+        heading: "Working pattern changed from 'full time' to 'part time'",
+        event_type: :teacher_working_pattern_updated,
+        happened_at: 15.seconds.ago,
+        **author_params
+      )
+    end
+  end
+
+  describe '.record_teacher_left_school_as_mentor!' do
+    let(:finished_on) { 1.month.ago.to_date }
+    let(:school) { FactoryBot.create(:school) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:, started_on: 2.years.ago.to_date) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_teacher_left_school_as_mentor!(
+          author:,
+          mentor_at_school_period:,
+          teacher:,
+          school:,
+          happened_at: finished_on
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          school:,
+          mentor_at_school_period:,
+          heading: "Rhys Ifans left #{school.name}",
+          event_type: :teacher_left_school_as_mentor,
+          happened_at: finished_on,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe '.record_bulk_upload_started_event!' do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
 
@@ -1042,55 +1142,64 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_school_partnership_created_event!' do
-    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+  context "when the event author is a lead provider" do
+    let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
+    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
 
-    it 'queues a RecordEventJob with the correct values' do
-      freeze_time do
-        Events::Record.record_school_partnership_created_event!(author:, school_partnership:)
-        metadata = {
-          contract_period_year: school_partnership.contract_period.year,
-        }
+    describe '.record_school_partnership_created_event!' do
+      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+      let(:lead_provider) { school_partnership.lead_provider }
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          heading: "#{school_partnership.school.name} partnered with #{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) for #{school_partnership.contract_period.year}",
-          school_partnership:,
-          school: school_partnership.school,
-          delivery_partner: school_partnership.delivery_partner,
-          lead_provider: school_partnership.lead_provider,
-          event_type: :school_partnership_created,
-          happened_at: Time.zone.now,
-          metadata:,
-          **author_params
-        )
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_school_partnership_created_event!(author:, school_partnership:)
+          metadata = {
+            contract_period_year: school_partnership.contract_period.year,
+          }
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            heading: "#{school_partnership.school.name} partnered with #{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) for #{school_partnership.contract_period.year}",
+            school_partnership:,
+            school: school_partnership.school,
+            delivery_partner: school_partnership.delivery_partner,
+            lead_provider: school_partnership.lead_provider,
+            event_type: :school_partnership_created,
+            happened_at: Time.zone.now,
+            metadata:,
+            **author_params
+          )
+        end
       end
     end
-  end
 
-  describe '.record_school_partnership_updated_event!' do
-    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+    describe '.record_school_partnership_updated_event!' do
+      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+      let(:lead_provider) { school_partnership.lead_provider }
+      let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
+      let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
 
-    it 'queues a RecordEventJob with the correct values' do
-      freeze_time do
-        previous_delivery_partner = school_partnership.delivery_partner
-        school_partnership.update!(lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership))
-        Events::Record.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications: school_partnership.saved_changes)
-        metadata = {
-          contract_period_year: school_partnership.contract_period.year,
-        }
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          previous_delivery_partner = school_partnership.delivery_partner
+          school_partnership.update!(lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership))
+          Events::Record.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications: school_partnership.saved_changes)
+          metadata = {
+            contract_period_year: school_partnership.contract_period.year,
+          }
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          heading: "#{school_partnership.school.name} changed partnership from #{previous_delivery_partner.name} to #{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) for #{school_partnership.contract_period.year}",
-          school_partnership:,
-          school: school_partnership.school,
-          delivery_partner: school_partnership.delivery_partner,
-          lead_provider: school_partnership.lead_provider,
-          event_type: :school_partnership_updated,
-          happened_at: Time.zone.now,
-          metadata:,
-          modifications: [/Lead provider delivery partnership changed from '\d+' to '\d+'/],
-          **author_params
-        )
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            heading: "#{school_partnership.school.name} changed partnership from #{previous_delivery_partner.name} to #{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) for #{school_partnership.contract_period.year}",
+            school_partnership:,
+            school: school_partnership.school,
+            delivery_partner: school_partnership.delivery_partner,
+            lead_provider: school_partnership.lead_provider,
+            event_type: :school_partnership_updated,
+            happened_at: Time.zone.now,
+            metadata:,
+            modifications: [/Lead provider delivery partnership changed from '\d+' to '\d+'/],
+            **author_params
+          )
+        end
       end
     end
   end
@@ -1202,6 +1311,119 @@ RSpec.describe Events::Record do
         contract_period:,
         lead_provider_delivery_partnership:
       )
+    end
+  end
+
+  describe '.record_training_period_assigned_to_school_partnership_event!' do
+    let(:school) { FactoryBot.create(:school) }
+    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Ichigo', trs_last_name: 'Kurosaki') }
+    let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
+    let(:lead_provider) { school_partnership.lead_provider }
+    let(:delivery_partner) { school_partnership.delivery_partner }
+
+    context 'when ECT training' do
+      let(:ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school:,
+          started_on: Date.new(2025, 1, 1),
+          finished_on: Date.new(2025, 12, 31)
+        )
+      end
+
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :with_only_expression_of_interest,
+          ect_at_school_period:,
+          started_on: Date.new(2025, 3, 1),
+          finished_on: Date.new(2025, 3, 31)
+        )
+      end
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_training_period_assigned_to_school_partnership_event!(
+            author:,
+            school_partnership:,
+            training_period:,
+            ect_at_school_period:,
+            teacher:,
+            lead_provider:,
+            delivery_partner:,
+            school:,
+            mentor_at_school_period: nil
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            school_partnership:,
+            training_period:,
+            ect_at_school_period:,
+            teacher:,
+            lead_provider:,
+            delivery_partner:,
+            school:,
+            heading: "Ichigo Kurosaki’s ECT training period was assigned to a school partnership",
+            event_type: :training_period_assigned_to_school_partnership,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when mentor training' do
+      let(:mentor_at_school_period) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          school:,
+          started_on: Date.new(2025, 1, 1),
+          finished_on: Date.new(2025, 12, 31)
+        )
+      end
+
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          :with_only_expression_of_interest,
+          mentor_at_school_period:,
+          started_on: Date.new(2025, 3, 1),
+          finished_on: Date.new(2025, 3, 31)
+        )
+      end
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_training_period_assigned_to_school_partnership_event!(
+            author:,
+            school_partnership:,
+            training_period:,
+            mentor_at_school_period:,
+            teacher:,
+            lead_provider:,
+            delivery_partner:,
+            school:,
+            ect_at_school_period: nil
+          )
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            school_partnership:,
+            training_period:,
+            mentor_at_school_period:,
+            teacher:,
+            lead_provider:,
+            delivery_partner:,
+            school:,
+            heading: "Ichigo Kurosaki’s mentor training period was assigned to a school partnership",
+            event_type: :training_period_assigned_to_school_partnership,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
     end
   end
 end

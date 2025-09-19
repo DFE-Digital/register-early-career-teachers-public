@@ -29,6 +29,11 @@ RSpec/RequireRailsHelper:
     - "spec/spec_helper.rb"
     - "spec/rails_helper.rb"
 
+# Otherwise it suggests the namespace "ec_ts"
+RSpec/SpecFilePathFormat:
+  CustomTransform:
+    ECTs: ects
+
 Style/StringLiterals:
   EnforcedStyle: single_quotes
 
@@ -81,11 +86,12 @@ Rails/UnknownEnv:
     - sandbox
     - review
     - migration
+    - paritycheck
 
 Rails/SkipsModelValidations:
   Enabled: true
   Exclude:
-    - spec/support/shared_examples/declarative_touch.rb
+    - spec/support/shared_examples/declarative_updates.rb
 
 Rails/StrongParametersExpect:
   Enabled: true
@@ -104,6 +110,7 @@ Rails/SaveBang:
   Exclude:
     - app/services/**/*
     - spec/support/shared_examples/metadata_support.rb
+    - spec/support/shared_examples/query_avoids_includes.rb
 
 Naming/MethodParameterName:
   Enabled: false
@@ -114,10 +121,6 @@ Lint/MissingSuper:
 Capybara/CurrentPathExpectation:
   Exclude:
     - "spec/features/**/*" # Excluded in feature specs because we use Playwright (not Capybara) for those. Leaving it enabled elsewhere in case Capybara matchers are used in other test types.
-
-RSpec/SpecFilePathFormat:
-  Exclude:
-    - "spec/components/schools/ects/listing_card_component_spec.rb"
 
 RSpec/EmptyExampleGroup:
   Exclude:

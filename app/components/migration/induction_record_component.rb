@@ -1,5 +1,5 @@
 module Migration
-  class InductionRecordComponent < ViewComponent::Base
+  class InductionRecordComponent < ApplicationComponent
     attr_reader :induction_record
 
     def initialize(induction_record:)
@@ -9,7 +9,7 @@ module Migration
     def migrated_mentor
       return unless mentor_present?
 
-      Teacher.find_by(ecf_mentor_profile_id: induction_record.mentor_profile_id)
+      Teacher.find_by(api_mentor_profile_id: induction_record.mentor_profile_id)
     end
 
     def mentor_present?

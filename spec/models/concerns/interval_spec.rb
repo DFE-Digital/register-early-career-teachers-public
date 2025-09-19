@@ -78,6 +78,12 @@ describe Interval do
       end
     end
 
+    describe '.started_on_or_before' do
+      it 'returns records where the started_on date is equal to or earlier than the provided date' do
+        expect(DummyMentor.started_on_or_before(Date.yesterday).to_sql).to end_with(%("started_on" <= '#{Date.yesterday.iso8601}'))
+      end
+    end
+
     describe '.started_on_or_after' do
       it 'returns records where the started_on date is equal to or later than the provided date' do
         expect(DummyMentor.started_on_or_after(Date.yesterday).to_sql).to end_with(%("started_on" >= '#{Date.yesterday.iso8601}'))
@@ -110,12 +116,12 @@ describe Interval do
       end
     end
 
-    describe '.ongoing_today_or_starting_tomorrow_or_after' do
+    describe '.current_or_future' do
       it 'chains together .ongoing_today and .starting_tomorrow_or_after' do
         allow(DummyMentor).to receive(:ongoing_today).and_call_original
         allow(DummyMentor).to receive(:starting_tomorrow_or_after).and_call_original
 
-        DummyMentor.ongoing_today_or_starting_tomorrow_or_after
+        DummyMentor.current_or_future
 
         expect(DummyMentor).to have_received(:ongoing_today).once
         expect(DummyMentor).to have_received(:starting_tomorrow_or_after).once

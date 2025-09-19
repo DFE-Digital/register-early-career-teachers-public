@@ -1,121 +1,58 @@
 describe "Admin adds an induction period" do
   before do
-    allow(Rails.application.config)
-      .to receive(:enable_bulk_claim)
-      .and_return(use_new_programme_types)
     sign_in_as_dfe_user(role: :admin)
   end
 
-  context "using induction programmes" do
-    let(:use_new_programme_types) { false }
+  it "adds a closed induction period" do
+    given_an_appropriate_body_exists(name: "Test Appropriate Body")
+    given_a_teacher_exists(first_name: "Test", last_name: "Person")
+    when_i_go_to_the_teacher_page
+    then_there_is_no_induction_summary
+    and_there_are_no_past_induction_periods
 
-    it "adds a closed induction period" do
-      given_an_appropriate_body_exists(name: "Test Appropriate Body")
-      given_a_teacher_exists(first_name: "Test", last_name: "Person")
-      when_i_go_to_the_teacher_page
-      then_there_is_no_induction_summary
-      and_there_are_no_past_induction_periods
+    when_i_click_the_add_an_induction_period_link
+    then_there_is_a_form_to_add_an_induction_period(
+      for_teacher: "Test Person"
+    )
 
-      when_i_click_the_add_an_induction_period_link
-      then_there_is_a_form_to_add_an_induction_period(
-        for_teacher: "Test Person"
-      )
-
-      when_i_fill_in_the_form_with(
-        appropriate_body: "Test Appropriate Body",
-        start_date: "1-1-2024",
-        end_date: "1-1-2025",
-        number_of_terms: "2",
-        induction_programme: "Full induction programme"
-      )
-      and_i_submit_the_form
-      then_i_see_a_success_message
-      and_there_is_an_induction_summary
-      and_there_is_a_past_induction_period(
-        appropriate_body: "Test Appropriate Body"
-      )
-    end
-
-    it "adds an open induction period" do
-      given_an_appropriate_body_exists(name: "Test Appropriate Body")
-      given_a_teacher_exists(first_name: "Test", last_name: "Person")
-      when_i_go_to_the_teacher_page
-      then_there_is_no_induction_summary
-      and_there_are_no_past_induction_periods
-
-      when_i_click_the_add_an_induction_period_link
-      then_there_is_a_form_to_add_an_induction_period(
-        for_teacher: "Test Person"
-      )
-
-      when_i_fill_in_the_form_with(
-        appropriate_body: "Test Appropriate Body",
-        start_date: "1-1-2024",
-        induction_programme: "Full induction programme"
-      )
-      and_i_submit_the_form
-      then_i_see_a_success_message
-      and_there_is_an_induction_summary
-      and_there_is_a_current_induction_period(
-        appropriate_body: "Test Appropriate Body"
-      )
-    end
+    when_i_fill_in_the_form_with(
+      appropriate_body: "Test Appropriate Body",
+      start_date: "1-1-2024",
+      end_date: "1-1-2025",
+      number_of_terms: "2",
+      induction_programme: "Provider-led"
+    )
+    and_i_submit_the_form
+    then_i_see_a_success_message
+    and_there_is_an_induction_summary
+    and_there_is_a_past_induction_period(
+      appropriate_body: "Test Appropriate Body"
+    )
   end
 
-  context "using training programmes" do
-    let(:use_new_programme_types) { true }
+  it "adds an open induction period" do
+    given_an_appropriate_body_exists(name: "Test Appropriate Body")
+    given_a_teacher_exists(first_name: "Test", last_name: "Person")
+    when_i_go_to_the_teacher_page
+    then_there_is_no_induction_summary
+    and_there_are_no_past_induction_periods
 
-    it "adds a closed induction period" do
-      given_an_appropriate_body_exists(name: "Test Appropriate Body")
-      given_a_teacher_exists(first_name: "Test", last_name: "Person")
-      when_i_go_to_the_teacher_page
-      then_there_is_no_induction_summary
-      and_there_are_no_past_induction_periods
+    when_i_click_the_add_an_induction_period_link
+    then_there_is_a_form_to_add_an_induction_period(
+      for_teacher: "Test Person"
+    )
 
-      when_i_click_the_add_an_induction_period_link
-      then_there_is_a_form_to_add_an_induction_period(
-        for_teacher: "Test Person"
-      )
-
-      when_i_fill_in_the_form_with(
-        appropriate_body: "Test Appropriate Body",
-        start_date: "1-1-2024",
-        end_date: "1-1-2025",
-        number_of_terms: "2",
-        induction_programme: "Provider-led"
-      )
-      and_i_submit_the_form
-      then_i_see_a_success_message
-      and_there_is_an_induction_summary
-      and_there_is_a_past_induction_period(
-        appropriate_body: "Test Appropriate Body"
-      )
-    end
-
-    it "adds an open induction period" do
-      given_an_appropriate_body_exists(name: "Test Appropriate Body")
-      given_a_teacher_exists(first_name: "Test", last_name: "Person")
-      when_i_go_to_the_teacher_page
-      then_there_is_no_induction_summary
-      and_there_are_no_past_induction_periods
-
-      when_i_click_the_add_an_induction_period_link
-      then_there_is_a_form_to_add_an_induction_period(
-        for_teacher: "Test Person"
-      )
-
-      when_i_fill_in_the_form_with(
-        appropriate_body: "Test Appropriate Body",
-        start_date: "1-1-2024",
-        induction_programme: "Provider-led"
-      )
-      and_i_submit_the_form
-      then_i_see_a_success_message
-      and_there_is_an_induction_summary
-      and_there_is_a_current_induction_period(
-        appropriate_body: "Test Appropriate Body"
-      )
-    end
+    when_i_fill_in_the_form_with(
+      appropriate_body: "Test Appropriate Body",
+      start_date: "1-1-2024",
+      induction_programme: "Provider-led"
+    )
+    and_i_submit_the_form
+    then_i_see_a_success_message
+    and_there_is_an_induction_summary
+    and_there_is_a_current_induction_period(
+      appropriate_body: "Test Appropriate Body"
+    )
   end
 
 private

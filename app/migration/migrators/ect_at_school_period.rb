@@ -29,7 +29,7 @@ module Migrators
     end
 
     def migrate_one!(teacher_profile)
-      teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+      teacher = find_teacher_by_trn!(teacher_profile.trn)
 
       result = true
 
@@ -42,14 +42,15 @@ module Migrators
 
           school_periods = []
 
-          # TODO: we could just grab the first entry in each school group
           if sanitizer.valid?
             sanitizer.induction_records.each_value do |induction_records_group|
               school_periods << SchoolPeriodExtractor.new(induction_records: induction_records_group).school_periods
             end
 
-            teacher.update!(ecf_ect_profile_id: participant_profile.id)
-            result = Builders::ECT::SchoolPeriods.new(teacher:, school_periods: school_periods.flatten).build
+            school_periods.flatten!
+
+            teacher.update!(api_ect_profile_id: participant_profile.id)
+            result = Builders::ECT::SchoolPeriods.new(teacher:, school_periods:).build
           else
             ::TeacherMigrationFailure.create!(teacher:,
                                               model: :ect_at_school_period,
@@ -60,6 +61,13 @@ module Migrators
           end
         end
       result
+    end
+
+  private
+
+    def preload_caches
+      cache_manager.cache_schools
+      cache_manager.cache_teachers
     end
   end
 end

@@ -57,6 +57,28 @@ RSpec.describe ParityCheckHelper, type: :helper do
     it { is_expected.to eq(%(<ul class=\"govuk-list\"><li>Participant declarations</li><li>Users</li></ul>)) }
   end
 
+  describe "#id_count_in_words" do
+    subject { helper.id_count_in_words(ids) }
+
+    context "when there are no ids" do
+      let(:ids) { [] }
+
+      it { is_expected.to eq("0 IDs") }
+    end
+
+    context "when there is one id" do
+      let(:ids) { [123] }
+
+      it { is_expected.to eq("1 ID") }
+    end
+
+    context "when there are multiple ids" do
+      let(:ids) { Array.new(1001) }
+
+      it { is_expected.to eq("1,001 IDs") }
+    end
+  end
+
   describe "#match_rate_tag" do
     {
       0 => "red",

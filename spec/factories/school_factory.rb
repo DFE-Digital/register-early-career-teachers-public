@@ -56,23 +56,5 @@ FactoryBot.define do
       induction_tutor_name { Faker::Name.name }
       induction_tutor_email { Faker::Internet.email }
     end
-
-    trait :with_metadata do
-      transient do
-        contract_period { create(:contract_period) }
-        lead_provider { create(:lead_provider) }
-      end
-
-      after(:create) do |school, evaluator|
-        create(:school_lead_provider_contract_period_metadata,
-               school:,
-               contract_period: evaluator.contract_period,
-               lead_provider: evaluator.lead_provider)
-
-        create(:school_contract_period_metadata,
-               school:,
-               contract_period: evaluator.contract_period)
-      end
-    end
   end
 end

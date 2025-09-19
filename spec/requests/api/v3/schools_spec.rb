@@ -2,12 +2,12 @@ RSpec.describe "Schools API", type: :request do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
   let(:contract_period) { active_lead_provider.contract_period }
-  let(:serializer) { SchoolSerializer }
+  let(:serializer) { API::SchoolSerializer }
   let(:serializer_options) { { contract_period_year: contract_period.id, lead_provider_id: lead_provider.id } }
 
   def create_resource(active_lead_provider:)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-    FactoryBot.create(:school_partnership, :with_school_metadata, lead_provider_delivery_partnership:).school
+    FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:).school
   end
 
   describe "#index" do

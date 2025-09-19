@@ -1,5 +1,5 @@
 module Migration
-  class MigrationFailureComponent < ViewComponent::Base
+  class MigrationFailureComponent < ApplicationComponent
     attr_reader :migration_failure
 
     def initialize(migration_failure:)

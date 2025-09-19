@@ -34,12 +34,13 @@ module Migrators
     end
 
     def migrate!
-      migrate(self.class.schools) do |ecf_school|
+      schools_with_associations = self.class.schools.preload(:partnerships, :induction_records)
+
+      migrate(schools_with_associations) do |ecf_school|
         gias_school = find_gias_school_by_urn(ecf_school.urn.to_i) || migrate_school!(ecf_school)
         if check_gias_school(gias_school:, ecf_school:)
           [
             compare_fields(gias_school:, ecf_school:),
-            update_gias_school!(gias_school:, api_id: ecf_school.id),
             update_school!(school: gias_school.school, ecf_school:),
           ].all?
         end
@@ -82,20 +83,23 @@ module Migrators
       Builders::GIAS::School.new(ecf_school).build if migrateable_school?(ecf_school)
     end
 
-    def migrateable_school?(ecf_school) = open_school_with_partnerships?(ecf_school) || not_open_school_with_induction_records?(ecf_school)
+    def migrateable_school?(ecf_school)
+      return ecf_school.partnerships.any? if ecf_school.open?
 
-    def not_open_school_with_induction_records?(ecf_school) = !ecf_school.open? && ecf_school.induction_records.exists?
-
-    def open_school_with_partnerships?(ecf_school) = ecf_school.open? && ecf_school.partnerships.exists?
-
-    def update_gias_school!(gias_school:, api_id:) = gias_school.update!(api_id:)
+      ecf_school.induction_records.any?
+    end
 
     def update_school!(school:, ecf_school:)
-      timestamp_attrs = {
+      induction_coordinator = ecf_school.induction_coordinators.first
+
+      attrs = {
+        api_id: ecf_school.id,
+        induction_tutor_name: induction_coordinator&.full_name,
+        induction_tutor_email: induction_coordinator&.email,
         created_at: ecf_school.created_at,
-        updated_at: ecf_school.updated_at
+        api_updated_at: ecf_school.updated_at
       }
-      school.update_columns(timestamp_attrs)
+      school.update_columns(attrs)
     end
   end
 end

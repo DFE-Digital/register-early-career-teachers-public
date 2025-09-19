@@ -52,6 +52,7 @@ erDiagram
     datetime created_at
     datetime updated_at
     enum fee_type
+    datetime api_updated_at
   }
   Statement }o--|| ActiveLeadProvider : belongs_to
   SchoolPartnership {
@@ -76,9 +77,18 @@ erDiagram
     datetime api_updated_at
     string induction_tutor_name
     citext induction_tutor_email
+    uuid api_id
   }
   School }o--|| AppropriateBody : belongs_to
   School }o--|| LeadProvider : belongs_to
+  Schedule {
+    integer id
+    integer contract_period_year
+    enum identifier
+    datetime created_at
+    datetime updated_at
+  }
+  Schedule }o--|| ContractPeriod : belongs_to
   PendingInductionSubmissionBatch {
     integer id
     integer appropriate_body_id
@@ -108,9 +118,6 @@ erDiagram
     string trn
     string trs_first_name
     string trs_last_name
-    uuid ecf_user_id
-    uuid ecf_ect_profile_id
-    uuid ecf_mentor_profile_id
     date trs_qts_awarded_on
     string trs_qts_status_description
     string trs_induction_status
@@ -120,6 +127,11 @@ erDiagram
     date mentor_became_ineligible_for_funding_on
     enum mentor_became_ineligible_for_funding_reason
     boolean trs_deactivated
+    uuid api_user_id
+    uuid api_ect_profile_id
+    uuid api_mentor_profile_id
+    integer ect_payments_frozen_year
+    integer mentor_payments_frozen_year
   }
   PendingInductionSubmission {
     integer id
@@ -148,11 +160,21 @@ erDiagram
     date trs_qts_awarded_on
     datetime delete_at
     integer pending_induction_submission_batch_id
-    string error_messages
+    array[string] error_messages
     enum training_programme
   }
   PendingInductionSubmission }o--|| AppropriateBody : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
+  Milestone {
+    integer id
+    integer schedule_id
+    enum declaration_type
+    date start_date
+    date milestone_date
+    datetime created_at
+    datetime updated_at
+  }
+  Milestone }o--|| Schedule : belongs_to
   MentorshipPeriod {
     integer id
     integer ect_at_school_period_id
@@ -319,7 +341,7 @@ erDiagram
     integer id
     integer delivery_partner_id
     integer lead_provider_id
-    array[int] contract_period_years
+    array[integer] contract_period_years
     datetime created_at
     datetime updated_at
   }

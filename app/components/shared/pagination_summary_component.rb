@@ -1,5 +1,5 @@
 module Shared
-  class PaginationSummaryComponent < ViewComponent::Base
+  class PaginationSummaryComponent < ApplicationComponent
     attr_reader :pagy, :record_name
 
     def initialize(pagy:, record_name: "records")

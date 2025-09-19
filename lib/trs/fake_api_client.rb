@@ -1,4 +1,15 @@
 module TRS
+  # 7000001 - 7000009 are special TRNs that mimic:
+  #
+  # 1. Missing QTS
+  # 2. Not found
+  # 3. Prohibited
+  # 4. Deactivated
+  # 5. Alerts
+  # 6. ERO mentor
+  # 7. Passed induction
+  # 8. Failed induction
+  # 9. Exempt
   class FakeAPIClient
     class FakeAPIClientUsedInProduction < StandardError; end
 
@@ -131,6 +142,9 @@ module TRS
       when 7_000_004 then raise(TRS::Errors::TeacherDeactivated)
       when 7_000_005 then @has_alerts_but_not_prohibited = true
       when 7_000_006 then nil # teacher with TRN 7000006 is seeded as an early roll out mentor
+      when 7_000_007 then @induction_status = 'Passed'
+      when 7_000_008 then @induction_status = 'Failed'
+      when 7_000_009 then @induction_status = 'Exempt'
       else
         @has_qts = true
         @has_itt = true

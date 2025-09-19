@@ -1,5 +1,5 @@
 module Schools
-  class SummaryCardComponent < ViewComponent::Base
+  class SummaryCardComponent < ApplicationComponent
     include AppropriateBodyHelper
     include ProgrammeHelper
     include TeacherHelper

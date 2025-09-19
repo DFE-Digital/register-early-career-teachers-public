@@ -26,9 +26,9 @@ describe Migrators::ReconcileAdjustment do
         instance.migrate!
 
         described_class.statements_with_adjustments.find_each do |statement|
-          adjustment = ::Statement::Adjustment.find_by!(api_id: statement.id)
+          adjustment = ::Statement::Adjustment.find_by!(ecf_id: statement.id)
 
-          expect(adjustment.api_id).to eq statement.id
+          expect(adjustment.ecf_id).to eq statement.id
           expect(adjustment.payment_type).to eq "Reconcile amounts pre-adjustments feature"
           expect(adjustment.amount).to eq statement.reconcile_amount
           expect(adjustment.created_at).to eq statement.created_at

@@ -42,13 +42,13 @@
         <% if @latest_release_note.present? %>
           <h3 class="govuk-heading-m">
             <span class="govuk-caption-m"><%= @latest_release_note.date %></span>
-            <%= @latest_release_note.title %>
+            <%= link_to @latest_release_note.title, api_guidance_release_note_path(@latest_release_note.slug) %>
           </h3>
           <p>
             <%= render API::Guidance::ReleaseNotes::TagsComponent.new(tags: @latest_release_note.tags) %>
           </p>
           <p class="govuk-body">
-            <%= govuk_link_to("Read release note", api_guidance_release_notes_path(anchor: "latest")) %>
+            <%= govuk_link_to("View all release notes", api_guidance_release_notes_path) %>
           </p>
         <% end %>
       </div>

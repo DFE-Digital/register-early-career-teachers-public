@@ -1,6 +1,10 @@
 RSpec.describe 'Registering an ECT' do
   include_context 'test trs api client'
 
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'Finding a teacher using national insurance number' do
     given_i_am_logged_in_as_a_school_user
     and_i_am_on_the_schools_landing_page
@@ -25,7 +29,7 @@ RSpec.describe 'Registering an ECT' do
   def and_i_am_on_the_schools_landing_page
     path = '/schools/home/ects'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_start_adding_an_ect
@@ -33,7 +37,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_in_the_requirements_page
-    expect(page.url).to end_with('/schools/register-ect/what-you-will-need')
+    expect(page).to have_path('/schools/register-ect/what-you-will-need')
   end
 
   def when_i_click_continue
@@ -41,7 +45,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_on_the_find_ect_step_page
-    expect(page.url).to end_with('/schools/register-ect/find-ect')
+    expect(page).to have_path('/schools/register-ect/find-ect')
   end
 
   def when_i_submit_a_trn_and_a_date_of_birth_that_does_not_match
@@ -53,7 +57,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_national_insurance_number_step
-    expect(page.url).to end_with('/schools/register-ect/national-insurance-number')
+    expect(page).to have_path('/schools/register-ect/national-insurance-number')
   end
 
   def when_i_enter_a_matching_national_insurance_number
@@ -62,6 +66,6 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_review_details_step
-    expect(page.url).to end_with('/schools/register-ect/review-ect-details')
+    expect(page).to have_path('/schools/register-ect/review-ect-details')
   end
 end

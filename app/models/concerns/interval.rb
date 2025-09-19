@@ -12,6 +12,7 @@ module Interval
     scope :earliest_first, -> { order(started_on: 'asc') }
     scope :latest_first, -> { order(started_on: 'desc') }
     scope :started_before, ->(date) { where(started_on: ...date) }
+    scope :started_on_or_before, ->(date) { where(started_on: ..date) }
     scope :started_on_or_after, ->(date) { where(started_on: date..) }
     scope :finished_before, ->(date) { where(finished_on: ...date) }
     scope :finished_on_or_after, ->(date) { where(finished_on: date..) }
@@ -22,7 +23,7 @@ module Interval
     # Date relative scopes
     scope :ongoing_today, -> { ongoing_on(Time.zone.today) }
     scope :starting_tomorrow_or_after, -> { started_on_or_after(Time.zone.tomorrow) }
-    scope :ongoing_today_or_starting_tomorrow_or_after, -> { ongoing_today.or(starting_tomorrow_or_after).earliest_first }
+    scope :current_or_future, -> { ongoing_today.or(starting_tomorrow_or_after) }
   end
 
   # Validations

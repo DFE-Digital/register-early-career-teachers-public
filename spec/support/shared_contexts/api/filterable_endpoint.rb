@@ -18,7 +18,7 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([previous_contract_period_resource, next_contract_period_resource]), root: "data", **options))
+    expect(response.body).to eq(serializer.render(apply_expected_order([previous_contract_period_resource.reload, next_contract_period_resource.reload]), root: "data", **options))
   end
 
   it "ignores invalid cohorts" do
@@ -29,32 +29,43 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
     next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
     create_resource(active_lead_provider: next_active_lead_provider)
 
-    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort,1099" } })
+    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort,,20A1,nil,null, ,1099,#{SecureRandom.uuid}" } })
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([resource]), root: "data", **options))
+    expect(response.body).to eq(serializer.render([resource.reload], root: "data", **options))
+  end
+
+  it "returns all resources when cohort is blank" do
+    resource = create_resource(active_lead_provider:)
+
+    authenticated_api_get(path, params: { filter: { cohort: "" } })
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render([resource.reload], root: "data", **options))
   end
 end
 
 RSpec.shared_examples "a filter by updated_since endpoint" do
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
-  let!(:resource_updated_one_week_ago) { travel_to(1.week.ago) { create_resource(active_lead_provider:) } }
-  let!(:resource_updated_one_month_ago) { travel_to(1.month.ago) { create_resource(active_lead_provider:) } }
+  let!(:resource_updated_one_week_ago) { create_resource(active_lead_provider:).tap { it.update_columns(api_updated_at: 1.week.ago) } }
+  let!(:resource_updated_one_month_ago) { create_resource(active_lead_provider:).tap { it.update_columns(api_updated_at: 1.month.ago) } }
 
   before do
     # Resource updated more than two months ago should not be included.
-    travel_to(3.months.ago) { create_resource(active_lead_provider:) }
+    create_resource(active_lead_provider:).update_columns(api_updated_at: 3.months.ago)
   end
 
   it "returns only resource that have been updated since the provided date" do
     updated_since = 2.months.ago.utc.iso8601
     params = { filter: { updated_since: } }
+
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([resource_updated_one_week_ago, resource_updated_one_month_ago]), root: "data", **options))
+    expect(response.body).to eq(serializer.render(apply_expected_order([resource_updated_one_week_ago.reload, resource_updated_one_month_ago.reload]), root: "data", **options))
   end
 
   it "correctly decodes URL encoded dates" do
@@ -64,7 +75,7 @@ RSpec.shared_examples "a filter by updated_since endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(apply_expected_order([resource_updated_one_week_ago, resource_updated_one_month_ago]), root: "data", **options))
+    expect(response.body).to eq(serializer.render(apply_expected_order([resource_updated_one_week_ago.reload, resource_updated_one_month_ago.reload]), root: "data", **options))
   end
 
   it "returns 400 bad request when the updated_since is not a valid date" do
@@ -90,22 +101,37 @@ RSpec.shared_examples "a filter by a single cohort (contract_period year) endpoi
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render([resource.reload], root: "data", **serializer_options))
   end
 
-  it "ignores invalid cohorts" do
-    resource = create_resource(active_lead_provider:)
+  it "returns no resources if the specified cohort is invalid" do
+    create_resource(active_lead_provider:)
 
     # Resource for the next contract_period should not be included.
     next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
     next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
     create_resource(active_lead_provider: next_active_lead_provider)
 
-    authenticated_api_get(path, params: { filter: { cohort: "#{active_lead_provider.contract_period.year},invalid,cohort,1099" } })
+    authenticated_api_get(path, params: { filter: { cohort: "invalid" } })
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render([], root: "data", **serializer_options))
+  end
+
+  it "returns no resources if the specified cohort is not found" do
+    create_resource(active_lead_provider:)
+
+    # Resource for the next contract_period should not be included.
+    next_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
+    next_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: next_contract_period)
+    create_resource(active_lead_provider: next_active_lead_provider)
+
+    authenticated_api_get(path, params: { filter: { cohort: "1999" } })
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render([], root: "data", **serializer_options))
   end
 end
 
@@ -121,7 +147,7 @@ RSpec.shared_examples "a filter by urn endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render([resource.reload], root: "data", **serializer_options))
   end
 
   it "ignores invalid urns" do
@@ -135,7 +161,7 @@ RSpec.shared_examples "a filter by urn endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render([resource.reload], root: "data", **serializer_options))
   end
 end
 
@@ -146,7 +172,7 @@ RSpec.shared_examples "a does not filter by cohort endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render(resource.reload, root: "data", **serializer_options))
   end
 end
 
@@ -154,12 +180,12 @@ RSpec.shared_examples "a does not filter by updated_since endpoint" do
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
 
   it "returns the resources, ignoring the `updated_since`" do
-    updated_since_after_resource_updated_at = (resource.updated_at + 1.day).utc.iso8601
+    updated_since_after_resource_updated_at = (resource.api_updated_at + 1.day).utc.iso8601
     authenticated_api_get(path, params: { filter: { updated_since: updated_since_after_resource_updated_at } })
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render(resource.reload, root: "data", **serializer_options))
   end
 end
 
@@ -175,7 +201,7 @@ RSpec.shared_examples "a filter by delivery_partner_id endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render([resource.reload], root: "data", **serializer_options))
   end
 
   it "ignores invalid delivery partner ids" do
@@ -189,7 +215,7 @@ RSpec.shared_examples "a filter by delivery_partner_id endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render([resource], root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render([resource.reload], root: "data", **serializer_options))
   end
 end
 
@@ -205,6 +231,6 @@ RSpec.shared_examples "a does not filter by delivery_partner_id endpoint" do
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render(resource.reload, root: "data", **serializer_options))
   end
 end

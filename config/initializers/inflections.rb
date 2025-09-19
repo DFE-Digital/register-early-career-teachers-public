@@ -24,4 +24,6 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "ITT" # Initial teacher training
   inflect.acronym "OmniAuth"
   inflect.acronym "OpenID"
+
+  inflect.irregular "was", "were"
 end

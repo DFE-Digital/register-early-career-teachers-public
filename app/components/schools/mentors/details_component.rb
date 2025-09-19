@@ -1,6 +1,6 @@
 module Schools
   module Mentors
-    class DetailsComponent < ViewComponent::Base
+    class DetailsComponent < ApplicationComponent
       include TeacherHelper
 
       def initialize(teacher:, mentor:)
@@ -28,14 +28,25 @@ module Schools
       def name_row
         {
           key: { text: 'Name' },
-          value: { text: teacher_full_name(@teacher) }
+          value: { text: teacher_full_name(@teacher) },
+          actions: [{
+            text: "Change",
+            visually_hidden_text: "name",
+            href: schools_mentors_change_name_wizard_edit_path(@mentor)
+          }]
         }
       end
 
       def email_row
         {
           key: { text: 'Email address' },
-          value: { text: @mentor.email }
+          value: { text: @mentor.email },
+          actions: [{
+            text: "Change",
+            visually_hidden_text: "email address",
+            href: schools_mentors_change_email_address_wizard_edit_path(@mentor),
+            classes: "govuk-link--no-visited-state"
+          }]
         }
       end
 

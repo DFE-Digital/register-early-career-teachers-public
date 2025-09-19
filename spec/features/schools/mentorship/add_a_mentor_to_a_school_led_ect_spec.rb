@@ -1,4 +1,8 @@
 RSpec.describe 'Add a mentor to a school led ECT' do
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'happy path' do
     given_there_is_a_school_in_the_service
     and_there_is_a_school_led_ect_with_no_mentor_registered_at_the_school
@@ -38,7 +42,7 @@ RSpec.describe 'Add a mentor to a school led ECT' do
   def and_i_am_on_the_schools_landing_page
     path = '/schools/home/ects'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
@@ -47,7 +51,7 @@ RSpec.describe 'Add a mentor to a school led ECT' do
 
   def then_i_am_in_the_who_will_mentor_page
     expect(page.get_by_text("Who will mentor #{@ect_name}?")).to be_visible
-    expect(page.url).to end_with("/school/ects/#{@ect.id}/mentorship/new")
+    expect(page).to have_path("/school/ects/#{@ect.id}/mentorship/new")
   end
 
   def when_i_select_the_mentor
@@ -56,7 +60,7 @@ RSpec.describe 'Add a mentor to a school led ECT' do
   end
 
   def then_i_should_be_taken_to_the_mentorship_confirmation_page
-    expect(page.url).to end_with("/school/ects/#{@ect.id}/mentorship/confirmation")
+    expect(page).to have_path("/school/ects/#{@ect.id}/mentorship/confirmation")
     expect(page.get_by_text("You’ve assigned #{@mentor_name} as a mentor for #{@ect_name}")).to be_visible
   end
 
@@ -65,7 +69,7 @@ RSpec.describe 'Add a mentor to a school led ECT' do
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page.url).to end_with('/schools/home/ects')
+    expect(page).to have_path('/schools/home/ects')
   end
 
   def and_the_ect_is_shown_linked_to_the_mentor_just_registered

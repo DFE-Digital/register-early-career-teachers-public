@@ -150,7 +150,6 @@
   - address_line1
   - address_line2
   - address_line3
-  - api_id
   - postcode
   - primary_contact_email
   - secondary_contact_email
@@ -211,6 +210,7 @@
   - urn
   - induction_tutor_name
   - induction_tutor_email
+  - api_id
   :school_partnerships:
   - id
   - created_at
@@ -220,14 +220,16 @@
   - api_id
   - api_updated_at
   :teachers:
-  - ecf_user_id
-  - ecf_ect_profile_id
-  - ecf_mentor_profile_id
+  - api_user_id
+  - api_ect_profile_id
+  - api_mentor_profile_id
   - corrected_name
   - trs_first_name
   - trs_last_name
   - mentor_became_ineligible_for_funding_on
   - mentor_became_ineligible_for_funding_reason
+  - ect_payments_frozen_year
+  - mentor_payments_frozen_year
   :pending_induction_submissions:
   - id
   - appropriate_body_id
@@ -332,6 +334,7 @@
   - updated_at
   - metadata
   - modifications
+  - zendesk_ticket_id
   :ect_at_school_periods:
   - id
   - school_id
@@ -378,6 +381,7 @@
   - worker
   - created_at
   - updated_at
+  - cache_stats
   :contract_periods:
   - year
   - created_at
@@ -395,7 +399,7 @@
   :statement_adjustments:
   - id
   - statement_id
-  - api_id
+  - ecf_id
   - payment_type
   - amount
   - created_at
@@ -413,6 +417,7 @@
   - status
   - created_at
   - updated_at
+  - api_updated_at
   :api_tokens:
   - id
   - lead_provider_id
@@ -455,6 +460,9 @@
   - rect_body
   - ecf_time_ms
   - rect_time_ms
+  - ecf_request_uri
+  - rect_request_uri
+  - request_body
   - page
   - created_at
   - updated_at
@@ -486,5 +494,20 @@
   - delivery_partner_id
   - lead_provider_id
   - contract_period_years
+  - created_at
+  - updated_at
+  :schedules:
+  - id
+  - contract_period_year
+  - identifier
+  - schedule_type
+  - created_at
+  - updated_at
+  :milestones:
+  - id
+  - schedule_id
+  - declaration_type
+  - start_date
+  - milestone_date
   - created_at
   - updated_at

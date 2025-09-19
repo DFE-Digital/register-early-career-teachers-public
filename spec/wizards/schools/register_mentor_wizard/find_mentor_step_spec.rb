@@ -183,7 +183,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     end
   end
 
-  context '#save!' do
+  describe '#save!' do
     context 'when the step is not valid' do
       subject { wizard.current_step }
 

@@ -1,5 +1,6 @@
 RSpec.describe 'Registering an ECT' do
   before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
     FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
   end
 
@@ -32,7 +33,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_in_the_requirements_page
-    expect(page.url).to end_with('/schools/register-ect/what-you-will-need')
+    expect(page).to have_path('/schools/register-ect/what-you-will-need')
   end
 
   def and_i_click_continue
@@ -40,7 +41,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_ect_start_date_page
-    expect(page.url).to end_with('/schools/register-ect/start-date')
+    expect(page).to have_path('/schools/register-ect/start-date')
   end
 
   def when_i_enter_a_valid_start_date
@@ -60,7 +61,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_taken_to_the_training_programme_page
-    expect(page.url).to end_with('/schools/register-ect/training-programme')
+    expect(page).to have_path('/schools/register-ect/training-programme')
   end
 
   def when_i_select_school_led
@@ -72,7 +73,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_am_taken_to_the_check_answers_page
-    expect(page.url).to end_with('/schools/register-ect/check-answers')
+    expect(page).to have_path('/schools/register-ect/check-answers')
   end
 
   def and_i_see_the_correct_appropriate_body_on_the_page

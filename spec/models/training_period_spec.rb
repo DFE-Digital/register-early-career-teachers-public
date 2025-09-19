@@ -1,4 +1,16 @@
 describe TrainingPeriod do
+  include SchoolPartnershipHelpers
+  describe "declarative updates" do
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 3.years.ago.to_date, finished_on: nil) }
+    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+    let(:instance) { FactoryBot.create(:training_period, ect_at_school_period:, school_partnership:) }
+    let!(:target) { school_partnership.school }
+
+    describe "declarative metadata" do
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+    end
+  end
+
   describe "enums" do
     it "uses the training programme enum" do
       expect(subject).to define_enum_for(:training_programme)
@@ -280,6 +292,56 @@ describe TrainingPeriod do
     describe ".for_mentor" do
       it "returns training periods only for the specified mentor at school period" do
         expect(TrainingPeriod.for_mentor(456).to_sql).to end_with(%(WHERE "training_periods"."mentor_at_school_period_id" = 456))
+      end
+    end
+
+    describe '.at_school' do
+      let(:school) { FactoryBot.create(:school) }
+      let(:contract_period) { FactoryBot.create(:contract_period) }
+      let(:partnership) { make_partnership_for(school, contract_period) }
+
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+      let(:ect_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period:,
+          school_partnership: partnership,
+          started_on: ect_at_school_period.started_on,
+          finished_on: ect_at_school_period.finished_on
+        )
+      end
+
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+      let(:mentor_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          school_partnership: partnership,
+          started_on: mentor_at_school_period.started_on,
+          finished_on: mentor_at_school_period.finished_on
+        )
+      end
+
+      let(:other_school) { FactoryBot.create(:school) }
+      let(:other_ect_period) { FactoryBot.create(:ect_at_school_period, school: other_school) }
+      let(:other_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period: other_ect_period,
+          started_on: other_ect_period.started_on,
+          finished_on: other_ect_period.finished_on
+        )
+      end
+
+      it 'returns training periods for ECTs and Mentors at the school' do
+        expect(TrainingPeriod.at_school(school.id)).to include(ect_training_period, mentor_training_period)
+      end
+
+      it 'does not return training periods for ECTs and Mentors at other schools' do
+        expect(TrainingPeriod.at_school(school.id)).not_to include(other_training_period)
       end
     end
   end

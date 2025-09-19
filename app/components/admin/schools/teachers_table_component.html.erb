@@ -1,0 +1,28 @@
+<% if teachers_with_roles.any? %>
+  <%= govuk_table do |table|
+    table.with_head do |head|
+      head.with_row do |row|
+        row.with_cell(text: "Name")
+        row.with_cell(text: "TRN")
+        row.with_cell(text: "Type")
+        row.with_cell(text: "Contract period")
+      end
+    end
+
+    table.with_body do |body|
+      teachers_with_roles.each do |teacher_data|
+        teacher = teacher_data[:teacher]
+        body.with_row do |row|
+          row.with_cell do
+            govuk_link_to teacher_full_name(teacher), admin_teacher_path(teacher)
+          end
+          row.with_cell(text: teacher.trn)
+          row.with_cell(text: ::Teachers::Role.new(teacher:, school:).to_s)
+          row.with_cell(text: latest_contract_period(teacher_data))
+        end
+      end
+    end
+  end %>
+<% else %>
+  <p class="govuk-body">No teachers found at this school.</p>
+<% end %>

@@ -127,3 +127,11 @@
   margin-top: 100px;
   text-align: center;
 }
+
+.response-details code {
+  padding: 2px 5px;
+  font-family: monospace;
+  background-color: $govuk-template-background-colour;
+  white-space: pre-wrap;
+  font-size: 0.8em;
+}

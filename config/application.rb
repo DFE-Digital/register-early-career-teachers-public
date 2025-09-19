@@ -51,8 +51,6 @@ module RegisterEarlyCareerTeachers
     config.enable_schools_interface = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_SCHOOLS_INTERFACE', false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_SENTRY', false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BLAZER', false))
-    config.enable_bulk_upload = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BULK_UPLOAD', false))
-    config.enable_bulk_claim = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BULK_CLAIM', false))
     config.enable_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_API', false))
     config.bypass_filter_parameter_logging = false
     config.sentry_dsn = ENV['SENTRY_DSN']
@@ -65,7 +63,7 @@ module RegisterEarlyCareerTeachers
       rect_url: ENV['PARITY_CHECK_RECT_URL'],
     }
 
-    config.dfe_sign_in_issuer = ENV.fetch('DFE_SIGN_IN_ISSUER', 'https://dev-oidc.signin.education.gov.uk')
+    config.dfe_sign_in_issuer = ENV.fetch('DFE_SIGN_IN_ISSUER', 'https://test-oidc.signin.education.gov.uk')
     config.dfe_sign_in_client_id = ENV['DFE_SIGN_IN_CLIENT_ID']
     config.dfe_sign_in_secret = ENV['DFE_SIGN_IN_SECRET']
     config.dfe_sign_in_redirect_uri = ENV['DFE_SIGN_IN_REDIRECT_URI']
@@ -86,10 +84,10 @@ module RegisterEarlyCareerTeachers
       ActionView::Base.default_form_builder = GOVUKDesignSystemFormBuilder::FormBuilder
     end
 
-    Dir.glob(Rails.root.join("app/middlewares/*.rb")).sort.each do |file|
+    Dir.glob(Rails.root.join("app/middlewares/**/*.rb")).sort.each do |file|
       require file
     end
 
-    config.middleware.use APIRequestMiddleware
+    config.middleware.use API::RequestMiddleware
   end
 end

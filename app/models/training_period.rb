@@ -1,5 +1,6 @@
 class TrainingPeriod < ApplicationRecord
   include Interval
+  include DeclarativeMetadata
 
   # Enums
   enum :training_programme,
@@ -26,6 +27,8 @@ class TrainingPeriod < ApplicationRecord
   has_many :declarations, inverse_of: :training_period
   has_many :events
 
+  refresh_metadata -> { school_partnership&.school }, on_event: %i[create destroy update]
+
   # Validations
   validates :started_on,
             presence: true
@@ -42,7 +45,10 @@ class TrainingPeriod < ApplicationRecord
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
   scope :for_mentor, ->(mentor_at_school_period_id) { where(mentor_at_school_period_id:) }
   scope :for_school_partnership, ->(school_partnership_id) { where(school_partnership_id:) }
-
+  scope :at_school, ->(school) {
+    left_outer_joins(:ect_at_school_period, :mentor_at_school_period)
+      .merge(ECTAtSchoolPeriod.for_school(school).or(MentorAtSchoolPeriod.for_school(school)))
+  }
   # Delegations
   delegate :name, to: :delivery_partner, prefix: true, allow_nil: true
   delegate :name, to: :lead_provider, prefix: true, allow_nil: true

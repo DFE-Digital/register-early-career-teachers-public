@@ -14,6 +14,7 @@ module AppropriateBodies
         if csv_data.valid?
           @pending_induction_submission_batch.update!(data: csv_data.to_a, **csv_data.metadata)
 
+          @pending_induction_submission_batch.processing!
           record_bulk_upload_started_event
           process_batch_claim
 
@@ -37,8 +38,11 @@ module AppropriateBodies
       def update
         @pending_induction_submission_batch = PendingInductionSubmissionBatch.find(params[:id])
 
-        process_batch_claim
-        record_bulk_upload_completed_event
+        if @pending_induction_submission_batch.processed?
+          @pending_induction_submission_batch.completing!
+          process_batch_claim
+          record_bulk_upload_completed_event
+        end
 
         redirect_to ab_batch_claim_path(@pending_induction_submission_batch)
       end

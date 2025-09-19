@@ -29,9 +29,9 @@ module Migrators
     end
 
     def migrate_one!(ecf_adjustment)
-      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(api_id: ecf_adjustment.id)
+      statement_adjustment = ::Statement::Adjustment.find_or_initialize_by(ecf_id: ecf_adjustment.id)
 
-      statement_adjustment.statement = ::Statement.find_by!(api_id: ecf_adjustment.statement_id)
+      statement_adjustment.statement = find_statement_by_api_id!(ecf_adjustment.statement_id)
       statement_adjustment.payment_type = ecf_adjustment.payment_type
       statement_adjustment.amount = ecf_adjustment.amount
       statement_adjustment.created_at = ecf_adjustment.created_at
@@ -39,6 +39,12 @@ module Migrators
 
       statement_adjustment.save!
       statement_adjustment
+    end
+
+  private
+
+    def preload_caches
+      cache_manager.cache_statements
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_16_071240) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -22,6 +22,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
+  create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api"]
   create_enum "fee_types", ["output", "service"]
@@ -35,6 +36,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
   create_enum "parity_check_run_modes", ["concurrent", "sequential"]
   create_enum "parity_check_run_states", ["pending", "in_progress", "completed", "failed"]
   create_enum "request_method_types", ["get", "post", "put"]
+  create_enum "schedule_identifiers", ["ecf-extended-april", "ecf-extended-january", "ecf-extended-september", "ecf-reduced-april", "ecf-reduced-january", "ecf-reduced-september", "ecf-replacement-april", "ecf-replacement-january", "ecf-replacement-september", "ecf-standard-april", "ecf-standard-january", "ecf-standard-september"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]
   create_enum "working_pattern", ["part_time", "full_time"]
@@ -147,6 +149,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.integer "worker"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "cache_stats"
   end
 
   create_table "declarations", force: :cascade do |t|
@@ -227,6 +230,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.bigint "pending_induction_submission_batch_id"
     t.bigint "statement_id"
     t.bigint "statement_adjustment_id"
+    t.integer "zendesk_ticket_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
@@ -285,8 +289,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.boolean "induction_eligibility", null: false
     t.boolean "in_england", null: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, ((((COALESCE((name)::text, ''::text) || ' '::text) || COALESCE((postcode)::text, ''::text)) || ' '::text) || COALESCE((urn)::text, ''::text)))", stored: true
-    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["api_id"], name: "index_gias_schools_on_api_id", unique: true
     t.index ["name"], name: "index_gias_schools_on_name"
     t.index ["search"], name: "index_gias_schools_on_search", using: :gin
     t.index ["ukprn"], name: "index_gias_schools_on_ukprn", unique: true
@@ -419,6 +421,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
 
+  create_table "milestones", force: :cascade do |t|
+    t.bigint "schedule_id"
+    t.enum "declaration_type", null: false, enum_type: "declaration_types"
+    t.date "start_date", null: false
+    t.date "milestone_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["schedule_id", "declaration_type"], name: "index_milestones_on_schedule_id_and_declaration_type", unique: true
+    t.index ["schedule_id"], name: "index_milestones_on_schedule_id"
+  end
+
   create_table "parity_check_endpoints", force: :cascade do |t|
     t.string "path", null: false
     t.enum "method", null: false, enum_type: "request_method_types"
@@ -452,6 +465,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "page"
+    t.string "ecf_request_uri"
+    t.string "rect_request_uri"
+    t.jsonb "request_body"
     t.index ["request_id", "page"], name: "index_parity_check_responses_on_request_id_and_page", unique: true
     t.index ["request_id"], name: "index_parity_check_responses_on_request_id"
   end
@@ -520,6 +536,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
+  create_table "schedules", force: :cascade do |t|
+    t.integer "contract_period_year", null: false
+    t.enum "identifier", null: false, enum_type: "schedule_identifiers"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_period_year", "identifier"], name: "index_schedules_on_contract_period_year_and_identifier", unique: true
+  end
+
   create_table "school_partnerships", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -542,6 +566,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.string "induction_tutor_name"
     t.citext "induction_tutor_email"
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["api_id"], name: "index_schools_on_api_id", unique: true
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true
@@ -670,11 +696,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
 
   create_table "statement_adjustments", force: :cascade do |t|
     t.bigint "statement_id", null: false
-    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "ecf_id"
     t.string "payment_type", null: false
     t.decimal "amount", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["ecf_id"], name: "index_statement_adjustments_on_ecf_id", unique: true
     t.index ["statement_id"], name: "index_statement_adjustments_on_statement_id"
   end
 
@@ -690,6 +717,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.enum "fee_type", default: "output", null: false, enum_type: "fee_types"
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
   end
 
@@ -712,9 +740,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.string "trn", null: false
     t.string "trs_first_name"
     t.string "trs_last_name"
-    t.uuid "ecf_user_id"
-    t.uuid "ecf_ect_profile_id"
-    t.uuid "ecf_mentor_profile_id"
     t.date "trs_qts_awarded_on"
     t.string "trs_qts_status_description"
     t.string "trs_induction_status", limit: 18
@@ -725,6 +750,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
     t.enum "mentor_became_ineligible_for_funding_reason", enum_type: "mentor_became_ineligible_for_funding_reason"
     t.boolean "trs_deactivated", default: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
+    t.uuid "api_user_id", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "api_ect_profile_id", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "api_mentor_profile_id", default: -> { "gen_random_uuid()" }, null: false
+    t.integer "ect_payments_frozen_year"
+    t.integer "mentor_payments_frozen_year"
+    t.index ["api_ect_profile_id"], name: "index_teachers_on_api_ect_profile_id", unique: true
+    t.index ["api_mentor_profile_id"], name: "index_teachers_on_api_mentor_profile_id", unique: true
+    t.index ["api_user_id"], name: "index_teachers_on_api_user_id", unique: true
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
@@ -802,6 +835,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "lead_providers"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "schools"
+  add_foreign_key "milestones", "schedules"
   add_foreign_key "parity_check_requests", "lead_providers"
   add_foreign_key "parity_check_requests", "parity_check_endpoints", column: "endpoint_id"
   add_foreign_key "parity_check_requests", "parity_check_runs", column: "run_id"
@@ -809,6 +843,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
+  add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
@@ -822,6 +857,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_21_150837) do
   add_foreign_key "statement_adjustments", "statements"
   add_foreign_key "statements", "active_lead_providers"
   add_foreign_key "teacher_migration_failures", "teachers"
+  add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
+  add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
   add_foreign_key "training_periods", "active_lead_providers", column: "expression_of_interest_id"
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "mentor_at_school_periods"

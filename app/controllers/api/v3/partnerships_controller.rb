@@ -2,8 +2,15 @@ module API
   module V3
     class PartnershipsController < BaseController
       def index
-        conditions = { contract_period_years:, updated_since:, delivery_partner_api_ids:, sort: }
-        render json: to_json(paginate(partnerships_query(conditions:).school_partnerships))
+        conditions = {
+          contract_period_years: extract_conditions(contract_period_years),
+          updated_since:,
+          delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids),
+          sort:
+        }
+        paginated_school_partnerships = partnerships_query(conditions:).school_partnerships { paginate(it) }
+
+        render json: to_json(paginated_school_partnerships)
       end
 
       def show
@@ -11,7 +18,7 @@ module API
       end
 
       def create
-        service = SchoolPartnerships::Create.new({
+        service = API::SchoolPartnerships::Create.new({
           lead_provider_id: current_lead_provider.id,
           contract_period_year: create_partnership_params[:cohort],
           school_api_id: create_partnership_params[:school_id],
@@ -24,7 +31,7 @@ module API
       def update
         school_partnership = partnerships_query.school_partnership_by_api_id(api_id)
 
-        service = SchoolPartnerships::Update.new({
+        service = API::SchoolPartnerships::Update.new({
           school_partnership_id: school_partnership.id,
           delivery_partner_api_id: update_partnership_params[:delivery_partner_id],
         })
@@ -43,8 +50,13 @@ module API
       end
 
       def partnerships_query(conditions: {})
-        conditions[:lead_provider_id] = current_lead_provider.id
-        SchoolPartnerships::Query.new(**conditions.compact)
+        API::SchoolPartnerships::Query.new(**(default_query_conditions.merge(conditions)).compact)
+      end
+
+      def default_query_conditions
+        @default_query_conditions ||= {
+          lead_provider_id: current_lead_provider.id,
+        }
       end
 
       def partnerships_params
@@ -56,7 +68,7 @@ module API
       end
 
       def sort
-        partnerships_params[:sort]
+        sort_order(sort: partnerships_params[:sort], model: SchoolPartnership, default: { created_at: :asc })
       end
 
       def delivery_partner_api_ids
@@ -64,7 +76,7 @@ module API
       end
 
       def to_json(obj)
-        PartnershipSerializer.render(obj, root: "data")
+        API::SchoolPartnershipSerializer.render(obj, root: "data")
       end
     end
   end

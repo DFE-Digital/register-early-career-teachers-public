@@ -2,6 +2,7 @@ class Event < ApplicationRecord
   EVENT_TYPES = %w[
     bulk_upload_completed
     bulk_upload_started
+    delivery_partner_name_changed
     import_from_dqt
     induction_extension_created
     induction_extension_updated
@@ -18,6 +19,8 @@ class Event < ApplicationRecord
     statement_adjustment_added
     statement_adjustment_deleted
     statement_adjustment_updated
+    teacher_email_address_updated
+    teacher_working_pattern_updated
     teacher_fails_induction
     teacher_imported_from_trs
     teacher_induction_status_reset
@@ -26,6 +29,7 @@ class Event < ApplicationRecord
     teacher_registered_as_ect
     teacher_left_school_as_ect
     teacher_registered_as_mentor
+    teacher_left_school_as_mentor
     teacher_starts_being_mentored
     teacher_starts_mentoring
     teacher_starts_training_period
@@ -37,6 +41,7 @@ class Event < ApplicationRecord
     teacher_trs_induction_end_date_updated
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
+    training_period_assigned_to_school_partnership
   ].freeze
 
   belongs_to :author, class_name: 'User'

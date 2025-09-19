@@ -26,8 +26,6 @@ RSpec.describe MermaidErd::Generator do
         expect(contents).to include('```mermaid')
         expect(contents).to include('erDiagram')
         expect(contents).to include('TestModel {')
-        # Checks that at least one string column is called 'name' or 'emails'
-        expect(contents).to match(/string\s+(name|emails)/)
       end
     end
 
@@ -71,6 +69,67 @@ RSpec.describe MermaidErd::Generator do
         expect {
           generator.generate
         }.to raise_error(/only allowed in development and test/)
+      end
+    end
+
+    context 'when the model has an integer array column' do
+      before do
+        ActiveRecord::Base.connection.create_table(:test_array_models, force: true) do |t|
+          t.integer "contract_period_years", default: [], null: false, array: true
+        end
+
+        define_test_model(model_name: 'TestArrayModel', table_name: 'test_array_models')
+      end
+
+      after do
+        ActiveRecord::Base.connection.drop_table(:test_array_models, if_exists: true)
+      end
+
+      it 'renders the array column as array[integer]' do
+        generator.generate
+
+        expect(File.read(output_path)).to include('array[integer] contract_period_years')
+      end
+
+      it 'does not render nested array brackets' do
+        generator.generate
+        expect(File.read(output_path)).not_to include('array[integer[]]')
+      end
+    end
+
+    context 'when the model has a varchar array column' do
+      before do
+        ActiveRecord::Base.connection.create_table(:test_varchar_array_models, force: true) do |t|
+          t.string :tags, array: true, default: [], null: false
+        end
+        define_test_model(model_name: 'TestVarcharArrayModel', table_name: 'test_varchar_array_models')
+      end
+
+      after { ActiveRecord::Base.connection.drop_table(:test_varchar_array_models, if_exists: true) }
+
+      it 'renders a varchar array as array[string]' do
+        generator.generate
+        expect(File.read(output_path)).to include('array[string] tags')
+      end
+    end
+
+    context 'when the model has a enum array column' do
+      before do
+        ActiveRecord::Base.connection.create_enum('pizza_toppings', %w[ham pineapple anchovy mushrooms])
+        ActiveRecord::Base.connection.create_table(:test_enum_array_models, force: true) do |t|
+          t.enum 'ordered_toppings', default: %w[ham pineapple anchovy mushrooms], array: true, enum_type: 'pizza_toppings'
+        end
+        define_test_model(model_name: 'TestEnumArrayModel', table_name: 'test_enum_array_models')
+      end
+
+      after do
+        ActiveRecord::Base.connection.drop_table(:test_enum_array_models, if_exists: true)
+        ActiveRecord::Base.connection.execute('DROP TYPE IF EXISTS pizza_toppings')
+      end
+
+      it 'renders an enum array as array[enum]' do
+        generator.generate
+        expect(File.read(output_path)).to include('array[enum] ordered_toppings')
       end
     end
   end

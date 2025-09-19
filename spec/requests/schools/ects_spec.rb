@@ -2,16 +2,43 @@ RSpec.describe 'ECT summary' do
   let(:ect) { FactoryBot.create(:ect_at_school_period, school:) }
   let(:school) { FactoryBot.create(:school) }
 
-  before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect) }
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
 
-  describe '#show' do
-    context 'when signed in as school user' do
-      before do
-        sign_in_as(:school_user, school:)
-        get("/school/ects/#{ect.id}")
+  describe "GET #index" do
+    context "when not signed in" do
+      it "redirects to the rot page" do
+        get schools_ects_path
+
+        expect(response).to redirect_to(root_path)
       end
+    end
 
-      it { expect(response).to be_successful }
+    context "when signed in as a non-school user" do
+      include_context "sign in as DfE user"
+
+      it "returns unauthorized" do
+        get schools_ects_path
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "when signed in as a school user" do
+      before { sign_in_as(:school_user, school:) }
+
+      it "returns ok" do
+        get schools_ects_path
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
+
+  describe 'GET #show' do
+    let!(:training_period) do
+      FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect)
     end
 
     describe 'finding the ECT at school period' do
@@ -33,6 +60,64 @@ RSpec.describe 'ECT summary' do
         end
 
         it { is_expected.to be_not_found }
+      end
+
+      context "when there is no training period" do
+        let!(:training_period) { nil }
+
+        before do
+          sign_in_as(:school_user, school:)
+          get("/school/ects/#{ect.id}")
+        end
+
+        it { is_expected.to be_successful }
+      end
+
+      context 'when accessing old period ID from different school' do
+        let(:other_school) { FactoryBot.create(:school) }
+        let(:teacher) { ect.teacher }
+        let!(:new_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: other_school) }
+
+        before do
+          sign_in_as(:school_user, school: other_school)
+          get("/school/ects/#{ect.id}")
+        end
+
+        it 'returns not found' do
+          expect(response).to be_not_found
+          expect(response.status).to eq(404)
+        end
+      end
+
+      context 'when accessing future ECT period at current school' do
+        let(:teacher) { FactoryBot.create(:teacher) }
+        let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 1.month.from_now) }
+
+        before do
+          sign_in_as(:school_user, school:)
+          get("/school/ects/#{future_period.id}")
+        end
+
+        it 'allows access to future periods at the same school' do
+          expect(response).to be_successful
+          expect(response.status).to eq(200)
+        end
+      end
+
+      context 'when accessing future ECT period from different school' do
+        let(:other_school) { FactoryBot.create(:school) }
+        let(:teacher) { FactoryBot.create(:teacher) }
+        let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: 1.month.from_now) }
+
+        before do
+          sign_in_as(:school_user, school:)
+          get("/school/ects/#{future_period.id}")
+        end
+
+        it 'returns not found' do
+          expect(response).to be_not_found
+          expect(response.status).to eq(404)
+        end
       end
     end
   end

@@ -1,4 +1,8 @@
 RSpec.describe 'Registering a mentor' do
+  before do
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
   scenario 'Teacher without a TRN cannot be registered' do
     given_there_is_a_school_in_the_service
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
@@ -30,7 +34,7 @@ RSpec.describe 'Registering a mentor' do
   def and_i_am_on_the_schools_landing_page
     path = '/schools/home/ects'
     page.goto path
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
@@ -48,7 +52,7 @@ RSpec.describe 'Registering a mentor' do
 
   def then_i_should_be_taken_to_the_find_mentor_page
     path = '/school/register-mentor/find-mentor'
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_they_do_not_have_a_trn
@@ -56,6 +60,6 @@ RSpec.describe 'Registering a mentor' do
   end
 
   def then_i_should_be_taken_to_the_no_trn_page
-    expect(page.url).to end_with('/school/register-mentor/no-trn')
+    expect(page).to have_path('/school/register-mentor/no-trn')
   end
 end

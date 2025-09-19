@@ -44,12 +44,14 @@ RSpec.shared_examples "supports refreshing all metadata" do |factory, object_typ
     it "enqueues jobs to refresh metadata for all #{factory} in batches" do
       expect(RefreshMetadataJob).to receive(:perform_later).with(
         object_type:,
-        object_ids: object_ids[0..1]
+        object_ids: object_ids[0..1],
+        track_changes: false
       )
 
       expect(RefreshMetadataJob).to receive(:perform_later).with(
         object_type:,
-        object_ids: object_ids[2..2]
+        object_ids: object_ids[2..2],
+        track_changes: false
       )
 
       refresh_all_metadata
@@ -61,15 +63,47 @@ RSpec.shared_examples "supports refreshing all metadata" do |factory, object_typ
       it "enqueues jobs to refresh metadata for all #{factory} in batches" do
         expect(RefreshMetadataJob).to receive(:perform_now).with(
           object_type:,
-          object_ids: object_ids[0..1]
+          object_ids: object_ids[0..1],
+          track_changes: false
         )
 
         expect(RefreshMetadataJob).to receive(:perform_now).with(
           object_type:,
-          object_ids: object_ids[2..2]
+          object_ids: object_ids[2..2],
+          track_changes: false
         )
 
         refresh_all_metadata
+      end
+    end
+  end
+end
+
+RSpec.shared_examples "supports tracking metadata upsert changes" do |metadata_model|
+  describe "track upsert changes" do
+    context "when track_changes is false" do
+      it "does not track changes" do
+        allow(Sentry).to receive(:capture_message)
+        allow(Rails.logger).to receive(:warn)
+
+        perform_refresh_metadata
+
+        expect(Sentry).not_to have_received(:capture_message).with("[Metadata] #{metadata_model.name} change")
+        expect(Rails.logger).not_to have_received(:warn).with(a_string_starting_with("[Metadata] #{metadata_model.name} change:"))
+      end
+    end
+
+    context "when track_changes is true" do
+      before { handler.track_changes! }
+
+      it "tracks changes" do
+        allow(Sentry).to receive(:capture_message)
+        allow(Rails.logger).to receive(:warn)
+
+        perform_refresh_metadata
+
+        expect(Sentry).to have_received(:capture_message).with("[Metadata] #{metadata_model.name} change")
+        expect(Rails.logger).to have_received(:warn).with(a_string_starting_with("[Metadata] #{metadata_model.name} change:"))
       end
     end
   end

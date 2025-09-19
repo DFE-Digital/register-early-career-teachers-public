@@ -7,17 +7,26 @@ describe Teacher do
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
 
-    describe '.current_ect_at_school_period' do
+    describe '.current_or_next_ect_at_school_period' do
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      it { is_expected.to have_one(:current_ect_at_school_period).class_name('ECTAtSchoolPeriod') }
+      it { is_expected.to have_one(:current_or_next_ect_at_school_period).class_name('ECTAtSchoolPeriod') }
 
       context 'when there is a current period' do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
         let!(:finished_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 10.years.ago, finished_on: 8.years.ago, teacher:) }
 
         it 'returns the current ect_at_school_period' do
-          expect(teacher.current_ect_at_school_period).to eql(ect_at_school_period)
+          expect(teacher.current_or_next_ect_at_school_period).to eql(ect_at_school_period)
+        end
+      end
+
+      context 'when there is a current period and a future period' do
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 2.weeks.from_now, teacher:) }
+        let!(:future_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.weeks.from_now, finished_on: nil, teacher:) }
+
+        it 'returns the current ect_at_school_period' do
+          expect(teacher.current_or_next_ect_at_school_period).to eql(ect_at_school_period)
         end
       end
 
@@ -25,7 +34,7 @@ describe Teacher do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :finished, teacher:) }
 
         it 'returns nil' do
-          expect(teacher.current_ect_at_school_period).to be_nil
+          expect(teacher.current_or_next_ect_at_school_period).to be_nil
         end
       end
     end
@@ -80,6 +89,10 @@ describe Teacher do
     subject { FactoryBot.build(:teacher) }
 
     it { is_expected.to validate_length_of(:trs_induction_status).with_message('TRS induction status must be shorter than 18 characters') }
+
+    it { is_expected.to validate_uniqueness_of(:api_user_id).case_insensitive.with_message("API user id already exists for another teacher") }
+    it { is_expected.to validate_uniqueness_of(:api_ect_profile_id).case_insensitive.with_message("API ect profile id already exists for another teacher") }
+    it { is_expected.to validate_uniqueness_of(:api_mentor_profile_id).case_insensitive.with_message("API mentor profile id already exists for another teacher") }
 
     describe "trn" do
       it { is_expected.to validate_uniqueness_of(:trn).with_message('TRN already exists').case_insensitive }
@@ -218,6 +231,14 @@ describe Teacher do
 
         expect(Teacher.active_in_trs.to_sql).to end_with(expected_clause)
       end
+    end
+  end
+
+  describe "normalizing" do
+    subject { FactoryBot.build(:teacher, corrected_name: " Tobias Menzies ") }
+
+    it "removes leading and trailing spaces from the corrected name" do
+      expect(subject.corrected_name).to eql("Tobias Menzies")
     end
   end
 end

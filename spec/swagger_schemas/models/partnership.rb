@@ -55,6 +55,11 @@ PARTNERSHIP = {
           nullable: true,
           example: "john.doe@example.com"
         },
+        participants_currently_training: {
+          description: "The number of participants currently in training",
+          type: "integer",
+          example: 10
+        },
         updated_at: {
           description: "The date the partnership was last updated",
           type: "string",

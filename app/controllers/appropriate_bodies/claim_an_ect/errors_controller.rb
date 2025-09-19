@@ -9,9 +9,6 @@ module AppropriateBodies
       def no_qts = nil
       def prohibited_from_teaching = nil
 
-      def exempt = nil
-      def completed = nil
-
     private
 
       def find_pending_induction_submission
