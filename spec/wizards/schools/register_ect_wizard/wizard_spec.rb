@@ -20,10 +20,9 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         expect(wizard.allowed_steps).to include(:find_ect)
       end
 
-      it 'allows progression through later steps when TRS data is not present' do
-        # Should allow start_date, working_pattern, etc. when no TRS data
+      it 'only allows find_ect step when no TRS data is present' do
         wizard.ect.update!(start_date: '2024-09-01')
-        expect(wizard.allowed_steps).to include(:start_date, :working_pattern)
+        expect(wizard.allowed_steps).to eq([:find_ect])
       end
     end
 
@@ -200,20 +199,29 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       end
     end
 
-    context 'when progressing through flow without TRS data (test scenario)' do
+    context 'when progressing through normal flow after TRS validation' do
       before do
-        # Simulate a test scenario where we skip find_ect and go straight to later steps
+        # Properly set up ECT with TRS data as would happen after find_ect step
         wizard.ect.update!(
+          trn: '1234567',
+          trs_first_name: 'John',
+          trs_last_name: 'Doe',
+          trs_date_of_birth: '1990-01-01',
+          change_name: 'no',
+          email: 'test@example.com',
           start_date: '2024-09-01',
           working_pattern: 'full_time',
           appropriate_body_id: 1,
           training_programme: 'school_led'
         )
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
       end
 
-      it 'allows progression without requiring TRS validation steps' do
+      it 'allows progression through all required steps' do
         expected_steps = %i[
           find_ect
+          review_ect_details
+          email_address
           start_date
           working_pattern
           state_school_appropriate_body
@@ -223,14 +231,14 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
 
         allowed = wizard.allowed_steps
         expected_steps.each do |step|
-          expect(allowed).to include(step), "Expected #{step} to be in allowed steps for test scenario"
+          expect(allowed).to include(step), "Expected #{step} to be in allowed steps"
         end
       end
 
-      it 'does not require review_ect_details or email_address when no TRS data' do
+      it 'includes review_ect_details and email_address when TRS data is present' do
         allowed = wizard.allowed_steps
-        expect(allowed).not_to include(:review_ect_details)
-        expect(allowed).not_to include(:email_address)
+        expect(allowed).to include(:review_ect_details)
+        expect(allowed).to include(:email_address)
       end
     end
 
@@ -238,12 +246,20 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       let(:school) { FactoryBot.create(:school, :independent) }
 
       before do
+        # Set up ECT with TRS data for independent school flow
         wizard.ect.update!(
+          trn: '1234567',
+          trs_first_name: 'John',
+          trs_last_name: 'Doe',
+          trs_date_of_birth: '1990-01-01',
+          change_name: 'no',
+          email: 'test@example.com',
           start_date: '2024-09-01',
           working_pattern: 'full_time',
           appropriate_body_id: 1,
           training_programme: 'school_led'
         )
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
       end
 
       it 'includes independent_school_appropriate_body instead of state_school_appropriate_body' do
@@ -256,10 +272,18 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     context 'when school has previous programme choices' do
       before do
         allow(school).to receive(:last_programme_choices?).and_return(true)
+        # Set up ECT with TRS data
         wizard.ect.update!(
+          trn: '1234567',
+          trs_first_name: 'John',
+          trs_last_name: 'Doe',
+          trs_date_of_birth: '1990-01-01',
+          change_name: 'no',
+          email: 'test@example.com',
           start_date: '2024-09-01',
           working_pattern: 'full_time'
         )
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
       end
 
       it 'includes use_previous_ect_choices step' do
@@ -279,13 +303,20 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
 
     context 'when ECT chooses provider-led training' do
       before do
+        # Set up ECT with TRS data for provider-led flow
         wizard.ect.update!(
+          trn: '1234567',
+          trs_first_name: 'John',
+          trs_last_name: 'Doe',
+          trs_date_of_birth: '1990-01-01',
+          change_name: 'no',
+          email: 'test@example.com',
           start_date: '2024-09-01',
           working_pattern: 'full_time',
           appropriate_body_id: 1,
           training_programme: 'provider_led'
         )
-        allow(wizard.ect).to receive(:provider_led?).and_return(true)
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false, provider_led?: true)
       end
 
       it 'includes lead_provider step' do
@@ -334,6 +365,183 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
 
     it 'returns path for the last allowed step' do
       expect(wizard.allowed_step_path).to include('review-ect-details')
+    end
+  end
+
+  describe 'change step logic' do
+    context 'when ECT has completed the flow' do
+      before do
+        wizard.ect.update!(
+          trn: '1234567',
+          trs_first_name: 'John',
+          trs_date_of_birth: '1990-01-01',
+          change_name: 'no',
+          email: 'test@example.com',
+          start_date: '2024-09-01',
+          working_pattern: 'full_time',
+          appropriate_body_id: 1,
+          training_programme: 'school_led'
+        )
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
+      end
+
+      it 'includes change_email_address step' do
+        expect(wizard.allowed_steps).to include(:change_email_address)
+      end
+
+      it 'includes cant_use_changed_email when email cannot be used' do
+        allow(wizard.ect).to receive(:cant_use_email?).and_return(true)
+        expect(wizard.allowed_steps).to include(:cant_use_changed_email)
+      end
+
+      context 'for state school' do
+        let(:school) { FactoryBot.create(:school, :state_funded) }
+
+        it 'includes change_state_school_appropriate_body step' do
+          expect(wizard.allowed_steps).to include(:change_state_school_appropriate_body)
+        end
+
+        it 'does not include change_independent_school_appropriate_body step' do
+          expect(wizard.allowed_steps).not_to include(:change_independent_school_appropriate_body)
+        end
+      end
+
+      context 'for independent school' do
+        let(:school) { FactoryBot.create(:school, :independent) }
+
+        it 'includes change_independent_school_appropriate_body step' do
+          expect(wizard.allowed_steps).to include(:change_independent_school_appropriate_body)
+        end
+
+        it 'does not include change_state_school_appropriate_body step' do
+          expect(wizard.allowed_steps).not_to include(:change_state_school_appropriate_body)
+        end
+      end
+
+      it 'includes change_training_programme step' do
+        expect(wizard.allowed_steps).to include(:change_training_programme)
+      end
+
+      context 'when ECT is not school-led and was previously school-led' do
+        before do
+          wizard.ect.update!(training_programme: 'provider_led', lead_provider_id: 1)
+          allow(wizard.ect).to receive_messages(school_led?: false, was_school_led?: true, provider_led?: true)
+        end
+
+        it 'includes training_programme_change_lead_provider step' do
+          expect(wizard.allowed_steps).to include(:training_programme_change_lead_provider)
+        end
+      end
+
+      context 'when ECT is not school-led and was previously school-led (change scenario)' do
+        before do
+          # Complete the flow with provider-led training and lead provider
+          wizard.ect.update!(training_programme: 'provider_led', lead_provider_id: 123)
+          # Mock that they were previously school-led to trigger the change step
+          allow(wizard.ect).to receive_messages(school_led?: false, was_school_led?: true, provider_led?: true)
+        end
+
+        it 'includes training_programme_change_lead_provider step' do
+          expect(wizard.allowed_steps).to include(:training_programme_change_lead_provider)
+        end
+      end
+
+      context 'when ECT is school-led' do
+        before do
+          allow(wizard.ect).to receive(:school_led?).and_return(true)
+        end
+
+        it 'does not include training_programme_change_lead_provider step' do
+          expect(wizard.allowed_steps).not_to include(:training_programme_change_lead_provider)
+        end
+      end
+    end
+  end
+
+  describe 'always allowed steps integration' do
+    it 'allows change steps via allowed_step? method' do
+      expect(wizard.allowed_step?('change_email_address')).to be true
+      expect(wizard.allowed_step?('change_training_programme')).to be true
+    end
+
+    it 'allows no_previous_ect_choices_change steps via allowed_step? method' do
+      expect(wizard.allowed_step?('no_previous_ect_choices_change_training_programme')).to be true
+    end
+
+    it 'allows training_programme_change steps via allowed_step? method' do
+      expect(wizard.allowed_step?('training_programme_change_lead_provider')).to be true
+    end
+
+    it 'allows error steps via allowed_step? method' do
+      expect(wizard.allowed_step?('not_found')).to be true
+      expect(wizard.allowed_step?('cant_use_email')).to be true
+      expect(wizard.allowed_step?('cant_use_changed_email')).to be true
+      expect(wizard.allowed_step?('induction_completed')).to be true
+    end
+
+    it 'does not allow regular steps when not in allowed_steps' do
+      # These should only be allowed if they're in the calculated allowed_steps
+      allow(wizard).to receive(:allowed_steps).and_return([:find_ect])
+      expect(wizard.allowed_step?('email_address')).to be false
+      expect(wizard.allowed_step?('check_answers')).to be false
+    end
+  end
+
+  describe 'contract period validation' do
+    before do
+      wizard.ect.update!(
+        trn: '1234567',
+        trs_first_name: 'John',
+        trs_date_of_birth: '1990-01-01',
+        change_name: 'no',
+        email: 'test@example.com',
+        start_date: future_date.strftime('%Y-%m-%d')
+      )
+      allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
+    end
+
+    let(:future_date) { 1.month.from_now }
+
+    context 'when start date is in future and contract period is not enabled' do
+      before do
+        allow(wizard).to receive_messages(past_start_date?: false, start_date_contract_period: double(enabled?: false))
+      end
+
+      it 'includes cannot_register_ect_yet step' do
+        expect(wizard.allowed_steps).to include(:cannot_register_ect_yet)
+      end
+
+      it 'does not include working_pattern step' do
+        expect(wizard.allowed_steps).not_to include(:working_pattern)
+      end
+    end
+
+    context 'when start date is in past' do
+      before do
+        allow(wizard).to receive(:past_start_date?).and_return(true)
+      end
+
+      it 'includes working_pattern step' do
+        expect(wizard.allowed_steps).to include(:working_pattern)
+      end
+
+      it 'does not include cannot_register_ect_yet step' do
+        expect(wizard.allowed_steps).not_to include(:cannot_register_ect_yet)
+      end
+    end
+
+    context 'when start date is in future but contract period is enabled' do
+      before do
+        allow(wizard).to receive_messages(past_start_date?: false, start_date_contract_period: double(enabled?: true))
+      end
+
+      it 'includes working_pattern step' do
+        expect(wizard.allowed_steps).to include(:working_pattern)
+      end
+
+      it 'does not include cannot_register_ect_yet step' do
+        expect(wizard.allowed_steps).not_to include(:cannot_register_ect_yet)
+      end
     end
   end
 end

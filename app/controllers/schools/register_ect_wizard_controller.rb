@@ -44,11 +44,6 @@ module Schools
     def check_allowed_step
       return if @wizard.allowed_step?
 
-      # Don't redirect change steps or error steps - let them through
-      step_name = current_step.to_s
-      return if step_name.start_with?('change_', 'no_previous_ect_choices_change_', 'training_programme_change_')
-      return if step_name.in?(%w[not_found trn_not_found induction_completed induction_exempt induction_failed cannot_register_ect already_active_at_school])
-
       redirect_to @wizard.allowed_step_path
     end
 
