@@ -27,7 +27,7 @@ Additional partnerships by different lead providers for the same school and coho
 
 ### Partnership ID 
 
-Each confirmed partnership has a unique identifier (`id`), returned in the `GET /partnerships` response. This ID represents the agreement between a school, delivery partner, and lead provider for a given cohort. 
+Each confirmed partnership has a unique identifier (`id`), returned in the `GET /partnerships` response. This `id` represents the agreement between a school, delivery partner, and lead provider for a given cohort. 
 
 ### How providers can find out if they’ve got participants training with them 
 
