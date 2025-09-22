@@ -1,0 +1,18 @@
+<% page_data(
+    title: "Training programme updated for #{@wizard.teacher_full_name}",
+    header: false
+) %>
+
+<% if @wizard.ect_at_school_period.provider_led_training_programme? %>
+  <%= render "provider_led_success" %>
+<% else %>
+ <%= render "school_led_success" %>
+<% end %>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Back to #{@wizard.teacher_full_name}’s details",
+        schools_ect_path(@wizard.ect_at_school_period),
+        no_visited_state: true
+      ) %>
+</p>
