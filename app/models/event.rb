@@ -21,6 +21,7 @@ class Event < ApplicationRecord
     statement_adjustment_updated
     teacher_email_address_updated
     teacher_working_pattern_updated
+    teacher_training_programme_updated
     teacher_fails_induction
     teacher_imported_from_trs
     teacher_induction_status_reset

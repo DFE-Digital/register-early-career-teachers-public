@@ -36,19 +36,30 @@ module Schools
     end
 
     def training_programme_row
-      summary_list_row('Training programme', training_programme_display_name)
+      {
+        key: { text: 'Training programme' },
+        value: { text: training_programme_display_name },
+        actions: [{
+          text: "Change",
+          visually_hidden_text: "training programme",
+          href: schools_ects_change_training_programme_wizard_edit_path(@ect_at_school_period),
+          classes: "govuk-link--no-visited-state"
+        }]
+      }
     end
 
     def lead_provider_row
-      summary_list_row('Lead provider', lead_provider_display_text)
+      {
+        key: { text: 'Lead provider' },
+        value: { text: lead_provider_display_text }
+      }
     end
 
     def delivery_partner_row
-      summary_list_row('Delivery partner', delivery_partner_display_text)
-    end
-
-    def summary_list_row(key, value)
-      { key: { text: key }, value: { text: value } }
+      {
+        key: { text: 'Delivery partner' },
+        value: { text: delivery_partner_display_text }
+      }
     end
 
     def lead_provider_display_text
