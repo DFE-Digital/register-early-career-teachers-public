@@ -81,7 +81,7 @@ If participants later leave, switch provider, or move to school-led, the flag st
 
 ### Find schools 
 
-Lead providers can use the `GET /schools` endpoint to find schools in a given cohort, check the school’s high-level programme status (school-led vs provider-led), and whether a partnership already exists.  
+Lead providers can use the `GET /schools` endpoint to find schools in a given cohort, check the school’s high-level programme status (`school-led` vs `provider-led`), and whether a partnership already exists.  
 
 This will help providers find schools to work with, create or roll over partnerships, and avoid duplicate submissions. Since programme choice is now set per participant, this endpoint gives the school-level context needed to plan, while participant endpoints hold individual details. 
 
