@@ -6,6 +6,7 @@ describe Teacher do
     it { is_expected.to have_many(:appropriate_bodies).through(:induction_periods) }
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_many(:teacher_id_changes) }
 
     describe '.current_or_next_ect_at_school_period' do
       let(:teacher) { FactoryBot.create(:teacher) }

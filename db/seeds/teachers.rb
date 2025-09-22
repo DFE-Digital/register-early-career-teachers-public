@@ -18,7 +18,13 @@ def describe_teacher(teacher)
       Colourize.text('no', :red)
     end
 
-  print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status}, payments frozen: #{payments_frozen})", indent: 2)
+  id_changes = if teacher.teacher_id_changes.present?
+                 Colourize.text('yes', :green)
+               else
+                 Colourize.text('no', :red)
+               end
+
+  print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status}, payments frozen: #{payments_frozen}, id changes: #{id_changes})", indent: 2)
 end
 
 early_roll_out_mentor_attrs = {
@@ -49,5 +55,9 @@ teachers = [
 ]
 
 teachers.each do |attrs|
-  FactoryBot.create(:teacher, attrs).tap { |teacher| describe_teacher(teacher) }
+  FactoryBot.create(:teacher, attrs).tap do |teacher|
+    FactoryBot.create(:teacher_id_change, teacher:) if Faker::Boolean.boolean(true_ratio: 0.2)
+
+    describe_teacher(teacher)
+  end
 end
