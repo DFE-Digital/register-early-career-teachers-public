@@ -11,10 +11,12 @@ active_lead_providers = ActiveLeadProvider
   .eager_load(:contract_period, :lead_provider)
   .index_by { |alp| [alp.lead_provider, alp.contract_period.year] }
 
+ambition_institute_2021 = active_lead_providers.fetch([ambition_institute, 2021])
 ambition_institute_2022 = active_lead_providers.fetch([ambition_institute, 2022])
 ambition_institute_2023 = active_lead_providers.fetch([ambition_institute, 2023])
 ambition_institute_2024 = active_lead_providers.fetch([ambition_institute, 2024])
 ambition_institute_2026 = active_lead_providers.fetch([ambition_institute, 2026])
+teach_first_2021 = active_lead_providers.fetch([teach_first, 2021])
 teach_first_2022 = active_lead_providers.fetch([teach_first, 2022])
 teach_first_2023 = active_lead_providers.fetch([teach_first, 2023])
 teach_first_2024 = active_lead_providers.fetch([teach_first, 2024])
@@ -27,10 +29,12 @@ grain = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")
 rising_minds = DeliveryPartner.find_by!(name: "Rising Minds Network")
 
 [
+  { active_lead_provider: ambition_institute_2021, delivery_partner: artisan },
   { active_lead_provider: ambition_institute_2022, delivery_partner: artisan },
   { active_lead_provider: ambition_institute_2023, delivery_partner: artisan },
   { active_lead_provider: ambition_institute_2024, delivery_partner: artisan },
   { active_lead_provider: ambition_institute_2026, delivery_partner: artisan },
+  { active_lead_provider: teach_first_2021, delivery_partner: grain },
   { active_lead_provider: teach_first_2022, delivery_partner: grain },
   { active_lead_provider: teach_first_2023, delivery_partner: grain },
   { active_lead_provider: teach_first_2024, delivery_partner: grain },
