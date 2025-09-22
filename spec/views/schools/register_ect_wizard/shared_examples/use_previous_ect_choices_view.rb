@@ -1,4 +1,8 @@
 RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_path:, back_step_name:, continue_path:, continue_step_name:|
+  let(:last_chosen_appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:last_chosen_lead_provider) { FactoryBot.build(:lead_provider) }
+  let(:last_chosen_delivery_partner) { FactoryBot.build(:delivery_partner) }
+
   let(:store) do
     FactoryBot.build(:session_repository,
                      full_name: 'John Doe',
@@ -14,11 +18,13 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
                      use_previous_ect_choices: false)
   end
   let(:school) { FactoryBot.create(:school, :independent) }
+  let(:decorated_school) { Schools::DecoratedSchool.new(school) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, store:, school:) }
 
   before do
     assign(:ect, wizard.ect)
     assign(:school, school)
+    assign(:decorated_school, decorated_school)
     assign(:wizard, wizard)
   end
 
@@ -69,6 +75,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
 
     before do
       assign(:school, school)
+      assign(:decorated_school, decorated_school)
       render
     end
 
@@ -95,24 +102,28 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
 
     before do
-      allow(wizard.ect).to receive(:lead_provider_has_confirmed_partnership_for_contract_period?).with(school).and_return(true)
-      allow(wizard.ect).to receive_messages(
-        previous_lead_provider_name: 'Orochimaru',
-        previous_delivery_partner_name: 'Akatsuki'
+      choices = double(
+        'Schools::LatestRegistrationChoices',
+        lead_provider: last_chosen_lead_provider,
+        delivery_partner: last_chosen_delivery_partner,
+        appropriate_body: last_chosen_appropriate_body
       )
 
+      allow(decorated_school).to receive(:latest_registration_choices).and_return(choices)
+
       assign(:school, school)
+      assign(:decorated_school, decorated_school)
       render
     end
 
     it 'renders the lead provider row' do
       expect(rendered).to have_css('.govuk-summary-list__key', text: 'Lead provider')
-      expect(rendered).to have_css('.govuk-summary-list__value', text: 'Orochimaru')
+      expect(rendered).to have_css('.govuk-summary-list__value', text: last_chosen_lead_provider.name)
     end
 
     it 'renders the delivery partner row' do
       expect(rendered).to have_css('.govuk-summary-list__key', text: 'Delivery partner')
-      expect(rendered).to have_css('.govuk-summary-list__value', text: 'Akatsuki')
+      expect(rendered).to have_css('.govuk-summary-list__value', text: last_chosen_delivery_partner.name)
     end
   end
 
@@ -120,16 +131,22 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
 
     before do
-      allow(wizard.ect).to receive(:lead_provider_has_confirmed_partnership_for_contract_period?).with(school).and_return(false)
-      allow(wizard.ect).to receive(:previous_eoi_lead_provider_name).and_return('Uchiha Clan')
+      choices = double(
+        'Schools::LatestRegistrationChoices',
+        lead_provider: last_chosen_lead_provider,
+        appropriate_body: last_chosen_appropriate_body,
+        delivery_partner: nil
+      )
+      allow(decorated_school).to receive(:latest_registration_choices).and_return(choices)
 
       assign(:school, school)
+      assign(:decorated_school, decorated_school)
       render
     end
 
     it 'renders the lead provider row with the EOI name' do
       expect(rendered).to have_css('.govuk-summary-list__key', text: 'Lead provider')
-      expect(rendered).to have_css('.govuk-summary-list__value', text: 'Uchiha Clan')
+      expect(rendered).to have_css('.govuk-summary-list__value', text: last_chosen_lead_provider.name)
     end
 
     it 'does not render the delivery partner row' do
@@ -137,7 +154,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     end
 
     it 'renders the explanatory paragraph' do
-      expect(rendered).to include('Uchiha Clan will confirm if they’ll be working with your school and which delivery partner will deliver training events.')
+      expect(rendered).to include("#{last_chosen_lead_provider.name} will confirm if they’ll be working with your school and which delivery partner will deliver training events.")
     end
   end
 end
