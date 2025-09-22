@@ -8,7 +8,7 @@ Partnerships are agreements between schools, lead providers, and delivery partne
 
 1. Cohort opens for registrations.
 2. Schools register ECTs and mentors, choosing the programme type (`provider-led` or `school-led`) for each participant rather than making a schoolwide choice.
-3. If the school chooses the provider-led option, they also tell us which lead provider will be training the participant. 
+3. If the school chooses the `provider-led` option, they also tell us which lead provider will be training the participant. 
 4. Lead providers find schools they want to partner with using `GET /schools` API endpoint. Schools that have selected them will show as `expression_of_interest = TRUE`. 
 5. Lead providers create partnerships via the `POST /partnerships` endpoint. They’ll then see any participants the school has assigned to them in `GET /participants`.
 
