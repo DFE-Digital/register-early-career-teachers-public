@@ -149,7 +149,7 @@ The API now supports multiple partnerships for a school in the same cohort:
 In the API: 
 
 * `GET /partnerships` may return more than one partnership for the same school and cohort
-* `in_partnership` will state `TRUE` if any partnership exists and `FALSE` if none exist
+* `in_partnership` will state `true` if any partnership exists and `false` if none exist
 
 ## View partnerships 
 
