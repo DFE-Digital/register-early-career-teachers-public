@@ -52,7 +52,7 @@ Each partnership record shows one school induction tutor (name and email):
 Lead providers can check participant records using the `GET /participants` endpoint to see if a school is working with them: 
 
 * if the participant appears, they’re the selected lead provider
-* if the school later changes provider, the participant will remain in their feed with a `leaving` or `left` status (including moves to school-led or a different provider)
+* if the school later changes provider, the participant will remain in their feed with a `leaving` or `left` status (including moves to `school-led` or a different provider)
 * if the participant does not appear, either the school has not selected them as the lead provider or their partnership with the school for that cohort has not been created or rolled over (or both) 
 
 If providers believe a school has assigned the wrong provider to an ECT or mentor, they should ask the school to update the participant’s record in the service first. If they think they should be the provider, they can create a partnership to view the school induction tutor’s details. 
