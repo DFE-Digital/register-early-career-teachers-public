@@ -9,4 +9,5 @@ We will:
 * improve our admin and finance console, so all our users can get the information and support they need
 * work out how to communicate best with schools on the transition between services, including how to contact us for support
 * improve how schools can make changes to ECT and mentor records, so we can get more accurate information for them
-* work out how we might integrate with the third party services which appropriate bodies use to manage inductions, so we can make it easier to record inductions
+* enable appropriate bodies to check training data for early career teachers, in the same service where they submit induction data, so we can save them time and improve data accuracy
+* consider how to enable appropriate bodies to record induction updates ahead of time, so that they can most effectively manage their workload
