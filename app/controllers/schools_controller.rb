@@ -23,6 +23,7 @@ private
 
   def set_school
     @school = school_from_session
+    @decorated_school = Schools::DecoratedSchool.new(school_from_session)
   end
 
   def school_from_session
