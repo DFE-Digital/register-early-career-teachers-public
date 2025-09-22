@@ -2,8 +2,6 @@ module API
   class GuidanceController < ApplicationController
     include ReleaseNotes
 
-    skip_before_action :authenticate
-
     layout 'api_guidance'
 
     def show

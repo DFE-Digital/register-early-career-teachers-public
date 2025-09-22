@@ -1,5 +1,4 @@
 class OTPSessionsController < ApplicationController
-  skip_before_action :authenticate
   before_action :build_otp_form, except: %i[new request_code]
 
   def new

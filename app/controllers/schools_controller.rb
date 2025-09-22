@@ -1,4 +1,6 @@
 class SchoolsController < ApplicationController
+  before_action :authenticate
+
   include Authorisation
 
   before_action :set_school
