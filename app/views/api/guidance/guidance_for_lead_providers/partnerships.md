@@ -126,7 +126,7 @@ For detailed technical information, view the `POST /partnerships` [endpoint Swag
 
 ### When lead providers can create a partnership 
 
-Lead providers can create a partnership even if the school hasn’t registered participants. The only exceptions are when the cohort has not opened, or the school is doing school-led training. 
+Lead providers can create a partnership even if the school hasn’t registered participants. The only exceptions are when the cohort has not opened, or the school is doing `school-led` training. 
  
 ### Continuing into future cohorts 
 
