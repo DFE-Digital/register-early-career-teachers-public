@@ -11,6 +11,10 @@ module Schools
 
     delegate :last_chosen_appropriate_body, to: :school
     delegate :last_chosen_lead_provider, to: :school
+    delegate :last_chosen_training_programme, to: :school
+
+    delegate :lead_provider, to: :lead_provider_and_delivery_partner
+    delegate :delivery_partner, to: :lead_provider_and_delivery_partner
 
     def appropriate_body = last_chosen_appropriate_body
 
