@@ -1,15 +1,26 @@
 describe Schools::LatestRegistrationChoices do
   let(:service) { Schools::LatestRegistrationChoices.new(school:, contract_period:) }
 
-  let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+  let(:school) { FactoryBot.build(:school) }
+  let(:contract_period) { FactoryBot.build(:contract_period) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+
+  describe 'delegation' do
+    subject { service }
+
+    it { is_expected.to delegate_method(:last_chosen_appropriate_body).to(:school) }
+    it { is_expected.to delegate_method(:last_chosen_lead_provider).to(:school) }
+    it { is_expected.to delegate_method(:last_chosen_training_programme).to(:school) }
+    it { is_expected.to delegate_method(:lead_provider).to(:lead_provider_and_delivery_partner) }
+    it { is_expected.to delegate_method(:delivery_partner).to(:lead_provider_and_delivery_partner) }
+  end
 
   describe '#lead_provider_and_delivery_partner' do
     subject { service.lead_provider_and_delivery_partner }
 
     context 'when there is no last_chosen_lead_provider present on the school' do
-      let(:lead_provider) { FactoryBot.create(:lead_provider) }
-      let(:school) { FactoryBot.create(:school, last_chosen_lead_provider: nil) }
+      let(:lead_provider) { FactoryBot.build(:lead_provider) }
+      let(:school) { FactoryBot.build(:school, last_chosen_lead_provider: nil) }
 
       it { is_expected.to be_nil }
     end
