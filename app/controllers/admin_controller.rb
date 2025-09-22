@@ -1,4 +1,6 @@
 class AdminController < ApplicationController
+  before_action :authenticate
+
   include Authorisation
 
   def index

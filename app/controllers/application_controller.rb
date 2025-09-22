@@ -3,7 +3,6 @@ class ApplicationController < ActionController::Base
 
   class UnredirectableError < StandardError; end
 
-  before_action :authenticate
   before_action :set_sentry_user
 
   include Pagy::Backend
