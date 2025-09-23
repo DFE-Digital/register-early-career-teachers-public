@@ -2,6 +2,7 @@ class GIAS::SchoolLink < ApplicationRecord
   self.table_name = "gias_school_links"
 
   LINK_TYPES = [
+    "Children's Centre Link",
     "Closure",
     "Expansion",
     "Merged - change in age range",
