@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_23_142354) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -407,6 +407,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
     t.index ["lead_provider_id"], name: "idx_on_lead_provider_id_bb46a39503"
     t.index ["school_id", "lead_provider_id", "contract_period_year"], name: "idx_on_school_id_lead_provider_id_contract_period_y_54fbb99e92", unique: true
     t.index ["school_id"], name: "idx_on_school_id_b772864906"
+  end
+
+  create_table "metadata_teacher_lead_providers", force: :cascade do |t|
+    t.bigint "teacher_id"
+    t.bigint "lead_provider_id"
+    t.datetime "ect_training_record_created_at"
+    t.datetime "mentor_training_record_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lead_provider_id"], name: "index_metadata_teacher_lead_providers_on_lead_provider_id"
+    t.index ["teacher_id"], name: "index_metadata_teacher_lead_providers_on_teacher_id"
   end
 
   create_table "migration_failures", force: :cascade do |t|
@@ -850,6 +861,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "lead_providers"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "schools"
+  add_foreign_key "metadata_teacher_lead_providers", "lead_providers"
+  add_foreign_key "metadata_teacher_lead_providers", "teachers"
   add_foreign_key "milestones", "schedules"
   add_foreign_key "parity_check_requests", "lead_providers"
   add_foreign_key "parity_check_requests", "parity_check_endpoints", column: "endpoint_id"

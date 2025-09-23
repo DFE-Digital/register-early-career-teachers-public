@@ -14,6 +14,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
            source: :mentee
 
   refresh_metadata -> { school }, on_event: %i[create destroy update]
+  refresh_metadata -> { teacher }, on_event: %i[create destroy update]
 
   # Validations
   validates :email,
