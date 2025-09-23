@@ -151,7 +151,7 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/PartnershipRequest"
+              "$ref": "#/components/schemas/PartnershipCreateRequest"
   "/api/v3/partnerships/{id}":
     get:
       summary: Retrieve a single partnership
