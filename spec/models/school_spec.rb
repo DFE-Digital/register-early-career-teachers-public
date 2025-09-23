@@ -72,6 +72,7 @@ describe School do
       postcode
       secondary_contact_email
       section_41_approved
+      section_41_approved?
       status
       type_name
       ukprn
