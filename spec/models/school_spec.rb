@@ -50,6 +50,37 @@ describe School do
     it { is_expected.to have_many(:lead_provider_contract_period_metadata).class_name("Metadata::SchoolLeadProviderContractPeriod") }
   end
 
+  describe 'delegation' do
+    subject { FactoryBot.build(:school) }
+
+    %i[
+      address_line1
+      address_line2
+      address_line3
+      administrative_district_name
+      closed_on
+      establishment_number
+      funding_eligibility
+      induction_eligibility
+      in_england
+      local_authority_code
+      local_authority_name
+      name
+      opened_on
+      primary_contact_email
+      phase_name
+      postcode
+      secondary_contact_email
+      section_41_approved
+      status
+      type_name
+      ukprn
+      website
+    ].each do |delegated_method|
+      it { is_expected.to delegate_method(delegated_method).to(:gias_school) }
+    end
+  end
+
   describe 'validations' do
     subject { FactoryBot.create(:school) }
 
