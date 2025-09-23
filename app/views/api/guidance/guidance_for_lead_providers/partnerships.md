@@ -73,7 +73,7 @@ Schools now choose lead providers per participant, so this field reflects indivi
 
 #### Why `expression_of_interest` stays `true` after a partnership is confirmed 
 
-Once a partnership is confirmed for a cohort, `expression_of_interest` remains `TRUE` to show that the school is working with the lead provider for that cohort. 
+Once a partnership is confirmed for a cohort, `expression_of_interest` remains `true` to show that the school is working with the lead provider for that cohort. 
 
 If participants later leave, switch provider, or move to school-led, the flag stays `true`.  
 
