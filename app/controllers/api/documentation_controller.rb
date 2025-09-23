@@ -2,8 +2,6 @@
 
 module API
   class DocumentationController < ApplicationController
-    skip_before_action :authenticate
-
     layout "api_docs"
 
     def index
