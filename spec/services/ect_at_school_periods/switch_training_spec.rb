@@ -99,6 +99,52 @@ module ECTAtSchoolPeriods
             SwitchTraining.to_school_led(ect_at_school_period, author:)
           end
         end
+
+        context "when the switch happens on the same day the training period started" do
+          let!(:training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :ongoing,
+              :provider_led,
+              :with_school_partnership,
+              ect_at_school_period:,
+              started_on: Date.current
+            )
+          end
+
+          it "finishes the existing training period" do
+            freeze_time
+
+            SwitchTraining.to_school_led(ect_at_school_period, author:)
+
+            expect { training_period.reload }.not_to raise_error
+            expect(training_period.finished_on).to eq(Date.current)
+          end
+
+          it "creates a new school-led training period" do
+            SwitchTraining.to_school_led(ect_at_school_period, author:)
+
+            expect(ect_at_school_period.reload).to be_school_led_training_programme
+          end
+
+          it "records an event" do
+            freeze_time
+
+            expect(Events::Record)
+              .to receive(:record_teacher_switches_to_school_led_training!)
+              .with(
+                author:,
+                training_period: instance_of(TrainingPeriod),
+                ect_at_school_period:,
+                teacher: ect_at_school_period.teacher,
+                school: ect_at_school_period.school,
+                happened_at: Time.current
+              )
+
+            SwitchTraining.to_school_led(ect_at_school_period, author:)
+          end
+        end
       end
 
       context "when the `current_or_next_training_period` is already school-led" do
@@ -215,6 +261,54 @@ module ECTAtSchoolPeriods
         end
 
         context "when there is no confirmed school partnership" do
+          it "finishes the existing training period" do
+            freeze_time
+
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+            expect { training_period.reload }.not_to raise_error
+            expect(training_period.finished_on).to eq(Date.current)
+          end
+
+          it "creates a new provider-led training period with an expression of interest" do
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+            expect(ect_at_school_period.reload).to be_provider_led_training_programme
+            new_training_period = ect_at_school_period.training_periods.last
+            expect(new_training_period.school_partnership).to be_nil
+            expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+          end
+
+          it "records an event" do
+            freeze_time
+
+            expect(Events::Record)
+              .to receive(:record_teacher_switches_to_provider_led_training!)
+              .with(
+                author:,
+                training_period: instance_of(TrainingPeriod),
+                ect_at_school_period:,
+                teacher: ect_at_school_period.teacher,
+                school: ect_at_school_period.school,
+                happened_at: Time.current
+              )
+
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+          end
+        end
+
+        context "when the switch happens on the same day the training period started" do
+          let!(:training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :ongoing,
+              :school_led,
+              ect_at_school_period:,
+              started_on: Date.current
+            )
+          end
+
           it "finishes the existing training period" do
             freeze_time
 
