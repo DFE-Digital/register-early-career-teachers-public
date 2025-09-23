@@ -62,9 +62,7 @@ module Interval
     started_on <= finished_on
   end
 
-  def invalid_date_order?
-    finished_on <= started_on
-  end
+  def invalid_date_order? = !valid_date_order?
 
   def ongoing? = finished_on.nil?
 
