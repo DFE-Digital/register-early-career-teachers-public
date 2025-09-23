@@ -92,8 +92,8 @@ describe Teacher do
     it { is_expected.to validate_length_of(:trs_induction_status).with_message('TRS induction status must be shorter than 18 characters') }
 
     it { is_expected.to validate_uniqueness_of(:api_user_id).case_insensitive.with_message("API user id already exists for another teacher") }
-    it { is_expected.to validate_uniqueness_of(:api_ect_profile_id).case_insensitive.with_message("API ect profile id already exists for another teacher") }
-    it { is_expected.to validate_uniqueness_of(:api_mentor_profile_id).case_insensitive.with_message("API mentor profile id already exists for another teacher") }
+    it { is_expected.to validate_uniqueness_of(:api_ect_training_record_id).case_insensitive.with_message("API ect training record id already exists for another teacher") }
+    it { is_expected.to validate_uniqueness_of(:api_mentor_training_record_id).case_insensitive.with_message("API mentor training record id already exists for another teacher") }
 
     describe "trn" do
       it { is_expected.to validate_uniqueness_of(:trn).with_message('TRN already exists').case_insensitive }

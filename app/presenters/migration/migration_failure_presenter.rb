@@ -41,8 +41,8 @@ module Migration
     end
 
     def profile_id_from_parent
-      return parent.api_ect_profile_id if parent.api_ect_profile_id.present?
-      return parent.api_mentor_profile_id if parent.api_mentor_profile_id.present?
+      return parent.api_ect_training_record_id if parent.api_ect_training_record_id.present?
+      return parent.api_mentor_training_record_id if parent.api_mentor_training_record_id.present?
 
       if parent.api_user_id.present?
         # NOTE: if they have both ECT and Mentor profiles we don't know which had the issue
