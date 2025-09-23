@@ -67,7 +67,7 @@ Schools now choose lead providers per participant, so this field reflects indivi
 
 | Scenario |   `expression_of_interest` | 
 | ------------ | ------------- |  
-| School has registered at least one participant with the lead provider for the chosen cohort | `TRUE`|  
+| School has registered at least one participant with the lead provider for the chosen cohort | `true`|  
 | No participants registered with the lead provider | `FALSE` |  
 | No partnership for the cohort and the school reports all participants have left or are no longer training with the lead provider | Changes from `TRUE` to `FALSE` |  
 
