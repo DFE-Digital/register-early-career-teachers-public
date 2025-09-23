@@ -20,4 +20,24 @@
     row.with_key(text: "Address")
     row.with_value { address }
   end
+
+  sl.with_row do |row|
+    row.with_key(text: "Establishment status")
+    row.with_value(text: status)
+  end
+
+  sl.with_row do |row|
+    row.with_key(text: "Establishment type")
+    row.with_value(text: establishment_type)
+  end
+
+  sl.with_row do |row|
+    row.with_key(text: "Section 41 status")
+    row.with_value(text: section_41_status)
+  end
+
+  sl.with_row do |row|
+    row.with_key(text: "Administratrive district")
+    row.with_value(text: administrative_district)
+  end
 end %>
