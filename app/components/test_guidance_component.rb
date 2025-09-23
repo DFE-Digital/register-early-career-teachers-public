@@ -55,7 +55,7 @@ class TestGuidanceComponent < ApplicationComponent
 
     def rows_with_buttons
       rows.map do |row|
-        _, trn, dob, national_insurance_number, = row
+        _name, trn, dob, national_insurance_number, _notes = row
         row + [populate_button(trn, dob, national_insurance_number)]
       end
     end
