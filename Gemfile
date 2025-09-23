@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 ruby "3.4.4"
 
-gem "rails", "~> 8.0.2"
+gem "rails", "~> 8.0.3"
 
 gem "blazer"
 gem "bootsnap", require: false
