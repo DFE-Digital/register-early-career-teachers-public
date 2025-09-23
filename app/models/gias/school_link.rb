@@ -2,23 +2,23 @@ class GIAS::SchoolLink < ApplicationRecord
   self.table_name = "gias_school_links"
 
   LINK_TYPES = [
+    "Closure",
+    "Expansion",
+    "Merged - change in age range",
+    "Merged - expansion in school capacity and changer in age range",
+    "Merged - expansion of school capacity",
+    "Other",
+    "Predecessor - amalgamated",
     "Predecessor - merged",
+    "Predecessor - Split School",
     "Predecessor",
+    "Result of Amalgamation",
     "Sixth Form Centre Link",
+    "Sixth Form Centre School",
     "Successor - amalgamated",
     "Successor - merged",
-    "Successor",
-    "Predecessor - amalgamated",
-    "Result of Amalgamation",
-    "Merged - expansion in school capacity and changer in age range",
-    "Expansion",
-    "Other",
-    "Merged - expansion of school capacity",
-    "Closure",
-    "Merged - change in age range",
-    "Sixth Form Centre School",
     "Successor - Split School",
-    "Predecessor - Split School",
+    "Successor"
   ].freeze
 
   # Associations
