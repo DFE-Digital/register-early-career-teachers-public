@@ -15,6 +15,16 @@ class Teacher < ApplicationRecord
   has_many :induction_extensions, inverse_of: :teacher
   has_many :teacher_id_changes, inverse_of: :teacher
 
+  has_one :earliest_ect_at_school_period,
+          -> { earliest_first },
+          class_name: "ECTAtSchoolPeriod",
+          inverse_of: :teacher
+
+  has_one :earliest_mentor_at_school_period,
+          -> { earliest_first },
+          class_name: "MentorAtSchoolPeriod",
+          inverse_of: :teacher
+
   has_many :induction_periods
   has_one :first_induction_period, -> { order(started_on: :asc) }, class_name: "InductionPeriod"
   has_one :last_induction_period, -> { order(started_on: :desc) }, class_name: "InductionPeriod"
