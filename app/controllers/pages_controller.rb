@@ -1,6 +1,4 @@
 class PagesController < ApplicationController
-  skip_before_action :authenticate
-
   def home
     redirect_to(post_login_redirect_path) and return if authenticated?
 

@@ -1,4 +1,6 @@
 class AppropriateBodiesController < ApplicationController
+  before_action :authenticate
+
   include Authorisation
 
   before_action :set_appropriate_body

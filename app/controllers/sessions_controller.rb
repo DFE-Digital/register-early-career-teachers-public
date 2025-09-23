@@ -3,8 +3,6 @@
 # 2. Sessions::Manager#current_user -> Sessions::User.from_session
 #
 class SessionsController < ApplicationController
-  skip_before_action :authenticate
-
   def new
     render :new
   end
