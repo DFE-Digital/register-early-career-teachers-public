@@ -29,6 +29,7 @@ module ECTAtSchoolPeriods
       ActiveRecord::Base.transaction do
         finish_or_destroy_existing_training_period!
         create_school_led_training_period!
+        record_training_period_switched_to_school_led_event!
       end
     end
 
@@ -39,6 +40,7 @@ module ECTAtSchoolPeriods
       ActiveRecord::Base.transaction do
         finish_training_period!
         create_provider_led_training_period!
+        record_training_period_switched_to_provider_led_event!
       end
     end
 
@@ -64,19 +66,41 @@ module ECTAtSchoolPeriods
     end
 
     def create_school_led_training_period!
-      TrainingPeriods::Create.school_led(
+      @new_training_period = TrainingPeriods::Create.school_led(
         period: @ect_at_school_period,
         started_on:
       ).call
     end
 
     def create_provider_led_training_period!
-      TrainingPeriods::Create.provider_led(
+      @new_training_period = TrainingPeriods::Create.provider_led(
         period: @ect_at_school_period,
         started_on:,
         school_partnership: earliest_matching_school_partnership,
         expression_of_interest:
       ).call
+    end
+
+    def record_training_period_switched_to_school_led_event!
+      Events::Record.record_teacher_switches_to_school_led_training!(
+        author: @author,
+        ect_at_school_period: @ect_at_school_period,
+        teacher: @ect_at_school_period.teacher,
+        training_period: @new_training_period,
+        school:,
+        happened_at: Time.current
+      )
+    end
+
+    def record_training_period_switched_to_provider_led_event!
+      Events::Record.record_teacher_switches_to_provider_led_training!(
+        author: @author,
+        ect_at_school_period: @ect_at_school_period,
+        teacher: @ect_at_school_period.teacher,
+        training_period: @new_training_period,
+        school:,
+        happened_at: Time.current
+      )
     end
 
     def started_on = Date.current

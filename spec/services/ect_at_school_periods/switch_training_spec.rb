@@ -37,6 +37,23 @@ module ECTAtSchoolPeriods
 
             expect(ect_at_school_period.reload).to be_school_led_training_programme
           end
+
+          it "records an event" do
+            freeze_time
+
+            expect(Events::Record)
+              .to receive(:record_teacher_switches_to_school_led_training!)
+              .with(
+                author:,
+                training_period: instance_of(TrainingPeriod),
+                ect_at_school_period:,
+                teacher: ect_at_school_period.teacher,
+                school: ect_at_school_period.school,
+                happened_at: Time.current
+              )
+
+            SwitchTraining.to_school_led(ect_at_school_period, author:)
+          end
         end
 
         context "when there is no confirmed school partnership" do
@@ -63,6 +80,23 @@ module ECTAtSchoolPeriods
             SwitchTraining.to_school_led(ect_at_school_period, author:)
 
             expect(ect_at_school_period.reload).to be_school_led_training_programme
+          end
+
+          it "records an event" do
+            freeze_time
+
+            expect(Events::Record)
+              .to receive(:record_teacher_switches_to_school_led_training!)
+              .with(
+                author:,
+                training_period: instance_of(TrainingPeriod),
+                ect_at_school_period:,
+                teacher: ect_at_school_period.teacher,
+                school: ect_at_school_period.school,
+                happened_at: Time.current
+              )
+
+            SwitchTraining.to_school_led(ect_at_school_period, author:)
           end
         end
       end
@@ -161,6 +195,23 @@ module ECTAtSchoolPeriods
             expect(new_training_period.school_partnership).to eq(school_partnership)
             expect(new_training_period.expression_of_interest).to be_nil
           end
+
+          it "records an event" do
+            freeze_time
+
+            expect(Events::Record)
+              .to receive(:record_teacher_switches_to_provider_led_training!)
+              .with(
+                author:,
+                training_period: instance_of(TrainingPeriod),
+                ect_at_school_period:,
+                teacher: ect_at_school_period.teacher,
+                school: ect_at_school_period.school,
+                happened_at: Time.current
+              )
+
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+          end
         end
 
         context "when there is no confirmed school partnership" do
@@ -180,6 +231,23 @@ module ECTAtSchoolPeriods
             new_training_period = ect_at_school_period.training_periods.last
             expect(new_training_period.school_partnership).to be_nil
             expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+          end
+
+          it "records an event" do
+            freeze_time
+
+            expect(Events::Record)
+              .to receive(:record_teacher_switches_to_provider_led_training!)
+              .with(
+                author:,
+                training_period: instance_of(TrainingPeriod),
+                ect_at_school_period:,
+                teacher: ect_at_school_period.teacher,
+                school: ect_at_school_period.school,
+                happened_at: Time.current
+              )
+
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
           end
         end
       end

@@ -831,6 +831,142 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_switches_to_provider_led_training!" do
+    subject(:record_event) do
+      Events::Record.record_teacher_switches_to_provider_led_training!(
+        author:,
+        training_period:,
+        ect_at_school_period:,
+        teacher:,
+        school:,
+        happened_at: Time.current
+      )
+    end
+
+    let(:school) { FactoryBot.create(:school) }
+    let(:teacher) do
+      FactoryBot.create(:teacher, trs_first_name: "John", trs_last_name: "Cena")
+    end
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
+    end
+
+    before { freeze_time }
+
+    context "when the new training period is not provider led" do
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :school_led,
+          :ongoing,
+          ect_at_school_period:
+        )
+      end
+
+      it "raises an error" do
+        expect { record_event }
+          .to raise_error(ArgumentError)
+          .with_message("training period must be a provider-led training programme")
+      end
+    end
+
+    context "when the new training period is provider led" do
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          :ongoing,
+          ect_at_school_period:
+        )
+      end
+
+      it "enqueues a `RecordEventJob` with the correct values" do
+        record_event
+
+        expect(RecordEventJob)
+          .to have_received(:perform_later)
+          .with(
+            teacher:,
+            school:,
+            ect_at_school_period:,
+            training_period:,
+            heading: "John Cena switched to a provider-led training programme",
+            event_type: :teacher_switches_to_provider_led_training,
+            happened_at: Time.current,
+            **author_params
+          )
+      end
+    end
+  end
+
+  describe ".record_teacher_switches_to_school_led_training!" do
+    subject(:record_event) do
+      Events::Record.record_teacher_switches_to_school_led_training!(
+        author:,
+        training_period:,
+        ect_at_school_period:,
+        teacher:,
+        school:,
+        happened_at: Time.current
+      )
+    end
+
+    let(:school) { FactoryBot.create(:school) }
+    let(:teacher) do
+      FactoryBot.create(:teacher, trs_first_name: "John", trs_last_name: "Cena")
+    end
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
+    end
+
+    before { freeze_time }
+
+    context "when the new training period is not school led" do
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          :ongoing,
+          ect_at_school_period:
+        )
+      end
+
+      it "raises an error" do
+        expect { record_event }
+          .to raise_error(ArgumentError)
+          .with_message("training period must be a school-led training programme")
+      end
+    end
+
+    context "when the new training period is school led" do
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :school_led,
+          :ongoing,
+          ect_at_school_period:
+        )
+      end
+
+      it "enqueues a `RecordEventJob` with the correct values" do
+        record_event
+
+        expect(RecordEventJob)
+          .to have_received(:perform_later)
+          .with(
+            teacher:,
+            school:,
+            ect_at_school_period:,
+            training_period:,
+            heading: "John Cena switched to a school-led training programme",
+            event_type: :teacher_switches_to_school_led_training,
+            happened_at: Time.current,
+            **author_params
+          )
+      end
+    end
+  end
+
   describe '.record_teacher_starts_mentoring_event!' do
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }
     let(:school) { FactoryBot.create(:school) }

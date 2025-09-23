@@ -34,6 +34,8 @@ class Event < ApplicationRecord
     teacher_starts_mentoring
     teacher_starts_training_period
     teacher_finishes_training_period
+    teacher_switches_to_provider_led_training
+    teacher_switches_to_school_led_training
     teacher_finishes_being_mentored
     teacher_finishes_mentoring
     teacher_trs_attributes_updated

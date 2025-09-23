@@ -332,6 +332,30 @@ module Events
       new(event_type:, author:, heading:, training_period:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
     end
 
+    def self.record_teacher_switches_to_provider_led_training!(author:, training_period:, ect_at_school_period:, teacher:, school:, happened_at:)
+      unless training_period.provider_led_training_programme?
+        fail(ArgumentError, "training period must be a provider-led training programme")
+      end
+
+      event_type = :teacher_switches_to_provider_led_training
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name} switched to a provider-led training programme"
+
+      new(event_type:, author:, heading:, training_period:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_switches_to_school_led_training!(author:, training_period:, ect_at_school_period:, teacher:, school:, happened_at:)
+      unless training_period.school_led_training_programme?
+        fail(ArgumentError, "training period must be a school-led training programme")
+      end
+
+      event_type = :teacher_switches_to_school_led_training
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name} switched to a school-led training programme"
+
+      new(event_type:, author:, heading:, training_period:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
     def self.record_teacher_starts_mentoring_event!(author:, mentor:, mentee:, mentor_at_school_period:, mentorship_period:, school:, happened_at: Time.zone.now)
       event_type = :teacher_starts_mentoring
       mentor_name = Teachers::Name.new(mentor).full_name
