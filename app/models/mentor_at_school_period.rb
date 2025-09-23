@@ -57,12 +57,6 @@ class MentorAtSchoolPeriod < ApplicationRecord
     teacher.mentor_at_school_periods.for_school(school_id).excluding(self)
   end
 
-  def eligible_for_funding_and_first_provider_led_assignment?(ect_at_school_period)
-    ect_at_school_period.provider_led_training_programme? &&
-      Teachers::MentorFundingEligibility.new(trn: teacher.trn).eligible? &&
-      training_periods.ongoing.none?
-  end
-
 private
 
   def teacher_school_distinct_period
