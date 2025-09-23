@@ -71,7 +71,7 @@ Schools now choose lead providers per participant, so this field reflects indivi
 | No participants registered with the lead provider | `false` |  
 | No partnership for the cohort and the school reports all participants have left or are no longer training with the lead provider | Changes from `true` to `false` |  
 
-#### Why `expression_of_interest` stays `TRUE` after a partnership is confirmed 
+#### Why `expression_of_interest` stays `true` after a partnership is confirmed 
 
 Once a partnership is confirmed for a cohort, `expression_of_interest` remains `TRUE` to show that the school is working with the lead provider for that cohort. 
 
