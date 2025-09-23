@@ -5,6 +5,7 @@ module API
       GUIDANCE_PAGES = [
         { title: "API IDs explained", path: "api-ids-explained" },
         { title: "API data states", path: "api-data-states" },
+        { title: "Partnerships", path: "partnerships" },
         { title: "Syncing data best practice", path: "data-syncing" },
       ].freeze
 
