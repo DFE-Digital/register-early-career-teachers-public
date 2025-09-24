@@ -33,6 +33,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
   let(:mentor) { wizard.mentor }
 
   before do
+    allow(mentor).to receive(:ect_lead_provider_invalid?).and_return(false)
     assign(:wizard, wizard)
     assign(:mentor, mentor)
     assign(:ect_name, "Michael Dixon")
@@ -256,6 +257,26 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
           'Change mentoring only at your school',
           href: schools_register_mentor_wizard_mentoring_at_new_school_only_path
         )
+      end
+    end
+
+    context 'when ect lead provider is invalid' do
+      before do
+        allow(mentor).to receive_messages(
+          provider_led_ect?: false,
+          mentoring_at_new_school_only?: false,
+          funding_available?: false,
+          lead_provider: nil,
+          ect_lead_provider: lead_provider,
+          ect_lead_provider_invalid?: true
+        )
+        render
+      end
+
+      it 'shows the lead provider row even if other conditions are false' do
+        expect(rendered).to have_element(:dt, text: 'Lead provider')
+        expect(rendered).to have_element(:dd, text: 'FraggleRock')
+        expect(rendered).to have_link('Change', href: schools_register_mentor_wizard_change_lead_provider_path)
       end
     end
   end

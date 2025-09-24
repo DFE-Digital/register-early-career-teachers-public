@@ -15,6 +15,7 @@ module Schools
       def next_step
         return :cant_use_email if mentor.cant_use_email?
         return :review_mentor_eligibility if eligible_for_review?
+        return :lead_provider if !mentor.previously_registered_as_mentor? && mentor.ect_lead_provider_invalid?
         return :check_answers unless mentor.previously_registered_as_mentor?
 
         case mentor.mentorship_status
@@ -32,7 +33,7 @@ module Schools
     private
 
       def eligible_for_review?
-        ect.provider_led_training_programme? && mentor.funding_available? && !mentor.previously_registered_as_mentor?
+        ect.provider_led_training_programme? && mentor.funding_available? && !mentor.previously_registered_as_mentor? && !mentor.ect_lead_provider_invalid?
       end
 
       def persist
