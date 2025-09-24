@@ -26,7 +26,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def link_to_assign_mentor(ect)
-    govuk_warning_text(text: "You must #{assign_or_create_mentor_link(ect)} for this ECT.".html_safe)
+    govuk_warning_text(text: assign_or_create_mentor_link(ect))
   end
 
   # @param ect [ECTAtSchoolPeriod]
@@ -72,7 +72,7 @@ module ECTHelper
 private
 
   def assign_or_create_mentor_link(ect)
-    govuk_link_to("assign a mentor or register a new one", assign_or_create_mentor_path(ect), no_visited_state: true)
+    govuk_link_to("Assign a mentor for this ECT", assign_or_create_mentor_path(ect), no_visited_state: true)
   end
 
   def assign_or_create_mentor_path(ect)
