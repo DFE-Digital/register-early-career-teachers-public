@@ -16,7 +16,7 @@ module Teachers
     end
 
     def induction_start_date
-      @induction_start_date ||= first_induction_period&.started_on
+      @induction_start_date ||= teacher.started_induction_period&.started_on
     end
 
     def has_induction_periods?
@@ -29,12 +29,6 @@ module Teachers
 
     def with_appropriate_body?(appropriate_body)
       current_induction_period&.appropriate_body == appropriate_body
-    end
-
-  private
-
-    def first_induction_period
-      induction_periods.earliest_first.first
     end
   end
 end
