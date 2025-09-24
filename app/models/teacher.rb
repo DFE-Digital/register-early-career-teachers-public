@@ -19,6 +19,8 @@ class Teacher < ApplicationRecord
   has_one :first_induction_period, -> { order(started_on: :asc) }, class_name: "InductionPeriod"
   has_one :last_induction_period, -> { order(started_on: :desc) }, class_name: "InductionPeriod"
   has_one :ongoing_induction_period, -> { ongoing }, class_name: "InductionPeriod"
+  has_one :started_induction_period, -> { earliest_first }, class_name: "InductionPeriod"
+  has_one :finished_induction_period, -> { finished.with_outcome.latest_first }, class_name: "InductionPeriod"
 
   has_many :appropriate_bodies, through: :induction_periods
   has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body
