@@ -80,7 +80,7 @@ RSpec.describe 'Redirect to register a new mentor for an ECT' do
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
-    page.get_by_role('link', name: 'assign a mentor or register a new one').click
+    page.get_by_role('link', name: 'Assign a mentor for this ECT').click
   end
 
   def then_i_am_in_the_who_will_mentor_page
