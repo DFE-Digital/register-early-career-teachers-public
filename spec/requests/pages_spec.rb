@@ -20,7 +20,7 @@ RSpec.describe "Pages", type: :request do
   end
 
   describe 'GET /accessibility' do
-    it 'shows the accessibilty statement' do
+    it 'shows the accessibility statement' do
       get '/accessibility'
       expect(response).to be_successful
       expect(response.body).to include('Accessibility statement')

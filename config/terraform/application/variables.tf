@@ -34,7 +34,7 @@ variable "service_name" {
   description = "Full name of the service. Lowercase and hyphen separated"
 }
 variable "service_short" {
-  description = "Short name to identify the service. Up to 6 charcters."
+  description = "Short name to identify the service. Up to 6 characters."
 }
 variable "deploy_azure_backing_services" {
   default     = true

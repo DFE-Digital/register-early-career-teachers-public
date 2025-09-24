@@ -105,7 +105,7 @@ Prior to creating a partnership we will perform validation to ensure:
 - The school has confirmed that they will delivery DfE funded training for the given cohort.
 - The delivery partner has a `ProviderRelationship` created for the lead provider (see above).
 
-If the above validation is satisfied, the partnership will be created with the lead provider (it will **not** be a relationship type partnership). 
+If the above validation is satisfied, the partnership will be created with the lead provider (it will **not** be a relationship type partnership).
 
 A challenge deadline will be set on the partnership to give time for the school to challenge the declared partnership. The date will be the **maximum** of either:
 
@@ -180,7 +180,7 @@ Finance users are able to view partnership information in two places.
 
 On both the `Search participant data -> Enter search terms -> Select participant` page they can view:
 
-- Trianing programme
+- Training programme
 - Lead provider
 
 On the `View finance statements -> Select lead provider -> Download declarations CSV` export they can view:
@@ -192,7 +192,7 @@ On the `View finance statements -> Select lead provider -> Download declarations
 
 In ECF we have the notion of both **partnerships** and **relationship partnerships**.
 
-A **partnership** describes an _active_ relationship between a lead provider, school and delivery partner for a given cohort. 
+A **partnership** describes an _active_ relationship between a lead provider, school and delivery partner for a given cohort.
 
 A **relationship partnership** is created when a participant transfers to a school that does not have a partnership with the lead provider/delivery partner that the participant is currently training with. In order to support the participant (and to get around the limitation of one 'active' partnership per school) we use the notion of a relationship partnership. This enables us to surface the participant appropriately in the API, even though they do not have a formal partnership arranged with the school.
 
