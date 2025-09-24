@@ -114,24 +114,90 @@ RSpec.describe Admin::Schools::OverviewComponent, type: :component do
     end
   end
 
+  describe '#section_41_status' do
+    context 'when true' do
+      let(:school) { FactoryBot.build(:school, :section_41) }
+
+      it { expect(component.section_41_status).to eql('Approved') }
+    end
+
+    context 'when false' do
+      let(:school) { FactoryBot.build(:school, :not_section_41) }
+
+      it { expect(component.section_41_status).to eql('Not approved') }
+    end
+  end
+
+  describe '#establishment_type' do
+    let(:school) { FactoryBot.build(:school) }
+
+    it { expect(component.establishment_type).to eql(school.type_name) }
+  end
+
+  describe '#administrative_district' do
+    context 'when present' do
+      let(:school) { FactoryBot.build(:school, :with_administrative_district) }
+
+      it { expect(component.administrative_district).to eql(school.administrative_district_name) }
+    end
+
+    context 'when missing' do
+      let(:school) { FactoryBot.build(:school) }
+
+      it { expect(component.administrative_district).to eql('Not available') }
+    end
+  end
+
+  describe '#status' do
+    let(:school) { FactoryBot.build(:school) }
+
+    it { expect(component.status).to eql(school.status.capitalize) }
+  end
+
   describe 'rendering' do
     before do
       school.update!(induction_tutor_name: 'Jane Smith', induction_tutor_email: 'jane@school.edu')
-      allow(school).to receive_messages(local_authority_name: 'Essex', address_line1: '123 Main St', address_line2: '', address_line3: '', postcode: 'SW1A 1AA')
+      allow(school).to receive_messages(
+        local_authority_name: 'Essex',
+        address_line1: '123 Main St',
+        address_line2: '',
+        address_line3: '',
+        postcode: 'SW1A 1AA',
+        type_name: 'Community school',
+        section_41_approved?: false,
+        status: 'Open',
+        administrative_district_name: 'South Northamptonshire'
+      )
     end
 
     it 'renders the summary list with school information' do
       render_inline(component)
 
       expect(rendered_content).to have_css('.govuk-summary-list')
+
       expect(rendered_content).to have_css('dt', text: 'Induction tutor')
       expect(rendered_content).to have_css('dd', text: 'Jane Smith')
+
       expect(rendered_content).to have_css('dt', text: 'Induction tutor email')
       expect(rendered_content).to have_css('dd', text: 'jane@school.edu')
+
       expect(rendered_content).to have_css('dt', text: 'Local authority')
       expect(rendered_content).to have_css('dd', text: 'Essex')
+
       expect(rendered_content).to have_css('dt', text: 'Address')
       expect(rendered_content).to have_css('dd', text: /123 Main St.*SW1A 1AA/m)
+
+      expect(rendered_content).to have_css('dt', text: 'Establishment status')
+      expect(rendered_content).to have_css('dd', text: 'Open')
+
+      expect(rendered_content).to have_css('dt', text: 'Establishment type')
+      expect(rendered_content).to have_css('dd', text: 'Community school')
+
+      expect(rendered_content).to have_css('dt', text: 'Section 41 status')
+      expect(rendered_content).to have_css('dd', text: 'Not approved')
+
+      expect(rendered_content).to have_css('dt', text: 'Administratrive district')
+      expect(rendered_content).to have_css('dd', text: 'South Northamptonshire')
     end
 
     it 'includes change links for editable fields' do
