@@ -12,7 +12,7 @@ module Schools
 
       def initialize(teacher:, mentor:)
         @teacher = teacher
-        @mentor  = mentor
+        @mentor = mentor
       end
 
       def render?
