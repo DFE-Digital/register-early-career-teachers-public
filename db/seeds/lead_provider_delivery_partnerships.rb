@@ -3,6 +3,8 @@ def describe_lead_provider_delivery_partnership(lpdp)
   print_seed_info("#{lpdp.delivery_partner.name} are working with #{alp.lead_provider.name} in #{alp.contract_period.year}")
 end
 
+# These delivery partnerships are used by other seeds, so are created explicitly.
+
 ambition_institute = LeadProvider.find_by!(name: 'Ambition Institute')
 teach_first = LeadProvider.find_by!(name: 'Teach First')
 best_practice_network = LeadProvider.find_by!(name: 'Best Practice Network')
@@ -45,4 +47,18 @@ rising_minds = DeliveryPartner.find_by!(name: "Rising Minds Network")
   FactoryBot.create(:lead_provider_delivery_partnership,
                     active_lead_provider: data[:active_lead_provider],
                     delivery_partner: data[:delivery_partner]).tap { |lpdp| describe_lead_provider_delivery_partnership(lpdp) }
+end
+
+# These are additional delivery partnerships useful for testing.
+
+all_delivery_partners = DeliveryPartner.all
+
+ActiveLeadProvider.find_each do |active_lead_provider|
+  all_delivery_partners.sample(rand(1..3)).each do |delivery_partner|
+    next if LeadProviderDeliveryPartnership.exists?(active_lead_provider:, delivery_partner:)
+
+    FactoryBot
+      .create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+      .tap { describe_lead_provider_delivery_partnership(it) }
+  end
 end
