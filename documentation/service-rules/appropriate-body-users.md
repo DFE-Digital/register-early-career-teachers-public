@@ -44,7 +44,7 @@ The users, accounts, credentials and links to organisations are managed by DfE S
 
 1. a user visits the service and when they try to access a restricted page (i.e., by clicking the 'Start now' button) they are redirected to the DfE Sign-in login page
 2. they enter their username and password and are then redirected back to the application with an [ID token param](https://jwt.io/) on the URL
-3. we decode this token and it contains information on who the person is and which organsiation they're associated with, which looks something like the example below
+3. we decode this token and it contains information on who the person is and which organisation they're associated with, which looks something like the example below
 4. we check our list of appropriate bodies for an `dfe_sign_in_organisation_id` that matches the `organisation->id`
 5. we then call the [DfE Sign-in API](https://github.com/DFE-Digital/login.dfe.public-api?tab=readme-ov-file#get-roles-for-service) to ensure that the person has the role:
     * name: `Register ECTs`
@@ -76,7 +76,7 @@ Example user info returned by DfE Sign-in:
 
 When an appropriate body user logs in they'll see a list of their current ECTs.
 
-They can search the list by name and TRN. When 7 digit numbers are detected in the search string they will take precedance over any text.
+They can search the list by name and TRN. When 7 digit numbers are detected in the search string they will take precedence over any text.
 
 They can also [find and claim](#claiming-a-new-early-career-teacher) new ECTs by clicking the 'Find and claim an ECT' button.
 

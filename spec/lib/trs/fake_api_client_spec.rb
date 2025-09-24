@@ -214,7 +214,7 @@ describe TRS::FakeAPIClient do
 
       before { subject.reopen_teacher_induction!(trn: teacher.trn, start_date:) }
 
-      it 'sets the status to InProgres, sets the startDate to the provided one and clears the completedDate' do
+      it 'sets the status to InProgress, sets the startDate to the provided one and clears the completedDate' do
         expect(redis_client.hgetall(key)).to match(
           include(
             'status' => 'InProgress',
