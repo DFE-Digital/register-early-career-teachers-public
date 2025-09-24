@@ -61,7 +61,10 @@ RSpec.describe "View parity check request" do
     expect(page.get_by_role("heading", name: "Response IDs")).to be_visible
 
     expect(page.get_by_text("There was 1 ID returned by ECF that were not returned by RECT.")).to be_visible
+    expect(page.get_by_text("123")).to be_visible
+
     expect(page.get_by_text("There was 1 ID returned by RECT that were not returned by ECF.")).to be_visible
+    expect(page.get_by_text("456")).to be_visible
   end
 
   scenario "Paginating the parity check responses when there are many" do
