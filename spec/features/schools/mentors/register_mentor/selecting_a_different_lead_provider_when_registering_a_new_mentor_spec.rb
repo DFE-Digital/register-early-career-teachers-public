@@ -68,7 +68,7 @@ RSpec.describe 'Selecting a different lead provider' do
   end
 
   def and_i_click_to_assign_a_mentor_to_the_ect
-    page.get_by_role('link', name: 'assign a mentor or register a new one').click
+    page.get_by_role('link', name: 'Assign a mentor for this ECT').click
   end
 
   def and_i_click_continue(link_or_button)
