@@ -612,6 +612,16 @@ FactoryBot.create(:training_period,
                   school_partnership: teach_first_grain_partnership_2022,
                   training_programme: 'provider_led').tap { |tp| describe_training_period(tp) }
 
+print_seed_info("Ichigo Kurosaki (Mentor)", indent: 2, colour: MENTOR_COLOUR)
+
+ichigo_kurosaki = Teacher.find_by!(trs_first_name: 'Ichigo', trs_last_name: 'Kurosaki')
+FactoryBot.create(:mentor_at_school_period,
+                  teacher: ichigo_kurosaki,
+                  school: brookfield_school,
+                  email: 'ichigo.kurosaki@brookfield.com',
+                  started_on: 1.year.ago,
+                  finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+
 print_seed_info("Dominic West (ECT)", indent: 2, colour: ECT_COLOUR)
 
 dominic_west = Teacher.find_by!(trs_first_name: 'Dominic', trs_last_name: 'West')
