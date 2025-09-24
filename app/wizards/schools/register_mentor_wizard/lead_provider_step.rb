@@ -16,7 +16,11 @@ module Schools
       end
 
       def previous_step
-        :programme_choices
+        if mentor.ect_lead_provider_invalid?
+          :email_address
+        else
+          :programme_choices
+        end
       end
 
     private

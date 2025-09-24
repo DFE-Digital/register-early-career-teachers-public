@@ -12,6 +12,10 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
   end
 
   context 'with provider_led ect and without funding exemption' do
+    before do
+      allow(wizard.mentor).to receive(:ect_lead_provider_invalid?).and_return(false)
+    end
+
     it_behaves_like 'an email step', current_step: :email_address,
                                      previous_step: :review_mentor_details,
                                      next_step: :review_mentor_eligibility,
@@ -20,6 +24,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
 
   context 'with funding exemption' do
     before do
+      allow(wizard.mentor).to receive(:ect_lead_provider_invalid?).and_return(false)
       FactoryBot.create(:teacher, :early_roll_out_mentor, trn: "1234567")
     end
 
@@ -29,6 +34,10 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
   end
 
   context 'with school_led ect' do
+    before do
+      allow(wizard.mentor).to receive(:ect_lead_provider_invalid?).and_return(false)
+    end
+
     it_behaves_like 'an email step', current_step: :email_address,
                                      previous_step: :review_mentor_details,
                                      next_step: :check_answers,
@@ -85,5 +94,22 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
       expect { described_class.new(wizard:).next_step }
         .to raise_error(described_class::InvalidMentorshipStatus, /Unexpected status: :unknown_state/)
     end
+  end
+
+  context 'when ect lead provider is not valid for mentor contract period' do
+    before do
+      allow(wizard.mentor).to receive_messages(
+        cant_use_email?: false,
+        previously_registered_as_mentor?: false,
+        funding_available?: true,
+        ect_lead_provider_invalid?: true
+      )
+    end
+
+    it_behaves_like 'an email step',
+                    current_step: :email_address,
+                    previous_step: :review_mentor_details,
+                    next_step: :lead_provider,
+                    training_programme: :provider_led
   end
 end
