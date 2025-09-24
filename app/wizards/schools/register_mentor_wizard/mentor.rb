@@ -72,6 +72,12 @@ module Schools
         @ect ||= ECTAtSchoolPeriod.find(store["ect_id"]) if store["ect_id"].present?
       end
 
+      def ect_lead_provider_invalid?
+        return false unless ect_lead_provider
+
+        !LeadProviders::Active.new(ect_lead_provider).active_in_contract_period?(contract_period)
+      end
+
       def lead_provider
         @lead_provider ||= LeadProvider.find(lead_provider_id) if lead_provider_id
       end
