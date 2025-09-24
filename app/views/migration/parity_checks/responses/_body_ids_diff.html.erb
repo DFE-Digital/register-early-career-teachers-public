@@ -2,13 +2,13 @@
   <span class="body-ids-diff">
     <%= govuk_list do %>
       <% response.ecf_only_body_ids.each do |id| %>
-        <%= tag.li(tag.span(class: "diff red") { id }) %>
+        <%= tag.li(tag.span(id, class: "diff red")) %>
       <% end %>
     <% end %>
 
     <%= govuk_list do %>
-      <% response.ecf_only_body_ids.each do |id| %>
-        <%= tag.li(tag.span(class: "diff green") { id }) %>
+      <% response.rect_only_body_ids.each do |id| %>
+        <%= tag.li(tag.span(id, class: "diff green")) %>
       <% end %>
     <% end %>
   </span>
