@@ -55,7 +55,10 @@ RSpec.describe "View parity check response" do
     expect(page.get_by_role("heading", name: "Response IDs")).to be_visible
 
     expect(page.get_by_text("There was 1 ID returned by ECF that were not returned by RECT.")).to be_visible
+    expect(page.locator("li span.diff.red").text_content).to eq("123")
+
     expect(page.get_by_text("There was 1 ID returned by RECT that were not returned by ECF.")).to be_visible
+    expect(page.locator("li span.diff.green").text_content).to eq("456")
   end
 
   scenario "Viewing a parity check response where the bodies are filterable", :js do
