@@ -176,6 +176,7 @@
   - otp_verified_at
   - created_at
   - updated_at
+  - role
   :training_periods:
   - id
   - school_partnership_id
