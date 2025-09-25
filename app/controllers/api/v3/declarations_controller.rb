@@ -1,6 +1,6 @@
 module API
   module V3
-    class DeclarationsController < BaseController
+    class DeclarationsController < APIController
       def create = head(:method_not_allowed)
       def index = head(:method_not_allowed)
       def show = head(:method_not_allowed)
