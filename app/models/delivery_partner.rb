@@ -1,6 +1,5 @@
 class DeliveryPartner < ApplicationRecord
-  include DeclarativeTouch
-  include DeclarativeMetadata
+  include DeclarativeUpdates
 
   # Associations
   has_many :lead_provider_delivery_partnerships, inverse_of: :delivery_partner

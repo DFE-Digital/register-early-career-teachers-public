@@ -1,6 +1,6 @@
 module Metadata
   class SchoolContractPeriod < Metadata::Base
-    include DeclarativeTouch
+    include DeclarativeUpdates
 
     self.table_name = :metadata_schools_contract_periods
 

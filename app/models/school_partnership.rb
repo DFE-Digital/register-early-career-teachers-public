@@ -1,6 +1,5 @@
 class SchoolPartnership < ApplicationRecord
-  include DeclarativeTouch
-  include DeclarativeMetadata
+  include DeclarativeUpdates
 
   # Associations
   belongs_to :lead_provider_delivery_partnership, inverse_of: :school_partnerships
