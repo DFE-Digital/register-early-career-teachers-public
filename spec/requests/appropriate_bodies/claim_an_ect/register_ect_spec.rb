@@ -10,8 +10,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
       it 'redirects to the root page' do
         get("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}/edit")
 
-        expect(response).to be_redirection
-        expect(response.redirect_url).to end_with(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -37,8 +36,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
       it 'redirects to the root page' do
         patch("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}")
 
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -92,8 +90,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
             end
           end
 
-          expect(response).to be_redirection
-          expect(response.redirect_url).to match(%r{/claim-an-ect/register-ect/\d+\z})
+          expect(response).to redirect_to(%r{/claim-an-ect/register-ect/\d+\z})
         end
 
         it 'calls AppropriateBodies::ClaimAnECT::RegisterECT#register' do
@@ -138,8 +135,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
               end
             end
 
-            expect(response).to be_redirection
-            expect(response.redirect_url).to match(%r{/claim-an-ect/register-ect/\d+\z})
+            expect(response).to redirect_to(%r{/claim-an-ect/register-ect/\d+\z})
           end
         end
       end
@@ -167,8 +163,7 @@ RSpec.describe 'Appropriate body claiming an ECT: registering the ECT' do
       it 'redirects to the root page' do
         get("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}")
 
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 

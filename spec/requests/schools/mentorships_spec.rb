@@ -13,9 +13,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         get("/school/ects/#{ect_at_school_period.id}/mentorship/new")
-
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -39,9 +37,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         post("/school/ects/#{ect_at_school_period.id}/mentorship")
-
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -55,9 +51,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
 
         it 'redirects to the start of the wizard to add a new mentor to the school' do
           post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
-
-          expect(response).to be_redirection
-          expect(response.redirect_url).to eq(schools_register_mentor_wizard_start_url(ect_id: ect_at_school_period.id))
+          expect(response).to redirect_to(schools_register_mentor_wizard_start_url(ect_id: ect_at_school_period.id))
         end
       end
 
@@ -90,8 +84,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
 
           expect(Schools::AssignMentorForm).to have_received(:new).with(ect: ect_at_school_period, mentor_id: mentor.id.to_s).once
           expect(ECTAtSchoolPeriods::Mentorship.new(ect_at_school_period).current_mentor).to eq(mentor)
-          expect(response).to be_redirection
-          expect(response.redirect_url).to eq(confirmation_schools_ect_mentorship_url(ect_id: ect_at_school_period.id))
+          expect(response).to redirect_to(confirmation_schools_ect_mentorship_url(ect_id: ect_at_school_period.id))
         end
       end
 
@@ -154,9 +147,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         get("/school/ects/#{ect_at_school_period.id}/mentorship/confirmation")
-
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 

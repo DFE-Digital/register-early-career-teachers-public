@@ -9,8 +9,7 @@ RSpec.describe "Appropriate Body teacher show page", type: :request do
       it 'redirects to the root page' do
         get("/appropriate-body/teachers/#{teacher.id}")
 
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 

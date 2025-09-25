@@ -34,7 +34,7 @@ RSpec.describe "Admin::BatchesController", type: :request do
     context "when not signed in" do
       it "redirects to sign in" do
         get admin_batches_path
-        expect(response).to be_redirection
+        expect(response).to redirect_to("/sign-in")
       end
     end
   end
