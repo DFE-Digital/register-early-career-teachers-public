@@ -52,6 +52,18 @@ FactoryBot.define do
       gias_school { association :gias_school, :open, :in_england, :not_cip_only_type, urn: }
     end
 
+    trait :section_41 do
+      gias_school { association :gias_school, :section_41, urn: }
+    end
+
+    trait :not_section_41 do
+      gias_school { association :gias_school, :not_section_41, urn: }
+    end
+
+    trait :with_administrative_district do
+      gias_school { association :gias_school, administrative_district_name: 'North Northhamptonshire', urn: }
+    end
+
     trait :with_induction_tutor do
       induction_tutor_name { Faker::Name.name }
       induction_tutor_email { Faker::Internet.email }

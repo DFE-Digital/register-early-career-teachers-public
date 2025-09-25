@@ -1,15 +1,15 @@
 RSpec.describe "schools/mentorships/new.html.erb" do
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-  let(:ect_name) { Teachers::Name.new(ect.teacher).full_name }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+  let(:ect_name) { Teachers::Name.new(ect_at_school_period.teacher).full_name }
   let(:mentor) { double("mentor_at_school_period", full_name: 'Peter Times', id: 7) }
   let(:mentor_id) { mentor.id }
-  let(:mentor_form) { Schools::AssignMentorForm.new(ect:, mentor_id:) }
+  let(:mentor_form) { Schools::AssignMentorForm.new(ect: ect_at_school_period, mentor_id:) }
   let(:title) { "Who will mentor #{ect_name}?" }
-  let(:continue_path) { schools_ect_mentorship_path(ect) }
+  let(:continue_path) { schools_ect_mentorship_path(ect_at_school_period) }
   let(:back_path) { schools_ects_home_path }
 
   before do
-    assign(:ect, ect)
+    assign(:ect_at_school_period, ect_at_school_period)
     assign(:ect_name, ect_name)
     assign(:mentor_form, mentor_form)
   end

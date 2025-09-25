@@ -10,7 +10,7 @@ describe Milestone do
     it { is_expected.to validate_presence_of(:start_date).with_message('Enter a start date') }
     it { is_expected.to validate_inclusion_of(:declaration_type).in_array(declaration_types).with_message('Choose a valid declaration type') }
 
-    it 'ensures uniqueness of declaraion_types and schedule_ids' do
+    it 'ensures uniqueness of declaration_types and schedule_ids' do
       original = FactoryBot.create(:milestone)
       duplicate = original.dup
 

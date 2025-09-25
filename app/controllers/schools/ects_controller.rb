@@ -4,11 +4,7 @@ module Schools
 
     def index
       search = Teachers::Search.new(ect_at_school: school, query_string: params[:q]).search
-      @pagy, @filtered_teachers = pagy(search)
-
-      @school_ect_periods = ECTAtSchoolPeriod.current_or_future
-                                             .where(teacher: @filtered_teachers, school: @school)
-                                             .includes(:current_or_next_training_period)
+      @pagy, @teachers = pagy(search)
 
       @number_of_teachers = Teachers::Search.new(ect_at_school: school).count
     end

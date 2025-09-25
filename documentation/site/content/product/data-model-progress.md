@@ -283,7 +283,7 @@ a certain state. If necessary, we can easily take the same approach for eligibil
 
 ## Finding the active induction record isn't easy
 
-Induction records are stored in a slightly unconventional fasion where any
+Induction records are stored in a slightly unconventional fashion where any
 changes are recorded as a new row rather than upgrading an existing one. We
 also allow future records to be created, which are used to indicate future
 standards. This means finding the 'active' one is complicated and slow.
@@ -295,7 +295,7 @@ standards. This means finding the 'active' one is complicated and slow.
 
 ### Status ✅
 
-This is resolved by the swtich from induction records to induction and training
+This is resolved by the switch from induction records to induction and training
 periods which are backed up by strong validation rules:
 
 * an ECT can have one concurrent induction period

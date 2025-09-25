@@ -8,7 +8,7 @@
 %>
 
 <%= form_with model: @mentor_form,
-              url: schools_ect_mentorship_path(@ect),
+              url: schools_ect_mentorship_path(@ect_at_school_period),
               method: :post do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
