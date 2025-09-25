@@ -106,6 +106,7 @@ end
 ambition_institute = LeadProvider.find_by!(name: 'Ambition Institute')
 teach_first = LeadProvider.find_by!(name: 'Teach First')
 best_practice_network = LeadProvider.find_by!(name: 'Best Practice Network')
+capita = LeadProvider.find_by!(name: 'Capita')
 
 abbey_grove_school = School.find_by!(urn: 1_759_427)
 ackley_bridge = School.find_by!(urn: 3_375_958)
@@ -114,6 +115,7 @@ brookfield_school = School.find_by!(urn: 2_976_163)
 
 artisan_education_group = DeliveryPartner.find_by!(name: 'Artisan Education Group')
 grain_teaching_school_hub = DeliveryPartner.find_by!(name: 'Grain Teaching School Hub')
+capita_delivery_partner = DeliveryPartner.find_by!(name: 'Capita Delivery Partner')
 
 south_yorkshire_studio_hub = AppropriateBody.find_by!(name: 'South Yorkshire Studio Hub')
 golden_leaf_teaching_school_hub = AppropriateBody.find_by!(name: 'Golden Leaf Teaching School Hub')
@@ -172,6 +174,12 @@ teach_first_grain_partnership_2025 = find_school_partnership(
   contract_period: ContractPeriod.find_by!(year: 2025),
   lead_provider: teach_first,
   delivery_partner: grain_teaching_school_hub
+)
+
+capita__delivery_partner__2022 = find_school_partnership(
+  contract_period: cp_2022,
+  lead_provider: capita,
+  delivery_partner: capita_delivery_partner
 )
 
 print_seed_info("Emma Thompson (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -661,6 +669,34 @@ FactoryBot.create(:training_period,
                   school_partnership: teach_first_grain_partnership_2025,
                   training_programme: 'provider_led',
                   expression_of_interest: teach_first_grain_2025).tap { |tp| describe_training_period(tp) }
+
+print_seed_info('Naruto Uzumaki (ECT, invalid LP)', indent: 2, colour: ECT_COLOUR)
+
+naruto_uzumaki = Teacher.find_or_create_by!(
+  trs_first_name: 'Naruto',
+  trs_last_name: 'Uzumaki',
+  trn: '9300999'
+)
+
+naruto_ect_at_brookfield = FactoryBot.create(
+  :ect_at_school_period,
+  teacher: naruto_uzumaki,
+  school: brookfield_school,
+  email: 'naruto.uzumaki@konoha.com',
+  started_on: Date.new(2023, 9, 1),
+  finished_on: nil,
+  school_reported_appropriate_body: south_yorkshire_studio_hub
+).tap { |sp| describe_ect_at_school_period(sp) }
+
+FactoryBot.create(
+  :training_period,
+  :for_ect,
+  ect_at_school_period: naruto_ect_at_brookfield,
+  started_on: Date.new(2023, 9, 1),
+  finished_on: nil,
+  school_partnership: capita__delivery_partner__2022,
+  training_programme: 'provider_led'
+).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Adding mentorships:")
 
