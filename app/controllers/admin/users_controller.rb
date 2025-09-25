@@ -43,7 +43,7 @@ module Admin
   private
 
     def user_params
-      params.expect(user: %i[name email])
+      params.expect(user: %i[name email role])
     end
   end
 end
