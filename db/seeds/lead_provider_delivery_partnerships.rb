@@ -8,6 +8,7 @@ end
 ambition_institute = LeadProvider.find_by!(name: 'Ambition Institute')
 teach_first = LeadProvider.find_by!(name: 'Teach First')
 best_practice_network = LeadProvider.find_by!(name: 'Best Practice Network')
+capita = LeadProvider.find_by!(name: "Capita")
 
 active_lead_providers = ActiveLeadProvider
   .eager_load(:contract_period, :lead_provider)
@@ -25,10 +26,12 @@ teach_first_2024 = active_lead_providers.fetch([teach_first, 2024])
 teach_first_2025 = active_lead_providers.fetch([teach_first, 2025])
 best_practice_network_2023 = active_lead_providers.fetch([best_practice_network, 2023])
 best_practice_network_2024 = active_lead_providers.fetch([best_practice_network, 2024])
+capita_2022 = active_lead_providers.fetch([capita, 2022])
 
 artisan = DeliveryPartner.find_by!(name: "Artisan Education Group")
 grain = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")
 rising_minds = DeliveryPartner.find_by!(name: "Rising Minds Network")
+capita_delivery_partner = DeliveryPartner.find_by!(name: "Capita Delivery Partner")
 
 [
   { active_lead_provider: ambition_institute_2021, delivery_partner: artisan },
@@ -42,7 +45,8 @@ rising_minds = DeliveryPartner.find_by!(name: "Rising Minds Network")
   { active_lead_provider: teach_first_2024, delivery_partner: grain },
   { active_lead_provider: teach_first_2025, delivery_partner: grain },
   { active_lead_provider: best_practice_network_2023, delivery_partner: rising_minds },
-  { active_lead_provider: best_practice_network_2024, delivery_partner: rising_minds }
+  { active_lead_provider: best_practice_network_2024, delivery_partner: rising_minds },
+  { active_lead_provider: capita_2022, delivery_partner: capita_delivery_partner }
 ].each do |data|
   FactoryBot.create(:lead_provider_delivery_partnership,
                     active_lead_provider: data[:active_lead_provider],
