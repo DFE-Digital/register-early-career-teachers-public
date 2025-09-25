@@ -353,12 +353,6 @@
   - email
   - school_reported_appropriate_body_id
   - training_programme
-  :dfe_roles:
-  - id
-  - role_type
-  - user_id
-  - created_at
-  - updated_at
   :delivery_partners:
   - id
   - name
