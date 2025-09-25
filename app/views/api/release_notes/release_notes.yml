@@ -21,31 +21,81 @@
 #
 #     **bold** and _italic_ text
 
+- title: Partnerships endpoints now in sandbox for testing   
+  date: 2025-09-XX 
+  tags: 
+    - sandbox-release 
+    - new-field 
+    - removed-field
+  body: |
+    We’ve added the partnerships endpoints to the [‘Register early career teachers’ API sandbox](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3): 
+    
+    * `GET /partnerships` to retrieve multiple partnerships 
+    * `GET /partnerships/{id}` to retrieve an individual partnership 
+    * `POST /partnerships` to create a partnership 
+    * `PUT /partnerships/{id}` to update a partnership 
+    
+    Read our [partnerships guidance](/api/guidance/guidance-for-lead-providers/partnerships) for more detailed information.  
+
+    ## What’s changed from the existing ‘Manage training for early career teachers’ API?  
+    
+    ### Challenge fields removed 
+    
+    Because schools now make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership, we’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`) from partnership responses. 
+
+    ### Providers can now see the number of ECTs or mentors currently training with them for a given partnership 
+    
+    We’ve added the numeric `participants_currently_training` field in the `GET /partnerships` endpoint. It shows lead providers whether any ECTs or mentors are currently training with them in a partnership.  
+    
+    ### New expression of interest field 
+    
+    We’ve introduced the `expression_of_interest` field in the `GET /schools` and `GET /schools/{id}` endpoints to show lead providers whether a school has any participants registered with them for that cohort. This should help lead providers create partnerships with schools that have stated they're training with them.
+    
+    The attribute holds one of 2 possible response values, `true` or `false`. 
+
+    If a school has expressed interest but no partnership exists, creating one lets the lead provider see the school’s registered participants in the API.
+    
+    ### Multiple partnerships may appear 
+    
+    Previously, schools had a default partnership with a single lead provider for each cohort. 
+    
+    We’ve changed this to reflect that some schools need to set up partnerships with more than one lead provider. 
+    
+    In the API: 
+    
+    * `GET /partnerships` may return more than one partnership for the same school and cohort 
+    * the `in_partnership` field will state `true` if any partnership exists and `false` if none exist 
+    
+    ### Earlier partnership submissions allowed 
+    
+    Lead providers can create a partnership even if the school hasn’t registered participants. The only exceptions are when the cohort has not opened, or the school is doing school-led training. 
+
+
 - title: Schools endpoints now in sandbox for testing  
   date: 2025-08-13
   tags:
     - sandbox-release
   body: |
-    We’ve added the GET `/api/v3/schools` and GET `/api/v3/schools/{id}` endpoints in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3). 
+    We’ve added the `GET /api/v3/schools` and `GET /api/v3/schools/{id}` endpoints in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3). 
 
     ### New `expression_of_interest` field 
 
-    Shows as `TRUE` when at least one participant for that cohort is registered with you as the lead provider. Once a partnership is confirmed, it remains `TRUE` even if all participants later leave that school, change lead provider or change to school-led training. 
+    Shows as `true` when at least one participant for that cohort is registered with you as the lead provider. Once a partnership is confirmed, it remains `true` even if all participants later leave that school, change lead provider or change to `school-led` training. 
 
     ### Updated `induction_programme_choice` logic 
 
-    Now shows `provider-led` if any participant in the cohort is on provider-led training. Shows `school-led` if all participants for that cohort are registered for school-led training for the school. Shows `not_yet_known` if no participants have been registered by the school yet. 
+    Now shows `provider-led` if any participant in the cohort is on provider-led training. Shows `school-led` if all participants for that cohort are registered for `school-led` training for the school. Shows `not_yet_known` if no participants have been registered by the school yet. 
 
     ### Updated `in_partnership` logic 
 
-    Now `TRUE` when at least one partnership exists for the school and cohort, and `FALSE` when none exist. We also now allow multiple partnerships per cohort between different lead providers. However, we'll only allow a lead provider to create one partnership per cohort with a school each for our initial release. 
+    Now `true` when at least one partnership exists for the school and cohort, and `false` when none exist. We also now allow multiple partnerships per cohort between different lead providers. However, we'll only allow a lead provider to create one partnership per cohort with a school each for our initial release. 
 
 - title: Delivery partner details available in API sandbox 
   date: 2025-08-12
   tags:
     - sandbox-release
   body: |
-   Lead providers can now view delivery partner details for their schools via GET `/api/v3/delivery-partners` and GET `/api/v3/delivery-partners/{id}` endpoints in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3).
+   Lead providers can now view delivery partner details for their schools via `GET /api/v3/delivery-partners` and `GET /api/v3/delivery-partners/{id}` endpoints in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3).
   
    There are no changes to the functionality compared to the delivery partner endpoints in the ‘Manage training for early career teachers’ API.
   
@@ -63,8 +113,8 @@
   body: |
    Lead providers can now check their financial statements in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3).
 
-   Use the GET `/api/v3/statements` endpoint to retrieve all statements or GET `/api/v3/statements/{id}` endpoint to retrieve a specific statement.
+   Use the `GET /api/v3/statements` endpoint to retrieve all statements or `GET /api/v3/statements/{id}` endpoint to retrieve a specific statement.
 
-   We’ve removed the type field from the responses. We used it to differentiate between NPQ and early career training statements, but it's no longer needed.
+   We’ve removed the `type` field from the responses. We used it to differentiate between NPQ and early career training statements, but it's no longer needed.
 
    We’d welcome feedback on this update before it goes into production. Share any suggestions or concerns via the usual Slack channels.
