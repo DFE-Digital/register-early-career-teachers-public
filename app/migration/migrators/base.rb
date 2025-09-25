@@ -89,7 +89,7 @@ module Migrators
   protected
 
     def migrate(collection)
-      Metadata::Manager.skip_metadata_updates do
+      DeclarativeMetadata.skip_updates do
         items = collection.order(:id).offset(offset).limit(limit)
 
         start_migration!(items.count)
