@@ -49,7 +49,7 @@ RSpec.describe 'Registering an ECT' do
   end
 
   def then_i_should_be_taken_to_the_ect_already_registered_error_page
-    expect(page).to have_path('/schools/register-ect/already-active_at-school')
+    expect(page).to have_path('/schools/register-ect/already-active-at-school')
   end
 
   def when_i_click_try_again

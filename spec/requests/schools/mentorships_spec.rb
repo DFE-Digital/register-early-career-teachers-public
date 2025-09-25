@@ -1,7 +1,7 @@
 RSpec.describe 'Create mentorship of an ECT to a mentor' do
   include ActionView::Helpers::SanitizeHelper
 
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
   let(:school) { FactoryBot.create(:school, :independent) }
 
@@ -12,7 +12,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
   describe 'GET /school/ects/:id/mentorship/new' do
     context 'when not signed in' do
       it 'redirects to the root page' do
-        get("/school/ects/#{ect.id}/mentorship/new")
+        get("/school/ects/#{ect_at_school_period.id}/mentorship/new")
 
         expect(response).to be_redirection
         expect(response.redirect_url).to eql(root_url)
@@ -27,10 +27,10 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
       it 'instantiates a new Schools::AssignMentorForm and renders the page' do
         allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
-        get("/school/ects/#{ect.id}/mentorship/new")
+        get("/school/ects/#{ect_at_school_period.id}/mentorship/new")
 
         expect(response).to be_successful
-        expect(Schools::AssignMentorForm).to have_received(:new).with(ect:).once
+        expect(Schools::AssignMentorForm).to have_received(:new).with(ect: ect_at_school_period).once
       end
     end
   end
@@ -38,7 +38,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
   describe 'POST /school/ects/:id/mentorship' do
     context 'when not signed in' do
       it 'redirects to the root page' do
-        post("/school/ects/#{ect.id}/mentorship")
+        post("/school/ects/#{ect_at_school_period.id}/mentorship")
 
         expect(response).to be_redirection
         expect(response.redirect_url).to eql(root_url)
@@ -54,10 +54,10 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
         let(:params) { { schools_assign_mentor_form: { mentor_id: '0' } } }
 
         it 'redirects to the start of the wizard to add a new mentor to the school' do
-          post("/school/ects/#{ect.id}/mentorship", params:)
+          post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
 
           expect(response).to be_redirection
-          expect(response.redirect_url).to eq(schools_register_mentor_wizard_start_url(ect_id: ect.id))
+          expect(response.redirect_url).to eq(schools_register_mentor_wizard_start_url(ect_id: ect_at_school_period.id))
         end
       end
 
@@ -67,41 +67,41 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
         it 'renders the form again for the user to select a different option' do
           allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
-          post("/school/ects/#{ect.id}/mentorship", params:)
+          post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
 
           expect(response).to be_successful
-          expect(Schools::AssignMentorForm).to have_received(:new).with(ect:, mentor_id: mentor.id.next.to_s).once
-          expect(sanitize(response.body)).to include("Who will mentor #{Teachers::Name.new(ect.teacher).full_name}?")
+          expect(Schools::AssignMentorForm).to have_received(:new).with(ect: ect_at_school_period, mentor_id: mentor.id.next.to_s).once
+          expect(sanitize(response.body)).to include("Who will mentor #{Teachers::Name.new(ect_at_school_period.teacher).full_name}?")
         end
       end
 
       context 'when a valid mentor has been selected for the school led ect mentorship' do
         before do
-          FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period: ect)
+          FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period:)
         end
 
         let(:params) { { schools_assign_mentor_form: { mentor_id: mentor.id } } }
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
 
         it 'creates the mentorship and redirects the user to the confirmation page' do
           allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
-          post("/school/ects/#{ect.id}/mentorship", params:)
+          post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
 
-          expect(Schools::AssignMentorForm).to have_received(:new).with(ect:, mentor_id: mentor.id.to_s).once
-          expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to eq(mentor)
+          expect(Schools::AssignMentorForm).to have_received(:new).with(ect: ect_at_school_period, mentor_id: mentor.id.to_s).once
+          expect(ECTAtSchoolPeriods::Mentorship.new(ect_at_school_period).current_mentor).to eq(mentor)
           expect(response).to be_redirection
-          expect(response.redirect_url).to eq(confirmation_schools_ect_mentorship_url(ect_id: ect.id))
+          expect(response.redirect_url).to eq(confirmation_schools_ect_mentorship_url(ect_id: ect_at_school_period.id))
         end
       end
 
       context 'provider led ECT mentorship' do
         before do
-          FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: ect)
+          FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:)
         end
 
         let(:params) { { schools_assign_mentor_form: { mentor_id: mentor.id } } }
-        let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
 
         context 'when the mentor is eligible for funding' do
           before do
@@ -109,7 +109,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
               .with(trn: mentor.teacher.trn)
               .and_return(instance_double(Teachers::MentorFundingEligibility, eligible?: true))
 
-            post("/school/ects/#{ect.id}/mentorship", params:)
+            post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
           end
 
           it 'redirects the user to the assign existing mentor wizard' do
@@ -126,20 +126,20 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
               .with(trn: mentor.teacher.trn)
               .and_return(instance_double(Teachers::MentorFundingEligibility, eligible?: false))
 
-            post("/school/ects/#{ect.id}/mentorship", params:)
+            post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
           end
 
           it 'creates the mentorship and redirects the user to the confirmation page' do
-            expect(Schools::AssignMentorForm).to have_received(:new).with(ect:, mentor_id: mentor.id.to_s).once
-            expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to eq(mentor)
-            expect(response).to redirect_to(confirmation_schools_ect_mentorship_path(ect_id: ect.id))
+            expect(Schools::AssignMentorForm).to have_received(:new).with(ect: ect_at_school_period, mentor_id: mentor.id.to_s).once
+            expect(ECTAtSchoolPeriods::Mentorship.new(ect_at_school_period).current_mentor).to eq(mentor)
+            expect(response).to redirect_to(confirmation_schools_ect_mentorship_path(ect_id: ect_at_school_period.id))
           end
         end
 
         context 'when no mentor_at_school_period is found' do
           let(:params) { { schools_assign_mentor_form: { mentor_id: 'non-existent' } } }
 
-          before { post("/school/ects/#{ect.id}/mentorship", params:) }
+          before { post("/school/ects/#{ect_at_school_period.id}/mentorship", params:) }
 
           it 'redirects to the new form again' do
             expect(response).to have_http_status(:ok)
@@ -153,7 +153,7 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
   describe 'GET /school/ects/:id/mentorship/confirmation' do
     context 'when not signed in' do
       it 'redirects to the root page' do
-        get("/school/ects/#{ect.id}/mentorship/confirmation")
+        get("/school/ects/#{ect_at_school_period.id}/mentorship/confirmation")
 
         expect(response).to be_redirection
         expect(response.redirect_url).to eql(root_url)
@@ -168,10 +168,10 @@ RSpec.describe 'Create mentorship of an ECT to a mentor' do
       end
 
       it 'instantiates a new Schools::AssignMentorForm and renders the page' do
-        Schools::AssignMentor.new(ect:, mentor:, author:).assign!
+        Schools::AssignMentor.new(ect: ect_at_school_period, mentor:, author:).assign!
         allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
-        get("/school/ects/#{ect.id}/mentorship/confirmation")
+        get("/school/ects/#{ect_at_school_period.id}/mentorship/confirmation")
 
         expect(response).to be_successful
         expect(sanitize(response.body)).to include("You've assigned #{Teachers::Name.new(mentor.teacher).full_name} as a mentor")

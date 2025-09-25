@@ -1,5 +1,5 @@
 RSpec.describe DfERole, type: :model do
-  it "defines role precendence" do
+  it "defines role precedence" do
     expect(described_class::ROLE_PRECEDENCE).to eq(%w[super_admin finance admin])
   end
 

@@ -7,6 +7,63 @@ describe Teacher do
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:teacher_id_changes) }
+    it { is_expected.to have_one(:started_induction_period).class_name("InductionPeriod") }
+    it { is_expected.to have_one(:finished_induction_period).class_name("InductionPeriod") }
+
+    describe ".started_induction_period" do
+      subject { teacher.started_induction_period }
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      it { is_expected.to be_nil }
+
+      context "when there is an induction period" do
+        let!(:induction_period) { FactoryBot.create(:induction_period, started_on: 1.year.ago, teacher:) }
+
+        it { is_expected.to eq(induction_period) }
+      end
+
+      context "when there are multiple induction periods" do
+        let!(:latest_induction_period) { FactoryBot.create(:induction_period, started_on: 1.year.ago, teacher:) }
+        let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 2.years.ago, teacher:) }
+
+        it { is_expected.to eq(earliest_induction_period) }
+      end
+    end
+
+    describe ".finished_induction_period" do
+      subject { teacher.finished_induction_period }
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      it { is_expected.to be_nil }
+
+      context "when there is an induction period without an outcome" do
+        before { FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 1.month.ago, teacher:) }
+
+        it { is_expected.to be_nil }
+      end
+
+      context "when there is an induction period with an outcome" do
+        let!(:induction_period) { FactoryBot.create(:induction_period, :pass, started_on: 1.year.ago, finished_on: 1.month.ago, teacher:) }
+
+        it { is_expected.to eq(induction_period) }
+      end
+
+      context "when there are multiple induction periods, all without an outcome" do
+        let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 6.months.ago, finished_on: 3.months.ago, teacher:) }
+        let!(:latest_induction_period) { FactoryBot.create(:induction_period, started_on: 3.months.ago, finished_on: 1.day.ago, teacher:) }
+
+        it { is_expected.to be_nil }
+      end
+
+      context "when there are multiple induction periods, with and without outcomes" do
+        let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 6.months.ago, finished_on: 3.months.ago, teacher:) }
+        let!(:latest_induction_period) { FactoryBot.create(:induction_period, :pass, started_on: 3.months.ago, finished_on: 1.day.ago, teacher:) }
+
+        it { is_expected.to eq(latest_induction_period) }
+      end
+    end
 
     describe '.current_or_next_ect_at_school_period' do
       let(:teacher) { FactoryBot.create(:teacher) }

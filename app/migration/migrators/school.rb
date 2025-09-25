@@ -80,10 +80,10 @@ module Migrators
     end
 
     def migrate_school!(ecf_school)
-      Builders::GIAS::School.new(ecf_school).build if migrateable_school?(ecf_school)
+      Builders::GIAS::School.new(ecf_school).build if migratable_school?(ecf_school)
     end
 
-    def migrateable_school?(ecf_school)
+    def migratable_school?(ecf_school)
       return ecf_school.partnerships.any? if ecf_school.open?
 
       ecf_school.induction_records.any?
