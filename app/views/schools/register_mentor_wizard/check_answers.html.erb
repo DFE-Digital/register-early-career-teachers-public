@@ -52,7 +52,7 @@
     end
   end
 
-  if (@mentor.provider_led_ect? && @mentor.mentoring_at_new_school_only? && @mentor.funding_available?) || @mentor.ect_lead_provider_invalid?
+  if @mentor.provider_led_ect? && ((@mentor.mentoring_at_new_school_only? && @mentor.funding_available?) || @mentor.ect_lead_provider_invalid?)
     summary_list.with_row do |row|
       row.with_key(text: "Lead provider")
       row.with_value(text: @mentor.lead_provider&.name || @mentor.ect_lead_provider&.name)
