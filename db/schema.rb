@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_26_152312) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_25_051441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -168,14 +168,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_152312) do
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["api_id"], name: "index_delivery_partners_on_api_id", unique: true
     t.index ["name"], name: "index_delivery_partners_on_name", unique: true
-  end
-
-  create_table "dfe_roles", force: :cascade do |t|
-    t.enum "role_type", default: "admin", null: false, enum_type: "dfe_role_type"
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_dfe_roles_on_user_id"
   end
 
   create_table "ect_at_school_periods", force: :cascade do |t|
@@ -814,7 +806,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_152312) do
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
-  add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"

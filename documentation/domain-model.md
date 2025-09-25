@@ -275,14 +275,6 @@ erDiagram
   ECTAtSchoolPeriod }o--|| School : belongs_to
   ECTAtSchoolPeriod }o--|| Teacher : belongs_to
   ECTAtSchoolPeriod }o--|| AppropriateBody : belongs_to
-  DfERole {
-    integer id
-    enum role_type
-    integer user_id
-    datetime created_at
-    datetime updated_at
-  }
-  DfERole }o--|| User : belongs_to
   DeliveryPartner {
     integer id
     string name
