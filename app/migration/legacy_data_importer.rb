@@ -15,9 +15,8 @@ class LegacyDataImporter
     # FIXME: could cause an issue if there are any jobs in process, plus do
     # we want to do this?
     DataMigration.all.find_each(&:destroy!)
-
     Metadata::Manager.destroy_all_metadata!
-
     Migrators::Base.migrators_in_dependency_order.reverse.each(&:reset!)
+    GIAS::Importer.new.fetch
   end
 end
