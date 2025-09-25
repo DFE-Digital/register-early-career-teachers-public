@@ -28,6 +28,16 @@ RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_even
             }.to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } }.to(all(be_within(5.seconds).of(Time.current))))
           end
 
+          context "when wrapped in a skip_updates block" do
+            around { |example| DeclarativeTouch.skip_updates { example.run } }
+
+            it "does not touch the #{timestamp_attribute} of the associated model(s)" do
+              expect {
+                instance.update_attribute(attribute_to_change, new_value)
+              }.not_to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } })
+            end
+          end
+
           it "does not touch the updated_at of the associated model(s)" do
             # If the target is the same as the instance the updated_at will always be updated.
             unless instance == target
@@ -62,6 +72,16 @@ RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_even
             instance.update!(updated_at: 1.week.ago)
           }.to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } }.to(all(be_within(5.seconds).of(Time.current))))
         end
+
+        context "when wrapped in a skip_updates block" do
+          around { |example| DeclarativeTouch.skip_updates { example.run } }
+
+          it "does not touch the #{timestamp_attribute} of the associated model(s)" do
+            expect {
+              instance.update!(updated_at: 1.week.ago)
+            }.not_to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } })
+          end
+        end
       end
     end
   end
@@ -78,6 +98,14 @@ RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_even
         expect {
           instance
         }.not_to(change { Array.wrap(target).map { |t| t.reload.updated_at } })
+      end
+
+      context "when wrapped in a skip_updates block" do
+        around { |example| DeclarativeTouch.skip_updates { example.run } }
+
+        it "does not touch the #{timestamp_attribute} of the associated model(s)" do
+          expect { instance }.not_to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } })
+        end
       end
     end
   end
@@ -96,6 +124,14 @@ RSpec.shared_examples "a declarative touch model" do |when_changing: [], on_even
         expect {
           instance.destroy!
         }.not_to(change { Array.wrap(target).map { |t| t.reload.updated_at } })
+      end
+
+      context "when wrapped in a skip_updates block" do
+        around { |example| DeclarativeTouch.skip_updates { example.run } }
+
+        it "does not touch the #{timestamp_attribute} of the associated model(s)" do
+          expect { instance.destroy! }.not_to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } })
+        end
       end
     end
   end
@@ -122,6 +158,16 @@ RSpec.shared_examples "a declarative metadata model" do |when_changing: [], on_e
             instance.update!(attribute_to_change => new_value)
 
             expect(manager).to have_received(:refresh_metadata!).with(target)
+          end
+
+          context "when wrapped in a skip_updates block" do
+            around { |example| DeclarativeMetadata.skip_updates { example.run } }
+
+            it "does not refresh the metadata of the associated model(s)" do
+              instance.update!(attribute_to_change => new_value)
+
+              expect(manager).not_to have_received(:refresh_metadata!).with(target)
+            end
           end
 
           if target_optional
@@ -151,6 +197,16 @@ RSpec.shared_examples "a declarative metadata model" do |when_changing: [], on_e
 
           expect(manager).to have_received(:refresh_metadata!).with(target)
         end
+
+        context "when wrapped in a skip_updates block" do
+          around { |example| DeclarativeMetadata.skip_updates { example.run } }
+
+          it "does not refresh the metadata of the associated model(s)" do
+            instance.update!(updated_at: 1.week.ago)
+
+            expect(manager).not_to have_received(:refresh_metadata!).with(target)
+          end
+        end
       end
     end
   end
@@ -165,18 +221,45 @@ RSpec.shared_examples "a declarative metadata model" do |when_changing: [], on_e
         expect(manager).to have_received(:refresh_metadata!).with(target)
       end
     end
+
+    context "when wrapped in a skip_updates block" do
+      around { |example| DeclarativeMetadata.skip_updates { example.run } }
+
+      it "does not refresh the metadata of the associated model(s)" do
+        allow(Metadata::Manager).to receive(:new).and_return(manager)
+
+        instance
+
+        expect(manager).not_to have_received(:refresh_metadata!).with(target)
+      end
+    end
   end
 
   if :destroy.in?(on_event)
-    context "when destroying" do
-      it "refreshes the metadata of the associated model(s) on destroy" do
+    describe "destroy event" do
+      before do
         # Ensure it's created first.
         instance
+
         allow(Metadata::Manager).to receive(:new).and_return(manager)
+      end
 
-        instance.destroy!
+      context "when destroying" do
+        it "refreshes the metadata of the associated model(s) on destroy" do
+          instance.destroy!
 
-        expect(manager).to have_received(:refresh_metadata!).with(target)
+          expect(manager).to have_received(:refresh_metadata!).with(target)
+        end
+      end
+
+      context "when wrapped in a skip_updates block" do
+        around { |example| DeclarativeMetadata.skip_updates { example.run } }
+
+        it "does not refresh the metadata of the associated model(s)" do
+          instance.destroy!
+
+          expect(manager).not_to have_received(:refresh_metadata!).with(target)
+        end
       end
     end
   end
