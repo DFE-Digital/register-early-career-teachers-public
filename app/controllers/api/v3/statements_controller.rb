@@ -1,6 +1,6 @@
 module API
   module V3
-    class StatementsController < BaseController
+    class StatementsController < APIController
       def index
         conditions = {
           contract_period_years: extract_conditions(contract_period_years),

@@ -1,6 +1,6 @@
 module API
   module V3
-    class SchoolsController < BaseController
+    class SchoolsController < APIController
       filter_validation required_filters: %i[cohort]
 
       def index
