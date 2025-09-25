@@ -9,8 +9,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
       it 'redirects to the root page' do
         get('/appropriate-body/claim-an-ect/find-ect/new')
 
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -33,9 +32,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         post('/appropriate-body/claim-an-ect/find-ect')
-
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -67,8 +64,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
             pending_induction_submission: PendingInductionSubmission.last
           )
 
-          expect(response).to be_redirection
-          expect(response.redirect_url).to match(%r{/claim-an-ect/check-ect/\d+/edit\z})
+          expect(response).to redirect_to(%r{/claim-an-ect/check-ect/\d+/edit\z})
         end
       end
 
@@ -81,7 +77,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
             params: { pending_induction_submission: search_params }
           )
 
-          expect(response.redirect_url).to match(%r{/appropriate-body/claim-an-ect/errors/no-qts/\d+\z})
+          expect(response).to redirect_to(%r{/appropriate-body/claim-an-ect/errors/no-qts/\d+\z})
         end
       end
 
@@ -94,7 +90,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
             params: { pending_induction_submission: search_params }
           )
 
-          expect(response.redirect_url).to match(%r{/appropriate-body/claim-an-ect/errors/prohibited-from-teaching/\d+\z})
+          expect(response).to redirect_to(%r{/appropriate-body/claim-an-ect/errors/prohibited-from-teaching/\d+\z})
         end
       end
 
@@ -118,7 +114,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
 
           last_pending_induction_submission_id = PendingInductionSubmission.last.id
 
-          expect(response.redirect_url).to end_with("/appropriate-body/claim-an-ect/check-ect/#{last_pending_induction_submission_id}/edit")
+          expect(response).to redirect_to("/appropriate-body/claim-an-ect/check-ect/#{last_pending_induction_submission_id}/edit")
         end
       end
 
@@ -141,8 +137,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
             params: { pending_induction_submission: search_params }
           )
 
-          expect(response).to be_redirection
-          expect(response.redirect_url).to match(%r{/teachers/\d+\z})
+          expect(response).to redirect_to(%r{/teachers/\d+\z})
           expect(flash[:notice]).to eq("Teacher #{teacher.trs_first_name} #{teacher.trs_last_name} already has an active induction period with this appropriate body")
         end
       end
