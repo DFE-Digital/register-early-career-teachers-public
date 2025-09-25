@@ -18,7 +18,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
         let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
 
         before do
-          allow(wizard.mentor).to receive(:funding_available?).and_return(true)
+          allow(wizard.mentor).to receive_messages(funding_available?: true, ect_lead_provider_invalid?: false)
         end
 
         context 'when the ect is provider led' do
@@ -66,10 +66,26 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
 
       context 'when the mentor is not available for funding' do
         before do
-          allow(wizard.mentor).to receive(:funding_available?).and_return(false)
+          allow(wizard.mentor).to receive_messages(funding_available?: false, ect_lead_provider_invalid?: false)
         end
 
         it { expect(subject.previous_step).to eq(:email_address) }
+      end
+
+      context 'when mentor has invalid lead provider' do
+        before do
+          allow(wizard.mentor).to receive_messages(ect_lead_provider_invalid?: true, previously_registered_as_mentor?: false)
+        end
+
+        it { expect(subject.previous_step).to eq(:lead_provider) }
+      end
+
+      context 'when previously registered as a mentor and invalid lead provider' do
+        before do
+          allow(wizard.mentor).to receive_messages(ect_lead_provider_invalid?: true, previously_registered_as_mentor?: true)
+        end
+
+        it { expect(subject.previous_step).to eq(:lead_provider) }
       end
     end
   end
