@@ -1,6 +1,6 @@
 module API
   module V3
-    class PartnershipsController < BaseController
+    class PartnershipsController < APIController
       def index
         conditions = {
           contract_period_years: extract_conditions(contract_period_years),

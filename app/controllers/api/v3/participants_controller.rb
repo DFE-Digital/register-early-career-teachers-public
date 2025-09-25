@@ -1,6 +1,6 @@
 module API
   module V3
-    class ParticipantsController < BaseController
+    class ParticipantsController < APIController
       def index = head(:method_not_allowed)
       def show = head(:method_not_allowed)
       def change_schedule = head(:method_not_allowed)
