@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_25_051441) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_26_152312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -801,6 +801,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_25_051441) do
     t.datetime "otp_verified_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.enum "role", default: "admin", null: false, enum_type: "dfe_role_type"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
