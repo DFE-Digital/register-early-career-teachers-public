@@ -64,7 +64,8 @@ teachers = [
   { trs_first_name: 'Robson', trs_last_name: 'Scottie', trn: '3002582', **early_roll_out_mentor_attrs },
   { trs_first_name: 'Muhammed', trs_last_name: 'Ali', trn: '3002580', **early_roll_out_mentor_attrs },
   { trs_first_name: 'Roy', trs_last_name: 'Dotrice', trn: '7000007', **early_roll_out_mentor_attrs },
-  { trs_first_name: 'Ichigo', trs_last_name: 'Kurosaki', trn: '7777654', trs_induction_status: 'InProgress' }
+  { trs_first_name: 'Ichigo', trs_last_name: 'Kurosaki', trn: '7777654', trs_induction_status: 'InProgress' },
+  { trs_first_name: 'Naruto', trs_last_name: 'Uzumaki', trn: '9300999', trs_induction_status: 'InProgress' },
 ]
 
 teachers.each do |attrs|
