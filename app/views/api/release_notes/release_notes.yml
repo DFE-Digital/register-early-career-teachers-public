@@ -22,20 +22,20 @@
 #     **bold** and _italic_ text
 
 - title: Partnerships endpoints now in sandbox for testing   
-  date: 2025-09-XX 
+  date: 2025-09-26
   tags: 
     - sandbox-release 
     - new-field 
     - removed-field
   body: |
-    We’ve added the partnerships endpoints to the [‘Register early career teachers’ API sandbox](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3): 
+    We’ve added the partnerships endpoints to the [‘Register early career teachers’ API sandbox](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3):
     
-    * `GET /partnerships` to retrieve multiple partnerships 
-    * `GET /partnerships/{id}` to retrieve an individual partnership 
-    * `POST /partnerships` to create a partnership 
-    * `PUT /partnerships/{id}` to update a partnership 
+    * `GET /partnerships` to retrieve multiple partnerships
+    * `GET /partnerships/{id}` to retrieve an individual partnership
+    * `POST /partnerships` to create a partnership
+    * `PUT /partnerships/{id}` to update a partnership
     
-    Read our [partnerships guidance](/api/guidance/guidance-for-lead-providers/partnerships) for more detailed information.  
+    Read our [partnerships guidance](/api/guidance/guidance-for-lead-providers/partnerships) for more detailed information.
 
     ## What’s changed from the existing ‘Manage training for early career teachers’ API?  
     
