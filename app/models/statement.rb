@@ -1,5 +1,5 @@
 class Statement < ApplicationRecord
-  include DeclarativeTouch
+  include DeclarativeUpdates
 
   VALID_FEE_TYPES = %w[output service].freeze
 

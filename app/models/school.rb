@@ -1,7 +1,6 @@
 class School < ApplicationRecord
   include GIASHelpers
-  include DeclarativeTouch
-  include DeclarativeMetadata
+  include DeclarativeUpdates
 
   touch -> { self }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
