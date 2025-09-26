@@ -6,9 +6,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         get("/appropriate-body/teachers/#{teacher.id}/release/new")
-
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -36,9 +34,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         post("/appropriate-body/teachers/#{teacher.id}/release")
-
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -86,8 +82,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
           expect(induction_period.finished_on).to eq(Date.parse("2023-07-31"))
           expect(induction_period.number_of_terms).to eq(6)
 
-          expect(response).to be_redirection
-          expect(response.redirect_url).to end_with("/appropriate-body/teachers/#{teacher.id}/release")
+          expect(response).to redirect_to("/appropriate-body/teachers/#{teacher.id}/release")
         end
 
         context 'with missing params' do

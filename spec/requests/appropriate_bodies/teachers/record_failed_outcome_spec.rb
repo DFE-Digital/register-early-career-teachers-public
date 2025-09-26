@@ -27,9 +27,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
-
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -55,9 +53,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         post("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
-
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -103,8 +99,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
             author: an_instance_of(Sessions::Users::AppropriateBodyPersona)
           )
 
-          expect(response).to be_redirection
-          expect(response.redirect_url).to end_with("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
+          expect(response).to redirect_to("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
         end
       end
 
@@ -166,9 +161,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
-
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+        expect(response).to redirect_to(root_url)
       end
     end
 
@@ -177,7 +170,6 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
 
       it 'renders the show page for a valid teacher' do
         get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
-
         expect(response).to be_successful
       end
     end
