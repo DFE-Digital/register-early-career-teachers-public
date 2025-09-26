@@ -76,7 +76,7 @@ describe Event do
 
       before { subject.valid? }
 
-      context 'when happened_at is in the past' do
+      context 'when happened_at is in the future' do
         let(:happened_at) { 1.minute.from_now }
 
         it { is_expected.to(be_invalid) }
@@ -86,7 +86,7 @@ describe Event do
         end
       end
 
-      context 'when happened_at is in the future' do
+      context 'when happened_at is in the past' do
         let(:happened_at) { 1.minute.ago }
 
         it { is_expected.to(be_valid) }

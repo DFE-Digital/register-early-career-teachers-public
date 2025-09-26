@@ -42,6 +42,7 @@ class Event < ApplicationRecord
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
     training_period_assigned_to_school_partnership
+    statement_authorised_for_payment
   ].freeze
 
   belongs_to :author, class_name: 'User'
