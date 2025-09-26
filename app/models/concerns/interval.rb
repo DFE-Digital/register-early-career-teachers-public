@@ -19,6 +19,7 @@ module Interval
     scope :overlapping_with, ->(period) { where(*overlapping_with_range(period.started_on, period.finished_on)) }
     scope :containing_period, ->(period) { where(*containing_range(period.started_on, period.finished_on)) }
     scope :ongoing_on, ->(date) { where(*date_in_range(date)) }
+    scope :started, -> { where(started_on: ..Time.zone.today) }
 
     # Date relative scopes
     scope :ongoing_today, -> { ongoing_on(Time.zone.today) }
