@@ -14,8 +14,8 @@ RSpec.describe "Appropriate Body bulk actions show page", type: :request do
     context 'when not signed in' do
       it 'redirects to the root page' do
         get("/appropriate-body/bulk/actions/#{batch.id}")
-        expect(response).to be_redirection
-        expect(response.redirect_url).to eql(root_url)
+
+        expect(response).to redirect_to(root_url)
       end
     end
 

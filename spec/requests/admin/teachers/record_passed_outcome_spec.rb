@@ -27,8 +27,6 @@ RSpec.describe 'Admin recording a passed outcome for a teacher' do
     context 'when not signed in' do
       it 'redirects to the sign in page' do
         get("/admin/teachers/#{teacher.id}/record-passed-outcome/new")
-
-        expect(response).to be_redirection
         expect(response).to redirect_to(sign_in_path)
       end
     end
@@ -102,8 +100,7 @@ RSpec.describe 'Admin recording a passed outcome for a teacher' do
             author: an_instance_of(Sessions::Users::DfEPersona)
           )
 
-          expect(response).to be_redirection
-          expect(response.redirect_url).to end_with("/admin/teachers/#{teacher.id}/record-passed-outcome")
+          expect(response).to redirect_to("/admin/teachers/#{teacher.id}/record-passed-outcome")
         end
       end
 
