@@ -1,6 +1,5 @@
 class LeadProviderDeliveryPartnership < ApplicationRecord
-  include DeclarativeTouch
-  include DeclarativeMetadata
+  include DeclarativeUpdates
 
   belongs_to :active_lead_provider
   belongs_to :delivery_partner

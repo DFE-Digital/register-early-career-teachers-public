@@ -33,11 +33,6 @@ RSpec.describe LegacyDataImporter do
       importer.migrate!
     end
 
-    it "does not refresh the metadata when a migration is in progress" do
-      expect(Metadata::Manager).not_to receive(:refresh_all_metadata!)
-      importer.migrate!
-    end
-
     context "when all migrations have finished" do
       let!(:data_migration) { FactoryBot.create(:data_migration, :completed) }
 

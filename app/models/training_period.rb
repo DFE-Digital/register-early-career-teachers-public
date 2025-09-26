@@ -1,6 +1,6 @@
 class TrainingPeriod < ApplicationRecord
   include Interval
-  include DeclarativeMetadata
+  include DeclarativeUpdates
 
   # Enums
   enum :training_programme,

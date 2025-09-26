@@ -1,6 +1,6 @@
 class MentorAtSchoolPeriod < ApplicationRecord
   include Interval
-  include DeclarativeMetadata
+  include DeclarativeUpdates
 
   # Associations
   belongs_to :school, inverse_of: :mentor_at_school_periods

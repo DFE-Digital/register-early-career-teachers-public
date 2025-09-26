@@ -2,7 +2,7 @@ class GIAS::School < ApplicationRecord
   self.table_name = "gias_schools"
   self.ignored_columns = %i[search]
 
-  include DeclarativeTouch
+  include DeclarativeUpdates
 
   touch -> { school }, when_changing: %i[name], timestamp_attribute: :api_updated_at
 

@@ -7,7 +7,7 @@ module GIAS
     SCHOOL_LINKS_FILENAME = "links.csv"
 
     def fetch
-      Metadata::Manager.skip_metadata_updates do
+      DeclarativeUpdates.skip(:metadata) do
         import_only? ? fetch_and_import_only : fetch_and_update
       end
       Metadata::Handlers::School.refresh_all_metadata!(async: true)
