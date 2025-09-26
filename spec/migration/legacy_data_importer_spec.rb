@@ -44,13 +44,16 @@ RSpec.describe LegacyDataImporter do
   end
 
   describe "#reset!" do
+    let(:gias_importer) { instance_spy(GIAS::Importer) }
+
     before do
       allow(Migrators::Base).to receive(:migrators_in_dependency_order).and_return [migrator1, migrator2]
+      allow(GIAS::Importer).to receive(:new).and_return(gias_importer)
     end
 
     it "destroys any DataMigration records" do
       FactoryBot.create_list(:data_migration, 2)
-      [migrator1, migrator2].each { |migrator| allow(migrator).to receive(:reset!) }
+      [migrator1, migrator2].each { allow(it).to receive(:reset!) }
 
       expect {
         importer.reset!
@@ -66,6 +69,15 @@ RSpec.describe LegacyDataImporter do
       [migrator1, migrator2].each { allow(it).to receive(:reset!) }
       expect(Metadata::Manager).to receive(:destroy_all_metadata!)
       importer.reset!
+    end
+
+    it "import schools from GIAS" do
+      [migrator1, migrator2].each { allow(it).to receive(:reset!) }
+
+      importer.reset!
+
+      expect(GIAS::Importer).to have_received(:new).once
+      expect(gias_importer).to have_received(:fetch).once
     end
   end
 end

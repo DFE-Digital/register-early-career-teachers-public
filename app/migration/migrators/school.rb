@@ -22,7 +22,11 @@ module Migrators
 
     def self.record_count = schools.count
 
-    def self.reset! = nil
+    def self.reset!
+      if Rails.application.config.enable_migration_testing
+        ::GIAS::School.connection.execute("TRUNCATE #{::GIAS::School.table_name} RESTART IDENTITY CASCADE")
+      end
+    end
 
     def self.schools
       ::Migration::School.with(eligible_or_cip_or_with_irs:
