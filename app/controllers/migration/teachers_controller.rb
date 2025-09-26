@@ -58,7 +58,7 @@ private
   end
 
   def user
-    @user ||= Migration::User.find(teacher.api_user_id)
+    @user ||= Migration::User.find(teacher.api_id)
   end
 
   def teacher
