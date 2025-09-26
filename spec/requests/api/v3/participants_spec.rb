@@ -90,6 +90,8 @@ RSpec.describe "Participants API", type: :request do
                       school_partnership:,
                       started_on: finished_on.next_day,
                       finished_on: both_mentor_period.finished_on)
+
+    Metadata::Manager.refresh_all_metadata!(async: false, track_changes: false)
   end
 
   describe "#index" do

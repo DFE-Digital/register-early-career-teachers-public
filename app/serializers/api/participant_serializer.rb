@@ -5,25 +5,9 @@ class API::ParticipantSerializer < Blueprinter::Base
     field(:ecf_enrolments) do |teacher, options|
       lead_provider = options[:lead_provider]
 
-      latest_ect_training_period = TrainingPeriod
-        .includes(:ect_at_school_period)
-        .where(ect_at_school_period: { teacher: } )
-        .latest_first
-        .started
-        .find do |training_period|
-          training_period.lead_provider == lead_provider
-        end
+      metadata = teacher.lead_provider_metadata.select { it.lead_provider_id == lead_provider.id }.sole
 
-      latest_mentor_training_period = TrainingPeriod
-        .includes(:mentor_at_school_period)
-        .where(mentor_at_school_period: { teacher: } )
-        .latest_first
-        .started
-        .find do |training_period|
-          training_period.lead_provider == lead_provider
-        end
-
-      [latest_ect_training_period, latest_mentor_training_period].compact.map do |training_period|
+      [metadata.latest_ect_training_period, metadata.latest_mentor_training_period].compact.map do |training_period|
         ecf_enrolment(training_period)
       end
     end

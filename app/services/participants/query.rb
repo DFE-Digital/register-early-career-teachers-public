@@ -22,6 +22,18 @@ module Participants
       Teacher
         .select("teachers.*")
         .from("(#{ect_teachers.to_sql} UNION #{mentor_teachers.to_sql}) as teachers")
+        .includes(
+          lead_provider_metadata: {
+            latest_ect_training_period: [
+              :lead_provider,
+              { ect_at_school_period: :teacher },
+            ],
+            latest_mentor_training_period: [
+              :lead_provider,
+              { mentor_at_school_period: :teacher },
+            ]
+          }
+        )
     end
 
     def ect_teachers
