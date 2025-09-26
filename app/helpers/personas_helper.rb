@@ -8,7 +8,7 @@ module PersonasHelper
     when 'Appropriate body user'
       persona.appropriate_body_name
     when 'DfE staff'
-      role = User::ROLES.find { |r| r.identifier == persona.role.to_sym }.name
+      role = User::ROLES.fetch(persona.role.to_sym)
       "Department for Education staff member (#{role})"
     else
       fail(UnrecognisedPersonaType)
@@ -18,6 +18,6 @@ module PersonasHelper
   def persona_role(persona)
     return unless persona.type == 'DfE staff'
 
-    User::ROLES.find { |r| r.identifier == persona.role.to_sym }.name
+    User::ROLES.fetch(persona.role.to_sym)
   end
 end
