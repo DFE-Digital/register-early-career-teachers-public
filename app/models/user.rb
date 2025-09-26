@@ -17,4 +17,7 @@ class User < ApplicationRecord
   # Associations
   has_many :events
   has_many :authored_events, class_name: 'Event', inverse_of: :author
+
+  # Scopes
+  scope :alphabetical, -> { order(name: :asc) }
 end

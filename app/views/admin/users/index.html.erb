@@ -9,4 +9,13 @@
   <%= govuk_button_link_to 'Add new user', new_admin_user_path, secondary: true %>
 <p>
 
-<%= govuk_list(@users.map { |u| govuk_link_to(u.name, admin_user_path(u), no_visited_state: true) }) %>
+<%=
+  govuk_list(
+    @users.map do |u|
+      safe_join([
+        govuk_link_to(u.name, admin_user_path(u), no_visited_state: true),
+        elevated_role_name(u)
+      ].compact, " ")
+    end
+  )
+%>

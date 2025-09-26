@@ -1,7 +1,7 @@
 module Admin
   class UsersController < AdminController
     def index
-      @users = User.all
+      @users = User.alphabetical
     end
 
     def show
@@ -16,11 +16,11 @@ module Admin
       dfe_users = DfEUsers.new(author: current_user)
 
       if dfe_users.create_user(user_params)
-        flash[:notice] = "#{dfe_users.user_name} added"
+        flash[:notice] = "#{dfe_users.user.name} added"
         redirect_to admin_users_path
       else
         @user = dfe_users.user
-        render :new
+        render :new, status: :bad_request
       end
     end
 
@@ -32,11 +32,11 @@ module Admin
       dfe_users = DfEUsers.new(author: current_user)
 
       if dfe_users.update_user(params[:id], user_params)
-        flash[:notice] = "#{dfe_users.user_name} updated"
+        flash[:notice] = "#{dfe_users.user.name} updated"
         redirect_to admin_users_path
       else
         @user = dfe_users.user
-        render :edit
+        render :edit, status: :bad_request
       end
     end
 

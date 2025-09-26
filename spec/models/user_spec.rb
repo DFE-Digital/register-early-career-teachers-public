@@ -25,4 +25,12 @@ describe User do
       )
     end
   end
+
+  describe 'scopes' do
+    describe '.alphabetical' do
+      it 'orders by name ascending' do
+        expect(User.alphabetical.to_sql).to end_with('ORDER BY "users"."name" ASC')
+      end
+    end
+  end
 end
