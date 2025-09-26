@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_26_104754) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -770,6 +770,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
     t.integer "mentor_payments_frozen_year"
     t.boolean "ect_pupil_premium_uplift", default: false, null: false
     t.boolean "ect_sparsity_uplift", default: false, null: false
+    t.datetime "first_became_eligible_for_ect_training_at"
+    t.datetime "first_became_eligible_for_mentor_training_at"
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
     t.index ["api_user_id"], name: "index_teachers_on_api_user_id", unique: true
