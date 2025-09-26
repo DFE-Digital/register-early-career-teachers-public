@@ -1,43 +1,45 @@
-namespace :schools, path: :school do
-  scope module: :ects, path: "/ects/:ect_id", as: :ects do
-    namespace :change_name_wizard, path: "change-name" do
-      concerns :wizardable, wizard: Schools::ECTs::ChangeNameWizard
+constraints -> { Rails.application.config.enable_schools_interface } do
+  namespace :schools, path: :school do
+    scope module: :ects, path: "/ects/:ect_id", as: :ects do
+      namespace :change_name_wizard, path: "change-name" do
+        concerns :wizardable, wizard: Schools::ECTs::ChangeNameWizard
+      end
+
+      namespace :change_email_address_wizard, path: "change-email-address" do
+        concerns :wizardable, wizard: Schools::ECTs::ChangeEmailAddressWizard
+      end
+
+      namespace :change_working_pattern_wizard, path: "change-working-pattern" do
+        concerns :wizardable, wizard: Schools::ECTs::ChangeWorkingPatternWizard
+      end
     end
 
-    namespace :change_email_address_wizard, path: "change-email-address" do
-      concerns :wizardable, wizard: Schools::ECTs::ChangeEmailAddressWizard
+    resources :ects, only: %i[index show] do
+      resource :mentorship, only: %i[new create] do
+        get :confirmation, on: :collection
+      end
     end
 
-    namespace :change_working_pattern_wizard, path: "change-working-pattern" do
-      concerns :wizardable, wizard: Schools::ECTs::ChangeWorkingPatternWizard
-    end
-  end
+    scope module: :mentors, path: "/mentors/:mentor_id", as: :mentors do
+      namespace :change_name_wizard, path: "change-name" do
+        concerns :wizardable, wizard: Schools::Mentors::ChangeNameWizard
+      end
 
-  resources :ects, only: %i[index show] do
-    resource :mentorship, only: %i[new create] do
-      get :confirmation, on: :collection
-    end
-  end
-
-  scope module: :mentors, path: "/mentors/:mentor_id", as: :mentors do
-    namespace :change_name_wizard, path: "change-name" do
-      concerns :wizardable, wizard: Schools::Mentors::ChangeNameWizard
+      namespace :change_email_address_wizard, path: "change-email-address" do
+        concerns :wizardable, wizard: Schools::Mentors::ChangeEmailAddressWizard
+      end
     end
 
-    namespace :change_email_address_wizard, path: "change-email-address" do
-      concerns :wizardable, wizard: Schools::Mentors::ChangeEmailAddressWizard
+    resources :mentors, only: %i[index]
+
+    namespace :register_mentor_wizard, path: "register-mentor" do
+      get "what-you-will-need", as: :start, action: :start
+
+      concerns :wizardable, wizard: Schools::RegisterMentorWizard
     end
-  end
 
-  resources :mentors, only: %i[index]
-
-  namespace :register_mentor_wizard, path: "register-mentor" do
-    get "what-you-will-need", as: :start, action: :start
-
-    concerns :wizardable, wizard: Schools::RegisterMentorWizard
-  end
-
-  namespace :assign_existing_mentor_wizard, path: 'assign-existing-mentor' do
-    concerns :wizardable, wizard: Schools::AssignExistingMentorWizard
+    namespace :assign_existing_mentor_wizard, path: 'assign-existing-mentor' do
+      concerns :wizardable, wizard: Schools::AssignExistingMentorWizard
+    end
   end
 end
