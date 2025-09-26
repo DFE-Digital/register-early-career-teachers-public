@@ -9,6 +9,8 @@ describe Teacher do
     it { is_expected.to have_many(:teacher_id_changes) }
     it { is_expected.to have_one(:started_induction_period).class_name("InductionPeriod") }
     it { is_expected.to have_one(:finished_induction_period).class_name("InductionPeriod") }
+    it { is_expected.to have_one(:earliest_ect_at_school_period).class_name("ECTAtSchoolPeriod") }
+    it { is_expected.to have_one(:earliest_mentor_at_school_period).class_name("MentorAtSchoolPeriod") }
 
     describe ".started_induction_period" do
       subject { teacher.started_induction_period }
@@ -62,6 +64,48 @@ describe Teacher do
         let!(:latest_induction_period) { FactoryBot.create(:induction_period, :pass, started_on: 3.months.ago, finished_on: 1.day.ago, teacher:) }
 
         it { is_expected.to eq(latest_induction_period) }
+      end
+    end
+
+    describe ".earliest_ect_at_school_period" do
+      subject { teacher.earliest_ect_at_school_period }
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      it { is_expected.to be_nil }
+
+      context "when there is an ECT at school period" do
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, teacher:) }
+
+        it { is_expected.to eq(ect_at_school_period) }
+      end
+
+      context "when there are multiple ECT at school periods" do
+        let!(:latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, teacher:) }
+        let!(:earliest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, teacher:) }
+
+        it { is_expected.to eq(earliest_ect_at_school_period) }
+      end
+    end
+
+    describe ".earliest_mentor_at_school_period" do
+      subject { teacher.earliest_mentor_at_school_period }
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      it { is_expected.to be_nil }
+
+      context "when there is an mentor at school period" do
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 1.year.ago, teacher:) }
+
+        it { is_expected.to eq(mentor_at_school_period) }
+      end
+
+      context "when there are multiple mentor at school periods" do
+        let!(:latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 1.year.ago, teacher:) }
+        let!(:earliest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 2.years.ago, teacher:) }
+
+        it { is_expected.to eq(earliest_mentor_at_school_period) }
       end
     end
 
