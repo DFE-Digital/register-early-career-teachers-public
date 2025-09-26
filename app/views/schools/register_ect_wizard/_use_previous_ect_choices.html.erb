@@ -32,7 +32,7 @@
   end
 end %>
 
-<% if @decorated_school.provider_led_training_programme_chosen? && !@decorated_school.has_partnership_with?(lead_provider: @decorated_school.latest_registration_choices.lead_provider.name, contract_period: @ect.contract_start_date) %>
+<% if @decorated_school.provider_led_training_programme_chosen? && !@decorated_school.has_partnership_with?(lead_provider: @decorated_school.latest_registration_choices.lead_provider, contract_period: @ect.contract_start_date) %>
   <p class="govuk-body">
     <%= @decorated_school.latest_registration_choices.lead_provider.name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.
   </p>
