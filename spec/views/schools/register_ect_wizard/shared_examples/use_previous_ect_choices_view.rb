@@ -137,7 +137,10 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
         appropriate_body: last_chosen_appropriate_body,
         delivery_partner: nil
       )
-      allow(decorated_school).to receive(:latest_registration_choices).and_return(choices)
+      allow(decorated_school).to receive_messages(
+        latest_registration_choices: choices,
+        has_partnership_with?: false
+      )
 
       assign(:school, school)
       assign(:decorated_school, decorated_school)
@@ -155,6 +158,13 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
 
     it 'renders the explanatory paragraph' do
       expect(rendered).to include("#{last_chosen_lead_provider.name} will confirm if they’ll be working with your school and which delivery partner will deliver training events.")
+    end
+
+    it 'calls #has_partnership_with? using the lead provider and contract period' do
+      expect(decorated_school).to have_received(:has_partnership_with?).with(
+        lead_provider: decorated_school.latest_registration_choices.lead_provider,
+        contract_period: wizard.ect.contract_start_date
+      )
     end
   end
 end
