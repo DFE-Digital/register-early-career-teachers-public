@@ -157,6 +157,24 @@ RSpec.describe AppropriateBodies::RecordOutcome do
         expect { subject.pass! }.to raise_error(AppropriateBodies::Errors::ECTHasNoOngoingInductionPeriods)
       end
     end
+
+    context "when ongoing induction period only has the legacy programme type" do
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
+                          appropriate_body:,
+                          teacher:,
+                          started_on: '2024-1-1')
+      end
+
+      it "populates the new programme type and outcome" do
+        service.pass!
+
+        expect(induction_period.reload).to have_attributes(
+          training_programme: 'provider_led',
+          outcome: 'pass'
+        )
+      end
+    end
   end
 
   describe "#fail!" do
@@ -249,6 +267,24 @@ RSpec.describe AppropriateBodies::RecordOutcome do
     context "when an ECT has no ongoing induction periods" do
       it do
         expect { subject.fail! }.to raise_error(AppropriateBodies::Errors::ECTHasNoOngoingInductionPeriods)
+      end
+    end
+
+    context "when ongoing induction period only has the legacy programme type" do
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
+                          appropriate_body:,
+                          teacher:,
+                          started_on: '2024-1-1')
+      end
+
+      it "populates the new programme type and outcome" do
+        service.fail!
+
+        expect(induction_period.reload).to have_attributes(
+          training_programme: 'provider_led',
+          outcome: 'fail'
+        )
       end
     end
   end
