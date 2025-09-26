@@ -15,16 +15,9 @@ namespace :appropriate_bodies, path: 'appropriate-body', as: 'ab' do
   end
 
   namespace :claim_an_ect, path: 'claim-an-ect' do
-    resource :find_ect, only: %i[new create], path: 'find-ect', controller: '/appropriate_bodies/claim_an_ect/find_ect', as: 'find'
-    resources :check_ect, only: %i[edit update], path: 'check-ect', controller: '/appropriate_bodies/claim_an_ect/check_ect', as: 'check'
-    resources :register_ect, only: %i[edit update show], path: 'register-ect', controller: '/appropriate_bodies/claim_an_ect/register_ect', as: 'register'
-
-    namespace :errors do
-      get 'induction-already-completed/:id', to: '/appropriate_bodies/claim_an_ect/errors#induction_already_completed', as: 'already_complete'
-      get 'induction-with-another-appropriate-body/:id', to: '/appropriate_bodies/claim_an_ect/errors#induction_with_another_appropriate_body', as: 'another_ab'
-      get 'no-qts/:id', to: '/appropriate_bodies/claim_an_ect/errors#no_qts', as: 'no_qts'
-      get 'prohibited-from-teaching/:id', to: '/appropriate_bodies/claim_an_ect/errors#prohibited_from_teaching', as: 'prohibited'
-    end
+    resource :find_ect, only: %i[new create], path: 'find-ect', controller: 'find_ect', as: 'find'
+    resources :check_ect, only: %i[edit update], path: 'check-ect', controller: 'check_ect', as: 'check'
+    resources :register_ect, only: %i[edit update show], path: 'register-ect', controller: 'register_ect', as: 'register'
   end
 
   namespace :process_batch, path: 'bulk', as: 'batch' do

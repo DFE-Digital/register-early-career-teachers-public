@@ -257,7 +257,7 @@ RSpec.describe PendingInductionSubmission do
       end
     end
 
-    describe "start_date_after_qts_date" do
+    describe "#start_date_after_qts_date" do
       let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, started_on:, trs_qts_awarded_on: Date.new(2023, 5, 1)) }
 
       context "when trs_qts_awarded_on is before started_on" do
@@ -282,22 +282,93 @@ RSpec.describe PendingInductionSubmission do
     end
   end
 
-  describe '#fail?' do
-    subject { FactoryBot.build(:pending_induction_submission, outcome: 'fail') }
+  context 'when ending an induction period' do
+    describe '#release?' do
+      subject { FactoryBot.build(:pending_induction_submission, outcome: nil) }
 
-    it { is_expected.to be_fail }
+      it { is_expected.to be_release }
+    end
+
+    describe '#fail?' do
+      subject { FactoryBot.build(:pending_induction_submission, outcome: 'fail') }
+
+      it { is_expected.to be_fail }
+    end
+
+    describe '#pass?' do
+      subject { FactoryBot.build(:pending_induction_submission, outcome: 'pass') }
+
+      it { is_expected.to be_pass }
+    end
   end
 
-  describe '#pass?' do
-    subject { FactoryBot.build(:pending_induction_submission, outcome: 'pass') }
+  describe 'eligibility' do
+    subject do
+      FactoryBot.build(:pending_induction_submission,
+                       trs_induction_status: 'RequiredToComplete',
+                       trs_qts_awarded_on: 1.year.ago,
+                       trs_prohibited_from_teaching: false)
+    end
 
-    it { is_expected.to be_pass }
+    it { is_expected.not_to be_no_qts }
+    it { is_expected.not_to be_prohibited_from_teaching }
+    it { is_expected.not_to be_exempt }
+    it { is_expected.not_to be_passed }
+    it { is_expected.not_to be_failed }
+    it { is_expected.not_to be_already_completed }
+    it { is_expected.not_to be_ineligible }
   end
 
-  describe '#exempt?' do
-    subject { FactoryBot.build(:pending_induction_submission, trs_induction_status: 'Exempt') }
+  describe 'ineligibility' do
+    subject { FactoryBot.build(:pending_induction_submission, trs_induction_status:) }
 
-    it { is_expected.to be_exempt }
+    context 'when exempt from induction' do
+      let(:trs_induction_status) { 'Exempt' }
+
+      it { is_expected.to be_exempt }
+      it { is_expected.to be_already_completed }
+      it { is_expected.to be_ineligible }
+    end
+
+    context 'when induction is already passed' do
+      let(:trs_induction_status) { 'Passed' }
+
+      it { is_expected.to be_passed }
+      it { is_expected.to be_already_completed }
+      it { is_expected.to be_ineligible }
+    end
+
+    context 'when induction is already failed' do
+      let(:trs_induction_status) { 'Failed' }
+
+      it { is_expected.to be_failed }
+      it { is_expected.to be_already_completed }
+      it { is_expected.to be_ineligible }
+    end
+
+    context 'when induction is already failed (in Wales)' do
+      let(:trs_induction_status) { 'FailedInWales' }
+
+      it { is_expected.to be_failed }
+      it { is_expected.to be_already_completed }
+      it { is_expected.to be_ineligible }
+    end
+
+    context 'when QTS has not been awarded' do
+      subject { FactoryBot.build(:pending_induction_submission, trs_qts_awarded_on: nil) }
+
+      it { is_expected.to be_no_qts }
+      it { is_expected.not_to be_already_completed }
+      it { is_expected.to be_ineligible }
+    end
+
+    context 'when prohibited from teaching' do
+      subject { FactoryBot.build(:pending_induction_submission, trs_prohibited_from_teaching: true) }
+
+      it { is_expected.to be_prohibited_from_teaching }
+      it { is_expected.not_to be_already_completed }
+      it { is_expected.to be_ineligible }
+    end
   end
 
   describe '#teacher' do
