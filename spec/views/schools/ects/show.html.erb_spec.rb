@@ -85,7 +85,7 @@ RSpec.describe 'schools/ects/show.html.erb' do
       context 'when unassigned' do
         it 'has instruction to assign' do
           expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Mentor')
-          expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'You must assign a mentor or register a new one for this ECT.')
+          expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Assign a mentor for this ECT')
         end
       end
     end
