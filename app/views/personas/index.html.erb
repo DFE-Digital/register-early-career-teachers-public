@@ -18,7 +18,12 @@
           <%= persona.name %> (<%= persona.email %>)
         </h2>
         <div>
-          <h3 class="govuk-heading-s"><%= persona.type %></h3>
+          <h3 class="govuk-heading-s">
+            <%= persona.type %>
+            <% if persona.dfe_staff %>
+              (<%= persona_role(persona) %>)
+            <% end %>
+          </h3>
         </div>
         <div>
           <%= tag.p(persona_organisation(persona)) %>
