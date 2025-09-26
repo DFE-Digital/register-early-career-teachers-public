@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_26_152312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -763,7 +763,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
     t.enum "mentor_became_ineligible_for_funding_reason", enum_type: "mentor_became_ineligible_for_funding_reason"
     t.boolean "trs_deactivated", default: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
-    t.uuid "api_user_id", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "api_ect_training_record_id", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "api_mentor_training_record_id", default: -> { "gen_random_uuid()" }, null: false
     t.integer "ect_payments_frozen_year"
@@ -771,8 +771,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
     t.boolean "ect_pupil_premium_uplift", default: false, null: false
     t.boolean "ect_sparsity_uplift", default: false, null: false
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
+    t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
-    t.index ["api_user_id"], name: "index_teachers_on_api_user_id", unique: true
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
@@ -872,8 +872,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_153321) do
   add_foreign_key "statement_adjustments", "statements"
   add_foreign_key "statements", "active_lead_providers"
   add_foreign_key "teacher_id_changes", "teachers"
-  add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_user_id"
-  add_foreign_key "teacher_id_changes", "teachers", column: "api_to_teacher_id", primary_key: "api_user_id"
+  add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"
+  add_foreign_key "teacher_id_changes", "teachers", column: "api_to_teacher_id", primary_key: "api_id"
   add_foreign_key "teacher_migration_failures", "teachers"
   add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
   add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
