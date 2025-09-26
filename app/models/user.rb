@@ -1,13 +1,11 @@
 class User < ApplicationRecord
-  Role = Data.define(:identifier, :name)
+  ROLES = {
+    admin: 'Admin',
+    super_admin: 'Super admin',
+    finance: 'Finance',
+  }.freeze
 
-  ROLES = [
-    Role.new(identifier: :admin, name: 'Admin'),
-    Role.new(identifier: :super_admin, name: 'Super admin'),
-    Role.new(identifier: :finance, name: 'Finance'),
-  ].freeze
-
-  enum :role, ROLES.to_h { |r| [r.identifier, r.identifier.to_s] }, validate: { message: 'Must be admin, finance or super_admin' }
+  enum :role, ROLES.keys.index_with(&:to_s), validate: { message: 'Must be admin, finance or super_admin' }
 
   encrypts :otp_secret
 
