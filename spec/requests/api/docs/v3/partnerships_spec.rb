@@ -29,7 +29,7 @@ RSpec.describe "Partnerships endpoint", openapi_spec: "v3/swagger.yaml", type: :
                     url: "/api/v3/partnerships",
                     tag: "Partnerships",
                     resource_description: "partnership",
-                    request_schema_ref: "#/components/schemas/PartnershipRequest",
+                    request_schema_ref: "#/components/schemas/PartnershipCreateRequest",
                     response_schema_ref: "#/components/schemas/PartnershipResponse",
                   } do
                     let(:params) do
