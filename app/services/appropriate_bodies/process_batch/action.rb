@@ -2,23 +2,16 @@ module AppropriateBodies
   module ProcessBatch
     # Management of closing induction periods in bulk via CSV upload
     class Action < Base
-      # @return [nil, true] convert the valid submissions into permanent records
+      # @return [nil, true]
       def complete!
         pending_induction_submission_batch.completing!
 
         pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
-          @pending_induction_submission = pending_induction_submission
-
-          record_outcome.pass! if pending_induction_submission.pass?
-          record_outcome.fail! if pending_induction_submission.fail?
-          release_ect.release! if pending_induction_submission.release?
-
-          true
-        rescue StandardError => e
-          Rails.logger.info(e.message)
-          Sentry.capture_exception(e)
-
-          next(false)
+          if pending_induction_submission.release?
+            ReleaseECTJob.perform_later(pending_induction_submission.id, author.email, author.name)
+          else
+            RecordOutcomeJob.perform_later(pending_induction_submission.id, author.email, author.name)
+          end
         end
 
         pending_induction_submission_batch.tally!
@@ -99,25 +92,6 @@ module AppropriateBodies
       # @return [Boolean] 0-16 upto one decimal place
       def invalid_terms?
         row.number_of_terms !~ /\A\d+(\.\d{1})?\z/ || !row.number_of_terms.to_f.between?(0, 16)
-      end
-
-      # @return [AppropriateBodies::ReleaseECT]
-      def release_ect
-        ReleaseECT.new(
-          appropriate_body:,
-          pending_induction_submission:,
-          author:
-        )
-      end
-
-      # @return [AppropriateBodies::RecordOutcome]
-      def record_outcome
-        RecordOutcome.new(
-          appropriate_body:,
-          pending_induction_submission:,
-          teacher:,
-          author:
-        )
       end
     end
   end

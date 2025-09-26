@@ -1,0 +1,54 @@
+RSpec.describe AppropriateBodies::ProcessBatch::ReleaseECTJob, type: :job do
+  include ActiveJob::TestHelper
+
+  subject(:perform_release_ect_job) do
+    described_class.perform_now(pending_induction_submission.id, author_email, author_name)
+  end
+
+  include_context 'test trs api client'
+
+  let(:pending_induction_submission_batch) do
+    FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
+  end
+
+  let(:pending_induction_submission) do
+    FactoryBot.create(:pending_induction_submission,
+                      pending_induction_submission_batch:,
+                      finished_on: 1.day.ago.to_date,
+                      number_of_terms: 10.9)
+  end
+
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:author_email) { 'barry@not-a-clue.co.uk' }
+  let(:author_name) { 'Barry Cryer' }
+  let(:teacher) { pending_induction_submission.teacher }
+  let(:induction_period) { teacher.induction_periods.first }
+
+  before do
+    FactoryBot.create(:teacher, trn: pending_induction_submission.trn)
+    FactoryBot.create(:induction_period, :ongoing, teacher: pending_induction_submission.teacher, appropriate_body:)
+  end
+
+  it 'closes the induction' do
+    perform_release_ect_job
+    perform_enqueued_jobs
+
+    expect(induction_period.finished_on).to eq(pending_induction_submission.finished_on)
+    expect(induction_period.number_of_terms).to eq(pending_induction_submission.number_of_terms)
+    expect(induction_period.outcome).to be_nil
+  end
+
+  it 'creates a closed induction event by the author' do
+    allow(Events::Record).to receive(:record_induction_period_closed_event!).and_call_original
+
+    perform_release_ect_job
+    perform_enqueued_jobs
+
+    expect(Events::Record).to have_received(:record_induction_period_closed_event!).with(
+      appropriate_body:,
+      teacher:,
+      induction_period:,
+      author: an_instance_of(::Events::AppropriateBodyBatchAuthor)
+    )
+  end
+end
