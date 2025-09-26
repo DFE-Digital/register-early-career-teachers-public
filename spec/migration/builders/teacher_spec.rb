@@ -30,12 +30,12 @@ describe Builders::Teacher do
       expect(teacher.trs_last_name).to eq "Thompson"
     end
 
-    context "when an ECF User ID is supplied" do
-      let(:api_user_id) { SecureRandom.uuid }
+    context "when an ECF ID is supplied" do
+      let(:api_id) { SecureRandom.uuid }
 
       it "stores the id" do
-        teacher = described_class.new(trn:, full_name:, api_user_id:).build
-        expect(teacher.api_user_id).to eq api_user_id
+        teacher = described_class.new(trn:, full_name:, api_id:).build
+        expect(teacher.api_id).to eq api_id
       end
     end
 
