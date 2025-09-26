@@ -11,6 +11,10 @@ namespace :schools, path: :school do
     namespace :change_working_pattern_wizard, path: "change-working-pattern" do
       concerns :wizardable, wizard: Schools::ECTs::ChangeWorkingPatternWizard
     end
+
+    namespace :change_training_programme_wizard, path: "change-training-programme" do
+      concerns :wizardable, wizard: Schools::ECTs::ChangeTrainingProgrammeWizard
+    end
   end
 
   resources :ects, only: %i[index show] do

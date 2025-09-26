@@ -1,0 +1,5 @@
+<% if @wizard.ect_at_school_period.provider_led_training_programme? %>
+  <%= render "provider_to_school_led" %>
+<% else %>
+  <%= render "school_to_provider_led" %>
+<% end %>

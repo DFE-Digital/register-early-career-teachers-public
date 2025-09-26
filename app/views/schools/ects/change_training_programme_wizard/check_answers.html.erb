@@ -1,0 +1,41 @@
+<% page_data(
+    title: "Check and confirm change",
+    backlink_href: @wizard.previous_step_path
+) %>
+
+<%= govuk_summary_list do |list| %>
+  <% list.with_row do |row| %>
+    <%= row.with_key { "Early career teacher" } %>
+    <%= row.with_value { @wizard.teacher_full_name } %>
+  <% end %>
+
+  <% list.with_row do |row| %>
+    <%= row.with_key { "Current training programme" } %>
+    <%= row.with_value { ::TRAINING_PROGRAMME[@wizard.current_step.current_training_programme] } %>
+  <% end %>
+
+  <% list.with_row do |row| %>
+    <%= row.with_key { "New training programme" } %>
+    <%= row.with_value { ::TRAINING_PROGRAMME[@wizard.current_step.new_training_programme] } %>
+  <% end %>
+
+  <% if @wizard.current_step.new_training_programme == "provider_led" %>
+    <% list.with_row do |row| %>
+      <%= row.with_key { "Lead provider" } %>
+      <%= row.with_value { @wizard.current_step.new_lead_provider_name } %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= govuk_button_to(
+      "Confirm change",
+      @wizard.current_step_path
+    ) %>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Cancel and go back to #{@wizard.teacher_full_name}’s details",
+        schools_ect_path(@wizard.ect_at_school_period),
+        no_visited_state: true
+      ) %>
+</p>
