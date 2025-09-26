@@ -16,7 +16,7 @@ RSpec.describe RefreshMetadataJob, type: :job do
 
         manager = instance_double(Metadata::Manager)
         allow(Metadata::Manager).to receive(:new) { manager }
-        expect(manager).to receive(:refresh_metadata!).with(schools, track_changes: true)
+        expect(manager).to receive(:refresh_metadata!).with(a_collection_containing_exactly(*schools), track_changes: true)
 
         described_class.new.perform(object_type: School, object_ids: schools.map(&:id), track_changes: true)
       end
