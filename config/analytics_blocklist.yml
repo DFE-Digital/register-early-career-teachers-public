@@ -232,6 +232,14 @@
   - mentor_payments_frozen_year
   - ect_pupil_premium_uplift
   - ect_sparsity_uplift
+  :metadata_teacher_lead_providers:
+  - id
+  - teacher_id
+  - lead_provider_id
+  - latest_ect_training_period_id
+  - latest_mentor_training_period_id
+  - created_at
+  - updated_at
   :pending_induction_submissions:
   - id
   - appropriate_body_id

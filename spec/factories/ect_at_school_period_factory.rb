@@ -7,7 +7,7 @@ FactoryBot.define do
     independent_school
 
     started_on { generate(:base_ect_date) }
-    finished_on { started_on + 1.day }
+    finished_on { started_on + 1.year }
     email { Faker::Internet.email }
     working_pattern { WORKING_PATTERNS.keys.sample }
 
@@ -46,13 +46,6 @@ FactoryBot.define do
 
     trait :teaching_school_hub_ab do
       association :school_reported_appropriate_body, :teaching_school_hub, factory: :appropriate_body
-    end
-
-    trait :with_teacher_payments_frozen_year do
-      after(:create) do |record|
-        ect_payments_frozen_year = FactoryBot.create(:contract_period, year: [2021, 2022].sample).year
-        record.teacher.update!(ect_payments_frozen_year:)
-      end
     end
 
     trait :with_training_period do
