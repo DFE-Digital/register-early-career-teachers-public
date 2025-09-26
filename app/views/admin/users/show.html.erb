@@ -24,6 +24,11 @@
       row.with_key(text: 'Created on')
       row.with_value { @user.created_at.to_date.to_fs(:govuk) }
     end
+
+    component.with_row do |row|
+      row.with_key(text: 'Role')
+      row.with_value { role_name(@user.role) }
+    end
   end
 %>
 

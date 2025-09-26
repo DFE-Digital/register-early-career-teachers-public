@@ -1,7 +1,5 @@
 module Admin
   class DfEUsers
-    class AlreadyExists < StandardError; end
-
     attr_reader :author, :user
 
     def initialize(author:)
@@ -10,11 +8,11 @@ module Admin
 
     def create_user(params)
       @user = User.new(params)
-      fail AlreadyExists if user.persisted?
 
       User.transaction do
         modifications = user.changes
-        user.save
+
+        raise ActiveRecord::Rollback unless user.save
 
         Events::Record.record_dfe_user_created_event!(author:, user:, modifications:)
       end
@@ -26,7 +24,8 @@ module Admin
 
       User.transaction do
         modifications = user.changes
-        user.save
+
+        raise ActiveRecord::Rollback unless user.save
 
         Events::Record.record_dfe_user_updated_event!(author:, user:, modifications:)
       end
