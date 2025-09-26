@@ -11,13 +11,12 @@ module Schools
       end
 
       def next_step
-        # MentorRegistrationFlow: AC6a, AC6b + AC7, school-led or ineligible mentors go straight to CYA
         if mentor.became_ineligible_for_funding? || !mentor.provider_led_ect?
           :check_answers
         elsif mentor.previous_training_period.blank?
           :programme_choices # if previous registration school led
         else
-          :previous_training_period_details # AC8
+          :previous_training_period_details
         end
       end
 

@@ -16,6 +16,9 @@ module Schools
       end
 
       def previous_step
+        return :email_address if mentor.ect_lead_provider_invalid? && !mentor.previously_registered_as_mentor?
+        return :previous_training_period_details if mentor.ect_lead_provider_invalid? && mentor.previously_registered_as_mentor?
+
         :programme_choices
       end
 
