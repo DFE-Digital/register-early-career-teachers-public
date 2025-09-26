@@ -20,7 +20,7 @@ RSpec.describe 'Appropriate Body bulk actions confirmation', type: :request do
       it 'enqueues a job' do
         expect {
           put ab_batch_action_path(batch)
-        }.to have_enqueued_job(ProcessBatchActionJob).with(batch, user.email, user.name).exactly(1).times
+        }.to have_enqueued_job(AppropriateBodies::ProcessBatch::ActionJob).with(batch, user.email, user.name).exactly(1).times
       end
 
       it 'records an upload completed event' do
@@ -49,11 +49,11 @@ RSpec.describe 'Appropriate Body bulk actions confirmation', type: :request do
       it 'prevents duplicates' do
         expect {
           put ab_batch_action_path(batch)
-        }.to have_enqueued_job(ProcessBatchActionJob).with(batch, user.email, user.name)
+        }.to have_enqueued_job(AppropriateBodies::ProcessBatch::ActionJob).with(batch, user.email, user.name)
 
         expect {
           put ab_batch_action_path(batch)
-        }.not_to have_enqueued_job(ProcessBatchActionJob)
+        }.not_to have_enqueued_job(AppropriateBodies::ProcessBatch::ActionJob)
       end
     end
   end

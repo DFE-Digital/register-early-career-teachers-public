@@ -263,32 +263,11 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     end
 
     describe '#complete!' do
-      before do
-        allow(Events::Record).to receive(:record_induction_period_opened_event!).and_call_original
-        service.complete!
-      end
-
-      it 'records the teacher' do
-        expect(teacher.trn).to eq trn
-        expect(teacher.trs_first_name).to eq 'Kirk'
-        expect(teacher.trs_last_name).to eq 'Van Houten'
-      end
-
-      it 'opens induction period' do
-        expect(induction_period.started_on).to eq(Date.parse(started_on))
-        expect(induction_period.finished_on).to be_nil
-        expect(induction_period.outcome).to be_nil
-        expect(induction_period.training_programme).to eq('provider_led')
-        expect(induction_period.induction_programme).to eq('fip') # 'fip' is the value for provider-led
-      end
-
-      it 'creates events owned by the author' do
-        expect(Events::Record).to have_received(:record_induction_period_opened_event!).with(
-          appropriate_body:,
-          teacher:,
-          induction_period:,
-          author:,
-          modifications: {}
+      it 'enqueues a job to complete the submission' do
+        expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::RegisterECTJob).with(
+          submission.id,
+          author.email,
+          author.name
         )
       end
     end

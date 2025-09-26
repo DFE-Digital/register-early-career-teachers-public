@@ -329,12 +329,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         expect(submission.trs_last_name).to eq 'Van Houten'
       end
 
-      it 'does not closes edit induction period' do
-        expect(induction_period.finished_on).not_to eq(Date.parse(finished_on))
-        expect(induction_period.number_of_terms).not_to eq(3.2)
-        expect(induction_period.outcome).not_to eq('pass')
-      end
-
       context 'when the TRN is missing' do
         let(:error) { '2nd attempt from downloaded CSV with errors' }
 
@@ -384,63 +378,25 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       describe '#complete!' do
-        it 'closes induction period with a pass' do
-          service.complete!
-          induction_period.reload
-          expect(induction_period.finished_on).to eq(Date.parse(finished_on))
-          expect(induction_period.number_of_terms).to eq(3.2)
-          expect(induction_period.outcome).to eq('pass')
-        end
-
-        context 'when the outcome is pass' do
-          before do
-            allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
-            service.complete!
-          end
-
-          it 'creates events owned by the author' do
-            expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
-              appropriate_body:,
-              teacher:,
-              induction_period:,
-              author:
-            )
+        context 'when passing or failing' do
+          it 'enqueues a job to complete the submission' do
+            expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::RecordOutcomeJob).with(
+              submission.id,
+              author.email,
+              author.name
+            ).and have_enqueued_job(AnalyticsBatchJob)
           end
         end
 
-        context 'when the outcome is fail' do
-          let(:outcome) { 'fail' }
-
-          before do
-            allow(Events::Record).to receive(:record_teacher_fails_induction_event!).and_call_original
-            service.complete!
-          end
-
-          it 'creates events owned by the author' do
-            expect(Events::Record).to have_received(:record_teacher_fails_induction_event!).with(
-              appropriate_body:,
-              teacher:,
-              induction_period:,
-              author:
-            )
-          end
-        end
-
-        context 'when the outcome is release' do
+        context 'when releasing' do
           let(:outcome) { 'release' }
 
-          before do
-            allow(Events::Record).to receive(:record_induction_period_closed_event!).and_call_original
-            service.complete!
-          end
-
-          it 'creates events owned by the author' do
-            expect(Events::Record).to have_received(:record_induction_period_closed_event!).with(
-              appropriate_body:,
-              teacher:,
-              induction_period:,
-              author:
-            )
+          it 'enqueues a job to complete the submission' do
+            expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::ReleaseECTJob).with(
+              submission.id,
+              author.email,
+              author.name
+            ).and have_enqueued_job(AnalyticsBatchJob)
           end
         end
       end
