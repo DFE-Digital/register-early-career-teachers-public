@@ -29,7 +29,10 @@ Rails.application.routes.draw do
   post '/auth/:provider/callback', to: 'sessions#create'
   get '/sign-in', to: 'sessions#new'
   get '/sign-out', to: 'sessions#destroy'
-  get '/switch-role', to: 'sessions#update', as: 'switch_role'
+
+  constraints -> { Rails.application.config.enable_schools_interface } do
+    get '/switch-role', to: 'sessions#update', as: 'switch_role'
+  end
 
   # one time password
   get '/otp-sign-in', to: 'otp_sessions#new'
