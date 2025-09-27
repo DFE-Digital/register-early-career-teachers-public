@@ -10,7 +10,7 @@ namespace :admin do
   # Background jobs dashboard
   mount MissionControl::Jobs::Engine, at: "jobs"
 
-  resources :users, only: %i[index]
+  resources :users
   resources :batches, only: %i[index], path: 'bulk' # all activity
 
   resources :organisations, only: %i[index] do

@@ -175,7 +175,7 @@ RSpec.describe 'Sessions', type: :request do
       let(:params) { {} }
 
       before do
-        FactoryBot.create(:user, email:, name:).dfe_roles.create!
+        FactoryBot.create(:user, email:, name:)
       end
 
       it 'authenticates and redirects to the admin home page' do

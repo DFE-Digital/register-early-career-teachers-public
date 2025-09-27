@@ -3,22 +3,10 @@ FactoryBot.define do
     sequence(:email) { |n| "john.doe#{n}@example.com" }
     sequence(:name) { |n| "John Doe #{n}" }
 
-    trait :admin do
-      after(:create) do |user|
-        FactoryBot.create(:dfe_role, :admin, user:)
-      end
-    end
+    admin
 
-    trait :super_admin do
-      after(:create) do |user|
-        FactoryBot.create(:dfe_role, :super_admin, user:)
-      end
-    end
-
-    trait :finance do
-      after(:create) do |user|
-        FactoryBot.create(:dfe_role, :finance, user:)
-      end
-    end
+    trait(:admin) { role { 'admin' } }
+    trait(:super_admin) { role { 'super_admin' } }
+    trait(:finance) { role { 'finance' } }
   end
 end

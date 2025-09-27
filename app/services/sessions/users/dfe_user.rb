@@ -18,6 +18,8 @@ module Sessions
         super(email: user.email, **)
       end
 
+      delegate :role, :admin?, :super_admin?, :finance?, to: :user
+
       def dfe_user? = true
 
       def event_author_params
