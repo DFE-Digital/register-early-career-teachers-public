@@ -3,7 +3,7 @@
     title: "Edit #{@user.name}",
     caption: 'DfE staff',
     caption_size: 'm',
-    error: false,
+    error: @user.errors.any?,
     backlink_href: admin_users_path
   )
 %>

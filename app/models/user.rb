@@ -10,9 +10,12 @@ class User < ApplicationRecord
   encrypts :otp_secret
 
   # Validations
-  validates :name, presence: true
-  validates :email, presence: true, uniqueness: true, notify_email: true
-  validates :role, presence: true
+  validates :name, presence: { message: 'Enter a name' }
+  validates :role, presence: { message: 'Choose a role' }
+  validates :email,
+            presence: { message: 'Enter an email address' },
+            uniqueness: { message: 'Email address already used, enter another' },
+            notify_email: true
 
   # Associations
   has_many :events

@@ -34,4 +34,12 @@ describe 'admin/users/new.html.erb' do
   it 'has an add user button' do
     expect(rendered).to have_css('button', text: 'Add user')
   end
+
+  context 'when the user has errors' do
+    let(:user) { User.new.tap(&:valid?) }
+
+    it 'prefixes the page title with error' do
+      expect(view.content_for(:page_title)).to start_with('Error:')
+    end
+  end
 end
