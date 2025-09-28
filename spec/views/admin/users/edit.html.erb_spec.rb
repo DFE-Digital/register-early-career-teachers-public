@@ -34,4 +34,17 @@ describe 'admin/users/edit.html.erb' do
   it 'has an add user button' do
     expect(rendered).to have_css('button', text: 'Update user')
   end
+
+  context 'when the user has errors' do
+    let(:user) do
+      FactoryBot.create(:user) do |u|
+        u.email = ''
+        u.valid?
+      end
+    end
+
+    it 'prefixes the page title with error' do
+      expect(view.content_for(:page_title)).to start_with('Error:')
+    end
+  end
 end
