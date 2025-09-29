@@ -113,6 +113,39 @@ module ECTAtSchoolPeriods
         end
       end
 
+      context "when the switch happens before the ECT has started" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :not_started_yet)
+        end
+
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :not_started_yet,
+            :provider_led,
+            :with_school_partnership,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on
+          )
+        end
+
+        it "removes the existing training period" do
+          SwitchTraining.to_school_led(ect_at_school_period, author:)
+
+          expect { training_period.reload }
+            .to raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it "creates a new school-led training period that starts on the ECT start date" do
+          SwitchTraining.to_school_led(ect_at_school_period, author:)
+
+          expect(ect_at_school_period.reload).to be_school_led_training_programme
+          new_training_period = TrainingPeriod.last
+          expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
+        end
+      end
+
       context "when the `current_or_next_training_period` is already school-led" do
         let!(:training_period) do
           FactoryBot.create(
@@ -274,6 +307,38 @@ module ECTAtSchoolPeriods
               )
 
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+          end
+        end
+
+        context "when the switch happens before the ECT has started" do
+          let(:ect_at_school_period) do
+            FactoryBot.create(:ect_at_school_period, :not_started_yet)
+          end
+
+          let!(:training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :not_started_yet,
+              :school_led,
+              ect_at_school_period:,
+              started_on: ect_at_school_period.started_on
+            )
+          end
+
+          it "removes the existing training period" do
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+            expect { training_period.reload }
+              .to raise_error(ActiveRecord::RecordNotFound)
+          end
+
+          it "creates a new provider-led training period that starts on the ECT start date" do
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+            expect(ect_at_school_period.reload).to be_provider_led_training_programme
+            new_training_period = TrainingPeriod.last
+            expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
           end
         end
       end
