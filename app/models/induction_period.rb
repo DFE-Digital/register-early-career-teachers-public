@@ -4,6 +4,10 @@ class InductionPeriod < ApplicationRecord
   include Interval
   include SharedInductionPeriodValidation
   include SharedNumberOfTermsValidation
+  include DeclarativeUpdates
+
+  refresh_metadata -> { teacher }, on_event: %i[create destroy]
+  refresh_metadata -> { teacher }, when_changing: %i[started_on finished_on outcome], on_event: %i[update]
 
   # Associations
   belongs_to :appropriate_body

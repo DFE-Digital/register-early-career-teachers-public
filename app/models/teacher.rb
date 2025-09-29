@@ -1,4 +1,6 @@
 class Teacher < ApplicationRecord
+  include DeclarativeUpdates
+
   TRN_FORMAT = %r{\A\d{7}\z}
 
   self.ignored_columns = %i[search]
@@ -8,6 +10,9 @@ class Teacher < ApplicationRecord
     completed_during_early_roll_out: 'completed_during_early_roll_out',
     started_not_completed: 'started_not_completed',
   }
+
+  refresh_metadata -> { self }, on_event: %i[create]
+  refresh_metadata -> { self }, when_changing: %i[mentor_became_ineligible_for_funding_on mentor_became_ineligible_for_funding_reason], on_event: %i[update]
 
   # Associations
   has_many :ect_at_school_periods, inverse_of: :teacher
@@ -21,6 +26,7 @@ class Teacher < ApplicationRecord
   has_one :ongoing_induction_period, -> { ongoing }, class_name: "InductionPeriod"
   has_one :started_induction_period, -> { earliest_first }, class_name: "InductionPeriod"
   has_one :finished_induction_period, -> { finished.with_outcome.latest_first }, class_name: "InductionPeriod"
+  has_one :metadata, class_name: "Metadata::Teacher"
 
   has_many :appropriate_bodies, through: :induction_periods
   has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body

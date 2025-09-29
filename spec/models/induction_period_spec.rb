@@ -4,6 +4,22 @@ RSpec.describe InductionPeriod do
 
   it_behaves_like 'an induction period'
 
+  describe "declarative updates" do
+    let(:instance) { FactoryBot.create(:induction_period, teacher: target) }
+    let(:target) { FactoryBot.create(:teacher) }
+
+    def generate_new_value(attribute_to_change:)
+      return 2.years.ago if attribute_to_change == :started_on
+      return 1.day.ago if attribute_to_change == :finished_on
+      return :fail if attribute_to_change == :outcome
+
+      super(attribute_to_change:)
+    end
+
+    it_behaves_like "a declarative metadata model", on_event: %i[create destroy]
+    it_behaves_like "a declarative metadata model", when_changing: %i[started_on finished_on outcome], on_event: %i[update]
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
     it { is_expected.to belong_to(:teacher) }

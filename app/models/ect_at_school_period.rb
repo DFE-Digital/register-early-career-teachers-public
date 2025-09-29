@@ -16,6 +16,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_one :current_or_next_mentorship_period, -> { current_or_future.earliest_first }, class_name: 'MentorshipPeriod'
 
   refresh_metadata -> { school }, on_event: %i[create destroy update]
+  refresh_metadata -> { teacher }, on_event: %i[create destroy]
+  refresh_metadata -> { teacher }, when_changing: %i[started_on finished_on], on_event: %i[update]
 
   # Validations
   validate :appropriate_body_for_independent_school,

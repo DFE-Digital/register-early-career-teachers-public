@@ -1,4 +1,24 @@
 describe Teacher do
+  describe "declarative updates" do
+    let(:instance) { FactoryBot.create(:teacher) }
+    let(:target) { instance }
+
+    def generate_new_value(attribute_to_change:)
+      return 1.day.ago if attribute_to_change == :mentor_became_ineligible_for_funding_on
+      return "started_not_completed" if attribute_to_change == :mentor_became_ineligible_for_funding_reason
+
+      super(attribute_to_change:)
+    end
+
+    def will_change_attribute(attribute_to_change:, new_value:) # rubocop:disable Lint/UnusedMethodArgument
+      instance.mentor_became_ineligible_for_funding_on = 1.day.ago if attribute_to_change == :mentor_became_ineligible_for_funding_reason
+      instance.mentor_became_ineligible_for_funding_reason = "started_not_completed" if attribute_to_change == :mentor_became_ineligible_for_funding_on
+    end
+
+    it_behaves_like "a declarative metadata model", on_event: %i[create]
+    it_behaves_like "a declarative metadata model", when_changing: %i[mentor_became_ineligible_for_funding_on mentor_became_ineligible_for_funding_reason], on_event: %i[update]
+  end
+
   describe "associations" do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
@@ -9,6 +29,7 @@ describe Teacher do
     it { is_expected.to have_many(:teacher_id_changes) }
     it { is_expected.to have_one(:started_induction_period).class_name("InductionPeriod") }
     it { is_expected.to have_one(:finished_induction_period).class_name("InductionPeriod") }
+    it { is_expected.to have_one(:metadata).class_name("Metadata::Teacher") }
 
     describe ".started_induction_period" do
       subject { teacher.started_induction_period }

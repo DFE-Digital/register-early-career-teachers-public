@@ -234,6 +234,13 @@
   - ect_sparsity_uplift
   - first_became_eligible_for_ect_training_at
   - first_became_eligible_for_mentor_training_at
+  :metadata_teachers:
+  - id
+  - teacher_id
+  - created_at
+  - updated_at
+  - first_became_eligible_for_ect_training_at
+  - first_became_eligible_for_mentor_training_at
   :pending_induction_submissions:
   - id
   - appropriate_body_id

@@ -1,9 +1,26 @@
 describe ECTAtSchoolPeriod do
   describe "declarative updates" do
-    let(:instance) { FactoryBot.create(:ect_at_school_period, :ongoing, school: target) }
-    let!(:target) { FactoryBot.create(:school) }
+    describe "school" do
+      let(:instance) { FactoryBot.create(:ect_at_school_period, :ongoing, school: target) }
+      let!(:target) { FactoryBot.create(:school) }
 
-    it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+    end
+
+    describe "teacher" do
+      let(:instance) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: target) }
+      let(:target) { FactoryBot.create(:teacher) }
+
+      def generate_new_value(attribute_to_change:)
+        return 2.years.ago if attribute_to_change == :started_on
+        return 1.day.ago if attribute_to_change == :finished_on
+
+        super(attribute_to_change:)
+      end
+
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy]
+      it_behaves_like "a declarative metadata model", when_changing: %i[started_on finished_on], on_event: %i[update], target_optional: false
+    end
   end
 
   describe "associations" do

@@ -328,6 +328,15 @@ erDiagram
   }
   ActiveLeadProvider }o--|| ContractPeriod : belongs_to
   ActiveLeadProvider }o--|| LeadProvider : belongs_to
+  Metadata_Teacher {
+    integer id
+    integer teacher_id
+    date first_became_eligible_for_ect_training_at
+    date first_became_eligible_for_mentor_training_at
+    datetime created_at
+    datetime updated_at
+  }
+  Metadata_Teacher }o--|| Teacher : belongs_to
   Metadata_SchoolLeadProviderContractPeriod {
     integer id
     integer school_id
