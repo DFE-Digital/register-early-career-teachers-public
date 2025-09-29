@@ -8,15 +8,15 @@ describe TRS::TestAPIClient do
   end
 
   describe '#find_teacher' do
-    subject { TRS::TestAPIClient.new(**kwargs) }
+    subject(:client) { TRS::TestAPIClient.new(**kwargs) }
 
-    let(:trn) { '1234567' }
+    let(:trs_teacher) { client.find_teacher(trn: '1234567') }
 
     context 'when initialized with raise_not_found' do
       let(:kwargs) { { raise_not_found: true } }
 
       it 'raises a TRS::Errors::TeacherNotFound error' do
-        expect { subject.find_teacher(trn:) }.to raise_error(TRS::Errors::TeacherNotFound)
+        expect { trs_teacher }.to raise_error(TRS::Errors::TeacherNotFound)
       end
     end
 
@@ -24,7 +24,7 @@ describe TRS::TestAPIClient do
       let(:kwargs) { { raise_deactivated: true } }
 
       it 'raises a TRS::Errors::TeacherDeactivated error' do
-        expect { subject.find_teacher(trn:) }.to raise_error(TRS::Errors::TeacherDeactivated)
+        expect { trs_teacher }.to raise_error(TRS::Errors::TeacherDeactivated)
       end
     end
 
@@ -32,11 +32,11 @@ describe TRS::TestAPIClient do
       let(:kwargs) { { has_alerts_but_not_prohibited: true } }
 
       it 'the teacher has alerts' do
-        expect(subject.find_teacher(trn:)).to have_alerts
+        expect(trs_teacher).to have_alerts
       end
 
       it 'the teacher is not prohibited_from_teaching' do
-        expect(subject.find_teacher(trn:)).not_to be_prohibited_from_teaching
+        expect(trs_teacher).not_to be_prohibited_from_teaching
       end
     end
 
@@ -44,12 +44,12 @@ describe TRS::TestAPIClient do
       let(:kwargs) { { is_prohibited_from_teaching: true } }
 
       it 'the teacher is prohibited from teaching' do
-        expect(subject.find_teacher(trn:)).to be_prohibited_from_teaching
+        expect(trs_teacher).to be_prohibited_from_teaching
       end
     end
 
     describe 'induction_statuses' do
-      subject { TRS::TestAPIClient.new(**kwargs).find_teacher(trn:).induction_status }
+      subject { trs_teacher.induction_status }
 
       context 'when initialized induction_status: InProgress' do
         let(:kwargs) { { induction_status: 'InProgress' } }
@@ -75,7 +75,7 @@ describe TRS::TestAPIClient do
         let(:kwargs) { { has_qts: false } }
 
         it 'the teacher has no QTS awarded on date' do
-          expect(subject.find_teacher(trn:).qts_awarded_on).to be_nil
+          expect(trs_teacher.qts_awarded_on).to be_nil
         end
       end
 
@@ -83,7 +83,7 @@ describe TRS::TestAPIClient do
         let(:kwargs) { { has_qts: true } }
 
         it 'the teacher has a QTS awarded on date of 3 years ago' do
-          expect(subject.find_teacher(trn:).qts_awarded_on).to eql(3.years.ago.to_date)
+          expect(trs_teacher.qts_awarded_on).to eql(3.years.ago.to_date)
         end
       end
     end
@@ -93,7 +93,7 @@ describe TRS::TestAPIClient do
         let(:kwargs) { { has_itt: false } }
 
         it 'the teacher has no ITT training provider' do
-          expect(subject.find_teacher(trn:).initial_teacher_training_provider_name).to be_nil
+          expect(trs_teacher.initial_teacher_training_provider_name).to be_nil
         end
       end
 
@@ -101,7 +101,7 @@ describe TRS::TestAPIClient do
         let(:kwargs) { { has_itt: true } }
 
         it 'the teacher has no ITT training provider' do
-          expect(subject.find_teacher(trn:).initial_teacher_training_provider_name).to eql('Example Provider Ltd.')
+          expect(trs_teacher.initial_teacher_training_provider_name).to eql('Example Provider Ltd.')
         end
       end
     end

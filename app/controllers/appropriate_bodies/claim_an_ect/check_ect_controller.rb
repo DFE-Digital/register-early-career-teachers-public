@@ -14,14 +14,14 @@ module AppropriateBodies
           .new(appropriate_body: @appropriate_body, pending_induction_submission: @pending_induction_submission)
 
         if check_ect.begin_claim!
-          redirect_to(edit_ab_claim_an_ect_register_path(check_ect.pending_induction_submission))
+          redirect_to edit_ab_claim_an_ect_register_path(check_ect.pending_induction_submission)
         else
           @pending_induction_submission = check_ect.pending_induction_submission
 
           render :edit
         end
       rescue AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithAnotherAB
-        redirect_to ab_claim_an_ect_errors_another_ab_path(@pending_induction_submission)
+        redirect_to edit_ab_claim_an_ect_check_path(@pending_induction_submission)
       end
 
     private

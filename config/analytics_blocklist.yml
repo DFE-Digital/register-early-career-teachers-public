@@ -237,10 +237,7 @@
   - appropriate_body_id
   - establishment_id
   - trn
-  - trs_first_name
-  - trs_last_name
   - date_of_birth
-  - trs_induction_status
   - induction_programme
   - training_programme
   - started_on
@@ -249,15 +246,19 @@
   - created_at
   - updated_at
   - confirmed_at
-  - trs_email_address
+  - trs_first_name
+  - trs_last_name
   - trs_alerts
+  - trs_email_address
+  - trs_prohibited_from_teaching
   - trs_induction_start_date
+  - trs_induction_status
   - trs_induction_status_description
+  - trs_qts_awarded_on
   - trs_qts_status_description
   - trs_initial_teacher_training_end_date
   - trs_initial_teacher_training_provider_name
   - outcome
-  - trs_qts_awarded_on
   - delete_at
   - confirmed
   - pending_induction_submission_batch_id

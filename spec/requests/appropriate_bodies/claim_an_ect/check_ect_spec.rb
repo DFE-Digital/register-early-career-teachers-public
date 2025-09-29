@@ -74,7 +74,7 @@ RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT
             pending_induction_submission:
           )
 
-          expect(response).to redirect_to(%r{/claim-an-ect/register-ect/\d+/edit\z})
+          expect(response).to redirect_to("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}/edit")
         end
       end
 
@@ -88,9 +88,7 @@ RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT
             params: { pending_induction_submission: { confirmed: '1' } }
           )
 
-          redirect_url = "/appropriate-body/claim-an-ect/errors/induction-with-another-appropriate-body/#{pending_induction_submission.id}"
-
-          expect(response).to redirect_to(redirect_url)
+          expect(response).to redirect_to("/appropriate-body/claim-an-ect/check-ect/#{pending_induction_submission.id}/edit")
         end
       end
     end
