@@ -47,6 +47,8 @@ class TestGuidanceComponent < ApplicationComponent
         ["George James",        "2136110", "29/07/1968", "BN19500R8", "Exempt from induction"],
         ["Carol Burns",         "1058354", "02/04/1991", "27313BJL9", "Failed induction"],
         ["Nicola Borschmann",   "2467487", "02/02/1975", "532B10J1A", "Failed induction"],
+        ["John Smith",          "1247646", "19/06/1986", "6J8B903G8", "Failed induction in Wales"],
+        ["Jim Laney",           "3002065", "01/01/1990", "OA046772B", "Failed induction in Wales"],
         ["Dona Msa",            "3003943", "02/02/1964", "AB722128C", "No QTS"],
         ["George Orwell",       "2632412", "16/02/1984", "",          "Prohibited from teaching"],
         ["Neils Clarke-Dolan",  "2908239", "12/08/1978", "",          "Prohibited from teaching"],
