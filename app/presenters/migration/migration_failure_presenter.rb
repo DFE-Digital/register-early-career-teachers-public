@@ -44,11 +44,11 @@ module Migration
       return parent.api_ect_training_record_id if parent.api_ect_training_record_id.present?
       return parent.api_mentor_training_record_id if parent.api_mentor_training_record_id.present?
 
-      if parent.api_user_id.present?
+      if parent.api_id.present?
         # NOTE: if they have both ECT and Mentor profiles we don't know which had the issue
         #       and we're only returning the first from the DB but it feels that might be better
         #       than nothing.
-        Migration::User.find(parent.api_user_id).teacher_profile.participant_profiles.ect_or_mentor.first&.id
+        Migration::User.find(parent.api_id).teacher_profile.participant_profiles.ect_or_mentor.first&.id
       end
     end
 

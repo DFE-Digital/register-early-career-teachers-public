@@ -137,7 +137,7 @@ erDiagram
     date mentor_became_ineligible_for_funding_on
     enum mentor_became_ineligible_for_funding_reason
     boolean trs_deactivated
-    uuid api_user_id
+    uuid api_id
     uuid api_ect_training_record_id
     uuid api_mentor_training_record_id
     integer ect_payments_frozen_year
