@@ -21,7 +21,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:author_email) { 'barry@not-a-clue.co.uk' }
   let(:author_name) { 'Barry Cryer' }
-  let(:teacher) { pending_induction_submission.teacher }
+  let(:teacher) { Teacher.find_by(trn: pending_induction_submission.trn) }
   let(:induction_period) { teacher.induction_periods.first }
 
   it 'records the teacher' do
@@ -35,12 +35,13 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
     expect(teacher.trs_last_name).to eq(pending_induction_submission.trs_last_name)
   end
 
-  it 'opens an induction' do
+  it 'opens an induction', :aggregate_failures do
     expect {
       perform_register_ect_job
       perform_enqueued_jobs
     }.to change(InductionPeriod, :count).by(1)
 
+    expect(teacher.ongoing_induction_period).not_to be_nil
     expect(induction_period.started_on).to eq(pending_induction_submission.started_on)
     expect(induction_period.training_programme).to eq(pending_induction_submission.training_programme)
     expect(induction_period.finished_on).to be_nil
