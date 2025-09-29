@@ -4,7 +4,7 @@ module Statements
 
     def initialize(statement, author:)
       @statement = statement
-      @author    = author
+      @author = author
     end
 
     def authorise
