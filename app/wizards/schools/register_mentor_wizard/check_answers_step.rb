@@ -7,18 +7,15 @@ module Schools
 
       def previous_step
         case
-        when pop_back_to!(:eligibility_lead_provider)
-          :eligibility_lead_provider
-        when mentor.ect_lead_provider_invalid?
-          :lead_provider
+        when pop_back_to!(:eligibility_lead_provider) then :eligibility_lead_provider
+        when mentor.ect_lead_provider_invalid? then :lead_provider
         when mentor.previously_registered_as_mentor?
           if mentoring_at_new_school_only?
             same_programme_choices? ? :programme_choices : :lead_provider
           else
             :mentoring_at_new_school_only
           end
-        when provider_led_with_funding?
-          :review_mentor_eligibility
+        when provider_led_with_funding? then :review_mentor_eligibility
         else
           :email_address
         end
