@@ -3,17 +3,16 @@
   header: false)
 %>
 
-
-<%= govuk_panel(title_text: "You've successfully claimed #{PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name}'s induction") %>
+<%= govuk_panel(title_text: "You've successfully claimed #{pending_induction_submission_full_name(@pending_induction_submission)}'s induction") %>
 
 <p>
-  You've successfully claimed <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %> with <%= @appropriate_body.name %>. This means that they cannot be claimed by another appropriate body.
+  You've successfully claimed <%= pending_induction_submission_full_name(@pending_induction_submission) %> with <%= @appropriate_body.name %>. This means that they cannot be claimed by another appropriate body.
 </p>
 
 <h2 class="govuk-heading-m">What happens next</h2>
 
 <p>
-  Use this service to report of any changes in <%= PendingInductionSubmissions::Name.new(@pending_induction_submission).full_name %>'s induction. For example, if:
+  Use this service to report of any changes in <%= pending_induction_submission_full_name(@pending_induction_submission) %>'s induction. For example, if:
 </p>
 
 <ul class="govuk-list govuk-list--bullet">
