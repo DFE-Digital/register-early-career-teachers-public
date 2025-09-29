@@ -44,6 +44,7 @@ module Schools
         finish_existing_at_school_periods! if finish_existing_at_school_periods
         start_at_school!
         create_training_period!
+        set_eligibility!
         record_event!
       end
 
@@ -75,6 +76,13 @@ module Schools
         trs_last_name:,
         corrected_name:
       ).find_or_create_by!(trn:)
+    end
+
+    def set_eligibility!
+      return unless teacher.eligible_for_mentor_training?
+
+      teacher.first_became_eligible_for_mentor_training_at ||= Time.zone.now
+      teacher.save!
     end
 
     def school

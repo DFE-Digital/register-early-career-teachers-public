@@ -68,4 +68,12 @@ class Teacher < ApplicationRecord
   scope :active_in_trs, -> { where(trs_deactivated: false) }
 
   normalizes :corrected_name, with: -> { it.squish }
+
+  def eligible_for_ect_training?
+    induction_periods.ongoing_today.any? && ect_at_school_periods.ongoing_today.any?
+  end
+
+  def eligible_for_mentor_training?
+    mentor_became_ineligible_for_funding_on.blank? && mentor_became_ineligible_for_funding_reason.blank?
+  end
 end

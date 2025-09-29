@@ -51,6 +51,7 @@ module Schools
         close_ongoing_ect_period!
         @ect_at_school_period = start_at_school!
         create_training_period!
+        set_eligibility!
         record_event!
       end
 
@@ -71,6 +72,13 @@ module Schools
 
     def create_teacher!
       @teacher = ::Teacher.create_with(trs_first_name:, trs_last_name:, corrected_name:).find_or_create_by!(trn:)
+    end
+
+    def set_eligibility!
+      return unless teacher.eligible_for_ect_training?
+
+      teacher.first_became_eligible_for_ect_training_at ||= Time.zone.now
+      teacher.save!
     end
 
     def create_training_period!

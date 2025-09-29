@@ -73,6 +73,52 @@ describe InductionPeriods::CreateInductionPeriod do
           .to have_enqueued_job(BeginECTInductionJob)
           .with(trn: teacher.trn, start_date: started_on)
       end
+
+      context "when the teacher is eligible for ECT training" do
+        before do
+          FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
+        end
+
+        it "sets `first_became_eligible_for_ect_training_at`" do
+          expect { subject.create_induction_period! }.to change { teacher.reload.first_became_eligible_for_ect_training_at }.to be_within(5.seconds).of(Time.zone.now)
+        end
+
+        context "when `first_became_eligible_for_ect_training_at` is already set" do
+          before { teacher.update!(first_became_eligible_for_ect_training_at: 1.month.ago) }
+
+          it "does not change `first_became_eligible_for_ect_training_at`" do
+            expect { subject.create_induction_period! }.not_to(change { teacher.reload.first_became_eligible_for_ect_training_at })
+          end
+        end
+      end
+
+      context "when the teacher is not eligible for ECT training" do
+        it "does not set `first_became_eligible_for_ect_training_at`" do
+          expect { subject.create_induction_period! }.not_to(change { teacher.reload.first_became_eligible_for_ect_training_at })
+        end
+      end
+
+      context "when the teacher is eligible for mentor training" do
+        it "sets `first_became_eligible_for_mentor_training_at`" do
+          expect { subject.create_induction_period! }.to change { teacher.reload.first_became_eligible_for_mentor_training_at }.to be_within(5.seconds).of(Time.zone.now)
+        end
+
+        context "when `first_became_eligible_for_mentor_training_at` is already set" do
+          before { teacher.update!(first_became_eligible_for_mentor_training_at: 1.month.ago) }
+
+          it "does not change `first_became_eligible_for_mentor_training_at`" do
+            expect { subject.create_induction_period! }.not_to(change { teacher.reload.first_became_eligible_for_mentor_training_at })
+          end
+        end
+      end
+
+      context "when the teacher is not eligible for mentor training" do
+        let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
+
+        it "does not set `first_became_eligible_for_mentor_training_at`" do
+          expect { subject.create_induction_period! }.not_to(change { teacher.reload.first_became_eligible_for_mentor_training_at })
+        end
+      end
     end
 
     context "when the induction period is earlier than existing periods" do

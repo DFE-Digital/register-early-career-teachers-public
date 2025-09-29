@@ -24,6 +24,8 @@ module InductionPeriods
         record_event or raise ActiveRecord::Rollback
       end
 
+      set_eligibility!
+
       if teacher.induction_periods.started_before(induction_period.started_on)
           .or(teacher.induction_periods.with_outcome)
           .none?
@@ -48,6 +50,18 @@ module InductionPeriods
       )
 
       true
+    end
+
+    def set_eligibility!
+      if teacher.eligible_for_mentor_training?
+        teacher.first_became_eligible_for_mentor_training_at ||= Time.zone.now
+      end
+
+      if teacher.eligible_for_ect_training?
+        teacher.first_became_eligible_for_ect_training_at ||= Time.zone.now
+      end
+
+      teacher.save!
     end
 
     def notify_trs_of_new_induction_start

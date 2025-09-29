@@ -320,4 +320,52 @@ describe Teacher do
       expect(subject.corrected_name).to eql("Tobias Menzies")
     end
   end
+
+  describe "#eligible_for_ect_training?" do
+    subject(:teacher) { FactoryBot.create(:teacher) }
+
+    it { is_expected.not_to be_eligible_for_ect_training }
+
+    context "when there is an ongoing induction period and ect at school period" do
+      before do
+        FactoryBot.create(:induction_period, :ongoing, teacher:)
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
+      end
+
+      it { is_expected.to be_eligible_for_ect_training }
+    end
+
+    context "when there is an ongoing induction period and an ect at school period that has finished" do
+      before do
+        FactoryBot.create(:induction_period, :ongoing, teacher:)
+        FactoryBot.create(:ect_at_school_period, :finished, teacher:)
+      end
+
+      it { is_expected.not_to be_eligible_for_ect_training }
+    end
+
+    context "when there is an ongoing induction period but no ect at school period" do
+      before { FactoryBot.create(:induction_period, :ongoing, teacher:) }
+
+      it { is_expected.not_to be_eligible_for_ect_training }
+    end
+
+    context "when there is an ongoing ect at school. period but no induction period" do
+      before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+
+      it { is_expected.not_to be_eligible_for_ect_training }
+    end
+  end
+
+  describe "#eligible_for_mentor_training?" do
+    subject(:teacher) { FactoryBot.create(:teacher) }
+
+    it { is_expected.to be_eligible_for_mentor_training }
+
+    context "when the mentor became ineligible for funding" do
+      subject(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
+
+      it { is_expected.not_to be_eligible_for_ect_training }
+    end
+  end
 end
