@@ -21,18 +21,19 @@ RSpec.describe AppropriateBodies::ProcessBatch::ReleaseECTJob, type: :job do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:author_email) { 'barry@not-a-clue.co.uk' }
   let(:author_name) { 'Barry Cryer' }
-  let(:teacher) { pending_induction_submission.teacher }
+  let(:teacher) { Teacher.find_by(trn: pending_induction_submission.trn) }
   let(:induction_period) { teacher.induction_periods.first }
 
   before do
     FactoryBot.create(:teacher, trn: pending_induction_submission.trn)
-    FactoryBot.create(:induction_period, :ongoing, teacher: pending_induction_submission.teacher, appropriate_body:)
+    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
   end
 
-  it 'closes the induction' do
+  it 'closes the induction', :aggregate_failures do
     perform_release_ect_job
     perform_enqueued_jobs
 
+    expect(teacher.ongoing_induction_period).to be_nil
     expect(induction_period.finished_on).to eq(pending_induction_submission.finished_on)
     expect(induction_period.number_of_terms).to eq(pending_induction_submission.number_of_terms)
     expect(induction_period.outcome).to be_nil

@@ -32,10 +32,11 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordOutcomeJob, type: :job do
     FactoryBot.create(:induction_period, :ongoing, teacher: pending_induction_submission.teacher, appropriate_body:)
   end
 
-  it 'records an outcome for the induction' do
+  it 'records an outcome for the induction', :aggregate_failures do
     perform_record_outcome_job
     perform_enqueued_jobs
 
+    expect(teacher.ongoing_induction_period).to be_nil
     expect(induction_period.finished_on).to eq(pending_induction_submission.finished_on)
     expect(induction_period.outcome).to eq(pending_induction_submission.outcome)
     expect(induction_period.number_of_terms).to eq(pending_induction_submission.number_of_terms)

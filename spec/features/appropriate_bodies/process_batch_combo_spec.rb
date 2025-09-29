@@ -37,10 +37,13 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk claim"
     )
 
-    expect(AnalyticsBatchJob).to have_been_enqueued
-      .once.with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
-
+    expect(AnalyticsBatchJob).to have_been_enqueued.once
+      .with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
+    expect(AppropriateBodies::ProcessBatch::RegisterECTJob).to have_been_enqueued.twice
     expect(perform_enqueued_jobs).to be(3)
+    expect(RecordEventJob).to have_been_enqueued.exactly(6).times
+    expect(BeginECTInductionJob).to have_been_enqueued.twice
+
     expect(perform_enqueued_jobs).to be(8)
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
@@ -103,10 +106,14 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk action"
     )
 
-    expect(AnalyticsBatchJob).to have_been_enqueued
-      .once.with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
-
+    expect(AnalyticsBatchJob).to have_been_enqueued.once
+      .with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
+    expect(AppropriateBodies::ProcessBatch::RecordOutcomeJob).to have_been_enqueued.twice
     expect(perform_enqueued_jobs).to be(3)
+    expect(RecordEventJob).to have_been_enqueued.twice
+    expect(PassECTInductionJob).to have_been_enqueued
+    expect(FailECTInductionJob).to have_been_enqueued
+
     expect(perform_enqueued_jobs).to be(4)
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
