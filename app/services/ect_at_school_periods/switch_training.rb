@@ -27,7 +27,12 @@ module ECTAtSchoolPeriods
         @ect_at_school_period.school_led_training_programme?
 
       ActiveRecord::Base.transaction do
-        finish_or_destroy_existing_training_period!
+        if date_of_transition.future? || @training_period.school_partnership.blank?
+          @training_period.destroy!
+        else
+          finish_training_period!
+        end
+
         create_school_led_training_period!
       end
     end
@@ -37,7 +42,12 @@ module ECTAtSchoolPeriods
         @ect_at_school_period.provider_led_training_programme?
 
       ActiveRecord::Base.transaction do
-        finish_training_period!
+        if date_of_transition.future?
+          @training_period.destroy!
+        else
+          finish_training_period!
+        end
+
         create_provider_led_training_period!
       end
     end
@@ -46,19 +56,13 @@ module ECTAtSchoolPeriods
 
     attr_reader :school, :lead_provider
 
-    def finish_or_destroy_existing_training_period!
-      if @training_period.school_partnership.present?
-        finish_training_period!
-      else
-        @training_period.destroy!
-      end
-    end
+    def date_of_transition = [@ect_at_school_period.started_on, Date.current].max
 
     def finish_training_period!
       TrainingPeriods::Finish.ect_training(
         training_period: @training_period,
         ect_at_school_period: @ect_at_school_period,
-        finished_on:,
+        finished_on: Date.current,
         author: @author
       ).finish!
     end
@@ -66,20 +70,19 @@ module ECTAtSchoolPeriods
     def create_school_led_training_period!
       TrainingPeriods::Create.school_led(
         period: @ect_at_school_period,
-        started_on:
+        started_on: date_of_transition
       ).call
     end
 
     def create_provider_led_training_period!
       TrainingPeriods::Create.provider_led(
         period: @ect_at_school_period,
-        started_on:,
+        started_on: date_of_transition,
         school_partnership: earliest_matching_school_partnership,
         expression_of_interest:
       ).call
     end
 
-    def started_on = Date.current
-    def finished_on = Date.current
+    def started_on = date_of_transition
   end
 end
