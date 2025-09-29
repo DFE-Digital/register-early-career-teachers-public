@@ -21,14 +21,12 @@
 
     <%= render Shared::TopSearchComponent.new %>
 
-      <% if @filtered_mentors.count.zero? %>
+      <% if @filtered_mentors.empty? %>
         <p class="govuk-body">There are no mentors that match your search.</p>
 
       <% else %>
 
-        <% @filtered_mentors.to_a.map do |mentor| %>
-          <%= render Schools::Mentors::SummaryComponent.new(mentor: mentor, school: @school) %>
-        <% end %>
+        <%= render Schools::Mentors::SummaryComponent.with_collection(@filtered_mentors, school: @school) %>
         <%= govuk_pagination pagy: @pagy %>
 
       <% end %>
