@@ -62,10 +62,10 @@ RSpec.describe 'Admin recording a failed outcome for a teacher' do
       include_context 'sign in as DfE user'
 
       context 'with valid params' do
-        let(:fake_record_outcome) { double(AppropriateBodies::RecordOutcome, fail!: true) }
+        let(:fake_record_outcome) { double(AppropriateBodies::RecordFail, fail!: true) }
 
         before do
-          allow(AppropriateBodies::RecordOutcome).to receive(:new).and_return(fake_record_outcome)
+          allow(AppropriateBodies::RecordFail).to receive(:new).and_return(fake_record_outcome)
           allow(PendingInductionSubmissions::Build).to receive(:closing_induction_period).and_call_original
         end
 
@@ -93,10 +93,9 @@ RSpec.describe 'Admin recording a failed outcome for a teacher' do
             params: valid_params
           )
 
-          expect(AppropriateBodies::RecordOutcome).to have_received(:new).with(
+          expect(AppropriateBodies::RecordFail).to have_received(:new).with(
             appropriate_body:,
             pending_induction_submission: an_instance_of(PendingInductionSubmission),
-            teacher:,
             author: an_instance_of(Sessions::Users::DfEPersona)
           )
 

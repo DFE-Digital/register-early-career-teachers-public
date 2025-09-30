@@ -26,10 +26,11 @@ module AppropriateBodies
         @pending_induction_submission.save!
         redirect_to edit_ab_claim_an_ect_check_path(@pending_induction_submission)
 
-      # Already claimed by another AB
-      rescue AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB => e
-        teacher_id = Teacher.find_by!(trn: @pending_induction_submission.trn).id
-        redirect_to ab_teacher_path(teacher_id), notice: e.message
+      # Already claimed by current AB
+      rescue FindECT::TeacherHasOngoingInductionPeriodWithCurrentAB
+        teacher = Teacher.find_by(trn: @pending_induction_submission.trn)
+        full_name = ::Teachers::Name.new(teacher).full_name
+        redirect_to ab_teacher_path(teacher), notice: "Teacher #{full_name} already has an ongoing induction period with this appropriate body"
       end
 
     private
@@ -43,14 +44,13 @@ module AppropriateBodies
       end
 
       def find_ect
-        @find_ect ||=
-          AppropriateBodies::ClaimAnECT::FindECT.new(
-            appropriate_body: @appropriate_body,
-            pending_induction_submission: PendingInductionSubmission.new(
-              **pending_induction_submission_params,
-              **pending_induction_submission_attributes
-            )
+        @find_ect ||= FindECT.new(
+          appropriate_body: @appropriate_body,
+          pending_induction_submission: PendingInductionSubmission.new(
+            **pending_induction_submission_params,
+            **pending_induction_submission_attributes
           )
+        )
       end
     end
   end
