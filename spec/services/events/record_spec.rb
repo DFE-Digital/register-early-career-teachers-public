@@ -1005,6 +1005,35 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_training_programme_updated_event!" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+
+    it "enqueues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_training_programme_updated_event!(
+        old_training_programme: "school_led",
+        new_training_programme: "provider_led",
+        author:,
+        ect_at_school_period:,
+        school: ect_at_school_period.school,
+        teacher:,
+        happened_at: 25.minutes.ago
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        teacher:,
+        school: ect_at_school_period.school,
+        ect_at_school_period:,
+        heading: "Training programme changed from 'school led' to 'provider led'",
+        event_type: :teacher_training_programme_updated,
+        happened_at: 25.minutes.ago,
+        **author_params
+      )
+    end
+  end
+
   describe '.record_teacher_left_school_as_mentor!' do
     let(:finished_on) { 1.month.ago.to_date }
     let(:school) { FactoryBot.create(:school) }

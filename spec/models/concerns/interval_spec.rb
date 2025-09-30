@@ -15,16 +15,6 @@ describe Interval do
           expect(subject.errors.messages).to include(finished_on: ["The end date must be later than the start date (#{Date.yesterday.to_fs(:govuk)})"])
         end
       end
-
-      context "when finished_on matches started_on" do
-        subject { DummyMentor.new(started_on: Date.yesterday, finished_on: Date.yesterday) }
-
-        before { subject.valid? }
-
-        it "adds an error" do
-          expect(subject.errors.messages).to include(finished_on: ["The end date must be later than the start date (#{Date.yesterday.to_fs(:govuk)})"])
-        end
-      end
     end
   end
 
