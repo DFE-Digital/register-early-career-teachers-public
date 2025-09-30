@@ -1,0 +1,41 @@
+<% page_data(
+  title: "Change #{@wizard.teacher_full_name}’s training programme to school-led",
+  backlink_href: schools_ect_path(@wizard.ect_at_school_period)
+) %>
+
+<p class="govuk-body">
+  If your school wants to change its training programme, you should, for
+  continuity, make changes at the end of the school year.
+</p>
+
+<p class="govuk-body">
+  If you change <%= @wizard.teacher_full_name %>’s training from provider-led to
+  school-led, it means that their training with their current lead provider will
+  stop immediately. They’ll need to wait until your school-led programme is in
+  place before they can continue.
+</p>
+
+<p class="govuk-body">
+  Your school is responsible for designing and delivering a school-led training
+  programme. You should tell your appropriate body if your programme is
+  school-led as they’ll need to check and approve it.
+</p>
+
+<p class="govuk-body">
+  You should not change to a school-led programme in this service until it’s
+  been approved by your appropriate body.
+</p>
+
+<%= form_with model: @wizard.current_step, url: @wizard.current_step_path do |form| %>
+  <%= form.hidden_field :training_programme, value: "school_led" %>
+
+  <%= form.govuk_submit "Change training programme" %>
+
+  <p class="govuk-body">
+    <%= govuk_link_to(
+          "Cancel and go back to #{@wizard.teacher_full_name}’s details",
+          schools_ect_path(@wizard.ect_at_school_period),
+          no_visited_state: true
+        ) %>
+  </p>
+<% end %>
