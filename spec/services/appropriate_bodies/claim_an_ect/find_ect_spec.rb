@@ -69,7 +69,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
           it do
             expect {
               find_ect.import_from_trs!
-            }.to raise_error(AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB)
+            }.to raise_error(AppropriateBodies::ClaimAnECT::FindECT::TeacherHasOngoingInductionPeriodWithCurrentAB)
           end
         end
       end

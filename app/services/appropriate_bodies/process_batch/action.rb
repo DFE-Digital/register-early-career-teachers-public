@@ -84,7 +84,7 @@ module AppropriateBodies
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end
 
-      # @return [Boolean] pass, FAIL, Release (case-insensitive)
+      # @return [Boolean] case-insensitive
       def invalid_outcome?
         row.outcome !~ /\A(pass|fail|release)\z/i
       end
