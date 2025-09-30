@@ -1,5 +1,5 @@
 module ProgrammeHelper
-  def training_programme_name(training_programme, default = 'Training programme is not recognised')
+  def training_programme_name(training_programme, default = 'Pre-2021 induction')
     ::TRAINING_PROGRAMME.fetch(training_programme&.to_sym, default)
   end
 
