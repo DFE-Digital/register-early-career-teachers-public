@@ -174,6 +174,7 @@ erDiagram
     integer pending_induction_submission_batch_id
     array[string] error_messages
     enum training_programme
+    boolean trs_prohibited_from_teaching
   }
   PendingInductionSubmission }o--|| AppropriateBody : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
@@ -318,6 +319,19 @@ erDiagram
   }
   ActiveLeadProvider }o--|| ContractPeriod : belongs_to
   ActiveLeadProvider }o--|| LeadProvider : belongs_to
+  Metadata_TeacherLeadProvider {
+    integer id
+    integer teacher_id
+    integer lead_provider_id
+    integer latest_ect_training_period_id
+    integer latest_mentor_training_period_id
+    datetime created_at
+    datetime updated_at
+  }
+  Metadata_TeacherLeadProvider }o--|| Teacher : belongs_to
+  Metadata_TeacherLeadProvider }o--|| LeadProvider : belongs_to
+  Metadata_TeacherLeadProvider }o--|| TrainingPeriod : belongs_to
+  Metadata_TeacherLeadProvider }o--|| TrainingPeriod : belongs_to
   Metadata_SchoolLeadProviderContractPeriod {
     integer id
     integer school_id

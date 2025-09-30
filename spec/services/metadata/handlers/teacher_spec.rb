@@ -1,0 +1,202 @@
+RSpec.describe Metadata::Handlers::Teacher do
+  let(:instance) { described_class.new(teacher1) }
+
+  let!(:teacher1) { FactoryBot.create(:teacher) }
+
+  let!(:school1) { FactoryBot.create(:school) }
+  let!(:school_partnership1) { FactoryBot.create(:school_partnership, school: school1) }
+  let(:lead_provider1) { school_partnership1.lead_provider }
+
+  include_context "supports refreshing all metadata", :teacher, Teacher do
+    let(:object) { teacher1 }
+  end
+
+  describe ".destroy_all_metadata!" do
+    subject(:destroy_all_metadata) { described_class.destroy_all_metadata! }
+
+    before { instance.refresh_metadata! }
+
+    it "destroys all metadata for the teacher" do
+      expect { destroy_all_metadata }.to change(Metadata::TeacherLeadProvider, :count).from(1).to(0)
+    end
+  end
+
+  describe "#refresh_metadata!" do
+    subject(:refresh_metadata) { instance.refresh_metadata! }
+
+    describe "TeacherLeadProvider" do
+      include_context "supports tracking metadata upsert changes", Metadata::TeacherLeadProvider do
+        let(:handler) { instance }
+
+        def perform_refresh_metadata
+          refresh_metadata
+        end
+      end
+
+      it "creates metadata for all combinations of the teacher and lead providers" do
+        FactoryBot.create_list(:lead_provider, 2)
+
+        expect { refresh_metadata }.to change(Metadata::TeacherLeadProvider, :count).by(LeadProvider.count)
+      end
+
+      context "two training periods for different lead providers" do
+        let!(:school_partnership2) { FactoryBot.create(:school_partnership, school: school1) }
+        let(:lead_provider2) { school_partnership2.lead_provider }
+
+        let!(:ect_at_school_period1) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            school: school1,
+            teacher: teacher1,
+            started_on: 1.year.ago,
+            finished_on: Date.current
+          )
+        end
+        let!(:ect_training_period1) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            started_on: ect_at_school_period1.started_on,
+            finished_on: (ect_at_school_period1.started_on + 30.days),
+            ect_at_school_period: ect_at_school_period1,
+            school_partnership: school_partnership1
+          )
+        end
+        let!(:ect_training_period2) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            started_on: (ect_at_school_period1.started_on + 31.days),
+            finished_on: ect_at_school_period1.finished_on,
+            ect_at_school_period: ect_at_school_period1,
+            school_partnership: school_partnership2
+          )
+        end
+
+        let!(:mentor_at_school_period1) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            school: school1,
+            teacher: teacher1,
+            started_on: 1.year.ago,
+            finished_on: Date.current
+          )
+        end
+        let!(:mentor_training_period1) do
+          FactoryBot.create(
+            :training_period,
+            :for_mentor,
+            started_on: mentor_at_school_period1.started_on,
+            finished_on: (mentor_at_school_period1.started_on + 30.days),
+            mentor_at_school_period: mentor_at_school_period1,
+            school_partnership: school_partnership1
+          )
+        end
+        let!(:mentor_training_period2) do
+          FactoryBot.create(
+            :training_period,
+            :for_mentor,
+            started_on: (mentor_at_school_period1.started_on + 31.days),
+            finished_on: mentor_at_school_period1.finished_on,
+            mentor_at_school_period: mentor_at_school_period1,
+            school_partnership: school_partnership2
+          )
+        end
+
+        it "creates metadata for both lead providers" do
+          refresh_metadata
+
+          metadata1 = Metadata::TeacherLeadProvider.where(lead_provider: lead_provider1).sole
+          expect(metadata1).to have_attributes(
+            teacher: teacher1,
+            lead_provider: lead_provider1,
+            latest_ect_training_period: ect_training_period1,
+            latest_mentor_training_period: mentor_training_period1
+          )
+
+          metadata2 = Metadata::TeacherLeadProvider.where(lead_provider: lead_provider2).sole
+          expect(metadata2).to have_attributes(
+            teacher: teacher1,
+            lead_provider: lead_provider2,
+            latest_ect_training_period: ect_training_period2,
+            latest_mentor_training_period: mentor_training_period2
+          )
+        end
+      end
+
+      context "two training periods, one starting in the future" do
+        let!(:ect_at_school_period1) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            school: school1,
+            teacher: teacher1,
+            started_on: 30.days.ago,
+            finished_on: 1.year.from_now
+          )
+        end
+        let!(:ect_training_period1) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            started_on: ect_at_school_period1.started_on,
+            finished_on: 10.days.ago,
+            ect_at_school_period: ect_at_school_period1,
+            school_partnership: school_partnership1
+          )
+        end
+        let!(:ect_training_period2) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            started_on: 10.days.from_now,
+            finished_on: ect_at_school_period1.finished_on,
+            ect_at_school_period: ect_at_school_period1,
+            school_partnership: school_partnership1
+          )
+        end
+
+        let!(:mentor_at_school_period1) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            school: school1,
+            teacher: teacher1,
+            started_on: 30.days.ago,
+            finished_on: 1.year.from_now
+          )
+        end
+        let!(:mentor_training_period1) do
+          FactoryBot.create(
+            :training_period,
+            :for_mentor,
+            started_on: mentor_at_school_period1.started_on,
+            finished_on: 5.days.ago,
+            mentor_at_school_period: mentor_at_school_period1,
+            school_partnership: school_partnership1
+          )
+        end
+        let!(:mentor_training_period2) do
+          FactoryBot.create(
+            :training_period,
+            :for_mentor,
+            started_on: 15.days.from_now,
+            finished_on: mentor_at_school_period1.finished_on,
+            mentor_at_school_period: mentor_at_school_period1,
+            school_partnership: school_partnership1
+          )
+        end
+
+        it "creates metadata with the training period starting in the future" do
+          refresh_metadata
+
+          metadata = Metadata::TeacherLeadProvider.where(lead_provider: lead_provider1).sole
+          expect(metadata).to have_attributes(
+            teacher: teacher1,
+            lead_provider: lead_provider1,
+            latest_ect_training_period: ect_training_period2,
+            latest_mentor_training_period: mentor_training_period2
+          )
+        end
+      end
+    end
+  end
+end
