@@ -1,0 +1,15 @@
+<%
+  page_data(
+    title: "Edit #{@user.name}",
+    caption: 'DfE staff',
+    caption_size: 'm',
+    error: @user.errors.any?,
+    backlink_href: admin_users_path
+  )
+%>
+
+<%= form_for(@user, url: admin_user_path(@user)) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+  <%= render partial: 'form', locals: { f: } %>
+  <%= f.govuk_submit('Update user') %>
+<% end %>

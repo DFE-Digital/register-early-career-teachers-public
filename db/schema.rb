@@ -170,14 +170,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_152312) do
     t.index ["name"], name: "index_delivery_partners_on_name", unique: true
   end
 
-  create_table "dfe_roles", force: :cascade do |t|
-    t.enum "role_type", default: "admin", null: false, enum_type: "dfe_role_type"
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_dfe_roles_on_user_id"
-  end
-
   create_table "ect_at_school_periods", force: :cascade do |t|
     t.bigint "school_id", null: false
     t.bigint "teacher_id", null: false
@@ -809,12 +801,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_26_152312) do
     t.datetime "otp_verified_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.enum "role", default: "admin", null: false, enum_type: "dfe_role_type"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
-  add_foreign_key "dfe_roles", "users"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"

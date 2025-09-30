@@ -25,6 +25,7 @@
   image: personas/daphne.png
   alt: Daphne from Scooby Doo looking quizzical in a purple dress.
   type: DfE staff
+  role: super_admin
 
 - name: Norville Rogers
   email: shaggy@example.com
@@ -34,6 +35,17 @@
   image: personas/shaggy.png
   alt: Shaggy from Scooby Doo, wearing a green shirt looking directly forwards.
   type: DfE staff
+  role: admin
+
+- name: Scrooge McDuck
+  email: scrooge@example.com
+  appropriate_body_name: Null
+  dfe_staff: Yes
+  school_name: Null
+  image: personas/scrooge.png
+  alt: Scrooge McDuck wearing a top hat and red frock coat
+  type: DfE staff
+  role: finance
 
 - name: Bob Belcher
   email: bob@example.com

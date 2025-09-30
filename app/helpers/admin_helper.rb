@@ -35,4 +35,14 @@ module AdminHelper
       }
     ]
   end
+
+  def role_name(role)
+    User::ROLES.fetch(role.to_sym)
+  end
+
+  def role_options
+    role_option = Data.define(:identifier, :name)
+
+    User::ROLES.map { |k, v| role_option.new(identifier: k, name: v) }
+  end
 end
