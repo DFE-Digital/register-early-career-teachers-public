@@ -40,12 +40,6 @@ module AdminHelper
     User::ROLES.fetch(role.to_sym)
   end
 
-  def elevated_role_name(user)
-    return if user.admin?
-
-    "(#{role_name(user.role)})"
-  end
-
   def role_options
     role_option = Data.define(:identifier, :name)
 

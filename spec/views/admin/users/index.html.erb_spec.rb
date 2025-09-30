@@ -14,7 +14,7 @@ describe 'admin/users/index.html.erb' do
   end
 
   it 'displays a list of all DfE staff' do
-    expect(rendered).to have_css('ul.govuk-list > li', count: 3)
+    expect(rendered).to have_css('table.govuk-table > tbody > tr', count: 3)
   end
 
   it 'displays the user names as links to the profile pages' do
@@ -26,8 +26,8 @@ describe 'admin/users/index.html.erb' do
   end
 
   it 'displays the elevated roles but not regular admin' do
-    expect(rendered).to have_content('(Super admin)')
-    expect(rendered).to have_content('(Finance)')
-    expect(rendered).not_to have_content('(Admin)')
+    expect(rendered).to have_css('td', text: 'Super admin')
+    expect(rendered).to have_css('td', text: 'Finance')
+    expect(rendered).to have_css('td', text: 'Admin')
   end
 end
