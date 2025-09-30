@@ -7,9 +7,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
   belongs_to :teacher, inverse_of: :ect_at_school_periods
   belongs_to :school_reported_appropriate_body, class_name: 'AppropriateBody'
 
-  has_many :mentorship_periods, inverse_of: :mentee
+  has_many :mentorship_periods, inverse_of: :mentee, dependent: :destroy
   has_many :mentors, through: :mentorship_periods, source: :mentor
-  has_many :training_periods, inverse_of: :ect_at_school_period
+  has_many :training_periods, inverse_of: :ect_at_school_period, dependent: :destroy
   has_many :mentor_at_school_periods, through: :teacher
   has_many :events
   has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
