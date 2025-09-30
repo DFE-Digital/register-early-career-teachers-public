@@ -5,8 +5,8 @@ class MentorAtSchoolPeriod < ApplicationRecord
   # Associations
   belongs_to :school, inverse_of: :mentor_at_school_periods
   belongs_to :teacher, inverse_of: :mentor_at_school_periods
-  has_many :mentorship_periods, inverse_of: :mentor
-  has_many :training_periods, inverse_of: :mentor_at_school_period
+  has_many :mentorship_periods, inverse_of: :mentor, dependent: :destroy
+  has_many :training_periods, inverse_of: :mentor_at_school_period, dependent: :destroy
   has_many :declarations, through: :training_periods
   has_many :events
   has_many :currently_assigned_ects,
