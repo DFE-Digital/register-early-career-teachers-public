@@ -2,7 +2,7 @@ class PersonasController < ApplicationController
   layout 'full'
 
   def index
-    persona_data = Struct.new(:name, :email, :school_name, :school_type, :image, :alt, :appropriate_body_name, :dfe_staff, :type) do
+    persona_data = Struct.new(:name, :email, :school_name, :school_type, :image, :alt, :appropriate_body_name, :dfe_staff, :type, :role) do
       def appropriate_body_id
         AppropriateBody.find_by!(name: appropriate_body_name).id if appropriate_body_name.present?
       end

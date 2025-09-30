@@ -34,6 +34,13 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
+  describe 'delegation' do
+    it { is_expected.to delegate_method(:role).to(:user) }
+    it { is_expected.to delegate_method(:admin?).to(:user) }
+    it { is_expected.to delegate_method(:super_admin?).to(:user) }
+    it { is_expected.to delegate_method(:finance?).to(:user) }
+  end
+
   describe '#provider' do
     it { expect(dfe_persona.provider).to be(:persona) }
   end

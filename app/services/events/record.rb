@@ -663,6 +663,22 @@ module Events
       ).record_event!
     end
 
+    # Admin events
+
+    def self.record_dfe_user_created_event!(author:, user:, modifications:, happened_at: Time.zone.now)
+      event_type = :dfe_user_created
+      heading = "User #{user.name} added"
+
+      new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
+    end
+
+    def self.record_dfe_user_updated_event!(author:, user:, modifications:, happened_at: Time.zone.now)
+      event_type = :dfe_user_updated
+      heading = "User #{user.name} updated"
+
+      new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
+    end
+
   private
 
     def attributes

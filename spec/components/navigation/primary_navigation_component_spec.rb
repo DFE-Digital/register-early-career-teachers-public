@@ -36,7 +36,8 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
           { text: "Teachers", href: "/admin/teachers" },
           { text: "Schools", href: "/admin/schools" },
           { text: "Organisations", href: "/admin/organisations" },
-          { text: "Finance", href: "/admin/finance" }
+          { text: "Finance", href: "/admin/finance" },
+          { text: "Users", href: "/admin/users" }
         ]
 
         validate_navigation_items(expected_items)

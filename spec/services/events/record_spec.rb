@@ -7,6 +7,7 @@ RSpec.describe Events::Record do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Burns Slant Drilling Co.") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:author_params) { { author_id: author.id, author_name: author.name, author_email: author.email, author_type: :dfe_staff_user } }
+  let(:another_dfe_user) { FactoryBot.create(:user, name: 'Ian Richardson', email: 'er@education.gov.uk') }
 
   let(:heading) { 'Something happened' }
   let(:event_type) { :induction_period_opened }
@@ -1452,6 +1453,47 @@ RSpec.describe Events::Record do
             **author_params
           )
         end
+      end
+    end
+  end
+
+  describe '.record_dfe_user_created_event!' do
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_dfe_user_created_event!(author:, user: another_dfe_user, modifications: another_dfe_user.changes)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            user: another_dfe_user,
+            modifications: anything,
+            metadata: another_dfe_user.changes,
+            happened_at: Time.zone.now,
+            heading: "User Ian Richardson added",
+            event_type: :dfe_user_created,
+            **author_params
+          )
+        )
+      end
+    end
+  end
+
+  describe '.record_dfe_user_updated_event!' do
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        another_dfe_user.name = "Ian William Richardson"
+        Events::Record.record_dfe_user_updated_event!(author:, user: another_dfe_user, modifications: another_dfe_user.changes)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            user: another_dfe_user,
+            modifications: anything,
+            metadata: another_dfe_user.changes,
+            heading: "User Ian William Richardson updated",
+            happened_at: Time.zone.now,
+            event_type: :dfe_user_updated,
+            **author_params
+          )
+        )
       end
     end
   end
