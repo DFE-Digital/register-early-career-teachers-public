@@ -3,9 +3,9 @@ require "csv"
 
 module GIAS
   class Importer
-    ENCODING = "ISO-8859-1:UTF-8".freeze
-    SCHOOLS_FILENAME = "ecf_tech.csv".freeze
-    SCHOOL_LINKS_FILENAME = "links.csv".freeze
+    ENCODING = "ISO-8859-1:UTF-8"
+    SCHOOLS_FILENAME = "ecf_tech.csv"
+    SCHOOL_LINKS_FILENAME = "links.csv"
 
     def fetch
       DeclarativeUpdates.skip(:metadata) do
