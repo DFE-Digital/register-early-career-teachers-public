@@ -28,7 +28,8 @@ class PendingInductionSubmissionBatch < ApplicationRecord
 
   # Associations
   belongs_to :appropriate_body
-  has_many :pending_induction_submissions
+  has_many :pending_induction_submissions, dependent: :destroy
+  has_many :events, dependent: :nullify
 
   # Scopes
   scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
