@@ -1,5 +1,6 @@
 module Schools
   class RegisterMentor
+    class MentorIneligibleForTraining < StandardError; end
     include TrainingPeriodSources
 
     attr_reader :author,
@@ -59,10 +60,19 @@ module Schools
     def create_training_period!
       return if training_programme == 'school_led'
 
+      ensure_mentor_is_eligible!
+
       @training_period = ::TrainingPeriods::Create.provider_led(period: mentor_at_school_period,
                                                                 started_on: mentor_at_school_period.started_on,
                                                                 school_partnership:,
                                                                 expression_of_interest:).call
+    end
+
+    def ensure_mentor_is_eligible!
+      unless Teachers::MentorFundingEligibility.new(trn: teacher.trn).eligible?
+        raise MentorIneligibleForTraining,
+              "Mentor #{teacher.id} is not eligible for funded training"
+      end
     end
 
     def school_partnership
