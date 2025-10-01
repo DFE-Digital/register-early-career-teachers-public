@@ -112,6 +112,7 @@ RSpec.describe Schools::RegisterECT do
         context "when a Teacher record with the same TRN has a future period at different school" do
           let(:other_school) { FactoryBot.create(:school) }
           let(:started_on) { Date.current + 3.months } # Future start date after the other school's period
+          let!(:contract_period) { FactoryBot.create(:contract_period, year: Date.current.year) }
           let!(:future_contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
           let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
 
