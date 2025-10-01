@@ -17,16 +17,16 @@ describe TrainingPeriod do
 
       context "ECT training period" do
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
-        let(:instance) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on) }
+        let(:instance) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on) }
 
-        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on]
       end
 
       context "Mentor training period" do
         let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
-        let(:instance) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: mentor_at_school_period.started_on) }
+        let(:instance) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: mentor_at_school_period.started_on, finished_on: mentor_at_school_period.finished_on) }
 
-        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on]
       end
     end
   end
