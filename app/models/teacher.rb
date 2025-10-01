@@ -1,4 +1,6 @@
 class Teacher < ApplicationRecord
+  include DeclarativeUpdates
+
   TRN_FORMAT = %r{\A\d{7}\z}
 
   self.ignored_columns = %i[search]
@@ -33,6 +35,8 @@ class Teacher < ApplicationRecord
 
   # TODO: remove after migration complete
   has_many :teacher_migration_failures
+
+  refresh_metadata -> { self }, on_event: %i[create update]
 
   # Validations
   validates :trn,
