@@ -6,6 +6,10 @@ def generate_new_value(attribute_to_change:)
     !instance[attribute_to_change]
   elsif attribute_to_change.match?("email")
     Faker::Internet.email
+  elsif attribute_to_change == :started_on
+    (instance[attribute_to_change] || Date.current) + 1.day
+  elsif attribute_to_change == :finished_on
+    (instance[attribute_to_change] || Date.current) - 1.day
   else
     Faker::Types.send("rb_#{column.type}")
   end
