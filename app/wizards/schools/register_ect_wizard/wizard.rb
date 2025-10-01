@@ -77,7 +77,7 @@ module Schools
         # TRN must be present and teacher must be in TRS to proceed beyond find_ect
         return steps unless [ect.trn, ect.date_of_birth].all?(&:present?)
         return steps + %i[trn_not_found] unless ect.national_insurance_number || ect.in_trs?
-            
+
         unless ect.matches_trs_dob?
           steps << :national_insurance_number
           return steps unless ect.national_insurance_number
@@ -117,54 +117,56 @@ module Schools
         end
 
         unless school.last_programme_choices? && ect.use_previous_ect_choices
-          if school.independent?
-            steps << :independent_school_appropriate_body
-            return steps unless [ect.appropriate_body_id, ect.appropriate_body_type].all?
-          else
-            steps << :state_school_appropriate_body
-            return steps unless ect.appropriate_body_id
-          end
+          steps << if school.independent?
+                     :independent_school_appropriate_body
+                   else
+                     :state_school_appropriate_body
+                   end
+          return steps unless ect.appropriate_body_id
 
           steps << :training_programme
           return steps unless ect.training_programme
 
           if ect.provider_led?
             steps << :lead_provider
-            return steps unless ect.lead_provider_id
+            return steps unless ect.lead_provider_id || can_reach_check_answers?
           end
         end
 
         steps += %i[check_answers]
 
-        # Always allow change steps for completed flows
+        # Only allow change steps if user has reached check_answers step
+        # This prevents direct access to change steps without completing the flow
         steps << :change_email_address
         return steps + %i[cant_use_changed_email] if ect.cant_use_email?
 
         steps << (school.independent? ? :change_independent_school_appropriate_body : :change_state_school_appropriate_body)
 
         steps << :change_training_programme
-        steps << :training_programme_change_lead_provider if !ect.school_led? && (ect.was_school_led? || ect.lead_provider_id.nil?)
+        steps << :training_programme_change_lead_provider if ect.provider_led? && (ect.was_school_led? || ect.lead_provider_id.nil?)
+        steps << :change_lead_provider if ect.provider_led?
+        steps << :change_review_ect_details
+        steps << :change_start_date
+        steps << :change_use_previous_ect_choices if school.last_programme_choices?
+        steps << :change_working_pattern
 
-        steps += %i[
-          change_lead_provider
-          change_review_ect_details
-          change_start_date
-          change_use_previous_ect_choices
-          change_working_pattern
-          no_previous_ect_choices_change_independent_school_appropriate_body
-          no_previous_ect_choices_change_lead_provider
-          no_previous_ect_choices_change_training_programme
-          no_previous_ect_choices_change_state_school_appropriate_body
-        ]
+        # No previous choices change steps - only if school doesn't use previous choices
+        unless school.last_programme_choices? && ect.use_previous_ect_choices
+          steps << :no_previous_ect_choices_change_independent_school_appropriate_body if school.independent?
+          steps << :no_previous_ect_choices_change_state_school_appropriate_body unless school.independent?
+          steps << :no_previous_ect_choices_change_lead_provider if ect.provider_led?
+          steps << :no_previous_ect_choices_change_training_programme
+        end
 
         steps
       end
 
-      # Change steps and error steps are always allowed
+      # Change steps are only allowed if user has made reasonable progress in the flow
       def always_allowed_step?(step_name)
         step_name = step_name.to_s
-        step_name.start_with?('change_', 'no_previous_ect_choices_change_', 'training_programme_change_') ||
-          step_name.in?(%w[not_found trn_not_found induction_completed induction_exempt induction_failed cannot_register_ect already_active_at_school cant_use_email cant_use_changed_email])
+
+        # Error steps are always allowed
+        step_name.in?(%w[not_found trn_not_found induction_completed induction_exempt induction_failed cannot_register_ect already_active_at_school cant_use_email cant_use_changed_email])
       end
 
       def past_start_date?
@@ -177,6 +179,19 @@ module Schools
         return nil unless ect.start_date
 
         ContractPeriod.containing_date(Date.parse(ect.start_date))
+      end
+
+      def can_reach_check_answers?
+        # Check if user has basic required data to reach check_answers
+        return false unless [ect.trn, ect.trs_first_name, ect.change_name, ect.email, ect.start_date, ect.working_pattern].all?(&:present?)
+
+        # Check appropriate body requirements
+        return false if ect.appropriate_body_id.blank?
+
+        # Check training programme is selected
+        return false if ect.training_programme.blank?
+
+        true
       end
     end
   end

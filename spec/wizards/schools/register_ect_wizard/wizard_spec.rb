@@ -28,7 +28,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
 
     context 'when ECT has TRN but is not in TRS' do
       before do
-        wizard.ect.update!(trn: '1234567')
+        wizard.ect.update!(trn: '1234567', date_of_birth: '1990-01-01')
         allow(wizard.ect).to receive(:in_trs?).and_return(false)
       end
 
@@ -55,12 +55,9 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       context 'and national insurance number is provided but teacher not found' do
         before do
           wizard.ect.update!(national_insurance_number: 'AB123456C')
-          # Need to allow the initial in_trs? check to pass, then fail after NI number
-          call_count = 0
-          allow(wizard.ect).to receive(:in_trs?) do
-            call_count += 1
-            call_count == 1 # First call passes, subsequent calls fail
-          end
+          # Clear the cached allowed_steps and mock in_trs? to return false after NI number
+          wizard.instance_variable_set(:@allowed_steps, nil)
+          allow(wizard.ect).to receive(:in_trs?).and_return(false)
         end
 
         it 'includes not_found step' do
@@ -73,6 +70,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       before do
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_date_of_birth: '1990-01-01'
         )
@@ -89,6 +87,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       before do
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_date_of_birth: '1990-01-01',
           trs_induction_status: 'Passed'
@@ -105,6 +104,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       before do
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_date_of_birth: '1990-01-01',
           trs_induction_status: 'Exempt'
@@ -121,6 +121,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       before do
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_date_of_birth: '1990-01-01',
           trs_induction_status: 'Failed'
@@ -137,6 +138,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       before do
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_date_of_birth: '1990-01-01',
           prohibited_from_teaching: true
@@ -153,6 +155,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       before do
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_date_of_birth: '1990-01-01',
           change_name: 'no',
@@ -204,6 +207,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         # Properly set up ECT with TRS data as would happen after find_ect step
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_last_name: 'Doe',
           trs_date_of_birth: '1990-01-01',
@@ -249,6 +253,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         # Set up ECT with TRS data for independent school flow
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_last_name: 'Doe',
           trs_date_of_birth: '1990-01-01',
@@ -275,6 +280,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         # Set up ECT with TRS data
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_last_name: 'Doe',
           trs_date_of_birth: '1990-01-01',
@@ -306,6 +312,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         # Set up ECT with TRS data for provider-led flow
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_last_name: 'Doe',
           trs_date_of_birth: '1990-01-01',
@@ -373,6 +380,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       before do
         wizard.ect.update!(
           trn: '1234567',
+          date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_date_of_birth: '1990-01-01',
           change_name: 'no',
@@ -459,17 +467,18 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
   end
 
   describe 'always allowed steps integration' do
-    it 'allows change steps via allowed_step? method' do
-      expect(wizard.allowed_step?('change_email_address')).to be true
-      expect(wizard.allowed_step?('change_training_programme')).to be true
+    it 'does not allow change steps when user has not reached check_answers' do
+      # Change steps should only be allowed through normal wizard progression
+      expect(wizard.allowed_step?('change_email_address')).to be false
+      expect(wizard.allowed_step?('change_training_programme')).to be false
     end
 
-    it 'allows no_previous_ect_choices_change steps via allowed_step? method' do
-      expect(wizard.allowed_step?('no_previous_ect_choices_change_training_programme')).to be true
+    it 'does not allow no_previous_ect_choices_change steps when user has not reached check_answers' do
+      expect(wizard.allowed_step?('no_previous_ect_choices_change_training_programme')).to be false
     end
 
-    it 'allows training_programme_change steps via allowed_step? method' do
-      expect(wizard.allowed_step?('training_programme_change_lead_provider')).to be true
+    it 'does not allow training_programme_change steps when user has not reached check_answers' do
+      expect(wizard.allowed_step?('training_programme_change_lead_provider')).to be false
     end
 
     it 'allows error steps via allowed_step? method' do
@@ -491,6 +500,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     before do
       wizard.ect.update!(
         trn: '1234567',
+        date_of_birth: '1990-01-01',
         trs_first_name: 'John',
         trs_date_of_birth: '1990-01-01',
         change_name: 'no',
