@@ -8,3 +8,10 @@
     }
   )
 %>
+
+<%=
+  render DebugSessionComponent.new(
+    current_session: controller.session['user_session'],
+    current_user:
+  )
+%>
