@@ -1,13 +1,33 @@
 describe TrainingPeriod do
   include SchoolPartnershipHelpers
-  describe "declarative updates" do
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 3.years.ago.to_date, finished_on: nil) }
-    let(:school_partnership) { FactoryBot.create(:school_partnership) }
-    let(:instance) { FactoryBot.create(:training_period, ect_at_school_period:, school_partnership:) }
-    let!(:target) { school_partnership.school }
 
-    describe "declarative metadata" do
+  describe "declarative updates" do
+    context "when target is school" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 3.years.ago.to_date, finished_on: nil) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+      let(:instance) { FactoryBot.create(:training_period, ect_at_school_period:, school_partnership:) }
+      let!(:target) { school_partnership.school }
+
       it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+    end
+
+    context "when target is teacher" do
+      let(:teacher) { FactoryBot.create(:teacher) }
+      let!(:target) { teacher }
+
+      context "ECT training period" do
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+        let(:instance) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on) }
+
+        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+      end
+
+      context "Mentor training period" do
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
+        let(:instance) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: mentor_at_school_period.started_on) }
+
+        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+      end
     end
   end
 
