@@ -3,7 +3,7 @@ RSpec.describe 'Registering a mentor', :js do
   include SchoolPartnershipHelpers
 
   before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+    allow(Rails.application.config).to receive_messages(enable_schools_interface: true, enable_test_guidance: false)
   end
 
   let(:trn) { '3002586' }
@@ -131,14 +131,10 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def when_i_submit_the_find_mentor_form
-    if ActiveModel::Type::Boolean.new.cast(ENV.fetch('TEST_GUIDANCE', false))
-      page.get_by_role(:row, name: trn).get_by_role(:button, name: "Select").first.click
-    else
-      page.get_by_label('trn').fill(trn)
-      page.get_by_label('day').fill('3')
-      page.get_by_label('month').fill('2')
-      page.get_by_label('year').fill('1977')
-    end
+    page.get_by_label('trn').fill(trn)
+    page.get_by_label('day').fill('3')
+    page.get_by_label('month').fill('2')
+    page.get_by_label('year').fill('1977')
     page.get_by_role('button', name: 'Continue').click
   end
 

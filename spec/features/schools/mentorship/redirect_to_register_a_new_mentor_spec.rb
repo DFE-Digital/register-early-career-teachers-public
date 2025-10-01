@@ -3,7 +3,7 @@ RSpec.describe 'Redirect to register a new mentor for an ECT' do
   include SchoolPartnershipHelpers
 
   before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+    allow(Rails.application.config).to receive_messages(enable_schools_interface: true, enable_test_guidance: false)
   end
 
   let(:trn) { '9876543' }
