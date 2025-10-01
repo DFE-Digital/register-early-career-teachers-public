@@ -364,6 +364,104 @@ describe TrainingPeriod do
         expect(TrainingPeriod.at_school(school.id)).not_to include(other_training_period)
       end
     end
+
+    describe ".latest_ect_training_period" do
+      let!(:teacher) { FactoryBot.create(:teacher) }
+
+      let!(:school1) { FactoryBot.create(:school) }
+      let!(:school_partnership1) { FactoryBot.create(:school_partnership, school: school1) }
+      let(:lead_provider1) { school_partnership1.lead_provider }
+
+      let!(:school_partnership2) { FactoryBot.create(:school_partnership, school: school1) }
+      let(:lead_provider2) { school_partnership2.lead_provider }
+
+      let!(:ect_at_school_period1) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          school: school1,
+          teacher:,
+          started_on: 1.year.ago,
+          finished_on: Date.current
+        )
+      end
+      let!(:ect_training_period1) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          started_on: ect_at_school_period1.started_on,
+          finished_on: (ect_at_school_period1.started_on + 30.days),
+          ect_at_school_period: ect_at_school_period1,
+          school_partnership: school_partnership1
+        )
+      end
+      let!(:ect_training_period2) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          started_on: (ect_at_school_period1.started_on + 31.days),
+          finished_on: ect_at_school_period1.finished_on,
+          ect_at_school_period: ect_at_school_period1,
+          school_partnership: school_partnership2
+        )
+      end
+
+      it "returns latest ect training period for lead_provider1" do
+        expect(TrainingPeriod.latest_ect_training_period(teacher:, lead_provider: lead_provider1).first).to eq(ect_training_period1)
+      end
+
+      it "returns latest ect training period for lead_provider2" do
+        expect(TrainingPeriod.latest_ect_training_period(teacher:, lead_provider: lead_provider2).first).to eq(ect_training_period2)
+      end
+    end
+
+    describe ".latest_mentor_training_period" do
+      let!(:teacher) { FactoryBot.create(:teacher) }
+
+      let!(:school1) { FactoryBot.create(:school) }
+      let!(:school_partnership1) { FactoryBot.create(:school_partnership, school: school1) }
+      let(:lead_provider1) { school_partnership1.lead_provider }
+
+      let!(:school_partnership2) { FactoryBot.create(:school_partnership, school: school1) }
+      let(:lead_provider2) { school_partnership2.lead_provider }
+
+      let!(:mentor_at_school_period1) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          school: school1,
+          teacher:,
+          started_on: 1.year.ago,
+          finished_on: Date.current
+        )
+      end
+      let!(:mentor_training_period1) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          started_on: mentor_at_school_period1.started_on,
+          finished_on: (mentor_at_school_period1.started_on + 30.days),
+          mentor_at_school_period: mentor_at_school_period1,
+          school_partnership: school_partnership1
+        )
+      end
+      let!(:mentor_training_period2) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          started_on: (mentor_at_school_period1.started_on + 31.days),
+          finished_on: mentor_at_school_period1.finished_on,
+          mentor_at_school_period: mentor_at_school_period1,
+          school_partnership: school_partnership2
+        )
+      end
+
+      it "returns latest mentor training period for lead_provider1" do
+        expect(TrainingPeriod.latest_mentor_training_period(teacher:, lead_provider: lead_provider1).first).to eq(mentor_training_period1)
+      end
+
+      it "returns latest mentor training period for lead_provider2" do
+        expect(TrainingPeriod.latest_mentor_training_period(teacher:, lead_provider: lead_provider2).first).to eq(mentor_training_period2)
+      end
+    end
   end
 
   describe "#siblings" do

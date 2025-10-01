@@ -25,17 +25,8 @@ module Metadata::Handlers
           lead_provider_id:
         )
 
-        latest_ect_training_period = TrainingPeriod
-          .includes(:ect_at_school_period, :lead_provider)
-          .where(ect_at_school_period: { teacher: }, lead_provider: { id: lead_provider_id })
-          .latest_first
-          .first
-
-        latest_mentor_training_period = TrainingPeriod
-          .includes(:mentor_at_school_period, :lead_provider)
-          .where(mentor_at_school_period: { teacher: }, lead_provider: { id: lead_provider_id })
-          .latest_first
-          .first
+        latest_ect_training_period = TrainingPeriod.latest_ect_training_period(teacher:, lead_provider: lead_provider_id).first
+        latest_mentor_training_period = TrainingPeriod.latest_mentor_training_period(teacher:, lead_provider: lead_provider_id).first
 
         upsert(metadata, latest_ect_training_period:, latest_mentor_training_period:)
       end
