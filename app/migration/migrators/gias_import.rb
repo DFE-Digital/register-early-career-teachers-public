@@ -17,7 +17,7 @@ module Migrators
     end
 
     def migrate!
-      Metadata::Manager.skip_metadata_updates do
+      DeclarativeUpdates.skip do
         start_migration!(self.class.record_count)
         preload_caches if respond_to?(:preload_caches, true)
 
