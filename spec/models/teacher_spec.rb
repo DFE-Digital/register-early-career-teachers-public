@@ -1,4 +1,11 @@
 describe Teacher do
+  describe "declarative updates" do
+    let(:instance) { FactoryBot.create(:teacher) }
+    let(:target) { instance }
+
+    it_behaves_like "a declarative metadata model", on_event: %i[create update]
+  end
+
   describe "associations" do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
