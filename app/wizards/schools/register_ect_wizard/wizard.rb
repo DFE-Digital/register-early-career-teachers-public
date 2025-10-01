@@ -117,12 +117,13 @@ module Schools
         end
 
         unless school.last_programme_choices? && ect.use_previous_ect_choices
-          steps << if school.independent?
-                     :independent_school_appropriate_body
-                   else
-                     :state_school_appropriate_body
-                   end
-          return steps unless ect.appropriate_body_id
+          if school.independent?
+            steps << :independent_school_appropriate_body
+            return steps unless [ect.appropriate_body_id, ect.appropriate_body_type].all?
+          else
+            steps << :state_school_appropriate_body
+            return steps unless ect.appropriate_body_id
+          end
 
           steps << :training_programme
           return steps unless ect.training_programme
