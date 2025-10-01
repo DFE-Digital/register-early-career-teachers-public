@@ -8,6 +8,7 @@ erDiagram
     datetime otp_verified_at
     datetime created_at
     datetime updated_at
+    enum role
   }
   TrainingPeriod {
     integer id
