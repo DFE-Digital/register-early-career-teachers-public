@@ -75,24 +75,21 @@ module Schools
         steps = %i[find_ect]
 
         # TRN must be present and teacher must be in TRS to proceed beyond find_ect
-        return steps if ect.trn.blank?
-        return steps + %i[trn_not_found] unless ect.in_trs?
-
-        # If TRS data is present, check for blocking conditions
-        if ect.trs_date_of_birth.present?
-          unless ect.matches_trs_dob?
-            steps << :national_insurance_number
-            return steps unless ect.national_insurance_number
-            # After national insurance number is provided, check if teacher is still in TRS
-            return steps + %i[not_found] unless ect.in_trs?
-          end
-
-          return steps + %i[already_active_at_school] if ect.active_at_school?(school.urn)
-          return steps + %i[induction_completed] if ect.induction_completed?
-          return steps + %i[induction_exempt] if ect.induction_exempt?
-          return steps + %i[induction_failed] if ect.induction_failed?
-          return steps + %i[cannot_register_ect] if ect.prohibited_from_teaching?
+        return steps unless [ect.trn, ect.date_of_birth].all?(&:present?)
+        return steps + %i[trn_not_found] unless ect.national_insurance_number || ect.in_trs?
+            
+        unless ect.matches_trs_dob?
+          steps << :national_insurance_number
+          return steps unless ect.national_insurance_number
+          # After national insurance number is provided, check if teacher is still in TRS
+          return steps + %i[not_found] unless ect.in_trs?
         end
+
+        return steps + %i[already_active_at_school] if ect.active_at_school?(school.urn)
+        return steps + %i[induction_completed] if ect.induction_completed?
+        return steps + %i[induction_exempt] if ect.induction_exempt?
+        return steps + %i[induction_failed] if ect.induction_failed?
+        return steps + %i[cannot_register_ect] if ect.prohibited_from_teaching?
 
         # Normal registration flow requires TRS data
         return steps if ect.trs_first_name.blank?
