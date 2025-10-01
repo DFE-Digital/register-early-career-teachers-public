@@ -88,7 +88,7 @@ module Migrators
 
   protected
 
-    def migrate(collection)
+    def migrate(collection, &block)
       DeclarativeUpdates.skip do
         items = collection.order(:id).offset(offset).limit(limit)
 
@@ -99,7 +99,7 @@ module Migrators
         end
 
         # As we're using offset/limit, we can't use find_each!
-        items.each { |item| process_item(item) }
+        items.each { |item| process_item(item, &block) }
 
         finalise_migration!
       end
