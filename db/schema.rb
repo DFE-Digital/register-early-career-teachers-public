@@ -858,8 +858,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_29_155810) do
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "schools"
   add_foreign_key "metadata_teacher_lead_providers", "lead_providers"
   add_foreign_key "metadata_teacher_lead_providers", "teachers"
-  add_foreign_key "metadata_teacher_lead_providers", "training_periods", column: "latest_ect_training_period_id"
-  add_foreign_key "metadata_teacher_lead_providers", "training_periods", column: "latest_mentor_training_period_id"
+  add_foreign_key "metadata_teacher_lead_providers", "training_periods", column: "latest_ect_training_period_id", on_delete: :nullify
+  add_foreign_key "metadata_teacher_lead_providers", "training_periods", column: "latest_mentor_training_period_id", on_delete: :nullify
   add_foreign_key "milestones", "schedules"
   add_foreign_key "parity_check_requests", "lead_providers"
   add_foreign_key "parity_check_requests", "parity_check_endpoints", column: "endpoint_id"

@@ -1,18 +1,9 @@
 describe MentorAtSchoolPeriod do
   describe "declarative updates" do
-    context "when target is school" do
-      let(:instance) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: target) }
-      let!(:target) { FactoryBot.create(:school) }
+    let(:instance) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: target) }
+    let!(:target) { FactoryBot.create(:school) }
 
-      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
-    end
-
-    context "when target is teacher" do
-      let(:instance) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: target) }
-      let!(:target) { FactoryBot.create(:teacher) }
-
-      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
-    end
+    it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
   end
 
   describe "associations" do
