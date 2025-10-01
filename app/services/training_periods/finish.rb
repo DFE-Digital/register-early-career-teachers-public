@@ -38,7 +38,7 @@ module TrainingPeriods
 
     def finish!
       ActiveRecord::Base.transaction do
-        training_period.update!(finished_on:)
+        training_period.update!(finished_on: earliest_finished_on)
 
         Events::Record.record_teacher_finishes_training_period_event!(
           author:,
@@ -50,6 +50,12 @@ module TrainingPeriods
           teacher:
         )
       end
+    end
+
+  private
+
+    def earliest_finished_on
+      [finished_on, training_period.api_withdrawn_at, training_period.api_deferred_at].compact.min
     end
   end
 end

@@ -23,6 +23,10 @@ erDiagram
     uuid ecf_end_induction_record_id
     integer expression_of_interest_id
     enum training_programme
+    date api_deferred_at
+    enum api_deferral_reason
+    date api_withdrawn_at
+    enum api_withdrawal_reason
   }
   TrainingPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| MentorAtSchoolPeriod : belongs_to

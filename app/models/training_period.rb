@@ -32,7 +32,8 @@ class TrainingPeriod < ApplicationRecord
   # Validations
   validates :started_on,
             presence: true
-
+  validates :api_withdrawal_reason, presence: true, if: -> { api_withdrawn_at.present? }
+  validates :api_deferral_reason, presence: true, if: -> { api_deferred_at.present? }
   validate :one_id_of_trainee_present
   validate :at_least_expression_of_interest_or_school_partnership_present, if: :provider_led_training_programme?
   validate :expression_of_interest_absent_for_school_led, if: :school_led_training_programme?
