@@ -197,6 +197,52 @@ RSpec.describe Metadata::Handlers::Teacher do
           )
         end
       end
+
+      context "ect without mentor" do
+        let!(:ect_at_school_period1) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            school: school1,
+            teacher: teacher1
+          )
+        end
+        let!(:ect_training_period1) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            started_on: ect_at_school_period1.started_on,
+            finished_on: ect_at_school_period1.finished_on,
+            ect_at_school_period: ect_at_school_period1,
+            school_partnership: school_partnership1
+          )
+        end
+
+        it "creates metadata with ect but no mentor training period" do
+          refresh_metadata
+
+          metadata = Metadata::TeacherLeadProvider.where(lead_provider: lead_provider1).sole
+          expect(metadata).to have_attributes(
+            teacher: teacher1,
+            lead_provider: lead_provider1,
+            latest_ect_training_period: ect_training_period1,
+            latest_mentor_training_period: nil
+          )
+        end
+      end
+
+      context "teacher without any training periods" do
+        it "creates metadata with nil latest training periods" do
+          refresh_metadata
+
+          metadata = Metadata::TeacherLeadProvider.where(lead_provider: lead_provider1).sole
+          expect(metadata).to have_attributes(
+            teacher: teacher1,
+            lead_provider: lead_provider1,
+            latest_ect_training_period: nil,
+            latest_mentor_training_period: nil
+          )
+        end
+      end
     end
   end
 end
