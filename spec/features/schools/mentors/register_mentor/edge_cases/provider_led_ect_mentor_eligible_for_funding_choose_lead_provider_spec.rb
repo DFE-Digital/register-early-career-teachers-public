@@ -1,5 +1,6 @@
 RSpec.describe 'Registering a mentor', :js do
   include_context 'test trs api client'
+  include SchoolPartnershipHelpers
 
   before do
     allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
@@ -65,24 +66,34 @@ RSpec.describe 'Registering a mentor', :js do
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    contract_period = FactoryBot.create(:contract_period, year: Date.current.year)
-
-    @lead_provider = FactoryBot.create(:lead_provider, name: "Xavier's School for Gifted Youngsters")
-    FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period:)
+    @contract_period = FactoryBot.create(:contract_period, year: Date.current.year)
+    school_partnership_for_ect = make_partnership_for(@school, @contract_period, lead_provider_name: "Xavier's School for Gifted Youngsters")
 
     @another_lead_provider = FactoryBot.create(:lead_provider, name: "Another lead provider")
-    FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period:)
+    FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period: @contract_period)
 
-    @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :ongoing, lead_provider: @lead_provider, school: @school)
-    @training_period = FactoryBot.create(:training_period, :ongoing, ect_at_school_period: @ect)
-    @ect_name = Teachers::Name.new(@ect.teacher).full_name
+    @ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
+    @training_period = FactoryBot.create(
+      :training_period, :ongoing,
+      ect_at_school_period: @ect_at_school_period,
+      school_partnership: school_partnership_for_ect
+    )
+
+    @ect_name = Teachers::Name.new(@ect_at_school_period.teacher).full_name
   end
 
   def and_mentor_has_existing_mentorship_at_another_school
     another_school = FactoryBot.create(:school, urn: "7654321")
     @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: 'Kirk', trs_last_name: 'Van Houten', corrected_name: nil)
     @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: another_school, teacher: @teacher)
-    @training_period = FactoryBot.create(:training_period, :for_mentor, :with_school_partnership, :ongoing, started_on: @existing_mentor_at_school_period.started_on, mentor_at_school_period: @existing_mentor_at_school_period)
+    school_partnership_for_prev_lp = make_partnership_for(another_school, @contract_period, lead_provider_name: 'Mentor Prev LP')
+
+    @training_period = FactoryBot.create(
+      :training_period, :for_mentor, :provider_led, :ongoing,
+      mentor_at_school_period: @existing_mentor_at_school_period,
+      school_partnership: school_partnership_for_prev_lp,
+      started_on: @existing_mentor_at_school_period.started_on
+    )
   end
 
   def and_i_am_on_the_schools_landing_page
@@ -97,7 +108,7 @@ RSpec.describe 'Registering a mentor', :js do
 
   def then_i_am_in_the_requirements_page
     expect(page.get_by_text("What you'll need to add a new mentor for #{@ect_name}")).to be_visible
-    expect(page.url).to end_with("/school/register-mentor/what-you-will-need?ect_id=#{@ect.id}")
+    expect(page.url).to end_with("/school/register-mentor/what-you-will-need?ect_id=#{@ect_at_school_period.id}")
   end
 
   def when_i_click_continue
