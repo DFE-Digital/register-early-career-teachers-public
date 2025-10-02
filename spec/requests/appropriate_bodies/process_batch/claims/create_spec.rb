@@ -66,5 +66,19 @@ RSpec.describe 'Appropriate Body bulk claims upload', type: :request do
         expect(response.body).to include('The selected file must be a CSV')
       end
     end
+
+    context 'with a malformed CSV' do
+      let(:csv_file) do
+        fixture_file_upload('spec/fixtures/malformed_claim.csv', 'text/csv')
+      end
+
+      it 'shows error message' do
+        post ab_batch_claims_path, params: {
+          pending_induction_submission_batch: { csv_file: }
+        }
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include('The selected file is malformed')
+      end
+    end
   end
 end
