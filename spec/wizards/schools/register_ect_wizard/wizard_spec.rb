@@ -481,11 +481,12 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       expect(wizard.allowed_step?('training_programme_change_lead_provider')).to be false
     end
 
-    it 'allows error steps via allowed_step? method' do
-      expect(wizard.allowed_step?('not_found')).to be true
-      expect(wizard.allowed_step?('cant_use_email')).to be true
-      expect(wizard.allowed_step?('cant_use_changed_email')).to be true
-      expect(wizard.allowed_step?('induction_completed')).to be true
+    it 'does not allow error steps when error conditions are not met' do
+      # Error steps should only be allowed when the actual error conditions are met
+      expect(wizard.allowed_step?('not_found')).to be false
+      expect(wizard.allowed_step?('cant_use_email')).to be false
+      expect(wizard.allowed_step?('cant_use_changed_email')).to be false
+      expect(wizard.allowed_step?('induction_completed')).to be false
     end
 
     it 'does not allow regular steps when not in allowed_steps' do
