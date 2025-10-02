@@ -5,30 +5,26 @@ class API::ParticipantSerializer < Blueprinter::Base
     field(:ecf_enrolments) do |teacher, options|
       lead_provider = options[:lead_provider]
 
-      (teacher.ect_at_school_periods + teacher.mentor_at_school_periods).map { |trainee|
-        training_period = latest_training_period(trainee, lead_provider)
-        next unless training_period
+      metadata = metadata(teacher, lead_provider)
 
-        ecf_enrolment(training_period)
-      }.compact
+      [metadata.latest_ect_training_period, metadata.latest_mentor_training_period].compact.map do |training_period|
+        ecf_enrolment(metadata, training_period)
+      end
     end
 
     class << self
-      def latest_training_period(trainee, lead_provider)
-        trainee.training_periods.sort_by(&:started_on).reverse.find do |training_period|
-          training_period.lead_provider == lead_provider
-        end
+      def metadata(teacher, lead_provider)
+        teacher.lead_provider_metadata.select { it.lead_provider_id == lead_provider.id }.sole
       end
 
-      def ecf_enrolment(training_period)
+      def ecf_enrolment(metadata, training_period)
         trainee = training_period.trainee
         teacher = trainee.teacher
         training_record_id = training_period.for_ect? ? teacher.api_ect_training_record_id : teacher.api_mentor_training_record_id
         {
           training_record_id:,
           email: trainee.email,
-          mentor_id_1: training_period.for_ect? ? trainee.latest_mentorship_period&.mentor&.teacher&.api_id : nil,
-          mentor_id_2: training_period.for_ect? ? training_period.latest_mentorship_period&.mentor&.teacher&.api_id : nil,
+          mentor_id: metadata.mentor_id,
           participant_type: training_period.for_ect? ? "ect" : "mentor",
         }
       end

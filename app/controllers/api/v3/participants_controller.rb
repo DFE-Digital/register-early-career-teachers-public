@@ -14,7 +14,7 @@ module API
     private
 
       def participants_query
-        conditions = {}
+        conditions = { lead_provider: current_lead_provider }
 
         Participants::Query.new(**conditions.compact)
       end

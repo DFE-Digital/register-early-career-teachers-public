@@ -23,7 +23,6 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
   has_one :expression_of_interest_lead_provider, through: :expression_of_interest, source: :lead_provider
   has_one :expression_of_interest_contract_period, through: :expression_of_interest, source: :contract_period
-  has_one :latest_mentorship_period, -> { latest_first }, through: :ect_at_school_period
 
   has_many :declarations, inverse_of: :training_period
   has_many :events

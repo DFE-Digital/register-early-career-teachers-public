@@ -1,8 +1,9 @@
 module Participants
   class Query
-    attr_reader :scope
+    attr_reader :scope, :lead_provider
 
-    def initialize
+    def initialize(lead_provider:)
+      @lead_provider = lead_provider
       @scope = all_participants
     end
 
@@ -22,26 +23,31 @@ module Participants
         .select("teachers.*")
         .from("(#{ect_teachers.to_sql} UNION #{mentor_teachers.to_sql}) as teachers")
         .includes(
-          ect_at_school_periods: [
-            { training_periods: [:lead_provider, { latest_mentorship_period: :mentor }] },
-            { latest_mentorship_period: :mentor }
-          ],
-          mentor_at_school_periods: [
-            { training_periods: :lead_provider }
-          ]
+          lead_provider_metadata: {
+            latest_ect_training_period: [
+              :lead_provider,
+              { ect_at_school_period: :teacher },
+            ],
+            latest_mentor_training_period: [
+              :lead_provider,
+              { mentor_at_school_period: :teacher },
+            ]
+          }
         )
     end
 
     def ect_teachers
       Teacher
         .select("teachers.*")
-        .joins(ect_at_school_periods: { training_periods: :lead_provider })
+        .joins(lead_provider_metadata: %i[lead_provider latest_ect_training_period])
+        .where(lead_providers: { id: lead_provider.id })
     end
 
     def mentor_teachers
       Teacher
         .select("teachers.*")
-        .joins(mentor_at_school_periods: { training_periods: :lead_provider })
+        .joins(lead_provider_metadata: %i[lead_provider latest_mentor_training_period])
+        .where(lead_providers: { id: lead_provider.id })
     end
   end
 end
