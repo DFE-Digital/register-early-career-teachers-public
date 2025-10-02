@@ -67,6 +67,9 @@ module AppropriateBodies
           else
             false # can be claimed
           end
+        elsif pending_induction_submission.prohibited_from_teaching?
+          capture_error("#{name} is prohibited from teaching")
+          true
         elsif pending_induction_submission.passed?
           capture_error("#{name} has already passed their induction")
           true
@@ -75,9 +78,6 @@ module AppropriateBodies
           true
         elsif pending_induction_submission.exempt?
           capture_error("#{name} is exempt from completing their induction")
-          true
-        elsif pending_induction_submission.prohibited_from_teaching?
-          capture_error("#{name} is prohibited from teaching")
           true
         elsif pending_induction_submission.no_qts?
           capture_error("#{name} does not have their qualified teacher status (QTS)")
