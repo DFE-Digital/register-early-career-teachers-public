@@ -57,7 +57,7 @@ module AppropriateBodies
       end
 
       def process_batch_action
-        ProcessBatchActionJob.perform_later(
+        ProcessBatch::ActionJob.perform_later(
           @pending_induction_submission_batch,
           current_user.email,
           current_user.name

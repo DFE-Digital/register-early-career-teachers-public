@@ -2,25 +2,12 @@ module AppropriateBodies
   module ProcessBatch
     # Management of registration and new induction periods in bulk via CSV upload
     class Claim < Base
-      # @return [nil, true] convert the valid submissions into permanent records
+      # @return [nil, true]
       def complete!
         pending_induction_submission_batch.completing!
 
-        pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
-          @pending_induction_submission = pending_induction_submission
-
-          # OPTIMIZE: params effectively passed in twice
-          register_ect.register(
-            started_on: pending_induction_submission.started_on,
-            induction_programme: pending_induction_submission.induction_programme,
-            training_programme: pending_induction_submission.training_programme
-          )
-          true
-        rescue StandardError => e
-          Rails.logger.info(e.message)
-          Sentry.capture_exception(e)
-
-          next(false)
+        pending_induction_submission_batch.pending_induction_submissions.without_errors.each do |pending_induction_submission|
+          RegisterECTJob.perform_later(pending_induction_submission.id, author.email, author.name)
         end
 
         pending_induction_submission_batch.tally!
@@ -47,7 +34,7 @@ module AppropriateBodies
         find_ect.import_from_trs!
         check_ect.begin_claim!
 
-        pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :find_ect) && pending_induction_submission.save(context: :check_ect) && pending_induction_submission.save(context: :register_ect)
+        pending_induction_submission.playback_errors unless pending_induction_submission.save(context: %i[find_ect check_ect register_ect])
       end
 
       # @return [Boolean]
@@ -145,11 +132,6 @@ module AppropriateBodies
       # @return [AppropriateBodies::ClaimAnECT::CheckECT]
       def check_ect
         ClaimAnECT::CheckECT.new(appropriate_body:, pending_induction_submission:)
-      end
-
-      # @return [AppropriateBodies::ClaimAnECT::RegisterECT]
-      def register_ect
-        ClaimAnECT::RegisterECT.new(appropriate_body:, pending_induction_submission:, author:)
       end
     end
   end

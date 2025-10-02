@@ -22,7 +22,7 @@ RSpec.describe 'Appropriate Body bulk claims upload', type: :request do
         post ab_batch_claims_path, params: {
           pending_induction_submission_batch: { csv_file: }
         }
-      }.to have_enqueued_job(ProcessBatchClaimJob)
+      }.to have_enqueued_job(AppropriateBodies::ProcessBatch::ClaimJob)
     end
 
     it 'records an upload started event' do
