@@ -14,15 +14,3 @@
     current_user_type: current_user&.user_type
   )
 %>
-
-<% if Rails.env.development? && authenticated? %>
-  <div class='govuk-width-container govuk-!-margin-top-6'>
-    <%= govuk_details(summary_text: 'Debug session') do %>
-      <%=
-        govuk_summary_list(rows: controller.session['user_session'].map do |key, value|
-          { key: { text: key.humanize }, value: { text: value } }
-        end)
-      %>
-    <% end %>
-  </div>
-<% end %>

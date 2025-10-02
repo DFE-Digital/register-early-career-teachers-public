@@ -6,5 +6,12 @@
       'Privacy' => '/privacy',
       'Contact support' => '/support'
     }
-  )
+  ) do |footer|
+    footer.with_meta_html do
+      render DebugSessionComponent.new(
+        current_session: controller.session['user_session'],
+        current_user:
+      )
+    end
+  end
 %>
