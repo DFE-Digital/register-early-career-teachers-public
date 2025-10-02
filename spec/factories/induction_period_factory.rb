@@ -24,13 +24,13 @@ FactoryBot.define do
 
     trait(:cip) { induction_programme { "cip" } }
     trait(:diy) { induction_programme { "diy" } }
+    trait(:pre_2021) { induction_programme { "pre_september_2021" } }
 
-    # bypass setter to set legacy programme type and unset new one
     trait :legacy_programme_type do
-      after(:build) do |ip|
+      after(:build) do |ip, evaluator|
         ip.write_attribute(:training_programme, nil)
-        ip.write_attribute(:induction_programme, 'fip')
-        ip.save!(validate: false)
+        ip.write_attribute(:induction_programme, evaluator.induction_programme)
+        ip.save!
       end
     end
   end
