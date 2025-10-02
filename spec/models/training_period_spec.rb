@@ -365,7 +365,7 @@ describe TrainingPeriod do
       end
     end
 
-    describe ".latest_ect_training_period" do
+    describe ".ect_training_periods_latest_first" do
       let!(:teacher) { FactoryBot.create(:teacher) }
 
       let!(:school1) { FactoryBot.create(:school) }
@@ -406,15 +406,15 @@ describe TrainingPeriod do
       end
 
       it "returns latest ect training period for lead_provider1" do
-        expect(TrainingPeriod.latest_ect_training_period(teacher:, lead_provider: lead_provider1).first).to eq(ect_training_period1)
+        expect(TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider1).first).to eq(ect_training_period1)
       end
 
       it "returns latest ect training period for lead_provider2" do
-        expect(TrainingPeriod.latest_ect_training_period(teacher:, lead_provider: lead_provider2).first).to eq(ect_training_period2)
+        expect(TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider2).first).to eq(ect_training_period2)
       end
     end
 
-    describe ".latest_mentor_training_period" do
+    describe ".mentor_training_periods_latest_first" do
       let!(:teacher) { FactoryBot.create(:teacher) }
 
       let!(:school1) { FactoryBot.create(:school) }
@@ -455,11 +455,11 @@ describe TrainingPeriod do
       end
 
       it "returns latest mentor training period for lead_provider1" do
-        expect(TrainingPeriod.latest_mentor_training_period(teacher:, lead_provider: lead_provider1).first).to eq(mentor_training_period1)
+        expect(TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider1).first).to eq(mentor_training_period1)
       end
 
       it "returns latest mentor training period for lead_provider2" do
-        expect(TrainingPeriod.latest_mentor_training_period(teacher:, lead_provider: lead_provider2).first).to eq(mentor_training_period2)
+        expect(TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider2).first).to eq(mentor_training_period2)
       end
     end
   end

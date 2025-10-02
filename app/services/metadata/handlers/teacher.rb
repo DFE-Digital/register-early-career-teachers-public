@@ -25,8 +25,8 @@ module Metadata::Handlers
           lead_provider_id:
         )
 
-        latest_ect_training_period = TrainingPeriod.latest_ect_training_period(teacher:, lead_provider: lead_provider_id).first
-        latest_mentor_training_period = TrainingPeriod.latest_mentor_training_period(teacher:, lead_provider: lead_provider_id).first
+        latest_ect_training_period = TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider_id).first
+        latest_mentor_training_period = TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider_id).first
 
         upsert(metadata, latest_ect_training_period:, latest_mentor_training_period:)
       end
