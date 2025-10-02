@@ -60,7 +60,7 @@ module Schools
       end
 
       def allowed_step?(step_name = current_step_name)
-        allowed_steps.include?(step_name) || always_allowed_step?(step_name)
+        allowed_steps.include?(step_name)
       end
 
       def ect
@@ -161,13 +161,6 @@ module Schools
         steps
       end
 
-      # Change steps are only allowed if user has made reasonable progress in the flow
-      def always_allowed_step?(step_name)
-        step_name = step_name.to_s
-
-        # Error steps are always allowed
-        step_name.in?(%w[not_found trn_not_found induction_completed induction_exempt induction_failed cannot_register_ect already_active_at_school cant_use_email cant_use_changed_email])
-      end
 
       def past_start_date?
         return false unless ect.start_date
