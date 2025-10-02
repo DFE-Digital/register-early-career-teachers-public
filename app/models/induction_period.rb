@@ -22,11 +22,13 @@ class InductionPeriod < ApplicationRecord
               message: "Choose an induction programme"
             }
 
-  # TODO: add null: false to the database column after populating old records
   validates :training_programme,
             inclusion: {
               in: ::TRAINING_PROGRAMME.keys.map(&:to_s),
               message: "Choose an induction programme"
+            },
+            unless: ->(ip) {
+              ip.induction_programme.in?(%w[unknown pre_september_2021])
             }
 
   validates :outcome,
