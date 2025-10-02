@@ -69,7 +69,7 @@ module Schools
     end
 
     def ensure_mentor_is_eligible!
-      unless Teachers::MentorFundingEligibility.new(trn: teacher.trn).eligible?
+      if Teachers::MentorFundingEligibility.new(trn: teacher.trn).ineligible?
         raise MentorIneligibleForTraining,
               "Mentor #{teacher.id} is not eligible for funded training"
       end
