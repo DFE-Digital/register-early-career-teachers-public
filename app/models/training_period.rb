@@ -51,12 +51,12 @@ class TrainingPeriod < ApplicationRecord
       .merge(ECTAtSchoolPeriod.for_school(school).or(MentorAtSchoolPeriod.for_school(school)))
   }
 
-  scope :latest_ect_training_period, ->(teacher:, lead_provider:) {
+  scope :ect_training_periods_latest_first, ->(teacher:, lead_provider:) {
     includes(:ect_at_school_period, :lead_provider)
     .where(ect_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
     .latest_first
   }
-  scope :latest_mentor_training_period, ->(teacher:, lead_provider:) {
+  scope :mentor_training_periods_latest_first, ->(teacher:, lead_provider:) {
     includes(:mentor_at_school_period, :lead_provider)
     .where(mentor_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
     .latest_first
