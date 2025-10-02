@@ -3,7 +3,7 @@ class TestGuidanceComponent < ApplicationComponent
   renders_one :trs_fake_api_instructions, "TRSFakeAPIInstructions"
 
   def render?
-    ActiveModel::Type::Boolean.new.cast(ENV.fetch('TEST_GUIDANCE', false)) &&
+    Rails.application.config.enable_test_guidance &&
       (content.present? || trs_example_teacher_details.present? || trs_fake_api_instructions.present?)
   end
 
