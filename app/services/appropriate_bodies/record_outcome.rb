@@ -23,8 +23,6 @@ module AppropriateBodies
       raise Errors::ECTHasNoOngoingInductionPeriods if ongoing_induction_period.blank?
 
       ActiveRecord::Base.transaction do
-        map_legacy_programme_type!
-
         close_induction_period(outcome)
         case outcome
         when :pass
@@ -56,15 +54,6 @@ module AppropriateBodies
         teacher:,
         appropriate_body:,
         induction_period: ongoing_induction_period
-      )
-    end
-
-    # Legacy induction periods have "induction programme" not "training programme" set.
-    def map_legacy_programme_type!
-      return if ongoing_induction_period.training_programme.present?
-
-      ongoing_induction_period.update!(
-        training_programme: ::PROGRAMME_MAPPER[ongoing_induction_period.induction_programme]
       )
     end
 

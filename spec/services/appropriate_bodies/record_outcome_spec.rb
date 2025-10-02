@@ -270,7 +270,7 @@ RSpec.describe AppropriateBodies::RecordOutcome do
       end
     end
 
-    context "when ongoing induction period only has the legacy programme type" do
+    context "when ongoing induction period only has a mappable legacy programme type" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
                           appropriate_body:,
@@ -278,11 +278,31 @@ RSpec.describe AppropriateBodies::RecordOutcome do
                           started_on: '2024-1-1')
       end
 
-      it "populates the new programme type and outcome" do
+      it "maps the new programme type" do
         service.fail!
 
         expect(induction_period.reload).to have_attributes(
+          induction_programme: 'fip',
           training_programme: 'provider_led',
+          outcome: 'fail'
+        )
+      end
+    end
+
+    context "when ongoing induction period only has an unmappable legacy programme type" do
+      let!(:induction_period) do
+        FactoryBot.create(:induction_period, :ongoing, :pre_2021, :legacy_programme_type,
+                          appropriate_body:,
+                          teacher:,
+                          started_on: '2024-1-1')
+      end
+
+      it "leaves the new programme type blank" do
+        service.fail!
+
+        expect(induction_period.reload).to have_attributes(
+          induction_programme: 'pre_september_2021',
+          training_programme: nil,
           outcome: 'fail'
         )
       end
