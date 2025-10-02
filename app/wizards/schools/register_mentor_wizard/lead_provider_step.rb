@@ -16,7 +16,7 @@ module Schools
       end
 
       def previous_step
-        :programme_choices
+        Schools::RegisterMentorWizard::LeadProviderRules.new(mentor).previous_step_from_lead_provider
       end
 
     private
