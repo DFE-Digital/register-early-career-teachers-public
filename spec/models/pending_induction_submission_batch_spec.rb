@@ -4,6 +4,7 @@ RSpec.describe PendingInductionSubmissionBatch do
   describe 'associations' do
     it { is_expected.to belong_to(:appropriate_body) }
     it { is_expected.to have_many(:pending_induction_submissions) }
+    it { is_expected.to have_many(:events) }
   end
 
   describe "scopes" do

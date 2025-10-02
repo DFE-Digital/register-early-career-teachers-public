@@ -2,7 +2,7 @@
 # errors and should not occur in production.
 #
 # Occasionally, we may decide or need to remove these failed batches if they exist.
-
+#
 PendingInductionSubmissionBatch.transaction do
-  PendingInductionSubmissionBatch.failed.delete_all
+  PendingInductionSubmissionBatch.failed.destroy_all
 end
