@@ -1287,6 +1287,35 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe '.record_statement_authorised_for_payment_event!' do
+    let(:statement) { FactoryBot.create(:statement) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        statement.update!(marked_as_paid_at: Time.zone.now)
+
+        Events::Record.record_statement_authorised_for_payment_event!(
+          author:,
+          statement:,
+          happened_at: statement.marked_as_paid_at
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "Statement authorised for payment",
+          event_type: :statement_authorised_for_payment,
+          statement:,
+          active_lead_provider: statement.active_lead_provider,
+          lead_provider: statement.active_lead_provider.lead_provider,
+          happened_at: statement.marked_as_paid_at,
+          metadata: hash_including(
+            contract_period_year: statement.active_lead_provider.contract_period.year
+          ),
+          **author_params
+        )
+      end
+    end
+  end
+
   describe '#record_lead_provider_delivery_partnership_added_event!' do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }

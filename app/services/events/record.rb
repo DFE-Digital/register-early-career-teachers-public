@@ -538,6 +538,31 @@ module Events
       ).record_event!
     end
 
+    # Statement Events
+
+    def self.record_statement_authorised_for_payment_event!(author:, statement:, happened_at: Time.zone.now)
+      event_type = :statement_authorised_for_payment
+
+      active_lead_provider = statement.active_lead_provider
+      lead_provider        = active_lead_provider.lead_provider
+      heading              = "Statement authorised for payment"
+
+      metadata = {
+        contract_period_year: active_lead_provider.contract_period_year
+      }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at:,
+        metadata:
+      ).record_event!
+    end
+
     # Statement Adjustment Events
 
     def self.record_statement_adjustment_added_event!(author:, statement_adjustment:)
