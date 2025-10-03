@@ -1,4 +1,11 @@
 describe Teacher do
+  describe "declarative updates" do
+    let(:instance) { FactoryBot.create(:teacher) }
+    let(:target) { instance }
+
+    it_behaves_like "a declarative metadata model", on_event: %i[create update]
+  end
+
   describe "associations" do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
@@ -7,6 +14,7 @@ describe Teacher do
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:teacher_id_changes) }
+    it { is_expected.to have_many(:lead_provider_metadata).class_name("Metadata::TeacherLeadProvider") }
     it { is_expected.to have_one(:started_induction_period).class_name("InductionPeriod") }
     it { is_expected.to have_one(:finished_induction_period).class_name("InductionPeriod") }
     it { is_expected.to have_one(:earliest_ect_at_school_period).class_name("ECTAtSchoolPeriod") }
