@@ -32,12 +32,12 @@ runs:
       run: |
         tf_vars_file=config/terraform/application/config/${{ inputs.environment }}.tfvars.json
         echo "NAMESPACE=$(jq -r '.namespace' ${tf_vars_file})" >> $GITHUB_ENV
-        if [ "${{ inputs.environment }}" = "migration" ]; then
+        if [ "${{ inputs.target_environment }}" = "migration" ]; then
           echo "DB_INSTANCE=mg" >> $GITHUB_ENV
         else
           echo "DB_INSTANCE=pc" >> $GITHUB_ENV
         fi
-        
+
     - name: Checkout code
       uses: actions/checkout@v3
 
