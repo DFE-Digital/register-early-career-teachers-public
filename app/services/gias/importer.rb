@@ -3,6 +3,7 @@ require "csv"
 
 module GIAS
   class Importer
+    ENCODING = "ISO-8859-1:UTF-8"
     SCHOOLS_FILENAME = "ecf_tech.csv"
     SCHOOL_LINKS_FILENAME = "links.csv"
 
@@ -11,6 +12,48 @@ module GIAS
         import_only? ? fetch_and_import_only : fetch_and_update
       end
       Metadata::Handlers::School.refresh_all_metadata!(async: true)
+    end
+
+    def foreach_school_row(&block)
+      CSV.foreach(schools_file_path, headers: true, encoding: ENCODING, &block)
+    end
+
+    def foreach_school_link_row(&block)
+      CSV.foreach(school_links_file_path, headers: true, encoding: ENCODING, &block)
+    end
+
+    def number_of_schools_to_import
+      @number_of_schools_to_import ||= File.foreach(schools_file_path, encoding: ENCODING).count
+    end
+
+    def number_of_school_links_to_import
+      @number_of_school_links_to_import ||= File.foreach(school_links_file_path, encoding: ENCODING).count
+    end
+
+    def parse_school_row(row)
+      @school_row = GIAS::SchoolRow.new(row)
+      if eligible_for_registration?
+        import_only? ? import_school! : update_school!
+      end
+
+      true
+    end
+
+    def parse_school_link_row(row)
+      link_date = row.fetch("LinkEstablishedDate")
+      link_type = row.fetch("LinkType")
+      link_urn = row.fetch("LinkURN")
+      urn = row.fetch("URN")
+      gias_school = GIAS::School.find_by(urn:)
+
+      if gias_school
+        link = gias_school.gias_school_links
+                          .create_with(link_date:, link_type:, link_urn:)
+                          .find_or_create_by!(link_urn:)
+        link.update!(link_type:) if link.link_type != link_type
+      end
+
+      true
     end
 
   private
@@ -47,31 +90,17 @@ module GIAS
       end
     end
 
-    def import_schools(path: gias_files[SCHOOLS_FILENAME].path)
-      CSV.foreach(path, headers: true, encoding: "ISO-8859-1:UTF-8") do |data|
-        @school_row = GIAS::SchoolRow.new(data)
-        if eligible_for_registration?
-          import_only? ? import_school! : update_school!
-        end
-      end
+    def import_schools
+      foreach_school_row { |row| parse_school_row(row) }
     end
 
-    def import_school_links(path: gias_files[SCHOOL_LINKS_FILENAME].path)
-      CSV.foreach(path, headers: true, encoding: "ISO-8859-1:UTF-8") do |row|
-        link_date = row.fetch("LinkEstablishedDate")
-        link_type = row.fetch("LinkType")
-        link_urn = row.fetch("LinkURN")
-        urn = row.fetch("URN")
-        gias_school = GIAS::School.find_by(urn:)
-
-        if gias_school
-          link = gias_school.gias_school_links
-                            .create_with(link_date:, link_type:, link_urn:)
-                            .find_or_create_by!(link_urn:)
-          link.update!(link_type:) if link.link_type != link_type
-        end
-      end
+    def import_school_links
+      foreach_school_link_row { |row| parse_school_link_row(row) }
     end
+
+    def schools_file_path = gias_files[SCHOOLS_FILENAME].path
+
+    def school_links_file_path = gias_files[SCHOOL_LINKS_FILENAME].path
 
     def sync_changes!
       gias_school.assign_attributes(attributes)
