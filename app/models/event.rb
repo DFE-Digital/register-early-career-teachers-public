@@ -45,6 +45,7 @@ class Event < ApplicationRecord
     training_period_assigned_to_school_partnership
     dfe_user_created
     dfe_user_updated
+    statement_authorised_for_payment
   ].freeze
 
   belongs_to :author, class_name: 'User'
