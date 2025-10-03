@@ -37,6 +37,8 @@ RSpec.describe LegacyDataImporter do
       let!(:data_migration) { FactoryBot.create(:data_migration, :completed) }
 
       it "initiates an async refresh of the metadata" do
+        allow(Migrators::Base).to receive(:migrators_in_dependency_order).and_return([])
+
         expect(Metadata::Manager).to receive(:refresh_all_metadata!).with(async: true)
         importer.migrate!
       end

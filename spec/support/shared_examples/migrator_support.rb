@@ -1,4 +1,4 @@
-RSpec.shared_examples "a migrator" do |model, dependencies|
+RSpec.shared_examples "a migrator" do |model, dependencies, multiple_workers: true|
   let(:worker) { 0 }
   let(:instance) { described_class.new(worker:) }
   let(:data_migration) { FactoryBot.create(:data_migration, model:, worker: 0) }
@@ -199,29 +199,31 @@ RSpec.shared_examples "a migrator" do |model, dependencies|
       end
     end
 
-    context "when there are models across multiple workers" do
-      let(:records_per_worker) { 1 }
+    if multiple_workers
+      context "when there are models across multiple workers" do
+        let(:records_per_worker) { 1 }
 
-      before { FactoryBot.create(:data_migration, model:, worker: 1) }
+        before { FactoryBot.create(:data_migration, model:, worker: 1) }
 
-      it "only processes a portion of the models" do
-        expect { migrate! }.to change { data_migration.reload.processed_count }.by(1)
-      end
+        it "only processes a portion of the models" do
+          expect { migrate! }.to change { data_migration.reload.processed_count }.by(1)
+        end
 
-      it "sets the total_count of the number of models this worker will process" do
-        expect { migrate! }.to change { data_migration.reload.total_count }.from(nil).to(1)
-      end
+        it "sets the total_count of the number of models this worker will process" do
+          expect { migrate! }.to change { data_migration.reload.total_count }.from(nil).to(1)
+        end
 
-      it "logs out as it runs" do
-        allow(Rails.logger).to receive(:info)
-        expect(Rails.logger).to receive(:info).with("Migration started: [{model: \"#{model_name}\", worker: 0, processed_count: 0, total_count: 1}]")
-        expect(Rails.logger).to receive(:info).with("Migration completed: [{model: \"#{model_name}\", worker: 0, processed_count: 1, total_count: 1}]")
-        migrate!
-      end
+        it "logs out as it runs" do
+          allow(Rails.logger).to receive(:info)
+          expect(Rails.logger).to receive(:info).with("Migration started: [{model: \"#{model_name}\", worker: 0, processed_count: 0, total_count: 1}]")
+          expect(Rails.logger).to receive(:info).with("Migration completed: [{model: \"#{model_name}\", worker: 0, processed_count: 1, total_count: 1}]")
+          migrate!
+        end
 
-      it "does not queue a follow up migration until all migrators have finished" do
-        expect { migrate! }.not_to(have_enqueued_job(MigrationJob))
-        expect { described_class.new(worker: 1).migrate! }.to(have_enqueued_job(MigrationJob))
+        it "does not queue a follow up migration until all migrators have finished" do
+          expect { migrate! }.not_to(have_enqueued_job(MigrationJob))
+          expect { described_class.new(worker: 1).migrate! }.to(have_enqueued_job(MigrationJob))
+        end
       end
     end
   end

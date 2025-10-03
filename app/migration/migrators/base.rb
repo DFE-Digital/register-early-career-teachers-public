@@ -88,7 +88,7 @@ module Migrators
 
   protected
 
-    def migrate(collection)
+    def migrate(collection, &block)
       DeclarativeUpdates.skip do
         items = collection.order(:id).offset(offset).limit(limit)
 
@@ -99,13 +99,7 @@ module Migrators
         end
 
         # As we're using offset/limit, we can't use find_each!
-        items.each do |item|
-          success = yield(item)
-          DataMigration.update_counters(data_migration.id, processed_count: 1, failure_count: success ? 0 : 1)
-        rescue StandardError => e
-          DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
-          failure_manager.record_failure(item, e.message)
-        end
+        items.each { |item| process_item(item, &block) }
 
         finalise_migration!
       end
@@ -192,6 +186,14 @@ module Migrators
     end
 
   private
+
+    def process_item(item)
+      success = yield(item)
+      DataMigration.update_counters(data_migration.id, processed_count: 1, failure_count: success ? 0 : 1)
+    rescue StandardError => e
+      DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
+      failure_manager.record_failure(item, e.message)
+    end
 
     def offset
       worker * self.class.records_per_worker
