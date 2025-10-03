@@ -1,16 +1,33 @@
 module Statements
   class AuthorisePayment
-    attr_reader :statement
+    class NotAuthorisable < StandardError; end
 
-    def initialize(statement)
+    attr_reader :statement, :author
+
+    def initialize(statement, author:)
       @statement = statement
+      @author = author
     end
 
-    def authorise
-      return false unless statement.can_authorise_payment?
+    def authorise!
+      ActiveRecord::Base.transaction do
+        raise NotAuthorisable unless statement.can_authorise_payment?
 
-      statement.marked_as_paid_at = Time.zone.now
-      statement.mark_as_paid
+        return true if statement.marked_as_paid_at.present?
+
+        paid_at = Time.zone.now
+
+        statement.update!(marked_as_paid_at: paid_at)
+        statement.mark_as_paid!
+
+        Events::Record.record_statement_authorised_for_payment_event!(
+          author:,
+          statement:,
+          happened_at: paid_at
+        )
+
+        true
+      end
     end
   end
 end
