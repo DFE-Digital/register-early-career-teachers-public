@@ -39,42 +39,40 @@ namespace :admin do
   end
 
   resources :teachers, only: %i[index show] do
-    resource :timeline, only: %i[show], controller: 'teachers/timeline'
     resources :induction_periods, only: %i[new create edit update destroy], path: 'induction-periods' do
       member do
         get :confirm_delete, path: 'confirm-delete'
       end
     end
-    resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: 'teachers/record_passed_outcome'
-    resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: 'teachers/record_failed_outcome'
-    resource :reopen_induction, only: %i[update], path: 'reopen-induction', controller: 'teachers/reopen_induction' do
-      member { get :confirm }
-    end
-    resources :extensions, only: %i[index new create edit update destroy], controller: 'teachers/extensions' do
-      member do
-        get :confirm_delete
+
+    scope module: :teachers do
+      resource :timeline, only: :show, controller: :timeline
+      resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: :record_passed_outcome
+      resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: :record_failed_outcome
+      resource :reopen_induction, only: :update, path: 'reopen-induction', controller: :reopen_induction do
+        member { get :confirm }
+      end
+      resources :extensions, except: :show do
+        member { get :confirm_delete }
       end
     end
   end
 
   namespace :import_ect, path: 'import-ect' do
-    resource :find_ect, only: %i[new create], path: 'find-ect', controller: 'find_ect', as: 'find'
-    resources :check_ect, only: %i[edit update], path: 'check-ect', controller: 'check_ect', as: 'check'
-    resources :register_ect, only: %i[show], path: 'register-ect', controller: 'register_ect', as: 'register'
+    resource :find_ect, only: %i[new create], path: 'find-ect', as: 'find', controller: :find_ect
+    resources :check_ect, only: %i[edit update], path: 'check-ect', as: 'check'
+    resources :register_ect, only: %i[show], path: 'register-ect', as: 'register'
   end
 
-  resource :finance, only: %i[show], controller: 'finance' do
-    collection do
-      resources :statements, as: 'finance_statements', controller: 'finance/statements', only: %i[index show] do
-        collection do
-          post :choose
-        end
-        member do
-          post :authorise_payment
-        end
-        resources :adjustments, controller: 'finance/adjustments', only: %i[new create edit update destroy] do
-          member do
-            get :delete
+  resource :finance, only: :show, controller: :finance do
+    scope module: :finance do
+      collection do
+        resources :statements, as: 'finance_statements', only: %i[index show] do
+          collection { post :choose }
+          member { post :authorise_payment }
+
+          resources :adjustments, only: %i[new create edit update destroy] do
+            member { get :delete }
           end
         end
       end
