@@ -22,3 +22,4 @@ TRS_API_BASE_URL: "https://preprod.teacher-qualifications-api.education.gov.uk"
 TRS_API_VERSION: "20250203"
 RAILS_ENV: sandbox
 ENABLE_TRS_TEACHER_REFRESH: false
+ENABLE_TIME_TRAVEL: true

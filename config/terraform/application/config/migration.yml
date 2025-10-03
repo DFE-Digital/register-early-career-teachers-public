@@ -21,3 +21,4 @@ ENCRYPTION_DERIVATION_SALT: migration_derivation_salt
 RAILS_ENV: migration
 PARITY_CHECK_ECF_URL: https://cpd-ecf-migration-web.teacherservices.cloud
 PARITY_CHECK_RECT_URL: https://cpd-ec2-migration-web.teacherservices.cloud
+ENABLE_TIME_TRAVEL: true

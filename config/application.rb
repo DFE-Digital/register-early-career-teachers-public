@@ -90,5 +90,9 @@ module RegisterEarlyCareerTeachers
     end
 
     config.middleware.use API::RequestMiddleware
+
+    if ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TIME_TRAVEL", false))
+      config.middleware.use API::TimeTravelerMiddleware
+    end
   end
 end
