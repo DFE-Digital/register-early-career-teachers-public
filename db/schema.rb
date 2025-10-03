@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_06_073517) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_06_110349) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -23,6 +23,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_073517) do
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
+  create_enum "deferral_reasons", ["bereavement", "long-term-sickness", "parental-leave", "career-break", "other"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api"]
   create_enum "fee_types", ["output", "service"]
@@ -39,6 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_073517) do
   create_enum "schedule_identifiers", ["ecf-extended-april", "ecf-extended-january", "ecf-extended-september", "ecf-reduced-april", "ecf-reduced-january", "ecf-reduced-september", "ecf-replacement-april", "ecf-replacement-january", "ecf-replacement-september", "ecf-standard-april", "ecf-standard-january", "ecf-standard-september"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]
+  create_enum "withdrawal_reasons", ["left-teaching-profession", "moved-school", "mentor-no-longer-being-mentor", "switched-to-school-led", "other"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "active_lead_providers", force: :cascade do |t|
@@ -798,6 +800,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_073517) do
     t.uuid "ecf_end_induction_record_id"
     t.bigint "expression_of_interest_id"
     t.enum "training_programme", null: false, enum_type: "training_programme"
+    t.datetime "deferred_at"
+    t.enum "deferral_reason", enum_type: "deferral_reasons"
+    t.datetime "withdrawn_at"
+    t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"

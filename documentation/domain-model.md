@@ -24,6 +24,10 @@ erDiagram
     uuid ecf_end_induction_record_id
     integer expression_of_interest_id
     enum training_programme
+    datetime deferred_at
+    enum deferral_reason
+    datetime withdrawn_at
+    enum withdrawal_reason
   }
   TrainingPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| MentorAtSchoolPeriod : belongs_to
