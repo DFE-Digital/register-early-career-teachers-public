@@ -25,8 +25,6 @@ module Schools
 
       private
 
-        delegate :valid_step?, to: :wizard
-
         def pre_populate_attributes
           self.name = store.name.presence || wizard.teacher_full_name
         end
