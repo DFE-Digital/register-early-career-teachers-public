@@ -84,8 +84,8 @@ jobs:
         run: |-
           npm run lint:scss
 
-  erb_linting:
-    name: "Lint ERB"
+  html_linting:
+    name: Herb
     env:
       GOVUK_NOTIFY_API_KEY: Test
     runs-on: ubuntu-latest
@@ -103,9 +103,8 @@ jobs:
           bundler-cache: true
 
       - name: Lint ERB Templates
-        if: false
         run: |-
-          bundle exec erblint --lint-all
+          bundle exec herb analyze app
 
   terraform_linting:
     name: Lint Terraform

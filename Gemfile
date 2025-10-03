@@ -82,6 +82,7 @@ end
 group :development, :test do
   gem "brakeman"
   gem "debug", platforms: %i[mri windows]
+  gem 'herb'
   gem 'rswag-specs'
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-govuk', require: false
