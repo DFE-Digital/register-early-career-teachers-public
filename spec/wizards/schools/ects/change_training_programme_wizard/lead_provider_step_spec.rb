@@ -36,7 +36,6 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
 
   describe "validations" do
     context "when the lead_provider_id is blank" do
-      let!(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:params) { { lead_provider_id: "" } }
 
       it "is invalid" do
@@ -47,7 +46,6 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
     end
 
     context "when the lead_provider_id is invalid" do
-      let!(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:params) { { lead_provider_id: "invalid" } }
 
       it "is invalid" do
@@ -58,7 +56,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
     end
 
     context "when the lead_provider_id is valid" do
-      let!(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:params) { { lead_provider_id: lead_provider.id } }
 
       it "is valid" do
@@ -82,7 +80,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
     end
 
     context "when the lead_provider_id is valid" do
-      let!(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:params) { { lead_provider_id: lead_provider.id } }
 
       it "stores the lead provider" do
