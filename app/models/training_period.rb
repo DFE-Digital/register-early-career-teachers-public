@@ -28,6 +28,7 @@ class TrainingPeriod < ApplicationRecord
   has_many :events
 
   refresh_metadata -> { school_partnership&.school }, on_event: %i[create destroy update]
+  refresh_metadata -> { trainee&.teacher }, on_event: %i[create destroy update], when_changing: %i[started_on finished_on]
 
   # Validations
   validates :started_on,
@@ -49,6 +50,18 @@ class TrainingPeriod < ApplicationRecord
     left_outer_joins(:ect_at_school_period, :mentor_at_school_period)
       .merge(ECTAtSchoolPeriod.for_school(school).or(MentorAtSchoolPeriod.for_school(school)))
   }
+
+  scope :ect_training_periods_latest_first, ->(teacher:, lead_provider:) {
+    includes(:ect_at_school_period, :lead_provider)
+    .where(ect_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
+    .latest_first
+  }
+  scope :mentor_training_periods_latest_first, ->(teacher:, lead_provider:) {
+    includes(:mentor_at_school_period, :lead_provider)
+    .where(mentor_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
+    .latest_first
+  }
+
   # Delegations
   delegate :name, to: :delivery_partner, prefix: true, allow_nil: true
   delegate :name, to: :lead_provider, prefix: true, allow_nil: true
