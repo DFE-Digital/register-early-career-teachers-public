@@ -59,5 +59,15 @@ FactoryBot.define do
       association :mentor_at_school_period
       ect_at_school_period { nil }
     end
+
+    trait :withdrawn do
+      api_withdrawn_at { Time.zone.today }
+      api_withdrawal_reason { "left-teaching-profession" }
+    end
+
+    trait :deferred do
+      api_deferred_at { Time.zone.today }
+      api_deferral_reason { "long-term-sickness" }
+    end
   end
 end
