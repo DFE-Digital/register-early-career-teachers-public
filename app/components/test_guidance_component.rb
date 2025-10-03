@@ -50,8 +50,8 @@ class TestGuidanceComponent < ApplicationComponent
         ["John Smith",          "1247646", "19/06/1986", "6J8B903G8", "Failed induction in Wales"],
         ["Jim Laney",           "3002065", "01/01/1990", "OA046772B", "Failed induction in Wales"],
         ["Dona Msa",            "3003943", "02/02/1964", "AB722128C", "No QTS"],
-        ["George Orwell",       "2632412", "16/02/1984", "",          "Prohibited from teaching"],
-        ["Neils Clarke-Dolan",  "2908239", "12/08/1978", "",          "Prohibited from teaching"],
+        ["George Orwell",       "2632412", "16/02/1984", "",          "Prohibited from teaching (In progress)"],
+        ["Neils Clarke-Dolan",  "2908239", "12/08/1978", "",          "Prohibited from teaching (Passed)"],
       ]
     end
 
