@@ -30,7 +30,11 @@ FactoryBot.define do
     end
 
     trait :with_school_partnership do
-      association :school_partnership
+      transient do
+        teacher_period { ect_at_school_period.presence || mentor_at_school_period }
+      end
+
+      school_partnership { association :school_partnership, school: teacher_period.school }
     end
 
     trait :with_no_school_partnership do
