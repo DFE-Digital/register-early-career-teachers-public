@@ -416,11 +416,11 @@ describe TrainingPeriod do
       end
 
       it "returns latest ect training period for lead_provider1" do
-        expect(TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider1).first).to eq(ect_training_period2)
+        expect(TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider1)).to eq([ect_training_period2, ect_training_period1])
       end
 
       it "returns latest ect training period for lead_provider2" do
-        expect(TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider2).first).to eq(ect_training_period3)
+        expect(TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider2)).to eq([ect_training_period3])
       end
     end
 
@@ -475,11 +475,11 @@ describe TrainingPeriod do
       end
 
       it "returns latest mentor training period for lead_provider1" do
-        expect(TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider1).first).to eq(mentor_training_period2)
+        expect(TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider1)).to eq([mentor_training_period2, mentor_training_period1])
       end
 
       it "returns latest mentor training period for lead_provider2" do
-        expect(TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider2).first).to eq(mentor_training_period3)
+        expect(TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider2)).to eq([mentor_training_period3])
       end
     end
   end
