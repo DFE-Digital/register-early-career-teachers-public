@@ -13,14 +13,6 @@ module Schools
         def previous_step = :edit
         def next_step = :check_answers
 
-        def lead_providers_for_select
-          return [] unless contract_period
-
-          LeadProviders::Active
-            .in_contract_period(contract_period)
-            .select(:id, :name)
-        end
-
         def save!
           store.lead_provider_id = lead_provider_id if valid_step?
         end
@@ -29,10 +21,6 @@ module Schools
 
         def pre_populate_attributes
           self.lead_provider_id = store.lead_provider_id
-        end
-
-        def contract_period
-          ContractPeriod.containing_date(ect_at_school_period.started_on)
         end
       end
     end
