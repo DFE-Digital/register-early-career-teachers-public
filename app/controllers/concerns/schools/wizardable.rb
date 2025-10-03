@@ -25,7 +25,7 @@ module Schools
 
       before_action -> { @wizard.reset },
                     if: -> { @current_step == :edit },
-                    unless: -> { @previous_step == :check_answers },
+                    unless: -> { wizard_class.step?(@previous_step) },
                     only: :new
 
     private
