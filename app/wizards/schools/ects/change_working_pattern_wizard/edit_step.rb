@@ -32,8 +32,6 @@ module Schools
 
       private
 
-        delegate :valid_step?, to: :wizard
-
         def pre_populate_attributes
           self.working_pattern = store.working_pattern.presence ||
             ect_at_school_period.working_pattern

@@ -27,8 +27,6 @@ module Schools
 
       private
 
-        delegate :valid_step?, to: :wizard
-
         def pre_populate_attributes
           self.lead_provider_id = store.lead_provider_id
         end

@@ -5,11 +5,9 @@ module Schools
 
     private
 
-      delegate :ect_at_school_period, :author, to: :wizard
+      delegate :ect_at_school_period, :author, :valid_step?, to: :wizard
 
-      def pre_populate_attributes
-        nil
-      end
+      def pre_populate_attributes = nil
     end
   end
 end
