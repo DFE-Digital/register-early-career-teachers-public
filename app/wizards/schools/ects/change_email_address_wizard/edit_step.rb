@@ -34,8 +34,6 @@ module Schools
 
       private
 
-        delegate :valid_step?, to: :wizard
-
         def pre_populate_attributes
           self.email = store.email.presence || ect_at_school_period.email
         end

@@ -22,8 +22,6 @@ module Schools
 
       private
 
-        delegate :valid_step?, to: :wizard
-
         def pre_populate_attributes
           self.training_programme = store.training_programme
         end
