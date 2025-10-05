@@ -9,6 +9,14 @@ module Schools
 
       private
 
+        def selected_lead_provider
+          @selected_lead_provider ||= if store.accepting_current_lead_provider
+                                        lead_provider_for_ect_at_school_period
+                                      else
+                                        LeadProvider.find(store.lead_provider_id)
+                                      end
+        end
+
         def lead_provider_for_ect_at_school_period
           @lead_provider_for_ect_at_school_period ||= ECTAtSchoolPeriods::CurrentTraining
             .new(ect_at_school_period)
