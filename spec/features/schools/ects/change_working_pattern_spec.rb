@@ -1,10 +1,4 @@
-describe "School user can change ECTs working pattern" do
-  before do
-    allow(Rails.application.config)
-      .to receive(:enable_schools_interface)
-      .and_return(true)
-  end
-
+describe "School user can change ECTs working pattern", :enable_schools_interface do
   it "changes the working pattern" do
     given_there_is_a_school
     and_there_is_an_ect

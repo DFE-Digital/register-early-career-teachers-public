@@ -1,4 +1,4 @@
-describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
+describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schools_interface do
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:ect_at_school_period) do
@@ -17,12 +17,6 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController" do
       ect_at_school_period:,
       started_on: ect_at_school_period.started_on
     )
-  end
-
-  before do
-    allow(Rails.application.config)
-      .to receive(:enable_schools_interface)
-      .and_return(true)
   end
 
   describe "GET #new" do

@@ -1,4 +1,4 @@
-RSpec.describe "Changing an mentor's name" do
+RSpec.describe "Changing an mentor's name", :enable_schools_interface do
   let!(:mentor_at_school_period) do
     FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
   end
@@ -10,8 +10,6 @@ RSpec.describe "Changing an mentor's name" do
   let(:school) { FactoryBot.create(:school) }
 
   before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-
     given_i_am_logged_in_as_a_school_user
     and_i_visit_the_mentors_page
     when_i_select_a_mentor
