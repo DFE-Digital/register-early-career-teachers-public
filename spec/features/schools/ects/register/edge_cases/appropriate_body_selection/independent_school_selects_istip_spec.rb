@@ -1,4 +1,6 @@
 RSpec.describe 'Registering an ECT', :enable_schools_interface do
+  include_context 'test trs api client'
+
   scenario 'Independent school selects ISTIP as appropriate body' do
     given_i_am_logged_in_as_an_independent_school_user
     when_i_start_the_wizard_from_find_ect

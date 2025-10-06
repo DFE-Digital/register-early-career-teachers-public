@@ -1,4 +1,6 @@
 RSpec.describe 'Registering an ECT', :enable_schools_interface do
+  include_context 'test trs api client'
+
   before do
     FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
   end
