@@ -18,3 +18,4 @@ ENCRYPTION_PRIMARY_KEY: review_primary_key
 ENCRYPTION_DETERMINISTIC_KEY: review_deterministic_key
 ENCRYPTION_DERIVATION_SALT: review_derivation_salt
 RAILS_ENV: review
+ENABLE_TIME_TRAVEL: true
