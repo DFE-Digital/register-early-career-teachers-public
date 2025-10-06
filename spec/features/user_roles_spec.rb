@@ -1,10 +1,6 @@
-RSpec.describe 'User roles' do
+RSpec.describe 'User roles', :enable_schools_interface do
   let(:school) { FactoryBot.create(:school, :state_funded) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: school.name) }
-
-  before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-  end
 
   context 'when the user has multiple roles (School and AB)' do
     before do

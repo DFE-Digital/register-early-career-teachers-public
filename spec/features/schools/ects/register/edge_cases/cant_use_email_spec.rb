@@ -1,9 +1,5 @@
-RSpec.describe 'Registering an ECT', :js do
+RSpec.describe 'Registering an ECT', :enable_schools_interface, :js do
   include_context 'test trs api client'
-
-  before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-  end
 
   let(:trn) { '3002586' }
 
