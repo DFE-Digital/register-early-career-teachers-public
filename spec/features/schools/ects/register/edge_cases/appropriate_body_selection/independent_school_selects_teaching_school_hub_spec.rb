@@ -1,6 +1,5 @@
-RSpec.describe 'Registering an ECT' do
+RSpec.describe 'Registering an ECT', :enable_schools_interface do
   before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
     FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
   end
 

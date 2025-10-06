@@ -1,8 +1,8 @@
-RSpec.describe 'Registering a mentor', :js do
+RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
   include_context 'test trs api client'
 
   before do
-    allow(Rails.application.config).to receive_messages(enable_schools_interface: true, enable_test_guidance: false)
+    allow(Rails.application.config).to receive_messages(enable_test_guidance: false)
   end
 
   let(:trn) { '3002586' }

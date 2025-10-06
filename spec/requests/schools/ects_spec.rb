@@ -1,10 +1,6 @@
-RSpec.describe 'ECT summary' do
+RSpec.describe 'ECT summary', :enable_schools_interface do
   let(:ect) { FactoryBot.create(:ect_at_school_period, school:) }
   let(:school) { FactoryBot.create(:school) }
-
-  before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-  end
 
   describe "GET #index" do
     context "when not signed in" do

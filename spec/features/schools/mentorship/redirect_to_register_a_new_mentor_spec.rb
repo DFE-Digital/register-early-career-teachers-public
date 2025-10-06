@@ -1,9 +1,9 @@
-RSpec.describe 'Redirect to register a new mentor for an ECT' do
+RSpec.describe 'Redirect to register a new mentor for an ECT', :enable_schools_interface do
   include_context 'test trs api client'
   include SchoolPartnershipHelpers
 
   before do
-    allow(Rails.application.config).to receive_messages(enable_schools_interface: true, enable_test_guidance: false)
+    allow(Rails.application.config).to receive_messages(enable_test_guidance: false)
   end
 
   let(:trn) { '9876543' }

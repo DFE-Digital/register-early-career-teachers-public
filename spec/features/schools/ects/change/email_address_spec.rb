@@ -1,6 +1,4 @@
-describe "School user can change ECTs email address" do
-  before { enable_schools_interface }
-
+describe "School user can change ECTs email address", :enable_schools_interface do
   it "changes the email address" do
     given_there_is_a_school
     and_there_is_an_ect
@@ -24,12 +22,6 @@ describe "School user can change ECTs email address" do
   end
 
 private
-
-  def enable_schools_interface
-    allow(Rails.application.config)
-      .to receive(:enable_schools_interface)
-      .and_return(true)
-  end
 
   def given_there_is_a_school
     @school = FactoryBot.create(:school)

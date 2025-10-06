@@ -1,4 +1,4 @@
-describe "Schools::Mentors::ChangeEmailAddressWizardController" do
+describe "Schools::Mentors::ChangeEmailAddressWizardController", :enable_schools_interface do
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:mentor_at_school_period) do
@@ -9,12 +9,6 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController" do
       school:,
       email: "mentor@example.com"
     )
-  end
-
-  before do
-    allow(Rails.application.config)
-      .to receive(:enable_schools_interface)
-      .and_return(true)
   end
 
   describe "GET #new" do

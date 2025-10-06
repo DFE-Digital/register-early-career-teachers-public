@@ -1,8 +1,4 @@
-RSpec.describe 'Wizardable routes' do
-  before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-  end
-
+RSpec.describe 'Wizardable routes', :enable_schools_interface do
   it 'creates GET and POST routes for each step' do
     expect(get: '/school/register-mentor/find-mentor')
       .to route_to(controller: 'schools/register_mentor_wizard', action: 'new')
