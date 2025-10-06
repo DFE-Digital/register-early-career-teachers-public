@@ -1,6 +1,17 @@
-def describe_lead_provider_delivery_partnership(lpdp)
-  alp = lpdp.active_lead_provider
-  print_seed_info("#{lpdp.delivery_partner.name} are working with #{alp.lead_provider.name} in #{alp.contract_period.year}")
+def describe_lead_provider_delivery_partnerships(lead_provider_delivery_partnerships)
+  lead_provider_delivery_partnerships
+    .group_by { it.active_lead_provider.contract_period_year }
+    .sort
+    .to_h
+    .each do |year, lpdps|
+      print_seed_info(Colourize.text(year, :yellow), indent: 2)
+
+      lpdps.group_by(&:lead_provider).each do |lead_provider, lpdp|
+        print_seed_info(Colourize.text(lead_provider.name + ' is working with:', :cyan), indent: 4)
+
+        lpdp.each { print_seed_info(it.delivery_partner.name, indent: 6) }
+      end
+    end
 end
 
 # These delivery partnerships are used by other seeds, so are created explicitly.
@@ -33,6 +44,8 @@ grain = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")
 rising_minds = DeliveryPartner.find_by!(name: "Rising Minds Network")
 capita_delivery_partner = DeliveryPartner.find_by!(name: "Capita Delivery Partner")
 
+lead_provider_delivery_partnerships = []
+
 [
   { active_lead_provider: ambition_institute_2021, delivery_partner: artisan },
   { active_lead_provider: ambition_institute_2022, delivery_partner: artisan },
@@ -50,7 +63,7 @@ capita_delivery_partner = DeliveryPartner.find_by!(name: "Capita Delivery Partne
 ].each do |data|
   FactoryBot.create(:lead_provider_delivery_partnership,
                     active_lead_provider: data[:active_lead_provider],
-                    delivery_partner: data[:delivery_partner]).tap { |lpdp| describe_lead_provider_delivery_partnership(lpdp) }
+                    delivery_partner: data[:delivery_partner]).tap { lead_provider_delivery_partnerships << it }
 end
 
 # These are additional delivery partnerships useful for testing.
@@ -63,6 +76,8 @@ ActiveLeadProvider.find_each do |active_lead_provider|
 
     FactoryBot
       .create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
-      .tap { describe_lead_provider_delivery_partnership(it) }
+      .tap { lead_provider_delivery_partnerships << it }
   end
 end
+
+describe_lead_provider_delivery_partnerships(lead_provider_delivery_partnerships)
