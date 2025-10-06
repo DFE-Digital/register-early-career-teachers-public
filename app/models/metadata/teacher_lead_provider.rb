@@ -1,6 +1,6 @@
 module Metadata
   class TeacherLeadProvider < Metadata::Base
-    self.table_name = :metadata_teacher_lead_providers
+    self.table_name = :metadata_teachers_lead_providers
 
     belongs_to :teacher
     belongs_to :lead_provider
