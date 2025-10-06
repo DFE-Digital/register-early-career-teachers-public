@@ -1,9 +1,5 @@
-RSpec.describe 'Registering an ECT' do
+RSpec.describe 'Registering an ECT', :enable_schools_interface do
   include_context 'test trs api client that finds teacher prohibited from teaching'
-
-  before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-  end
 
   scenario 'The ECT is prohibited from teaching' do
     given_i_am_logged_in_as_a_school_user

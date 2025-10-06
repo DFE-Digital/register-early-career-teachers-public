@@ -1,8 +1,7 @@
-RSpec.describe 'Registering an ECT' do
+RSpec.describe 'Registering an ECT', :enable_schools_interface do
   include_context 'test trs api client'
 
   before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
     create_contract_period_for_start_date
     create_lead_provider_and_active_lead_provider
     create_school_with_previous_choices

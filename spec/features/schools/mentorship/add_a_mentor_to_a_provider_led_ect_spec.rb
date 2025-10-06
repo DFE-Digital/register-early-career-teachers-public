@@ -1,6 +1,5 @@
-RSpec.describe 'Add a mentor to a provider led ECT' do
+RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface do
   before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
     given_there_is_a_school_in_the_service
     and_the_school_has_a_provider_led_ect_with_no_mentor
     and_the_school_has_a_mentor_eligible_to_mentor_the_ect

@@ -1,10 +1,6 @@
-RSpec.describe 'Selecting a different lead provider' do
+RSpec.describe 'Selecting a different lead provider', :enable_schools_interface do
   include_context 'test trs api client'
   include SchoolPartnershipHelpers
-
-  before do
-    allow(Rails.application.config).to receive_messages(enable_schools_interface: true, enable_test_guidance: false)
-  end
 
   scenario 'Registering a new mentor' do
     given_there_is_a_school_in_the_service

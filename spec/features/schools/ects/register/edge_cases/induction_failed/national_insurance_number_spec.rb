@@ -1,9 +1,5 @@
-RSpec.describe 'Registering an ECT' do
+RSpec.describe 'Registering an ECT', :enable_schools_interface do
   include_context 'test trs api returns a teacher and then a teacher that has failed their induction'
-
-  before do
-    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
-  end
 
   scenario 'User enters national insurance number but teacher has failed their induction' do
     given_i_am_logged_in_as_a_school_user

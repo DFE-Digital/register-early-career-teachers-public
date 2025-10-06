@@ -1,4 +1,4 @@
-describe "Schools::ECTs::ChangeWorkingPatternWizardController" do
+describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_interface do
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:ect_at_school_period) do
@@ -9,12 +9,6 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController" do
       school:,
       working_pattern: "full_time"
     )
-  end
-
-  before do
-    allow(Rails.application.config)
-      .to receive(:enable_schools_interface)
-      .and_return(true)
   end
 
   describe "GET #new" do
