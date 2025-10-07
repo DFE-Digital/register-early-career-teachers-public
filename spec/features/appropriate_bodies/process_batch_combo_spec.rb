@@ -108,7 +108,8 @@ RSpec.describe 'Process bulk claims then actions events' do
 
     expect(AnalyticsBatchJob).to have_been_enqueued.once
       .with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
-    expect(AppropriateBodies::ProcessBatch::RecordOutcomeJob).to have_been_enqueued.twice
+    expect(AppropriateBodies::ProcessBatch::RecordPassJob).to have_been_enqueued.once
+    expect(AppropriateBodies::ProcessBatch::RecordFailJob).to have_been_enqueued.once
     expect(perform_enqueued_jobs).to be(3)
     expect(RecordEventJob).to have_been_enqueued.twice
     expect(PassECTInductionJob).to have_been_enqueued
