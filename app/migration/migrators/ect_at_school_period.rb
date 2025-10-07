@@ -50,7 +50,9 @@ module Migrators
             school_periods.flatten!
 
             teacher.update!(api_ect_training_record_id: participant_profile.id)
-            result = Builders::ECT::SchoolPeriods.new(teacher:, school_periods:).build
+            result = Builders::ECT::SchoolPeriods
+                       .new(teacher:, school_periods:, created_at: participant_profile.created_at)
+                       .build
           else
             ::TeacherMigrationFailure.create!(teacher:,
                                               model: :ect_at_school_period,
