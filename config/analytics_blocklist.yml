@@ -243,6 +243,7 @@
   - lead_provider_id
   - latest_ect_training_period_id
   - latest_mentor_training_period_id
+  - api_mentor_id
   - created_at
   - updated_at
   :pending_induction_submissions:
