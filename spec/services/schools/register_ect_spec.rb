@@ -185,6 +185,28 @@ RSpec.describe Schools::RegisterECT do
             expect(training_period.school_partnership).to eq(school_partnership)
           end
         end
+
+        context "when a Teacher record with the same TRN exists and is eligible for ECT training" do
+          before { FactoryBot.create(:induction_period, :ongoing, teacher:) }
+
+          it "sets `first_became_eligible_for_ect_training_at`" do
+            expect { service.register! }.to change { teacher.reload.first_became_eligible_for_ect_training_at }.to be_within(5.seconds).of(Time.zone.now)
+          end
+
+          context "when `first_became_eligible_for_ect_training_at` is already set" do
+            before { teacher.update!(first_became_eligible_for_ect_training_at: 1.month.ago) }
+
+            it "does not change `first_became_eligible_for_ect_training_at`" do
+              expect { service.register! }.not_to(change { teacher.reload.first_became_eligible_for_ect_training_at })
+            end
+          end
+        end
+
+        context "when a Teacher record with the same TRN exists and is not eligible for ECT training" do
+          it "does not set `first_became_eligible_for_ect_training_at`" do
+            expect { service.register! }.not_to(change { teacher.reload.first_became_eligible_for_ect_training_at })
+          end
+        end
       end
     end
 
