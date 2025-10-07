@@ -31,12 +31,24 @@ We decided to combine Record inductions and the rest of the services for trainin
 So far, we have:
 
 * built a way for schools to register ECTs and mentors to save school's time and improve data accuracy
-* set up DfE Sign in for appropriate bodies, so we can improve how all users access the service
+* set up DfE Sign in for appropriate bodies and schools, so we can improve how all users access the service
 * improved how mentors are assigned to ECTs, so we can reduce having to chase schools to tell us mentor information
 * built a service for appropriate bodies to record data about inductions individually, so we can start to consolidate services and reduce workload for all users
-* set up how we want to migrate data from ECF1 to the new Register early career teachers service, and started cleaning these up
+* released a way for appropriate bodies to record and submit outcomes for inductions in bulk
+* set up how we want to migrate data from ECF1 to the new Register early career teachers service
 * designed and built how ECTs and mentors are registered when they are moving schools
-* set up how ECT and mentor records are viewed by schools so school users can understand their status
+* built how ECT and mentor records are viewed by schools so school users can understand their status
+* designed how schools tell us ECTs and mentors are no longer at a school, so we get more accurate information on if they are still training to share with appropriate bodies and lead providers
+* built multiple endpoints on the API, including improvements so we speed up the onboarding of ECTs and mentors to training
+* released the draft API specification and started acting on feedback so we can iterate the rest of our API build to meet lead provider needs
+* released our API guidance, so we can give information to lead providers as we build the API and they can test it and feedback as it's being developed
+* built a lot of the admin tooling we'll require, including admin tooling, in one centralised admin tool for all of our DfE users
+* built our 'parity check' for the API, to ensure we migrate data correctly and can inform lead providers of data changes
+* improved how schools can make changes to ECT and mentor records, so we can get more accurate information for them
+* designed how to gather a singular school induction tutor for schools so we make sure lead providers have the information they need
+
+
+  
 													
 # The roadmap
 
