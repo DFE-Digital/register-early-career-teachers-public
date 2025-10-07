@@ -23,6 +23,7 @@ class Event < ApplicationRecord
     teacher_working_pattern_updated
     teacher_training_programme_updated
     teacher_fails_induction
+    teacher_funding_eligibilty_set
     teacher_imported_from_trs
     teacher_induction_status_reset
     teacher_name_updated_by_trs
