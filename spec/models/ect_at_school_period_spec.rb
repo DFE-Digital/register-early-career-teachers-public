@@ -97,6 +97,37 @@ describe ECTAtSchoolPeriod do
         end
       end
     end
+
+    describe '.latest_mentorship_period' do
+      subject { ect_at_school_period.latest_mentorship_period }
+
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+      let(:mentorship_started_on) { 3.weeks.ago }
+      let(:mentorship_finished_on) { nil }
+      let!(:latest_mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: mentorship_started_on,
+          finished_on: mentorship_finished_on
+        )
+      end
+
+      before do
+        # Previous mentorship period.
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: latest_mentorship_period.started_on - 6.months,
+          finished_on: latest_mentorship_period.started_on
+        )
+      end
+
+      it { is_expected.to eq(latest_mentorship_period) }
+    end
   end
 
   describe "validations" do
