@@ -50,8 +50,10 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
       deadline_date = Date.new(year, month, 1).prev_day
       payment_date = Date.new(year, month, 25)
       fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
-      status = if payment_date.past?
-                 fee_type == 'output' ? :paid : :payable
+      status = if payment_date.past? && fee_type == "output"
+                 :paid
+               elsif deadline_date.past?
+                 :payable
                else
                  :open
                end
