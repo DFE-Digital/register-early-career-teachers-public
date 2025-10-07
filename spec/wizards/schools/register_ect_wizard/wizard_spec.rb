@@ -377,6 +377,8 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
 
   describe 'change step logic' do
     context 'when ECT has completed the flow' do
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+
       before do
         wizard.ect.update!(
           trn: '1234567',
@@ -387,7 +389,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
           email: 'test@example.com',
           start_date: '2024-09-01',
           working_pattern: 'full_time',
-          appropriate_body_id: 1,
+          appropriate_body_id: appropriate_body.id,
           training_programme: 'school_led'
         )
         allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)

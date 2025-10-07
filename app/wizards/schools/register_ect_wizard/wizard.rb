@@ -117,20 +117,19 @@ module Schools
         end
 
         unless school.last_programme_choices? && ect.use_previous_ect_choices
-          if school.independent?
-            steps << :independent_school_appropriate_body
-            return steps unless [ect.appropriate_body_id, ect.appropriate_body_type].all?
-          else
-            steps << :state_school_appropriate_body
-            return steps unless ect.appropriate_body_id
-          end
+          steps << if school.independent?
+                     :independent_school_appropriate_body
+                   else
+                     :state_school_appropriate_body
+                   end
+          return steps unless ect.appropriate_body_id
 
           steps << :training_programme
           return steps unless ect.training_programme
 
           if ect.provider_led?
             steps << :lead_provider
-            return steps unless ect.lead_provider_id
+            return steps unless ect.lead_provider_id || can_reach_check_answers?
           end
         end
 
@@ -144,11 +143,7 @@ module Schools
         steps << (school.independent? ? :change_independent_school_appropriate_body : :change_state_school_appropriate_body)
 
         steps << :change_training_programme
-        if ect.provider_led?
-          return %i[training_programme_change_lead_provider] if ect.lead_provider_id.nil?
-
-          steps << :training_programme_change_lead_provider
-        end
+        steps << :training_programme_change_lead_provider if ect.provider_led? && (ect.was_school_led? || ect.lead_provider_id.nil?)
 
         steps << :change_lead_provider if ect.provider_led?
         steps << :change_review_ect_details
