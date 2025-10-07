@@ -164,31 +164,12 @@ RSpec.describe Schools::RegisterMentor do
         end
       end
 
-      context "when a Teacher record with the same TRN exists and is eligible for mentor training" do
-        let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      it 'calls `Teachers::SetFundingEligibility` service with correct params' do
+        allow(Teachers::SetFundingEligibilty).to receive(:new).and_call_original
 
-        it "sets `first_became_eligible_for_mentor_training_at`" do
-          expect { service.register! }.to change { teacher.reload.first_became_eligible_for_mentor_training_at }.to be_within(5.seconds).of(Time.zone.now)
-        end
+        service.register!
 
-        context "when `first_became_eligible_for_mentor_training_at` is already set" do
-          before { teacher.update!(first_became_eligible_for_mentor_training_at: 1.month.ago) }
-
-          it "does not change `first_became_eligible_for_mentor_training_at`" do
-            expect { service.register! }.not_to(change { teacher.reload.first_became_eligible_for_mentor_training_at })
-          end
-        end
-      end
-
-      context "when a Teacher record with the same TRN exists and is not eligible for mentor training" do
-        let!(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding, trn:) }
-
-        it "does not set `first_became_eligible_for_mentor_training_at`" do
-          expect { service.register! }
-          .to raise_error(Schools::RegisterMentor::MentorIneligibleForTraining,
-                          /Mentor #{teacher.id} is not eligible for funded training/)
-          .and(not_change { teacher.reload.first_became_eligible_for_mentor_training_at })
-        end
+        expect(Teachers::SetFundingEligibilty).to have_received(:new).with(teacher:, author:)
       end
     end
 

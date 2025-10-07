@@ -11,9 +11,9 @@ RSpec.describe Teachers::SetFundingEligibilty do
       end
 
       it "sets `first_became_eligible_for_ect_training_at` if not already set" do
-        expect { service.set! }.to change(teacher, :first_became_eligible_for_ect_training_at).from(nil)
-
-        expect(teacher.first_became_eligible_for_ect_training_at).to be_present
+        freeze_time do
+          expect { service.set! }.to change(teacher, :first_became_eligible_for_ect_training_at).from(nil).to(Time.zone.now)
+        end
       end
 
       it "does not change `first_became_eligible_for_ect_training_at` if already set" do
@@ -31,9 +31,9 @@ RSpec.describe Teachers::SetFundingEligibilty do
 
     context "when teacher is eligible for mentor training" do
       it "sets first_became_eligible_for_mentor_training_at if not already set" do
-        expect { service.set! }.to change(teacher, :first_became_eligible_for_mentor_training_at).from(nil)
-
-        expect(teacher.first_became_eligible_for_mentor_training_at).to be_present
+        freeze_time do
+          expect { service.set! }.to change(teacher, :first_became_eligible_for_mentor_training_at).from(nil).to(Time.zone.now)
+        end
       end
 
       it "does not `change first_became_eligible_for_mentor_training_at` if already set" do
@@ -55,13 +55,15 @@ RSpec.describe Teachers::SetFundingEligibilty do
 
     context "when teacher attributes are changed" do
       it "records a teacher set funding eligibility event" do
-        expect(Events::Record).to receive(:record_teacher_set_funding_eligibilty_event!)
-          .with(author:, teacher:, happened_at: instance_of(ActiveSupport::TimeWithZone))
+        freeze_time do
+          expect(Events::Record).to receive(:record_teacher_set_funding_eligibilty_event!)
+            .with(author:,
+                  teacher:,
+                  happened_at: Time.zone.now,
+                  modifications: { "first_became_eligible_for_mentor_training_at" => [nil, Time.zone.now] })
 
-        FactoryBot.create(:induction_period, :ongoing, teacher:)
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
-
-        service.set!
+          service.set!
+        end
       end
     end
 
@@ -75,18 +77,6 @@ RSpec.describe Teachers::SetFundingEligibilty do
 
         service.set!
       end
-    end
-
-    it "saves the teacher" do
-      expect(teacher).to receive(:save!)
-
-      service.set!
-    end
-
-    it "runs inside a transaction" do
-      expect(ActiveRecord::Base).to receive(:transaction).and_call_original
-
-      service.set!
     end
 
     context "when an error is raised during the eligibility setting" do

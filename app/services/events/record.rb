@@ -451,12 +451,12 @@ module Events
       ).record_event!
     end
 
-    def self.record_teacher_set_funding_eligibilty_event!(author:, teacher:, happened_at:)
+    def self.record_teacher_set_funding_eligibilty_event!(author:, teacher:, happened_at:, modifications:)
       event_type = :teacher_funding_eligibilty_set
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} funding eligibilty was set"
 
-      new(event_type:, author:, heading:, teacher:, happened_at:).record_event!
+      new(event_type:, author:, heading:, teacher:, happened_at:, modifications:).record_event!
     end
 
     # Bulk Upload Events

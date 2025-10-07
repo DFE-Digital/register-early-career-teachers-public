@@ -41,7 +41,8 @@ private
     Events::Record.record_teacher_set_funding_eligibilty_event!(
       author:,
       teacher:,
-      happened_at: Time.zone.now
+      happened_at: Time.zone.now,
+      modifications: teacher.saved_changes
     )
   end
 end

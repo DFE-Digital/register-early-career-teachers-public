@@ -25,21 +25,21 @@ RSpec.describe ImmutableOnceSetValidator, type: :model do
     it { is_expected.to be_empty }
   end
 
-  context "when attribute is `\"set\"` and changing to `\"set\"`" do
+  context "when attribute is `set` and changing to `set`" do
     let(:current_value) { "set" }
     let(:new_value) { "set" }
 
     it { is_expected.to be_empty }
   end
 
-  context "when attribute is `false` and changing to `\"test\"`" do
+  context "when attribute is `false` and changing to `test`" do
     let(:current_value) { false }
     let(:new_value) { "test" }
 
     it { is_expected.to include("cannot be changed once set") }
   end
 
-  context "when the attribute is `\"\"` and is changing to `true`" do
+  context "when the attribute is `` and is changing to `true`" do
     let(:current_value) { "" }
     let(:new_value) { true }
 
