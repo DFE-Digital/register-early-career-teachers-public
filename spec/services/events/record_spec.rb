@@ -1526,4 +1526,22 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe '.record_teacher_set_funding_eligibilty_event!' do
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        Events::Record.record_teacher_set_funding_eligibilty_event!(author:, teacher:, happened_at:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            **author_params,
+            teacher:,
+            heading: "Rhys Ifans funding eligibilty was set",
+            happened_at:,
+            event_type: :teacher_funding_eligibilty_set
+          )
+        )
+      end
+    end
+  end
 end
