@@ -54,7 +54,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
   def siblings
     return MentorAtSchoolPeriod.none unless teacher
 
-    teacher.mentor_at_school_periods.for_school(school_id).excluding(self)
+    teacher.mentor_at_school_periods.active.for_school(school_id).excluding(self)
   end
 
 private
