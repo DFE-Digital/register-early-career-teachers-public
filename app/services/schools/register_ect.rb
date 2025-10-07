@@ -51,6 +51,7 @@ module Schools
         close_ongoing_ect_period!
         @ect_at_school_period = start_at_school!
         create_training_period!
+        set_eligibility_for_funding!
         record_event!
       end
 
@@ -121,6 +122,13 @@ module Schools
         finished_on: started_on,
         author:
       ).finish!
+    end
+
+    def set_eligibility_for_funding!
+      Teachers::SetFundingEligibilty.new(
+        teacher:,
+        author:
+      ).set!
     end
 
     def record_event!

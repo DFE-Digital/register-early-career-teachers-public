@@ -45,6 +45,7 @@ module Schools
         finish_existing_at_school_periods! if finish_existing_at_school_periods
         start_at_school!
         create_training_period!
+        set_eligibility_for_funding!
         record_event!
       end
 
@@ -97,6 +98,13 @@ module Schools
 
     def start_at_school!
       @mentor_at_school_period = teacher.mentor_at_school_periods.create!(school:, started_on:, email:)
+    end
+
+    def set_eligibility_for_funding!
+      Teachers::SetFundingEligibilty.new(
+        teacher:,
+        author:
+      ).set!
     end
 
     def record_event!
