@@ -1,4 +1,4 @@
-RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
+RSpec.describe 'Appropriate body recording a failed induction outcome for a teacher' do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 

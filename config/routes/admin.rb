@@ -47,8 +47,8 @@ namespace :admin do
 
     scope module: :teachers do
       resource :timeline, only: :show, controller: :timeline
-      resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: :record_passed_outcome
-      resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: :record_failed_outcome
+      resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: :record_passed_induction
+      resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: :record_failed_induction
       resource :reopen_induction, only: :update, path: 'reopen-induction', controller: :reopen_induction do
         member { get :confirm }
       end
