@@ -1,7 +1,7 @@
 module AppropriateBodies
   module ProcessBatch
     # @see AppropriateBodies::ProcessBatch::Action
-    class RecordOutcomeJob < ApplicationJob
+    class RecordFailJob < ApplicationJob
       queue_as :process_batch
 
       def perform(pending_induction_submission_id, author_email, author_name)
@@ -16,17 +16,11 @@ module AppropriateBodies
           batch_id: pending_induction_submission_batch.id
         )
 
-        teacher = Teacher.find_by(trn: pending_induction_submission.trn)
-
-        record_outcome = RecordOutcome.new(
+        RecordFail.new(
           appropriate_body:,
           pending_induction_submission:,
-          teacher:,
           author:
-        )
-
-        record_outcome.pass! if pending_induction_submission.pass?
-        record_outcome.fail! if pending_induction_submission.fail?
+        ).fail!
       end
     end
   end

@@ -378,9 +378,23 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
       end
 
       describe '#complete!' do
-        context 'when passing or failing' do
+        context 'when passing' do
+          let(:outcome) { 'pass' }
+
           it 'enqueues a job to complete the submission' do
-            expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::RecordOutcomeJob).with(
+            expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::RecordPassJob).with(
+              submission.id,
+              author.email,
+              author.name
+            ).and have_enqueued_job(AnalyticsBatchJob)
+          end
+        end
+
+        context 'when failing' do
+          let(:outcome) { 'fail' }
+
+          it 'enqueues a job to complete the submission' do
+            expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::RecordFailJob).with(
               submission.id,
               author.email,
               author.name
@@ -392,7 +406,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
           let(:outcome) { 'release' }
 
           it 'enqueues a job to complete the submission' do
-            expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::ReleaseECTJob).with(
+            expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::RecordReleaseJob).with(
               submission.id,
               author.email,
               author.name

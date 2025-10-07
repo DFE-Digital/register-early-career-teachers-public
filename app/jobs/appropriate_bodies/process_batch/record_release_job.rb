@@ -1,7 +1,7 @@
 module AppropriateBodies
   module ProcessBatch
     # @see AppropriateBodies::ProcessBatch::Action
-    class ReleaseECTJob < ApplicationJob
+    class RecordReleaseJob < ApplicationJob
       queue_as :process_batch
 
       def perform(pending_induction_submission_id, author_email, author_name)
@@ -16,7 +16,7 @@ module AppropriateBodies
           batch_id: pending_induction_submission_batch.id
         )
 
-        ReleaseECT.new(
+        RecordRelease.new(
           appropriate_body:,
           pending_induction_submission:,
           author:

@@ -1,7 +1,7 @@
-RSpec.describe AppropriateBodies::ProcessBatch::RecordOutcomeJob, type: :job do
+RSpec.describe AppropriateBodies::ProcessBatch::RecordFailJob, type: :job do
   include ActiveJob::TestHelper
 
-  subject(:perform_record_outcome_job) do
+  subject(:perform_record_fail_job) do
     described_class.perform_now(pending_induction_submission.id, author_email, author_name)
   end
 
@@ -11,14 +11,12 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordOutcomeJob, type: :job do
     FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
   end
 
-  let(:outcome) { 'pass' }
-
   let(:pending_induction_submission) do
     FactoryBot.create(:pending_induction_submission,
                       pending_induction_submission_batch:,
                       finished_on: 1.week.ago.to_date,
                       number_of_terms: 3.2,
-                      outcome:)
+                      outcome: 'fail')
   end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -33,7 +31,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordOutcomeJob, type: :job do
   end
 
   it 'records an outcome for the induction', :aggregate_failures do
-    perform_record_outcome_job
+    perform_record_fail_job
     perform_enqueued_jobs
 
     expect(teacher.ongoing_induction_period).to be_nil
@@ -42,37 +40,17 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordOutcomeJob, type: :job do
     expect(induction_period.number_of_terms).to eq(pending_induction_submission.number_of_terms)
   end
 
-  context 'when the outcome is a fail' do
-    let(:outcome) { 'fail' }
+  it 'creates a fail induction event by the author' do
+    allow(Events::Record).to receive(:record_teacher_fails_induction_event!).and_call_original
 
-    it 'creates a fail induction event by the author' do
-      allow(Events::Record).to receive(:record_teacher_fails_induction_event!).and_call_original
+    perform_record_fail_job
+    perform_enqueued_jobs
 
-      perform_record_outcome_job
-      perform_enqueued_jobs
-
-      expect(Events::Record).to have_received(:record_teacher_fails_induction_event!).with(
-        appropriate_body:,
-        teacher:,
-        induction_period:,
-        author: an_instance_of(::Events::AppropriateBodyBatchAuthor)
-      )
-    end
-  end
-
-  context 'when the outcome is a pass' do
-    it 'creates a pass induction event by the author' do
-      allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
-
-      perform_record_outcome_job
-      perform_enqueued_jobs
-
-      expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
-        appropriate_body:,
-        teacher:,
-        induction_period:,
-        author: an_instance_of(::Events::AppropriateBodyBatchAuthor)
-      )
-    end
+    expect(Events::Record).to have_received(:record_teacher_fails_induction_event!).with(
+      appropriate_body:,
+      teacher:,
+      induction_period:,
+      author: an_instance_of(::Events::AppropriateBodyBatchAuthor)
+    )
   end
 end
