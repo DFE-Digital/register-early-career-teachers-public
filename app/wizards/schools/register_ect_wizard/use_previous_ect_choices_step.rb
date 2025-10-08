@@ -24,12 +24,42 @@ module Schools
         :working_pattern
       end
 
+      def reusable_partnership_preview
+        return nil unless preview_eligible?
+
+        @reusable_partnership_preview ||= SchoolPartnerships::FindPreviousReusable.new.call(
+          school:,
+          last_lead_provider: school.last_chosen_lead_provider,
+          current_contract_period: ect.contract_start_date
+        )
+      end
+
     private
 
-      def choices = use_previous_ect_choices ? school.last_programme_choices : {}
-
       def persist
-        ect.update!(use_previous_ect_choices:, **choices)
+        return false unless ect.update(use_previous_ect_choices:, **choices)
+
+        store.school_partnership_to_reuse_id =
+          use_previous_ect_choices ? reusable_partnership_preview&.id : nil
+        true
+      end
+
+      def preview_eligible?
+        return false unless school.provider_led_training_programme_chosen?
+        return false if school.last_chosen_lead_provider.blank?
+        return false if current_year_partnership_exists?
+
+        true
+      end
+
+      def current_year_partnership_exists?
+        SchoolPartnerships::Search
+          .new(school:, contract_period: ect.contract_start_date, lead_provider: school.last_chosen_lead_provider)
+          .exists?
+      end
+
+      def choices
+        use_previous_ect_choices ? school.last_programme_choices : {}
       end
     end
   end

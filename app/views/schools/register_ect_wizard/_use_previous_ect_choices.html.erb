@@ -32,12 +32,28 @@
   end
 end %>
 
-<% if @decorated_school.provider_led_training_programme_chosen? && !@decorated_school.has_partnership_with?(lead_provider: @decorated_school.latest_registration_choices.lead_provider, contract_period: @ect.contract_start_date) %>
-  <p class="govuk-body">
-    <%= @decorated_school.latest_registration_choices.lead_provider.name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.
-  </p>
-<% end %>
+<% reusable = @wizard.current_step.reusable_partnership_preview if @decorated_school.provider_led_training_programme_chosen? %>
 
+<% if @decorated_school.provider_led_training_programme_chosen? &&
+      !@decorated_school.has_partnership_with?(lead_provider: @decorated_school.latest_registration_choices.lead_provider,
+                                               contract_period: @ect.contract_start_date) %>
+
+  <% if reusable.present? %>
+    <div class="govuk-inset-text">
+      <p class="govuk-body">
+        We can reuse your previous partnership:
+        <strong><%= reusable.lead_provider.name %></strong> with
+        <strong><%= reusable.delivery_partner.name %></strong>. If you choose “Yes”,
+        we’ll create a partnership for the current contract period using this pairing.
+      </p>
+    </div>
+  <% else %>
+    <p class="govuk-body">
+      <%= @decorated_school.latest_registration_choices.lead_provider.name %> will confirm if they’ll be working with your school
+      and which delivery partner will deliver training events.
+    </p>
+  <% end %>
+<% end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
