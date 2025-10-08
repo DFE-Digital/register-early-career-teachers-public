@@ -78,7 +78,7 @@ RSpec.describe "Changing an mentor's name", :enable_schools_interface do
 
   def and_i_visit_the_mentors_page
     page.goto(schools_mentors_home_path)
-    expect(page.url).to end_with('/school/home/mentors')
+    expect(page).to have_path('/school/home/mentors')
   end
 
   def when_i_select_a_mentor
@@ -114,15 +114,15 @@ RSpec.describe "Changing an mentor's name", :enable_schools_interface do
   end
 
   def then_i_should_be_taken_to_the_edit_page
-    expect(page.url).to end_with("/school/mentors/#{mentor_at_school_period.id}/change-name/edit")
+    expect(page).to have_path("/school/mentors/#{mentor_at_school_period.id}/change-name/edit")
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
-    expect(page.url).to end_with("/school/mentors/#{mentor_at_school_period.id}/change-name/check-answers")
+    expect(page).to have_path("/school/mentors/#{mentor_at_school_period.id}/change-name/check-answers")
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page.url).to end_with("/school/mentors/#{mentor_at_school_period.id}/change-name/confirmation")
+    expect(page).to have_path("/school/mentors/#{mentor_at_school_period.id}/change-name/confirmation")
   end
 
   def and_i_should_see_the_name(name)
