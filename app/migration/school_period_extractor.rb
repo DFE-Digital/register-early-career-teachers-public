@@ -43,7 +43,7 @@ private
                                                      end_source_id: induction_record.id,
                                                      training_programme:)
         periods << current_period
-      elsif induction_record.end_date && induction_record.end_date > current_period.end_date
+      elsif induction_record.end_date.nil? || induction_record.end_date > current_period.end_date
         current_period.end_date = induction_record.end_date
         current_period.end_source_id = induction_record.id
       end
