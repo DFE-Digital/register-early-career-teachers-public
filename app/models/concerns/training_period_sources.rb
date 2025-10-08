@@ -16,4 +16,18 @@ module TrainingPeriodSources
   def expression_of_interest
     earliest_matching_school_partnership ? nil : active_lead_provider
   end
+
+  def reuse_old_partnership
+    previous_id = @store&.school_partnership_to_reuse_id
+    return nil if previous_id.blank?
+
+    SchoolPartnerships::CreateFromPrevious
+      .new(
+        previous_school_partnership_id: previous_id,
+        school:,
+        author:,
+        current_contract_period_year: contract_period.year
+      )
+      .call
+  end
 end
