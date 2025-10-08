@@ -62,7 +62,7 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
         render_inline(subject)
 
         expected_items = [
-          { text: "ECTs", href: "/schools/home/ects" },
+          { text: "ECTs", href: "/school/home/ects" },
         ]
 
         validate_navigation_items(expected_items)

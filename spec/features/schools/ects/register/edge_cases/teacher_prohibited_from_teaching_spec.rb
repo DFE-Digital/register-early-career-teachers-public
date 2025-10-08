@@ -17,7 +17,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def when_i_am_on_the_find_ect_step_page
-    path = '/schools/register-ect/find-ect'
+    path = '/school/register-ect/find-ect'
     page.goto path
     expect(page).to have_path(path)
   end
@@ -31,7 +31,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_should_be_taken_to_the_cannot_register_ect_page
-    path = '/schools/register-ect/cannot-register-ect'
+    path = '/school/register-ect/cannot-register-ect'
     expect(page).to have_path(path)
   end
 
@@ -40,7 +40,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_should_be_taken_to_the_school_ects_page
-    path = '/schools/home/ects'
+    path = '/school/home/ects'
     expect(page).to have_path(path)
   end
 end
