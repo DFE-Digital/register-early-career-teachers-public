@@ -14,7 +14,7 @@ module API
     end
 
     def per_page
-      1000
+      100
     end
 
     def page
