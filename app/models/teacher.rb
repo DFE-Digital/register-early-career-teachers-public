@@ -56,8 +56,8 @@ class Teacher < ApplicationRecord
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another teacher" }
   validates :api_ect_training_record_id, uniqueness: { case_sensitive: false, message: "API ect training record id already exists for another teacher" }, allow_nil: true
   validates :api_mentor_training_record_id, uniqueness: { case_sensitive: false, message: "API mentor training record id already exists for another teacher" }, allow_nil: true
-  validates :first_became_eligible_for_ect_training_at, immutable_once_set: true
-  validates :first_became_eligible_for_mentor_training_at, immutable_once_set: true
+  validates :ect_first_became_eligible_for_training_at, immutable_once_set: true
+  validates :mentor_first_became_eligible_for_training_at, immutable_once_set: true
 
   # Scopes
   scope :search, ->(query_string) {

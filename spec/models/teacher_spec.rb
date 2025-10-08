@@ -260,24 +260,24 @@ describe Teacher do
       end
     end
 
-    describe ".first_became_eligible_for_ect_training_at, .first_became_eligible_for_mentor_training_at" do
+    describe ".ect_first_became_eligible_for_training_at, .mentor_first_became_eligible_for_training_at" do
       context "when not yet set" do
-        subject { FactoryBot.create(:teacher, first_became_eligible_for_ect_training_at: nil, first_became_eligible_for_mentor_training_at: nil) }
+        subject { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: nil, mentor_first_became_eligible_for_training_at: nil) }
 
-        it { is_expected.to allow_values("", " ", nil, "test", Date.new).for(:first_became_eligible_for_ect_training_at) }
-        it { is_expected.to allow_values("", " ", nil, "test", Date.new).for(:first_became_eligible_for_mentor_training_at) }
+        it { is_expected.to allow_values("", " ", nil, "test", Date.new).for(:ect_first_became_eligible_for_training_at) }
+        it { is_expected.to allow_values("", " ", nil, "test", Date.new).for(:mentor_first_became_eligible_for_training_at) }
       end
 
       context "when already set" do
-        subject { FactoryBot.create(:teacher, first_became_eligible_for_ect_training_at: time, first_became_eligible_for_mentor_training_at: time) }
+        subject { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: time, mentor_first_became_eligible_for_training_at: time) }
 
         let(:time) { Time.zone.now }
 
-        it { is_expected.not_to allow_values("", " ", nil, "test", Date.new).for(:first_became_eligible_for_ect_training_at) }
-        it { is_expected.to allow_value(time).for(:first_became_eligible_for_ect_training_at) }
+        it { is_expected.not_to allow_values("", " ", nil, "test", Date.new).for(:ect_first_became_eligible_for_training_at) }
+        it { is_expected.to allow_value(time).for(:ect_first_became_eligible_for_training_at) }
 
-        it { is_expected.not_to allow_values("", " ", nil, "test", Date.new).for(:first_became_eligible_for_mentor_training_at) }
-        it { is_expected.to allow_value(time).for(:first_became_eligible_for_mentor_training_at) }
+        it { is_expected.not_to allow_values("", " ", nil, "test", Date.new).for(:mentor_first_became_eligible_for_training_at) }
+        it { is_expected.to allow_value(time).for(:mentor_first_became_eligible_for_training_at) }
       end
     end
   end

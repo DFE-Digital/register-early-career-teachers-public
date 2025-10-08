@@ -1530,7 +1530,7 @@ RSpec.describe Events::Record do
   describe '.record_teacher_set_funding_eligibility_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        teacher.first_became_eligible_for_mentor_training_at = Time.zone.now
+        teacher.mentor_first_became_eligible_for_training_at = Time.zone.now
         raw_modifications = teacher.changes
 
         Events::Record.record_teacher_set_funding_eligibility_event!(author:, teacher:, happened_at:, modifications: raw_modifications)
@@ -1542,7 +1542,7 @@ RSpec.describe Events::Record do
             happened_at:,
             heading: "Rhys Ifans's funding eligibility was set",
             metadata: raw_modifications,
-            modifications: ["First became eligible for mentor training at set to '#{Time.zone.now}'"],
+            modifications: ["Mentor first became eligible for training at set to '#{Time.zone.now}'"],
             teacher:
           )
         )

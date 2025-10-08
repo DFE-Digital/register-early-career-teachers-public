@@ -778,8 +778,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_144737) do
     t.integer "mentor_payments_frozen_year"
     t.boolean "ect_pupil_premium_uplift", default: false, null: false
     t.boolean "ect_sparsity_uplift", default: false, null: false
-    t.datetime "first_became_eligible_for_ect_training_at"
-    t.datetime "first_became_eligible_for_mentor_training_at"
+    t.datetime "ect_first_became_eligible_for_training_at"
+    t.datetime "mentor_first_became_eligible_for_training_at"
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
