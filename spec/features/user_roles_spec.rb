@@ -66,7 +66,7 @@ private
   end
 
   def i_am_redirected_to_the_school_home_page
-    expect(page).to have_path('/schools/home/ects')
+    expect(page).to have_path('/school/home/ects')
   end
 
   def then_i_should_see_school_content

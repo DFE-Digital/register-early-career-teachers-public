@@ -118,7 +118,7 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
   end
 
   def then_i_am_on_the_mentor_details_page
-    expect(page).to have_path("/schools/mentors/#{@mentor.id}")
+    expect(page).to have_path("/school/mentors/#{@mentor.id}")
   end
 
   def given_i_click_the_back_link
@@ -130,7 +130,7 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
   end
 
   def then_i_am_on_the_mentors_index_page
-    expect(page).to have_path("/schools/home/mentors")
+    expect(page).to have_path("/school/home/mentors")
   end
 
   def build_school_and_mentor
