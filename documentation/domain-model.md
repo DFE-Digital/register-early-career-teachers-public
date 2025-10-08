@@ -149,8 +149,8 @@ erDiagram
     integer mentor_payments_frozen_year
     boolean ect_pupil_premium_uplift
     boolean ect_sparsity_uplift
-    datetime first_became_eligible_for_ect_training_at
-    datetime first_became_eligible_for_mentor_training_at
+    datetime ect_first_became_eligible_for_training_at
+    datetime mentor_first_became_eligible_for_training_at
   }
   PendingInductionSubmission {
     integer id

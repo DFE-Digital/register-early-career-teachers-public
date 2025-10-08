@@ -10,36 +10,36 @@ RSpec.describe Teachers::SetFundingEligibility do
         FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
       end
 
-      it "sets `first_became_eligible_for_ect_training_at` if not already set" do
+      it "sets `ect_first_became_eligible_for_training_at` if not already set" do
         freeze_time do
-          expect { service.set! }.to change(teacher, :first_became_eligible_for_ect_training_at).from(nil).to(Time.zone.now)
+          expect { service.set! }.to change(teacher, :ect_first_became_eligible_for_training_at).from(nil).to(Time.zone.now)
         end
       end
 
-      it "does not change `first_became_eligible_for_ect_training_at` if already set" do
-        teacher.update!(first_became_eligible_for_ect_training_at: 1.day.ago)
+      it "does not change `ect_first_became_eligible_for_training_at` if already set" do
+        teacher.update!(ect_first_became_eligible_for_training_at: 1.day.ago)
 
-        expect { service.set! }.not_to change(teacher, :first_became_eligible_for_ect_training_at)
+        expect { service.set! }.not_to change(teacher, :ect_first_became_eligible_for_training_at)
       end
     end
 
     context "when teacher is not eligible for ECT training" do
-      it "does not set `first_became_eligible_for_ect_training_at`" do
-        expect { service.set! }.not_to change(teacher, :first_became_eligible_for_ect_training_at)
+      it "does not set `ect_first_became_eligible_for_training_at`" do
+        expect { service.set! }.not_to change(teacher, :ect_first_became_eligible_for_training_at)
       end
     end
 
     context "when teacher is eligible for mentor training" do
-      it "sets first_became_eligible_for_mentor_training_at if not already set" do
+      it "sets mentor_first_became_eligible_for_training_at if not already set" do
         freeze_time do
-          expect { service.set! }.to change(teacher, :first_became_eligible_for_mentor_training_at).from(nil).to(Time.zone.now)
+          expect { service.set! }.to change(teacher, :mentor_first_became_eligible_for_training_at).from(nil).to(Time.zone.now)
         end
       end
 
-      it "does not `change first_became_eligible_for_mentor_training_at` if already set" do
-        teacher.update!(first_became_eligible_for_mentor_training_at: 1.day.ago)
+      it "does not `change mentor_first_became_eligible_for_training_at` if already set" do
+        teacher.update!(mentor_first_became_eligible_for_training_at: 1.day.ago)
 
-        expect { service.set! }.not_to change(teacher, :first_became_eligible_for_mentor_training_at)
+        expect { service.set! }.not_to change(teacher, :mentor_first_became_eligible_for_training_at)
       end
     end
 
@@ -48,8 +48,8 @@ RSpec.describe Teachers::SetFundingEligibility do
         teacher.update!(mentor_became_ineligible_for_funding_on: Time.zone.now, mentor_became_ineligible_for_funding_reason: "completed_declaration_received")
       end
 
-      it "does not set first_became_eligible_for_mentor_training_at" do
-        expect { service.set! }.not_to change(teacher, :first_became_eligible_for_mentor_training_at)
+      it "does not set mentor_first_became_eligible_for_training_at" do
+        expect { service.set! }.not_to change(teacher, :mentor_first_became_eligible_for_training_at)
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe Teachers::SetFundingEligibility do
             .with(author:,
                   teacher:,
                   happened_at: Time.zone.now,
-                  modifications: { "first_became_eligible_for_mentor_training_at" => [nil, Time.zone.now] })
+                  modifications: { "mentor_first_became_eligible_for_training_at" => [nil, Time.zone.now] })
 
           service.set!
         end
@@ -69,7 +69,7 @@ RSpec.describe Teachers::SetFundingEligibility do
 
     context "when teacher attributes are not changed" do
       before do
-        teacher.update!(first_became_eligible_for_ect_training_at: Time.zone.now, first_became_eligible_for_mentor_training_at: Time.zone.now)
+        teacher.update!(ect_first_became_eligible_for_training_at: Time.zone.now, mentor_first_became_eligible_for_training_at: Time.zone.now)
       end
 
       it "does not record a teacher set funding eligibility event" do
@@ -85,15 +85,15 @@ RSpec.describe Teachers::SetFundingEligibility do
       end
 
       it "rolls back any changes" do
-        original_ect_eligible_at = teacher.first_became_eligible_for_ect_training_at
-        original_mentor_eligible_at = teacher.first_became_eligible_for_mentor_training_at
+        original_ect_eligible_at = teacher.ect_first_became_eligible_for_training_at
+        original_mentor_eligible_at = teacher.mentor_first_became_eligible_for_training_at
 
         FactoryBot.create(:induction_period, :ongoing, teacher:)
         FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
 
         expect { service.set! }.to raise_error(ActiveRecord::RecordInvalid)
-        expect(teacher.reload.first_became_eligible_for_ect_training_at).to eq(original_ect_eligible_at)
-        expect(teacher.reload.first_became_eligible_for_mentor_training_at).to eq(original_mentor_eligible_at)
+        expect(teacher.reload.ect_first_became_eligible_for_training_at).to eq(original_ect_eligible_at)
+        expect(teacher.reload.mentor_first_became_eligible_for_training_at).to eq(original_mentor_eligible_at)
       end
     end
   end

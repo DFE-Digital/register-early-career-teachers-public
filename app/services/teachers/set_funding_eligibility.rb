@@ -17,11 +17,11 @@ private
 
   def set_eligibility!
     if eligible_for_ect_training?
-      teacher.first_became_eligible_for_ect_training_at ||= Time.zone.now
+      teacher.ect_first_became_eligible_for_training_at ||= Time.zone.now
     end
 
     if eligible_for_mentor_training?
-      teacher.first_became_eligible_for_mentor_training_at ||= Time.zone.now
+      teacher.mentor_first_became_eligible_for_training_at ||= Time.zone.now
     end
 
     teacher.save!
