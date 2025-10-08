@@ -1,11 +1,12 @@
 module Builders
   module ECT
     class SchoolPeriods
-      attr_reader :teacher, :school_periods
+      attr_reader :teacher, :school_periods, :created_at
 
-      def initialize(teacher:, school_periods:)
+      def initialize(teacher:, school_periods:, created_at:)
         @teacher = teacher
         @school_periods = school_periods
+        @created_at = created_at
       end
 
       def build
@@ -16,6 +17,8 @@ module Builders
           school_period = ::ECTAtSchoolPeriod.find_or_initialize_by(teacher:, school:, started_on: period.start_date)
           school_period.ecf_start_induction_record_id = period.start_source_id
           next_period = school_periods[idx + 1]
+
+          school_period.created_at = created_at if idx.zero?
 
           if next_period.present? && period.end_date.present? && (period.end_date > next_period.start_date || period.end_date < period.start_date)
             school_period.finished_on = next_period.start_date
