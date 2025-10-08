@@ -14,7 +14,7 @@ module API
     end
 
     def per_page
-      [params.dig(:page, :per_page)&.to_i || Pagy::DEFAULT[:api_per_page], Pagy::DEFAULT[:api_max_per_page]].min
+      1000
     end
 
     def page
