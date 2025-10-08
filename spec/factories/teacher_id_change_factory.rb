@@ -5,9 +5,7 @@ FactoryBot.define do
     api_to_teacher_id { teacher.api_id }
 
     after(:build) do |teacher_id_change|
-      from_teacher = create(:teacher)
-
-      teacher_id_change.api_from_teacher_id = from_teacher.api_id
+      teacher_id_change.api_from_teacher_id ||= create(:teacher).api_id
     end
   end
 end
