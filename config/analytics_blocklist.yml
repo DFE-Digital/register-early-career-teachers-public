@@ -225,9 +225,19 @@
   - api_id
   - api_updated_at
   :teachers:
+<<<<<<< Updated upstream
   - api_id
   - api_ect_training_record_id
   - api_mentor_training_record_id
+=======
+>>>>>>> Stashed changes
+  - api_ect_training_record_id
+  - api_mentor_training_record_id
+  - ect_pupil_premium_uplift
+  - ect_sparsity_uplift
+  - api_user_id
+  - api_ect_profile_id
+  - api_mentor_profile_id
   - corrected_name
   - trs_first_name
   - trs_last_name
