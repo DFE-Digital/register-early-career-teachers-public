@@ -61,7 +61,44 @@ describe TrainingPeriod do
   end
 
   describe "validations" do
+    it { is_expected.not_to validate_presence_of(:withdrawn_at) }
+    it { is_expected.not_to validate_presence_of(:withdrawal_reason) }
+    it { is_expected.not_to validate_presence_of(:deferred_at) }
+    it { is_expected.not_to validate_presence_of(:deferral_reason) }
     it { is_expected.to validate_presence_of(:started_on) }
+
+    context "when deferred_at and withdrawn_at are both present" do
+      subject { FactoryBot.build(:training_period, deferred_at: Time.zone.now, withdrawn_at: Time.zone.now) }
+
+      it "is expected to have an error on base" do
+        subject.valid?
+        expect(subject.errors.messages[:base]).to include("A training period cannot be both withdrawn and deferred")
+      end
+    end
+
+    context "when withdrawn_at is present" do
+      subject { FactoryBot.build(:training_period, withdrawn_at: Time.zone.now) }
+
+      it { is_expected.to validate_presence_of(:withdrawal_reason) }
+    end
+
+    context "when withdrawal_reason is present" do
+      subject { FactoryBot.build(:training_period, withdrawal_reason: "moved-school") }
+
+      it { is_expected.to validate_presence_of(:withdrawn_at) }
+    end
+
+    context "when deferred_at is present" do
+      subject { FactoryBot.build(:training_period, deferred_at: Time.zone.now) }
+
+      it { is_expected.to validate_presence_of(:deferral_reason) }
+    end
+
+    context "when deferral_reason is present" do
+      subject { FactoryBot.build(:training_period, deferral_reason: "parental-leave") }
+
+      it { is_expected.to validate_presence_of(:deferred_at) }
+    end
 
     context "exactly one id of trainee present" do
       context "when ect_at_school_period_id and mentor_at_school_period_id are all nil" do
