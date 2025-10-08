@@ -2,7 +2,7 @@ FactoryBot.define do
   sequence(:base_ect_date) { |n| 3.years.ago.to_date + (2 * n).days }
 
   factory(:ect_at_school_period) do
-    association :teacher
+    teacher { association :teacher, api_ect_training_record_id: SecureRandom.uuid }
 
     independent_school
 
