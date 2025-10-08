@@ -1,4 +1,5 @@
 describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schools_interface do
+  let(:contract_period) { FactoryBot.create(:contract_period, :current) }
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:ect_at_school_period) do
@@ -6,7 +7,8 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
       :ect_at_school_period,
       :ongoing,
       teacher:,
-      school:
+      school:,
+      started_on: contract_period.started_on + 2.months
     )
   end
   let!(:training_period) do
@@ -150,7 +152,6 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
       end
 
       context "when changing from school-led to provider-led training" do
-        let(:contract_period) { FactoryBot.create(:contract_period, :current) }
         let(:lead_provider) { FactoryBot.create(:lead_provider) }
         let!(:active_lead_provider) do
           FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
