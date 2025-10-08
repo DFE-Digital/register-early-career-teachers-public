@@ -1,4 +1,4 @@
-class Teachers::SetFundingEligibilty
+class Teachers::SetFundingEligibility
   attr_reader :teacher, :author
 
   def initialize(teacher:, author:)
@@ -9,7 +9,7 @@ class Teachers::SetFundingEligibilty
   def set!
     ActiveRecord::Base.transaction do
       set_eligibility!
-      record_teacher_set_funding_eligibilty_event!
+      record_teacher_set_funding_eligibility_event!
     end
   end
 
@@ -35,10 +35,10 @@ private
     teacher.mentor_became_ineligible_for_funding_on.blank? && teacher.mentor_became_ineligible_for_funding_reason.blank?
   end
 
-  def record_teacher_set_funding_eligibilty_event!
+  def record_teacher_set_funding_eligibility_event!
     return unless teacher.saved_changes?
 
-    Events::Record.record_teacher_set_funding_eligibilty_event!(
+    Events::Record.record_teacher_set_funding_eligibility_event!(
       author:,
       teacher:,
       happened_at: Time.zone.now,

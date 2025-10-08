@@ -1,4 +1,4 @@
-RSpec.describe Teachers::SetFundingEligibilty do
+RSpec.describe Teachers::SetFundingEligibility do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:author) { Events::SystemAuthor.new }
   let(:service) { described_class.new(teacher:, author:) }
@@ -56,7 +56,7 @@ RSpec.describe Teachers::SetFundingEligibilty do
     context "when teacher attributes are changed" do
       it "records a teacher set funding eligibility event" do
         freeze_time do
-          expect(Events::Record).to receive(:record_teacher_set_funding_eligibilty_event!)
+          expect(Events::Record).to receive(:record_teacher_set_funding_eligibility_event!)
             .with(author:,
                   teacher:,
                   happened_at: Time.zone.now,
@@ -73,7 +73,7 @@ RSpec.describe Teachers::SetFundingEligibilty do
       end
 
       it "does not record a teacher set funding eligibility event" do
-        expect(Events::Record).not_to receive(:record_teacher_set_funding_eligibilty_event!)
+        expect(Events::Record).not_to receive(:record_teacher_set_funding_eligibility_event!)
 
         service.set!
       end

@@ -101,7 +101,7 @@ module Schools
     end
 
     def set_eligibility_for_funding!
-      Teachers::SetFundingEligibilty.new(
+      Teachers::SetFundingEligibility.new(
         teacher:,
         author:
       ).set!

@@ -52,11 +52,11 @@ RSpec.describe 'Process bulk claims then actions events' do
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibilty was set/,
+      /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibilty was set/
+      /funding eligibility was set/
     )
 
     page.reload
@@ -78,11 +78,11 @@ RSpec.describe 'Process bulk claims then actions events' do
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibilty was set/,
+      /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibilty was set/,
+      /funding eligibility was set/,
       "The Appropriate Body started a bulk action"
     )
 
@@ -104,11 +104,11 @@ RSpec.describe 'Process bulk claims then actions events' do
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibilty was set/,
+      /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibilty was set/,
+      /funding eligibility was set/,
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action"
     )
@@ -128,11 +128,11 @@ RSpec.describe 'Process bulk claims then actions events' do
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibilty was set/,
+      /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibilty was set/,
+      /funding eligibility was set/,
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action",
       /passed induction/,

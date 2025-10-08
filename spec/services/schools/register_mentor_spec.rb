@@ -165,11 +165,11 @@ RSpec.describe Schools::RegisterMentor do
       end
 
       it 'calls `Teachers::SetFundingEligibility` service with correct params' do
-        allow(Teachers::SetFundingEligibilty).to receive(:new).and_call_original
+        allow(Teachers::SetFundingEligibility).to receive(:new).and_call_original
 
         service.register!
 
-        expect(Teachers::SetFundingEligibilty).to have_received(:new).with(teacher:, author:)
+        expect(Teachers::SetFundingEligibility).to have_received(:new).with(teacher:, author:)
       end
     end
 
