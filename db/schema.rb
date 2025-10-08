@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_06_110349) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_08_144737) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -772,8 +772,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_110349) do
     t.boolean "trs_deactivated", default: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.uuid "api_ect_training_record_id", default: -> { "gen_random_uuid()" }, null: false
-    t.uuid "api_mentor_training_record_id", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "api_ect_training_record_id"
+    t.uuid "api_mentor_training_record_id"
     t.integer "ect_payments_frozen_year"
     t.integer "mentor_payments_frozen_year"
     t.boolean "ect_pupil_premium_uplift", default: false, null: false

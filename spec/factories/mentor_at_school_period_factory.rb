@@ -3,7 +3,7 @@ FactoryBot.define do
 
   factory(:mentor_at_school_period) do
     association :school
-    association :teacher
+    teacher { association :teacher, api_mentor_training_record_id: SecureRandom.uuid }
 
     started_on { generate(:base_mentor_date) }
     finished_on { started_on + 1.day }
