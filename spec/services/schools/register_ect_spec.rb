@@ -25,7 +25,7 @@ RSpec.describe Schools::RegisterECT do
   let(:trs_last_name) { "Rhodes" }
   let(:working_pattern) { "full_time" }
   let(:ect_at_school_period) { subject.teacher.ect_at_school_periods.first }
-  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
 
   describe '#register!' do
     context 'when provider led' do
@@ -111,13 +111,27 @@ RSpec.describe Schools::RegisterECT do
 
         context "when a Teacher record with the same TRN has a future period at different school" do
           let(:other_school) { FactoryBot.create(:school) }
-          let(:started_on) { Date.current + 3.months } # Future start date after the other school's period
-          let!(:future_contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
-          let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
+          let(:started_on) { Date.current + 3.months }
+
+          let(:future_contract_year) { started_on.month >= 6 ? started_on.year : started_on.year - 1 }
+
+          let!(:future_contract_period) do
+            FactoryBot.create(:contract_period, year: future_contract_year)
+          end
+
+          let!(:future_active_lead_provider) do
+            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period)
+          end
+
+          let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
           before do
             # Future period at other school
-            FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: Date.current + 1.month, finished_on: Date.current + 2.months)
+            FactoryBot.create(:ect_at_school_period,
+                              teacher:,
+                              school: other_school,
+                              started_on: Date.current + 1.month,
+                              finished_on: Date.current + 2.months)
           end
 
           it "allows registration with non-overlapping future date" do
@@ -192,9 +206,7 @@ RSpec.describe Schools::RegisterECT do
       let(:training_programme) { 'school_led' }
       let(:lead_provider) { nil }
 
-      before do
-        FactoryBot.create(:teacher, trn:)
-      end
+      before { FactoryBot.create(:teacher, trn:) }
 
       it 'creates a TrainingPeriod' do
         expect { service.register! }.to change(TrainingPeriod, :count).by(1)
