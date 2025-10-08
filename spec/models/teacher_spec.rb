@@ -238,7 +238,7 @@ describe Teacher do
 
         it { is_expected.to be_invalid }
 
-        it 'has validation errors on the ineligibilty date field' do
+        it 'has validation errors on the ineligibility date field' do
           subject.valid?
 
           expected_message = /Enter the date when the mentor became ineligible for funding/
@@ -251,7 +251,7 @@ describe Teacher do
 
         it { is_expected.to be_invalid }
 
-        it 'has validation errors on the ineligibilty date field' do
+        it 'has validation errors on the ineligibility date field' do
           subject.valid?
 
           expected_message = /Choose the reason why the mentor became ineligible for funding/

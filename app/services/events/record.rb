@@ -451,10 +451,10 @@ module Events
       ).record_event!
     end
 
-    def self.record_teacher_set_funding_eligibilty_event!(author:, teacher:, happened_at:, modifications:)
-      event_type = :teacher_funding_eligibilty_set
+    def self.record_teacher_set_funding_eligibility_event!(author:, teacher:, happened_at:, modifications:)
+      event_type = :teacher_funding_eligibility_set
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} funding eligibilty was set"
+      heading = "#{teacher_name}'s funding eligibility was set"
 
       new(event_type:, author:, heading:, teacher:, happened_at:, modifications:).record_event!
     end
