@@ -41,7 +41,7 @@ RSpec.describe 'Searching for a mentor', :enable_schools_interface do
   end
 
   def and_i_am_on_the_mentor_list_page
-    page.goto('/schools/home/mentors')
+    page.goto('/school/home/mentors')
   end
 
   def when_i_search_for_a_teacher

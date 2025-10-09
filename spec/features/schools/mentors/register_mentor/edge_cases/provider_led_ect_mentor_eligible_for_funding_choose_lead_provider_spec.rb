@@ -93,7 +93,7 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
   end
 
   def and_i_am_on_the_schools_landing_page
-    path = '/schools/home/ects'
+    path = '/school/home/ects'
     page.goto path
     expect(page).to have_path(path)
   end

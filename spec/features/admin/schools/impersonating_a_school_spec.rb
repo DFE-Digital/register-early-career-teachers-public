@@ -42,7 +42,7 @@ private
   end
 
   def then_i_should_be_on_the_schools_home_page
-    expect(page).to have_path('/schools/home/ects')
+    expect(page).to have_path('/school/home/ects')
   end
 
   def and_i_should_be_impersonating_the_school
