@@ -3,7 +3,7 @@ constraints -> { Rails.application.config.enable_schools_interface } do
     get "/home/ects", to: "ects#index", as: :ects_home
     resources :ects, only: %i[index show] do
       resource :mentorship, only: %i[new create] do
-        get :confirmation, on: :collection
+        get :confirmation
       end
     end
 
