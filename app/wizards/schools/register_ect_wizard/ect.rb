@@ -53,6 +53,18 @@ module Schools
         trs_induction_status == 'Failed'
       end
 
+      def prohibited_from_teaching?
+        prohibited_from_teaching == true
+      end
+
+      def registered?
+        ect_at_school_period_id.present?
+      end
+
+      def was_school_led?
+        previous_training_programme == 'school_led'
+      end
+
       def induction_start_date
         first_induction_period&.started_on
       end
