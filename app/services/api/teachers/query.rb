@@ -10,6 +10,7 @@ module API::Teachers
       training_status: :ignore,
       api_from_teacher_id: :ignore,
       updated_since: :ignore,
+      include_withdrawn_by_error: true,
       sort: { created_at: :asc }
     )
       @lead_provider_id = lead_provider_id
@@ -20,6 +21,7 @@ module API::Teachers
       where_training_status_is(training_status)
       where_api_from_teacher_id_is(api_from_teacher_id)
       where_updated_since(updated_since)
+      where_including_withdrawn_by_error(include_withdrawn_by_error)
       set_sort_by(sort)
     end
 
@@ -152,6 +154,12 @@ module API::Teachers
 
       # TODO: update when we have an accurate updated_at field
       @scope = scope.where(updated_at: updated_since..)
+    end
+
+    def where_including_withdrawn_by_error(include_withdrawn_by_error)
+      return if ignore?(filter: include_withdrawn_by_error)
+
+      @scope = scope.merge(ECTAtSchoolPeriod.unscope(:left_outer_joins, where: :withdrawn_by_error)).merge(MentorAtSchoolPeriod.unscope(:left_outer_joins, where: :withdrawn_by_error))
     end
 
     def set_sort_by(sort)

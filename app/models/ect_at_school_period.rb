@@ -42,6 +42,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
   validate :teacher_distinct_period
 
   # Scopes
+  default_scope { where(withdrawn_by_error: false) }
+
   scope :for_school, ->(school_id) { where(school_id:) }
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
   scope :with_partnerships_for_contract_period, ->(year) {
@@ -59,7 +61,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
     with_expressions_of_interest_for_contract_period(year)
     .where(expression_of_interest: { lead_provider_id: })
   }
-  scope :active, -> { where(withdrawn_by_error: false) }
 
   def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
 
@@ -68,7 +69,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   def siblings
     return ECTAtSchoolPeriod.none unless teacher
 
-    teacher.ect_at_school_periods.active.excluding(self)
+    teacher.ect_at_school_periods.excluding(self)
   end
 
   delegate :trn, to: :teacher

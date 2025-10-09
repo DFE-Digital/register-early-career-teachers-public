@@ -32,6 +32,8 @@ class MentorAtSchoolPeriod < ApplicationRecord
   validate :teacher_school_distinct_period
 
   # Scopes
+  default_scope { where(withdrawn_by_error: false) }
+
   scope :for_school, ->(school_id) { where(school_id:) }
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
   scope :with_partnerships_for_contract_period, ->(year) {
@@ -54,7 +56,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
   def siblings
     return MentorAtSchoolPeriod.none unless teacher
 
-    teacher.mentor_at_school_periods.active.for_school(school_id).excluding(self)
+    teacher.mentor_at_school_periods.for_school(school_id).excluding(self)
   end
 
 private
