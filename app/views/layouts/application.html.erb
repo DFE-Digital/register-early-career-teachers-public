@@ -6,6 +6,16 @@
     <%= render partial: "layouts/shared/header" %>
 
     <div class="govuk-width-container">
+      <% if Rails.application.config.enable_incident_banner %>
+        <%= govuk_notification_banner(
+              title_text: "There are intermittent issues accessing the service",
+              classes: "govuk-!-margin-top-4"
+        ) do %>
+          This is due to an issue with our service provider. We apologise for
+          the inconvenience and will let you know as soon as this is resolved.
+        <% end %>
+      <% end %>
+
       <%= environment_specific_phase_banner %>
       <%= render Admin::ImpersonationBannerComponent.new(user: current_user, school: @school) %>
       <%= yield(:backlink_or_breadcrumb) %>
