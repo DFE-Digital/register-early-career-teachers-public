@@ -39,7 +39,7 @@ class API::TeacherSerializer < Blueprinter::Base
         if training_status == :withdrawn
           {
             "withdrawn_at" => training_period.withdrawn_at.utc.rfc3339,
-            "reason" => training_period.withdrawal_reason
+            "reason" => training_period.withdrawal_reason.dasherize
           }
         end
       end
@@ -48,7 +48,7 @@ class API::TeacherSerializer < Blueprinter::Base
         if training_status == :deferred
           {
             "deferred_at" => training_period.deferred_at.utc.rfc3339,
-            "reason" => training_period.deferral_reason
+            "reason" => training_period.deferral_reason.dasherize
           }
         end
       end

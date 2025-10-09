@@ -122,7 +122,7 @@ describe API::TeacherSerializer, type: :serializer do
           end
 
           context "when `training_status` is withdrawn" do
-            before { ect_training_period.update!(withdrawn_at: 3.days.ago, withdrawal_reason: "moved-school") }
+            before { ect_training_period.update!(withdrawn_at: 3.days.ago, withdrawal_reason: :moved_school) }
 
             it "serializes `training_status` as withdrawn" do
               expect(ect_enrolment["training_status"]).to eq("withdrawn")
@@ -134,7 +134,7 @@ describe API::TeacherSerializer, type: :serializer do
           end
 
           context "when `training_status` is deferred" do
-            before { ect_training_period.update!(deferred_at: 1.day.ago, deferral_reason: "bereavement") }
+            before { ect_training_period.update!(deferred_at: 1.day.ago, deferral_reason: :bereavement) }
 
             it "serializes `training_status` as deferred" do
               expect(ect_enrolment["training_status"]).to eq("deferred")
@@ -248,7 +248,7 @@ describe API::TeacherSerializer, type: :serializer do
           end
 
           context "when `training_status` is withdrawn" do
-            before { mentor_training_period.update!(withdrawn_at: 3.days.ago, withdrawal_reason: "moved-school") }
+            before { mentor_training_period.update!(withdrawn_at: 3.days.ago, withdrawal_reason: :moved_school) }
 
             it "serializes `training_status` as withdrawn" do
               expect(mentor_enrolment["training_status"]).to eq("withdrawn")
@@ -260,7 +260,7 @@ describe API::TeacherSerializer, type: :serializer do
           end
 
           context "when `training_status` is deferred" do
-            before { mentor_training_period.update!(deferred_at: 1.day.ago, deferral_reason: "bereavement") }
+            before { mentor_training_period.update!(deferred_at: 1.day.ago, deferral_reason: :bereavement) }
 
             it "serializes `training_status` as deferred" do
               expect(mentor_enrolment["training_status"]).to eq("deferred")
