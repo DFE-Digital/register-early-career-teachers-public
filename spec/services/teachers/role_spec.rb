@@ -33,7 +33,13 @@ RSpec.describe Teachers::Role do
 
       context 'when teacher has inactive ECT period at any school' do
         before do
-          FactoryBot.create(:ect_at_school_period, teacher:, school:, finished_on: 1.month.ago)
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher:,
+            school:,
+            started_on: 2.months.ago,
+            finished_on: 1.month.ago
+          )
         end
 
         it 'returns ECT (Inactive) role' do
