@@ -77,8 +77,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
   def remove!
     transaction do
       training_periods.each do |tp|
-        tp.withdrawn_at = Time.zone.now
-        tp.withdrawal_reason = "other"
         tp.finished_on = started_on
         tp.save!
       end

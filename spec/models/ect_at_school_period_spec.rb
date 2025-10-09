@@ -365,8 +365,6 @@ describe ECTAtSchoolPeriod do
       expect(ect_at_school_period.finished_on).to eq(ect_at_school_period.started_on)
 
       training_period1.reload
-      expect(training_period1.withdrawn_at.iso8601).to eq(Time.zone.now.iso8601)
-      expect(training_period1.withdrawal_reason).to eq("other")
       expect(training_period1.finished_on).to eq(training_period1.started_on)
 
       # Register new school
