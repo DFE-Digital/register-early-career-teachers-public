@@ -1,4 +1,6 @@
-# Create, view and update partnerships 
+---
+title: Create, view and update partnerships
+---
 
 ## What are partnerships? 
 
