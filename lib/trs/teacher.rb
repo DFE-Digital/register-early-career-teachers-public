@@ -12,6 +12,7 @@ module TRS
                 :national_insurance_number,
                 :alerts,
                 :induction_start_date,
+                :induction_completed_date,
                 :induction_status,
                 :induction_status_description,
                 :qts_awarded_on,
@@ -29,6 +30,7 @@ module TRS
       @national_insurance_number = data['nationalInsuranceNumber']
       @alerts = data.fetch('alerts', []).map { |a| a.dig(*%w[alertType alertCategory alertCategoryId]) }
       @induction_start_date = data.dig('induction', 'startDate')
+      @induction_completed_date = data.dig('induction', 'completedDate')
       @induction_status = data.dig('induction', 'status')
       @induction_status_description = data.dig('induction', 'statusDescription')
       @qts_awarded_on = data.dig('qts', 'awarded')
@@ -78,6 +80,7 @@ module TRS
         trs_national_insurance_number: national_insurance_number,
         trs_alerts: alerts,
         trs_induction_start_date: induction_start_date,
+        trs_induction_completed_date: induction_completed_date,
         trs_induction_status: induction_status,
         trs_induction_status_description: induction_status_description,
         trs_qts_awarded_on: qts_awarded_on,
