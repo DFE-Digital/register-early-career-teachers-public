@@ -1,5 +1,5 @@
 ---
-title: Syncing data best practice
+title: Keeping data in sync
 ---
 
 To ensure smooth and reliable integration with the API, it’s important to follow best practice when syncing participant and training data. 
