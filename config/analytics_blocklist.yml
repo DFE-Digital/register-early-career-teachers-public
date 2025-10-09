@@ -366,6 +366,8 @@
   - email
   - school_reported_appropriate_body_id
   - training_programme
+  - removed_at
+  - removed_reason
   :delivery_partners:
   - id
   - name

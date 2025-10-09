@@ -338,4 +338,40 @@ describe ECTAtSchoolPeriod do
       expect(ect_at_school_period.siblings).to match_array([period_1, period_2, period_3])
     end
   end
+
+  describe "nuclear withdrawal" do
+    let!(:started_on) { 10.days.ago.to_date }
+    let!(:teacher) { FactoryBot.create(:teacher) }
+    let!(:school1) { FactoryBot.create(:school) }
+    let!(:school2) { FactoryBot.create(:school) }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school: school1, started_on:, finished_on: 20.days.from_now) }
+    let!(:training_period1) do
+      FactoryBot.create(
+        :training_period,
+        :for_ect,
+        ect_at_school_period:,
+        started_on: ect_at_school_period.started_on,
+        finished_on: ect_at_school_period.finished_on
+      )
+    end
+
+    it "allows us to remove a ect at school period and register teacher with new school for the same period" do
+      freeze_time
+
+      # Remove ect at school period
+      ect_at_school_period.remove!
+      expect(ect_at_school_period.removed_at.iso8601).to eq(Time.zone.now.iso8601)
+      expect(ect_at_school_period.removed_reason).to eq("registered_by_error")
+      expect(ect_at_school_period.finished_on).to eq(ect_at_school_period.started_on)
+
+      training_period1.reload
+      expect(training_period1.withdrawn_at.iso8601).to eq(Time.zone.now.iso8601)
+      expect(training_period1.withdrawal_reason).to eq("other")
+      expect(training_period1.finished_on).to eq(training_period1.started_on)
+
+      # Register new school
+      ect_at_school_period2 = FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school: school2, started_on:, finished_on: nil)
+      expect(ect_at_school_period2.started_on.iso8601).to eq(started_on.iso8601)
+    end
+  end
 end

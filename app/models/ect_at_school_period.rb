@@ -74,6 +74,22 @@ class ECTAtSchoolPeriod < ApplicationRecord
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
   delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
 
+  def remove!
+    transaction do
+      training_periods.each do |tp|
+        tp.withdrawn_at = Time.zone.now
+        tp.withdrawal_reason = "other"
+        tp.finished_on = started_on
+        tp.save!
+      end
+
+      self.removed_at = Time.zone.now
+      self.removed_reason = "registered_by_error"
+      self.finished_on = started_on
+      save!
+    end
+  end
+
 private
 
   def appropriate_body_for_independent_school
