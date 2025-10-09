@@ -5,7 +5,6 @@ RSpec.describe 'Wizardable routes', :enable_schools_interface do
     expect(post: '/school/register-mentor/find-mentor')
       .to route_to(controller: 'schools/register_mentor_wizard', action: 'create')
 
-    # TODO: move under "school" path
     expect(get: '/school/register-ect/find-ect')
       .to route_to(controller: 'schools/register_ect_wizard', action: 'new')
     expect(post: '/school/register-ect/find-ect')
