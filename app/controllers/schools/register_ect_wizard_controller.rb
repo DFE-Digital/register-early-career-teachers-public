@@ -2,6 +2,7 @@ module Schools
   class RegisterECTWizardController < SchoolsController
     before_action :initialize_wizard, only: %i[new create]
     before_action :reset_wizard, only: :new
+    before_action :check_allowed_step, except: %i[start]
 
     FORM_KEY = :register_ect_wizard
     WIZARD_CLASS = Schools::RegisterECTWizard::Wizard.freeze
@@ -38,6 +39,12 @@ module Schools
       request.path.split("/").last.underscore.to_sym.tap do |step_from_path|
         return :not_found unless WIZARD_CLASS.step?(step_from_path)
       end
+    end
+
+    def check_allowed_step
+      return if @wizard.allowed_step?
+
+      redirect_to @wizard.allowed_step_path
     end
 
     def reset_wizard
