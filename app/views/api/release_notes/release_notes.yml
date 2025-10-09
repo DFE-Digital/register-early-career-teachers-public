@@ -35,7 +35,7 @@
     * `POST /partnerships` to create a partnership
     * `PUT /partnerships/{id}` to update a partnership
     
-    Read our [partnerships guidance](/api/guidance/guidance-for-lead-providers/partnerships) for more detailed information.
+    Read our [partnerships guidance](/api/guidance/guidance-for-lead-providers/create-view-and-update-partnerships) for more detailed information.
 
     ## What’s changed from the existing ‘Manage training for early career teachers’ API?  
     
