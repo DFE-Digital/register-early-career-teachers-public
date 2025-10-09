@@ -1,4 +1,4 @@
-RSpec.describe API::Schools::Query do
+RSpec.describe API::Schools::Query, :with_metadata do
   before { FactoryBot.create(:lead_provider) } # Needed for metadata.
 
   it_behaves_like "a query that avoids includes" do
@@ -181,9 +181,6 @@ RSpec.describe API::Schools::Query do
         end
 
         before do
-          Metadata::Manager.new.refresh_metadata!([school1, school2, school3])
-
-          # Needs to happen after metadata refreshes.
           school1.update!(api_updated_at: 2.days.ago)
           school2.update!(api_updated_at: 10.minutes.ago)
         end

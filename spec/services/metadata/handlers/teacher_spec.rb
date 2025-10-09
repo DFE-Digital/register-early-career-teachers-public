@@ -1,4 +1,4 @@
-RSpec.describe Metadata::Handlers::Teacher do
+RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
   let(:instance) { described_class.new(teacher1) }
 
   let!(:teacher1) { FactoryBot.create(:teacher) }
