@@ -77,7 +77,7 @@ RSpec.describe "Changing an ECT's name", :enable_schools_interface do
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page.url).to end_with('/schools/home/ects')
+    expect(page).to have_path('/school/home/ects')
   end
 
   def when_i_select_an_ect
@@ -113,15 +113,15 @@ RSpec.describe "Changing an ECT's name", :enable_schools_interface do
   end
 
   def then_i_should_be_taken_to_the_edit_page
-    expect(page.url).to end_with("/school/ects/#{ect_at_school_period.id}/change-name/edit")
+    expect(page).to have_path("/school/ects/#{ect_at_school_period.id}/change-name/edit")
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
-    expect(page.url).to end_with("/school/ects/#{ect_at_school_period.id}/change-name/check-answers")
+    expect(page).to have_path("/school/ects/#{ect_at_school_period.id}/change-name/check-answers")
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page.url).to end_with("/school/ects/#{ect_at_school_period.id}/change-name/confirmation")
+    expect(page).to have_path("/school/ects/#{ect_at_school_period.id}/change-name/confirmation")
   end
 
   def and_i_should_see_the_name(name)

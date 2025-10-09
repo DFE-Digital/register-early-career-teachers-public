@@ -18,7 +18,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def when_i_am_on_the_find_ect_step_page
-    page.goto('/schools/register-ect/find-ect')
+    page.goto('/school/register-ect/find-ect')
   end
 
   def and_i_submit_a_date_of_birth_and_trn_of_a_teacher_that_has_completed_their_induction
@@ -30,7 +30,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_am_taken_to_the_teacher_has_completed_their_induction_error_page
-    expect(page).to have_path('/schools/register-ect/induction-completed')
+    expect(page).to have_path('/school/register-ect/induction-completed')
   end
 
   def when_i_click_register_another_ect
@@ -38,6 +38,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_am_taken_to_the_find_ect_step_page
-    expect(page).to have_path('/schools/register-ect/find-ect')
+    expect(page).to have_path('/school/register-ect/find-ect')
   end
 end

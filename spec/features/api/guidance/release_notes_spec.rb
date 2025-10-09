@@ -30,12 +30,12 @@ private
   def given_i_am_on_the_api_guidance_page
     path = "/api/guidance"
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def when_i_click_release_notes
     page.get_by_role("link", name: "Release notes", exact: true).click
-    expect(page.url).to end_with("/api/guidance/release-notes")
+    expect(page).to have_path("/api/guidance/release-notes")
   end
 
   def then_i_should_see_an_entry_for_each_release_note
@@ -47,7 +47,7 @@ private
   def when_i_visit_non_existing_release_note_page
     path = api_guidance_release_note_path("does-not-exist")
     page.goto(path)
-    expect(page.url).to end_with(path)
+    expect(page).to have_path(path)
   end
 
   def then_i_should_see_not_found
@@ -56,7 +56,7 @@ private
 
   def and_i_click_on_a_release_note
     page.get_by_role('link', name: release_note_2.title, exact: true).click
-    expect(page.url).to end_with("/api/guidance/release-notes/#{release_note_2.slug}")
+    expect(page).to have_path("/api/guidance/release-notes/#{release_note_2.slug}")
   end
 
   def then_i_should_see_the_release_note

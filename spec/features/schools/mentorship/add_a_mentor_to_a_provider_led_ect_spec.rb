@@ -171,7 +171,7 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page).to have_path('/schools/home/ects')
+    expect(page).to have_path('/school/home/ects')
   end
 
   def and_the_ect_is_shown_linked_to_the_mentor_just_registered

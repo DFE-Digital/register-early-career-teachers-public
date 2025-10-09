@@ -74,7 +74,7 @@ RSpec.describe 'Redirect to register a new mentor for an ECT', :enable_schools_i
   end
 
   def and_i_am_on_the_schools_landing_page
-    path = '/schools/home/ects'
+    path = '/school/home/ects'
     page.goto path
     expect(page).to have_path(path)
   end
@@ -182,7 +182,7 @@ RSpec.describe 'Redirect to register a new mentor for an ECT', :enable_schools_i
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page).to have_path('/schools/home/ects')
+    expect(page).to have_path('/school/home/ects')
   end
 
   def and_the_ect_is_shown_linked_to_the_mentor_just_registered

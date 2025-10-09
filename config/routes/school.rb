@@ -1,5 +1,15 @@
 constraints -> { Rails.application.config.enable_schools_interface } do
   namespace :schools, path: :school do
+    get "/home/ects", to: "ects#index", as: :ects_home
+    resources :ects, only: %i[index show] do
+      resource :mentorship, only: %i[new create] do
+        get :confirmation
+      end
+    end
+
+    get "/home/mentors", to: "mentors#index", as: :mentors_home
+    resources :mentors, only: %i[index show]
+
     scope module: :ects, path: "/ects/:ect_id", as: :ects do
       namespace :change_name_wizard, path: "change-name" do
         concerns :wizardable, wizard: Schools::ECTs::ChangeNameWizard
@@ -18,12 +28,6 @@ constraints -> { Rails.application.config.enable_schools_interface } do
       end
     end
 
-    resources :ects, only: %i[index show] do
-      resource :mentorship, only: %i[new create] do
-        get :confirmation, on: :collection
-      end
-    end
-
     scope module: :mentors, path: "/mentors/:mentor_id", as: :mentors do
       namespace :change_name_wizard, path: "change-name" do
         concerns :wizardable, wizard: Schools::Mentors::ChangeNameWizard
@@ -34,7 +38,11 @@ constraints -> { Rails.application.config.enable_schools_interface } do
       end
     end
 
-    resources :mentors, only: %i[index]
+    namespace :register_ect_wizard, path: "register-ect" do
+      get "what-you-will-need", as: :start, action: :start
+
+      concerns :wizardable, wizard: Schools::RegisterECTWizard
+    end
 
     namespace :register_mentor_wizard, path: "register-mentor" do
       get "what-you-will-need", as: :start, action: :start
@@ -42,7 +50,7 @@ constraints -> { Rails.application.config.enable_schools_interface } do
       concerns :wizardable, wizard: Schools::RegisterMentorWizard
     end
 
-    namespace :assign_existing_mentor_wizard, path: 'assign-existing-mentor' do
+    namespace :assign_existing_mentor_wizard, path: "assign-existing-mentor" do
       concerns :wizardable, wizard: Schools::AssignExistingMentorWizard
     end
   end
