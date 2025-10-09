@@ -65,13 +65,13 @@ FactoryBot.define do
     end
 
     trait :withdrawn do
-      withdrawn_at { Time.zone.today }
-      withdrawal_reason { "left-teaching-profession" }
+      withdrawn_at { Faker::Date.between(from: started_on, to: (finished_on || Date.current)) }
+      withdrawal_reason { TrainingPeriod.withdrawal_reasons.values.sample }
     end
 
     trait :deferred do
-      deferred_at { Time.zone.today }
-      deferral_reason { "long-term-sickness" }
+      deferred_at { Faker::Date.between(from: started_on, to: (finished_on || Date.current)) }
+      deferral_reason { TrainingPeriod.deferral_reasons.values.sample }
     end
   end
 end

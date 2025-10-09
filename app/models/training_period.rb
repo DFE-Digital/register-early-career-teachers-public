@@ -9,6 +9,22 @@ class TrainingPeriod < ApplicationRecord
        validate: { message: "Must be provider_led or school_led" },
        suffix: :training_programme
 
+  enum :withdrawal_reason, {
+    left_teaching_profession: "left-teaching-profession",
+    moved_school: "moved-school",
+    mentor_no_longer_being_mentor: "mentor-no-longer-being-mentor",
+    switched_to_school_led: "switched-to-school-led",
+    other: "other"
+  }, suffix: :withdrawal_reason
+
+  enum :deferral_reason, {
+    bereavement: "bereavement",
+    long_term_sickness: "long-term-sickness",
+    parental_leave: "parental-leave",
+    career_break: "career-break",
+    other: "other"
+  }, suffix: :deferral_reason
+
   # Associations
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
