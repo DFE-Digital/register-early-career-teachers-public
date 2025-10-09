@@ -113,7 +113,7 @@ module AppropriateBodies
       # @return [nil, String]
       def fetch_trs_details!
         pending_induction_submission.update(
-          **trs_teacher.to_h.except(:trs_national_insurance_number)
+          **trs_teacher.to_h.except(:trs_national_insurance_number, :trs_induction_completed_date)
         )
 
         nil

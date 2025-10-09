@@ -30,6 +30,7 @@ RSpec.describe TRS::Teacher do
         'startDate' => '2024-09-18',
         'endDate' => '2024-09-18',
         'status' => 'InProgress',
+        'completedDate' => '2024-09-18',
         'statusDescription' => 'Induction Status Description',
         'certificateUrl' => 'induction_certificate_url'
       },
@@ -91,6 +92,7 @@ RSpec.describe TRS::Teacher do
         trs_alerts: %w[3fa85f64-5717-4562-b3fc-2c963f66afa6],
         trs_induction_start_date: '2024-09-18',
         trs_induction_status: 'InProgress',
+        trs_induction_completed_date: '2024-09-18',
         trs_induction_status_description: 'Induction Status Description',
         trs_initial_teacher_training_end_date: "2024-09-18",
         trs_initial_teacher_training_provider_name: "Provider Name",
