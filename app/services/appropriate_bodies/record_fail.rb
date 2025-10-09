@@ -24,10 +24,9 @@ module AppropriateBodies
 
     def send_fail_induction_notification_to_trs
       FailECTInductionJob.perform_later(
-        trn: pending_induction_submission.trn,
+        trn: teacher.trn,
         start_date: teacher.first_induction_period.started_on,
-        completed_date: pending_induction_submission.finished_on,
-        pending_induction_submission_id: pending_induction_submission.id
+        completed_date: teacher.last_induction_period.finished_on
       )
     end
   end

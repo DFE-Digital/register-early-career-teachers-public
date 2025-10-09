@@ -104,15 +104,13 @@ module InductionPeriods
         PassECTInductionJob.perform_later(
           trn: teacher.trn,
           start_date: induction_period.started_on,
-          completed_date: induction_period.finished_on,
-          pending_induction_submission_id: nil
+          completed_date: induction_period.finished_on
         )
       elsif induction_period.outcome == "fail"
         FailECTInductionJob.perform_later(
           trn: teacher.trn,
           start_date: induction_period.started_on,
-          completed_date: induction_period.finished_on,
-          pending_induction_submission_id: nil
+          completed_date: induction_period.finished_on
         )
       end
     end
