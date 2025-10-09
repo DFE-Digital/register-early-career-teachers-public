@@ -59,8 +59,7 @@ RSpec.describe AppropriateBodies::RecordFail do
         }.to have_enqueued_job(FailECTInductionJob).with(
           trn: pending_induction_submission.trn,
           start_date: induction_period.started_on,
-          completed_date: pending_induction_submission.finished_on,
-          pending_induction_submission_id: pending_induction_submission.id
+          completed_date: pending_induction_submission.finished_on
         )
       end
 
