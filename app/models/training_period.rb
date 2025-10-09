@@ -10,18 +10,18 @@ class TrainingPeriod < ApplicationRecord
        suffix: :training_programme
 
   enum :withdrawal_reason, {
-    left_teaching_profession: "left-teaching-profession",
-    moved_school: "moved-school",
-    mentor_no_longer_being_mentor: "mentor-no-longer-being-mentor",
-    switched_to_school_led: "switched-to-school-led",
+    left_teaching_profession: "left_teaching_profession",
+    moved_school: "moved_school",
+    mentor_no_longer_being_mentor: "mentor_no_longer_being_mentor",
+    switched_to_school_led: "switched_to_school_led",
     other: "other"
   }, suffix: :withdrawal_reason
 
   enum :deferral_reason, {
     bereavement: "bereavement",
-    long_term_sickness: "long-term-sickness",
-    parental_leave: "parental-leave",
-    career_break: "career-break",
+    long_term_sickness: "long_term_sickness",
+    parental_leave: "parental_leave",
+    career_break: "career_break",
     other: "other"
   }, suffix: :deferral_reason
 

@@ -83,7 +83,7 @@ describe TrainingPeriod do
     end
 
     context "when withdrawal_reason is present" do
-      subject { FactoryBot.build(:training_period, withdrawal_reason: "moved-school") }
+      subject { FactoryBot.build(:training_period, withdrawal_reason: :moved_school) }
 
       it { is_expected.to validate_presence_of(:withdrawn_at) }
     end
@@ -95,7 +95,7 @@ describe TrainingPeriod do
     end
 
     context "when deferral_reason is present" do
-      subject { FactoryBot.build(:training_period, deferral_reason: "parental-leave") }
+      subject { FactoryBot.build(:training_period, deferral_reason: :parental_leave) }
 
       it { is_expected.to validate_presence_of(:deferred_at) }
     end
