@@ -29,7 +29,7 @@ RSpec.describe TRS::Teacher do
       'induction' => {
         'startDate' => '2024-09-18',
         'endDate' => '2024-09-18',
-        'status' => 'Exempt',
+        'status' => 'InProgress',
         'statusDescription' => 'Induction Status Description',
         'certificateUrl' => 'induction_certificate_url'
       },
@@ -90,7 +90,7 @@ RSpec.describe TRS::Teacher do
         trs_email_address: 'john.doe@example.com',
         trs_alerts: %w[3fa85f64-5717-4562-b3fc-2c963f66afa6],
         trs_induction_start_date: '2024-09-18',
-        trs_induction_status: 'Exempt',
+        trs_induction_status: 'InProgress',
         trs_induction_status_description: 'Induction Status Description',
         trs_initial_teacher_training_end_date: "2024-09-18",
         trs_initial_teacher_training_provider_name: "Provider Name",
@@ -103,7 +103,15 @@ RSpec.describe TRS::Teacher do
   end
 
   describe "#check_eligibility!" do
+    context "when the teacher is eligible" do
+      it do
+        expect { service.check_eligibility! }.not_to raise_error
+      end
+    end
+
     context "when the teacher is exempt" do
+      let(:data) { { 'induction' => { 'status' => 'Exempt' } } }
+
       it do
         expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
       end
@@ -119,6 +127,14 @@ RSpec.describe TRS::Teacher do
 
     context "when the teacher has failed their induction" do
       let(:data) { { 'induction' => { 'status' => 'Failed' } } }
+
+      it do
+        expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
+      end
+    end
+
+    context "when the teacher has failed their induction (in Wales)" do
+      let(:data) { { 'induction' => { 'status' => 'FailedInWales' } } }
 
       it do
         expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
