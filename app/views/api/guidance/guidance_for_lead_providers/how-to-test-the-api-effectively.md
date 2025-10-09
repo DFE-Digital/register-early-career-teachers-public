@@ -1,10 +1,16 @@
 # How to test the API effectively 
 
-## Start in sandbox 
+## Before starting 
 
-Use the [sandbox environment](/api)  to test API integrations without affecting real data. 
+Get familiar with the [Swagger API documentation](/api/docs/v3). 
 
-Read the [Swagger documentation](/api/docs/v3) and try each operation individually before automating. 
+Read our [guidance on keeping data in sync](/api/guidance/keeping-data-in-sync). 
+
+## Test in the sandbox
+
+Use the [sandbox environment](/api) to test API integrations without affecting real data. 
+
+Try each operation individually before automating. 
 
 ## Focused pulls 
 
@@ -15,31 +21,6 @@ Instead of downloading all schools, participants, or partnerships on every test 
 ### Example 
 
 Use `GET /participants?filter[updated_since]=2025-10-01T00:00:00Z` instead of pulling the entire participant list every time. 
-
-## Perform weekly syncs 
-
-We recommend you sync all records in the API weekly without using the `updated_since` filters. We can coordinate ‘windows’ for providers to do this when the service has a low background load. Contact us if you need further details. 
-
-## Poll daily 
-
-To ensure you never miss any declarations, participants, transfers or unfunded mentors, we recommend making regular poll requests to the relevant `GET` endpoints several times daily. Use the `updated_since` filter and the default pagination of [100] records per page. 
-
-Continue this until the API response is empty. 
-
-### Polling windows 
-
-Always poll 2 windows back from your last successful update request. This guarantees that all participant data is captured. For example: 
-
-* at 3:15pm enter the following request - `/api/v3/participants/ecf?filter[updated_since]=2025-01-28T13:15:00Z`
-* at 4:15pm enter the following request - `/api/v3/participants/ecf?filter[updated_since]=2025-01-28T14:15:00Z` 
-
-Try polling randomly rather than on the hour to prevent system overload. 
-
-## Don't overload the API with too many requests 
-
-Providers are limited to 1,000 requests per 5 minutes when using the API in the sandbox environment. If the limit is exceeded, providers will see `429 HTTP` status codes. 
-
-This limit on requests for each authentication key is calculated on a rolling basis. 
 
 ## Test different values for fields in endpoints 
 
