@@ -686,4 +686,54 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
     end
   end
+
+  describe '#registered?' do
+    context 'when ect_at_school_period_id is present' do
+      before { ect.update!(ect_at_school_period_id: 123) }
+
+      it 'returns true' do
+        expect(ect.registered?).to be true
+      end
+    end
+
+    context 'when ect_at_school_period_id is nil' do
+      before { ect.update!(ect_at_school_period_id: nil) }
+
+      it 'returns false' do
+        expect(ect.registered?).to be false
+      end
+    end
+  end
+
+  describe '#was_school_led?' do
+    let(:teacher) { FactoryBot.create(:teacher, trn: ect.trn) }
+
+    context 'when previous training programme was school-led' do
+      before do
+        school_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+        FactoryBot.create(:training_period, :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+      end
+
+      it 'returns true' do
+        expect(ect.was_school_led?).to be true
+      end
+    end
+
+    context 'when previous training programme was provider-led' do
+      before do
+        provider_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+        FactoryBot.create(:training_period, :provider_led, :with_school_partnership, ect_at_school_period: provider_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
+      end
+
+      it 'returns false' do
+        expect(ect.was_school_led?).to be false
+      end
+    end
+
+    context 'when there is no previous training programme' do
+      it 'returns false' do
+        expect(ect.was_school_led?).to be false
+      end
+    end
+  end
 end

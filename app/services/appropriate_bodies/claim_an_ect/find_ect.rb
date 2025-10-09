@@ -28,7 +28,7 @@ module AppropriateBodies
 
         pending_induction_submission.assign_attributes(
           appropriate_body:,
-          **trs_teacher.to_h.except(:trs_national_insurance_number)
+          **trs_teacher.to_h.except(:trs_national_insurance_number, :trs_induction_completed_date)
         )
 
         check_if_teacher_has_ongoing_induction_period_with_appropriate_body!

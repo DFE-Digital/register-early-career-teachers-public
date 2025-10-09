@@ -4,6 +4,8 @@ STATEMENT_STATE_COLOURS = {
   paid: :green,
 }.freeze
 
+OUTPUT_FEE_MONTHS = [1, 4, 8, 10].freeze
+
 def describe_group_of_statements(lead_provider, statements, month_col_width: 15, year_col_width: 18)
   return if statements.empty?
 
@@ -45,12 +47,12 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
     years = [registration_year, registration_year + 1]
 
     years.product(months).map do |year, month|
-      deadline_date = Time.zone.local(year, month).end_of_month
-      payment_date = Time.zone.at(rand(deadline_date.to_i..(deadline_date + 2.months).to_i))
-      fee_type = %w[service output].sample
-      status = if payment_date < Date.current && fee_type == 'output'
+      deadline_date = Date.new(year, month, 1).prev_day
+      payment_date = Date.new(year, month, 25)
+      fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
+      status = if payment_date.past? && fee_type == "output"
                  :paid
-               elsif Date.current.between?(deadline_date, payment_date)
+               elsif deadline_date.past?
                  :payable
                else
                  :open

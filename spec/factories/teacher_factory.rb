@@ -40,5 +40,19 @@ FactoryBot.define do
         ].sample
       end
     end
+
+    trait :with_teacher_id_change do
+      transient do
+        id_changed_from_trn { FactoryBot.create(:teacher, trs_first_name:).trn }
+      end
+
+      after(:create) do |teacher, evaluator|
+        FactoryBot.create(
+          :teacher_id_change,
+          teacher:,
+          api_from_teacher_id: Teacher.find_by_trn(evaluator.id_changed_from_trn).api_id
+        )
+      end
+    end
   end
 end
