@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_06_110349) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_09_140022) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -185,11 +185,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_110349) do
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
     t.bigint "school_reported_appropriate_body_id"
+    t.string "status", default: "active"
+    t.datetime "withdrawn_at"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
     t.index ["school_reported_appropriate_body_id"], name: "idx_on_school_reported_appropriate_body_id_01f5ffc90a"
-    t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
+    t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_and_started_on", unique: true, where: "((status)::text = 'active'::text)"
     t.index ["teacher_id"], name: "index_ect_at_school_periods_on_teacher_id"
   end
 

@@ -41,6 +41,11 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   validate :teacher_distinct_period
 
+  enum :status, {
+    active: "active",
+    withdrawn: "withdrawn",
+  }, prefix: true
+
   # Scopes
   scope :for_school, ->(school_id) { where(school_id:) }
   scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
@@ -59,6 +64,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
     with_expressions_of_interest_for_contract_period(year)
     .where(expression_of_interest: { lead_provider_id: })
   }
+  scope :active, -> { where(status: "active") }
 
   def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
 
@@ -67,12 +73,28 @@ class ECTAtSchoolPeriod < ApplicationRecord
   def siblings
     return ECTAtSchoolPeriod.none unless teacher
 
-    teacher.ect_at_school_periods.excluding(self)
+    teacher.ect_at_school_periods.active.excluding(self)
   end
 
   delegate :trn, to: :teacher
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
   delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
+
+  def mark_withdrawn!
+    transaction do
+      training_periods.each do |tp|
+        tp.withdrawn_at = Time.zone.now
+        tp.withdrawal_reason = "other"
+        tp.finished_on = Time.zone.now
+        tp.save!
+      end
+
+      self.status = "withdrawn"
+      self.withdrawn_at = Time.zone.now
+      self.finished_on = Time.zone.now
+      save!
+    end
+  end
 
 private
 
