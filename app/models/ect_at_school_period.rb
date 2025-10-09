@@ -83,8 +83,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
   def mark_withdrawn!
     transaction do
       training_periods.each do |tp|
-        tp.withdrawn_at = Time.zone.now
-        tp.withdrawal_reason = "other"
         tp.finished_on = Time.zone.now
         tp.save!
       end
