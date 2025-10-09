@@ -1,4 +1,4 @@
-describe API::DeliveryPartnerSerializer, type: :serializer do
+describe API::DeliveryPartnerSerializer, :with_metadata, type: :serializer do
   subject(:response) do
     options = { lead_provider_id: lead_provider.id }
     JSON.parse(described_class.render(delivery_partner, **options))
@@ -12,7 +12,6 @@ describe API::DeliveryPartnerSerializer, type: :serializer do
   before do
     # Ensure other metadata exists for another lead provider.
     FactoryBot.create(:lead_provider)
-    Metadata::Manager.refresh_all_metadata!
   end
 
   describe "core attributes" do

@@ -1,4 +1,4 @@
-describe API::TeacherSerializer, type: :serializer do
+describe API::TeacherSerializer, :with_metadata, type: :serializer do
   subject(:response) do
     options = { lead_provider_id: lead_provider.id }
     JSON.parse(described_class.render(teacher, **options))
@@ -10,7 +10,6 @@ describe API::TeacherSerializer, type: :serializer do
   before do
     # Ensure other metadata exists for another lead provider.
     FactoryBot.create(:lead_provider)
-    Metadata::Manager.refresh_all_metadata!
   end
 
   describe "core attributes" do

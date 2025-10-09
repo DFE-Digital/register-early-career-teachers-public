@@ -1,4 +1,4 @@
-RSpec.describe API::Teachers::Query do
+RSpec.describe API::Teachers::Query, :with_metadata do
   it_behaves_like "a query that avoids includes" do
     before { FactoryBot.create(:teacher) }
   end

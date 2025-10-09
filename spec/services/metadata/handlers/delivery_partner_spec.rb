@@ -1,4 +1,4 @@
-RSpec.describe Metadata::Handlers::DeliveryPartner do
+RSpec.describe Metadata::Handlers::DeliveryPartner, :with_metadata do
   let(:instance) { described_class.new(delivery_partner) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:) }
