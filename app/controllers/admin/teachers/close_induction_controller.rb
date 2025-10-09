@@ -1,6 +1,6 @@
 module Admin
   module Teachers
-    class RecordOutcomeController < AdminController
+    class CloseInductionController < AdminController
       before_action :find_teacher
 
       def new

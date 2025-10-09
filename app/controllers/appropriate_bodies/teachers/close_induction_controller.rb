@@ -1,8 +1,10 @@
 module AppropriateBodies
   module Teachers
-    class RecordOutcomeController < AppropriateBodiesController
+    class CloseInductionController < AppropriateBodiesController
+      before_action :find_former_teacher, only: [:show]
+      before_action :find_current_teacher, except: [:show]
+
       def new
-        @teacher = find_current_teacher
         @pending_induction_submission = PendingInductionSubmission.new
 
         if @teacher.ongoing_induction_period.blank?
@@ -11,7 +13,6 @@ module AppropriateBodies
       end
 
       def show
-        @teacher = find_former_teacher
       end
 
     private
@@ -28,11 +29,11 @@ module AppropriateBodies
       end
 
       def find_former_teacher
-        AppropriateBodies::ECTs.new(@appropriate_body).current_or_completed_while_at_appropriate_body.find_by!(id: params[:teacher_id])
+        @teacher = ects.current_or_completed_while_at_appropriate_body.find_by!(id: params[:teacher_id])
       end
 
       def find_current_teacher
-        AppropriateBodies::ECTs.new(@appropriate_body).current_or_completed_while_at_appropriate_body.find_by!(id: params[:teacher_id])
+        @teacher = ects.current_or_completed_while_at_appropriate_body.find_by!(id: params[:teacher_id])
       end
 
       def build_closing_induction_period(outcome: nil)
@@ -42,6 +43,10 @@ module AppropriateBodies
           **pending_induction_submission_attributes,
           outcome:
         ).pending_induction_submission
+      end
+
+      def ects
+        AppropriateBodies::ECTs.new(@appropriate_body)
       end
     end
   end

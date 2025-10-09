@@ -1,4 +1,4 @@
-RSpec.describe "appropriate_bodies/teachers/record_failed_outcome/new.html.erb" do
+RSpec.describe "appropriate_bodies/teachers/record_released_induction/new.html.erb" do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
   let(:pending_induction_submission) { PendingInductionSubmission.new }
@@ -26,7 +26,7 @@ RSpec.describe "appropriate_bodies/teachers/record_failed_outcome/new.html.erb" 
     expect(rendered).to have_css('label', text: 'How many terms of induction did they spend with you?')
   end
 
-  it 'has a warning submit button' do
-    expect(rendered).to have_css('button.govuk-button--warning')
+  it 'has a submit button' do
+    expect(rendered).to have_css('button.govuk-button')
   end
 end
