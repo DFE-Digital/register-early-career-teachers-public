@@ -65,7 +65,7 @@ RSpec.describe SandboxSeedData::LeadProviderDeliveryPartnerships do
       let(:environment) { "production" }
 
       it "does not create any delivery partners" do
-        expect { instance.plant }.not_to change(DeliveryPartner, :count)
+        expect { instance.plant }.not_to change(LeadProviderDeliveryPartnership, :count)
       end
     end
   end
