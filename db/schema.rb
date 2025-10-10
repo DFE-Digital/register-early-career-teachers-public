@@ -807,11 +807,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_10_075339) do
     t.enum "deferral_reason", enum_type: "deferral_reasons"
     t.datetime "withdrawn_at"
     t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
+    t.bigint "schedule_id"
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"
     t.index ["expression_of_interest_id"], name: "index_training_periods_on_expression_of_interest_id"
     t.index ["mentor_at_school_period_id"], name: "index_training_periods_on_mentor_at_school_period_id"
+    t.index ["schedule_id"], name: "index_training_periods_on_schedule_id"
     t.index ["school_partnership_id", "ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "provider_partnership_trainings", unique: true
     t.index ["school_partnership_id"], name: "index_training_periods_on_school_partnership_id"
   end
@@ -878,26 +880,4 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_10_075339) do
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
-  add_foreign_key "school_partnerships", "schools"
-  add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
-  add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
-  add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"
-  add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "statement_adjustments", "statements"
-  add_foreign_key "statements", "active_lead_providers"
-  add_foreign_key "teacher_id_changes", "teachers"
-  add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"
-  add_foreign_key "teacher_id_changes", "teachers", column: "api_to_teacher_id", primary_key: "api_id"
-  add_foreign_key "teacher_migration_failures", "teachers"
-  add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
-  add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
-  add_foreign_key "training_periods", "active_lead_providers", column: "expression_of_interest_id"
-  add_foreign_key "training_periods", "ect_at_school_periods"
-  add_foreign_key "training_periods", "mentor_at_school_periods"
-  add_foreign_key "training_periods", "school_partnerships"
 end

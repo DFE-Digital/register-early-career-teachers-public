@@ -195,6 +195,7 @@
   - deferral_reason
   - withdrawn_at
   - withdrawal_reason
+  - schedule_id
   :teacher_migration_failures:
   - id
   - teacher_id
