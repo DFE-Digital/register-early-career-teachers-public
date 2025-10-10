@@ -1,5 +1,5 @@
 describe Builders::Mentor::SchoolPeriods do
-  subject(:service) { described_class.new(teacher:, school_periods:) }
+  subject(:service) { described_class.new(teacher:, school_periods:, created_at:) }
 
   let(:school_1) { FactoryBot.create(:school, urn: "123456") }
   let(:school_2) { FactoryBot.create(:school, urn: "987654") }
@@ -7,6 +7,7 @@ describe Builders::Mentor::SchoolPeriods do
   let(:period_1) { FactoryBot.build(:school_period, urn: school_1.urn, start_date: 1.year.ago.to_date, end_date: 1.month.ago.to_date) }
   let(:period_2) { FactoryBot.build(:school_period, urn: school_2.urn, start_date: 1.month.ago.to_date, end_date: nil) }
   let(:school_periods) { [period_1, period_2] }
+  let(:created_at) { period_1.start_date.to_time }
 
   before do
     CacheManager.instance.clear_all_caches!
@@ -23,6 +24,7 @@ describe Builders::Mentor::SchoolPeriods do
       service.build
       periods = teacher.mentor_at_school_periods.order(:started_on)
 
+      expect(periods.first.created_at).to eq created_at
       expect(periods.first.school).to eq school_1
       expect(periods.first.started_on).to eq period_1.start_date
       expect(periods.first.finished_on).to eq period_1.end_date
