@@ -265,6 +265,7 @@
   - confirmed_at
   - trs_first_name
   - trs_last_name
+  - trs_date_of_birth
   - trs_alerts
   - trs_email_address
   - trs_prohibited_from_teaching
