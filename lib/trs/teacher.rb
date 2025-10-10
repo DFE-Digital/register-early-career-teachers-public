@@ -11,8 +11,8 @@ module TRS
     ELIGIBLE_INDUCTION_STATUSES = %w[None RequiredToComplete InProgress].freeze
     INDUCTION_STATUSES = (ELIGIBLE_INDUCTION_STATUSES + INELIGIBLE_INDUCTION_STATUSES).freeze
 
-    attr_reader :trn,
-                :date_of_birth,
+    attr_reader :trs_trn,
+                :trs_date_of_birth,
                 :trs_first_name,
                 :trs_last_name,
                 :trs_email_address,
@@ -29,8 +29,8 @@ module TRS
 
     # @param data [Hash{String=>Mixed}] TRS API response
     def initialize(data)
-      @trn = data['trn']
-      @date_of_birth = data['dateOfBirth']
+      @trs_trn = data['trn']
+      @trs_date_of_birth = data['dateOfBirth']
       @trs_first_name = data['firstName']
       @trs_last_name = data['lastName']
       @trs_email_address = data['emailAddress']
@@ -50,6 +50,8 @@ module TRS
     def prohibited_from_teaching?
       PROHIBITED_FROM_TEACHING_CATEGORY_ID.in?(trs_alerts)
     end
+
+    alias_method :trs_prohibited_from_teaching, :prohibited_from_teaching?
 
     # @return [Boolean]
     def no_qts?
@@ -76,11 +78,10 @@ module TRS
       true
     end
 
-    # @return [Hash] saved to PendingInductionSubmission record
+    # @return [Hash] splatted into PendingInductionSubmissions and wizard SessionRepositories
     def to_h
       {
-        trn:,
-        date_of_birth:,
+        trs_date_of_birth:,
         trs_first_name:,
         trs_last_name:,
         trs_email_address:,
@@ -93,7 +94,7 @@ module TRS
         trs_initial_teacher_training_provider_name:,
         trs_initial_teacher_training_end_date:,
         trs_alerts:,
-        trs_prohibited_from_teaching: prohibited_from_teaching?,
+        trs_prohibited_from_teaching:,
       }
     end
   end

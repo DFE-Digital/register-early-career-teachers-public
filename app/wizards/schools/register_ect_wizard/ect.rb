@@ -54,7 +54,7 @@ module Schools
       end
 
       def prohibited_from_teaching?
-        prohibited_from_teaching == true
+        trs_prohibited_from_teaching == true
       end
 
       def registered?
