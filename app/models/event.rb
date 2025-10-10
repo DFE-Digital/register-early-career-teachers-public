@@ -15,6 +15,7 @@ class Event < ApplicationRecord
     lead_provider_api_token_revoked
     lead_provider_delivery_partnership_added
     school_partnership_created
+    school_partnership_reused
     school_partnership_updated
     statement_adjustment_added
     statement_adjustment_deleted
