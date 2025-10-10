@@ -51,7 +51,13 @@ module Schools
     def lead_provider_row
       {
         key: { text: 'Lead provider' },
-        value: { text: lead_provider_display_text }
+        value: { text: lead_provider_display_text },
+        actions: [{
+          text: "Change",
+          visually_hidden_text: "lead provider",
+          href: schools_ects_change_lead_provider_wizard_edit_path(@ect_at_school_period),
+          classes: "govuk-link--no-visited-state"
+        }]
       }
     end
 
