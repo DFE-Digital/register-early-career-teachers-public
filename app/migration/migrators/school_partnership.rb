@@ -14,7 +14,7 @@ module Migrators
 
     def self.dependencies
       # FIXME: add school in here as it might be needed but not currently migrated?
-      %i[lead_provider_delivery_partnership]
+      %i[school lead_provider_delivery_partnership]
     end
 
     def self.reset!
