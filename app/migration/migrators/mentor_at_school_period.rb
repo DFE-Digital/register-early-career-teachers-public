@@ -49,7 +49,9 @@ module Migrators
             end
 
             teacher.update!(api_mentor_training_record_id: participant_profile.id)
-            result = Builders::Mentor::SchoolPeriods.new(teacher:, school_periods: school_periods.flatten).build
+            result = Builders::Mentor::SchoolPeriods
+                       .new(teacher:, school_periods: school_periods.flatten, created_at: participant_profile.created_at)
+                       .build
           else
             ::TeacherMigrationFailure.create!(teacher:,
                                               model: :mentor_at_school_period,
