@@ -27,6 +27,10 @@ constraints -> { Rails.application.config.enable_schools_interface } do
         concerns :wizardable, wizard: Schools::ECTs::ChangeTrainingProgrammeWizard
       end
 
+      namespace :change_lead_provider_wizard, path: "change-lead-provider" do
+        concerns :wizardable, wizard: Schools::ECTs::ChangeLeadProviderWizard
+      end
+
       namespace :change_mentor_wizard, path: "change-mentor" do
         concerns :wizardable, wizard: Schools::ECTs::ChangeMentorWizard
       end
