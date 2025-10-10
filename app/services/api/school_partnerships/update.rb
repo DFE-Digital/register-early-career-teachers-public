@@ -47,20 +47,26 @@ module API::SchoolPartnerships
     end
 
     def delivery_partner_exists
+      return if errors[:delivery_partner_api_id].any?
+
       errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
     end
 
     def school_partnership_exists
+      return if errors[:school_partnership_id].any?
+
       errors.add(:school_partnership_id, "The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again.") unless school_partnership
     end
 
     def lead_provider_delivery_partnership_exists
+      return if errors[:delivery_partner_api_id].any?
       return unless active_lead_provider && delivery_partner
 
       errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
     end
 
     def does_not_cause_duplicate_school_partnership
+      return if errors[:delivery_partner_api_id].any?
       return unless school_partnership && lead_provider_delivery_partnership
 
       existing_school_partnership = school_partnership.school.school_partnerships.exists?(lead_provider_delivery_partnership:)
