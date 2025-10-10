@@ -1,9 +1,11 @@
 # Perform Teacher edits on behalf of an author and track change events:
 #
-# 1. first and last name changes
-# 2. QTS award date changes (tbc)
-# 3. ITT provider name changes (tbc)
+# 1. teacher name changes
+# 2. induction status and date changes
+# 3. QTS and ITT changes
+# 4. teacher deactivation
 #
+# @see Teachers::Manageable
 class Teachers::Manage
   class AlreadyDeactivated < StandardError; end
 
@@ -13,6 +15,12 @@ class Teachers::Manage
     @author = author
     @teacher = teacher
     @appropriate_body = appropriate_body
+  end
+
+  private_class_method :new
+
+  def self.system_update(teacher:)
+    new(teacher:, author: Events::SystemAuthor.new, appropriate_body: nil)
   end
 
   def self.find_or_initialize_by(trn:, trs_first_name:, trs_last_name:, event_metadata:)
@@ -33,36 +41,23 @@ class Teachers::Manage
       old_name = full_name
       teacher.assign_attributes(trs_first_name:, trs_last_name:)
       new_name = full_name
+
       record_name_change_event(old_name, new_name)
       teacher.save!
     end
   end
 
-  # FIXME: remove this method, there's no custom event for changing the QTS
-  #        award date so it doesn't need special treatment
-  def update_qts_awarded_on!(trs_qts_awarded_on:)
-    Teacher.transaction do
-      @old_award_date = teacher.trs_qts_awarded_on
-      teacher.assign_attributes(trs_qts_awarded_on:)
-      @new_award_date = teacher.trs_qts_awarded_on
-      teacher.save!
-    end
-  end
-
-  # FIXME: remove this method, there's no custom event for changing the ITT
-  #        provider name
-  def update_itt_provider_name!(trs_initial_teacher_training_provider_name:)
-    Teacher.transaction do
-      teacher.assign_attributes(trs_initial_teacher_training_provider_name:)
-      teacher.save!
-    end
-  end
-
-  def update_trs_induction_status!(trs_induction_status:)
+  # TODO: log induction date changes in status event
+  def update_trs_induction_status!(trs_induction_status:, trs_induction_start_date:, trs_induction_completed_date:)
     Teacher.transaction do
       old_induction_status = teacher.trs_induction_status
-      teacher.assign_attributes(trs_induction_status:)
+      teacher.assign_attributes(
+        trs_induction_status:,
+        trs_induction_start_date:,
+        trs_induction_completed_date:
+      )
       new_induction_status = teacher.trs_induction_status
+
       record_induction_status_change_event(old_induction_status, new_induction_status)
       teacher.save!
     end
@@ -89,7 +84,7 @@ class Teachers::Manage
 
     Teacher.transaction do
       teacher.update!(trs_deactivated: true, trs_data_last_refreshed_at:)
-      record_teacher_deactivated_event(teacher:, author:)
+      record_teacher_deactivated_event
     end
   end
 
@@ -118,7 +113,7 @@ private
     Events::Record.teacher_trs_attributes_updated_event!(author:, teacher:, modifications:)
   end
 
-  def record_teacher_deactivated_event(teacher:, author:)
+  def record_teacher_deactivated_event
     Events::Record.record_teacher_trs_deactivated_event!(author:, teacher:)
   end
 end

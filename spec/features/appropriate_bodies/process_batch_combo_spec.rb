@@ -1,7 +1,7 @@
-RSpec.describe 'Process bulk claims then actions events' do
+RSpec.describe 'Process batch events' do
   include ActiveJob::TestHelper
 
-  include_context 'test trs api client'
+  include_context 'test trs api client that finds teacher with specific induction status', 'InProgress'
 
   let(:appropriate_body) do
     FactoryBot.create(:appropriate_body, name: 'The Appropriate Body')
@@ -11,7 +11,7 @@ RSpec.describe 'Process bulk claims then actions events' do
     sign_in_as_appropriate_body_user(appropriate_body:)
   end
 
-  scenario 'happy path' do
+  scenario 'upload claim CSV then action CSV', :aggregate_failures do
     # action
     page.goto(new_ab_batch_claim_path)
     expect(page).to have_path('/appropriate-body/bulk/claims/new')
@@ -41,22 +41,24 @@ RSpec.describe 'Process bulk claims then actions events' do
       .with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
     expect(AppropriateBodies::ProcessBatch::RegisterECTJob).to have_been_enqueued.twice
     expect(perform_enqueued_jobs).to be(3)
-    expect(RecordEventJob).to have_been_enqueued.exactly(8).times
+    expect(RecordEventJob).to have_been_enqueued.exactly(10).times
     expect(BeginECTInductionJob).to have_been_enqueued.twice
 
-    expect(perform_enqueued_jobs).to be(10)
+    expect(perform_enqueued_jobs).to be(12)
 
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
       "Induction status set to 'InProgress'",
+      "TRS attributes updated",
       /was claimed by The Appropriate Body/,
       /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibility was set/
+      /funding eligibility was set/,
+      "TRS attributes updated"
     )
 
     page.reload
@@ -77,10 +79,12 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
       "Induction status set to 'InProgress'",
+      "TRS attributes updated",
       /was claimed by The Appropriate Body/,
       /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
+      "TRS attributes updated",
       /was claimed by The Appropriate Body/,
       /funding eligibility was set/,
       "The Appropriate Body started a bulk action"
@@ -103,10 +107,12 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
       "Induction status set to 'InProgress'",
+      "TRS attributes updated",
       /was claimed by The Appropriate Body/,
       /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
+      "TRS attributes updated",
       /was claimed by The Appropriate Body/,
       /funding eligibility was set/,
       "The Appropriate Body started a bulk action",
@@ -128,10 +134,12 @@ RSpec.describe 'Process bulk claims then actions events' do
       "The Appropriate Body completed a bulk claim",
       "Imported from TRS",
       "Induction status set to 'InProgress'",
+      "TRS attributes updated",
       /was claimed by The Appropriate Body/,
       /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
+      "TRS attributes updated",
       /was claimed by The Appropriate Body/,
       /funding eligibility was set/,
       "The Appropriate Body started a bulk action",

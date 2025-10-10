@@ -46,6 +46,17 @@ module TRS
       @initial_teacher_training_end_date = data.dig('initialTeacherTraining', -1, 'endDate')
     end
 
+    # TODO: Have all TRS::Teacher methods use the "trs_" prefix (same as PendingInductionSubmission)
+    alias_method :trs_first_name, :first_name
+    alias_method :trs_last_name, :last_name
+    alias_method :trs_induction_start_date, :induction_start_date
+    alias_method :trs_induction_completed_date, :induction_completed_date
+    alias_method :trs_induction_status, :induction_status
+    alias_method :trs_qts_status_description, :qts_status_description
+    alias_method :trs_initial_teacher_training_provider_name, :initial_teacher_training_provider_name
+    alias_method :trs_initial_teacher_training_end_date, :initial_teacher_training_end_date
+    alias_method :trs_qts_awarded_on, :qts_awarded_on
+
     # @return [Boolean]
     def prohibited_from_teaching?
       PROHIBITED_FROM_TEACHING_CATEGORY_ID.in?(alerts)
@@ -84,7 +95,6 @@ module TRS
         trs_first_name: first_name,
         trs_last_name: last_name,
         trs_email_address: email_address,
-        trs_national_insurance_number: national_insurance_number,
         trs_alerts: alerts,
         trs_induction_start_date: induction_start_date,
         trs_induction_completed_date: induction_completed_date,
