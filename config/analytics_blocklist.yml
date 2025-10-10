@@ -269,6 +269,7 @@
   - trs_email_address
   - trs_prohibited_from_teaching
   - trs_induction_start_date
+  - trs_induction_completed_date
   - trs_induction_status
   - trs_induction_status_description
   - trs_qts_awarded_on

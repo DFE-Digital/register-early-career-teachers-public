@@ -29,15 +29,9 @@ module AppropriateBodies
         #       below a case and add different errors to the :base
         return false unless pending_induction_submission.valid?(:find_ect)
 
-        pending_induction_submission.assign_attributes(
-          appropriate_body:,
-          **trs_teacher.to_h.except(:trs_national_insurance_number, :trs_induction_completed_date)
-        )
-
+        pending_induction_submission.assign_attributes(appropriate_body:, **trs_teacher.to_h)
         check_if_teacher_has_ongoing_induction_period_with_appropriate_body!
-
         trs_teacher.check_eligibility!
-
         pending_induction_submission.save(context: :find_ect)
       end
 
