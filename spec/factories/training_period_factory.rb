@@ -4,6 +4,7 @@ FactoryBot.define do
   factory(:training_period) do
     for_ect
     with_school_partnership
+    with_schedule
     provider_led
 
     started_on { generate(:base_training_date) }
@@ -35,6 +36,19 @@ FactoryBot.define do
       end
 
       school_partnership { association :school_partnership, school: teacher_period.school }
+    end
+
+    trait :with_schedule do
+      transient do
+        schedule { FactoryBot.build(:schedule, contract_period: school_partnership.contract_period) }
+      end
+
+      after(:build) do |training_period, evaluator|
+        # Only `provider_led` training periods with a school partnership should have a schedule
+        if training_period.school_partnership.present?
+          training_period.schedule = evaluator.schedule
+        end
+      end
     end
 
     trait :with_no_school_partnership do

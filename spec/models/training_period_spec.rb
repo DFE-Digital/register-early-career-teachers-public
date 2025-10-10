@@ -86,6 +86,7 @@ describe TrainingPeriod do
     it { is_expected.to belong_to(:expression_of_interest).class_name('ActiveLeadProvider') }
     it { is_expected.to have_one(:expression_of_interest_lead_provider).through(:expression_of_interest).source(:lead_provider) }
     it { is_expected.to have_one(:expression_of_interest_contract_period).through(:expression_of_interest).source(:contract_period) }
+    it { is_expected.to belong_to(:schedule) }
   end
 
   describe "validations" do
@@ -364,6 +365,32 @@ describe TrainingPeriod do
           it 'does not validate absence of expression_of_interest and school_partnership' do
             expect(subject).to be_valid
           end
+        end
+      end
+    end
+
+    describe "check if schedule contract period matches school partnership contract period" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil) }
+      let(:school) { ect_at_school_period.school }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+      let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+      let(:school_partnership) { make_partnership_for(school, contract_period) }
+
+      context "when contract periods match" do
+        subject { FactoryBot.build(:training_period, :ongoing, schedule:, school_partnership:, ect_at_school_period:) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when contract periods do not match" do
+        subject { FactoryBot.build(:training_period, :ongoing, schedule:, school_partnership: mismatched_school_partnership, ect_at_school_period:) }
+
+        let(:mismatched_school_partnership) { make_partnership_for(school, FactoryBot.create(:contract_period, year: 2025)) }
+
+        it "adds an error to schedule" do
+          subject.valid?
+
+          expect(subject.errors[:schedule]).to include("Contract period of schedule must match contract period of school partnership")
         end
       end
     end
