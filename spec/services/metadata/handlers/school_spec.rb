@@ -1,4 +1,4 @@
-RSpec.describe Metadata::Handlers::School do
+RSpec.describe Metadata::Handlers::School, :with_metadata do
   let(:instance) { described_class.new(school) }
   let(:school) { FactoryBot.create(:school) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }

@@ -34,4 +34,17 @@ RSpec.configure do |config|
       .to receive(:enable_schools_interface)
       .and_return(true)
   end
+
+  config.around do |example|
+    declarative_updates_to_skip = %i[metadata touch]
+
+    declarative_updates_to_skip.delete(:metadata) if example.metadata[:with_metadata]
+    declarative_updates_to_skip.delete(:touch) if example.metadata[:with_touches]
+
+    if declarative_updates_to_skip.empty?
+      example.run
+    else
+      DeclarativeUpdates.skip(*declarative_updates_to_skip) { example.run }
+    end
+  end
 end
