@@ -56,7 +56,7 @@ By default, the API returns up to 100 items per page. You need to test fetching 
 
 Try calling `GET /participants?page[size]=100&page[number]=2` to make sure your system correctly follows pagination links and doesn’t stop after the first batch. 
 
-## Check seed data is adequate or requesting seed data that’s more tailored to their needs 
+## Check seed data is adequate or request seed data that’s more tailored to your needs 
 
 Make sure the test data (seed data) in the sandbox fits what you need to test. If it doesn’t, ask DfE for adjustments. 
 
