@@ -131,9 +131,10 @@ module API::SchoolPartnerships
     end
 
     def not_school_led
+      return if errors[:school_api_id].any?
       return unless metadata&.induction_programme_choice == "school_led"
 
-      errors.add(:induction_programme_choice, "This school has only registered school-led participants. Contact the school for more information.")
+      errors.add(:school_api_id, "This school has only registered school-led participants. Contact the school for more information.")
     end
   end
 end
