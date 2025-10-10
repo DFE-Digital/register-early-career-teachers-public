@@ -4,13 +4,17 @@ title: How to test the API effectively
 
 ## Before starting 
 
-Get familiar with the [Swagger API documentation](/api/docs/v3). 
+Bookmark the [Swagger API documentation](/api/docs/v3). It includes: 
+
+* a list of all available API endpoints
+* required data fields and formats
+* response types and error messages 
 
 Read our [guidance on keeping data in sync](/api/guidance/keeping-data-in-sync). 
 
 ## Test in the sandbox
 
-Use the [sandbox environment](/api) to test API integrations without affecting real data. 
+Use the [sandbox environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/) to test API integrations without affecting real data. 
 
 Try each operation individually before automating. 
 
@@ -22,7 +26,7 @@ Instead of downloading all schools, participants, or partnerships on every test 
  
 ### Example 
 
-Use `GET /participants?filter[updated_since]=2025-10-01T00:00:00Z` instead of pulling the entire participant list every time. 
+Try using `GET /participants?filter[updated_since]=2025-10-01T00:00:00Z` instead of pulling the entire participant list every time. 
 
 ## Test different values for fields in endpoints 
 
@@ -44,9 +48,7 @@ Submit a partnership with missing data to trigger a `422 error`, and confirm you
 
 Check how your system handles repeated data or changing order in API responses. 
 
-### Example 
-
-If the same participant appears twice in a page of results, your sync process should merge them, not duplicate them. Don’t assume results will always come in the same order. 
+Contact us if the same participant appears twice in a page of results. There should not be any duplicates. 
 
 ## Test pagination with default value of 100 per page 
 
@@ -83,11 +85,8 @@ Test posting `started`, `retained-1`, and `completed` declarations for the same 
 
 - [ ] Happy paths pass for partnerships, participants, and declarations 
 - [ ] Error paths handled with retries/back-off where appropriate 
-- [ ] Incremental sync implemented. No full-table pulls 
-- [ ] Idempotent create/update flows proven by repeat runs 
+- [ ] Both full syncs and partial syncs using the `updated_since` filter implemented 
 - [ ] Multiple partnerships per school/cohort supported 
-- [ ] Uses `expression_of_interest` and `participants_currently_training` correctly in dashboards 
-- [ ] Logs, metrics and alerts in place 
-- [ ] Correlation IDs captured 
+- [ ] New fields such as `expression_of_interest` and `participants_currently_training` work correctly
 - [ ] Access keys secured 
 - [ ] Sandbox tests recorded with sample requests, responses and timestamps 
