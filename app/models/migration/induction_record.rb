@@ -9,6 +9,7 @@ module Migration
 
     has_one :school_cohort, through: :induction_programme
     has_one :school, through: :school_cohort
+    has_one :cohort, through: :school_cohort
     has_one :partnership, through: :induction_programme
     has_one :delivery_partner, through: :partnership
     has_one :lead_provider, through: :partnership
