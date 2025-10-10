@@ -13,11 +13,7 @@ module SandboxSeedData
   private
 
     def create_teacher
-      teacher = FactoryBot.build(
-        :teacher,
-        trs_first_name: Faker::Name.first_name,
-        trs_last_name: Faker::Name.last_name
-      ).tap do
+      teacher = FactoryBot.build(:teacher, :with_realistic_name).tap do
         random_date = rand(1..100).days.ago
         it.update!(created_at: random_date, updated_at: random_date)
       end
