@@ -41,7 +41,7 @@ RSpec.describe 'Searching for an ECT', :enable_schools_interface do
   end
 
   def and_i_am_on_the_ects_list_page
-    page.goto('/schools/home/ects')
+    page.goto('/school/home/ects')
   end
 
   def when_i_search_for_a_teacher

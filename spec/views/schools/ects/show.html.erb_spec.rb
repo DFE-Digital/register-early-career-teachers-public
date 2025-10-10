@@ -66,7 +66,11 @@ RSpec.describe 'schools/ects/show.html.erb' do
       context 'when assigned' do
         before do
           mentor = FactoryBot.create(:teacher, trs_first_name: 'Moby', trs_last_name: 'Dick')
-          mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: current_school, teacher: mentor)
+          mentor_at_school_period = FactoryBot.create(:mentor_at_school_period,
+                                                      started_on: current_ect_period.started_on,
+                                                      finished_on: nil,
+                                                      school: current_school,
+                                                      teacher: mentor)
 
           FactoryBot.create(:mentorship_period, :ongoing,
                             started_on: current_ect_period.started_on,

@@ -68,7 +68,7 @@ RSpec.describe API::DeliveryPartners::Query do
       expect(query.delivery_partners).to eq([delivery_partner1, delivery_partner2, delivery_partner3])
     end
 
-    describe "filtering" do
+    describe "filtering", :with_metadata do
       describe "by `lead_provider`" do
         let(:lead_provider_delivery_partnership1) { FactoryBot.create(:lead_provider_delivery_partnership) }
         let!(:delivery_partner1) { lead_provider_delivery_partnership1.delivery_partner }

@@ -63,7 +63,7 @@ private
   end
 
   def then_i_should_go_to_the_latest_release_note
-    expect(page.url).to end_with("/api/guidance/release-notes/#{latest_release_note.slug}")
+    expect(page).to have_path("/api/guidance/release-notes/#{latest_release_note.slug}")
   end
 
   def and_i_see_sidebar_menu

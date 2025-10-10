@@ -237,6 +237,8 @@
   - mentor_payments_frozen_year
   - ect_pupil_premium_uplift
   - ect_sparsity_uplift
+  - ect_first_became_eligible_for_training_at
+  - mentor_first_became_eligible_for_training_at
   :metadata_teachers_lead_providers:
   - id
   - teacher_id

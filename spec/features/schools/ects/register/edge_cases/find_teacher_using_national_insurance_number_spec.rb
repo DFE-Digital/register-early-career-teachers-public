@@ -23,7 +23,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def and_i_am_on_the_schools_landing_page
-    path = '/schools/home/ects'
+    path = '/school/home/ects'
     page.goto path
     expect(page).to have_path(path)
   end
@@ -33,7 +33,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_am_in_the_requirements_page
-    expect(page).to have_path('/schools/register-ect/what-you-will-need')
+    expect(page).to have_path('/school/register-ect/what-you-will-need')
   end
 
   def when_i_click_continue
@@ -41,7 +41,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_am_on_the_find_ect_step_page
-    expect(page).to have_path('/schools/register-ect/find-ect')
+    expect(page).to have_path('/school/register-ect/find-ect')
   end
 
   def when_i_submit_a_trn_and_a_date_of_birth_that_does_not_match
@@ -53,7 +53,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_should_be_taken_to_the_national_insurance_number_step
-    expect(page).to have_path('/schools/register-ect/national-insurance-number')
+    expect(page).to have_path('/school/register-ect/national-insurance-number')
   end
 
   def when_i_enter_a_matching_national_insurance_number
@@ -62,6 +62,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_should_be_taken_to_the_review_details_step
-    expect(page).to have_path('/schools/register-ect/review-ect-details')
+    expect(page).to have_path('/school/register-ect/review-ect-details')
   end
 end

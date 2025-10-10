@@ -30,7 +30,7 @@ describe Migrators::School do
                       ukprn: ecf_school.ukprn)
   end
 
-  it_behaves_like "a migrator", :school, [] do
+  it_behaves_like "a migrator", :school, %i[gias_import] do
     def create_migration_resource = create_ecf_school
 
     def create_resource(migration_resource) = create_gias_school(migration_resource)

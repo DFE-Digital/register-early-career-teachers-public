@@ -1,5 +1,5 @@
 describe Migrators::SchoolPartnership do
-  it_behaves_like "a migrator", :school_partnership, %i[lead_provider_delivery_partnership] do
+  it_behaves_like "a migrator", :school_partnership, %i[school lead_provider_delivery_partnership] do
     def create_migration_resource
       FactoryBot.create(:migration_partnership)
     end

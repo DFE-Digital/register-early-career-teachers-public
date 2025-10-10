@@ -32,7 +32,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def when_i_start_the_wizard_from_find_ect
-    page.goto('/schools/register-ect/find-ect')
+    page.goto('/school/register-ect/find-ect')
   end
 
   def and_i_complete_the_find_ect_step
@@ -75,7 +75,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_am_taken_to_the_training_programme_page
-    expect(page).to have_path('/schools/register-ect/training-programme')
+    expect(page).to have_path('/school/register-ect/training-programme')
   end
 
   def when_i_select_school_led
@@ -87,7 +87,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_am_taken_to_the_check_answers_page
-    expect(page).to have_path('/schools/register-ect/check-answers')
+    expect(page).to have_path('/school/register-ect/check-answers')
   end
 
   def and_i_see_the_correct_appropriate_body_on_the_page

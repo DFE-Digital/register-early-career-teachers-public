@@ -23,8 +23,6 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
   let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
   let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
 
-  before { Metadata::Manager.refresh_all_metadata! }
-
   describe "validations" do
     subject { service }
 
@@ -140,7 +138,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
       end
     end
 
-    context "when the induction programme choice is school_led" do
+    context "when the induction programme choice is school_led", :with_metadata do
       before { Metadata::SchoolContractPeriod.bypass_update_restrictions { school.contract_period_metadata.update!(induction_programme_choice: :school_led) } }
 
       it "is invalid" do
@@ -149,7 +147,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
       end
     end
 
-    context "when the induction programme choice is not_yet_known" do
+    context "when the induction programme choice is not_yet_known", :with_metadata do
       before { Metadata::SchoolContractPeriod.bypass_update_restrictions { school.contract_period_metadata.update!(induction_programme_choice: :not_yet_known) } }
 
       it { is_expected.to be_valid }

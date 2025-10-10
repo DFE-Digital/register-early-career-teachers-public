@@ -1,4 +1,4 @@
-RSpec.describe "Schools API", type: :request do
+RSpec.describe "Schools API", :with_metadata, type: :request do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
   let(:contract_period) { active_lead_provider.contract_period }
