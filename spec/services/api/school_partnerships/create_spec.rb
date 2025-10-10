@@ -143,7 +143,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:induction_programme_choice]).to include("This school has only registered school-led participants. Contact the school for more information.")
+        expect(service.errors[:school_api_id]).to include("This school has only registered school-led participants. Contact the school for more information.")
       end
     end
 
