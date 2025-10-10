@@ -238,7 +238,7 @@ describe Teacher do
 
         it { is_expected.to be_invalid }
 
-        it 'has validation errors on the ineligibilty date field' do
+        it 'has validation errors on the ineligibility date field' do
           subject.valid?
 
           expected_message = /Enter the date when the mentor became ineligible for funding/
@@ -251,12 +251,33 @@ describe Teacher do
 
         it { is_expected.to be_invalid }
 
-        it 'has validation errors on the ineligibilty date field' do
+        it 'has validation errors on the ineligibility date field' do
           subject.valid?
 
           expected_message = /Choose the reason why the mentor became ineligible for funding/
           expect(subject.errors.messages[:mentor_became_ineligible_for_funding_reason]).to include(expected_message)
         end
+      end
+    end
+
+    describe ".ect_first_became_eligible_for_training_at, .mentor_first_became_eligible_for_training_at" do
+      context "when not yet set" do
+        subject { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: nil, mentor_first_became_eligible_for_training_at: nil) }
+
+        it { is_expected.to allow_values("", " ", nil, "test", Date.new).for(:ect_first_became_eligible_for_training_at) }
+        it { is_expected.to allow_values("", " ", nil, "test", Date.new).for(:mentor_first_became_eligible_for_training_at) }
+      end
+
+      context "when already set" do
+        subject { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: time, mentor_first_became_eligible_for_training_at: time) }
+
+        let(:time) { Time.zone.now }
+
+        it { is_expected.not_to allow_values("", " ", nil, "test", Date.new).for(:ect_first_became_eligible_for_training_at) }
+        it { is_expected.to allow_value(time).for(:ect_first_became_eligible_for_training_at) }
+
+        it { is_expected.not_to allow_values("", " ", nil, "test", Date.new).for(:mentor_first_became_eligible_for_training_at) }
+        it { is_expected.to allow_value(time).for(:mentor_first_became_eligible_for_training_at) }
       end
     end
   end

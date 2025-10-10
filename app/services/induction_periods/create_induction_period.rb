@@ -24,6 +24,8 @@ module InductionPeriods
         record_event or raise ActiveRecord::Rollback
       end
 
+      set_eligibility_for_funding!
+
       if teacher.induction_periods.started_before(induction_period.started_on)
           .or(teacher.induction_periods.with_outcome)
           .none?
@@ -55,6 +57,13 @@ module InductionPeriods
         trn: teacher.trn,
         start_date: induction_period.started_on
       )
+    end
+
+    def set_eligibility_for_funding!
+      Teachers::SetFundingEligibility.new(
+        teacher:,
+        author:
+      ).set!
     end
   end
 end

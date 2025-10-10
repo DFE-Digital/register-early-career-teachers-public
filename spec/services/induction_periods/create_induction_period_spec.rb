@@ -45,7 +45,7 @@ describe InductionPeriods::CreateInductionPeriod do
 
         perform_enqueued_jobs
 
-        expect(Event.last.event_type).to eql('induction_period_opened')
+        expect(Event.all.map(&:event_type)).to match_array(%w[induction_period_opened teacher_funding_eligibility_set])
       end
 
       it 'creates the event with the expected values' do
@@ -55,7 +55,7 @@ describe InductionPeriods::CreateInductionPeriod do
 
         perform_enqueued_jobs
 
-        last_event = Event.last
+        last_event = Event.find_by(event_type: 'induction_period_opened')
         expect(last_event.appropriate_body).to eql(appropriate_body)
         expect(last_event.teacher).to eql(teacher)
         expect(last_event.happened_at.to_date).to eql(started_on)
@@ -103,6 +103,14 @@ describe InductionPeriods::CreateInductionPeriod do
         expect { subject.create_induction_period! }
           .to have_enqueued_job(BeginECTInductionJob)
           .with(trn: teacher.trn, start_date: started_on)
+      end
+
+      it 'calls `Teachers::SetFundingEligibility` service with correct params' do
+        expect(Teachers::SetFundingEligibility).to receive(:new)
+          .with(teacher:, author:)
+          .and_call_original
+
+        subject.create_induction_period!
       end
     end
 
