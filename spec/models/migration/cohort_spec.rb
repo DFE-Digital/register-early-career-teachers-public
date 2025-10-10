@@ -14,7 +14,7 @@ describe Migration::Cohort, type: :model do
       it do
         freeze_time do
           subject.payments_frozen_at = 1.second.ago
-          is_expected.to be_payments_frozen
+          expect(subject).to be_payments_frozen
         end
       end
     end
@@ -23,7 +23,7 @@ describe Migration::Cohort, type: :model do
       it do
         freeze_time do
           subject.payments_frozen_at = 2.minutes.from_now
-          is_expected.not_to be_payments_frozen
+          expect(subject).not_to be_payments_frozen
         end
       end
     end
@@ -32,7 +32,7 @@ describe Migration::Cohort, type: :model do
       it do
         freeze_time do
           subject.payments_frozen_at = nil
-          is_expected.not_to be_payments_frozen
+          expect(subject).not_to be_payments_frozen
         end
       end
     end
