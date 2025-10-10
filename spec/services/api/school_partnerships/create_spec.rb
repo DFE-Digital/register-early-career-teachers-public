@@ -38,7 +38,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:contract_period_year]).to include("The '#/contract_period_year' you have entered is invalid. Check contract period details and try again.")
+        expect(service.errors[:contract_period_year]).to eq(["The '#/contract_period_year' you have entered is invalid. Check contract period details and try again."])
       end
     end
 
@@ -47,7 +47,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:contract_period_year]).to include("You cannot create this partnership until the contract period has started.")
+        expect(service.errors[:contract_period_year]).to eq(["You cannot create this partnership until the contract period has started."])
       end
     end
 
@@ -56,7 +56,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:lead_provider_id]).to include("Enter a '#/lead_provider_id'.")
+        expect(service.errors[:lead_provider_id]).to eq(["Enter a '#/lead_provider_id'."])
       end
     end
 
@@ -65,7 +65,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to include("The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'.")
+        expect(service.errors[:school_api_id]).to eq(["The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'."])
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to include("The school you have entered has not registered to deliver DfE-funded training. Contact the school for more information.")
+        expect(service.errors[:school_api_id]).to eq(["The school you have entered has not registered to deliver DfE-funded training. Contact the school for more information."])
       end
     end
 
@@ -83,7 +83,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to include("The school you have entered is currently ineligible for DfE funding. Contact the school for more information.")
+        expect(service.errors[:school_api_id]).to eq(["The school you have entered is currently ineligible for DfE funding. Contact the school for more information."])
       end
     end
 
@@ -92,7 +92,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to include("You are already in a confirmed partnership with this school for the entered contract period.")
+        expect(service.errors[:school_api_id]).to eq(["You are already in a confirmed partnership with this school for the entered contract period."])
       end
     end
 
@@ -125,7 +125,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to include("The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.")
+        expect(service.errors[:delivery_partner_api_id]).to eq(["The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again."])
       end
     end
 
@@ -134,7 +134,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to include("The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.")
+        expect(service.errors[:delivery_partner_api_id]).to eq(["The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information."])
       end
     end
 
@@ -143,7 +143,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to include("This school has only registered school-led participants. Contact the school for more information.")
+        expect(service.errors[:school_api_id]).to eq(["This school has only registered school-led participants. Contact the school for more information."])
       end
     end
 
@@ -151,6 +151,19 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
       before { Metadata::SchoolContractPeriod.bypass_update_restrictions { school.contract_period_metadata.update!(induction_programme_choice: :not_yet_known) } }
 
       it { is_expected.to be_valid }
+    end
+
+    context "guarded error messages" do
+      let(:service) { described_class.new }
+
+      it "only returns one error message per param at a time" do
+        expect(service).to be_invalid
+
+        expect(service.errors[:contract_period_year].count).to be(1)
+        expect(service.errors[:school_api_id].count).to be(1)
+        expect(service.errors[:lead_provider_id].count).to be(1)
+        expect(service.errors[:delivery_partner_api_id].count).to be(1)
+      end
     end
   end
 
