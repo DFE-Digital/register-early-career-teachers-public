@@ -64,7 +64,7 @@ Make sure the test data (seed data) in the sandbox fits what you need to test. I
 
 If you only see one school or cohort, request extra records so you can test multiple partnerships or transfers. 
 
-## Use the header which allows them to perform actions in the future for testing correctly (`X-With-Server-Date`) 
+## Use the header which allows you to perform actions in the future for testing correctly (`X-With-Server-Date`) 
 
 Use the `X-With-Server-Date` header to simulate future dates when testing time-sensitive features. 
 
