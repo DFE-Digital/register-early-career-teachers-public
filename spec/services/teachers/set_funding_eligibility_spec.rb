@@ -7,7 +7,12 @@ RSpec.describe Teachers::SetFundingEligibility do
     context "when teacher is eligible for ECT training" do
       before do
         FactoryBot.create(:induction_period, :ongoing, teacher:)
-        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          started_on: 2.months.ago,
+          finished_on: nil
+        )
       end
 
       it "sets `ect_first_became_eligible_for_training_at` if not already set" do
