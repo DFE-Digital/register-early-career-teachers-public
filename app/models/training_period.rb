@@ -10,8 +10,10 @@ class TrainingPeriod < ApplicationRecord
        suffix: :training_programme
 
   # Associations
-  belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
+  belongs_to :ect_at_school_period, inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
+  belongs_to :unscoped_ect_at_school_period, -> { unscope(where: :withdrawn_by_error) }, class_name: "ECTAtSchoolPeriod", foreign_key: :ect_at_school_period_id
+  belongs_to :unscoped_mentor_at_school_period, -> { unscope(where: :withdrawn_by_error) }, class_name: "MentorAtSchoolPeriod", foreign_key: :mentor_at_school_period_id
   belongs_to :school_partnership
 
   has_one :lead_provider_delivery_partnership, through: :school_partnership
@@ -57,13 +59,13 @@ class TrainingPeriod < ApplicationRecord
   }
 
   scope :ect_training_periods_latest_first, ->(teacher:, lead_provider:) {
-    includes(:ect_at_school_period, :lead_provider)
-    .where(ect_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
+    includes(:unscoped_ect_at_school_period, :lead_provider)
+    .where(unscoped_ect_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
     .latest_first
   }
   scope :mentor_training_periods_latest_first, ->(teacher:, lead_provider:) {
-    includes(:mentor_at_school_period, :lead_provider)
-    .where(mentor_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
+    includes(:unscoped_mentor_at_school_period, :lead_provider)
+    .where(unscoped_mentor_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
     .latest_first
   }
 
