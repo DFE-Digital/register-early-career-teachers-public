@@ -16,7 +16,7 @@ class Teachers::InductionStatus
   def induction_status_colour = determine_status.colour
 
   def completed?
-    trs_induction_status.in?(%w[Exempt Passed Failed FailedInWales])
+    trs_induction_status.in?(TRS::Teacher::INELIGIBLE_INDUCTION_STATUSES)
   end
 
 private

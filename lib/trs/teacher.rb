@@ -3,6 +3,8 @@ module TRS
   class Teacher
     PROHIBITED_FROM_TEACHING_CATEGORY_ID = 'b2b19019-b165-47a3-8745-3297ff152581'
     INELIGIBLE_INDUCTION_STATUSES = %w[Passed Failed FailedInWales Exempt].freeze
+    ELIGIBLE_INDUCTION_STATUSES = %w[None RequiredToComplete InProgress].freeze
+    INDUCTION_STATUSES = (ELIGIBLE_INDUCTION_STATUSES + INELIGIBLE_INDUCTION_STATUSES).freeze
 
     attr_reader :trn,
                 :date_of_birth,
