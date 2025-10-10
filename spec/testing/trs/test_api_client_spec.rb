@@ -49,7 +49,7 @@ describe TRS::TestAPIClient do
     end
 
     describe 'induction_statuses' do
-      subject { trs_teacher.induction_status }
+      subject { trs_teacher.trs_induction_status }
 
       context 'when initialized induction_status: InProgress' do
         let(:kwargs) { { induction_status: 'InProgress' } }
@@ -75,7 +75,7 @@ describe TRS::TestAPIClient do
         let(:kwargs) { { has_qts: false } }
 
         it 'the teacher has no QTS awarded on date' do
-          expect(trs_teacher.qts_awarded_on).to be_nil
+          expect(trs_teacher.trs_qts_awarded_on).to be_nil
         end
       end
 
@@ -83,7 +83,7 @@ describe TRS::TestAPIClient do
         let(:kwargs) { { has_qts: true } }
 
         it 'the teacher has a QTS awarded on date of 3 years ago' do
-          expect(trs_teacher.qts_awarded_on).to eql(3.years.ago.to_date)
+          expect(trs_teacher.trs_qts_awarded_on).to eql(3.years.ago.to_date)
         end
       end
     end
@@ -93,7 +93,7 @@ describe TRS::TestAPIClient do
         let(:kwargs) { { has_itt: false } }
 
         it 'the teacher has no ITT training provider' do
-          expect(trs_teacher.initial_teacher_training_provider_name).to be_nil
+          expect(trs_teacher.trs_initial_teacher_training_provider_name).to be_nil
         end
       end
 
@@ -101,7 +101,7 @@ describe TRS::TestAPIClient do
         let(:kwargs) { { has_itt: true } }
 
         it 'the teacher has no ITT training provider' do
-          expect(trs_teacher.initial_teacher_training_provider_name).to eql('Example Provider Ltd.')
+          expect(trs_teacher.trs_initial_teacher_training_provider_name).to eql('Example Provider Ltd.')
         end
       end
     end
