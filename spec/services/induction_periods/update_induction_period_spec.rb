@@ -66,8 +66,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
           expect(PassECTInductionJob).to have_received(:perform_later).with(
             trn: teacher.trn,
             start_date: Date.parse("2023-02-01"),
-            completed_date: Date.parse("2024-01-31"),
-            pending_induction_submission_id: nil
+            completed_date: Date.parse("2024-01-31")
           )
         end
 
@@ -139,8 +138,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
           expect(FailECTInductionJob).to have_received(:perform_later).with(
             trn: teacher.trn,
             start_date: Date.parse("2023-01-01"),
-            completed_date: Date.parse("2024-01-31"),
-            pending_induction_submission_id: nil
+            completed_date: Date.parse("2024-01-31")
           )
         end
       end
@@ -285,8 +283,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
           expect(PassECTInductionJob).to have_received(:perform_later).with(
             trn: teacher.trn,
             start_date: Date.parse("2023-01-01"),
-            completed_date: Date.parse("2024-01-31"),
-            pending_induction_submission_id: nil
+            completed_date: Date.parse("2024-01-31")
           )
 
           expect(Events::Record).to have_received(:record_teacher_trs_induction_start_date_updated_event!).with(
@@ -331,8 +328,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
         expect(PassECTInductionJob).to have_received(:perform_later).with(
           trn: teacher.trn,
           start_date: Date.parse("2023-01-01"),
-          completed_date: Date.parse("2024-01-31"),
-          pending_induction_submission_id: nil
+          completed_date: Date.parse("2024-01-31")
         )
 
         expect(Events::Record).to have_received(:record_teacher_trs_induction_end_date_updated_event!).with(

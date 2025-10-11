@@ -93,7 +93,7 @@ RSpec.describe 'Appropriate body claiming an ECT: finding the ECT' do
             expect(response).to be_redirection
             expect(response).to redirect_to("/appropriate-body/teachers/#{teacher.id}")
 
-            expect(flash[:notice]).to eq('Teacher Trent Reznor already has an active induction period with this appropriate body')
+            expect(flash[:notice]).to eq('Teacher Trent Reznor already has an ongoing induction period with this appropriate body')
           end
         end
       end

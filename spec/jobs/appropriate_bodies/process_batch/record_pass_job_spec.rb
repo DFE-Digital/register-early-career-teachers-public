@@ -1,7 +1,7 @@
-RSpec.describe AppropriateBodies::ProcessBatch::ReleaseECTJob, type: :job do
+RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
   include ActiveJob::TestHelper
 
-  subject(:perform_release_ect_job) do
+  subject(:perform_record_pass_job) do
     described_class.perform_now(pending_induction_submission.id, author_email, author_name)
   end
 
@@ -14,38 +14,39 @@ RSpec.describe AppropriateBodies::ProcessBatch::ReleaseECTJob, type: :job do
   let(:pending_induction_submission) do
     FactoryBot.create(:pending_induction_submission,
                       pending_induction_submission_batch:,
-                      finished_on: 1.day.ago.to_date,
-                      number_of_terms: 10.9)
+                      finished_on: 1.week.ago.to_date,
+                      number_of_terms: 3.2,
+                      outcome: 'pass')
   end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:author_email) { 'barry@not-a-clue.co.uk' }
   let(:author_name) { 'Barry Cryer' }
-  let(:teacher) { Teacher.find_by(trn: pending_induction_submission.trn) }
+  let(:teacher) { pending_induction_submission.teacher }
   let(:induction_period) { teacher.induction_periods.first }
 
   before do
     FactoryBot.create(:teacher, trn: pending_induction_submission.trn)
-    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
+    FactoryBot.create(:induction_period, :ongoing, teacher: pending_induction_submission.teacher, appropriate_body:)
   end
 
-  it 'closes the induction', :aggregate_failures do
-    perform_release_ect_job
+  it 'records an outcome for the induction', :aggregate_failures do
+    perform_record_pass_job
     perform_enqueued_jobs
 
     expect(teacher.ongoing_induction_period).to be_nil
     expect(induction_period.finished_on).to eq(pending_induction_submission.finished_on)
+    expect(induction_period.outcome).to eq(pending_induction_submission.outcome)
     expect(induction_period.number_of_terms).to eq(pending_induction_submission.number_of_terms)
-    expect(induction_period.outcome).to be_nil
   end
 
-  it 'creates a closed induction event by the author' do
-    allow(Events::Record).to receive(:record_induction_period_closed_event!).and_call_original
+  it 'creates a pass induction event by the author' do
+    allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
 
-    perform_release_ect_job
+    perform_record_pass_job
     perform_enqueued_jobs
 
-    expect(Events::Record).to have_received(:record_induction_period_closed_event!).with(
+    expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
       appropriate_body:,
       teacher:,
       induction_period:,

@@ -8,9 +8,11 @@ module AppropriateBodies
 
         pending_induction_submission_batch.pending_induction_submissions.without_errors.map do |pending_induction_submission|
           if pending_induction_submission.release?
-            ReleaseECTJob.perform_later(pending_induction_submission.id, author.email, author.name)
-          else
-            RecordOutcomeJob.perform_later(pending_induction_submission.id, author.email, author.name)
+            RecordReleaseJob.perform_later(pending_induction_submission.id, author.email, author.name)
+          elsif pending_induction_submission.pass?
+            RecordPassJob.perform_later(pending_induction_submission.id, author.email, author.name)
+          elsif pending_induction_submission.fail?
+            RecordFailJob.perform_later(pending_induction_submission.id, author.email, author.name)
           end
         end
 
@@ -84,7 +86,7 @@ module AppropriateBodies
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end
 
-      # @return [Boolean] pass, FAIL, Release (case-insensitive)
+      # @return [Boolean] case-insensitive
       def invalid_outcome?
         row.outcome !~ /\A(pass|fail|release)\z/i
       end

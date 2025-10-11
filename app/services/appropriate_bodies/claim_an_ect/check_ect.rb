@@ -1,6 +1,9 @@
 module AppropriateBodies
   module ClaimAnECT
     class CheckECT
+      class TeacherHasOngoingInductionPeriodWithAnotherAB < StandardError
+      end
+
       attr_reader :appropriate_body, :pending_induction_submission
 
       def initialize(appropriate_body:, pending_induction_submission:)
@@ -21,6 +24,8 @@ module AppropriateBodies
 
     private
 
+      # @raise [AppropriateBodies::ClaimAnECT::CheckECT::TeacherHasOngoingInductionPeriodWithAnotherAB]
+      # @return [nil]
       def check_if_teacher_has_ongoing_induction_period_with_another_appropriate_body!
         existing_teacher = Teacher.find_by(trn: pending_induction_submission.trn)
 
@@ -31,7 +36,7 @@ module AppropriateBodies
         return unless ongoing_induction_period
 
         if ongoing_induction_period.appropriate_body != appropriate_body
-          raise AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithAnotherAB, ::Teachers::Name.new(existing_teacher).full_name
+          raise TeacherHasOngoingInductionPeriodWithAnotherAB
         end
       end
     end

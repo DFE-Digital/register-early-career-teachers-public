@@ -3,8 +3,6 @@ RSpec.describe FailECTInductionJob, type: :job do
   let(:trn) { teacher.trn }
   let(:start_date) { Date.parse("2023-11-13") }
   let(:completed_date) { Date.parse("2024-01-13") }
-  let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
-  let!(:pending_induction_submission_id) { pending_induction_submission.id }
   let(:api_client) { instance_double(TRS::APIClient) }
   let(:refresh_service) { instance_double(Teachers::RefreshTRSAttributes) }
 
@@ -20,46 +18,19 @@ RSpec.describe FailECTInductionJob, type: :job do
   describe '#perform' do
     context "when the API call is successful" do
       before do
-        allow(api_client).to receive(:fail_induction!)
-          .with(trn:, start_date:, completed_date:)
+        allow(api_client).to receive(:fail_induction!).with(trn:, start_date:, completed_date:)
       end
 
       it "calls the API client with correct parameters" do
-        expect(api_client).to receive(:fail_induction!)
-          .with(trn:, start_date:, completed_date:)
+        expect(api_client).to receive(:fail_induction!).with(trn:, start_date:, completed_date:)
 
-        described_class.perform_now(
-          trn:,
-          start_date:,
-          completed_date:,
-          pending_induction_submission_id:
-        )
-      end
-
-      it "it sets the delete_at timestamp to 24 hours in the future" do
-        freeze_time do
-          described_class.perform_now(
-            trn:,
-            start_date:,
-            completed_date:,
-            pending_induction_submission_id:
-          )
-
-          pending_induction_submission.reload
-
-          expect(pending_induction_submission.delete_at).to eql(24.hours.from_now)
-        end
+        described_class.perform_now(trn:, start_date:, completed_date:)
       end
 
       it "refreshes the teacher's TRS attributes" do
         expect(refresh_service).to receive(:refresh!)
 
-        described_class.perform_now(
-          trn:,
-          start_date:,
-          completed_date:,
-          pending_induction_submission_id:
-        )
+        described_class.perform_now(trn:, start_date:, completed_date:)
       end
     end
   end
