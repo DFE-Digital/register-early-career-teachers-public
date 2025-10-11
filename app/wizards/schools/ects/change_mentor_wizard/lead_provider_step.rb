@@ -1,6 +1,6 @@
 module Schools
   module ECTs
-    module ChangeTrainingProgrammeWizard
+    module ChangeMentorWizard
       class LeadProviderStep < Step
         attribute :lead_provider_id, :string
 
@@ -10,8 +10,10 @@ module Schools
 
         def self.permitted_params = [:lead_provider_id]
 
-        def previous_step = :edit
+        def previous_step = :training
         def next_step = :check_answers
+
+        def new_mentor = selected_mentor_at_school_period.teacher
 
         def save!
           store.lead_provider_id = lead_provider_id if valid_step?

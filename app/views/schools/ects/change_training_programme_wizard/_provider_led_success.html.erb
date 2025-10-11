@@ -1,7 +1,7 @@
 <%= govuk_panel(
       title_text: <<~TXT.squish
         You have changed #{@wizard.teacher_full_name}’s training programme to
-        provider-led with #{@wizard.current_step.provider_name}
+        provider-led with #{@wizard.current_step.current_lead_provider_name}
       TXT
     ) %>
 
@@ -10,6 +10,6 @@
 </h2>
 
 <p class="govuk-body">
-  We’ll let <%= @wizard.current_step.provider_name %> know your school wants to
-  work with them so they can arrange training.
+  We’ll let <%= @wizard.current_step.current_lead_provider_name %> know your
+  school wants to work with them so they can arrange training.
 </p>

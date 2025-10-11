@@ -34,10 +34,10 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::ConfirmationStep do
     end
   end
 
-  describe "#provider_name" do
+  describe "#current_lead_provider_name" do
     context "when there is no lead provider" do
       it "returns nil" do
-        expect(current_step.provider_name).to be_nil
+        expect(current_step.current_lead_provider_name).to be_nil
       end
     end
 
@@ -54,7 +54,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::ConfirmationStep do
       end
 
       it "returns the name of the lead provider" do
-        expect(current_step.provider_name)
+        expect(current_step.current_lead_provider_name)
           .to eq(training_period.lead_provider.name)
       end
     end
@@ -72,7 +72,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::ConfirmationStep do
       end
 
       it "returns the name of the lead provider from the expression of interest" do
-        expect(current_step.provider_name)
+        expect(current_step.current_lead_provider_name)
           .to eq(training_period.expression_of_interest.lead_provider.name)
       end
     end

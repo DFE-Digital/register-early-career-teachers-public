@@ -1,8 +1,8 @@
-describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
+describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do
-    Schools::ECTs::ChangeTrainingProgrammeWizard::Wizard.new(
+    Schools::ECTs::ChangeMentorWizard::Wizard.new(
       current_step: :lead_provider,
       step_params: ActionController::Parameters.new(lead_provider: params),
       author:,
@@ -10,27 +10,48 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
       ect_at_school_period:
     )
   end
-  let(:store) { FactoryBot.build(:session_repository) }
+  let(:store) do
+    FactoryBot.build(
+      :session_repository,
+      mentor_at_school_period_id: mentor_at_school_period.id,
+      accepting_current_lead_provider: nil
+    )
+  end
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
-  let(:params) { { lead_provider_id: Random.rand(1..100) } }
+  let(:mentor_at_school_period) do
+    FactoryBot.create(
+      :mentor_at_school_period,
+      :ongoing,
+      school:,
+      started_on: ect_at_school_period.started_on - 1.month
+    )
+  end
+  let(:params) { { lead_provider_id: "" } }
 
   describe ".permitted_params" do
     it "returns the permitted parameters" do
-      expect(described_class.permitted_params).to contain_exactly(:lead_provider_id)
+      expect(described_class.permitted_params)
+        .to contain_exactly(:lead_provider_id)
     end
   end
 
   describe "#previous_step" do
     it "returns the edit step" do
-      expect(current_step.previous_step).to eq(:edit)
+      expect(current_step.previous_step).to eq(:training)
     end
   end
 
   describe "#next_step" do
-    it "returns the check_answers step" do
+    it "returns the check answers step" do
       expect(current_step.next_step).to eq(:check_answers)
+    end
+  end
+
+  describe "#new_mentor" do
+    it "returns the teacher from the selected mentor_at_school_period" do
+      expect(current_step.new_mentor).to eq(mentor_at_school_period.teacher)
     end
   end
 
