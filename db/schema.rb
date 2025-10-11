@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_08_144737) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_09_140202) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -23,7 +23,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_144737) do
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
-  create_enum "deferral_reasons", ["bereavement", "long-term-sickness", "parental-leave", "career-break", "other"]
+  create_enum "deferral_reasons", ["bereavement", "long_term_sickness", "parental_leave", "career_break", "other"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api"]
   create_enum "fee_types", ["output", "service"]
@@ -40,7 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_144737) do
   create_enum "schedule_identifiers", ["ecf-extended-april", "ecf-extended-january", "ecf-extended-september", "ecf-reduced-april", "ecf-reduced-january", "ecf-reduced-september", "ecf-replacement-april", "ecf-replacement-january", "ecf-replacement-september", "ecf-standard-april", "ecf-standard-january", "ecf-standard-september"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]
-  create_enum "withdrawal_reasons", ["left-teaching-profession", "moved-school", "mentor-no-longer-being-mentor", "switched-to-school-led", "other"]
+  create_enum "withdrawal_reasons", ["left_teaching_profession", "moved_school", "mentor_no_longer_being_mentor", "switched_to_school_led", "other"]
   create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "active_lead_providers", force: :cascade do |t|

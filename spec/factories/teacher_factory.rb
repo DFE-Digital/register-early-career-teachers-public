@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory(:teacher) do
     sequence(:trn, 1_000_000)
-    sequence(:trs_first_name) { |n| "First name #{n}" }
-    sequence(:trs_last_name) { |n| "Last name #{n}" }
+    sequence(:trs_first_name) { Faker::Name.first_name }
+    sequence(:trs_last_name) { Faker::Name.last_name }
 
     trait :with_corrected_name do
       corrected_name { [trs_first_name, Faker::Name.middle_name, trs_last_name].join(' ') }
