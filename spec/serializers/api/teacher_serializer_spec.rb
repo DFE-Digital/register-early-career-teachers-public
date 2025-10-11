@@ -73,11 +73,24 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
       context "when there are ECT/mentor training periods for the lead provider" do
         let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider:) }
 
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
-        let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:, lead_provider_delivery_partnership:) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: 2.months.ago, finished_on: nil) }
+        let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period:, lead_provider_delivery_partnership:) }
 
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
-        let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, lead_provider_delivery_partnership:) }
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.months.ago, finished_on: nil) }
+        let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period:, lead_provider_delivery_partnership:) }
+
+        let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 2.months.ago, finished_on: nil) }
+        let!(:other_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period: other_mentor_at_school_period, lead_provider_delivery_partnership:) }
+
+        let!(:latest_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: other_mentor_at_school_period,
+            started_on: ect_training_period.started_on + 1.week,
+            finished_on: nil
+          )
+        end
 
         it { expect(ecf_enrolments.count).to eq(2) }
 
@@ -93,7 +106,15 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `mentor_id`" do
-            expect(ect_enrolment["mentor_id"]).to eq("mentor_api_id")
+            expect(ect_enrolment["mentor_id"]).to eq(latest_mentorship_period.mentor.teacher.api_id)
+          end
+
+          context "when there is no latest mentor training period" do
+            let(:latest_mentorship_period) { nil }
+
+            it "serializes `mentor_id` as nil" do
+              expect(ect_enrolment["mentor_id"]).to be_nil
+            end
           end
 
           it "serializes `school_urn`" do

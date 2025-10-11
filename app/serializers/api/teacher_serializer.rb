@@ -17,8 +17,11 @@ class API::TeacherSerializer < Blueprinter::Base
         end
       end
       field(:email) { |training_period| training_period.trainee.email }
-      field(:mentor_id) do |training_period|
-        "mentor_api_id" if training_period.for_ect? # TODO: implement when we have metadata for mentor_api_id
+      field(:mentor_id) do |training_period, options|
+        if training_period.for_ect?
+          teacher = training_period.trainee.teacher
+          ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:).api_mentor_id
+        end
       end
       field(:school_urn) { |training_period| training_period.school_partnership.school.urn }
       field(:participant_type) { |training_period| training_period.for_ect? ? "ect" : "mentor" }
@@ -69,17 +72,11 @@ class API::TeacherSerializer < Blueprinter::Base
     field :updated_at
 
     association :ecf_enrolments, blueprint: TrainingPeriodSerializer do |teacher, options|
-      metadata = lead_provider_metadata(teacher:, options:)
+      metadata = ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:)
       [metadata.latest_ect_training_period, metadata.latest_mentor_training_period].compact
     end
 
     association :teacher_id_changes, blueprint: TeacherIdChangeSerializer, name: :participant_id_changes
-
-    class << self
-      def lead_provider_metadata(teacher:, options:)
-        teacher.lead_provider_metadata.select { it.lead_provider_id == options[:lead_provider_id] }.sole
-      end
-    end
   end
 
   identifier :api_id, name: :id
@@ -87,5 +84,11 @@ class API::TeacherSerializer < Blueprinter::Base
 
   association :attributes, blueprint: AttributesSerializer do |teacher|
     teacher
+  end
+
+  class << self
+    def lead_provider_metadata(teacher:, options:)
+      teacher.lead_provider_metadata.select { it.lead_provider_id == options[:lead_provider_id] }.sole
+    end
   end
 end

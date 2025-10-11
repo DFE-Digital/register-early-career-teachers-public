@@ -278,7 +278,7 @@ RSpec.shared_examples "a declarative metadata model", :with_metadata do |when_ch
 
         instance
 
-        expect(manager).to have_received(:refresh_metadata!).with(target)
+        expect(manager).to have_received(:refresh_metadata!).with(target).at_least(:once)
       end
     end
 

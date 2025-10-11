@@ -334,6 +334,7 @@ erDiagram
     integer latest_mentor_training_period_id
     datetime created_at
     datetime updated_at
+    uuid api_mentor_id
   }
   Metadata_TeacherLeadProvider }o--|| Teacher : belongs_to
   Metadata_TeacherLeadProvider }o--|| LeadProvider : belongs_to

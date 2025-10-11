@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_08_144737) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_10_075339) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -410,6 +410,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_144737) do
     t.bigint "latest_mentor_training_period_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "api_mentor_id"
     t.index ["latest_ect_training_period_id"], name: "idx_on_latest_ect_training_period_id_2d0632b258"
     t.index ["latest_mentor_training_period_id"], name: "idx_on_latest_mentor_training_period_id_862127afaf"
     t.index ["lead_provider_id"], name: "index_metadata_teachers_lead_providers_on_lead_provider_id"

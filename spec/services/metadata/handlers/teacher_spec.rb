@@ -111,7 +111,8 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: ect_training_period1,
-            latest_mentor_training_period: mentor_training_period1
+            latest_mentor_training_period: mentor_training_period1,
+            api_mentor_id: nil
           )
 
           metadata2 = Metadata::TeacherLeadProvider.where(lead_provider: lead_provider2).sole
@@ -119,7 +120,8 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider2,
             latest_ect_training_period: ect_training_period2,
-            latest_mentor_training_period: mentor_training_period2
+            latest_mentor_training_period: mentor_training_period2,
+            api_mentor_id: nil
           )
         end
       end
@@ -193,7 +195,8 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: ect_training_period2,
-            latest_mentor_training_period: mentor_training_period2
+            latest_mentor_training_period: mentor_training_period2,
+            api_mentor_id: nil
           )
         end
       end
@@ -225,13 +228,14 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: ect_training_period1,
-            latest_mentor_training_period: nil
+            latest_mentor_training_period: nil,
+            api_mentor_id: nil
           )
         end
       end
 
       context "teacher without any training periods" do
-        it "creates metadata with nil latest training periods" do
+        it "creates metadata with nil latest training periods and api_mentor_id" do
           refresh_metadata
 
           metadata = Metadata::TeacherLeadProvider.where(lead_provider: lead_provider1).sole
@@ -239,7 +243,79 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: nil,
-            latest_mentor_training_period: nil
+            latest_mentor_training_period: nil,
+            api_mentor_id: nil
+          )
+        end
+      end
+
+      context "when the latest ECT training period has mentorship periods" do
+        let!(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            school: school1,
+            teacher: teacher1,
+            started_on: 1.year.ago,
+            finished_on: nil
+          )
+        end
+        let!(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            school: school1,
+            started_on: 1.year.ago,
+            finished_on: nil
+          )
+        end
+        let!(:ect_training_period1) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            started_on: ect_at_school_period.started_on + 1.month,
+            finished_on: nil,
+            ect_at_school_period:,
+            school_partnership: school_partnership1
+          )
+        end
+        let!(:latest_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: ect_training_period1.started_on + 1.month,
+            finished_on: nil
+          )
+        end
+
+        before do
+          # Previous mentorship period.
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: latest_mentorship_period.started_on - 1.month,
+            finished_on: latest_mentorship_period.started_on
+          )
+
+          # Previous ECT training period.
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            started_on: ect_at_school_period.started_on,
+            finished_on: ect_training_period1.started_on,
+            ect_at_school_period:,
+            school_partnership: school_partnership1
+          )
+        end
+
+        it "creates metadata with the correct/latest api_mentor_id" do
+          refresh_metadata
+
+          metadata = Metadata::TeacherLeadProvider.where(teacher: teacher1, lead_provider: lead_provider1).sole
+          expect(metadata).to have_attributes(
+            teacher: teacher1,
+            lead_provider: lead_provider1,
+            api_mentor_id: latest_mentorship_period.mentor.teacher.api_id
           )
         end
       end
