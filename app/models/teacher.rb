@@ -24,8 +24,8 @@ class Teacher < ApplicationRecord
   has_one :ongoing_induction_period, -> { ongoing }, class_name: "InductionPeriod"
   has_one :started_induction_period, -> { earliest_first }, class_name: "InductionPeriod"
   has_one :finished_induction_period, -> { finished.with_outcome.latest_first }, class_name: "InductionPeriod"
-  has_one :earliest_ect_at_school_period, -> { earliest_first }, class_name: "ECTAtSchoolPeriod"
-  has_one :earliest_mentor_at_school_period, -> { earliest_first }, class_name: "MentorAtSchoolPeriod"
+  has_one :earliest_ect_at_school_period, -> { unscope(where: :withdrawn_by_error).earliest_first }, class_name: "ECTAtSchoolPeriod"
+  has_one :earliest_mentor_at_school_period, -> { unscope(where: :withdrawn_by_error).earliest_first }, class_name: "MentorAtSchoolPeriod"
 
   has_many :appropriate_bodies, through: :induction_periods
   has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body

@@ -10,6 +10,7 @@ module API::Teachers
       training_status: :ignore,
       api_from_teacher_id: :ignore,
       updated_since: :ignore,
+      include_withdrawn_by_error: true,
       sort: { created_at: :asc }
     )
       @lead_provider_id = lead_provider_id
@@ -55,7 +56,7 @@ module API::Teachers
                 contract_period
                 delivery_partner
               ],
-              ect_at_school_period: {
+              unscoped_ect_at_school_period: {
                 teacher: %i[
                   started_induction_period
                   finished_induction_period
@@ -68,7 +69,7 @@ module API::Teachers
                 contract_period
                 delivery_partner
               ],
-              mentor_at_school_period: {
+              unscoped_mentor_at_school_period: {
                 teacher: %i[
                   started_induction_period
                   finished_induction_period

@@ -185,12 +185,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_144737) do
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
     t.bigint "school_reported_appropriate_body_id"
+    t.boolean "withdrawn_by_error", default: false, null: false
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
     t.index ["school_reported_appropriate_body_id"], name: "idx_on_school_reported_appropriate_body_id_01f5ffc90a"
     t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
     t.index ["teacher_id"], name: "index_ect_at_school_periods_on_teacher_id"
+    t.index ["withdrawn_by_error"], name: "index_ect_at_school_periods_on_withdrawn_by_error"
   end
 
   create_table "events", force: :cascade do |t|
@@ -344,10 +346,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_144737) do
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.citext "email"
+    t.boolean "withdrawn_by_error", default: false, null: false
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
     t.index ["teacher_id"], name: "index_mentor_at_school_periods_on_teacher_id"
+    t.index ["withdrawn_by_error"], name: "index_mentor_at_school_periods_on_withdrawn_by_error"
   end
 
   create_table "mentorship_periods", force: :cascade do |t|
