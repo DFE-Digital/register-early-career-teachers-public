@@ -12,5 +12,9 @@ FactoryBot.define do
     trait :with_sequential_start_year do
       sequence(:start_year) { |n| 2021 + (n % 9) }
     end
+
+    trait :payments_frozen do
+      payments_frozen_at { 2.months.ago }
+    end
   end
 end
