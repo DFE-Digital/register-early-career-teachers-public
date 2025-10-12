@@ -6,12 +6,14 @@ constraints -> { Rails.application.config.enable_api } do
     get "docs/:version", to: "documentation#index", as: :documentation
 
     namespace :v3 do
-      resources :participants, only: %i[index show] do
-        put :change_schedule, path: "change-schedule"
-        put :defer
-        put :resume
-        put :withdraw
-        get :transfers, to: "transfers#show"
+      resources :participants, only: %i[index show], param: :api_id do
+        member do
+          put :change_schedule, path: "change-schedule"
+          put :defer
+          put :resume
+          put :withdraw
+          get :transfers, to: "transfers#show"
+        end
 
         collection do
           resources :transfers, only: %i[index]
