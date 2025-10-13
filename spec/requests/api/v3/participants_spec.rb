@@ -5,10 +5,14 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
 
-  def create_resource(active_lead_provider:, from_participant_id: nil)
+  def create_resource(active_lead_provider:, from_participant_id: nil, training_status: nil)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
-    FactoryBot.create(:training_period, school_partnership:).trainee.teacher.tap do |teacher|
+    training_period = FactoryBot.create(:training_period, school_partnership:)
+    training_period.update!(withdrawn_at: 1.day.ago, withdrawal_reason: :other) if training_status == :withdrawn
+    training_period.update!(deferred_at: 1.day.ago, deferral_reason: :other) if training_status == :deferred
+
+    training_period.trainee.teacher.tap do |teacher|
       FactoryBot.create(:teacher_id_change, teacher:, api_from_teacher_id: from_participant_id) if from_participant_id
     end
   end
@@ -25,7 +29,7 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
     it_behaves_like "a paginated endpoint"
     it_behaves_like "a filter by multiple cohorts (contract_period year) endpoint"
     it_behaves_like "a filter by from_participant_id endpoint"
-    # it_behaves_like "a filter by training_status endpoint" TODO: implement when we have a training_status field
+    it_behaves_like "a filter by training_status endpoint"
     # it_behaves_like "a filter by updated_since endpoint" TODO: uncomment when Teacher has an api_updated_at
     # it_behaves_like "a sortable endpoint" TODO: uncomment when Teacher has an api_updated_at
   end
