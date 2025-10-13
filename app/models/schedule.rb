@@ -18,6 +18,7 @@ class Schedule < ApplicationRecord
 
   belongs_to :contract_period, inverse_of: :schedules, foreign_key: :contract_period_year
   has_many :milestones
+  has_many :training_periods
 
   validates :contract_period_year,
             presence: { message: 'Enter a contract period year' }

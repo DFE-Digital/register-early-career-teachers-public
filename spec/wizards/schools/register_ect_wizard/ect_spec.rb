@@ -640,6 +640,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
           FactoryBot.create(
             :training_period,
             :for_ect,
+            :with_only_expression_of_interest,
             ect_at_school_period: ect_period,
             started_on: Date.new(2025, 3, 10),
             expression_of_interest:

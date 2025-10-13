@@ -42,6 +42,19 @@ describe TrainingPeriods::Search do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
 
+    let(:school_partnership) do
+      FactoryBot.create(:school_partnership,
+                        school:,
+                        lead_provider_delivery_partnership: FactoryBot.create(
+                          :lead_provider_delivery_partnership,
+                          active_lead_provider: FactoryBot.create(
+                            :active_lead_provider,
+                            lead_provider:,
+                            contract_period:
+                          )
+                        ))
+    end
+
     let(:ect_at_school_period) do
       FactoryBot.create(:ect_at_school_period,
                         school:,
@@ -68,7 +81,7 @@ describe TrainingPeriods::Search do
       FactoryBot.create(:training_period,
                         :with_expression_of_interest,
                         ect_at_school_period:,
-                        school_partnership: FactoryBot.create(:school_partnership),
+                        school_partnership:,
                         expression_of_interest: matching_expression_of_interest,
                         started_on: Date.new(2025, 4, 1),
                         finished_on: Date.new(2025, 4, 30))

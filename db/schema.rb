@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_10_075339) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_13_110710) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -880,4 +880,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_10_075339) do
   add_foreign_key "pending_induction_submissions", "appropriate_bodies"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
+  add_foreign_key "school_partnerships", "schools"
+  add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
+  add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
+  add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"
+  add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "statement_adjustments", "statements"
+  add_foreign_key "statements", "active_lead_providers"
+  add_foreign_key "teacher_id_changes", "teachers"
+  add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"
+  add_foreign_key "teacher_id_changes", "teachers", column: "api_to_teacher_id", primary_key: "api_id"
+  add_foreign_key "teacher_migration_failures", "teachers"
+  add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
+  add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
+  add_foreign_key "training_periods", "active_lead_providers", column: "expression_of_interest_id"
+  add_foreign_key "training_periods", "ect_at_school_periods"
+  add_foreign_key "training_periods", "mentor_at_school_periods"
+  add_foreign_key "training_periods", "schedules"
+  add_foreign_key "training_periods", "school_partnerships"
 end
