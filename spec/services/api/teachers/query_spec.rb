@@ -5,8 +5,6 @@ RSpec.describe API::Teachers::Query, :with_metadata do
 
   describe "preloading relationships" do
     shared_examples "preloaded associations" do
-      it { expect(result.association(:earliest_ect_at_school_period)).to be_loaded }
-      it { expect(result.association(:earliest_mentor_at_school_period)).to be_loaded }
       it { expect(result.association(:teacher_id_changes)).to be_loaded }
       it { expect(result.association(:lead_provider_metadata)).to be_loaded }
 
@@ -32,11 +30,15 @@ RSpec.describe API::Teachers::Query, :with_metadata do
             expect(training_period.ect_at_school_period.association(:teacher)).to be_loaded
             expect(training_period.ect_at_school_period.teacher.association(:started_induction_period)).to be_loaded
             expect(training_period.ect_at_school_period.teacher.association(:finished_induction_period)).to be_loaded
+            expect(training_period.ect_at_school_period.teacher.association(:earliest_ect_at_school_period)).to be_loaded
+            expect(training_period.ect_at_school_period.teacher.association(:earliest_mentor_at_school_period)).to be_loaded
           elsif training_period.for_mentor?
             expect(training_period.association(:mentor_at_school_period)).to be_loaded
             expect(training_period.mentor_at_school_period.association(:teacher)).to be_loaded
             expect(training_period.mentor_at_school_period.teacher.association(:started_induction_period)).to be_loaded
             expect(training_period.mentor_at_school_period.teacher.association(:finished_induction_period)).to be_loaded
+            expect(training_period.mentor_at_school_period.teacher.association(:earliest_ect_at_school_period)).to be_loaded
+            expect(training_period.mentor_at_school_period.teacher.association(:earliest_mentor_at_school_period)).to be_loaded
           end
         end
       end
@@ -216,6 +218,76 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           query = described_class.new(api_from_teacher_id: " ")
 
           expect(query.teachers).to contain_exactly(teacher1, teacher2, teacher3)
+        end
+      end
+
+      describe "by `training_status`" do
+        let(:school_partnership) { FactoryBot.create(:school_partnership) }
+        let!(:deferred_teacher) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:).trainee.teacher }
+        let!(:withdrawn_teacher) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :withdrawn, school_partnership:).trainee.teacher }
+        let!(:active_teacher) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:).trainee.teacher }
+
+        context "when `training_status` param is omitted" do
+          it "returns all teachers" do
+            query = described_class.new
+
+            expect(query.teachers).to contain_exactly(deferred_teacher, withdrawn_teacher, active_teacher)
+          end
+        end
+
+        it "filters by deferred `training_status`" do
+          query = described_class.new(training_status: :deferred)
+
+          expect(query.teachers).to contain_exactly(deferred_teacher)
+        end
+
+        it "filters by withdrawn `training_status`" do
+          query = described_class.new(training_status: :withdrawn)
+
+          expect(query.teachers).to contain_exactly(withdrawn_teacher)
+        end
+
+        it "filters by active `training_status`" do
+          query = described_class.new(training_status: :active)
+
+          expect(query.teachers).to contain_exactly(active_teacher)
+        end
+
+        it "returns all teachers if an invalid `training_status` is supplied" do
+          query = described_class.new(training_status: "invalid")
+
+          expect(query.teachers).to contain_exactly(deferred_teacher, withdrawn_teacher, active_teacher)
+        end
+
+        it "does not filter by `training_status` if an empty string is supplied" do
+          query = described_class.new(training_status: " ")
+
+          expect(query.teachers).to contain_exactly(deferred_teacher, withdrawn_teacher, active_teacher)
+        end
+      end
+
+      describe "by `training_status` when a teacher has multiple training periods" do
+        let(:teacher) { FactoryBot.create(:teacher) }
+        let(:school_partnership) { FactoryBot.create(:school_partnership) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
+        let!(:deferred_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:, ect_at_school_period:) }
+        let!(:withdrawn_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :withdrawn, school_partnership:, mentor_at_school_period:) }
+
+        it "returns the teacher if any of the latest training periods match the filter" do
+          query = described_class.new(training_status: :deferred)
+
+          expect(query.teachers).to contain_exactly(teacher)
+
+          query = described_class.new(training_status: :withdrawn)
+
+          expect(query.teachers).to contain_exactly(teacher)
+        end
+
+        it "does not return the teacher if none of the latest training periods match the filter" do
+          query = described_class.new(training_status: :active)
+
+          expect(query.teachers).to be_empty
         end
       end
 
