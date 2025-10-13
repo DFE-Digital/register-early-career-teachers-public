@@ -195,6 +195,34 @@ RSpec.shared_examples "a filter by from_participant_id endpoint" do
   end
 end
 
+RSpec.shared_examples "a filter by training_status endpoint" do
+  it "returns only resources that have the specified training_status" do
+    deferred_resource = create_resource(active_lead_provider:, training_status: :deferred)
+
+    # Resource with another training_status should not be included.
+    create_resource(active_lead_provider:, training_status: :withdrawn)
+
+    params = { filter: { training_status: :deferred } }
+    authenticated_api_get(path, params:)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render([deferred_resource.reload], root: "data", **serializer_options))
+  end
+
+  it "returns no resources if the training_status is not found" do
+    deferred_resource = create_resource(active_lead_provider:, training_status: :deferred)
+    withdrawn_resource = create_resource(active_lead_provider:, training_status: :withdrawn)
+
+    params = { filter: { training_status: "invalid" } }
+    authenticated_api_get(path, params:)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render([deferred_resource, withdrawn_resource], root: "data", **serializer_options))
+  end
+end
+
 RSpec.shared_examples "a does not filter by cohort endpoint" do
   it "returns the resources, ignoring the `cohort`" do
     different_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period.year + 1)
