@@ -26,7 +26,7 @@ class API::TeacherSerializer < Blueprinter::Base
       field(:school_urn) { |training_period| training_period.school_partnership.school.urn }
       field(:participant_type) { |training_period| training_period.for_ect? ? "ect" : "mentor" }
       field(:cohort) { |training_period| training_period.school_partnership.contract_period.year }
-      field(:training_status) { "active" } # TODO: implement when we have training status service
+      field(:training_status) { |training_period| API::TrainingPeriods::TrainingStatus.new(training_period:).status }
       field(:participant_status) { "active" } # TODO: implement when we have participant status service
       field(:eligible_for_funding) { true } # TODO: implement when we have eligibility service
       field(:pupil_premium_uplift) do |training_period|
@@ -37,8 +37,24 @@ class API::TeacherSerializer < Blueprinter::Base
       end
       field(:schedule_identifier) { "ecf-extended-september" } # TODO: implement when training periods have a connection to a schedule
       field(:delivery_partner_id) { |training_period| training_period.school_partnership.delivery_partner.api_id }
-      field(:withdrawal) { nil } # TODO: implement when we have withdrawal service
-      field(:deferral) { nil } # TODO: implement when we have deferral service
+      field(:withdrawal) do |training_period|
+        training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
+        if training_status == :withdrawn
+          {
+            "withdrawn_at" => training_period.withdrawn_at.utc.rfc3339,
+            "reason" => training_period.withdrawal_reason.dasherize
+          }
+        end
+      end
+      field(:deferral) do |training_period|
+        training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
+        if training_status == :deferred
+          {
+            "deferred_at" => training_period.deferred_at.utc.rfc3339,
+            "reason" => training_period.deferral_reason.dasherize
+          }
+        end
+      end
       field(:created_at) do |training_period|
         teacher = training_period.trainee.teacher
 
