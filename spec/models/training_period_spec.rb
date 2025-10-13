@@ -42,6 +42,34 @@ describe TrainingPeriod do
                            .with_suffix(:training_programme)
                            .backed_by_column_of_type(:enum)
     end
+
+    it "uses the withdrawal_reasons enum" do
+      expect(subject).to define_enum_for(:withdrawal_reason)
+                           .with_values({
+                             left_teaching_profession: "left_teaching_profession",
+                             moved_school: "moved_school",
+                             mentor_no_longer_being_mentor: "mentor_no_longer_being_mentor",
+                             switched_to_school_led: "switched_to_school_led",
+                             other: "other"
+                           })
+                           .validating(allowing_nil: true)
+                           .with_suffix(:withdrawal_reason)
+                           .backed_by_column_of_type(:enum)
+    end
+
+    it "uses the deferral_reasons enum" do
+      expect(subject).to define_enum_for(:deferral_reason)
+                           .with_values({
+                             bereavement: "bereavement",
+                             long_term_sickness: "long_term_sickness",
+                             parental_leave: "parental_leave",
+                             career_break: "career_break",
+                             other: "other"
+                           })
+                           .validating(allowing_nil: true)
+                           .with_suffix(:deferral_reason)
+                           .backed_by_column_of_type(:enum)
+    end
   end
 
   describe "associations" do
@@ -83,7 +111,7 @@ describe TrainingPeriod do
     end
 
     context "when withdrawal_reason is present" do
-      subject { FactoryBot.build(:training_period, withdrawal_reason: "moved-school") }
+      subject { FactoryBot.build(:training_period, withdrawal_reason: :moved_school) }
 
       it { is_expected.to validate_presence_of(:withdrawn_at) }
     end
@@ -95,7 +123,7 @@ describe TrainingPeriod do
     end
 
     context "when deferral_reason is present" do
-      subject { FactoryBot.build(:training_period, deferral_reason: "parental-leave") }
+      subject { FactoryBot.build(:training_period, deferral_reason: :parental_leave) }
 
       it { is_expected.to validate_presence_of(:deferred_at) }
     end
