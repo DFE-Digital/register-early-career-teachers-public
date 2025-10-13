@@ -1,4 +1,4 @@
-RSpec.describe SandboxSeedData::Helpers::SchoolUrnGenerator, type: :helper do
+RSpec.describe SandboxSeedData::Helpers::SchoolURNGenerator, type: :helper do
   before { FactoryBot.create_list(:school, 5) }
 
   describe ".next" do

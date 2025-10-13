@@ -9,7 +9,7 @@ module SandboxSeedData
       log_plant_info("schools")
 
       NUMBER_OF_RECORDS.times do
-        create_school(urn: Helpers::SchoolUrnGenerator.next)
+        create_school(urn: Helpers::SchoolURNGenerator.next)
       end
     end
 
