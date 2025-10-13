@@ -1,9 +1,18 @@
 describe ECTAtSchoolPeriod do
   describe "declarative updates" do
-    let(:instance) { FactoryBot.create(:ect_at_school_period, :ongoing, school: target) }
-    let!(:target) { FactoryBot.create(:school) }
+    describe "school target" do
+      let(:instance) { FactoryBot.create(:ect_at_school_period, :ongoing, school: target) }
+      let!(:target) { FactoryBot.create(:school) }
 
-    it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+    end
+
+    describe "teacher target" do
+      let(:instance) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: target) }
+      let!(:target) { FactoryBot.create(:teacher) }
+
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy]
+    end
   end
 
   describe "associations" do
@@ -96,6 +105,37 @@ describe ECTAtSchoolPeriod do
           expect(ect_at_school_period.current_or_next_mentorship_period).to be_nil
         end
       end
+    end
+
+    describe '.latest_mentorship_period' do
+      subject { ect_at_school_period.latest_mentorship_period }
+
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+      let(:mentorship_started_on) { 3.weeks.ago }
+      let(:mentorship_finished_on) { nil }
+      let!(:latest_mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: mentorship_started_on,
+          finished_on: mentorship_finished_on
+        )
+      end
+
+      before do
+        # Previous mentorship period.
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period,
+          started_on: latest_mentorship_period.started_on - 6.months,
+          finished_on: latest_mentorship_period.started_on
+        )
+      end
+
+      it { is_expected.to eq(latest_mentorship_period) }
     end
   end
 
