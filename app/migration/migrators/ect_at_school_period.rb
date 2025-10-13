@@ -36,7 +36,7 @@ module Migrators
       teacher_profile
         .participant_profiles
         .ect
-        .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
+        .eager_load(:schedule, induction_records: [induction_programme: [school_cohort: %i[school cohort]]])
         .find_each do |participant_profile|
           sanitizer = InductionRecordSanitizer.new(participant_profile:, group_by: :school)
 
@@ -49,7 +49,11 @@ module Migrators
 
             school_periods.flatten!
 
-            teacher.update!(api_ect_training_record_id: participant_profile.id)
+            ect_payments_frozen_year = participant_profile.previous_payments_frozen_cohort_start_year
+            teacher.ect_payments_frozen_year = ect_payments_frozen_year if ect_payments_frozen_year
+            teacher.api_ect_training_record_id = participant_profile.id
+            teacher.save!
+
             result = Builders::ECT::SchoolPeriods
                        .new(teacher:, school_periods:, created_at: participant_profile.created_at)
                        .build

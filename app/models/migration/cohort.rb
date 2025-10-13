@@ -3,5 +3,9 @@ module Migration
     def next
       self.class.find_by(start_year: start_year + 1)
     end
+
+    def payments_frozen?
+      payments_frozen_at.present? && Time.current >= payments_frozen_at
+    end
   end
 end
