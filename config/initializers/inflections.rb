@@ -18,10 +18,11 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "ECT" # Early Career Teacher
   inflect.acronym "ECTs" # Early Career Teachers
   inflect.acronym "GIAS" # Get Information About Schools
+  inflect.acronym "ITT" # Initial teacher training
   inflect.acronym "OTP" # One-time Password
   inflect.acronym "TRN" # Teacher Reference Number
   inflect.acronym "TRS" # Teaching Record System
-  inflect.acronym "ITT" # Initial teacher training
+  inflect.acronym "URN" # Unique Reference Number
   inflect.acronym "OmniAuth"
   inflect.acronym "OpenID"
 
