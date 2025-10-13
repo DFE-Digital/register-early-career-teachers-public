@@ -32,9 +32,11 @@ module SandboxSeedData
       if Faker::Boolean.boolean(true_ratio: 0.5)
         ect_at_school_period = ect_at_school_period(teacher:, school:, school_period:)
         FactoryBot.create(:training_period, *traits.compact, :for_ect, ect_at_school_period:, school_partnership:, **training_period).tap { log_training_period(training_period: it) }
+        set_ect_eligible_for_funding(teacher:)
       else
         mentor_at_school_period = mentor_at_school_period(teacher:, school:, school_period:)
         FactoryBot.create(:training_period, *traits.compact, :for_mentor, mentor_at_school_period:, school_partnership:, **training_period).tap { log_training_period(training_period: it) }
+        set_mentor_eligible_for_funding(teacher:)
       end
     end
 
@@ -68,6 +70,18 @@ module SandboxSeedData
         email:,
         **school_period
       ).tap { log_mentor_at_school_period(mentor_at_school_period: it) }
+    end
+
+    def set_ect_eligible_for_funding(teacher:)
+      return unless Faker::Boolean.boolean(true_ratio: 0.1)
+
+      teacher.update!(ect_first_became_eligible_for_training_at: 3.months.ago)
+    end
+
+    def set_mentor_eligible_for_funding(teacher:)
+      return unless Faker::Boolean.boolean(true_ratio: 0.1)
+
+      teacher.update!(mentor_first_became_eligible_for_training_at: 3.months.ago)
     end
 
     def random_period_within(started_on:, finished_on:)
