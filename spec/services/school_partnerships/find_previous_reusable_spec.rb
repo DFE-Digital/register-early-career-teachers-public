@@ -20,14 +20,14 @@ RSpec.describe SchoolPartnerships::FindPreviousReusable do
     FactoryBot.create(:active_lead_provider, :for_year, year: current_year, lead_provider: last_lead_provider)
   end
 
-  def pair_current_year_with(dp)
+  def pair_current_year_with(delivery_partner)
     FactoryBot.create(:lead_provider_delivery_partnership,
                       active_lead_provider: active_lead_provider_for_current_year,
-                      delivery_partner: dp)
+                      delivery_partner:)
   end
 
   describe "#call" do
-    context "when a previous-year school partnership exists and the same LP+DP are active together this year" do
+    context "when a previous-year school partnership exists and the same LP/DP are active together this year" do
       let!(:previous_year_school_partnership) do
         FactoryBot.create(:school_partnership, :for_year,
                           year: previous_year,
@@ -159,7 +159,7 @@ RSpec.describe SchoolPartnerships::FindPreviousReusable do
     end
 
     context "when a current-year partnership exists but for a different DP" do
-      let!(:prev_sp) do
+      let!(:previous_sp) do
         FactoryBot.create(:school_partnership, :for_year,
                           year: previous_year,
                           school:,
@@ -169,14 +169,14 @@ RSpec.describe SchoolPartnerships::FindPreviousReusable do
 
       before do
         pair_current_year_with(delivery_partner_alpha)
-        other_curr_pair = FactoryBot.create(:lead_provider_delivery_partnership,
-                                            active_lead_provider: active_lead_provider_for_current_year,
-                                            delivery_partner: delivery_partner_omega)
-        FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: other_curr_pair)
+        other_current_pair = FactoryBot.create(:lead_provider_delivery_partnership,
+                                               active_lead_provider: active_lead_provider_for_current_year,
+                                               delivery_partner: delivery_partner_omega)
+        FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: other_current_pair)
       end
 
       it "returns the previous-year partnership that is valid this year (by DP)" do
-        expect(service.call(school:, last_lead_provider:, current_contract_period:)).to eq(prev_sp)
+        expect(service.call(school:, last_lead_provider:, current_contract_period:)).to eq(previous_sp)
       end
     end
 

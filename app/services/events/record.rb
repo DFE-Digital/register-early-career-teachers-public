@@ -562,8 +562,9 @@ module Events
       previous_school_partnership_id:,
       happened_at: Time.zone.now
     )
-      event_type = :school_partnership_reused
+      fail(NotPersistedRecord, 'school_partnership') unless school_partnership&.persisted?
 
+      event_type = :school_partnership_reused
       school           = school_partnership.school
       delivery_partner = school_partnership.delivery_partner
       lead_provider    = school_partnership.lead_provider

@@ -22,12 +22,11 @@ module TrainingPeriodSources
     return nil if previous_id.blank?
 
     SchoolPartnerships::CreateFromPrevious
-      .new(
+      .new.call(
         previous_school_partnership_id: previous_id,
         school:,
         author:,
         current_contract_period_year: contract_period.year
       )
-      .call
   end
 end

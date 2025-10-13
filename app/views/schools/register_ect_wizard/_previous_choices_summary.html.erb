@@ -1,0 +1,27 @@
+<%= govuk_summary_list do |summary_list| %>
+  <% if choices&.appropriate_body.present? %>
+    <% summary_list.with_row do |row| %>
+      <% row.with_key(text: 'Appropriate body') %>
+      <% row.with_value(text: choices.appropriate_body.name) %>
+    <% end %>
+  <% end %>
+
+  <% summary_list.with_row do |row| %>
+    <% row.with_key(text: 'Training programme') %>
+    <% row.with_value(text: training_programme_name(last_chosen_training_programme)) %>
+  <% end %>
+
+  <% if provider_led && choices.lead_provider.present? %>
+    <% summary_list.with_row do |row| %>
+      <% row.with_key(text: 'Lead provider') %>
+      <% row.with_value(text: choices.lead_provider.name) %>
+    <% end %>
+
+    <% if choices.delivery_partner.present? %>
+      <% summary_list.with_row do |row| %>
+        <% row.with_key(text: 'Delivery partner') %>
+        <% row.with_value(text: choices.delivery_partner.name) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

@@ -1403,8 +1403,8 @@ RSpec.describe Events::Record do
   end
 
   describe '.record_school_partnership_reused_event!' do
-    let(:school_partnership) { create(:school_partnership) }
-    let(:previous_school_partnership) { create(:school_partnership, school: school_partnership.school) }
+    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+    let(:previous_school_partnership) { FactoryBot.create(:school_partnership, school: school_partnership.school) }
 
     before { allow(RecordEventJob).to receive(:perform_later) }
 
@@ -1439,7 +1439,7 @@ RSpec.describe Events::Record do
     it 'raises NotPersistedRecord if school_partnership is unsaved' do
       expect {
         Events::Record.record_school_partnership_reused_event!(
-          author:, school_partnership: build(:school_partnership),
+          author:, school_partnership: FactoryBot.build(:school_partnership),
           previous_school_partnership_id: previous_school_partnership.id
         )
       }.to raise_error(Events::NotPersistedRecord, 'school_partnership')
