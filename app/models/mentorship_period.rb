@@ -1,5 +1,6 @@
 class MentorshipPeriod < ApplicationRecord
   include Interval
+  include DeclarativeUpdates
 
   # Associations
   belongs_to :mentee,
@@ -32,6 +33,8 @@ class MentorshipPeriod < ApplicationRecord
   # Scopes
   scope :for_mentee, ->(id) { where(ect_at_school_period_id: id) }
   scope :for_mentor, ->(id) { where(mentor_at_school_period_id: id) }
+
+  refresh_metadata -> { mentee.teacher }, on_event: %i[create destroy]
 
   # Instance methods
   def siblings
