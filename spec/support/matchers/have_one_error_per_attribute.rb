@@ -12,7 +12,7 @@ RSpec::Matchers.define :have_one_error_per_attribute do
   end
 
   failure_message_when_negated do |_actual|
-    "expected not all attributes to have exactly one error, but they did"
+    "expected exactly one error message per attribute, but have more"
   end
 
   description do

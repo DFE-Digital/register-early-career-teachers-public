@@ -88,7 +88,6 @@ module API::SchoolPartnerships
     end
 
     def school_partnership_does_not_already_exists
-      return if errors[:school_api_id].any?
       return unless school && active_lead_provider
 
       existing_school_partnership = school
@@ -118,7 +117,6 @@ module API::SchoolPartnerships
     end
 
     def lead_provider_delivery_partnership_exists
-      return if errors[:delivery_partner_api_id].any?
       return unless lead_provider && delivery_partner
 
       errors.add(:delivery_partner_api_id, "The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.") unless lead_provider_delivery_partnership
@@ -131,7 +129,6 @@ module API::SchoolPartnerships
     end
 
     def not_school_led
-      return if errors[:school_api_id].any?
       return unless metadata&.induction_programme_choice == "school_led"
 
       errors.add(:school_api_id, "This school has only registered school-led participants. Contact the school for more information.")
