@@ -154,16 +154,9 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
     end
 
     context "guarded error messages" do
-      let(:service) { described_class.new }
+      subject { described_class.new }
 
-      it "only returns one error message per param at a time" do
-        expect(service).to be_invalid
-
-        expect(service.errors[:contract_period_year].count).to be(1)
-        expect(service.errors[:school_api_id].count).to be(1)
-        expect(service.errors[:lead_provider_id].count).to be(1)
-        expect(service.errors[:delivery_partner_api_id].count).to be(1)
-      end
+      it { is_expected.to have_one_error_per_attribute }
     end
   end
 
