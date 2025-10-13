@@ -15,7 +15,7 @@ class TrainingPeriod < ApplicationRecord
     mentor_no_longer_being_mentor: "mentor_no_longer_being_mentor",
     switched_to_school_led: "switched_to_school_led",
     other: "other"
-  }, suffix: :withdrawal_reason
+  }, validate: { message: "Must be a valid withdrawal reason", allow_nil: true }, suffix: :withdrawal_reason
 
   enum :deferral_reason, {
     bereavement: "bereavement",
@@ -23,7 +23,7 @@ class TrainingPeriod < ApplicationRecord
     parental_leave: "parental_leave",
     career_break: "career_break",
     other: "other"
-  }, suffix: :deferral_reason
+  }, validate: { message: "Must be a valid deferral reason", allow_nil: true }, suffix: :deferral_reason
 
   # Associations
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
