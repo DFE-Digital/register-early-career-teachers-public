@@ -63,7 +63,7 @@ class TrainingPeriod < ApplicationRecord
   validates :withdrawal_reason, presence: true, if: -> { withdrawn_at.present? }
   validates :deferred_at, presence: true, if: -> { deferral_reason.present? }
   validates :deferral_reason, presence: true, if: -> { deferred_at.present? }
-  validate :schedule_contract_period_matches
+  validate :schedule_contract_period_matches, if: :provider_led_training_programme?
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
@@ -169,10 +169,12 @@ private
   end
 
   def schedule_contract_period_matches
-    return if schedule.blank? || contract_period.blank?
+    contract_periods_to_check = [contract_period, expression_of_interest_contract_period].compact.uniq
 
-    if contract_period != schedule.contract_period
-      errors.add(:schedule, "Contract period of schedule must match contract period of school partnership")
+    return if schedule.blank? || contract_periods_to_check.blank?
+
+    unless contract_periods_to_check.all?(schedule.contract_period)
+      errors.add(:schedule, "Contract period of schedule must match contract period of EOI and/or school partnership")
     end
   end
 end

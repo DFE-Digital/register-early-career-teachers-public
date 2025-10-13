@@ -40,12 +40,12 @@ FactoryBot.define do
 
     trait :with_schedule do
       transient do
-        schedule { FactoryBot.build(:schedule, contract_period: school_partnership.contract_period) }
+        schedule { FactoryBot.build(:schedule, contract_period: contract_period || expression_of_interest_contract_period) }
       end
 
       after(:build) do |training_period, evaluator|
-        # Only `provider_led` training periods with a school partnership should have a schedule
-        if training_period.school_partnership.present?
+        # Only `provider_led` training periods should have a schedule
+        if training_period.provider_led_training_programme?
           training_period.schedule = evaluator.schedule
         end
       end
@@ -56,12 +56,18 @@ FactoryBot.define do
     end
 
     trait :with_expression_of_interest do
-      association :expression_of_interest, factory: :active_lead_provider
+      after(:build) do |training_period|
+        training_period.expression_of_interest = FactoryBot.create(:active_lead_provider,
+                                                                   contract_period: training_period.contract_period ||
+                                                                   FactoryBot.create(:contract_period, :current))
+      end
     end
 
     trait :with_only_expression_of_interest do
-      school_partnership_id { nil }
+      school_partnership { nil }
       association :expression_of_interest, factory: :active_lead_provider
+
+      with_schedule
     end
 
     trait :ongoing do
