@@ -2,7 +2,7 @@ ALL_URNS = (1..999_999) unless defined?(ALL_URNS)
 
 module SandboxSeedData
   module Helpers
-    class SchoolUrnGenerator
+    class SchoolURNGenerator
       class << self
         def next
           next_urn = next_from_available_stack
