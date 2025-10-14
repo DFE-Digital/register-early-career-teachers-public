@@ -26,8 +26,10 @@ RSpec.describe API::Teachers::Query, :with_metadata do
         latest_training_periods.each do |training_period|
           expect(training_period.association(:school_partnership)).to be_loaded
           expect(training_period.school_partnership.association(:school)).to be_loaded
-          expect(training_period.school_partnership.association(:contract_period)).to be_loaded
-          expect(training_period.school_partnership.association(:delivery_partner)).to be_loaded
+          expect(training_period.school_partnership.association(:lead_provider_delivery_partnership)).to be_loaded
+
+          expect(training_period.school_partnership.lead_provider_delivery_partnership.association(:delivery_partner)).to be_loaded
+          expect(training_period.school_partnership.lead_provider_delivery_partnership.association(:active_lead_provider)).to be_loaded
 
           if training_period.for_ect?
             expect(training_period.association(:ect_at_school_period)).to be_loaded
