@@ -106,7 +106,7 @@ GEM
       base64
       gyoku (>= 0.4.0)
       nokogiri
-    asciidoctor (2.0.23)
+    asciidoctor (2.0.24)
     ast (2.4.3)
     async (2.27.2)
       console (~> 1.29)
