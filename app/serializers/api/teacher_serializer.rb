@@ -7,37 +7,34 @@ class API::TeacherSerializer < Blueprinter::Base
     end
 
     class TrainingPeriodSerializer < Blueprinter::Base
-      field(:training_record_id) do |training_period|
-        teacher = training_period.trainee.teacher
-
+      field(:training_record_id) do |(training_period, teacher)|
         if training_period.for_ect?
           teacher.api_ect_training_record_id
         else
           teacher.api_mentor_training_record_id
         end
       end
-      field(:email) { |training_period| training_period.trainee.email }
-      field(:mentor_id) do |training_period, options|
+      field(:email) { |(training_period, _)| training_period.trainee.email }
+      field(:mentor_id) do |(training_period, teacher), options|
         if training_period.for_ect?
-          teacher = training_period.trainee.teacher
           ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:).api_mentor_id
         end
       end
-      field(:school_urn) { |training_period| training_period.school_partnership.school.urn }
-      field(:participant_type) { |training_period| training_period.for_ect? ? "ect" : "mentor" }
-      field(:cohort) { |training_period| training_period.school_partnership.contract_period.year }
-      field(:training_status) { |training_period| API::TrainingPeriods::TrainingStatus.new(training_period:).status }
+      field(:school_urn) { |(training_period, _)| training_period.school_partnership.school.urn }
+      field(:participant_type) { |(training_period, _)| training_period.for_ect? ? "ect" : "mentor" }
+      field(:cohort) { |(training_period, _)| training_period.school_partnership.contract_period.year }
+      field(:training_status) { |(training_period, _)| API::TrainingPeriods::TrainingStatus.new(training_period:).status }
       field(:participant_status) { "active" } # TODO: implement when we have participant status service
       field(:eligible_for_funding) { true } # TODO: implement when we have eligibility service
-      field(:pupil_premium_uplift) do |training_period|
-        training_period.for_ect? && training_period.trainee.teacher.ect_pupil_premium_uplift
+      field(:pupil_premium_uplift) do |(training_period, teacher)|
+        training_period.for_ect? && teacher.ect_pupil_premium_uplift
       end
-      field(:sparsity_uplift) do |training_period|
-        training_period.for_ect? && training_period.trainee.teacher.ect_sparsity_uplift
+      field(:sparsity_uplift) do |(training_period, teacher)|
+        training_period.for_ect? && teacher.ect_sparsity_uplift
       end
       field(:schedule_identifier) { "ecf-extended-september" } # TODO: implement when training periods have a connection to a schedule
-      field(:delivery_partner_id) { |training_period| training_period.school_partnership.delivery_partner.api_id }
-      field(:withdrawal) do |training_period|
+      field(:delivery_partner_id) { |(training_period, _)| training_period.school_partnership.delivery_partner.api_id }
+      field(:withdrawal) do |(training_period, _)|
         training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
         if training_status == :withdrawn
           {
@@ -46,7 +43,7 @@ class API::TeacherSerializer < Blueprinter::Base
           }
         end
       end
-      field(:deferral) do |training_period|
+      field(:deferral) do |(training_period, _)|
         training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
         if training_status == :deferred
           {
@@ -55,9 +52,7 @@ class API::TeacherSerializer < Blueprinter::Base
           }
         end
       end
-      field(:created_at) do |training_period|
-        teacher = training_period.trainee.teacher
-
+      field(:created_at) do |(training_period, teacher)|
         earliest_school_period = if training_period.for_ect?
                                    teacher.earliest_ect_at_school_period
                                  else
@@ -66,13 +61,11 @@ class API::TeacherSerializer < Blueprinter::Base
 
         earliest_school_period.created_at.utc.rfc3339
       end
-      field(:induction_end_date) { |training_period| training_period.trainee.teacher.finished_induction_period&.finished_on&.rfc3339 }
-      field(:overall_induction_start_date) { |training_period| training_period.trainee.teacher.started_induction_period&.started_on&.rfc3339 }
-      field(:mentor_funding_end_date) { |training_period| training_period.trainee.teacher.mentor_became_ineligible_for_funding_on&.rfc3339 if training_period.for_mentor? }
-      field(:mentor_ineligible_for_funding_reason) { |training_period| training_period.trainee.teacher.mentor_became_ineligible_for_funding_reason if training_period.for_mentor? }
-      field(:cohort_changed_after_payments_frozen) do |training_period|
-        teacher = training_period.trainee.teacher
-
+      field(:induction_end_date) { |(_, teacher)| teacher.finished_induction_period&.finished_on&.rfc3339 }
+      field(:overall_induction_start_date) { |(_, teacher)| teacher.started_induction_period&.started_on&.rfc3339 }
+      field(:mentor_funding_end_date) { |(training_period, teacher)| teacher.mentor_became_ineligible_for_funding_on&.rfc3339 if training_period.for_mentor? }
+      field(:mentor_ineligible_for_funding_reason) { |(training_period, teacher)| teacher.mentor_became_ineligible_for_funding_reason if training_period.for_mentor? }
+      field(:cohort_changed_after_payments_frozen) do |(training_period, teacher)|
         if training_period.for_ect?
           teacher.ect_payments_frozen_year.present?
         else
@@ -89,7 +82,7 @@ class API::TeacherSerializer < Blueprinter::Base
 
     association :ecf_enrolments, blueprint: TrainingPeriodSerializer do |teacher, options|
       metadata = ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:)
-      [metadata.latest_ect_training_period, metadata.latest_mentor_training_period].compact
+      [[metadata.latest_ect_training_period, teacher], [metadata.latest_mentor_training_period, teacher]].reject { |period, _| period.nil? }
     end
 
     association :teacher_id_changes, blueprint: TeacherIdChangeSerializer, name: :participant_id_changes
