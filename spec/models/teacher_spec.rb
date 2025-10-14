@@ -196,7 +196,9 @@ describe Teacher do
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:teacher) }
+    subject { FactoryBot.build(:teacher, trn:) }
+
+    let(:trn) { '1234567' }
 
     it { is_expected.to validate_length_of(:trs_induction_status).with_message('TRS induction status must be shorter than 18 characters') }
 
@@ -205,6 +207,7 @@ describe Teacher do
     it { is_expected.to validate_uniqueness_of(:api_mentor_training_record_id).case_insensitive.with_message("API mentor training record id already exists for another teacher").allow_nil }
 
     describe "trn" do
+      it { is_expected.to validate_presence_of(:trn).with_message('Enter the teacher reference number (TRN)') }
       it { is_expected.to validate_uniqueness_of(:trn).with_message('TRN already exists').case_insensitive }
 
       context "when the string contains 7 numeric digits" do
@@ -216,6 +219,30 @@ describe Teacher do
       context "when the string contains less than 5 numeric digits or more than 7 numeric digits" do
         %w[1234 12345678 ONE4567 1234!].each do |value|
           it { is_expected.not_to allow_value(value).for(:trn) }
+        end
+      end
+
+      describe 'allowing some legacy (ECF1) teachers to have no TRN' do
+        context 'when not trnless (default)' do
+          it { is_expected.to validate_presence_of(:trn).with_message('Enter the teacher reference number (TRN)') }
+          it { is_expected.not_to allow_value(nil).for(:trn) }
+          it { is_expected.to allow_value(trn).for(:trn) }
+        end
+
+        context 'when trnless' do
+          subject { FactoryBot.build(:teacher, trnless: true) }
+
+          it { is_expected.to validate_absence_of(:trn).with_message('TRN not allowed when trnless is true') }
+          it { is_expected.to allow_value(nil).for(:trn) }
+          it { is_expected.not_to allow_value(trn).for(:trn) }
+        end
+
+        describe 'checking at the database level' do
+          it 'prevents a row from being inserted when trn is missing and trnless is false' do
+            expected_error = /new row for relation "teachers" violates check constraint "check_trn_presence"/
+
+            expect { FactoryBot.build(:teacher, trn: nil, trnless: false).save!(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, expected_error)
+          end
         end
       end
     end
