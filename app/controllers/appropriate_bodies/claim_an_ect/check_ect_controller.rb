@@ -10,9 +10,6 @@ module AppropriateBodies
       def update
         @pending_induction_submission = find_pending_induction_submission
 
-        check_ect = AppropriateBodies::ClaimAnECT::CheckECT
-          .new(appropriate_body: @appropriate_body, pending_induction_submission: @pending_induction_submission)
-
         if check_ect.begin_claim!
           redirect_to edit_ab_claim_an_ect_register_path(check_ect.pending_induction_submission)
         else
@@ -20,7 +17,9 @@ module AppropriateBodies
 
           render :edit
         end
-      rescue AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithAnotherAB
+
+      # Already claimed by another AB
+      rescue CheckECT::TeacherHasOngoingInductionPeriodWithAnotherAB
         redirect_to edit_ab_claim_an_ect_check_path(@pending_induction_submission)
       end
 
@@ -28,6 +27,13 @@ module AppropriateBodies
 
       def find_pending_induction_submission
         PendingInductionSubmissions::Search.new(appropriate_body: @appropriate_body).pending_induction_submissions.find(params[:id])
+      end
+
+      def check_ect
+        @check_ect ||= CheckECT.new(
+          appropriate_body: @appropriate_body,
+          pending_induction_submission: @pending_induction_submission
+        )
       end
     end
   end

@@ -11,7 +11,9 @@ RSpec.describe 'Appropriate body releasing an ECT' do
     end
 
     context 'when signed in as an appropriate body user' do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      before do
+        sign_in_as(:appropriate_body_user, appropriate_body:)
+      end
 
       context 'and a teacher actively training' do
         before do
@@ -39,10 +41,9 @@ RSpec.describe 'Appropriate body releasing an ECT' do
     end
 
     context 'when signed in as an appropriate body user' do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
-
       before do
-        allow(AppropriateBodies::ReleaseECT).to receive(:new).and_call_original
+        sign_in_as(:appropriate_body_user, appropriate_body:)
+        allow(AppropriateBodies::RecordRelease).to receive(:new).and_call_original
       end
 
       context "when the teacher has one ongoing induction period" do

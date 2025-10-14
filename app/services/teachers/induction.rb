@@ -8,7 +8,7 @@ module Teachers
     end
 
     def current_induction_period
-      @current_induction_period ||= induction_periods.ongoing.first
+      teacher.ongoing_induction_period
     end
 
     def past_induction_periods

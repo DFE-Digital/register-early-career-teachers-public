@@ -558,8 +558,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           expect(PassECTInductionJob).to have_received(:perform_later).with(
             trn: teacher.trn,
             start_date: params[:induction_period][:started_on].to_date,
-            completed_date: params[:induction_period][:finished_on].to_date,
-            pending_induction_submission_id: nil
+            completed_date: params[:induction_period][:finished_on].to_date
           )
         end
       end
@@ -645,8 +644,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           expect(FailECTInductionJob).to have_received(:perform_later).with(
             trn: teacher.trn,
             start_date: induction_period.started_on,
-            completed_date: params[:induction_period][:finished_on].to_date,
-            pending_induction_submission_id: nil
+            completed_date: params[:induction_period][:finished_on].to_date
           )
         end
       end
