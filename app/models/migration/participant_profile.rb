@@ -20,5 +20,13 @@ module Migration
     def mentor?
       type == "ParticipantProfile::Mentor"
     end
+
+    def previous_payments_frozen_cohort_start_year
+      return nil unless cohort_changed_after_payments_frozen?
+
+      induction_records
+        .find { |ir| ir.cohort.payments_frozen? && ir.cohort.id != schedule.cohort_id }
+        &.cohort&.start_year
+    end
   end
 end

@@ -61,7 +61,7 @@ RSpec.describe SandboxSeedData::SchoolPartnerships do
       let(:environment) { "production" }
 
       it "does not create any school partnerships" do
-        expect { instance.plant }.not_to change(ContractPeriod, :count)
+        expect { instance.plant }.not_to change(SchoolPartnership, :count)
       end
     end
   end

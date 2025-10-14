@@ -1,4 +1,13 @@
 describe MentorshipPeriod do
+  describe "declarative updates" do
+    let(:instance) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago, finished_on: nil) }
+    let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: 5.years.ago, finished_on: nil, teacher: target) }
+    let(:mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 5.years.ago, finished_on: nil) }
+    let!(:target) { FactoryBot.create(:teacher) }
+
+    it_behaves_like "a declarative metadata model", on_event: %i[create destroy]
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:mentee).class_name("ECTAtSchoolPeriod").with_foreign_key(:ect_at_school_period_id).inverse_of(:mentorship_periods) }
     it { is_expected.to belong_to(:mentor).class_name("MentorAtSchoolPeriod").with_foreign_key(:mentor_at_school_period_id).inverse_of(:mentorship_periods) }

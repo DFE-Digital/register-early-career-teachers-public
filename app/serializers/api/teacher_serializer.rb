@@ -17,13 +17,16 @@ class API::TeacherSerializer < Blueprinter::Base
         end
       end
       field(:email) { |training_period| training_period.trainee.email }
-      field(:mentor_id) do |training_period|
-        "mentor_api_id" if training_period.for_ect? # TODO: implement when we have metadata for mentor_api_id
+      field(:mentor_id) do |training_period, options|
+        if training_period.for_ect?
+          teacher = training_period.trainee.teacher
+          ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:).api_mentor_id
+        end
       end
       field(:school_urn) { |training_period| training_period.school_partnership.school.urn }
       field(:participant_type) { |training_period| training_period.for_ect? ? "ect" : "mentor" }
       field(:cohort) { |training_period| training_period.school_partnership.contract_period.year }
-      field(:training_status) { "active" } # TODO: implement when we have training status service
+      field(:training_status) { |training_period| API::TrainingPeriods::TrainingStatus.new(training_period:).status }
       field(:participant_status) { "active" } # TODO: implement when we have participant status service
       field(:eligible_for_funding) { true } # TODO: implement when we have eligibility service
       field(:pupil_premium_uplift) do |training_period|
@@ -34,8 +37,24 @@ class API::TeacherSerializer < Blueprinter::Base
       end
       field(:schedule_identifier) { "ecf-extended-september" } # TODO: implement when training periods have a connection to a schedule
       field(:delivery_partner_id) { |training_period| training_period.school_partnership.delivery_partner.api_id }
-      field(:withdrawal) { nil } # TODO: implement when we have withdrawal service
-      field(:deferral) { nil } # TODO: implement when we have deferral service
+      field(:withdrawal) do |training_period|
+        training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
+        if training_status == :withdrawn
+          {
+            "withdrawn_at" => training_period.withdrawn_at.utc.rfc3339,
+            "reason" => training_period.withdrawal_reason.dasherize
+          }
+        end
+      end
+      field(:deferral) do |training_period|
+        training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
+        if training_status == :deferred
+          {
+            "deferred_at" => training_period.deferred_at.utc.rfc3339,
+            "reason" => training_period.deferral_reason.dasherize
+          }
+        end
+      end
       field(:created_at) do |training_period|
         teacher = training_period.trainee.teacher
 
@@ -69,17 +88,11 @@ class API::TeacherSerializer < Blueprinter::Base
     field :updated_at
 
     association :ecf_enrolments, blueprint: TrainingPeriodSerializer do |teacher, options|
-      metadata = lead_provider_metadata(teacher:, options:)
+      metadata = ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:)
       [metadata.latest_ect_training_period, metadata.latest_mentor_training_period].compact
     end
 
     association :teacher_id_changes, blueprint: TeacherIdChangeSerializer, name: :participant_id_changes
-
-    class << self
-      def lead_provider_metadata(teacher:, options:)
-        teacher.lead_provider_metadata.select { it.lead_provider_id == options[:lead_provider_id] }.sole
-      end
-    end
   end
 
   identifier :api_id, name: :id
@@ -87,5 +100,11 @@ class API::TeacherSerializer < Blueprinter::Base
 
   association :attributes, blueprint: AttributesSerializer do |teacher|
     teacher
+  end
+
+  class << self
+    def lead_provider_metadata(teacher:, options:)
+      teacher.lead_provider_metadata.select { it.lead_provider_id == options[:lead_provider_id] }.sole
+    end
   end
 end

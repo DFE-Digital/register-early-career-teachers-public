@@ -106,7 +106,7 @@ GEM
       base64
       gyoku (>= 0.4.0)
       nokogiri
-    asciidoctor (2.0.23)
+    asciidoctor (2.0.24)
     ast (2.4.3)
     async (2.27.2)
       console (~> 1.29)
@@ -556,7 +556,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (3.2.2)
+    rack (3.2.3)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
     rack-oauth2 (2.2.1)

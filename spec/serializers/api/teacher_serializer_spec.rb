@@ -73,11 +73,24 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
       context "when there are ECT/mentor training periods for the lead provider" do
         let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider:) }
 
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
-        let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:, lead_provider_delivery_partnership:) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: 2.months.ago, finished_on: nil) }
+        let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period:, lead_provider_delivery_partnership:) }
 
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
-        let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, lead_provider_delivery_partnership:) }
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.months.ago, finished_on: nil) }
+        let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period:, lead_provider_delivery_partnership:) }
+
+        let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 2.months.ago, finished_on: nil) }
+        let!(:other_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period: other_mentor_at_school_period, lead_provider_delivery_partnership:) }
+
+        let!(:latest_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: other_mentor_at_school_period,
+            started_on: ect_training_period.started_on + 1.week,
+            finished_on: nil
+          )
+        end
 
         it { expect(ecf_enrolments.count).to eq(2) }
 
@@ -93,7 +106,15 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `mentor_id`" do
-            expect(ect_enrolment["mentor_id"]).to eq("mentor_api_id")
+            expect(ect_enrolment["mentor_id"]).to eq(latest_mentorship_period.mentor.teacher.api_id)
+          end
+
+          context "when there is no latest mentor training period" do
+            let(:latest_mentorship_period) { nil }
+
+            it "serializes `mentor_id` as nil" do
+              expect(ect_enrolment["mentor_id"]).to be_nil
+            end
           end
 
           it "serializes `school_urn`" do
@@ -110,6 +131,38 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           it "serializes `training_status`" do
             expect(ect_enrolment["training_status"]).to eq("active")
+          end
+
+          it "serializes `withdrawal`" do
+            expect(ect_enrolment["withdrawal"]).to be_nil
+          end
+
+          it "serializes `deferral`" do
+            expect(ect_enrolment["deferral"]).to be_nil
+          end
+
+          context "when `training_status` is withdrawn" do
+            before { ect_training_period.update!(withdrawn_at: 3.days.ago, withdrawal_reason: :moved_school) }
+
+            it "serializes `training_status` as withdrawn" do
+              expect(ect_enrolment["training_status"]).to eq("withdrawn")
+            end
+
+            it "serializes `withdrawal` with the details of the withdrawal" do
+              expect(ect_enrolment["withdrawal"]).to eq({ "withdrawn_at" => ect_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
+            end
+          end
+
+          context "when `training_status` is deferred" do
+            before { ect_training_period.update!(deferred_at: 1.day.ago, deferral_reason: :bereavement) }
+
+            it "serializes `training_status` as deferred" do
+              expect(ect_enrolment["training_status"]).to eq("deferred")
+            end
+
+            it "serializes `deferral` with the details of the deferral" do
+              expect(ect_enrolment["deferral"]).to eq({ "deferred_at" => ect_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
+            end
           end
 
           it "serializes `participant_status`" do
@@ -134,14 +187,6 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           it "serializes `delivery_partner_id`" do
             expect(ect_enrolment["delivery_partner_id"]).to eq(ect_training_period.school_partnership.delivery_partner.api_id)
-          end
-
-          it "serializes `withdrawal`" do
-            expect(ect_enrolment["withdrawal"]).to be_nil
-          end
-
-          it "serializes `deferral`" do
-            expect(ect_enrolment["deferral"]).to be_nil
           end
 
           it "serializes `created_at`" do
@@ -214,6 +259,38 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(mentor_enrolment["training_status"]).to eq("active")
           end
 
+          it "serializes `withdrawal`" do
+            expect(mentor_enrolment["withdrawal"]).to be_nil
+          end
+
+          it "serializes `deferral`" do
+            expect(mentor_enrolment["deferral"]).to be_nil
+          end
+
+          context "when `training_status` is withdrawn" do
+            before { mentor_training_period.update!(withdrawn_at: 3.days.ago, withdrawal_reason: :moved_school) }
+
+            it "serializes `training_status` as withdrawn" do
+              expect(mentor_enrolment["training_status"]).to eq("withdrawn")
+            end
+
+            it "serializes `withdrawal` with the details of the withdrawal" do
+              expect(mentor_enrolment["withdrawal"]).to eq({ "withdrawn_at" => mentor_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
+            end
+          end
+
+          context "when `training_status` is deferred" do
+            before { mentor_training_period.update!(deferred_at: 1.day.ago, deferral_reason: :bereavement) }
+
+            it "serializes `training_status` as deferred" do
+              expect(mentor_enrolment["training_status"]).to eq("deferred")
+            end
+
+            it "serializes `deferral` with the details of the deferral" do
+              expect(mentor_enrolment["deferral"]).to eq({ "deferred_at" => mentor_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
+            end
+          end
+
           it "serializes `participant_status`" do
             expect(mentor_enrolment["participant_status"]).to eq("active")
           end
@@ -236,14 +313,6 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           it "serializes `delivery_partner_id`" do
             expect(mentor_enrolment["delivery_partner_id"]).to eq(mentor_training_period.school_partnership.delivery_partner.api_id)
-          end
-
-          it "serializes `withdrawal`" do
-            expect(mentor_enrolment["withdrawal"]).to be_nil
-          end
-
-          it "serializes `deferral`" do
-            expect(mentor_enrolment["deferral"]).to be_nil
           end
 
           it "serializes `created_at`" do
