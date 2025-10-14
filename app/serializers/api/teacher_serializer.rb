@@ -22,7 +22,13 @@ class API::TeacherSerializer < Blueprinter::Base
       end
       field(:school_urn) { |(training_period, _)| training_period.school_partnership.school.urn }
       field(:participant_type) { |(training_period, _)| training_period.for_ect? ? "ect" : "mentor" }
-      field(:cohort) { |(training_period, _)| training_period.school_partnership.contract_period.year }
+      field(:cohort) do |(training_period, _)|
+        training_period
+          .school_partnership
+          .lead_provider_delivery_partnership
+          .active_lead_provider
+          .contract_period_year
+      end
       field(:training_status) { |(training_period, _)| API::TrainingPeriods::TrainingStatus.new(training_period:).status }
       field(:participant_status) { "active" } # TODO: implement when we have participant status service
       field(:eligible_for_funding) { true } # TODO: implement when we have eligibility service
@@ -33,7 +39,13 @@ class API::TeacherSerializer < Blueprinter::Base
         training_period.for_ect? && teacher.ect_sparsity_uplift
       end
       field(:schedule_identifier) { "ecf-extended-september" } # TODO: implement when training periods have a connection to a schedule
-      field(:delivery_partner_id) { |(training_period, _)| training_period.school_partnership.delivery_partner.api_id }
+      field(:delivery_partner_id) do |(training_period, _)|
+        training_period
+          .school_partnership
+          .lead_provider_delivery_partnership
+          .delivery_partner
+          .api_id
+      end
       field(:withdrawal) do |(training_period, _)|
         training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
         if training_status == :withdrawn

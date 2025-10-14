@@ -54,18 +54,16 @@ module API::Teachers
         .eager_load(
           lead_provider_metadata: {
             latest_ect_training_period: {
-              school_partnership: %i[
-                school
-                contract_period
-                delivery_partner
+              school_partnership: [
+                :school,
+                { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
               ],
               ect_at_school_period: []
             },
             latest_mentor_training_period: {
-              school_partnership: %i[
-                school
-                contract_period
-                delivery_partner
+              school_partnership: [
+                :school,
+                { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
               ],
               mentor_at_school_period: []
             }
