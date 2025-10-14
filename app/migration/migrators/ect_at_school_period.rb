@@ -51,6 +51,8 @@ module Migrators
 
             ect_payments_frozen_year = participant_profile.previous_payments_frozen_cohort_start_year
             teacher.ect_payments_frozen_year = ect_payments_frozen_year if ect_payments_frozen_year
+            teacher.ect_pupil_premium_uplift = true if participant_profile.pupil_premium_uplift
+            teacher.ect_sparsity_uplift = true if participant_profile.sparsity_uplift
             teacher.api_ect_training_record_id = participant_profile.id
             teacher.save!
 
