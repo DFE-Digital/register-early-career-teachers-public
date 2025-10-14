@@ -8,7 +8,8 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
   def create_resource(active_lead_provider:, from_participant_id: nil, training_status: nil)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
-    training_period = FactoryBot.create(:training_period, school_partnership:)
+    ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: nil)
+    training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.year.ago, finished_on: nil, school_partnership:)
     training_period.update!(withdrawn_at: 1.day.ago, withdrawal_reason: :other) if training_status == :withdrawn
     training_period.update!(deferred_at: 1.day.ago, deferral_reason: :other) if training_status == :deferred
 
