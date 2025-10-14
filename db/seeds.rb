@@ -18,6 +18,7 @@ priority_seeds = %w[
   school_partnerships
   teachers
   metadata
+  schedules_and_milestones
 ]
 
 seed_files = Dir["db/seeds/*.rb"].sort_by do |path|
