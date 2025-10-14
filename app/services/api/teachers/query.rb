@@ -45,7 +45,11 @@ module API::Teachers
       preloaded_results = results
         .strict_loading
         .includes(
-          :teacher_id_changes
+          :teacher_id_changes,
+          :started_induction_period,
+          :finished_induction_period,
+          :earliest_ect_at_school_period,
+          :earliest_mentor_at_school_period
         )
         .eager_load(
           lead_provider_metadata: {
@@ -55,14 +59,7 @@ module API::Teachers
                 contract_period
                 delivery_partner
               ],
-              ect_at_school_period: {
-                teacher: %i[
-                  started_induction_period
-                  finished_induction_period
-                  earliest_ect_at_school_period
-                  earliest_mentor_at_school_period
-                ]
-              }
+              ect_at_school_period: []
             },
             latest_mentor_training_period: {
               school_partnership: %i[
@@ -70,14 +67,7 @@ module API::Teachers
                 contract_period
                 delivery_partner
               ],
-              mentor_at_school_period: {
-                teacher: %i[
-                  started_induction_period
-                  finished_induction_period
-                  earliest_ect_at_school_period
-                  earliest_mentor_at_school_period
-                ]
-              }
+              mentor_at_school_period: []
             }
           }
         )
