@@ -73,13 +73,13 @@ module SandboxSeedData
     end
 
     def set_ect_eligible_for_funding(teacher:)
-      return unless Faker::Boolean.boolean(true_ratio: 0.1)
+      return unless Faker::Boolean.boolean(true_ratio: 0.65)
 
       teacher.update!(ect_first_became_eligible_for_training_at: 3.months.ago)
     end
 
     def set_mentor_eligible_for_funding(teacher:)
-      return unless Faker::Boolean.boolean(true_ratio: 0.1)
+      return unless Faker::Boolean.boolean(true_ratio: 0.65)
 
       teacher.update!(mentor_first_became_eligible_for_training_at: 3.months.ago)
     end

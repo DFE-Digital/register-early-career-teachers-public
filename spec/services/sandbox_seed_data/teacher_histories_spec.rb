@@ -83,7 +83,7 @@ RSpec.describe SandboxSeedData::TeacherHistories do
         allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.2).and_return(false)
         allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.15).and_return(false)
         allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.3).and_return(false)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.1).and_return(true)
+        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.65).and_return(true)
       end
 
       context "for ECT" do
