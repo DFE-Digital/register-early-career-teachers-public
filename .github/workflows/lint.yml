@@ -6,7 +6,7 @@ on:
         description: Ruby version
         type: string
         required: false
-        default: "3.4.4"
+        default: "3.4.7"
       node-version:
         description: Node version
         type: string
@@ -27,7 +27,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1.265.0
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ inputs.ruby-version }}
           bundler-cache: true
@@ -97,7 +97,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1.265.0
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ inputs.ruby-version }}
           bundler-cache: true
