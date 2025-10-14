@@ -94,7 +94,7 @@ class PendingInductionSubmission < ApplicationRecord
 
   validates :trs_induction_status,
             inclusion: {
-              in: %w[None RequiredToComplete Exempt InProgress Passed Failed FailedInWales],
+              in: TRS::Teacher::INDUCTION_STATUSES,
               message: "TRS Induction Status is not known",
             },
             on: :register_ect

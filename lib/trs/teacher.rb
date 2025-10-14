@@ -2,7 +2,14 @@ module TRS
   # Unpack API response and validate eligibility
   class Teacher
     PROHIBITED_FROM_TEACHING_CATEGORY_ID = 'b2b19019-b165-47a3-8745-3297ff152581'
+
+    # Conditional Registration Order
+    UNACCEPTABLE_CONDUCT_CATEGORY_ID = '5562a5b7-3e32-eb11-a814-000d3a23980a'
+
+    # Induction Statuses
     INELIGIBLE_INDUCTION_STATUSES = %w[Passed Failed FailedInWales Exempt].freeze
+    ELIGIBLE_INDUCTION_STATUSES = %w[None RequiredToComplete InProgress].freeze
+    INDUCTION_STATUSES = (ELIGIBLE_INDUCTION_STATUSES + INELIGIBLE_INDUCTION_STATUSES).freeze
 
     attr_reader :trn,
                 :date_of_birth,

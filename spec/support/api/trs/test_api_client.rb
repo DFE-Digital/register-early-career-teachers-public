@@ -86,8 +86,7 @@ module TRS
 
     def other_alert_data
       {
-        # Conditional Registration Order - unacceptable professional conduct
-        'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => '5562a5b7-3e32-eb11-a814-000d3a23980a' } } }]
+        'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => TRS::Teacher::UNACCEPTABLE_CONDUCT_CATEGORY_ID } } }]
       }
     end
 
