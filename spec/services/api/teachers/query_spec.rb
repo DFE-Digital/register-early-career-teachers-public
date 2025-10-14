@@ -6,7 +6,11 @@ RSpec.describe API::Teachers::Query, :with_metadata do
   describe "preloading relationships" do
     shared_examples "preloaded associations" do
       it { expect(result.association(:teacher_id_changes)).to be_loaded }
+      it { expect(result.association(:started_induction_period)).to be_loaded }
+      it { expect(result.association(:finished_induction_period)).to be_loaded }
       it { expect(result.association(:lead_provider_metadata)).to be_loaded }
+      it { expect(result.association(:earliest_ect_at_school_period)).to be_loaded }
+      it { expect(result.association(:earliest_mentor_at_school_period)).to be_loaded }
 
       it { expect(result.lead_provider_metadata.map { |metadata| metadata.association(:latest_ect_training_period) }).to all(be_loaded) }
       it { expect(result.lead_provider_metadata.map { |metadata| metadata.association(:latest_mentor_training_period) }).to all(be_loaded) }
@@ -27,18 +31,8 @@ RSpec.describe API::Teachers::Query, :with_metadata do
 
           if training_period.for_ect?
             expect(training_period.association(:ect_at_school_period)).to be_loaded
-            expect(training_period.ect_at_school_period.association(:teacher)).to be_loaded
-            expect(training_period.ect_at_school_period.teacher.association(:started_induction_period)).to be_loaded
-            expect(training_period.ect_at_school_period.teacher.association(:finished_induction_period)).to be_loaded
-            expect(training_period.ect_at_school_period.teacher.association(:earliest_ect_at_school_period)).to be_loaded
-            expect(training_period.ect_at_school_period.teacher.association(:earliest_mentor_at_school_period)).to be_loaded
           elsif training_period.for_mentor?
             expect(training_period.association(:mentor_at_school_period)).to be_loaded
-            expect(training_period.mentor_at_school_period.association(:teacher)).to be_loaded
-            expect(training_period.mentor_at_school_period.teacher.association(:started_induction_period)).to be_loaded
-            expect(training_period.mentor_at_school_period.teacher.association(:finished_induction_period)).to be_loaded
-            expect(training_period.mentor_at_school_period.teacher.association(:earliest_ect_at_school_period)).to be_loaded
-            expect(training_period.mentor_at_school_period.teacher.association(:earliest_mentor_at_school_period)).to be_loaded
           end
         end
       end
