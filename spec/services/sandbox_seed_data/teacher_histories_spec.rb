@@ -78,6 +78,41 @@ RSpec.describe SandboxSeedData::TeacherHistories do
       it { expect { plant }.to change(TrainingPeriod.where(deferred_at: nil, withdrawn_at: nil), :count).by(Teacher.count) }
     end
 
+    context "when setting eligible for funding" do
+      before do
+        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.2).and_return(false)
+        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.15).and_return(false)
+        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.3).and_return(false)
+        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.65).and_return(true)
+      end
+
+      context "for ECT" do
+        before do
+          allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.5).and_return(true)
+        end
+
+        it "sets eligible for funding for ECT" do
+          freeze_time
+          plant
+          teacher = teachers.first.reload
+          expect(teacher.ect_first_became_eligible_for_training_at).to eq(3.months.ago)
+        end
+      end
+
+      context "for Mentor" do
+        before do
+          allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.5).and_return(false)
+        end
+
+        it "sets eligible for funding for Mentor" do
+          freeze_time
+          plant
+          teacher = teachers.first.reload
+          expect(teacher.mentor_first_became_eligible_for_training_at).to eq(3.months.ago)
+        end
+      end
+    end
+
     it "logs the creation of teacher histories" do
       plant
 
