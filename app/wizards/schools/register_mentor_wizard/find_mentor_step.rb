@@ -3,7 +3,9 @@ module Schools
     class FindMentorStep < Step
       attr_accessor :trn, :date_of_birth
 
-      validates :trn, teacher_reference_number: true
+      validates :trn,
+                teacher_reference_number: true,
+                presence: { message: 'Enter the teacher reference number (TRN)' }
       validates :date_of_birth, date_of_birth: true
 
       def self.permitted_params

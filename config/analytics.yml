@@ -31,6 +31,7 @@ shared:
     - created_at
     - updated_at
     - trn
+    - trnless
     - trs_qts_awarded_on
     - trs_qts_status_description
     - trs_induction_status
