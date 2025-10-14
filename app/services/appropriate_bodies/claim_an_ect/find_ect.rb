@@ -1,6 +1,9 @@
 module AppropriateBodies
   module ClaimAnECT
     class FindECT
+      class TeacherHasOngoingInductionPeriodWithCurrentAB < StandardError
+      end
+
       attr_reader :api_client, :appropriate_body, :pending_induction_submission
 
       def initialize(appropriate_body:, pending_induction_submission:)
@@ -14,7 +17,7 @@ module AppropriateBodies
       # @raise [TRS::Errors::ProhibitedFromTeaching]
       # @raise [TRS::Errors::InductionAlreadyCompleted]
       # @raise [TRS::Errors::QTSNotAwarded]
-      # @raise [AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB]
+      # @raise [AppropriateBodies::FindECT::TeacherHasOngoingInductionPeriodWithCurrentAB]
       #
       # @return [Boolean]
       def import_from_trs!
@@ -48,7 +51,7 @@ module AppropriateBodies
         )
       end
 
-      # @raise [AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB]
+      # @raise [AppropriateBodies::ClaimAnECT::FindECT::TeacherHasOngoingInductionPeriodWithCurrentAB]
       # @return [nil]
       def check_if_teacher_has_ongoing_induction_period_with_appropriate_body!
         existing_teacher = Teacher.find_by(trn: pending_induction_submission.trn)
@@ -56,7 +59,7 @@ module AppropriateBodies
         return unless existing_teacher&.ongoing_induction_period
 
         if existing_teacher.ongoing_induction_period.appropriate_body == appropriate_body
-          raise AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB, ::Teachers::Name.new(existing_teacher).full_name
+          raise TeacherHasOngoingInductionPeriodWithCurrentAB
         end
       end
     end

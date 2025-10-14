@@ -13,7 +13,7 @@ module Admin
       # @raise [TRS::Errors::ProhibitedFromTeaching]
       # @raise [TRS::Errors::InductionAlreadyCompleted]
       # @raise [TRS::Errors::QTSNotAwarded]
-      # @raise [AppropriateBodies::Errors::TeacherHasActiveInductionPeriodWithCurrentAB]
+      # @raise [AppropriateBodies::ClaimAnECT::FindECT::TeacherHasOngoingInductionPeriodWithCurrentAB]
       #
       # @return [Boolean]
       def import_from_trs!

@@ -1,16 +1,12 @@
-RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
+RSpec.describe 'Appropriate body recording a passed induction outcome for a teacher' do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do
-    FactoryBot.create(
-      :induction_period,
-      :ongoing,
-      teacher:,
-      appropriate_body:,
-      started_on: 1.month.ago,
-      induction_programme: 'fip'
-    )
+    FactoryBot.create(:induction_period, :ongoing,
+                      teacher:,
+                      appropriate_body:,
+                      started_on: 1.month.ago)
   end
 
   let(:valid_params) do
@@ -18,15 +14,15 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
       pending_induction_submission: {
         finished_on: Date.current,
         number_of_terms: 3,
-        outcome: 'fail'
+        outcome: 'pass'
       }
     }
   end
 
-  describe 'GET /appropriate-body/teachers/:id/record-failed-outcome/new' do
+  describe 'GET /appropriate-body/teachers/:teacher_id/record-passed-outcome/new' do
     context 'when not signed in' do
       it 'redirects to the root page' do
-        get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
+        get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome/new")
         expect(response).to redirect_to(root_url)
       end
     end
@@ -35,24 +31,24 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
       before { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
       it 'renders the new form for a valid teacher' do
-        get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
+        get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome/new")
 
         expect(response).to be_successful
-        expect(response.body).to include('Record failed outcome')
+        expect(response.body).to include('Record passed outcome')
       end
 
       it 'returns not found for an invalid teacher' do
-        get("/appropriate-body/teachers/invalid-trn/record-failed-outcome/new")
+        get("/appropriate-body/teachers/invalid-trn/record-passed-outcome/new")
 
         expect(response).to have_http_status(:not_found)
       end
     end
   end
 
-  describe 'POST /appropriate-body/teachers/:id/record-failed-outcome' do
+  describe 'POST /appropriate-body/teachers/:teacher_id/record-passed-outcome' do
     context 'when not signed in' do
       it 'redirects to the root page' do
-        post("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
+        post("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome")
         expect(response).to redirect_to(root_url)
       end
     end
@@ -61,17 +57,17 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
       let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
       context 'with valid params' do
-        let(:fake_record_outcome) { double(AppropriateBodies::RecordOutcome, fail!: true) }
+        let(:fake_record_outcome) { double(AppropriateBodies::RecordPass, pass!: true) }
 
         before do
-          allow(AppropriateBodies::RecordOutcome).to receive(:new).and_return(fake_record_outcome)
+          allow(AppropriateBodies::RecordPass).to receive(:new).and_return(fake_record_outcome)
           allow(PendingInductionSubmissions::Build).to receive(:closing_induction_period).and_call_original
         end
 
         it 'creates a new pending induction submission' do
           expect {
             post(
-              "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
+              "/appropriate-body/teachers/#{teacher.id}/record-passed-outcome",
               params: valid_params
             )
           }.to change(PendingInductionSubmission, :count).by(1)
@@ -79,7 +75,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
 
         it 'uses PendingInductionSubmissions::Build to instantiate the PendingInductionSubmission' do
           post(
-            "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
+            "/appropriate-body/teachers/#{teacher.id}/record-passed-outcome",
             params: valid_params
           )
 
@@ -88,18 +84,17 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
 
         it 'calls the record outcome service and redirects' do
           post(
-            "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
+            "/appropriate-body/teachers/#{teacher.id}/record-passed-outcome",
             params: valid_params
           )
 
-          expect(AppropriateBodies::RecordOutcome).to have_received(:new).with(
+          expect(AppropriateBodies::RecordPass).to have_received(:new).with(
             appropriate_body:,
             pending_induction_submission: an_instance_of(PendingInductionSubmission),
-            teacher:,
             author: an_instance_of(Sessions::Users::AppropriateBodyPersona)
           )
 
-          expect(response).to redirect_to("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
+          expect(response).to redirect_to("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome")
         end
       end
 
@@ -109,14 +104,14 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
             pending_induction_submission: {
               finished_on: nil,
               number_of_terms: nil,
-              outcome: 'fail'
+              outcome: 'pass'
             }
           }
         end
 
         it 'renders the new form with errors' do
           post(
-            "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
+            "/appropriate-body/teachers/#{teacher.id}/record-passed-outcome",
             params: invalid_params
           )
 
@@ -130,14 +125,14 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
             pending_induction_submission: {
               finished_on: induction_period.started_on - 1.month,
               number_of_terms: 5,
-              outcome: 'fail'
+              outcome: 'pass'
             }
           }
         end
 
-        specify do
+        it 'includes finish date must be later than start date' do
           post(
-            "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome",
+            "/appropriate-body/teachers/#{teacher.id}/record-passed-outcome",
             params: invalid_params
           )
 
@@ -147,20 +142,16 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
     end
   end
 
-  describe 'GET /appropriate-body/teachers/:id/record-failed-outcome' do
+  describe 'GET /appropriate-body/teachers/:teacher_id/record-passed-outcome' do
     let!(:induction_period) do
-      FactoryBot.create(
-        :induction_period,
-        :fail,
-        teacher:,
-        appropriate_body:,
-        induction_programme: 'fip'
-      )
+      FactoryBot.create(:induction_period, :pass,
+                        teacher:,
+                        appropriate_body:)
     end
 
     context 'when not signed in' do
       it 'redirects to the root page' do
-        get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
+        get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome")
         expect(response).to redirect_to(root_url)
       end
     end
@@ -169,7 +160,7 @@ RSpec.describe 'Appropriate body recording a failed outcome for a teacher' do
       before { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
       it 'renders the show page for a valid teacher' do
-        get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
+        get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome")
         expect(response).to be_successful
       end
     end
