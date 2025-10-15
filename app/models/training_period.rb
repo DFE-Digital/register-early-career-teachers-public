@@ -29,6 +29,7 @@ class TrainingPeriod < ApplicationRecord
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
   belongs_to :mentor_at_school_period, inverse_of: :training_periods
   belongs_to :school_partnership
+  belongs_to :schedule
 
   has_one :lead_provider_delivery_partnership, through: :school_partnership
   has_one :active_lead_provider, through: :lead_provider_delivery_partnership
@@ -62,6 +63,8 @@ class TrainingPeriod < ApplicationRecord
   validates :withdrawal_reason, presence: true, if: -> { withdrawn_at.present? }
   validates :deferred_at, presence: true, if: -> { deferral_reason.present? }
   validates :deferral_reason, presence: true, if: -> { deferred_at.present? }
+  validate :schedule_contract_period_matches, if: :provider_led_training_programme?
+  validate :schedule_absent_for_school_led, if: :school_led_training_programme?
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
@@ -164,5 +167,21 @@ private
     return unless withdrawn_at.present? && deferred_at.present?
 
     errors.add(:base, "A training period cannot be both withdrawn and deferred")
+  end
+
+  def schedule_contract_period_matches
+    contract_periods_to_check = [contract_period, expression_of_interest_contract_period].compact.uniq
+
+    return if schedule.blank? || contract_periods_to_check.blank?
+
+    unless contract_periods_to_check.all?(schedule.contract_period)
+      errors.add(:schedule, "Contract period of schedule must match contract period of EOI and/or school partnership")
+    end
+  end
+
+  def schedule_absent_for_school_led
+    return if schedule.blank?
+
+    errors.add(:schedule, 'Schedule must be absent for school-led training programmes')
   end
 end

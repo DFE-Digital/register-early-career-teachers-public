@@ -225,12 +225,12 @@ kate_winslet_ect_at_ackley_bridge = FactoryBot.create(:ect_at_school_period,
 
 FactoryBot.create(:training_period,
                   :for_ect,
+                  :school_led,
                   ect_at_school_period: kate_winslet_ect_at_ackley_bridge,
                   started_on: Date.new(2021, 9, 1),
                   finished_on: nil,
                   expression_of_interest: nil,
-                  school_partnership: nil,
-                  training_programme: 'school_led').tap { |tp| describe_training_period(tp) }
+                  school_partnership: nil).tap { |tp| describe_training_period(tp) }
 
 FactoryBot.create(:induction_period,
                   teacher: kate_winslet,
@@ -331,12 +331,12 @@ hugh_grant_ect_at_abbey_grove = FactoryBot.create(:ect_at_school_period,
 
 FactoryBot.create(:training_period,
                   :for_ect,
+                  :school_led,
                   ect_at_school_period: hugh_grant_ect_at_abbey_grove,
                   started_on: Date.new(2021, 9, 1),
                   finished_on: nil,
                   expression_of_interest: nil,
-                  school_partnership: nil,
-                  training_programme: 'school_led').tap { |tp| describe_training_period(tp) }
+                  school_partnership: nil).tap { |tp| describe_training_period(tp) }
 
 FactoryBot.create(:induction_period,
                   teacher: hugh_grant,

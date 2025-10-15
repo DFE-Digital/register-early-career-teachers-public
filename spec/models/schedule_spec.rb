@@ -2,6 +2,7 @@ describe Schedule do
   describe 'relationships' do
     it { is_expected.to belong_to(:contract_period).inverse_of(:schedules).with_foreign_key(:contract_period_year) }
     it { is_expected.to have_many(:milestones) }
+    it { is_expected.to have_many(:training_periods) }
   end
 
   describe 'validation' do

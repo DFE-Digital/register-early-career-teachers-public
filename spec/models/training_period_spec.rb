@@ -86,6 +86,7 @@ describe TrainingPeriod do
     it { is_expected.to belong_to(:expression_of_interest).class_name('ActiveLeadProvider') }
     it { is_expected.to have_one(:expression_of_interest_lead_provider).through(:expression_of_interest).source(:lead_provider) }
     it { is_expected.to have_one(:expression_of_interest_contract_period).through(:expression_of_interest).source(:contract_period) }
+    it { is_expected.to belong_to(:schedule) }
   end
 
   describe "validations" do
@@ -155,6 +156,10 @@ describe TrainingPeriod do
     describe 'presence of expression of interest or school partnership' do
       let(:dates) { { started_on: 3.years.ago.to_date, finished_on: nil } }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **dates) }
+      let(:school) { ect_at_school_period.school }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+      let(:school_partnership) { make_partnership_for(school, contract_period) }
+      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
       context 'when provider-led' do
         subject { FactoryBot.build(:training_period, :provider_led, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
@@ -167,26 +172,26 @@ describe TrainingPeriod do
         end
 
         context 'when just the expression of interest is present' do
-          subject { FactoryBot.create(:training_period, :with_expression_of_interest, ect_at_school_period:, **dates) }
+          subject { FactoryBot.create(:training_period, :with_only_expression_of_interest, ect_at_school_period:, **dates) }
 
           it { is_expected.to(be_valid) }
         end
 
         context 'when just the school partnership is present' do
-          subject { FactoryBot.create(:training_period, :with_school_partnership, ect_at_school_period:, **dates) }
+          subject { FactoryBot.create(:training_period, school_partnership:, ect_at_school_period:, **dates) }
 
           it { is_expected.to(be_valid) }
         end
 
         context 'when both the expression of interest and school partnership are present' do
-          subject { FactoryBot.create(:training_period, :with_school_partnership, :with_expression_of_interest, ect_at_school_period:, **dates) }
+          subject { FactoryBot.create(:training_period, expression_of_interest:, school_partnership:, ect_at_school_period:, **dates) }
 
           it { is_expected.to(be_valid) }
         end
       end
 
       context 'when school-led' do
-        subject { FactoryBot.build(:training_period, :school_led, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
+        subject { FactoryBot.build(:training_period, :school_led, expression_of_interest: nil, school_partnership: nil, ect_at_school_period:, **dates) }
 
         it 'allows nil expression of interest and training period' do
           expect(subject).to(be_valid)
@@ -308,6 +313,10 @@ describe TrainingPeriod do
     describe 'absence of expression of interest and school partnership for school-led training' do
       let(:dates) { { started_on: 3.years.ago.to_date, finished_on: nil } }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **dates) }
+      let(:school) { ect_at_school_period.school }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+      let(:school_partnership) { make_partnership_for(school, contract_period) }
+      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
       context 'when school-led' do
         context 'when both expression of interest and school partnership are absent' do
@@ -318,8 +327,8 @@ describe TrainingPeriod do
 
         context 'when expression of interest is present' do
           subject do
-            FactoryBot.build(:training_period, :school_led, :with_expression_of_interest,
-                             ect_at_school_period:, **dates)
+            FactoryBot.build(:training_period, :school_led, expression_of_interest:,
+                                                            ect_at_school_period:, **dates)
           end
 
           it 'has an error on expression_of_interest' do
@@ -330,8 +339,8 @@ describe TrainingPeriod do
 
         context 'when school partnership is present' do
           subject do
-            FactoryBot.build(:training_period, :school_led, :with_school_partnership,
-                             ect_at_school_period:, **dates)
+            FactoryBot.build(:training_period, :school_led, school_partnership:,
+                                                            ect_at_school_period:, **dates)
           end
 
           it 'has an error on school_partnership' do
@@ -342,8 +351,8 @@ describe TrainingPeriod do
 
         context 'when both expression of interest and school partnership are present' do
           subject do
-            FactoryBot.build(:training_period, :school_led, :with_school_partnership, :with_expression_of_interest,
-                             ect_at_school_period:, **dates)
+            FactoryBot.build(:training_period, :school_led, school_partnership:, expression_of_interest:,
+                                                            ect_at_school_period:, **dates)
           end
 
           it 'has errors on both expression_of_interest and school_partnership' do
@@ -357,12 +366,95 @@ describe TrainingPeriod do
       context 'when provider-led' do
         context 'when both expression of interest and school partnership are present' do
           subject do
-            FactoryBot.build(:training_period, :provider_led, :with_school_partnership, :with_expression_of_interest,
-                             ect_at_school_period:, **dates)
+            FactoryBot.build(:training_period, :provider_led, school_partnership:, expression_of_interest:,
+                                                              ect_at_school_period:, **dates)
           end
 
           it 'does not validate absence of expression_of_interest and school_partnership' do
             expect(subject).to be_valid
+          end
+        end
+      end
+    end
+
+    describe "check if schedule contract period matches" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil) }
+      let(:school) { ect_at_school_period.school }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+      let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+      let(:school_partnership) { make_partnership_for(school, contract_period) }
+      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
+
+      context "contract period from school partnership" do
+        context "when contract periods match" do
+          subject { FactoryBot.build(:training_period, :ongoing, schedule:, school_partnership:, ect_at_school_period:) }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "when contract periods do not match" do
+          subject { FactoryBot.build(:training_period, :ongoing, schedule:, school_partnership: mismatched_school_partnership, ect_at_school_period:) }
+
+          let(:mismatched_school_partnership) { make_partnership_for(school, FactoryBot.create(:contract_period, year: 2025)) }
+
+          it "adds an error to schedule" do
+            subject.valid?
+
+            expect(subject.errors[:schedule]).to include("Contract period of schedule must match contract period of EOI and/or school partnership")
+          end
+        end
+      end
+
+      context "contract period from expression of interest" do
+        context "when contract periods match" do
+          subject do
+            FactoryBot.build(
+              :training_period,
+              :for_ect,
+              :ongoing,
+              :provider_led,
+              school_partnership: nil,
+              expression_of_interest:,
+              ect_at_school_period:,
+              schedule:,
+              started_on: ect_at_school_period.started_on
+            )
+          end
+
+          it { is_expected.to be_valid }
+        end
+
+        context "when contract periods do not match" do
+          subject do
+            FactoryBot.build(
+              :training_period,
+              :for_ect,
+              :ongoing,
+              :provider_led,
+              school_partnership: nil,
+              expression_of_interest: mismatched_expression_of_interest,
+              ect_at_school_period:,
+              schedule:,
+              started_on: ect_at_school_period.started_on
+            )
+          end
+
+          let(:mismatched_expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period: FactoryBot.create(:contract_period, year: 2025)) }
+
+          it "adds an error to schedule" do
+            subject.valid?
+
+            expect(subject.errors[:schedule]).to include("Contract period of schedule must match contract period of EOI and/or school partnership")
+          end
+        end
+
+        context "when training period is `school-led`" do
+          subject { FactoryBot.build(:training_period, :ongoing, :school_led, schedule:, ect_at_school_period:) }
+
+          it "adds an error to schedule" do
+            subject.valid?
+
+            expect(subject.errors[:schedule]).to include("Schedule must be absent for school-led training programmes")
           end
         end
       end
