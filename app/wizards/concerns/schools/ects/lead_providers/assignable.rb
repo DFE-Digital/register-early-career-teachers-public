@@ -5,7 +5,8 @@ module Schools
         extend ActiveSupport::Concern
 
         def lead_providers_for_select = active_lead_providers_in_contract_period
-        def current_lead_provider_name = lead_provider_for_ect_at_school_period&.name
+        def current_lead_provider = lead_provider_for_ect_at_school_period
+        def current_lead_provider_name = current_lead_provider&.name
 
       private
 
@@ -17,9 +18,12 @@ module Schools
                                       end
         end
 
+        def ect_at_school_period_training
+          ECTAtSchoolPeriods::CurrentTraining.new(ect_at_school_period)
+        end
+
         def lead_provider_for_ect_at_school_period
-          @lead_provider_for_ect_at_school_period ||= ECTAtSchoolPeriods::CurrentTraining
-            .new(ect_at_school_period)
+          @lead_provider_for_ect_at_school_period ||= ect_at_school_period_training
             .lead_provider_via_school_partnership_or_eoi
         end
 
