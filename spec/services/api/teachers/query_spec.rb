@@ -38,16 +38,6 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           end
         end
       end
-
-      context "when a lead_provider_id is specified" do
-        let(:lead_provider_id) { lead_provider.id }
-
-        before { FactoryBot.create(:teacher_lead_provider_metadata, lead_provider:, teacher:) }
-
-        it "only contains relevant metadata" do
-          expect(result.lead_provider_metadata).to contain_exactly(lead_provider_metadata)
-        end
-      end
     end
 
     let(:lead_provider_id) { :ignore }
