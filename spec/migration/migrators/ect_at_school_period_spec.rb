@@ -1,7 +1,10 @@
 RSpec.describe Migrators::ECTAtSchoolPeriod do
   it_behaves_like "a migrator", :ect_at_school_period, %i[teacher school] do
     def create_migration_resource
-      ect = FactoryBot.create(:migration_participant_profile, :ect)
+      ect = FactoryBot.create(:migration_participant_profile,
+                              :ect,
+                              sparsity_uplift: [true, false].sample,
+                              pupil_premium_uplift: [true, false].sample)
       FactoryBot.create(:migration_induction_record, participant_profile: ect)
       ect.teacher_profile
     end
@@ -24,6 +27,8 @@ RSpec.describe Migrators::ECTAtSchoolPeriod do
           teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
 
           teacher_profile.participant_profiles.first.induction_records.each do |induction_record|
+            expect(teacher.ect_pupil_premium_uplift).to eq(teacher_profile.participant_profiles.first.pupil_premium_uplift)
+            expect(teacher.ect_sparsity_uplift).to eq(teacher_profile.participant_profiles.first.sparsity_uplift)
             expect(teacher.ect_at_school_periods.first.started_on.to_date).to eq induction_record.start_date.to_date
             expect(teacher.ect_at_school_periods.first.school.urn).to eq induction_record.induction_programme.school_cohort.school.urn.to_i
           end
