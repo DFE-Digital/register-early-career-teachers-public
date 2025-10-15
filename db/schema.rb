@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_10_075339) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_14_131805) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -759,7 +759,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_10_075339) do
     t.string "corrected_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "trn", null: false
+    t.string "trn"
     t.string "trs_first_name"
     t.string "trs_last_name"
     t.date "trs_qts_awarded_on"
@@ -781,6 +781,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_10_075339) do
     t.boolean "ect_sparsity_uplift", default: false, null: false
     t.datetime "ect_first_became_eligible_for_training_at"
     t.datetime "mentor_first_became_eligible_for_training_at"
+    t.boolean "trnless", default: false, null: false
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
@@ -788,6 +789,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_10_075339) do
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
     t.index ["trs_first_name", "trs_last_name", "corrected_name"], name: "idx_on_trs_first_name_trs_last_name_corrected_name_6d0edad502", opclass: :gin_trgm_ops, using: :gin
+    t.check_constraint "trnless OR trn IS NOT NULL", name: "check_trn_presence"
   end
 
   create_table "training_periods", force: :cascade do |t|
