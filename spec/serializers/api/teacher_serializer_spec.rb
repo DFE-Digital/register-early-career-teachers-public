@@ -5,7 +5,14 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
   end
 
   let!(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
+  let(:teacher) do
+    FactoryBot.create(:teacher,
+                      :with_sparsity_uplift,
+                      :with_pupil_premium_uplift,
+                      :ineligible_for_mentor_funding,
+                      api_ect_training_record_id: SecureRandom.uuid,
+                      api_mentor_training_record_id: SecureRandom.uuid)
+  end
 
   before do
     # Ensure other metadata exists for another lead provider.
@@ -14,6 +21,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
   describe "core attributes" do
     it "serializes `id`" do
+      expect(response["id"]).to be_present
       expect(response["id"]).to eq(teacher.api_id)
     end
 
@@ -26,14 +34,17 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
     subject(:attributes) { response["attributes"] }
 
     it "serializes `full_name`" do
+      expect(attributes["full_name"]).to be_present
       expect(attributes["full_name"]).to eq(Teachers::Name.new(teacher).full_name_in_trs)
     end
 
     it "serializes `updated_at`" do
+      expect(attributes["updated_at"]).to be_present
       expect(attributes["updated_at"]).to eq(teacher.updated_at.utc.rfc3339)
     end
 
     it "serializes `teacher_reference_number`" do
+      expect(attributes["teacher_reference_number"]).to be_present
       expect(attributes["teacher_reference_number"]).to eq(teacher.trn)
     end
 
@@ -49,16 +60,25 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
         it { expect(participant_id_changes.count).to eq(2) }
 
         it "serializes `from_participant_id`" do
+          expect(participant_id_changes[0]["from_participant_id"]).to be_present
+          expect(participant_id_changes[1]["from_participant_id"]).to be_present
+
           expect(participant_id_changes[0]["from_participant_id"]).to eq(teacher_id_change_1.api_from_teacher_id)
           expect(participant_id_changes[1]["from_participant_id"]).to eq(teacher_id_change_2.api_from_teacher_id)
         end
 
         it "serializes `to_participant_id`" do
+          expect(participant_id_changes[0]["to_participant_id"]).to be_present
+          expect(participant_id_changes[1]["to_participant_id"]).to be_present
+
           expect(participant_id_changes[0]["to_participant_id"]).to eq(teacher_id_change_1.api_to_teacher_id)
           expect(participant_id_changes[1]["to_participant_id"]).to eq(teacher_id_change_2.api_to_teacher_id)
         end
 
         it "serializes `changed_at`" do
+          expect(participant_id_changes[0]["changed_at"]).to be_present
+          expect(participant_id_changes[1]["changed_at"]).to be_present
+
           expect(participant_id_changes[0]["changed_at"]).to eq(teacher_id_change_1.created_at.utc.rfc3339)
           expect(participant_id_changes[1]["changed_at"]).to eq(teacher_id_change_2.created_at.utc.rfc3339)
         end
@@ -98,14 +118,17 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           subject(:ect_enrolment) { response["attributes"]["ecf_enrolments"][0] }
 
           it "serializes `training_record_id`" do
+            expect(ect_enrolment["training_record_id"]).to be_present
             expect(ect_enrolment["training_record_id"]).to eq(teacher.api_ect_training_record_id)
           end
 
           it "serializes `email`" do
+            expect(ect_enrolment["email"]).to be_present
             expect(ect_enrolment["email"]).to eq(ect_at_school_period.email)
           end
 
           it "serializes `mentor_id`" do
+            expect(ect_enrolment["mentor_id"]).to be_present
             expect(ect_enrolment["mentor_id"]).to eq(latest_mentorship_period.mentor.teacher.api_id)
           end
 
@@ -118,6 +141,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `school_urn`" do
+            expect(ect_enrolment["school_urn"]).to be_present
             expect(ect_enrolment["school_urn"]).to eq(ect_training_period.school_partnership.school.urn)
           end
 
@@ -126,6 +150,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `cohort`" do
+            expect(ect_enrolment["cohort"]).to be_present
             expect(ect_enrolment["cohort"]).to eq(ect_training_period.school_partnership.contract_period.year)
           end
 
@@ -174,10 +199,12 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `pupil_premium_uplift`" do
+            expect(ect_enrolment["pupil_premium_uplift"]).to be_present
             expect(ect_enrolment["pupil_premium_uplift"]).to eq(teacher.ect_pupil_premium_uplift)
           end
 
           it "serializes `sparsity_uplift`" do
+            expect(ect_enrolment["sparsity_uplift"]).to be_present
             expect(ect_enrolment["sparsity_uplift"]).to eq(teacher.ect_sparsity_uplift)
           end
 
@@ -186,6 +213,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `delivery_partner_id`" do
+            expect(ect_enrolment["delivery_partner_id"]).to be_present
             expect(ect_enrolment["delivery_partner_id"]).to eq(ect_training_period.school_partnership.delivery_partner.api_id)
           end
 
@@ -232,10 +260,12 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           subject(:mentor_enrolment) { response["attributes"]["ecf_enrolments"][1] }
 
           it "serializes `training_record_id`" do
+            expect(mentor_enrolment["training_record_id"]).to be_present
             expect(mentor_enrolment["training_record_id"]).to eq(teacher.api_mentor_training_record_id)
           end
 
           it "serializes `email`" do
+            expect(mentor_enrolment["email"]).to be_present
             expect(mentor_enrolment["email"]).to eq(mentor_at_school_period.email)
           end
 
@@ -244,6 +274,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `school_urn`" do
+            expect(mentor_enrolment["school_urn"]).to be_present
             expect(mentor_enrolment["school_urn"]).to eq(mentor_training_period.school_partnership.school.urn)
           end
 
@@ -252,6 +283,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `cohort`" do
+            expect(mentor_enrolment["cohort"]).to be_present
             expect(mentor_enrolment["cohort"]).to eq(mentor_training_period.school_partnership.contract_period.year)
           end
 
@@ -312,6 +344,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `delivery_partner_id`" do
+            expect(mentor_enrolment["delivery_partner_id"]).to be_present
             expect(mentor_enrolment["delivery_partner_id"]).to eq(mentor_training_period.school_partnership.delivery_partner.api_id)
           end
 
@@ -354,6 +387,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `mentor_ineligible_for_funding_reason`" do
+            expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to be_present
             expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to eq(teacher.mentor_became_ineligible_for_funding_reason)
           end
 
