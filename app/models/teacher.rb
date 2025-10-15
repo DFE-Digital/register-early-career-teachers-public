@@ -40,8 +40,14 @@ class Teacher < ApplicationRecord
 
   # Validations
   validates :trn,
-            uniqueness: { message: 'TRN already exists', case_sensitive: false },
-            teacher_reference_number: true
+            uniqueness: { message: 'TRN already exists', case_sensitive: false, allow_nil: true },
+            teacher_reference_number: true,
+            presence: { message: 'Enter the teacher reference number (TRN)' },
+            unless: :trnless?
+
+  validates :trn,
+            absence: { message: 'TRN not allowed when trnless is true' },
+            if: :trnless?
 
   validates :trs_induction_status,
             allow_nil: true,

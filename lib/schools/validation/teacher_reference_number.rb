@@ -4,26 +4,21 @@ module Schools
       MIN_UNPADDED_TRN_LENGTH = 5
       PADDED_TRN_LENGTH = 7
 
-      attr_reader :trn, :error_message
+      attr_reader :trn, :error_message, :formatted_trn
 
       def initialize(trn)
         @trn = trn
         @error_message = nil
-      end
-
-      def formatted_trn
-        @formatted_trn ||= extract_trn_value
+        @formatted_trn ||= format_trn
       end
 
       def valid?
-        formatted_trn.present?
+        @error_message.nil?
       end
 
     private
 
-      def extract_trn_value
-        @error_message = "Enter the teacher reference number (TRN)" and return if trn.blank?
-
+      def format_trn
         # remove any characters that are not digits
         only_digits = trn.to_s.gsub(/[^\d]/, "")
 
