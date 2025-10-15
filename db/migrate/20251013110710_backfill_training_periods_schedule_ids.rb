@@ -7,6 +7,8 @@ class BackfillTrainingPeriodsScheduleIds < ActiveRecord::Migration[8.0]
 
       if default_schedule
         training_period.update!(schedule_id: default_schedule.id)
+      else
+        raise "No default schedule found for contract period id #{contract_period.id}"
       end
     end
   end

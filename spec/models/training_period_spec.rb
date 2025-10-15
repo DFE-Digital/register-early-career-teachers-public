@@ -449,9 +449,13 @@ describe TrainingPeriod do
         end
 
         context "when training period is `school-led`" do
-          subject { FactoryBot.build(:training_period, :ongoing, :school_led, ect_at_school_period:) }
+          subject { FactoryBot.build(:training_period, :ongoing, :school_led, schedule:, ect_at_school_period:) }
 
-          it { is_expected.to be_valid }
+          it "adds an error to schedule" do
+            subject.valid?
+
+            expect(subject.errors[:schedule]).to include("Schedule must be absent for school-led training programmes")
+          end
         end
       end
     end

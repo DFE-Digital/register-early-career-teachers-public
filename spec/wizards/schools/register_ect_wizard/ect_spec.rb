@@ -623,8 +623,6 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       let(:school) { FactoryBot.create(:school) }
 
       context 'when there is a previous training period with an EOI' do
-        let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Team Kurenai") }
-        let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, lead_provider:) }
         let(:teacher) { FactoryBot.create(:teacher) }
 
         let!(:ect_period) do
@@ -642,13 +640,12 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
             :for_ect,
             :with_only_expression_of_interest,
             ect_at_school_period: ect_period,
-            started_on: Date.new(2025, 3, 10),
-            expression_of_interest:
+            started_on: Date.new(2025, 3, 10)
           )
         end
 
         it 'returns the name of the EOI lead provider for the previous training period' do
-          expect(ect.previous_eoi_lead_provider_name).to eq("Team Kurenai")
+          expect(ect.previous_eoi_lead_provider_name).to eq(training_period.expression_of_interest.lead_provider.name)
         end
       end
 

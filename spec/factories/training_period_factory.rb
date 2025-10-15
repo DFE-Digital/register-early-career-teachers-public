@@ -24,6 +24,7 @@ FactoryBot.define do
       training_programme { 'school_led' }
       school_partnership { nil }
       expression_of_interest { nil }
+      schedule { nil }
     end
 
     trait(:provider_led) do
@@ -44,10 +45,7 @@ FactoryBot.define do
       end
 
       after(:build) do |training_period, evaluator|
-        # Only `provider_led` training periods should have a schedule
-        if training_period.provider_led_training_programme?
-          training_period.schedule = evaluator.schedule
-        end
+        training_period.schedule = evaluator.schedule
       end
     end
 
