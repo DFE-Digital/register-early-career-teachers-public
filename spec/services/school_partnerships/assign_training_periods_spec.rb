@@ -56,7 +56,7 @@ RSpec.describe SchoolPartnerships::AssignTrainingPeriods do
       FactoryBot.create(:training_period,
                         :with_expression_of_interest,
                         ect_at_school_period:,
-                        school_partnership: FactoryBot.create(:school_partnership),
+                        school_partnership:,
                         expression_of_interest: matching_expression_of_interest,
                         started_on: Date.new(2025, 4, 1),
                         finished_on: Date.new(2025, 4, 30))

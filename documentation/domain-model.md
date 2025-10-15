@@ -28,10 +28,12 @@ erDiagram
     enum deferral_reason
     datetime withdrawn_at
     enum withdrawal_reason
+    integer schedule_id
   }
   TrainingPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| MentorAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| SchoolPartnership : belongs_to
+  TrainingPeriod }o--|| Schedule : belongs_to
   TrainingPeriod }o--|| ActiveLeadProvider : belongs_to
   TeacherMigrationFailure {
     integer id

@@ -809,11 +809,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_131805) do
     t.enum "deferral_reason", enum_type: "deferral_reasons"
     t.datetime "withdrawn_at"
     t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
+    t.bigint "schedule_id"
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"
     t.index ["expression_of_interest_id"], name: "index_training_periods_on_expression_of_interest_id"
     t.index ["mentor_at_school_period_id"], name: "index_training_periods_on_mentor_at_school_period_id"
+    t.index ["schedule_id"], name: "index_training_periods_on_schedule_id"
     t.index ["school_partnership_id", "ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "provider_partnership_trainings", unique: true
     t.index ["school_partnership_id"], name: "index_training_periods_on_school_partnership_id"
   end
@@ -901,5 +903,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_131805) do
   add_foreign_key "training_periods", "active_lead_providers", column: "expression_of_interest_id"
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "mentor_at_school_periods"
+  add_foreign_key "training_periods", "schedules"
   add_foreign_key "training_periods", "school_partnerships"
 end
