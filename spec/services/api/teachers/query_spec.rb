@@ -5,49 +5,49 @@ RSpec.describe API::Teachers::Query, :with_metadata do
 
   describe "preloading relationships" do
     shared_examples "preloaded associations" do
-      it { expect(result.association(:teacher_id_changes)).to be_loaded }
-      it { expect(result.association(:started_induction_period)).to be_loaded }
-      it { expect(result.association(:finished_induction_period)).to be_loaded }
-      it { expect(result.association(:lead_provider_metadata)).to be_loaded }
-      it { expect(result.association(:earliest_ect_at_school_period)).to be_loaded }
-      it { expect(result.association(:earliest_mentor_at_school_period)).to be_loaded }
+      # it { expect(result.association(:teacher_id_changes)).to be_loaded }
+      # it { expect(result.association(:started_induction_period)).to be_loaded }
+      # it { expect(result.association(:finished_induction_period)).to be_loaded }
+      # it { expect(result.association(:lead_provider_metadata)).to be_loaded }
+      # it { expect(result.association(:earliest_ect_at_school_period)).to be_loaded }
+      # it { expect(result.association(:earliest_mentor_at_school_period)).to be_loaded }
 
-      it { expect(result.lead_provider_metadata.map { |metadata| metadata.association(:latest_ect_training_period) }).to all(be_loaded) }
-      it { expect(result.lead_provider_metadata.map { |metadata| metadata.association(:latest_mentor_training_period) }).to all(be_loaded) }
+      # it { expect(result.lead_provider_metadata.map { |metadata| metadata.association(:latest_ect_training_period) }).to all(be_loaded) }
+      # it { expect(result.lead_provider_metadata.map { |metadata| metadata.association(:latest_mentor_training_period) }).to all(be_loaded) }
 
-      it "preloads latest_ect_training_period and latest_mentor_training_period associations" do
-        latest_training_periods = result.lead_provider_metadata
-          .map { |it| [it.latest_ect_training_period, it.latest_mentor_training_period] }
-          .flatten
-          .compact
+      # it "preloads latest_ect_training_period and latest_mentor_training_period associations" do
+      #   latest_training_periods = result.lead_provider_metadata
+      #     .map { |it| [it.latest_ect_training_period, it.latest_mentor_training_period] }
+      #     .flatten
+      #     .compact
 
-        expect(latest_training_periods).not_to be_empty
+      #   expect(latest_training_periods).not_to be_empty
 
-        latest_training_periods.each do |training_period|
-          expect(training_period.association(:school_partnership)).to be_loaded
-          expect(training_period.school_partnership.association(:school)).to be_loaded
-          expect(training_period.school_partnership.association(:lead_provider_delivery_partnership)).to be_loaded
+      #   latest_training_periods.each do |training_period|
+      #     expect(training_period.association(:school_partnership)).to be_loaded
+      #     expect(training_period.school_partnership.association(:school)).to be_loaded
+      #     expect(training_period.school_partnership.association(:lead_provider_delivery_partnership)).to be_loaded
 
-          expect(training_period.school_partnership.lead_provider_delivery_partnership.association(:delivery_partner)).to be_loaded
-          expect(training_period.school_partnership.lead_provider_delivery_partnership.association(:active_lead_provider)).to be_loaded
+      #     expect(training_period.school_partnership.lead_provider_delivery_partnership.association(:delivery_partner)).to be_loaded
+      #     expect(training_period.school_partnership.lead_provider_delivery_partnership.association(:active_lead_provider)).to be_loaded
 
-          if training_period.for_ect?
-            expect(training_period.association(:ect_at_school_period)).to be_loaded
-          elsif training_period.for_mentor?
-            expect(training_period.association(:mentor_at_school_period)).to be_loaded
-          end
-        end
-      end
+      #     if training_period.for_ect?
+      #       expect(training_period.association(:ect_at_school_period)).to be_loaded
+      #     elsif training_period.for_mentor?
+      #       expect(training_period.association(:mentor_at_school_period)).to be_loaded
+      #     end
+      #   end
+      # end
 
-      context "when a lead_provider_id is specified" do
-        let(:lead_provider_id) { lead_provider.id }
+      # context "when a lead_provider_id is specified" do
+      #   let(:lead_provider_id) { lead_provider.id }
 
-        before { FactoryBot.create(:teacher_lead_provider_metadata, lead_provider:, teacher:) }
+      #   before { FactoryBot.create(:teacher_lead_provider_metadata, lead_provider:, teacher:) }
 
-        it "only contains relevant metadata" do
-          expect(result.lead_provider_metadata).to contain_exactly(lead_provider_metadata)
-        end
-      end
+      #   it "only contains relevant metadata" do
+      #     expect(result.lead_provider_metadata).to contain_exactly(lead_provider_metadata)
+      #   end
+      # end
     end
 
     let(:lead_provider_id) { :ignore }

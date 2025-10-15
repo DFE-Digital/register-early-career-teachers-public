@@ -43,7 +43,7 @@ module API::Teachers
 
     def preload_associations(results)
       preloaded_results = results
-        .strict_loading
+        # .strict_loading
         .includes(
           :teacher_id_changes,
           :started_induction_period,
@@ -51,24 +51,24 @@ module API::Teachers
           :earliest_ect_at_school_period,
           :earliest_mentor_at_school_period
         )
-        .eager_load(
-          lead_provider_metadata: {
-            latest_ect_training_period: {
-              school_partnership: [
-                :school,
-                { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
-              ],
-              ect_at_school_period: []
-            },
-            latest_mentor_training_period: {
-              school_partnership: [
-                :school,
-                { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
-              ],
-              mentor_at_school_period: []
-            }
-          }
-        )
+      # .eager_load(
+      #   lead_provider_metadata: {
+      #     latest_ect_training_period: {
+      #       school_partnership: [
+      #         :school,
+      #         { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
+      #       ],
+      #       ect_at_school_period: []
+      #     },
+      #     latest_mentor_training_period: {
+      #       school_partnership: [
+      #         :school,
+      #         { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
+      #       ],
+      #       mentor_at_school_period: []
+      #     }
+      #   }
+      # )
 
       unless ignore?(filter: lead_provider_id)
         preloaded_results = preloaded_results
