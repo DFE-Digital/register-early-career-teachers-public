@@ -15,6 +15,8 @@ module Builders
         period_date = Data.define(:started_on, :finished_on)
 
         training_period_data.each do |period|
+          next if period.training_programme == "school_led"
+
           period_dates = period_date.new(started_on: period.start_date, finished_on: period.end_date)
           school = find_school_by_urn!(period.school_urn)
 
