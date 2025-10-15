@@ -1,0 +1,19 @@
+---
+title: User not found
+backlink_href: <%= root_path %>
+---
+
+User sign in details do not match our records.
+
+Check you are using the correct DfE sign in details for the organisation you are signing in as.
+
+If you have not signed in before, you may need to ask an approver at your organisation to give you access.
+
+If you are still having problems, please <%= govuk_link_to('contact support', no_visited_state: true, href: support_path) %>.
+
+---
+
+If **<%= @organisation_name %>** is not the correct organisation, you can try signing in again.
+
+First <%= govuk_link_to('go to DSI and sign out', no_visited_state: true, new_tab: true, href: @dfe_user_account) %>
+then <%= govuk_link_to('sign in again', no_visited_state: true, href: sign_in_path) %> with a different organisation.
