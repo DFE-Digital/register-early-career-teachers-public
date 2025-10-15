@@ -1,4 +1,20 @@
 module UserHelper
+  # rubocop:disable RSpec/AnyInstance
+  def sign_in_as_unrecognised_user
+    Rails.logger.debug("Signing in with dfe sign in as an unrecognised user")
+    allow_any_instance_of(PagesController).to receive(:session).and_return({ invalid_user_organisation_name: 'Invalid Organisation' })
+    allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: %w[UnknownRole]))
+    mock_dfe_sign_in_provider!(email: Faker::Internet.email,
+                               uid: Faker::Internet.uuid,
+                               first_name: Faker::Name.first_name,
+                               last_name: Faker::Name.last_name,
+                               organisation_id: Faker::Internet.uuid,
+                               organisation_urn: Faker::Number.unique.number(digits: 6))
+    page.goto("/auth/dfe/callback")
+    stop_mocking_dfe_sign_in_provider!
+  end
+  # rubocop:enable RSpec/AnyInstance
+
   def sign_in_as_multi_role_user(appropriate_body:,
                                  school:,
                                  email: Faker::Internet.email,
