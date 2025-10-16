@@ -1612,4 +1612,38 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe '.record_teacher_training_period_deferred_event!' do
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+    let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+
+    it 'queues a RecordEventJob with the correct values' do
+      freeze_time do
+        training_period.deferral_reason = "other"
+        training_period.deferred_at = Time.zone.now
+        training_period.finished_on = Time.zone.today
+
+        raw_modifications = training_period.changes
+
+        Events::Record.record_teacher_training_period_deferred_event!(author:, teacher:, training_period:, happened_at:, modifications: raw_modifications)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            **author_params,
+            event_type: :teacher_training_period_deferred,
+            happened_at:,
+            heading: "Rhys Ifans's training period with id #{training_period.id} was deferred",
+            metadata: raw_modifications,
+            modifications: [
+              "Finished on changed from '#{Date.new(2025, 7, 20).to_formatted_s(:govuk_short)}' to '#{Time.zone.today.to_formatted_s(:govuk_short)}'",
+              "Deferred at set to '#{Time.zone.now}'",
+              "Deferral reason set to 'other'"
+            ],
+            teacher:,
+            training_period:
+          )
+        )
+      end
+    end
+  end
 end
