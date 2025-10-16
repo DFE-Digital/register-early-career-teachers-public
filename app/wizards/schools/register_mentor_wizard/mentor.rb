@@ -68,6 +68,10 @@ module Schools
         @trs_full_name ||= [trs_first_name, trs_last_name].join(" ")
       end
 
+      def prohibited_from_teaching?
+        trs_prohibited_from_teaching == true
+      end
+
       def ect
         @ect ||= ECTAtSchoolPeriod.find(store["ect_id"]) if store["ect_id"].present?
       end
