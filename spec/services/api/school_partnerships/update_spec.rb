@@ -24,7 +24,7 @@ RSpec.describe API::SchoolPartnerships::Update, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to include("The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.")
+        expect(service.errors[:delivery_partner_api_id]).to eq(["The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again."])
       end
     end
 
@@ -33,7 +33,7 @@ RSpec.describe API::SchoolPartnerships::Update, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:school_partnership_id]).to include("The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again.")
+        expect(service.errors[:school_partnership_id]).to eq(["The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again."])
       end
     end
 
@@ -42,7 +42,7 @@ RSpec.describe API::SchoolPartnerships::Update, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to include("The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information.")
+        expect(service.errors[:delivery_partner_api_id]).to eq(["The entered delivery partner is not recognised to be working in partnership with you for the given contract period. Contact the DfE for more information."])
       end
     end
 
@@ -51,8 +51,14 @@ RSpec.describe API::SchoolPartnerships::Update, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:delivery_partner_api_id]).to include("We are unable to process this request. You are already confirmed to be in partnership with the entered delivery partner. Contact the DfE for support.")
+        expect(service.errors[:delivery_partner_api_id]).to eq(["We are unable to process this request. You are already confirmed to be in partnership with the entered delivery partner. Contact the DfE for support."])
       end
+    end
+
+    context "guarded error messages" do
+      subject { described_class.new }
+
+      it { is_expected.to have_one_error_per_attribute }
     end
   end
 

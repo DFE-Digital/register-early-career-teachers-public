@@ -52,26 +52,38 @@ module API::SchoolPartnerships
     end
 
     def contract_period_exists
+      return if errors[:contract_period_year].any?
+
       errors.add(:contract_period_year, "The '#/contract_period_year' you have entered is invalid. Check contract period details and try again.") unless contract_period
     end
 
     def contract_period_enabled
+      return if errors[:contract_period_year].any?
+
       errors.add(:contract_period_year, "You cannot create this partnership until the contract period has started.") unless contract_period&.enabled?
     end
 
     def lead_provider_exists
+      return if errors[:lead_provider_id].any?
+
       errors.add(:lead_provider_id, "Enter a '#/lead_provider_id'.") unless lead_provider
     end
 
     def school_exists
+      return if errors[:school_api_id].any?
+
       errors.add(:school_api_id, "The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'.") unless school
     end
 
     def school_is_not_cip_only
+      return if errors[:school_api_id].any?
+
       errors.add(:school_api_id, "The school you have entered has not registered to deliver DfE-funded training. Contact the school for more information.") if school&.eligible_for_cip?
     end
 
     def school_is_eligible
+      return if errors[:school_api_id].any?
+
       errors.add(:school_api_id, "The school you have entered is currently ineligible for DfE funding. Contact the school for more information.") unless school&.eligible_for_fip?
     end
 
@@ -87,6 +99,8 @@ module API::SchoolPartnerships
     end
 
     def delivery_partner_exists
+      return if errors[:delivery_partner_api_id].any?
+
       errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
     end
 
@@ -117,7 +131,7 @@ module API::SchoolPartnerships
     def not_school_led
       return unless metadata&.induction_programme_choice == "school_led"
 
-      errors.add(:induction_programme_choice, "This school has only registered school-led participants. Contact the school for more information.")
+      errors.add(:school_api_id, "This school has only registered school-led participants. Contact the school for more information.")
     end
   end
 end
