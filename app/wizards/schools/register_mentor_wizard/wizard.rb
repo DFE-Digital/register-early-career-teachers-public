@@ -65,7 +65,7 @@ module Schools
               return [:confirmation]
             end
 
-            return steps + %i[cannot_register_mentor] if mentor.prohibited_from_teaching
+            return steps + %i[cannot_register_mentor] if mentor.prohibited_from_teaching?
 
             steps << :review_mentor_details
             return steps unless mentor.change_name

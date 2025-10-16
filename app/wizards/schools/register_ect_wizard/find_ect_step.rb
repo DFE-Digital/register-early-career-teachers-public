@@ -19,7 +19,7 @@ module Schools
         return :induction_completed if ect.induction_completed?
         return :induction_exempt if ect.induction_exempt?
         return :induction_failed if ect.induction_failed?
-        return :cannot_register_ect if trs_teacher.prohibited_from_teaching?
+        return :cannot_register_ect if ect.prohibited_from_teaching?
 
         :review_ect_details
       end
@@ -30,12 +30,7 @@ module Schools
         ect.update(trn: formatted_trn,
                    date_of_birth: date_of_birth.values.join("-"),
                    trs_national_insurance_number: trs_teacher.trs_national_insurance_number,
-                   trs_date_of_birth: trs_teacher.date_of_birth,
-                   trs_trn: trs_teacher.trn,
-                   trs_first_name: trs_teacher.trs_first_name,
-                   trs_last_name: trs_teacher.trs_last_name,
-                   trs_induction_status: trs_teacher.trs_induction_status,
-                   prohibited_from_teaching: trs_teacher.prohibited_from_teaching?)
+                   **trs_teacher.to_h)
       end
 
       def trs_teacher

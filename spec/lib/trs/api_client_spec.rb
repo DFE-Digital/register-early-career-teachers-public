@@ -28,7 +28,6 @@ RSpec.describe TRS::APIClient do
 
         expect(teacher).to be_a(TRS::Teacher)
         expect(teacher.to_h.compact).to eq({
-          trn: "1234567",
           trs_alerts: [],
           trs_first_name: "John",
           trs_prohibited_from_teaching: false
@@ -55,7 +54,6 @@ RSpec.describe TRS::APIClient do
 
         expect(teacher).to be_a(TRS::Teacher)
         expect(teacher.to_h.compact).to eq({
-          trn: "1234567",
           trs_alerts: [],
           trs_first_name: "John",
           trs_prohibited_from_teaching: false
