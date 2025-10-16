@@ -123,21 +123,6 @@ describe MentorAtSchoolPeriod do
         expect(described_class.with_expressions_of_interest_for_contract_period(training_period.expression_of_interest.contract_period.id)).to match_array([period_2])
       end
     end
-
-    describe ".with_expressions_of_interest_for_lead_provider_and_contract_period" do
-      let!(:training_period) do
-        FactoryBot.create(:training_period,
-                          :with_only_expression_of_interest,
-                          :for_mentor,
-                          mentor_at_school_period: period_2,
-                          started_on: period_2.started_on,
-                          finished_on: period_2.finished_on)
-      end
-
-      it "returns mentor in training periods only for the specified contract period and lead provider" do
-        expect(described_class.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to match_array([period_2])
-      end
-    end
   end
 
   describe "#siblings" do

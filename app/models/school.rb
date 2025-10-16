@@ -137,8 +137,10 @@ class School < ApplicationRecord
   end
 
   def expression_of_interest_for?(lead_provider_id, contract_period_year)
-    [ect_at_school_periods, mentor_at_school_periods].any? do |periods|
-      periods.with_expressions_of_interest_for_lead_provider_and_contract_period(contract_period_year, lead_provider_id).exists?
-    end
+    TrainingPeriod
+      .left_joins(:ect_at_school_period, :mentor_at_school_period, expression_of_interest: :contract_period)
+      .where(expression_of_interest: { lead_provider_id:, contract_period_year: })
+      .where("ect_at_school_periods.school_id = ? OR mentor_at_school_periods.school_id = ?", id, id)
+      .exists?
   end
 end
