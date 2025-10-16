@@ -660,7 +660,7 @@ GEM
       json-schema (>= 2.2, < 6.0)
       railties (>= 5.2, < 8.1)
       rspec-core (>= 2.14)
-    rubocop (1.79.2)
+    rubocop (1.80.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -674,35 +674,10 @@ GEM
     rubocop-ast (1.46.0)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
-    rubocop-capybara (2.22.1)
-      lint_roller (~> 1.1)
-      rubocop (~> 1.72, >= 1.72.1)
-    rubocop-factory_bot (2.27.1)
-      lint_roller (~> 1.1)
-      rubocop (~> 1.72, >= 1.72.1)
-    rubocop-govuk (5.1.20)
-      rubocop (= 1.79.2)
-      rubocop-ast (= 1.46.0)
-      rubocop-capybara (= 2.22.1)
-      rubocop-rails (= 2.33.3)
-      rubocop-rake (= 0.7.1)
-      rubocop-rspec (= 3.6.0)
-    rubocop-performance (1.26.0)
+    rubocop-performance (1.25.0)
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
-      rubocop-ast (>= 1.44.0, < 2.0)
-    rubocop-rails (2.33.3)
-      activesupport (>= 4.2.0)
-      lint_roller (~> 1.1)
-      rack (>= 1.1)
-      rubocop (>= 1.75.0, < 2.0)
-      rubocop-ast (>= 1.44.0, < 2.0)
-    rubocop-rake (0.7.1)
-      lint_roller (~> 1.1)
-      rubocop (>= 1.72.1)
-    rubocop-rspec (3.6.0)
-      lint_roller (~> 1.1)
-      rubocop (~> 1.72, >= 1.72.1)
+      rubocop-ast (>= 1.38.0, < 2.0)
     ruby-progressbar (1.13.0)
     rubypants (0.7.1)
     rubyzip (3.2.0)
@@ -743,6 +718,20 @@ GEM
       rbtree
       set (~> 1.0)
     stackprof (0.2.27)
+    standard (1.51.1)
+      language_server-protocol (~> 3.17.0.2)
+      lint_roller (~> 1.0)
+      rubocop (~> 1.80.2)
+      standard-custom (~> 1.0.0)
+      standard-performance (~> 1.8)
+    standard-custom (1.0.2)
+      lint_roller (~> 1.0)
+      rubocop (~> 1.50)
+    standard-performance (1.8.0)
+      lint_roller (~> 1.1)
+      rubocop-performance (~> 1.25.0)
+    standardrb (1.0.1)
+      standard
     state_machines (0.100.0)
     state_machines-activemodel (0.100.0)
       activemodel (>= 7.2)
@@ -872,9 +861,6 @@ DEPENDENCIES
   rspec
   rspec-rails
   rswag-specs
-  rubocop-factory_bot
-  rubocop-govuk
-  rubocop-performance
   rubypants
   rubyzip
   savon
@@ -883,6 +869,7 @@ DEPENDENCIES
   shoulda-matchers
   solid_queue
   stackprof
+  standardrb
   state_machines-activerecord
   turbo-rails
   tzinfo-data

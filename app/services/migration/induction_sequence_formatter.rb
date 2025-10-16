@@ -1,4 +1,3 @@
-# rubocop:disable Rails/Output
 module Migration
   # Formats and displays induction sequence analysis results to the console
   class InductionSequenceFormatter
@@ -142,4 +141,3 @@ module Migration
     end
   end
 end
-# rubocop:enable Rails/Output

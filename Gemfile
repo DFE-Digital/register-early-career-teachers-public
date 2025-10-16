@@ -84,9 +84,7 @@ group :development, :test do
   gem "debug", platforms: %i[mri windows]
   gem 'herb'
   gem 'rswag-specs'
-  gem 'rubocop-factory_bot', require: false
-  gem 'rubocop-govuk', require: false
-  gem 'rubocop-performance', require: false
+  gem "standardrb"
 end
 
 group :development, :test, :review, :staging, :sandbox do

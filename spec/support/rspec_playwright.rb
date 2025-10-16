@@ -29,11 +29,9 @@ module RSpecPlaywright
     end
   end
 
-  # rubocop:disable Naming/MethodName
   def self.slowMo
     ENV.fetch('SLOWMO', 0).to_i
   end
-  # rubocop:enable Naming/MethodName
 
   def self.check_versions!
     ruby_playwright_version = Gem::Version

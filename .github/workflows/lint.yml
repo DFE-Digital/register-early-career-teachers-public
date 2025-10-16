@@ -33,7 +33,7 @@ jobs:
           bundler-cache: true
 
       - name: Lint Ruby
-        run: bundle exec rubocop
+        run: bundle exec standardrb
 
   js_linting:
     name: "Lint JS"
