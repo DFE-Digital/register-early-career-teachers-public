@@ -46,6 +46,16 @@ describe Builders::Mentor::TrainingPeriods do
       expect(periods.last.ecf_end_induction_record_id).to eq training_period_2.end_source_id
     end
 
+    context "when a mentor training period is school-led" do
+      let(:training_period_2) { FactoryBot.build(:training_period_data, school_urn: school_2.urn, cohort_year: contract_period.year, lead_provider: partnership_2.lead_provider.name, delivery_partner: partnership_2.delivery_partner.name, training_programme: "school_led", start_date: school_period_2.started_on, end_date: nil) }
+
+      it "does not create a TeacherMigrationFailure record" do
+        expect {
+          service.build
+        }.not_to(change { TeacherMigrationFailure.count })
+      end
+    end
+
     context "when there is no MentorAtSchoolPeriod that contains the training dates" do
       let(:training_period_1) { FactoryBot.build(:training_period_data, cohort_year: contract_period.year, lead_provider: partnership_1.lead_provider.name, delivery_partner: partnership_1.delivery_partner.name, start_date: 14.months.ago.to_date, end_date: 1.month.ago.to_date) }
 
