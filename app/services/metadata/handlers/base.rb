@@ -28,32 +28,37 @@ module Metadata::Handlers
 
   protected
 
-    def upsert(metadata, attributes)
-      metadata.assign_attributes(attributes)
-      return unless metadata.changed?
-
-      metadata.save!
-      alert_on_changes(metadata:, attributes:)
-    end
-
     def lead_provider_ids
       @lead_provider_ids ||= LeadProvider.pluck(:id)
     end
 
-    def alert_on_changes(metadata:, attributes:)
+    def changes?(metadata, changes)
+      metadata.attributes.slice(*changes.keys) != changes
+    end
+
+    def upsert_all(model:, changes_to_upsert:, unique_by:)
+      return if changes_to_upsert.empty?
+
+      model.upsert_all(changes_to_upsert.values, unique_by:)
+      alert_on_changes(changes: changes_to_upsert)
+    end
+
+    def alert_on_changes(changes:)
       return unless @alert_on_changes
 
-      attrs = {
-        class: metadata.class.name,
-        id: metadata.id,
-        attributes:,
-      }
+      changes.each do |metadata, changed_attributes|
+        attrs = {
+          class: metadata.class.name,
+          id: metadata.id,
+          changed_attributes:,
+        }
 
-      Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
+        Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
 
-      Sentry.with_scope do |scope|
-        scope.set_context("metadata_changes", attrs) if scope
-        Sentry.capture_message("[Metadata] #{metadata.class.name} change")
+        Sentry.with_scope do |scope|
+          scope.set_context("metadata_changes", attrs) if scope
+          Sentry.capture_message("[Metadata] #{metadata.class.name} change")
+        end
       end
     end
   end
