@@ -14,7 +14,7 @@ module Schools
         error.nil?
       end
 
-    private
+      private
 
       def parse_nino
         parsed = nino.to_s.upcase.gsub(/\s*/, "")

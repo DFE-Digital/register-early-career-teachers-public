@@ -39,17 +39,17 @@ module Migrators
         success = Builders::MentorshipPeriods.new(teacher:, mentorship_period_data:).build
       else
         ::TeacherMigrationFailure.create!(teacher:,
-                                          model: :mentorship_period,
-                                          message: induction_records.error,
-                                          migration_item_id: participant_profile.id,
-                                          migration_item_type: participant_profile.class.name)
+          model: :mentorship_period,
+          message: induction_records.error,
+          migration_item_id: participant_profile.id,
+          migration_item_type: participant_profile.class.name)
         success = false
       end
 
       success
     end
 
-  private
+    private
 
     def preload_caches
       cache_manager.cache_teachers

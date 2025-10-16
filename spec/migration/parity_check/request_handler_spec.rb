@@ -4,7 +4,7 @@ RSpec.describe ParityCheck::RequestHandler do
   let(:instance) { described_class.new(request) }
   let(:enabled) { true }
 
-  before { allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: }) }
+  before { allow(Rails.application.config).to receive(:parity_check).and_return({enabled:}) }
 
   it "has the correct attributes" do
     expect(instance).to have_attributes(request:)

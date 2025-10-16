@@ -2,8 +2,8 @@ RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeTrainingPro
   subject { described_class.new(wizard:, training_programme: new_training_programme) }
 
   let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
-  let(:training_programme) { 'school_led' }
-  let(:new_training_programme) { 'provider_led' }
+  let(:training_programme) { "school_led" }
+  let(:new_training_programme) { "provider_led" }
   let(:independent_school) { FactoryBot.create(:school, :independent) }
   let(:state_funded_school) { FactoryBot.create(:school, :state_funded) }
   let(:school) { independent_school }
@@ -19,14 +19,14 @@ RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeTrainingPro
   describe "#next_step" do
     before { subject.send(:persist) }
 
-    context 'when the training programme is school led' do
-      let(:new_training_programme) { 'school_led' }
+    context "when the training programme is school led" do
+      let(:new_training_programme) { "school_led" }
 
       it { expect(subject.next_step).to eq(:check_answers) }
     end
 
-    context 'when the training programme is provided led' do
-      let(:new_training_programme) { 'provider_led' }
+    context "when the training programme is provided led" do
+      let(:new_training_programme) { "provider_led" }
 
       it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_lead_provider) }
     end
@@ -35,40 +35,40 @@ RSpec.describe Schools::RegisterECTWizard::NoPreviousECTChoicesChangeTrainingPro
   describe "#previous_step" do
     before { subject.send(:persist) }
 
-    context 'when the training programme is school led' do
-      let(:training_programme) { 'school_led' }
+    context "when the training programme is school led" do
+      let(:training_programme) { "school_led" }
 
-      context 'when the school is state funded' do
+      context "when the school is state funded" do
         let(:school) { state_funded_school }
 
         it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_state_school_appropriate_body) }
       end
 
-      context 'when the school is independent' do
+      context "when the school is independent" do
         let(:school) { independent_school }
 
         it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_independent_school_appropriate_body) }
       end
     end
 
-    context 'when the training programme is provided led' do
-      let(:training_programme) { 'provider_led' }
+    context "when the training programme is provided led" do
+      let(:training_programme) { "provider_led" }
 
-      context 'when the lead provider has already been selected' do
-        context 'when the school is state funded' do
+      context "when the lead provider has already been selected" do
+        context "when the school is state funded" do
           let(:school) { state_funded_school }
 
           it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_state_school_appropriate_body) }
         end
 
-        context 'when the school is independent' do
+        context "when the school is independent" do
           let(:school) { independent_school }
 
           it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_independent_school_appropriate_body) }
         end
       end
 
-      context 'when the lead provider has not been selected yet' do
+      context "when the lead provider has not been selected yet" do
         let(:lead_provider_id) { nil }
 
         it { expect(subject.previous_step).to eq(:no_previous_ect_choices_change_lead_provider) }

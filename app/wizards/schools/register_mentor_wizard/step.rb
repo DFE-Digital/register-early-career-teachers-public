@@ -17,7 +17,7 @@ module Schools
         TRS::Teacher.new({})
       end
 
-    private
+      private
 
       def persist = mentor.update(step_params)
 

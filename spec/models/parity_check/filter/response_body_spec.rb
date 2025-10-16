@@ -25,7 +25,7 @@ describe ParityCheck::Filter::ResponseBody do
     end
 
     context "when at least one response body is JSON" do
-      let(:response) { FactoryBot.create(:parity_check_response, ecf_body: { some: :json }.to_json, rect_body: "some text") }
+      let(:response) { FactoryBot.create(:parity_check_response, ecf_body: {some: :json}.to_json, rect_body: "some text") }
 
       it { is_expected.to be_filterable }
     end
@@ -47,22 +47,22 @@ describe ParityCheck::Filter::ResponseBody do
     end
 
     context "when the bodies are JSON" do
-      let(:ecf_body) { { key1: { subkey: "value" } }.to_json }
-      let(:rect_body) { { key2: "value" }.to_json }
+      let(:ecf_body) { {key1: {subkey: "value"}}.to_json }
+      let(:rect_body) { {key2: "value"}.to_json }
       let(:response) { FactoryBot.create(:parity_check_response, ecf_body:, rect_body:) }
 
       it "returns a hash of the key structure" do
         expect(key_hash).to eq(
           key1: {
-            subkey: {},
+            subkey: {}
           },
           key2: {}
         )
       end
 
       context "when the JSON contains arrays of objects" do
-        let(:ecf_body) { { key1: [{ subkey: "value1", other_subkey: [{ subsubkey: "value4" }] }, { subkey: "value2" }] }.to_json }
-        let(:rect_body) { { key2: "value" }.to_json }
+        let(:ecf_body) { {key1: [{subkey: "value1", other_subkey: [{subsubkey: "value4"}]}, {subkey: "value2"}]}.to_json }
+        let(:rect_body) { {key2: "value"}.to_json }
 
         it "returns a hash of the key structure with arrays" do
           expect(key_hash).to eq(
@@ -78,8 +78,8 @@ describe ParityCheck::Filter::ResponseBody do
       end
 
       context "when the JSON contains arrays of values" do
-        let(:ecf_body) { { key1: [{ subkey: "value1", other_subkey: %w[value4 value5] }] }.to_json }
-        let(:rect_body) { { key2: "value" }.to_json }
+        let(:ecf_body) { {key1: [{subkey: "value1", other_subkey: %w[value4 value5]}]}.to_json }
+        let(:rect_body) { {key2: "value"}.to_json }
 
         it "returns a hash of the key structure" do
           expect(key_hash).to eq(
@@ -171,14 +171,14 @@ describe ParityCheck::Filter::ResponseBody do
   describe "#filtered_response" do
     subject(:filtered_response) { instance.filtered_response }
 
-    let(:rect_body) { { key1: { subkey: [{ subsubkey: "value1" }] }, key2: "value2" }.to_json }
-    let(:ecf_body) { { key3: { subkey: "value3" }, key4: "value4" }.to_json }
+    let(:rect_body) { {key1: {subkey: [{subsubkey: "value1"}]}, key2: "value2"}.to_json }
+    let(:ecf_body) { {key3: {subkey: "value3"}, key4: "value4"}.to_json }
     let(:response) { FactoryBot.create(:parity_check_response, rect_body:, ecf_body:) }
     let(:selected_key_paths) { ["key1", "key1 subkey", "key1 subkey subsubkey", "key4"] }
 
     it "returns a response with filtered response bodies" do
-      expect(filtered_response.rect_body).to eq(JSON.pretty_generate({ key1: { subkey: [{ subsubkey: "value1" }] } }))
-      expect(filtered_response.ecf_body).to eq(JSON.pretty_generate({ key4: "value4" }))
+      expect(filtered_response.rect_body).to eq(JSON.pretty_generate({key1: {subkey: [{subsubkey: "value1"}]}}))
+      expect(filtered_response.ecf_body).to eq(JSON.pretty_generate({key4: "value4"}))
     end
 
     context "when not filterable" do

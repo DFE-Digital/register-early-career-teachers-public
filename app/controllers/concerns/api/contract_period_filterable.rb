@@ -2,7 +2,7 @@ module API
   module ContractPeriodFilterable
     extend ActiveSupport::Concern
 
-  protected
+    protected
 
     def contract_period_years
       params.dig(:filter, :cohort)

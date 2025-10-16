@@ -1,6 +1,6 @@
 RSpec.describe "Participants API", :with_metadata, type: :request do
   let(:serializer) { API::TeacherSerializer }
-  let(:serializer_options) { { lead_provider_id: lead_provider.id } }
+  let(:serializer_options) { {lead_provider_id: lead_provider.id} }
   let(:query) { API::Teachers::Query }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }

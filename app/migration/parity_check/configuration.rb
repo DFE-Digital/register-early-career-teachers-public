@@ -16,7 +16,7 @@ module ParityCheck
       parity_check_config["#{app}_url"]
     end
 
-  private
+    private
 
     def parity_check_enabled?
       parity_check_config[:enabled]

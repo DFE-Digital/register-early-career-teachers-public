@@ -4,9 +4,9 @@ module Shared
 
     def initialize(
       query_param: :q,
-      label_text: 'Search by name or teacher reference number (TRN)',
+      label_text: "Search by name or teacher reference number (TRN)",
       hint_text: nil,
-      submit_text: 'Search',
+      submit_text: "Search",
       url: nil
     )
       @query_param = query_param
@@ -17,14 +17,14 @@ module Shared
     end
 
     def call
-      form_with(method: :get, url: form_url, html: { class: "app-search-form" }) do |f|
+      form_with(method: :get, url: form_url, html: {class: "app-search-form"}) do |f|
         safe_join([
           content_tag(:div, class: "govuk-form-group") do
             f.govuk_text_field(
               query_param,
               value: search_value,
-              label: { text: label_text, size: "s" },
-              hint: { text: hint_text }
+              label: {text: label_text, size: "s"},
+              hint: {text: hint_text}
             )
           end,
           f.govuk_submit(submit_text, secondary: true, class: "app-search__button")
@@ -32,7 +32,7 @@ module Shared
       end
     end
 
-  private
+    private
 
     def form_url
       url || request.path

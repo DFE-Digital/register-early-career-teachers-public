@@ -7,7 +7,7 @@ describe Builders::ECT::TrainingPeriods do
   let(:contract_period) { FactoryBot.create(:contract_period) }
 
   let(:partnership_1) { make_partnership_for(school_1, contract_period) }
-  let(:partnership_2) { make_partnership_for(school_1, contract_period, lead_provider_name: 'Naruto Ninja Academy') }
+  let(:partnership_2) { make_partnership_for(school_1, contract_period, lead_provider_name: "Naruto Ninja Academy") }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:started_on) { contract_period.started_on }
@@ -48,12 +48,12 @@ describe Builders::ECT::TrainingPeriods do
     context "when the training periods overlap" do
       let(:training_period_2) do
         FactoryBot.build(:training_period_data,
-                         school_urn: school_1.urn,
-                         cohort_year: contract_period.year,
-                         lead_provider: partnership_2.lead_provider.name,
-                         delivery_partner: partnership_2.delivery_partner.name,
-                         start_date: school_period_1.started_on + 1.month,
-                         end_date: nil)
+          school_urn: school_1.urn,
+          cohort_year: contract_period.year,
+          lead_provider: partnership_2.lead_provider.name,
+          delivery_partner: partnership_2.delivery_partner.name,
+          start_date: school_period_1.started_on + 1.month,
+          end_date: nil)
       end
 
       it "replaces the end date with the next period start date" do

@@ -25,7 +25,7 @@ class Rack::Attack
 
   PUBLIC_API_PATH_PREFIXES = [
     "/api/guidance",
-    "/api/docs",
+    "/api/docs"
   ].freeze
 
   def self.protected_path?(request)

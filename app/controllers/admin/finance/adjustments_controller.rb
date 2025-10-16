@@ -46,7 +46,7 @@ module Admin::Finance
       redirect_to statement_path, alert: "Adjustment removed"
     end
 
-  private
+    private
 
     def adjustment_params
       params.permit(

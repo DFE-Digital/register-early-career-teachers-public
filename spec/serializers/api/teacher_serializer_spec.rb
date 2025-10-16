@@ -1,17 +1,17 @@
 describe API::TeacherSerializer, :with_metadata, type: :serializer do
   subject(:response) do
-    options = { lead_provider_id: lead_provider.id }
+    options = {lead_provider_id: lead_provider.id}
     JSON.parse(described_class.render(teacher, **options))
   end
 
   let!(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:teacher) do
     FactoryBot.create(:teacher,
-                      :with_sparsity_uplift,
-                      :with_pupil_premium_uplift,
-                      :ineligible_for_mentor_funding,
-                      api_ect_training_record_id: SecureRandom.uuid,
-                      api_mentor_training_record_id: SecureRandom.uuid)
+      :with_sparsity_uplift,
+      :with_pupil_premium_uplift,
+      :ineligible_for_mentor_funding,
+      api_ect_training_record_id: SecureRandom.uuid,
+      api_mentor_training_record_id: SecureRandom.uuid)
   end
 
   before do
@@ -174,7 +174,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
 
             it "serializes `withdrawal` with the details of the withdrawal" do
-              expect(ect_enrolment["withdrawal"]).to eq({ "withdrawn_at" => ect_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
+              expect(ect_enrolment["withdrawal"]).to eq({"withdrawn_at" => ect_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school"})
             end
           end
 
@@ -186,7 +186,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
 
             it "serializes `deferral` with the details of the deferral" do
-              expect(ect_enrolment["deferral"]).to eq({ "deferred_at" => ect_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
+              expect(ect_enrolment["deferral"]).to eq({"deferred_at" => ect_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement"})
             end
           end
 
@@ -307,7 +307,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
 
             it "serializes `withdrawal` with the details of the withdrawal" do
-              expect(mentor_enrolment["withdrawal"]).to eq({ "withdrawn_at" => mentor_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
+              expect(mentor_enrolment["withdrawal"]).to eq({"withdrawn_at" => mentor_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school"})
             end
           end
 
@@ -319,7 +319,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
 
             it "serializes `deferral` with the details of the deferral" do
-              expect(mentor_enrolment["deferral"]).to eq({ "deferred_at" => mentor_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
+              expect(mentor_enrolment["deferral"]).to eq({"deferred_at" => mentor_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement"})
             end
           end
 

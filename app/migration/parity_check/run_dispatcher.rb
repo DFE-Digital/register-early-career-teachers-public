@@ -6,7 +6,7 @@ module ParityCheck
       end
     end
 
-  private
+    private
 
     def in_progress_run?
       Run.in_progress.exists?

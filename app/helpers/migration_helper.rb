@@ -43,12 +43,12 @@ module MigrationHelper
     avg_percentage = data_migrations.sum(&:percentage_migrated_successfully).fdiv(data_migrations.count)
 
     colour = if avg_percentage < 80
-               "red"
-             elsif avg_percentage < 100
-               "yellow"
-             else
-               "green"
-             end
+      "red"
+    elsif avg_percentage < 100
+      "yellow"
+    else
+      "green"
+    end
 
     govuk_tag(text: "#{avg_percentage.floor}%", colour:)
   end
@@ -71,11 +71,11 @@ module MigrationHelper
   end
 
   def failure_item_json_code(item)
-    "<code>#{JSON.pretty_unparse(item).gsub(/\n/, '<br/>').gsub(/\s/, '&nbsp;')}</code>".html_safe
+    "<code>#{JSON.pretty_unparse(item).gsub("\n", "<br/>").gsub(/\s/, "&nbsp;")}</code>".html_safe
   end
 
   def failure_item_summary_list(item)
-    govuk_summary_list(html_attributes: { class: "govuk-!-font-size-16" }) do |summary_list|
+    govuk_summary_list(html_attributes: {class: "govuk-!-font-size-16"}) do |summary_list|
       item.each do |k, v|
         summary_list.with_row do |row|
           row.with_key { k }

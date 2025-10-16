@@ -2,7 +2,7 @@ module Admin
   module Statements
     class PaymentAuthorisationComponent < ApplicationComponent
       delegate :can_authorise_payment?,
-               to: :statement
+        to: :statement
 
       attr_accessor :statement
 

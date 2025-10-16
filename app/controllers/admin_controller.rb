@@ -6,7 +6,7 @@ class AdminController < ApplicationController
   def index
   end
 
-private
+  private
 
   def authorised?
     current_user&.dfe_user?

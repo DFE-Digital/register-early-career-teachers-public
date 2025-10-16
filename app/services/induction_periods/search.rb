@@ -11,10 +11,10 @@ module InductionPeriods
       scope
     end
 
-  private
+    private
 
     def filter_by_trn(trn)
-      @scope = scope.joins(:teacher).where(teachers: { trn: })
+      @scope = scope.joins(:teacher).where(teachers: {trn:})
     end
   end
 end

@@ -1,6 +1,6 @@
 module AppropriateBodies
   class PendingInductionSubmissionBatchController < AppropriateBodiesController
-    layout 'full'
+    layout "full"
 
     before_action :find_batch, only: %i[show edit]
 
@@ -22,7 +22,7 @@ module AppropriateBodies
       @pending_induction_submission_batch = PendingInductionSubmissionBatch.new
     end
 
-  private
+    private
 
     def import_params
       params.expect(pending_induction_submission_batch: :csv_file)

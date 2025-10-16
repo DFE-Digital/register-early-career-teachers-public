@@ -2,7 +2,7 @@ RSpec.describe InductionPeriod do
   it { is_expected.to be_a_kind_of(Interval) }
   it { is_expected.to be_a_kind_of(SharedInductionPeriodValidation) }
 
-  it_behaves_like 'an induction period'
+  it_behaves_like "an induction period"
 
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
@@ -18,30 +18,30 @@ RSpec.describe InductionPeriod do
     it { is_expected.to validate_presence_of(:started_on).with_message("Enter a start date") }
     it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
 
-    describe 'overlapping periods' do
-      let(:started_on_message) { 'Start date cannot overlap another induction period' }
-      let(:finished_on_message) { 'End date cannot overlap another induction period' }
+    describe "overlapping periods" do
+      let(:started_on_message) { "Start date cannot overlap another induction period" }
+      let(:finished_on_message) { "End date cannot overlap another induction period" }
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      describe '#teacher_distinct_period' do
+      describe "#teacher_distinct_period" do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             before do
               FactoryBot.create(:induction_period, teacher:,
-                                                   started_on: test.existing_period_range.first,
-                                                   finished_on: test.existing_period_range.last)
+                started_on: test.existing_period_range.first,
+                finished_on: test.existing_period_range.last)
               period.valid?
             end
 
             let(:period) do
               FactoryBot.build(:induction_period, teacher:,
-                                                  started_on: test.new_period_range.first,
-                                                  finished_on: test.new_period_range.last)
+                started_on: test.new_period_range.first,
+                finished_on: test.new_period_range.last)
             end
 
             let(:messages) { period.errors.messages }
 
-            it "is #{test.expected_valid ? 'valid' : 'invalid'}" do
+            it "is #{test.expected_valid ? "valid" : "invalid"}" do
               if test.expected_valid
                 expect(messages).not_to have_key(:started_on)
                 expect(messages).not_to have_key(:finished_on)
@@ -64,14 +64,14 @@ RSpec.describe InductionPeriod do
       end
     end
 
-    describe '#induction_programme' do
+    describe "#induction_programme" do
       it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy unknown pre_september_2021]).with_message("Choose an induction programme") }
     end
 
-    describe '#training_programme' do
+    describe "#training_programme" do
       it { is_expected.to validate_inclusion_of(:training_programme).in_array(%w[provider_led school_led]).with_message("Choose an induction programme") }
 
-      context 'when the induction pre-dates School-led and Provider-Led programme types and training_programme is blank' do
+      context "when the induction pre-dates School-led and Provider-Led programme types and training_programme is blank" do
         subject { FactoryBot.create(:induction_period, :ongoing, :pre_2021, :legacy_programme_type) }
 
         it { is_expected.to be_valid }
@@ -81,13 +81,13 @@ RSpec.describe InductionPeriod do
     describe "#outcome" do
       subject { FactoryBot.build(:induction_period) }
 
-      it { is_expected.to allow_value('pass').for(:outcome) }
-      it { is_expected.to allow_value('fail').for(:outcome) }
+      it { is_expected.to allow_value("pass").for(:outcome) }
+      it { is_expected.to allow_value("fail").for(:outcome) }
       it { is_expected.to allow_value(nil).for(:outcome) }
-      it { is_expected.not_to allow_value('invalid').for(:outcome) }
+      it { is_expected.not_to allow_value("invalid").for(:outcome) }
 
       context "when an invalid outcome is provided" do
-        before { subject.outcome = 'invalid' }
+        before { subject.outcome = "invalid" }
 
         it do
           expect(subject).not_to be_valid
@@ -235,9 +235,9 @@ RSpec.describe InductionPeriod do
     subject { induction_period_1.siblings }
 
     let!(:teacher) { FactoryBot.create(:teacher) }
-    let!(:induction_period_1) { FactoryBot.create(:induction_period, teacher:, started_on: '2022-01-01', finished_on: '2022-06-01') }
-    let!(:induction_period_2) { FactoryBot.create(:induction_period, teacher:, started_on: '2022-06-01', finished_on: '2023-01-01') }
-    let!(:unrelated_induction_period) { FactoryBot.create(:induction_period, started_on: '2022-06-01', finished_on: '2023-01-01') }
+    let!(:induction_period_1) { FactoryBot.create(:induction_period, teacher:, started_on: "2022-01-01", finished_on: "2022-06-01") }
+    let!(:induction_period_2) { FactoryBot.create(:induction_period, teacher:, started_on: "2022-06-01", finished_on: "2023-01-01") }
+    let!(:unrelated_induction_period) { FactoryBot.create(:induction_period, started_on: "2022-06-01", finished_on: "2023-01-01") }
 
     it "only returns records that belong to the same mentee" do
       expect(subject).to include(induction_period_2)
@@ -255,25 +255,25 @@ RSpec.describe InductionPeriod do
       let(:teacher) { FactoryBot.create(:teacher) }
       let!(:previous_period) do
         FactoryBot.create(:induction_period, :pre_2021,
-                          teacher:,
-                          started_on: "2017-09-11",
-                          finished_on: "2018-03-23")
+          teacher:,
+          started_on: "2017-09-11",
+          finished_on: "2018-03-23")
       end
 
       let!(:next_period) do
         FactoryBot.create(:induction_period, :pre_2021,
-                          teacher:,
-                          started_on: "2019-01-07",
-                          finished_on: "2019-07-16")
+          teacher:,
+          started_on: "2019-01-07",
+          finished_on: "2019-07-16")
       end
 
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing,
-                          teacher:,
-                          started_on: "2025-01-01")
+          teacher:,
+          started_on: "2025-01-01")
       end
 
-      let(:params) { { started_on: "2025-02-24" } }
+      let(:params) { {started_on: "2025-02-24"} }
 
       it "allows the edit" do
         expect { induction_period.update!(params) }.not_to raise_error
@@ -285,25 +285,25 @@ RSpec.describe InductionPeriod do
       let(:teacher) { FactoryBot.create(:teacher) }
       let!(:previous_period) do
         FactoryBot.create(:induction_period, :pre_2021,
-                          teacher:,
-                          started_on: "2017-09-01",
-                          finished_on: "2018-03-01")
+          teacher:,
+          started_on: "2017-09-01",
+          finished_on: "2018-03-01")
       end
 
       let!(:next_period) do
         FactoryBot.create(:induction_period, :pre_2021,
-                          teacher:,
-                          started_on: "2019-01-01",
-                          finished_on: "2019-07-01")
+          teacher:,
+          started_on: "2019-01-01",
+          finished_on: "2019-07-01")
       end
 
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing,
-                          teacher:,
-                          started_on: "2025-01-01")
+          teacher:,
+          started_on: "2025-01-01")
       end
 
-      let(:params) { { started_on: "2019-04-24" } }
+      let(:params) { {started_on: "2019-04-24"} }
 
       it "does not allow the edit" do
         expect { induction_period.update!(params) }.to raise_error(ActiveRecord::RecordInvalid)

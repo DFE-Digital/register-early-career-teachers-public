@@ -20,7 +20,7 @@ FactoryBot.define do
 
       [
         (:ect if evaluator.ect_teacher_type),
-        (:mentor if evaluator.mentor_teacher_type),
+        (:mentor if evaluator.mentor_teacher_type)
       ].compact.each do |teacher_type|
         at_school_period = FactoryBot.create(
           :"#{teacher_type}_at_school_period",

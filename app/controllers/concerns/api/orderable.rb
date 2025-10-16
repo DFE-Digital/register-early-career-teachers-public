@@ -2,9 +2,9 @@ module API
   module Orderable
     extend ActiveSupport::Concern
 
-    SORT_ORDER = { "+" => "ASC", "-" => "DESC" }.freeze
+    SORT_ORDER = {"+" => "ASC", "-" => "DESC"}.freeze
 
-  protected
+    protected
 
     def sort_order(sort:, model:, default: {})
       return default unless sort
@@ -17,7 +17,7 @@ module API
         .presence
     end
 
-  private
+    private
 
     def convert_sort_part_to_active_record_order(sort_part, model)
       extracted_sort_sign = /\A[+-]/.match?(sort_part) ? sort_part.slice!(0) : "+"

@@ -14,7 +14,7 @@ module Schools
           end
         end
 
-      private
+        private
 
         def record_event(old_name, new_name)
           ::Events::Record.teacher_name_changed_in_trs_event!(

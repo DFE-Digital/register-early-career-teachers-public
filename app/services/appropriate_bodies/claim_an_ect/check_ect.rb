@@ -22,7 +22,7 @@ module AppropriateBodies
         pending_induction_submission.save(context: :check_ect)
       end
 
-    private
+      private
 
       # @raise [AppropriateBodies::ClaimAnECT::CheckECT::TeacherHasOngoingInductionPeriodWithAnotherAB]
       # @return [nil]

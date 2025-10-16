@@ -32,7 +32,7 @@ module GIAS
         type_name:,
         ukprn:,
         urn:,
-        website:,
+        website:
       }
     end
 
@@ -158,7 +158,7 @@ module GIAS
       @website ||= data.fetch("SchoolWebsite").presence
     end
 
-  private
+    private
 
     def determine_funding_eligibility
       return :eligible_for_fip if open? && in_england? && (eligible_type? || (independent_school_type? && section_41_approved?))

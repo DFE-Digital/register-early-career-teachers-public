@@ -5,7 +5,7 @@ DELIVERY_PARTNERS_RESPONSE = {
   properties: {
     data: {
       type: :array,
-      items: { "$ref": "#/components/schemas/DeliveryPartner" },
-    },
-  },
+      items: {"$ref": "#/components/schemas/DeliveryPartner"}
+    }
+  }
 }.freeze

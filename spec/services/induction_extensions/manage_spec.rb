@@ -11,25 +11,25 @@ RSpec.describe InductionExtensions::Manage do
     )
   end
 
-  let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
-  let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Andy', trs_last_name: 'Zaltzman') }
+  let(:user) { FactoryBot.create(:user, name: "Christopher Biggins", email: "christopher.biggins@education.gov.uk") }
+  let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Andy", trs_last_name: "Zaltzman") }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
-  describe '#create_or_update!' do
+  describe "#create_or_update!" do
     before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
 
-    context 'when adding an extension' do
-      it 'records a create event' do
+    context "when adding an extension" do
+      it "records a create event" do
         freeze_time do
-          service.create_or_update!(id: nil, number_of_terms: '1')
+          service.create_or_update!(id: nil, number_of_terms: "1")
 
           expect(teacher.induction_extensions.count).to eq(1)
           expect(teacher.induction_extensions.last.number_of_terms).to eq(1)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             appropriate_body:,
-            author_email: 'christopher.biggins@education.gov.uk',
-            author_name: 'Christopher Biggins',
+            author_email: "christopher.biggins@education.gov.uk",
+            author_name: "Christopher Biggins",
             author_type: :appropriate_body_user,
             event_type: :induction_extension_created,
             happened_at: Time.zone.now,
@@ -43,19 +43,19 @@ RSpec.describe InductionExtensions::Manage do
       end
     end
 
-    context 'when editing an extension' do
+    context "when editing an extension" do
       let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:) }
 
-      it 'records an update event' do
+      it "records an update event" do
         freeze_time do
-          service.create_or_update!(id: induction_extension.id, number_of_terms: '4.6')
+          service.create_or_update!(id: induction_extension.id, number_of_terms: "4.6")
 
           expect(induction_extension.reload.number_of_terms).to eq(4.6)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             appropriate_body:,
-            author_email: 'christopher.biggins@education.gov.uk',
-            author_name: 'Christopher Biggins',
+            author_email: "christopher.biggins@education.gov.uk",
+            author_name: "Christopher Biggins",
             author_type: :appropriate_body_user,
             event_type: :induction_extension_updated,
             happened_at: Time.zone.now,
@@ -70,13 +70,13 @@ RSpec.describe InductionExtensions::Manage do
     end
   end
 
-  describe '#delete!' do
+  describe "#delete!" do
     before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
 
-    context 'when deleting an extension' do
+    context "when deleting an extension" do
       let!(:induction_extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 2.5) }
 
-      it 'deletes the extension and records a delete event' do
+      it "deletes the extension and records a delete event" do
         freeze_time do
           expect {
             service.delete!(id: induction_extension.id)
@@ -84,8 +84,8 @@ RSpec.describe InductionExtensions::Manage do
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             appropriate_body:,
-            author_email: 'christopher.biggins@education.gov.uk',
-            author_name: 'Christopher Biggins',
+            author_email: "christopher.biggins@education.gov.uk",
+            author_name: "Christopher Biggins",
             author_type: :appropriate_body_user,
             event_type: :induction_extension_deleted,
             happened_at: Time.zone.now,
@@ -95,7 +95,7 @@ RSpec.describe InductionExtensions::Manage do
         end
       end
 
-      it 'raises an error if the extension does not exist' do
+      it "raises an error if the extension does not exist" do
         expect {
           service.delete!(id: 999)
         }.to raise_error(ActiveRecord::RecordNotFound)

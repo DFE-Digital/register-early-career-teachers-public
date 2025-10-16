@@ -4,10 +4,10 @@ NOT_FOUND_RESPONSE = {
   properties: {
     error: {
       type: :string,
-      description: "Resource not found",
-    },
+      description: "Resource not found"
+    }
   },
   example: {
-    error: "Resource not found",
-  },
+    error: "Resource not found"
+  }
 }.freeze

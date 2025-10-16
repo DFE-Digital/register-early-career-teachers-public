@@ -3,7 +3,7 @@ module Teachers
   module Manageable
     extend ActiveSupport::Concern
 
-  private
+    private
 
     # @return [TRS::Teacher, PendingInductionSubmission]
     def trs_data

@@ -24,10 +24,10 @@ RSpec.describe Sessions::OneTimePassword do
 
       expect {
         service.generate_and_send_code
-      }.to have_enqueued_mail(OTPMailer, :otp_code_email).with(params: { recipient_email: user.email,
-                                                                         recipient_name: user.name,
-                                                                         code: "123456" },
-                                                               args: [])
+      }.to have_enqueued_mail(OTPMailer, :otp_code_email).with(params: {recipient_email: user.email,
+                                                                        recipient_name: user.name,
+                                                                        code: "123456"},
+        args: [])
     end
   end
 

@@ -6,7 +6,7 @@ module Schools
       # previous step is outside wizard
       def next_step = :confirmation
 
-    private
+      private
 
       def persist
         AssignMentor.new(

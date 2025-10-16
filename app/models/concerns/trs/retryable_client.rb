@@ -4,11 +4,11 @@ module TRS
 
     included do
       retry_on Errors::APIRequestError,
-               wait: ->(executions) { 2**executions },
-               attempts: 15
+        wait: ->(executions) { 2**executions },
+        attempts: 15
     end
 
-  private
+    private
 
     def api_client
       @api_client ||= TRS::APIClient.build

@@ -57,7 +57,7 @@ RSpec.describe "List adjustments for statement" do
   end
 
   def then_i_see_adjustments_section
-    expect(page.locator('#adjustments.govuk-summary-card h2').text_content).to eq("Additional adjustments")
+    expect(page.locator("#adjustments.govuk-summary-card h2").text_content).to eq("Additional adjustments")
   end
 
   def and_i_see_adjustment_values
@@ -77,7 +77,7 @@ RSpec.describe "List adjustments for statement" do
   end
 
   def and_i_should_not_see_add_adjustment_link
-    expect(page.get_by_role('link', name: "Add adjustment")).not_to be_visible
+    expect(page.get_by_role("link", name: "Add adjustment")).not_to be_visible
   end
 
   def when_i_visit_new_adjustment_page_directly

@@ -6,9 +6,9 @@ class API::Token < ApplicationRecord
 
   belongs_to :lead_provider
 
-  validates :lead_provider, presence: { message: "Lead provider must be specified" }
-  validates :token, presence: { message: "Hashed token must be specified" }
-  validates :token, uniqueness: { message: "Hashed token must be unique" }
+  validates :lead_provider, presence: {message: "Lead provider must be specified"}
+  validates :token, presence: {message: "Hashed token must be specified"}
+  validates :token, uniqueness: {message: "Hashed token must be unique"}
 
   scope :lead_provider_tokens, -> { where.not(lead_provider: nil) }
 end

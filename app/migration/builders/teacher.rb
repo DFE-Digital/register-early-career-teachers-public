@@ -24,7 +24,7 @@ module Builders
       nil
     end
 
-  private
+    private
 
     def create_teacher!
       ::Teacher.create!(trn:, trs_first_name: parser.first_name, trs_last_name: parser.last_name, api_id:)

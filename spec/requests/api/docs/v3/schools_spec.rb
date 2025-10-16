@@ -19,22 +19,22 @@ RSpec.describe "Schools endpoint", :with_metadata, openapi_spec: "v3/swagger.yam
   end
 
   it_behaves_like "an API index endpoint documentation",
-                  {
-                    url: "/api/v3/schools",
-                    tag: "Schools",
-                    resource_description: "schools scoped to cohort",
-                    response_schema_ref: "#/components/schemas/SchoolsResponse",
-                    filter_schema_ref: "#/components/schemas/SchoolsFilter",
-                    sorting_schema_ref: "#/components/schemas/SortingTimestamps",
-                  }
+    {
+      url: "/api/v3/schools",
+      tag: "Schools",
+      resource_description: "schools scoped to cohort",
+      response_schema_ref: "#/components/schemas/SchoolsResponse",
+      filter_schema_ref: "#/components/schemas/SchoolsFilter",
+      sorting_schema_ref: "#/components/schemas/SortingTimestamps"
+    }
 
   it_behaves_like "an API show endpoint documentation",
-                  {
-                    url: "/api/v3/schools/{id}",
-                    tag: "Schools",
-                    resource_description: "school scoped to cohort",
-                    response_schema_ref: "#/components/schemas/SchoolResponse",
-                    filter_schema_ref: "#/components/schemas/SchoolFilter",
-                  } do
+    {
+      url: "/api/v3/schools/{id}",
+      tag: "Schools",
+      resource_description: "school scoped to cohort",
+      response_schema_ref: "#/components/schemas/SchoolResponse",
+      filter_schema_ref: "#/components/schemas/SchoolFilter"
+    } do
   end
 end

@@ -4,7 +4,7 @@ module API::SchoolPartnerships
 
     attr_reader :scope
 
-    def initialize(school_id: :ignore, contract_period_years: :ignore, lead_provider_id: :ignore, delivery_partner_api_ids: :ignore, updated_since: :ignore, sort: { created_at: :asc })
+    def initialize(school_id: :ignore, contract_period_years: :ignore, lead_provider_id: :ignore, delivery_partner_api_ids: :ignore, updated_since: :ignore, sort: {created_at: :asc})
       @scope = SchoolPartnership
 
       where_lead_provider_is(lead_provider_id)
@@ -33,7 +33,7 @@ module API::SchoolPartnerships
       fail(ArgumentError, "id needed")
     end
 
-  private
+    private
 
     def preload_associations(results)
       results
@@ -47,7 +47,7 @@ module API::SchoolPartnerships
       @scope = scope
         .joins(:active_lead_provider)
         .where(
-          lead_provider_delivery_partnership: { active_lead_providers: { lead_provider_id: } }
+          lead_provider_delivery_partnership: {active_lead_providers: {lead_provider_id:}}
         )
     end
 
@@ -57,7 +57,7 @@ module API::SchoolPartnerships
       @scope = scope
         .joins(:active_lead_provider)
         .where(
-          lead_provider_delivery_partnership: { active_lead_providers: { contract_period_year: contract_period_years } }
+          lead_provider_delivery_partnership: {active_lead_providers: {contract_period_year: contract_period_years}}
         )
     end
 
@@ -73,7 +73,7 @@ module API::SchoolPartnerships
       @scope = scope
         .joins(:delivery_partner)
         .where(
-          lead_provider_delivery_partnership: { delivery_partners: { api_id: delivery_partner_api_ids } }
+          lead_provider_delivery_partnership: {delivery_partners: {api_id: delivery_partner_api_ids}}
         )
     end
 

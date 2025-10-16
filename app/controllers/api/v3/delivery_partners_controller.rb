@@ -15,15 +15,15 @@ module API
         render json: to_json(delivery_partners_query.delivery_partner_by_api_id(api_id))
       end
 
-    private
+      private
 
       def delivery_partners_query(conditions: {})
-        API::DeliveryPartners::Query.new(**(default_query_conditions.merge(conditions)).compact)
+        API::DeliveryPartners::Query.new(**default_query_conditions.merge(conditions).compact)
       end
 
       def default_query_conditions
         @default_query_conditions ||= {
-          lead_provider_id: current_lead_provider.id,
+          lead_provider_id: current_lead_provider.id
         }
       end
 
@@ -42,7 +42,7 @@ module API
       end
 
       def sort
-        sort_order(sort: delivery_partner_params[:sort], model: DeliveryPartner, default: { created_at: :asc })
+        sort_order(sort: delivery_partner_params[:sort], model: DeliveryPartner, default: {created_at: :asc})
       end
 
       def to_json(obj)

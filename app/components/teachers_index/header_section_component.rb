@@ -11,7 +11,7 @@ module TeachersIndex
       @query = query
     end
 
-  private
+    private
 
     attr_reader :status, :current_count, :open_count, :closed_count, :query
 
@@ -24,7 +24,7 @@ module TeachersIndex
     end
 
     def showing_closed?
-      status == 'closed'
+      status == "closed"
     end
 
     def should_show_navigation_link?

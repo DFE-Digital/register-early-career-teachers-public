@@ -42,8 +42,8 @@ module Builders
           training_period.ecf_end_induction_record_id = period_end_source_id
 
           training_period.school_partnership = if period.training_programme == "provider_led"
-                                                 find_school_partnership!(period, school)
-                                               end
+            find_school_partnership!(period, school)
+          end
 
           training_period.save!
         rescue ActiveRecord::ActiveRecordError => e
@@ -54,7 +54,7 @@ module Builders
         success
       end
 
-    private
+      private
 
       def find_school_by_urn!(urn)
         school = CacheManager.instance.find_school_by_urn(urn)

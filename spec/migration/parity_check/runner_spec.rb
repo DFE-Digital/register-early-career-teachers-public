@@ -2,7 +2,7 @@ RSpec.describe ParityCheck::Runner, type: :model do
   let(:endpoints) do
     [
       FactoryBot.create(:parity_check_endpoint, method: :get, path: "/test-path"),
-      FactoryBot.create(:parity_check_endpoint, method: :post, path: "/test-other-path"),
+      FactoryBot.create(:parity_check_endpoint, method: :post, path: "/test-other-path")
     ]
   end
   let(:mode) { "sequential" }
@@ -11,7 +11,7 @@ RSpec.describe ParityCheck::Runner, type: :model do
   let!(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:instance) { described_class.new(endpoint_ids:, mode:) }
 
-  before { allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: }) }
+  before { allow(Rails.application.config).to receive(:parity_check).and_return({enabled:}) }
 
   it "has the correct attributes" do
     expect(instance).to have_attributes(endpoint_ids:)

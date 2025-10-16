@@ -1,5 +1,5 @@
 class PersonasController < ApplicationController
-  layout 'full'
+  layout "full"
 
   def index
     persona_data = Struct.new(:name, :email, :school_name, :school_type, :image, :alt, :appropriate_body_name, :dfe_staff, :type, :role) do
@@ -8,7 +8,7 @@ class PersonasController < ApplicationController
       end
 
       def school_urn
-        School.joins(:gias_school).find_by!(gias_school: { name: school_name }).urn if school_name.present?
+        School.joins(:gias_school).find_by!(gias_school: {name: school_name}).urn if school_name.present?
       end
 
       def user_id
@@ -16,7 +16,7 @@ class PersonasController < ApplicationController
       end
     end
 
-    @personas = YAML.load_file(Rails.root.join('config/personas.yml'))
-                    .map { |p| persona_data.new(**p.symbolize_keys) }
+    @personas = YAML.load_file(Rails.root.join("config/personas.yml"))
+      .map { |p| persona_data.new(**p.symbolize_keys) }
   end
 end

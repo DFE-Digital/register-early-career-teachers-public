@@ -1,6 +1,6 @@
 module SandboxSeedData
   class Base
-  protected
+    protected
 
     def log_plant_info(name)
       logger.info("\r\n🪴  Planting #{name}...\r\n")
@@ -20,7 +20,7 @@ module SandboxSeedData
       %w[development review sandbox].include?(Rails.env)
     end
 
-  private
+    private
 
     def logger
       @logger ||= Logger.new($stdout).tap do |stdout_logger|

@@ -42,15 +42,15 @@ module Schools
       end
 
       def induction_completed?
-        trs_induction_status == 'Passed'
+        trs_induction_status == "Passed"
       end
 
       def induction_exempt?
-        trs_induction_status == 'Exempt'
+        trs_induction_status == "Exempt"
       end
 
       def induction_failed?
-        trs_induction_status == 'Failed'
+        trs_induction_status == "Failed"
       end
 
       def prohibited_from_teaching?
@@ -62,7 +62,7 @@ module Schools
       end
 
       def was_school_led?
-        previous_training_programme == 'school_led'
+        previous_training_programme == "school_led"
       end
 
       def induction_start_date
@@ -124,27 +124,27 @@ module Schools
       end
 
       def provider_led?
-        training_programme == 'provider_led'
+        training_programme == "provider_led"
       end
 
       def register!(school, author:)
         Schools::RegisterECT.new(school_reported_appropriate_body: appropriate_body,
-                                 corrected_name:,
-                                 email:,
-                                 lead_provider: (lead_provider if provider_led?),
-                                 training_programme:,
-                                 school:,
-                                 started_on: Date.parse(start_date),
-                                 trn:,
-                                 trs_first_name:,
-                                 trs_last_name:,
-                                 working_pattern:,
-                                 author:)
-                            .register!
+          corrected_name:,
+          email:,
+          lead_provider: (lead_provider if provider_led?),
+          training_programme:,
+          school:,
+          started_on: Date.parse(start_date),
+          trn:,
+          trs_first_name:,
+          trs_last_name:,
+          working_pattern:,
+          author:)
+          .register!
       end
 
       def school_led?
-        training_programme == 'school_led'
+        training_programme == "school_led"
       end
 
       def trs_full_name
@@ -172,7 +172,7 @@ module Schools
         previous_training_period&.expression_of_interest&.lead_provider&.name
       end
 
-    private
+      private
 
       def first_induction_period
         ordered_induction_periods.first

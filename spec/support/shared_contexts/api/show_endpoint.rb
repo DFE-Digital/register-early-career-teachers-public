@@ -17,7 +17,7 @@ shared_examples "a show endpoint" do
 
       expect(response).to have_http_status(:not_found)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq({ errors: [{ title: "Resource not found", detail: "Nothing could be found for the provided details" }] }.to_json)
+      expect(response.body).to eq({errors: [{title: "Resource not found", detail: "Nothing could be found for the provided details"}]}.to_json)
     end
   end
 
@@ -33,7 +33,7 @@ shared_examples "a show endpoint" do
 
       expect(response).to have_http_status(:not_found)
       expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq({ errors: [{ title: "Resource not found", detail: "Nothing could be found for the provided details" }] }.to_json)
+      expect(response.body).to eq({errors: [{title: "Resource not found", detail: "Nothing could be found for the provided details"}]}.to_json)
     end
   end
 end

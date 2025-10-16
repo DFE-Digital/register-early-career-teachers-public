@@ -8,7 +8,7 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get "/admin/organisations/appropriate-bodies/#{appropriate_body.id}"
@@ -18,7 +18,7 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "display appropriate bodies" do
         get "/admin/organisations/appropriate-bodies/#{appropriate_body.id}"

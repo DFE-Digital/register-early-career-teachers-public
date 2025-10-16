@@ -16,10 +16,10 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
     let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Test AB") }
     let!(:current_period) do
       FactoryBot.create(:induction_period, :ongoing,
-                        teacher:,
-                        appropriate_body:,
-                        started_on: '2025-06-30',
-                        induction_programme: 'fip')
+        teacher:,
+        appropriate_body:,
+        started_on: "2025-06-30",
+        induction_programme: "fip")
     end
 
     before { render_inline(component) }
@@ -39,10 +39,10 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
     end
 
     it "formats the start date" do
-      expect(page).to have_text('30 June 2025')
+      expect(page).to have_text("30 June 2025")
     end
 
-    describe '#enable_release' do
+    describe "#enable_release" do
       subject(:component) { described_class.new(mode:, teacher:, enable_release:) }
 
       context "when true" do
@@ -70,7 +70,7 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
       end
     end
 
-    describe '#enable_edit' do
+    describe "#enable_edit" do
       subject(:component) { described_class.new(mode:, teacher:, enable_edit:) }
 
       context "when true" do
@@ -95,11 +95,11 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
         context "when the induction period has an outcome" do
           let!(:current_period) do
             FactoryBot.create(:induction_period, :ongoing,
-                              teacher:,
-                              appropriate_body:,
-                              started_on: 6.months.ago,
-                              outcome: "pass",
-                              induction_programme: "cip")
+              teacher:,
+              appropriate_body:,
+              started_on: 6.months.ago,
+              outcome: "pass",
+              induction_programme: "cip")
           end
 
           it { expect(page).to have_link("Edit") }
@@ -113,7 +113,7 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
       end
     end
 
-    describe '#enable_delete' do
+    describe "#enable_delete" do
       subject(:component) { described_class.new(mode:, teacher:, enable_delete:) }
 
       before { render_inline(component) }

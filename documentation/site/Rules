@@ -1,55 +1,55 @@
 #!/usr/bin/env ruby
 
-compile '/index.html' do
-  layout '/default.*'
+compile "/index.html" do
+  layout "/default.*"
   filter(:erb)
 
   write(item.identifier)
 end
 
-compile '/product/roadmap.html' do
-  layout '/roadmap.*'
+compile "/product/roadmap.html" do
+  layout "/roadmap.*"
   filter(:erb)
 
-  write(item.identifier.without_ext + '/index.html')
+  write(item.identifier.without_ext + "/index.html")
 end
 
-compile 'content/roadmap/*.md' do
+compile "content/roadmap/*.md" do
   filter(:govuk_markdown)
-  layout('/default.*')
+  layout("/default.*")
 
   # no writing, we'll pull this content in manually
   # in the roadmap page
 end
 
-compile '/service-rules/ecf1/*.md' do
+compile "/service-rules/ecf1/*.md" do
   filter(:govuk_markdown)
-  layout('/ecf1-service-rules.*')
-  write(item.identifier.without_ext + '/index.html')
+  layout("/ecf1-service-rules.*")
+  write(item.identifier.without_ext + "/index.html")
 end
 
-compile '/service-rules/*.md' do
+compile "/service-rules/*.md" do
   filter(:govuk_markdown)
-  layout('/service-rules.*')
-  write(item.identifier.without_ext + '/index.html')
+  layout("/service-rules.*")
+  write(item.identifier.without_ext + "/index.html")
 end
 
-compile '/content-editors/*.md' do
+compile "/content-editors/*.md" do
   filter(:govuk_markdown)
-  layout('/service-rules.*')
-  write(item.identifier.without_ext + '/index.html')
+  layout("/service-rules.*")
+  write(item.identifier.without_ext + "/index.html")
 end
 
-compile '/**/*.md' do
+compile "/**/*.md" do
   filter(:govuk_markdown)
-  layout('/default.*')
-  write(item.identifier.without_ext + '/index.html')
+  layout("/default.*")
+  write(item.identifier.without_ext + "/index.html")
 end
 
-compile '/**/*.adoc' do
+compile "/**/*.adoc" do
   filter(:asciidoctor)
-  layout('/policy.*')
-  write(item.identifier.without_ext + '/index.html')
+  layout("/policy.*")
+  write(item.identifier.without_ext + "/index.html")
 end
 
 postprocess do
@@ -71,6 +71,6 @@ postprocess do
   puts " ✅"
 end
 
-passthrough '/**/*'
+passthrough "/**/*"
 
-layout '/**/*', :erb
+layout "/**/*", :erb

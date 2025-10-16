@@ -52,7 +52,7 @@ module ECTAtSchoolPeriods
       end
     end
 
-  private
+    private
 
     attr_reader :school, :lead_provider
 

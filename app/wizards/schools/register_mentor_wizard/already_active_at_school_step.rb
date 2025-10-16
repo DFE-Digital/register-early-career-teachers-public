@@ -5,7 +5,7 @@ module Schools
         :confirmation
       end
 
-    private
+      private
 
       def persist
         mentor.update!(already_active_at_school: true)

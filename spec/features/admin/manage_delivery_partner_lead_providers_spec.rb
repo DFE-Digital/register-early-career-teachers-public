@@ -53,7 +53,7 @@ RSpec.describe "Admin: Managing delivery partner lead providers", type: :feature
     and_i_should_see_both_partnerships
   end
 
-private
+  private
 
   def given_i_am_logged_in_as_an_admin
     sign_in_as_dfe_user(role: :admin)

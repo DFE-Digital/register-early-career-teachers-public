@@ -6,9 +6,9 @@ class Teacher < ApplicationRecord
   self.ignored_columns = %i[search]
 
   enum :mentor_became_ineligible_for_funding_reason, {
-    completed_declaration_received: 'completed_declaration_received',
-    completed_during_early_roll_out: 'completed_during_early_roll_out',
-    started_not_completed: 'started_not_completed',
+    completed_declaration_received: "completed_declaration_received",
+    completed_during_early_roll_out: "completed_during_early_roll_out",
+    started_not_completed: "started_not_completed"
   }
 
   # Associations
@@ -29,7 +29,7 @@ class Teacher < ApplicationRecord
 
   has_many :appropriate_bodies, through: :induction_periods
   has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body
-  has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: 'ECTAtSchoolPeriod'
+  has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: "ECTAtSchoolPeriod"
 
   has_many :events
 
@@ -40,28 +40,28 @@ class Teacher < ApplicationRecord
 
   # Validations
   validates :trn,
-            uniqueness: { message: 'TRN already exists', case_sensitive: false, allow_nil: true },
-            teacher_reference_number: true,
-            presence: { message: 'Enter the teacher reference number (TRN)' },
-            unless: :trnless?
+    uniqueness: {message: "TRN already exists", case_sensitive: false, allow_nil: true},
+    teacher_reference_number: true,
+    presence: {message: "Enter the teacher reference number (TRN)"},
+    unless: :trnless?
 
   validates :trn,
-            absence: { message: 'TRN not allowed when trnless is true' },
-            if: :trnless?
+    absence: {message: "TRN not allowed when trnless is true"},
+    if: :trnless?
 
   validates :trs_induction_status,
-            allow_nil: true,
-            length: { maximum: 18, message: 'TRS induction status must be shorter than 18 characters' }
+    allow_nil: true,
+    length: {maximum: 18, message: "TRS induction status must be shorter than 18 characters"}
 
   validates :mentor_became_ineligible_for_funding_on,
-            presence: { message: 'Enter the date when the mentor became ineligible for funding' },
-            if: -> { mentor_became_ineligible_for_funding_reason.present? }
+    presence: {message: "Enter the date when the mentor became ineligible for funding"},
+    if: -> { mentor_became_ineligible_for_funding_reason.present? }
   validates :mentor_became_ineligible_for_funding_reason,
-            presence: { message: 'Choose the reason why the mentor became ineligible for funding' },
-            if: -> { mentor_became_ineligible_for_funding_on.present? }
-  validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another teacher" }
-  validates :api_ect_training_record_id, uniqueness: { case_sensitive: false, message: "API ect training record id already exists for another teacher" }, allow_nil: true
-  validates :api_mentor_training_record_id, uniqueness: { case_sensitive: false, message: "API mentor training record id already exists for another teacher" }, allow_nil: true
+    presence: {message: "Choose the reason why the mentor became ineligible for funding"},
+    if: -> { mentor_became_ineligible_for_funding_on.present? }
+  validates :api_id, uniqueness: {case_sensitive: false, message: "API id already exists for another teacher"}
+  validates :api_ect_training_record_id, uniqueness: {case_sensitive: false, message: "API ect training record id already exists for another teacher"}, allow_nil: true
+  validates :api_mentor_training_record_id, uniqueness: {case_sensitive: false, message: "API mentor training record id already exists for another teacher"}, allow_nil: true
   validates :ect_first_became_eligible_for_training_at, immutable_once_set: true
   validates :mentor_first_became_eligible_for_training_at, immutable_once_set: true
 

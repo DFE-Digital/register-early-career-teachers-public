@@ -17,7 +17,7 @@ class Teachers::FullNameParser
     @parsed_name ||= parse_full_name
   end
 
-private
+  private
 
   # TODO: there is more we could do to sanitize/compose the name if necessary
   #       such as fix bad hyphenation eg "Smithers -Jones" or handle suffix titles eg "Esq."

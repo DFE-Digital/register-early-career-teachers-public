@@ -3,7 +3,7 @@ require "csv"
 module Migration
   # Exports induction sequence analysis results to CSV format
   class InductionSequenceExporter
-    DEFAULT_FILE_NAME = 'induction_sequences_analysis'
+    DEFAULT_FILE_NAME = "induction_sequences_analysis"
 
     def initialize(results)
       @results = results
@@ -26,7 +26,7 @@ module Migration
       file_path.to_s
     end
 
-  private
+    private
 
     def prepare_file_path(filename)
       return default_file_path if filename.blank?
@@ -35,7 +35,7 @@ module Migration
     end
 
     def default_file_path
-      timestamp = Time.current.strftime('%Y%m%d%H%M%S')
+      timestamp = Time.current.strftime("%Y%m%d%H%M%S")
 
       "/tmp/#{DEFAULT_FILE_NAME}_#{timestamp}.csv"
     end

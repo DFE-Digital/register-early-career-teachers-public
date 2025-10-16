@@ -7,7 +7,7 @@ def describe_lead_provider_delivery_partnerships(lead_provider_delivery_partners
       print_seed_info(Colourize.text(year, :yellow), indent: 2)
 
       lpdps.group_by(&:lead_provider).each do |lead_provider, lpdp|
-        print_seed_info(Colourize.text(lead_provider.name + ' is working with:', :cyan), indent: 4)
+        print_seed_info(Colourize.text(lead_provider.name + " is working with:", :cyan), indent: 4)
 
         lpdp.each { print_seed_info(it.delivery_partner.name, indent: 6) }
       end
@@ -16,9 +16,9 @@ end
 
 # These delivery partnerships are used by other seeds, so are created explicitly.
 
-ambition_institute = LeadProvider.find_by!(name: 'Ambition Institute')
-teach_first = LeadProvider.find_by!(name: 'Teach First')
-best_practice_network = LeadProvider.find_by!(name: 'Best Practice Network')
+ambition_institute = LeadProvider.find_by!(name: "Ambition Institute")
+teach_first = LeadProvider.find_by!(name: "Teach First")
+best_practice_network = LeadProvider.find_by!(name: "Best Practice Network")
 capita = LeadProvider.find_by!(name: "Capita")
 
 active_lead_providers = ActiveLeadProvider
@@ -47,23 +47,23 @@ capita_delivery_partner = DeliveryPartner.find_by!(name: "Capita Delivery Partne
 lead_provider_delivery_partnerships = []
 
 [
-  { active_lead_provider: ambition_institute_2021, delivery_partner: artisan },
-  { active_lead_provider: ambition_institute_2022, delivery_partner: artisan },
-  { active_lead_provider: ambition_institute_2023, delivery_partner: artisan },
-  { active_lead_provider: ambition_institute_2024, delivery_partner: artisan },
-  { active_lead_provider: ambition_institute_2026, delivery_partner: artisan },
-  { active_lead_provider: teach_first_2021, delivery_partner: grain },
-  { active_lead_provider: teach_first_2022, delivery_partner: grain },
-  { active_lead_provider: teach_first_2023, delivery_partner: grain },
-  { active_lead_provider: teach_first_2024, delivery_partner: grain },
-  { active_lead_provider: teach_first_2025, delivery_partner: grain },
-  { active_lead_provider: best_practice_network_2023, delivery_partner: rising_minds },
-  { active_lead_provider: best_practice_network_2024, delivery_partner: rising_minds },
-  { active_lead_provider: capita_2022, delivery_partner: capita_delivery_partner }
+  {active_lead_provider: ambition_institute_2021, delivery_partner: artisan},
+  {active_lead_provider: ambition_institute_2022, delivery_partner: artisan},
+  {active_lead_provider: ambition_institute_2023, delivery_partner: artisan},
+  {active_lead_provider: ambition_institute_2024, delivery_partner: artisan},
+  {active_lead_provider: ambition_institute_2026, delivery_partner: artisan},
+  {active_lead_provider: teach_first_2021, delivery_partner: grain},
+  {active_lead_provider: teach_first_2022, delivery_partner: grain},
+  {active_lead_provider: teach_first_2023, delivery_partner: grain},
+  {active_lead_provider: teach_first_2024, delivery_partner: grain},
+  {active_lead_provider: teach_first_2025, delivery_partner: grain},
+  {active_lead_provider: best_practice_network_2023, delivery_partner: rising_minds},
+  {active_lead_provider: best_practice_network_2024, delivery_partner: rising_minds},
+  {active_lead_provider: capita_2022, delivery_partner: capita_delivery_partner}
 ].each do |data|
   FactoryBot.create(:lead_provider_delivery_partnership,
-                    active_lead_provider: data[:active_lead_provider],
-                    delivery_partner: data[:delivery_partner]).tap { lead_provider_delivery_partnerships << it }
+    active_lead_provider: data[:active_lead_provider],
+    delivery_partner: data[:delivery_partner]).tap { lead_provider_delivery_partnerships << it }
 end
 
 # These are additional delivery partnerships useful for testing.

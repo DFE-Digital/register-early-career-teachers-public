@@ -1,9 +1,9 @@
 module InductionPeriods
   class CreateInductionPeriod
     attr_reader :induction_period,
-                :event,
-                :teacher,
-                :author
+      :event,
+      :teacher,
+      :author
 
     # @param author [Sessions::User]
     # @param teacher [Teacher]
@@ -35,7 +35,7 @@ module InductionPeriods
       induction_period
     end
 
-  private
+    private
 
     # @return [Boolean]
     def record_event

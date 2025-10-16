@@ -16,7 +16,7 @@ describe Schools::ECTs::ChangeWorkingPatternWizard::EditStep, type: :model do
   let(:ect_at_school_period) do
     FactoryBot.create(:ect_at_school_period, school:, working_pattern: "full_time")
   end
-  let(:params) { { working_pattern: "full_time" } }
+  let(:params) { {working_pattern: "full_time"} }
 
   describe ".permitted_params" do
     it "returns the permitted params" do
@@ -38,7 +38,7 @@ describe Schools::ECTs::ChangeWorkingPatternWizard::EditStep, type: :model do
 
   describe "validations" do
     context "when working pattern is blank" do
-      let(:params) { { working_pattern: "" } }
+      let(:params) { {working_pattern: ""} }
 
       it "is invalid" do
         expect(current_step).not_to be_valid
@@ -49,7 +49,7 @@ describe Schools::ECTs::ChangeWorkingPatternWizard::EditStep, type: :model do
     end
 
     context "when working pattern is unchanged" do
-      let(:params) { { working_pattern: ect_at_school_period.working_pattern } }
+      let(:params) { {working_pattern: ect_at_school_period.working_pattern} }
 
       it "is invalid" do
         expect(current_step).not_to be_valid
@@ -60,7 +60,7 @@ describe Schools::ECTs::ChangeWorkingPatternWizard::EditStep, type: :model do
     end
 
     context "when working pattern is valid" do
-      let(:params) { { working_pattern: "part_time" } }
+      let(:params) { {working_pattern: "part_time"} }
 
       it "is valid" do
         expect(current_step).to be_valid

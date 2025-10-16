@@ -4,14 +4,14 @@ module AppropriateBodies
       raise CloseInduction::TeacherHasNoOngoingInductionPeriod if induction_period.blank?
 
       InductionPeriod.transaction do
-        close_induction_period(outcome: 'fail')
+        close_induction_period(outcome: "fail")
         delete_submission
         send_fail_induction_notification_to_trs
         record_fail_induction_event!
       end
     end
 
-  private
+    private
 
     def record_fail_induction_event!
       Events::Record.record_teacher_fails_induction_event!(

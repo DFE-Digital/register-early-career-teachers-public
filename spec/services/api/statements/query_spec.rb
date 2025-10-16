@@ -202,7 +202,7 @@ RSpec.describe API::Statements::Query do
           expect(query.statements).to contain_exactly(statement1, statement2)
         end
 
-        it 'raises an error when searching by an invalid fee type' do
+        it "raises an error when searching by an invalid fee type" do
           expect { described_class.new(fee_type: "something_else") }.to raise_error(described_class::InvalidFeeTypeError)
         end
       end
@@ -221,14 +221,14 @@ RSpec.describe API::Statements::Query do
 
       describe "sort by payment_date" do
         it "returns statements in correct order" do
-          query = described_class.new(sort: { payment_date: :desc })
+          query = described_class.new(sort: {payment_date: :desc})
           expect(query.statements).to eq([statement2, statement1])
         end
       end
 
       describe "sort by year and month" do
         it "returns statements in correct order" do
-          query = described_class.new(sort: { year: :asc, month: :asc })
+          query = described_class.new(sort: {year: :asc, month: :asc})
           expect(query.statements).to eq([statement2, statement1])
         end
       end

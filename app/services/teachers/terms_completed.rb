@@ -11,7 +11,7 @@ class Teachers::TermsCompleted
     "#{terms_completed} of #{total_terms_required}"
   end
 
-private
+  private
 
   def terms_completed
     teacher.induction_periods.sum(:number_of_terms)

@@ -7,13 +7,13 @@ RSpec.describe "Rack::Attack" do
     set_request_ip(ip)
   end
 
-  ['/otp-sign-in', '/otp-sign-in/code', '/sign-in', '/otp-sign-in/code'].each do |protected_route|
+  ["/otp-sign-in", "/otp-sign-in/code", "/sign-in", "/otp-sign-in/code"].each do |protected_route|
     context "when requesting protected route #{protected_route}" do
       let(:path) { protected_route }
 
       it_behaves_like "a rate limited endpoint", "protected routes (OTP)" do
         def perform_request
-          get path, headers: { REMOTE_ADDR: request_ip }
+          get path, headers: {REMOTE_ADDR: request_ip}
         end
 
         def change_condition
@@ -32,7 +32,7 @@ RSpec.describe "Rack::Attack" do
 
     it_behaves_like "a rate limited endpoint", "API requests by auth token" do
       def perform_request
-        authenticated_api_get(path, token: api_token, headers: { REMOTE_ADDR: request_ip })
+        authenticated_api_get(path, token: api_token, headers: {REMOTE_ADDR: request_ip})
       end
 
       def change_condition
@@ -43,14 +43,14 @@ RSpec.describe "Rack::Attack" do
 
   [
     "/api/guidance",
-    "/api/docs/v3",
+    "/api/docs/v3"
   ].each do |public_api_path|
     context "when requesting the public API path #{public_api_path}" do
       let(:path) { public_api_path }
 
       it_behaves_like "a rate limited endpoint", "public API requests by ip" do
         def perform_request
-          get path, headers: { REMOTE_ADDR: request_ip }
+          get path, headers: {REMOTE_ADDR: request_ip}
         end
 
         def change_condition
@@ -65,7 +65,7 @@ RSpec.describe "Rack::Attack" do
 
     it_behaves_like "a rate limited endpoint", "All other requests by ip" do
       def perform_request
-        get(path, headers: { REMOTE_ADDR: request_ip })
+        get(path, headers: {REMOTE_ADDR: request_ip})
       end
 
       def change_condition

@@ -17,14 +17,14 @@ module SchoolPartnerships
       scope.earliest_first
     end
 
-  private
+    private
 
     def where_lead_provider_is(lead_provider)
       return if lead_provider == :ignore
 
       scope.merge!(
         scope.where(
-          lead_provider_delivery_partnership: { active_lead_providers: { lead_provider: } }
+          lead_provider_delivery_partnership: {active_lead_providers: {lead_provider:}}
         )
       )
     end
@@ -34,7 +34,7 @@ module SchoolPartnerships
 
       scope.merge!(
         scope.where(
-          lead_provider_delivery_partnership: { active_lead_providers: { contract_period_year: contract_period } }
+          lead_provider_delivery_partnership: {active_lead_providers: {contract_period_year: contract_period}}
         )
       )
     end
@@ -50,7 +50,7 @@ module SchoolPartnerships
 
       scope.merge!(
         scope.where(
-          lead_provider_delivery_partnership: { delivery_partner: }
+          lead_provider_delivery_partnership: {delivery_partner:}
         )
       )
     end

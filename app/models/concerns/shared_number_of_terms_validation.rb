@@ -3,21 +3,21 @@ module SharedNumberOfTermsValidation
 
   included do
     validates :number_of_terms,
-              numericality: { message: "Number of terms must be a number with up to 1 decimal place", allow_nil: true },
-              terms_range: true,
-              presence: {
-                message: "Enter a number of terms",
-                if: -> { respond_to?(:finished_on) && finished_on.present? }
-              },
-              absence: {
-                message: "Delete the number of terms if the induction has no end date",
-                if: -> { respond_to?(:finished_on) && finished_on.blank? }
-              }
+      numericality: {message: "Number of terms must be a number with up to 1 decimal place", allow_nil: true},
+      terms_range: true,
+      presence: {
+        message: "Enter a number of terms",
+        if: -> { respond_to?(:finished_on) && finished_on.present? }
+      },
+      absence: {
+        message: "Delete the number of terms if the induction has no end date",
+        if: -> { respond_to?(:finished_on) && finished_on.blank? }
+      }
 
     validate :validate_number_of_terms_decimal_places
   end
 
-private
+  private
 
   def validate_number_of_terms_decimal_places
     return if number_of_terms.nil?

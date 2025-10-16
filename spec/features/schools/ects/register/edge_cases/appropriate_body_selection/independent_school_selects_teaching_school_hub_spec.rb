@@ -1,11 +1,11 @@
-RSpec.describe 'Registering an ECT', :enable_schools_interface do
-  include_context 'test trs api client'
+RSpec.describe "Registering an ECT", :enable_schools_interface do
+  include_context "test trs api client"
 
   before do
-    FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
+    FactoryBot.create(:appropriate_body, name: "Golden Leaf Teaching Hub")
   end
 
-  scenario 'Independent school selects teaching school hub as appropriate body' do
+  scenario "Independent school selects teaching school hub as appropriate body" do
     given_i_am_logged_in_as_an_independent_school_user
     when_i_start_the_wizard_from_find_ect
     and_i_complete_the_find_ect_step
@@ -32,50 +32,50 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def when_i_start_the_wizard_from_find_ect
-    page.goto('/school/register-ect/find-ect')
+    page.goto("/school/register-ect/find-ect")
   end
 
   def and_i_complete_the_find_ect_step
-    page.get_by_label('trn').fill('9876543')
-    page.get_by_label('day').fill('3')
-    page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1977')
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("trn").fill("9876543")
+    page.get_by_label("day").fill("3")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1977")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def and_i_complete_the_review_ect_details_step
     # Assume name is correct
     page.get_by_label("Yes").check
-    page.get_by_role('button', name: 'Confirm and continue').click
+    page.get_by_role("button", name: "Confirm and continue").click
   end
 
   def and_i_complete_the_email_address_step
-    page.fill('input[type="email"]', 'example@example.com')
-    page.get_by_role('button', name: 'Continue').click
+    page.fill('input[type="email"]', "example@example.com")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def when_i_enter_a_valid_start_date
-    page.get_by_label('day').fill(1.month.ago.day.to_s)
-    page.get_by_label('month').fill(1.month.ago.month.to_s)
-    page.get_by_label('year').fill(1.month.ago.year.to_s)
+    page.get_by_label("day").fill(1.month.ago.day.to_s)
+    page.get_by_label("month").fill(1.month.ago.month.to_s)
+    page.get_by_label("year").fill(1.month.ago.year.to_s)
   end
 
   def and_i_click_continue
-    page.get_by_role('button', name: "Continue").click
+    page.get_by_role("button", name: "Continue").click
   end
 
   def and_i_select_a_teaching_school_hub_as_the_appropriate_body_type
-    page.get_by_label('A different appropriate body').check
+    page.get_by_label("A different appropriate body").check
   end
 
   def and_i_select_an_appropriate_body
-    page.get_by_role('combobox', name: "")
-        .first
-        .select_option(value: "Golden Leaf Teaching Hub")
+    page.get_by_role("combobox", name: "")
+      .first
+      .select_option(value: "Golden Leaf Teaching Hub")
   end
 
   def then_i_am_taken_to_the_training_programme_page
-    expect(page).to have_path('/school/register-ect/training-programme')
+    expect(page).to have_path("/school/register-ect/training-programme")
   end
 
   def when_i_select_school_led
@@ -87,10 +87,10 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_am_taken_to_the_check_answers_page
-    expect(page).to have_path('/school/register-ect/check-answers')
+    expect(page).to have_path("/school/register-ect/check-answers")
   end
 
   def and_i_see_the_correct_appropriate_body_on_the_page
-    expect(page.get_by_text('Golden Leaf Teaching Hub')).to be_visible
+    expect(page.get_by_text("Golden Leaf Teaching Hub")).to be_visible
   end
 end

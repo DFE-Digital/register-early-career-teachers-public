@@ -47,18 +47,18 @@ module Migrators
               training_period_data = TrainingPeriodExtractor.new(induction_records: induction_records_group).training_periods
 
               result = if participant_profile.ect?
-                         Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
-                       else
-                         Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
-                       end
+                Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
+              else
+                Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
+              end
             end
 
           else
             ::TeacherMigrationFailure.create!(teacher:,
-                                              model: :training_period,
-                                              message: sanitizer.error,
-                                              migration_item_id: participant_profile.id,
-                                              migration_item_type: participant_profile.class.name)
+              model: :training_period,
+              message: sanitizer.error,
+              migration_item_id: participant_profile.id,
+              migration_item_type: participant_profile.class.name)
             result = false
           end
         end
@@ -66,7 +66,7 @@ module Migrators
       result
     end
 
-  private
+    private
 
     def preload_caches
       cache_manager.cache_teachers

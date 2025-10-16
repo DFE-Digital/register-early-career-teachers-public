@@ -14,7 +14,7 @@ module Metadata
       Thread.current[:bypass_update_restrictions] = previous
     end
 
-  private
+    private
 
     def ensure_metadata_namespace
       return if Thread.current[:bypass_update_restrictions]

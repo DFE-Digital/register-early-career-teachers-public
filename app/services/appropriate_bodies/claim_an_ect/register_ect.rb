@@ -4,8 +4,8 @@ module AppropriateBodies
       include ::Teachers::Manageable
 
       attr_reader :appropriate_body,
-                  :pending_induction_submission,
-                  :author
+        :pending_induction_submission,
+        :author
 
       def initialize(appropriate_body:, pending_induction_submission:, author:)
         @appropriate_body = appropriate_body
@@ -33,7 +33,7 @@ module AppropriateBodies
         end
       end
 
-    private
+      private
 
       alias_method :trs_data, :pending_induction_submission
 
@@ -53,7 +53,7 @@ module AppropriateBodies
       # @return [Boolean]
       def update_trs_induction_status!
         manage_teacher.update_trs_induction_status!(
-          trs_induction_status: 'InProgress',
+          trs_induction_status: "InProgress",
           trs_induction_start_date: pending_induction_submission.trs_induction_start_date,
           trs_induction_completed_date: nil
         )
@@ -68,7 +68,7 @@ module AppropriateBodies
             appropriate_body:,
             started_on: pending_induction_submission.started_on,
             induction_programme: pending_induction_submission.induction_programme,
-            training_programme: pending_induction_submission.training_programme,
+            training_programme: pending_induction_submission.training_programme
           }
         ).create_induction_period!
         true

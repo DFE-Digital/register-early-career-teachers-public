@@ -24,7 +24,7 @@ module ParityCheck
       {
         "Authorization" => "Bearer #{token_provider.token(lead_provider:)}",
         "Accept" => "application/json",
-        "Content-Type" => "application/json",
+        "Content-Type" => "application/json"
       }
     end
 
@@ -50,7 +50,7 @@ module ParityCheck
       pages_remain?(previous_response) && @page = page + 1
     end
 
-  private
+    private
 
     def app_specific_path(app:)
       options[:"#{app}_path"] || path
@@ -95,7 +95,7 @@ module ParityCheck
     def pagination_query
       return {} unless pagination_enabled?
 
-      { page: { page:, per_page: PAGINATION_PER_PAGE } }
+      {page: {page:, per_page: PAGINATION_PER_PAGE}}
     end
 
     def pages_remain?(previous_response)

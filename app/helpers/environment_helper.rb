@@ -9,12 +9,12 @@ module EnvironmentHelper
     tag_text = ENVIRONMENT_PHASE_BANNER_TAG || "Beta"
     banner_text = ENVIRONMENT_PHASE_BANNER_CONTENT || environment_phase_banner_default_content
 
-    govuk_phase_banner(text: banner_text, tag: { text: tag_text, colour: ENVIRONMENT_COLOUR, html_attributes: tag_html_attributes }.compact, html_attributes:)
+    govuk_phase_banner(text: banner_text, tag: {text: tag_text, colour: ENVIRONMENT_COLOUR, html_attributes: tag_html_attributes}.compact, html_attributes:)
   end
 
-private
+  private
 
   def environment_phase_banner_default_content
-    "This is a new service – your #{support_mailto_link('feedback')} will help us to improve it.".html_safe
+    "This is a new service – your #{support_mailto_link("feedback")} will help us to improve it.".html_safe
   end
 end

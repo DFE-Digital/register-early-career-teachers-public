@@ -17,7 +17,7 @@ class Schools::AssignExistingMentorWizardController < SchoolsController
     end
   end
 
-private
+  private
 
   def check_allowed_step
     redirect_to @wizard.allowed_step_path unless @wizard.allowed_step?

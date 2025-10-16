@@ -7,10 +7,10 @@ module Metadata
 
     validates :delivery_partner, presence: true
     validates :lead_provider, presence: true
-    validates :delivery_partner_id, uniqueness: { scope: :lead_provider_id }
+    validates :delivery_partner_id, uniqueness: {scope: :lead_provider_id}
     validate :contract_period_years_is_an_array_of_valid_years
 
-  private
+    private
 
     def contract_period_years_is_an_array_of_valid_years
       if contract_period_years.nil? || !contract_period_years.is_a?(Array)

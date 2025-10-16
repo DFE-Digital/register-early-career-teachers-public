@@ -5,7 +5,7 @@ PARTNERSHIPS_RESPONSE = {
   properties: {
     data: {
       type: :array,
-      items: { "$ref": "#/components/schemas/Partnership" },
-    },
-  },
+      items: {"$ref": "#/components/schemas/Partnership"}
+    }
+  }
 }.freeze

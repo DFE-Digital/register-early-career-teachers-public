@@ -10,17 +10,17 @@ describe Migrators::GIASImport do
   def create_gias_school(csv_row)
     school_row = create_school_row(csv_row)
     FactoryBot.create(:gias_school, :with_school,
-                      urn: school_row.urn,
-                      administrative_district_name: school_row.administrative_district_name,
-                      funding_eligibility: school_row.funding_eligibility,
-                      induction_eligibility: school_row.induction_eligibility,
-                      in_england: school_row.in_england,
-                      name: school_row.name,
-                      phase_name: school_row.phase_name,
-                      section_41_approved: school_row.section_41_approved,
-                      status: school_row.status,
-                      type_name: school_row.type_name,
-                      ukprn: school_row.ukprn)
+      urn: school_row.urn,
+      administrative_district_name: school_row.administrative_district_name,
+      funding_eligibility: school_row.funding_eligibility,
+      induction_eligibility: school_row.induction_eligibility,
+      in_england: school_row.in_england,
+      name: school_row.name,
+      phase_name: school_row.phase_name,
+      section_41_approved: school_row.section_41_approved,
+      status: school_row.status,
+      type_name: school_row.type_name,
+      ukprn: school_row.ukprn)
   end
 
   def stub_gias_importer

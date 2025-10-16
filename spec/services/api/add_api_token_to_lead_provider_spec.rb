@@ -3,7 +3,7 @@ describe API::AddAPITokenToLeadProvider do
 
   let(:params) do
     {
-      lead_provider_name_or_id:,
+      lead_provider_name_or_id:
     }
   end
 
@@ -49,7 +49,7 @@ describe API::AddAPITokenToLeadProvider do
         it "errors and does not create token" do
           expect { subject.add }
             .to raise_exception(RuntimeError, "LeadProvider not found")
-                  .and(not_change(API::Token, :count))
+            .and(not_change(API::Token, :count))
         end
       end
     end
@@ -81,7 +81,7 @@ describe API::AddAPITokenToLeadProvider do
         it "errors and does not create token" do
           expect { subject.add }
             .to raise_exception(RuntimeError, "LeadProvider not found")
-                  .and(not_change(API::Token, :count))
+            .and(not_change(API::Token, :count))
         end
       end
     end

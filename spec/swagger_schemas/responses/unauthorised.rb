@@ -4,7 +4,7 @@ UNAUTHORISED_RESPONSE = {
   properties: {
     error: {
       type: :string,
-      example: "HTTP Token: Access denied",
-    },
-  },
+      example: "HTTP Token: Access denied"
+    }
+  }
 }.freeze

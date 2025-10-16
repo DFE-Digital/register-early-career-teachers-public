@@ -9,7 +9,7 @@ FactoryBot.define do
     rect_time_ms { Faker::Number.between(from: 10, to: 2000) }
     ecf_request_uri { "/path/to/ecf/endpoint" }
     rect_request_uri { "/path/to/rect/endpoint" }
-    request_body { { example: { request: "body" } } }
+    request_body { {example: {request: "body"}} }
 
     trait :matching do
       ecf_status_code { 200 }

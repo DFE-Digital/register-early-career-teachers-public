@@ -4,7 +4,7 @@ class DebugSessionComponent < ApplicationComponent
     Rails.application.config.enable_test_guidance && Current.session.present?
   end
 
-private
+  private
 
   def rows
     if Current.administrator.present?
@@ -16,17 +16,17 @@ private
 
   def session_rows
     Current.session.map do |key, value|
-      { key: { text: key.humanize }, value: { text: value } }
+      {key: {text: key.humanize}, value: {text: value}}
     end
   end
 
   def admin_rows
     [
       {
-        key: { text: 'Administrator' }, value: { text: Current.administrator.name }
+        key: {text: "Administrator"}, value: {text: Current.administrator.name}
       },
       {
-        key: { text: 'Role' }, value: { text: Current.role }
+        key: {text: "Role"}, value: {text: Current.role}
       }
     ]
   end

@@ -14,7 +14,7 @@ PARTNERSHIP_UPDATE_REQUEST = {
           enum: %w[
             partnership
           ],
-          example: "partnership",
+          example: "partnership"
         },
         attributes: {
           description: "A partnership update request attributes",
@@ -26,11 +26,11 @@ PARTNERSHIP_UPDATE_REQUEST = {
               required: true,
               nullable: false,
               type: :string,
-              example: "db2fbf67-b7b7-454f-a1b7-0020411e2314",
-            },
-          },
-        },
-      },
-    },
-  },
+              example: "db2fbf67-b7b7-454f-a1b7-0020411e2314"
+            }
+          }
+        }
+      }
+    }
+  }
 }.freeze

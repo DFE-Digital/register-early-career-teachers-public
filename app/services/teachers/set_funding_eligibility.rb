@@ -13,7 +13,7 @@ class Teachers::SetFundingEligibility
     end
   end
 
-private
+  private
 
   def set_eligibility!
     if eligible_for_ect_training?

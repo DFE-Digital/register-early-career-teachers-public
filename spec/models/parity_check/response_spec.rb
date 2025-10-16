@@ -90,14 +90,14 @@ describe ParityCheck::Response do
   end
 
   describe "#ecf_body=" do
-    let(:ecf_body) { { key: "value" } }
+    let(:ecf_body) { {key: "value"} }
     let(:response) { FactoryBot.build(:parity_check_response, ecf_body: ecf_body.to_json) }
 
     it { expect(response.ecf_body).to eq(JSON.pretty_generate(ecf_body)) }
   end
 
   describe "#rect_body=" do
-    let(:rect_body) { { key: "value" } }
+    let(:rect_body) { {key: "value"} }
     let(:response) { FactoryBot.build(:parity_check_response, rect_body: rect_body.to_json) }
 
     it { expect(response.rect_body).to eq(JSON.pretty_generate(rect_body)) }
@@ -209,7 +209,7 @@ describe ParityCheck::Response do
     subject { response }
 
     context "when the ECF and RECT ids are the same" do
-      let(:body) { { data: { id: 123 } }.to_json }
+      let(:body) { {data: {id: 123}}.to_json }
       let(:response) { FactoryBot.build(:parity_check_response, ecf_body: body, rect_body: body) }
 
       it { is_expected.to be_body_ids_matching }
@@ -217,8 +217,8 @@ describe ParityCheck::Response do
     end
 
     context "when the ECF and RECT bodies are different" do
-      let(:ecf_body) { { data: { id: 123 } }.to_json }
-      let(:rect_body) { { data: { id: 456 } }.to_json }
+      let(:ecf_body) { {data: {id: 123}}.to_json }
+      let(:rect_body) { {data: {id: 456}}.to_json }
       let(:response) { FactoryBot.build(:parity_check_response, ecf_body:, rect_body:) }
 
       it { is_expected.not_to be_body_ids_matching }
@@ -251,9 +251,9 @@ describe ParityCheck::Response do
     let(:response) { FactoryBot.build(:parity_check_response, ecf_body:) }
 
     context "when the ECF body is valid JSON" do
-      let(:ecf_body) { { key: { "value" => :nested } }.to_json }
+      let(:ecf_body) { {key: {"value" => :nested}}.to_json }
 
-      it { is_expected.to eq(key: { value: "nested" }) }
+      it { is_expected.to eq(key: {value: "nested"}) }
     end
 
     context "when the ECF body is not valid JSON" do
@@ -275,9 +275,9 @@ describe ParityCheck::Response do
     let(:response) { FactoryBot.build(:parity_check_response, rect_body:) }
 
     context "when the RECT body is valid JSON" do
-      let(:rect_body) { { key: { "value" => :nested } }.to_json }
+      let(:rect_body) { {key: {"value" => :nested}}.to_json }
 
-      it { is_expected.to eq(key: { value: "nested" }) }
+      it { is_expected.to eq(key: {value: "nested"}) }
     end
 
     context "when the RECT body is not valid JSON" do
@@ -299,13 +299,13 @@ describe ParityCheck::Response do
     let(:response) { FactoryBot.build(:parity_check_response, ecf_body:) }
 
     context "when the ECF body is valid JSON (single response)" do
-      let(:ecf_body) { { data: { id: 123, foo: :bar } }.to_json }
+      let(:ecf_body) { {data: {id: 123, foo: :bar}}.to_json }
 
       it { is_expected.to contain_exactly(123) }
     end
 
     context "when the ECF body is valid JSON (multiple response)" do
-      let(:ecf_body) { { data: [{ id: 456, foo: :bar }, { id: 123, foo: :baz }] }.to_json }
+      let(:ecf_body) { {data: [{id: 456, foo: :bar}, {id: 123, foo: :baz}]}.to_json }
 
       it { is_expected.to contain_exactly(123, 456) }
     end
@@ -329,13 +329,13 @@ describe ParityCheck::Response do
     let(:response) { FactoryBot.build(:parity_check_response, rect_body:) }
 
     context "when the RECT body is valid JSON (single response)" do
-      let(:rect_body) { { data: { id: 123, foo: :bar } }.to_json }
+      let(:rect_body) { {data: {id: 123, foo: :bar}}.to_json }
 
       it { is_expected.to contain_exactly(123) }
     end
 
     context "when the RECT body is valid JSON (multiple response)" do
-      let(:rect_body) { { data: [{ id: 456, foo: :bar }, { id: 123, foo: :baz }] }.to_json }
+      let(:rect_body) { {data: [{id: 456, foo: :bar}, {id: 123, foo: :baz}]}.to_json }
 
       it { is_expected.to contain_exactly(123, 456) }
     end
@@ -356,8 +356,8 @@ describe ParityCheck::Response do
   describe "#ecf_only_body_ids" do
     subject { response.ecf_only_body_ids }
 
-    let(:ecf_body) { { data: [{ id: 123 }, { id: 456 }] }.to_json }
-    let(:rect_body) { { data: [{ id: 123 }] }.to_json }
+    let(:ecf_body) { {data: [{id: 123}, {id: 456}]}.to_json }
+    let(:rect_body) { {data: [{id: 123}]}.to_json }
     let(:response) { FactoryBot.build(:parity_check_response, ecf_body:, rect_body:) }
 
     it { is_expected.to contain_exactly(456) }
@@ -366,8 +366,8 @@ describe ParityCheck::Response do
   describe "#rect_only_body_ids" do
     subject { response.rect_only_body_ids }
 
-    let(:ecf_body) { { data: [{ id: 456 }] }.to_json }
-    let(:rect_body) { { data: [{ id: 123 }, { id: 456 }] }.to_json }
+    let(:ecf_body) { {data: [{id: 456}]}.to_json }
+    let(:rect_body) { {data: [{id: 123}, {id: 456}]}.to_json }
     let(:response) { FactoryBot.build(:parity_check_response, ecf_body:, rect_body:) }
 
     it { is_expected.to contain_exactly(123) }

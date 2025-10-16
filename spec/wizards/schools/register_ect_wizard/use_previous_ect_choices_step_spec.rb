@@ -9,43 +9,43 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
     FactoryBot.build(:register_ect_wizard, current_step: :use_previous_ect_choices, school:, store:, step_params:)
   end
 
-  describe '#initialize' do
+  describe "#initialize" do
     subject { described_class.new(wizard:, **params) }
 
-    context 'when use_previous_ect_choices is provided' do
-      let(:params) { { use_previous_ect_choices: false } }
+    context "when use_previous_ect_choices is provided" do
+      let(:params) { {use_previous_ect_choices: false} }
 
-      it 'populate the instance from it' do
+      it "populate the instance from it" do
         expect(subject.use_previous_ect_choices).to be_falsey
       end
     end
 
-    context 'when no use_previous_ect_choices is provided' do
+    context "when no use_previous_ect_choices is provided" do
       let(:params) { {} }
 
-      it 'populate it from the wizard store' do
+      it "populate it from the wizard store" do
         expect(subject.use_previous_ect_choices).to be_truthy
       end
     end
   end
 
-  describe '#next_step' do
-    context 'when use_previous_ect_choices is true' do
+  describe "#next_step" do
+    context "when use_previous_ect_choices is true" do
       let(:use_previous_ect_choices) { true }
 
       it { expect(subject.next_step).to eq(:check_answers) }
     end
 
-    context 'when use_previous_ect_choices is false' do
+    context "when use_previous_ect_choices is false" do
       let(:use_previous_ect_choices) { false }
 
-      context 'for independent schools' do
+      context "for independent schools" do
         let(:school) { FactoryBot.create(:school, :independent) }
 
         it { expect(subject.next_step).to eq(:independent_school_appropriate_body) }
       end
 
-      context 'for state-funded schools' do
+      context "for state-funded schools" do
         let(:school) { FactoryBot.create(:school, :state_funded) }
 
         it { expect(subject.next_step).to eq(:state_school_appropriate_body) }
@@ -53,20 +53,20 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
     end
   end
 
-  describe '#previous_step' do
+  describe "#previous_step" do
     it { expect(subject.previous_step).to eq(:working_pattern) }
   end
 
-  describe '#save!' do
+  describe "#save!" do
     let(:step_params) do
       ActionController::Parameters.new(
         "use_previous_ect_choices" => {
-          "use_previous_ect_choices" => '0',
+          "use_previous_ect_choices" => "0"
         }
       )
     end
 
-    it 'updates the wizard ect use_previous_ect_choices' do
+    it "updates the wizard ect use_previous_ect_choices" do
       expect { subject.save! }.to change(subject.ect, :use_previous_ect_choices).from(true).to(false)
     end
   end

@@ -7,28 +7,28 @@ describe Builders::MentorshipPeriods do
   let!(:ect_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on:, finished_on:) }
   let(:mentor_period_1) do
     FactoryBot.create(:mentor_at_school_period,
-                      :ongoing,
-                      school: ect_period.school,
-                      started_on: started_on + 1.day)
+      :ongoing,
+      school: ect_period.school,
+      started_on: started_on + 1.day)
   end
   let(:mentor_period_2) do
     FactoryBot.create(:mentor_at_school_period,
-                      :ongoing,
-                      school: ect_period.school,
-                      started_on: started_on - 1.week)
+      :ongoing,
+      school: ect_period.school,
+      started_on: started_on - 1.week)
   end
 
   let(:mentorship_period_1) do
     FactoryBot.build(:mentorship_period_data,
-                     mentor_teacher: mentor_period_1.teacher,
-                     start_date: started_on + 2.days,
-                     end_date: started_on + 2.weeks)
+      mentor_teacher: mentor_period_1.teacher,
+      start_date: started_on + 2.days,
+      end_date: started_on + 2.weeks)
   end
   let(:mentorship_period_2) do
     FactoryBot.build(:mentorship_period_data,
-                     mentor_teacher: mentor_period_2.teacher,
-                     start_date: started_on + 1.month,
-                     end_date: started_on + 3.months)
+      mentor_teacher: mentor_period_2.teacher,
+      start_date: started_on + 1.month,
+      end_date: started_on + 3.months)
   end
   let(:mentorship_period_data) { [mentorship_period_1, mentorship_period_2] }
 

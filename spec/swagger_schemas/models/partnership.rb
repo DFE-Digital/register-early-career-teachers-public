@@ -4,7 +4,7 @@ PARTNERSHIP = {
   required: %i[id type attributes],
   properties: {
     id: {
-      "$ref": "#/components/schemas/IDAttribute",
+      "$ref": "#/components/schemas/IDAttribute"
     },
     type: {
       description: "The data type.",
@@ -12,7 +12,7 @@ PARTNERSHIP = {
       example: "partnership",
       enum: %w[
         partnership
-      ],
+      ]
     },
     attributes: {
       properties: {
@@ -72,7 +72,7 @@ PARTNERSHIP = {
           format: "date-time",
           example: "2021-05-31T02:22:32.000Z"
         }
-      },
-    },
-  },
+      }
+    }
+  }
 }.freeze

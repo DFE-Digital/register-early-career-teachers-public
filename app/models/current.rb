@@ -1,8 +1,8 @@
 class Current < ActiveSupport::CurrentAttributes
   attribute :session, default: {}
   attribute :user,
-            :administrator,
-            :role
+    :administrator,
+    :role
 
   def user=(user)
     super

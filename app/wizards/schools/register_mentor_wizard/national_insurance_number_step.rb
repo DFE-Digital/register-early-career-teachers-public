@@ -21,14 +21,14 @@ module Schools
         :find_mentor
       end
 
-    private
+      private
 
       def persist
         mentor.update(national_insurance_number:,
-                      trs_date_of_birth: trs_teacher.trs_date_of_birth,
-                      trs_first_name: trs_teacher.trs_first_name,
-                      trs_last_name: trs_teacher.trs_last_name,
-                      trs_prohibited_from_teaching: trs_teacher.trs_prohibited_from_teaching)
+          trs_date_of_birth: trs_teacher.trs_date_of_birth,
+          trs_first_name: trs_teacher.trs_first_name,
+          trs_last_name: trs_teacher.trs_last_name,
+          trs_prohibited_from_teaching: trs_teacher.trs_prohibited_from_teaching)
       end
 
       def trs_teacher

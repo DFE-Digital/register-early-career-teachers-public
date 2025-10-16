@@ -14,7 +14,7 @@ module Migration
       display_summary
     end
 
-  private
+    private
 
     def display_header
       puts "\n" + "=" * HEADER_SEPARATOR_LENGTH
@@ -56,8 +56,8 @@ module Migration
     def display_provider_details(result)
       puts "\n   🏢 Lead Provider: #{result[:lead_provider_name]}"
       puts "      Total records: #{result[:total_record_count]} (#{result[:null_end_date_count]} with NULL end_date)"
-      puts "      Schools: #{result[:schools].join(', ')}" if result[:schools].any?
-      puts "      Programme Types: #{result[:programme_types].join(', ')}" if result[:programme_types].any?
+      puts "      Schools: #{result[:schools].join(", ")}" if result[:schools].any?
+      puts "      Programme Types: #{result[:programme_types].join(", ")}" if result[:programme_types].any?
       puts "      Total Days with Provider: #{result[:total_days]} days"
 
       display_timeline(result[:provider_periods])
@@ -121,7 +121,7 @@ module Migration
       puts "   Total participants: #{count_unique_participants}"
       puts "   Total induction records: #{sum_total_records}"
       puts "   Total NULL end_date records: #{sum_null_end_date_records}"
-      puts "   Lead providers involved: #{list_lead_providers.join(', ')}"
+      puts "   Lead providers involved: #{list_lead_providers.join(", ")}"
     end
 
     def count_unique_participants

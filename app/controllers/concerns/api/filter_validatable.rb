@@ -9,14 +9,14 @@ module API
     module ClassMethods
       attr_reader :required_filters
 
-    private
+      private
 
       def filter_validation(required_filters: [])
         @required_filters = required_filters.map(&:to_s)
       end
     end
 
-  private
+    private
 
     def filter
       params[:filter] ||= {}
@@ -25,7 +25,7 @@ module API
     def validate_filters
       return unless filter_errors.any?
 
-      render json: { errors: API::Errors::Response.new(title: "Bad parameter", messages: filter_errors).call }, status: :bad_request
+      render json: {errors: API::Errors::Response.new(title: "Bad parameter", messages: filter_errors).call}, status: :bad_request
     end
 
     def filter_errors

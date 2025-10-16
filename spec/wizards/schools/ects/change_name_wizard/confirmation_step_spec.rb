@@ -3,14 +3,14 @@ RSpec.describe Schools::ECTs::ChangeNameWizard::ConfirmationStep, type: :model d
 
   let(:wizard) do
     FactoryBot.build(:change_ect_name_wizard,
-                     current_step: :confirmation)
+      current_step: :confirmation)
   end
 
-  describe '#next_step' do
+  describe "#next_step" do
     it { expect { current_step.next_step }.to raise_error(NotImplementedError) }
   end
 
-  describe '#previous_step' do
+  describe "#previous_step" do
     it { expect { current_step.previous_step }.to raise_error(NotImplementedError) }
   end
 end

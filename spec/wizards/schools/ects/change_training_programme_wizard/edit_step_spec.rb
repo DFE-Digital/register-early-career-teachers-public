@@ -14,7 +14,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::EditStep do
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
-  let(:params) { { training_programme: "" } }
+  let(:params) { {training_programme: ""} }
 
   describe ".permitted_params" do
     it "returns the permitted parameters" do
@@ -30,7 +30,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::EditStep do
 
   describe "#next_step" do
     context "when the training programme is provider_led" do
-      let(:params) { { training_programme: "provider_led" } }
+      let(:params) { {training_programme: "provider_led"} }
 
       it "returns the lead provider step" do
         expect(current_step.next_step).to eq(:lead_provider)
@@ -38,7 +38,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::EditStep do
     end
 
     context "when the training programme is school_led" do
-      let(:params) { { training_programme: "school_led" } }
+      let(:params) { {training_programme: "school_led"} }
 
       it "returns the check answers step" do
         expect(current_step.next_step).to eq(:check_answers)
@@ -48,7 +48,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::EditStep do
 
   describe "validations" do
     context "when training programme is blank" do
-      let(:params) { { training_programme: nil } }
+      let(:params) { {training_programme: nil} }
 
       it "is invalid" do
         expect(current_step).not_to be_valid
@@ -58,7 +58,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::EditStep do
     end
 
     context "when training programme is invalid" do
-      let(:params) { { training_programme: "something-invalid" } }
+      let(:params) { {training_programme: "something-invalid"} }
 
       it "is invalid" do
         expect(current_step).not_to be_valid
@@ -68,7 +68,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::EditStep do
     end
 
     context "when training programme is valid" do
-      let(:params) { { training_programme: "provider_led" } }
+      let(:params) { {training_programme: "provider_led"} }
 
       it "is valid" do
         expect(current_step).to be_valid
@@ -79,7 +79,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::EditStep do
 
   describe "#save!" do
     context "when the training programme is valid" do
-      let(:params) { { training_programme: "provider_led" } }
+      let(:params) { {training_programme: "provider_led"} }
 
       it "stores the training programme" do
         expect { current_step.save! }
@@ -93,7 +93,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::EditStep do
     end
 
     context "when the training programme is invalid" do
-      let(:params) { { training_programme: "" } }
+      let(:params) { {training_programme: ""} }
 
       it "does not store the training programme" do
         expect { current_step.save! }

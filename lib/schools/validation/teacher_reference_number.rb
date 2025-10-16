@@ -16,7 +16,7 @@ module Schools
         @error_message.nil?
       end
 
-    private
+      private
 
       def format_trn
         # remove any characters that are not digits

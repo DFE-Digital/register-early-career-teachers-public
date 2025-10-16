@@ -4,7 +4,7 @@ module API::Schools
 
     attr_reader :scope, :sort, :lead_provider_id, :contract_period_year
 
-    def initialize(contract_period_year:, lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, sort: { created_at: :asc })
+    def initialize(contract_period_year:, lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, sort: {created_at: :asc})
       @lead_provider_id = lead_provider_id
       @contract_period_year = contract_period_year
       @scope = School.eligible.not_cip_only
@@ -32,7 +32,7 @@ module API::Schools
       fail(ArgumentError, "id needed")
     end
 
-  private
+    private
 
     def preload_associations(results)
       preloaded_results = results
@@ -42,13 +42,13 @@ module API::Schools
       unless ignore?(filter: lead_provider_id)
         preloaded_results = preloaded_results
           .references(:metadata_schools_lead_providers_contract_periods)
-          .where(metadata_schools_lead_providers_contract_periods: { lead_provider_id: })
+          .where(metadata_schools_lead_providers_contract_periods: {lead_provider_id:})
       end
 
       unless ignore?(filter: contract_period_year)
         preloaded_results = preloaded_results
           .references(:metadata_schools_contract_periods, :metadata_schools_lead_providers_contract_periods)
-          .where(metadata_schools_contract_periods: { contract_period_year: }, metadata_schools_lead_providers_contract_periods: { contract_period_year: })
+          .where(metadata_schools_contract_periods: {contract_period_year:}, metadata_schools_lead_providers_contract_periods: {contract_period_year:})
       end
 
       preloaded_results
@@ -64,8 +64,8 @@ module API::Schools
       @scope = scope.or(
         School
           .where(id: School.select("schools.id")
-          .joins(school_partnerships: { lead_provider_delivery_partnership: { active_lead_provider: :contract_period } })
-          .where(contract_periods: { year: contract_period_year }))
+          .joins(school_partnerships: {lead_provider_delivery_partnership: {active_lead_provider: :contract_period}})
+          .where(contract_periods: {year: contract_period_year}))
       ).distinct
     end
 

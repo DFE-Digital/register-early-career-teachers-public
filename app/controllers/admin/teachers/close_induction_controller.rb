@@ -14,7 +14,7 @@ module Admin
       def show
       end
 
-    private
+      private
 
       def pending_induction_submission_params
         params.expect(pending_induction_submission: %i[finished_on number_of_terms outcome])
@@ -23,7 +23,7 @@ module Admin
       def pending_induction_submission_attributes
         {
           appropriate_body_id: appropriate_body.id,
-          trn: @teacher.trn,
+          trn: @teacher.trn
         }
       end
 

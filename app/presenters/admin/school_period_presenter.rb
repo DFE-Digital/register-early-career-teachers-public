@@ -38,7 +38,7 @@ module Admin
       TrainingPeriodPresenter.wrap(school_period.training_periods.order(started_on: :desc))
     end
 
-  private
+    private
 
     def school_period
       __getobj__

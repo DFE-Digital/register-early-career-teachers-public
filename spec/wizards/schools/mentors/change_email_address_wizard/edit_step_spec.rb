@@ -14,7 +14,7 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
-  let(:params) { { email: "email@example.com" } }
+  let(:params) { {email: "email@example.com"} }
 
   describe ".permitted_params" do
     it "returns the permitted parameters" do
@@ -36,7 +36,7 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
 
   describe "validations" do
     context "when email is blank" do
-      let(:params) { { email: "" } }
+      let(:params) { {email: ""} }
 
       it "is invalid" do
         expect(current_step).to be_invalid
@@ -47,7 +47,7 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
     end
 
     context "when email is invalid" do
-      let(:params) { { email: "invalid_email" } }
+      let(:params) { {email: "invalid_email"} }
 
       it "is invalid" do
         expect(current_step).to be_invalid
@@ -58,7 +58,7 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
     end
 
     context "when email is too long" do
-      let(:params) { { email: "a" * 250 + "@example.com" } }
+      let(:params) { {email: "a" * 250 + "@example.com"} }
 
       it "is invalid" do
         expect(current_step).to be_invalid
@@ -69,7 +69,7 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
     end
 
     context "when email hasn't been changed" do
-      let(:params) { { email: mentor_at_school_period.email } }
+      let(:params) { {email: mentor_at_school_period.email} }
 
       it "is invalid" do
         expect(current_step).to be_invalid
@@ -80,7 +80,7 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
     end
 
     context "when email is valid" do
-      let(:params) { { email: "new_email@example.com" } }
+      let(:params) { {email: "new_email@example.com"} }
 
       it "is valid" do
         expect(current_step).to be_valid
@@ -91,7 +91,7 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
 
   describe "save!" do
     context "when email is invalid" do
-      let(:params) { { email: "invalid_email" } }
+      let(:params) { {email: "invalid_email"} }
 
       it "does not store the email" do
         expect { current_step.save! }.not_to(change(store, :email))
@@ -99,7 +99,7 @@ describe Schools::Mentors::ChangeEmailAddressWizard::EditStep, type: :model do
     end
 
     context "when email is valid" do
-      let(:params) { { email: "new_email@example.com" } }
+      let(:params) { {email: "new_email@example.com"} }
 
       it "stores the email" do
         expect { current_step.save! }.to change(store, :email)

@@ -5,11 +5,11 @@ module SandboxSeedData
     STATE_COLOURS = {
       OP: :blue,
       PB: :cyan,
-      PD: :green,
+      PD: :green
     }.freeze
     COL_WIDTHS = {
       month: 10,
-      year: 18,
+      year: 18
     }.freeze
 
     def plant
@@ -28,13 +28,13 @@ module SandboxSeedData
 
             Statement.find_by(active_lead_provider:, month:, year:, deadline_date:) ||
               FactoryBot.create(:statement,
-                                active_lead_provider:,
-                                month:,
-                                year:,
-                                deadline_date:,
-                                payment_date: payment_date(deadline_date),
-                                status: status(payment_date(deadline_date), deadline_date),
-                                fee_type:)
+                active_lead_provider:,
+                month:,
+                year:,
+                deadline_date:,
+                payment_date: payment_date(deadline_date),
+                status: status(payment_date(deadline_date), deadline_date),
+                fee_type:)
           end
         end
 
@@ -42,7 +42,7 @@ module SandboxSeedData
       end
     end
 
-  private
+    private
 
     def active_lead_providers_by_lead_provider
       ActiveLeadProvider.includes(:lead_provider).group_by(&:lead_provider)
@@ -106,7 +106,7 @@ module SandboxSeedData
     end
 
     def format_statuses(shorthand_statuses)
-      return 'none'.rjust(COL_WIDTHS[:year]) unless shorthand_statuses
+      return "none".rjust(COL_WIDTHS[:year]) unless shorthand_statuses
 
       coloured_statuses = shorthand_statuses.map { |status| Colourize.text(status, STATE_COLOURS[status.to_sym]) }
       # The colourizing characters affect the length so offset the rjust.

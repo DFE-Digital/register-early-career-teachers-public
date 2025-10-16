@@ -8,10 +8,10 @@ module API::SchoolPartnerships
     attribute :school_api_id
     attribute :delivery_partner_api_id
 
-    validates :contract_period_year, presence: { message: "Enter a '#/contract_period_year'." }
-    validates :school_api_id, presence: { message: "Enter a '#/school_api_id'." }
-    validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
-    validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_api_id'." }
+    validates :contract_period_year, presence: {message: "Enter a '#/contract_period_year'."}
+    validates :school_api_id, presence: {message: "Enter a '#/school_api_id'."}
+    validates :lead_provider_id, presence: {message: "Enter a '#/lead_provider_id'."}
+    validates :delivery_partner_api_id, presence: {message: "Enter a '#/delivery_partner_api_id'."}
     validate :contract_period_exists
     validate :contract_period_enabled
     validate :lead_provider_exists
@@ -33,7 +33,7 @@ module API::SchoolPartnerships
       ).create
     end
 
-  private
+    private
 
     def contract_period
       @contract_period ||= ContractPeriod.find_by(year: contract_period_year) if contract_period_year
@@ -93,7 +93,7 @@ module API::SchoolPartnerships
       existing_school_partnership = school
         .school_partnerships
         .joins(:lead_provider_delivery_partnership)
-        .exists?(lead_provider_delivery_partnerships: { active_lead_provider: })
+        .exists?(lead_provider_delivery_partnerships: {active_lead_provider:})
 
       errors.add(:school_api_id, "You are already in a confirmed partnership with this school for the entered contract period.") if existing_school_partnership
     end

@@ -13,7 +13,7 @@ module Admin
       contract_period_partnerships.any?
     end
 
-  private
+    private
 
     def change_link_path(contract_period)
       helpers.new_admin_delivery_partner_delivery_partnership_path(

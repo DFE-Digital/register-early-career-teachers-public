@@ -4,7 +4,7 @@ module API
       def index
         conditions = {
           contract_period_years: extract_conditions(contract_period_years),
-          updated_since:,
+          updated_since:
         }
         paginated_statements = statements_query(conditions:).statements { paginate(it) }
 
@@ -15,15 +15,15 @@ module API
         render json: to_json(statements_query.statement_by_api_id(api_id))
       end
 
-    private
+      private
 
       def statements_query(conditions: {})
-        API::Statements::Query.new(**(default_query_conditions.merge(conditions).compact))
+        API::Statements::Query.new(**default_query_conditions.merge(conditions).compact)
       end
 
       def default_query_conditions
         @default_query_conditions ||= {
-          lead_provider_id: current_lead_provider.id,
+          lead_provider_id: current_lead_provider.id
         }
       end
 

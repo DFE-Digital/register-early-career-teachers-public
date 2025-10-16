@@ -22,7 +22,7 @@ module AppropriateBodies
         track_analytics!
       end
 
-    private
+      private
 
       # @return [nil, Boolean]
       def validate_submission!
@@ -33,10 +33,10 @@ module AppropriateBodies
 
         case row.outcome
         when /fail/i
-          pending_induction_submission.assign_attributes(outcome: 'fail')
+          pending_induction_submission.assign_attributes(outcome: "fail")
           pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
         when /pass/i
-          pending_induction_submission.assign_attributes(outcome: 'pass')
+          pending_induction_submission.assign_attributes(outcome: "pass")
           pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
         when /release/i
           pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :release_ect)
@@ -80,8 +80,8 @@ module AppropriateBodies
       def incorrectly_formatted?
         super
 
-        pending_induction_submission.errors.add(:base, 'Outcome must be either pass, fail or release') if invalid_outcome?
-        pending_induction_submission.errors.add(:base, 'Enter number of terms between 0 and 16 using up to one decimal place') if invalid_terms?
+        pending_induction_submission.errors.add(:base, "Outcome must be either pass, fail or release") if invalid_outcome?
+        pending_induction_submission.errors.add(:base, "Enter number of terms between 0 and 16 using up to one decimal place") if invalid_terms?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end

@@ -26,7 +26,7 @@ module Organisation
       access_level.roles.map(&:code)
     end
 
-  private
+    private
 
     # @see https://github.com/DFE-Digital/login.dfe.public-api
     # @return [DfESignIn::AccessLevel]

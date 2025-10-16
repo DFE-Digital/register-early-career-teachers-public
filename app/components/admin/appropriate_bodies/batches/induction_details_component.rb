@@ -13,16 +13,17 @@ module Admin
           batch.recorded_count.positive?
         end
 
-      private
+        private
 
         delegate :id, :claim?, :action?, to: :batch
         delegate :training_programme_name, :teacher_full_name, to: :helpers
 
         # @return [String]
         def caption
-          case
-          when claim? then "Opened induction periods (#{rows.count})"
-          when action? then "Closed induction periods (#{rows.count})"
+          if claim?
+            "Opened induction periods (#{rows.count})"
+          elsif action?
+            "Closed induction periods (#{rows.count})"
           else
             raise StandardError, "Unknown #{batch.class}#batch_type for #{id}"
           end
@@ -30,9 +31,10 @@ module Admin
 
         # @return [Array<String>]
         def head
-          case
-          when claim? then ['TRN', 'Name', 'Induction period start date', 'Induction programme']
-          when action? then ['TRN', 'Name', 'Induction period end date', 'Number of terms', 'Outcome']
+          if claim?
+            ["TRN", "Name", "Induction period start date", "Induction programme"]
+          elsif action?
+            ["TRN", "Name", "Induction period end date", "Number of terms", "Outcome"]
           else
             raise StandardError, "Unknown #{batch.class}#batch_type for #{id}"
           end
@@ -46,8 +48,8 @@ module Admin
         # @param induction_period [InductionPeriod]
         # @return [String]
         def induction_outcome_tag(induction_period)
-          colours = { release: 'yellow', pass: 'green', fail: 'red' }
-          outcome = induction_period.outcome || 'release'
+          colours = {release: "yellow", pass: "green", fail: "red"}
+          outcome = induction_period.outcome || "release"
           govuk_tag(text: outcome.titleize, colour: colours[outcome.to_sym])
         end
 
@@ -74,9 +76,9 @@ module Admin
         # @return [InductionPeriod::ActiveRecord_Relation]
         def inductions
           InductionPeriod
-              .includes(:teacher, :events)
-              .where(events: { pending_induction_submission_batch_id: id })
-              .order(:trs_last_name)
+            .includes(:teacher, :events)
+            .where(events: {pending_induction_submission_batch_id: id})
+            .order(:trs_last_name)
         end
       end
     end

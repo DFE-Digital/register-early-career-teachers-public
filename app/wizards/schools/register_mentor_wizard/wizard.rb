@@ -30,7 +30,7 @@ module Schools
             review_mentor_details: ReviewMentorDetailsStep,
             review_mentor_eligibility: ReviewMentorEligibilityStep,
             started_on: StartedOnStep,
-            trn_not_found: TRNNotFoundStep,
+            trn_not_found: TRNNotFoundStep
           }
         ]
       end
@@ -75,10 +75,10 @@ module Schools
             return steps + %i[change_email_address cant_use_changed_email cant_use_email] if mentor.cant_use_email?
 
             steps << if mentor.currently_mentor_at_another_school?
-                       :mentoring_at_new_school_only
-                     else
-                       :started_on
-                     end
+              :mentoring_at_new_school_only
+            else
+              :started_on
+            end
 
             steps << :started_on if mentor.mentoring_at_new_school_only == "yes" || mentor.previous_school_closed_mentor_at_school_periods?
             steps << :previous_training_period_details if mentor.eligible_for_funding? || mentor.provider_led_ect?

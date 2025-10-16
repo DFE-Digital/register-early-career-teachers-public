@@ -28,7 +28,7 @@ module Schools
       @mentor_name = ECTAtSchoolPeriods::Mentorship.new(ect_at_school_period).current_mentor_name
     end
 
-  private
+    private
 
     attr_reader :ect_at_school_period
 
@@ -51,7 +51,7 @@ module Schools
     end
 
     def register_new_mentor?
-      mentor_id == '0'
+      mentor_id == "0"
     end
 
     def set_ect

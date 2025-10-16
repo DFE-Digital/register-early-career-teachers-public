@@ -34,39 +34,39 @@ describe MentorshipPeriod do
     it { is_expected.to validate_presence_of(:ect_at_school_period_id) }
     it { is_expected.to validate_presence_of(:mentor_at_school_period_id) }
 
-    describe 'overlapping periods' do
-      let(:started_on_message) { 'Start date cannot overlap another Mentee period' }
-      let(:finished_on_message) { 'End date cannot overlap another Mentee period' }
+    describe "overlapping periods" do
+      let(:started_on_message) { "Start date cannot overlap another Mentee period" }
+      let(:finished_on_message) { "End date cannot overlap another Mentee period" }
 
-      describe '#mentee_distinct_period' do
+      describe "#mentee_distinct_period" do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             let(:mentor) do
               FactoryBot.create(:mentor_at_school_period,
-                                started_on: 5.years.ago,
-                                finished_on: nil)
+                started_on: 5.years.ago,
+                finished_on: nil)
             end
             let(:period) do
               FactoryBot.build(:mentorship_period, mentee:, mentor:,
-                                                   started_on: test.new_period_range.first,
-                                                   finished_on: test.new_period_range.last)
+                started_on: test.new_period_range.first,
+                finished_on: test.new_period_range.last)
             end
             let(:messages) { period.errors.messages }
 
             let(:mentee) do
               FactoryBot.create(:ect_at_school_period,
-                                started_on: 5.years.ago,
-                                finished_on: nil)
+                started_on: 5.years.ago,
+                finished_on: nil)
             end
 
             before do
               FactoryBot.create(:mentorship_period, mentee:, mentor:,
-                                                    started_on: test.existing_period_range.first,
-                                                    finished_on: test.existing_period_range.last)
+                started_on: test.existing_period_range.first,
+                finished_on: test.existing_period_range.last)
               period.valid?
             end
 
-            it "is #{test.expected_valid ? 'valid' : 'invalid'}" do
+            it "is #{test.expected_valid ? "valid" : "invalid"}" do
               if test.expected_valid
                 expect(messages).not_to have_key(:started_on)
                 expect(messages).not_to have_key(:finished_on)
@@ -89,32 +89,32 @@ describe MentorshipPeriod do
       end
     end
 
-    describe 'period containment' do
-      describe '#enveloped_by_ect_at_school_period' do
-        context 'when the ECT at school period contains the mentorship period' do
+    describe "period containment" do
+      describe "#enveloped_by_ect_at_school_period" do
+        context "when the ECT at school period contains the mentorship period" do
           subject! { FactoryBot.create(:mentorship_period, started_on: 3.months.ago, finished_on: 2.months.ago, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
 
           let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 4.months.ago, finished_on: 1.month.ago) }
           let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 4.months.ago, finished_on: 1.month.ago) }
 
-          it 'is valid' do
+          it "is valid" do
             expect(subject).to be_valid
           end
         end
 
-        context 'when the mentorship period extends beyond the teacher and mentor at school periods' do
+        context "when the mentorship period extends beyond the teacher and mentor at school periods" do
           subject { FactoryBot.build(:mentorship_period, started_on: 5.months.ago, finished_on: 1.month.ago, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
 
           let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 4.months.ago, finished_on: 1.month.ago) }
           let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 4.months.ago, finished_on: 1.month.ago) }
 
-          it 'has an appropriate error message about the ECT at school period' do
+          it "has an appropriate error message about the ECT at school period" do
             subject.valid?
 
             expect(subject.errors.messages[:base]).to include("Date range is not contained by the ECT at school period")
           end
 
-          it 'has an appropriate error message about the mentor at school period' do
+          it "has an appropriate error message about the mentor at school period" do
             subject.valid?
 
             expect(subject.errors.messages[:base]).to include("Date range is not contained by the mentor at school period")
@@ -123,44 +123,44 @@ describe MentorshipPeriod do
       end
     end
 
-    describe '#not_self_mentoring' do
-      context 'when mentor and mentee are the same teacher' do
+    describe "#not_self_mentoring" do
+      context "when mentor and mentee are the same teacher" do
         subject { FactoryBot.build(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
 
         let!(:teacher) { ect_at_school_period.teacher }
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
         let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
 
-        it 'add a base error' do
+        it "add a base error" do
           subject.valid?
 
-          expect(subject.errors.messages[:base]).to include('A mentee cannot mentor themself')
+          expect(subject.errors.messages[:base]).to include("A mentee cannot mentor themself")
         end
       end
 
-      context 'when mentor and mentee are different teachers' do
+      context "when mentor and mentee are different teachers" do
         subject { FactoryBot.build(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
 
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
         let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
 
-        it 'do not add an error' do
+        it "do not add an error" do
           subject.valid?
 
-          expect(subject.errors.messages[:base]).not_to include('A mentee cannot mentor themself')
+          expect(subject.errors.messages[:base]).not_to include("A mentee cannot mentor themself")
         end
       end
 
-      context 'when mentor or mentee are not set yet' do
+      context "when mentor or mentee are not set yet" do
         subject { FactoryBot.build(:mentorship_period, mentor: mentor_at_school_period) }
 
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
         let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
 
-        it 'do not add an error' do
+        it "do not add an error" do
           subject.valid?
 
-          expect(subject.errors.messages[:base]).not_to include('A mentee cannot mentor themself')
+          expect(subject.errors.messages[:base]).not_to include("A mentee cannot mentor themself")
         end
       end
     end
@@ -183,13 +183,13 @@ describe MentorshipPeriod do
   describe "#siblings" do
     subject { period_1.siblings }
 
-    let!(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: '2021-01-01') }
-    let!(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: '2021-01-01') }
-    let!(:period_1) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: '2022-01-01', finished_on: '2022-06-01') }
-    let!(:period_2) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: '2022-06-01', finished_on: '2023-01-01') }
+    let!(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01") }
+    let!(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: "2021-01-01") }
+    let!(:period_1) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: "2022-01-01", finished_on: "2022-06-01") }
+    let!(:period_2) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: "2022-06-01", finished_on: "2023-01-01") }
 
-    let!(:unrelated_mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: '2021-01-01') }
-    let!(:unrelated_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: unrelated_mentee, started_on: '2022-06-01', finished_on: '2023-01-01') }
+    let!(:unrelated_mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01") }
+    let!(:unrelated_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: unrelated_mentee, started_on: "2022-06-01", finished_on: "2023-01-01") }
 
     it "only returns records that belong to the same mentee" do
       expect(subject).to include(period_2)

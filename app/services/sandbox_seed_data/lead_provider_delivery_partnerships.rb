@@ -6,7 +6,7 @@ module SandboxSeedData
     COL_WIDTHS = {
       lead_provider_name: 40,
       delivery_partner_name: 40,
-      year: 6,
+      year: 6
     }.freeze
 
     def plant
@@ -26,7 +26,7 @@ module SandboxSeedData
       log_shared_delivery_partner_info
     end
 
-  private
+    private
 
     def log_shared_delivery_partner_info
       log_seed_info("Shared delivery partners", indent: 2, blank_lines_before: 1)
@@ -58,7 +58,7 @@ module SandboxSeedData
     def log_row_info(lead_provider)
       count_by_contract_period_year = LeadProviderDeliveryPartnership
         .joins(active_lead_provider: :lead_provider)
-        .where(active_lead_provider: { lead_provider: })
+        .where(active_lead_provider: {lead_provider:})
         .group("active_lead_provider.contract_period_year")
         .order("active_lead_provider.contract_period_year")
         .count
@@ -74,10 +74,10 @@ module SandboxSeedData
 
     def format_year_count(count)
       coloured_count = if count.positive?
-                         Colourize.text(count, :blue)
-                       else
-                         Colourize.text(0, :red)
-                       end
+        Colourize.text(count, :blue)
+      else
+        Colourize.text(0, :red)
+      end
 
       # The colourizing characters affect the length so offset the rjust.
       offset = coloured_count.length - count.to_s.length

@@ -5,12 +5,12 @@ module Admin
 
       def initialize(delivery_partner:, proposed_name:, author:)
         @delivery_partner = delivery_partner
-        @proposed_name    = proposed_name
-        @author           = author
+        @proposed_name = proposed_name
+        @author = author
       end
 
       def rename!
-        current  = delivery_partner.name
+        current = delivery_partner.name
         proposed = proposed_name.squish
         return delivery_partner if current.casecmp?(proposed)
 

@@ -3,7 +3,7 @@ module Schools
     class ProgrammeChoicesStep < Step
       attr_accessor :use_same_programme_choices
 
-      validates :use_same_programme_choices, inclusion: { in: %w[yes no], message: "Select 'Yes' or 'No' to confirm whether to use the programme choices used by your school previously" }
+      validates :use_same_programme_choices, inclusion: {in: %w[yes no], message: "Select 'Yes' or 'No' to confirm whether to use the programme choices used by your school previously"}
 
       def self.permitted_params
         %i[use_same_programme_choices]
@@ -21,7 +21,7 @@ module Schools
         :previous_training_period_details
       end
 
-    private
+      private
 
       def persist
         mentor.update!(use_same_programme_choices:, lead_provider_id:)

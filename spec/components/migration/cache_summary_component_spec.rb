@@ -1,8 +1,8 @@
 RSpec.describe Migration::CacheSummaryComponent, type: :component do
   let(:combined_stats) do
     {
-      cache_hits: { schools: 90, teachers: 10 },
-      cache_misses: { schools: 10, teachers: 0 }
+      cache_hits: {schools: 90, teachers: 10},
+      cache_misses: {schools: 10, teachers: 0}
     }
   end
 

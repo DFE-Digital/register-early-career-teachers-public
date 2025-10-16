@@ -1,6 +1,6 @@
 describe API::DeliveryPartnerSerializer, :with_metadata, type: :serializer do
   subject(:response) do
-    options = { lead_provider_id: lead_provider.id }
+    options = {lead_provider_id: lead_provider.id}
     JSON.parse(described_class.render(delivery_partner, **options))
   end
 

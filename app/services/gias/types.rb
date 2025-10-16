@@ -41,7 +41,7 @@ module GIAS
       "University technical college",
       "Voluntary aided school",
       "Voluntary controlled school",
-      "Welsh establishment",
+      "Welsh establishment"
     ].freeze
 
     CIP_ONLY_TYPES = [
@@ -84,7 +84,7 @@ module GIAS
       "British schools overseas",
       "Offshore schools",
       "Service children's education",
-      "Welsh establishment",
+      "Welsh establishment"
     ].freeze
 
     IN_ENGLAND_TYPES = (ALL_TYPES - NOT_IN_ENGLAND_TYPES).freeze

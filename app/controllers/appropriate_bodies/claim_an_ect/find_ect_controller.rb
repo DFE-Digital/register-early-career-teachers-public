@@ -1,7 +1,7 @@
 module AppropriateBodies
   module ClaimAnECT
     class FindECTController < AppropriateBodiesController
-      layout 'full'
+      layout "full"
 
       def new
         @pending_induction_submission = PendingInductionSubmission.new
@@ -33,14 +33,14 @@ module AppropriateBodies
         redirect_to ab_teacher_path(teacher), notice: "Teacher #{full_name} already has an ongoing induction period with this appropriate body"
       end
 
-    private
+      private
 
       def pending_induction_submission_params
         params.expect(pending_induction_submission: %i[trn date_of_birth])
       end
 
       def pending_induction_submission_attributes
-        { appropriate_body_id: @appropriate_body.id }
+        {appropriate_body_id: @appropriate_body.id}
       end
 
       def find_ect

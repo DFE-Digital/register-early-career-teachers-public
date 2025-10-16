@@ -11,7 +11,7 @@ module Admin
       @q = q
     end
 
-  private
+    private
 
     def form_url
       helpers.admin_delivery_partner_delivery_partnership_path(delivery_partner, year)

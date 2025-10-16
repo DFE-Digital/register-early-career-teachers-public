@@ -4,10 +4,10 @@
 # - induction periods that are ongoing (finished_on is null)
 
 teachers = Teacher.left_joins(:induction_periods)
-                  .where(trs_induction_status: 'RequiredToComplete')
-                  .where.not(induction_periods: { started_on: nil })
-                  .where(induction_periods: { finished_on: nil })
-                  .includes(:induction_periods)
+  .where(trs_induction_status: "RequiredToComplete")
+  .where.not(induction_periods: {started_on: nil})
+  .where(induction_periods: {finished_on: nil})
+  .includes(:induction_periods)
 
 Rails.logger.debug "Found #{teachers.count} teachers matching criteria"
 

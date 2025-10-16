@@ -4,10 +4,10 @@ module Schools
       attribute :use_previous_ect_choices, :boolean
 
       validates :use_previous_ect_choices,
-                inclusion: {
-                  in: [true, false],
-                  message: "Select 'Yes' or 'No' to confirm whether to use the programme choices used by your school previously"
-                }
+        inclusion: {
+          in: [true, false],
+          message: "Select 'Yes' or 'No' to confirm whether to use the programme choices used by your school previously"
+        }
 
       def self.permitted_params
         %i[use_previous_ect_choices]
@@ -24,7 +24,7 @@ module Schools
         :working_pattern
       end
 
-    private
+      private
 
       def choices = use_previous_ect_choices ? school.last_programme_choices : {}
 

@@ -24,7 +24,7 @@ module API
           status_code:,
           user_description: user_description(lead_provider),
           lead_provider:,
-          created_at:,
+          created_at:
         }
 
         event = DfE::Analytics::Event.new
@@ -57,7 +57,7 @@ module API
         DfE::Analytics::SendEvents.do([rate_limit_event.as_json])
       end
 
-    private
+      private
 
       def response_hash(response_body, status)
         return {} unless status > 299
@@ -65,7 +65,7 @@ module API
 
         JSON.parse(response_body)
       rescue JSON::ParserError
-        { body: "#{status} did not respond with JSON" }
+        {body: "#{status} did not respond with JSON"}
       end
 
       def request_body(request_data)
@@ -75,7 +75,7 @@ module API
           request_data[:params]
         end
       rescue JSON::ParserError
-        { error: "request data did not contain valid JSON" }
+        {error: "request data did not contain valid JSON"}
       end
 
       def fetch_user(session)

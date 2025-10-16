@@ -16,7 +16,7 @@ class Events::AppropriateBodyBatchAuthor
       author_name: name,
       appropriate_body_id:,
       author_type: :appropriate_body_user,
-      pending_induction_submission_batch_id: batch_id,
+      pending_induction_submission_batch_id: batch_id
     }
   end
 end

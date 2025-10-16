@@ -7,18 +7,18 @@ namespace :extensions do
 
     # teacher_id      appropriate_body_id   induction_extension_id
     data = [
-      [28_670, 	      388, 	                1160],
-      [23_641, 	      469, 	                1169],
-      [23_789, 	      386, 	                1161],
-      [28_396, 	      62,                   1170],
-      [12_789, 	      390, 	                1162],
-      [18_534, 	      288, 	                1171],
-      [32_529, 	      347, 	                1163],
-      [68_234, 	      326, 	                1164],
-      [29_393, 	      396, 	                1165],
-      [24_108, 	      330, 	                1166],
-      [35_991, 	      330, 	                1167],
-      [70_688, 	      416, 	                1168],
+      [28_670, 388, 1160],
+      [23_641, 469, 1169],
+      [23_789, 386, 1161],
+      [28_396, 62, 1170],
+      [12_789, 390, 1162],
+      [18_534, 288, 1171],
+      [32_529, 347, 1163],
+      [68_234, 326, 1164],
+      [29_393, 396, 1165],
+      [24_108, 330, 1166],
+      [35_991, 330, 1167],
+      [70_688, 416, 1168]
     ]
 
     data.map do |teacher_id, appropriate_body_id, induction_extension_id|
@@ -34,7 +34,7 @@ namespace :extensions do
         teacher:,
         induction_extension:,
         modifications: [
-          { 'number_of_terms' => [0.0, induction_extension.number_of_terms] }
+          {"number_of_terms" => [0.0, induction_extension.number_of_terms]}
         ],
         happened_at: induction_extension.created_at
       )

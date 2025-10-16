@@ -5,6 +5,7 @@ RSpec.describe ImmutableOnceSetValidator, type: :model do
   let(:test_class) do
     Class.new do
       include ActiveModel::Model
+
       attr_accessor :attribute, :attribute_was
 
       validates :attribute, immutable_once_set: true

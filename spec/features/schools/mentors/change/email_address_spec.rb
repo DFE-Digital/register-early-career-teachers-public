@@ -21,7 +21,7 @@ describe "School user can change mentor's email address", :enable_schools_interf
     then_i_see_the_confirmation_message
   end
 
-private
+  private
 
   def given_there_is_a_school
     @school = FactoryBot.create(:school)

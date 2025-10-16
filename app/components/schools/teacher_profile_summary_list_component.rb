@@ -7,7 +7,7 @@ module Schools
       @ect = ect
     end
 
-  private
+    private
 
     def ect_status_tag
       induction_status = @ect.teacher.trs_induction_status

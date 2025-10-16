@@ -12,7 +12,7 @@ module Schools
         error.nil?
       end
 
-    private
+      private
 
       attr_reader :name
 

@@ -26,7 +26,7 @@ module Sessions
         {
           author_email: email,
           author_name: name,
-          author_type: USER_TYPE,
+          author_type: USER_TYPE
         }
       end
 
@@ -43,7 +43,7 @@ module Sessions
         }
       end
 
-    private
+      private
 
       def appropriate_body_from(appropriate_body_id)
         ::AppropriateBody.find_by_id(appropriate_body_id).tap do |appropriate_body|

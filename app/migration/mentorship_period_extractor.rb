@@ -11,7 +11,7 @@ class MentorshipPeriodExtractor
     mentorship_periods.each(&block)
   end
 
-private
+  private
 
   def mentorship_periods
     @mentorship_periods ||= build_mentorship_periods
@@ -34,10 +34,10 @@ private
         mentor_teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor_id)
 
         current_period = Migration::MentorshipPeriodData.new(mentor_teacher:,
-                                                             start_date: induction_record.start_date,
-                                                             end_date: induction_record.end_date,
-                                                             start_source_id: induction_record.id,
-                                                             end_source_id: induction_record.id)
+          start_date: induction_record.start_date,
+          end_date: induction_record.end_date,
+          start_source_id: induction_record.id,
+          end_source_id: induction_record.id)
         periods << current_period
       else
         current_period.end_date = induction_record.end_date

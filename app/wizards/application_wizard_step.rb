@@ -9,7 +9,7 @@ class ApplicationWizardStep < DfE::Wizard::Step
     pre_populate_attributes unless any_permitted_param?(args)
   end
 
-private
+  private
 
   def any_permitted_param?(args)
     args.keys.map(&:to_sym).intersect?(self.class.permitted_params)

@@ -56,7 +56,7 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
       end
 
       context "dfe_analytics is enabled" do
-        before { stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true") }
+        before { stub_const("ENV", "DFE_ANALYTICS_ENABLED" => "true") }
 
         it { expect { perform_request }.to have_sent_analytics_event_types(:web_request) }
 
@@ -68,7 +68,7 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
           expected_values = {
             "event_type" => "web_request",
             "response_status" => 429,
-            "request_path" => path,
+            "request_path" => path
           }
 
           if path.starts_with?("/api/v3/")

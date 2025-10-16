@@ -12,7 +12,7 @@ module Schools
           lead_provider&.name
         end
 
-      private
+        private
 
         def lead_provider
           training_period.lead_provider.presence ||

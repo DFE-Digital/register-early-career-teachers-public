@@ -72,18 +72,18 @@ FactoryBot.define do
         active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider: selected_lead_provider, contract_period: selected_contract_period)
 
         lpdp = FactoryBot.create(:lead_provider_delivery_partnership,
-                                 active_lead_provider:,
-                                 delivery_partner: selected_delivery_partner)
+          active_lead_provider:,
+          delivery_partner: selected_delivery_partner)
 
         partnership = FactoryBot.create(:school_partnership,
-                                        school: ect.school,
-                                        lead_provider_delivery_partnership: lpdp)
+          school: ect.school,
+          lead_provider_delivery_partnership: lpdp)
 
         FactoryBot.create(:training_period,
-                          ect_at_school_period: ect,
-                          school_partnership: partnership,
-                          started_on: ect.started_on,
-                          finished_on: ect.finished_on)
+          ect_at_school_period: ect,
+          school_partnership: partnership,
+          started_on: ect.started_on,
+          finished_on: ect.finished_on)
       end
     end
 

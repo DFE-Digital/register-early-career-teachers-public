@@ -64,10 +64,10 @@ class API::TeacherSerializer < Blueprinter::Base
       end
       field(:created_at) do |(training_period, teacher, _)|
         earliest_school_period = if training_period.for_ect?
-                                   teacher.earliest_ect_at_school_period
-                                 else
-                                   teacher.earliest_mentor_at_school_period
-                                 end
+          teacher.earliest_ect_at_school_period
+        else
+          teacher.earliest_mentor_at_school_period
+        end
 
         earliest_school_period.created_at.utc.rfc3339
       end

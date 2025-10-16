@@ -37,7 +37,7 @@ module Migration
     def build_matched_attrs
       attrs = {
         started_on: training_period.ecf_start_induction_record_id,
-        provider: training_period.ecf_start_induction_record_id,
+        provider: training_period.ecf_start_induction_record_id
       }
       if school_period.ecf_end_induction_record_id.present?
         attrs[:finished_on] = training_period.ecf_end_induction_record_id

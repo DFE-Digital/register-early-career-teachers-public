@@ -28,7 +28,7 @@ RSpec.shared_examples "client performs requests" do
     expect(requests.map(&:headers)).to all include({
       "Content-Type" => "application/json",
       "Accept" => "application/json",
-      "Authorization" => "Bearer #{token}",
+      "Authorization" => "Bearer #{token}"
     })
   end
 
@@ -43,7 +43,7 @@ RSpec.shared_examples "client performs requests" do
         rect_time_ms: be >= 0,
         ecf_request_uri: CGI.unescape(ecf_requests.first.uri.request_uri),
         rect_request_uri: CGI.unescape(rect_requests.first.uri.request_uri),
-        request_body: (rect_requests + ecf_requests).sample.body,
+        request_body: (rect_requests + ecf_requests).sample.body
       })
     end
   end

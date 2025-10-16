@@ -24,7 +24,7 @@ module Admin
       end
     end
 
-  private
+    private
 
     def record_teacher_induction_status_reset_event!
       Events::Record.record_teacher_induction_status_reset_event!(

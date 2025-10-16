@@ -13,7 +13,7 @@ RSpec.describe "Run parity check" do
       enabled: true,
       ecf_url:,
       rect_url:,
-      tokens: { lead_provider.ecf_id => "test-token" }.to_json
+      tokens: {lead_provider.ecf_id => "test-token"}.to_json
     })
   end
 

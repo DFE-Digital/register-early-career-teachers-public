@@ -1,7 +1,7 @@
 RSpec.describe SandboxSeedData::TeacherHistories do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
-  let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
+  let(:logger) { instance_double(Logger, :info => nil, "formatter=" => nil, "level=" => nil) }
   let!(:teachers) { FactoryBot.create_list(:teacher, 1) }
   let!(:school_partnerships) { FactoryBot.create_list(:school_partnership, 2) }
   let!(:appropriate_bodies) { FactoryBot.create_list(:appropriate_body, 2) }

@@ -9,11 +9,11 @@ RSpec.describe AppropriateBodies::RecordFail do
     )
   end
 
-  include_context 'test trs api client'
+  include_context "test trs api client"
 
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
   end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -21,18 +21,18 @@ RSpec.describe AppropriateBodies::RecordFail do
 
   let(:pending_induction_submission) do
     FactoryBot.create(:pending_induction_submission,
-                      trn: teacher.trn,
-                      finished_on: 1.day.ago.to_date,
-                      number_of_terms: 6)
+      trn: teacher.trn,
+      finished_on: 1.day.ago.to_date,
+      number_of_terms: 6)
   end
 
   describe "#fail!" do
     context "with an ongoing induction period" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing,
-                          appropriate_body:,
-                          teacher:,
-                          started_on: '2024-1-1')
+          appropriate_body:,
+          teacher:,
+          started_on: "2024-1-1")
       end
 
       it "updates the induction period with fail outcome" do
@@ -45,7 +45,7 @@ RSpec.describe AppropriateBodies::RecordFail do
         )
       end
 
-      it 'sets the pending_induction_submission delete_at timestamp to 24h in the future' do
+      it "sets the pending_induction_submission delete_at timestamp to 24h in the future" do
         freeze_time do
           service.fail!
           pending_induction_submission.reload
@@ -81,7 +81,7 @@ RSpec.describe AppropriateBodies::RecordFail do
       end
 
       context "when the author is a DfE user" do
-        let(:dfe_user) { FactoryBot.create(:user, email: 'dfe_user@education.gov.uk') }
+        let(:dfe_user) { FactoryBot.create(:user, email: "dfe_user@education.gov.uk") }
         let(:author) do
           Sessions::Users::DfEUser.new(
             email: dfe_user.email
@@ -120,18 +120,18 @@ RSpec.describe AppropriateBodies::RecordFail do
     context "when ongoing induction period only has a mappable legacy programme type" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
-                          appropriate_body:,
-                          teacher:,
-                          started_on: '2024-1-1')
+          appropriate_body:,
+          teacher:,
+          started_on: "2024-1-1")
       end
 
       it "maps the new programme type" do
         service.fail!
 
         expect(induction_period.reload).to have_attributes(
-          induction_programme: 'fip',
-          training_programme: 'provider_led',
-          outcome: 'fail'
+          induction_programme: "fip",
+          training_programme: "provider_led",
+          outcome: "fail"
         )
       end
     end
@@ -139,18 +139,18 @@ RSpec.describe AppropriateBodies::RecordFail do
     context "when ongoing induction period only has an unmappable legacy programme type" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing, :pre_2021, :legacy_programme_type,
-                          appropriate_body:,
-                          teacher:,
-                          started_on: '2024-1-1')
+          appropriate_body:,
+          teacher:,
+          started_on: "2024-1-1")
       end
 
       it "leaves the new programme type blank" do
         service.fail!
 
         expect(induction_period.reload).to have_attributes(
-          induction_programme: 'pre_september_2021',
+          induction_programme: "pre_september_2021",
           training_programme: nil,
-          outcome: 'fail'
+          outcome: "fail"
         )
       end
     end

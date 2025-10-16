@@ -5,7 +5,7 @@ STATEMENTS_RESPONSE = {
   properties: {
     data: {
       type: :array,
-      items: { "$ref": "#/components/schemas/Statement" },
-    },
-  },
+      items: {"$ref": "#/components/schemas/Statement"}
+    }
+  }
 }.freeze

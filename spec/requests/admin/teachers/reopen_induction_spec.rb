@@ -71,7 +71,7 @@ describe "Admin::Teachers::ReopenInductionController" do
 
   describe "PATCH update" do
     let(:params) do
-      { admin_reopen_induction_period: { zendesk_ticket_id:, note: } }
+      {admin_reopen_induction_period: {zendesk_ticket_id:, note:}}
     end
     let(:zendesk_ticket_id) { "1234" }
     let(:note) { "A test note" }

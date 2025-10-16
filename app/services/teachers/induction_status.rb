@@ -2,7 +2,7 @@ class Teachers::InductionStatus
   attr_reader :teacher, :induction_periods, :trs_induction_status
 
   Status = Data.define(:name, :colour) do
-    def to_h = { text: name, colour: }
+    def to_h = {text: name, colour:}
   end
 
   def initialize(teacher:, induction_periods:, trs_induction_status:)
@@ -19,25 +19,25 @@ class Teachers::InductionStatus
     trs_induction_status.in?(TRS::Teacher::INELIGIBLE_INDUCTION_STATUSES)
   end
 
-private
+  private
 
   def determine_status
     case induction_info
-    in { trs_induction_status: 'RequiredToComplete' }
+    in {trs_induction_status: "RequiredToComplete"}
       required_to_complete
-    in { trs_induction_status: 'Exempt' }
+    in {trs_induction_status: "Exempt"}
       exempt
-    in { trs_induction_status: 'InProgress', has_an_open_induction_period: true }
+    in {trs_induction_status: "InProgress", has_an_open_induction_period: true}
       in_progress
-    in { trs_induction_status: 'InProgress' }
+    in {trs_induction_status: "InProgress"}
       paused
-    in { trs_induction_status: 'Failed' }
+    in {trs_induction_status: "Failed"}
       failed
-    in { trs_induction_status: 'Passed' }
+    in {trs_induction_status: "Passed"}
       passed
-    in { trs_induction_status: 'FailedInWales' }
+    in {trs_induction_status: "FailedInWales"}
       failed_in_wales
-    in { trs_induction_status: 'None' }
+    in {trs_induction_status: "None"}
       none
     else
       unknown
@@ -45,20 +45,20 @@ private
   end
 
   def induction_info
-    { trs_induction_status:, has_an_open_induction_period: }
+    {trs_induction_status:, has_an_open_induction_period:}
   end
 
   def has_an_open_induction_period
     induction_periods&.any?(&:ongoing?)
   end
 
-  def exempt = Status.new(name: 'Exempt', colour: 'green')
-  def failed = Status.new(name: 'Failed', colour: 'red')
-  def failed_in_wales = Status.new(name: 'Failed in Wales', colour: 'red')
-  def in_progress = Status.new(name: 'In progress', colour: 'blue')
-  def none = Status.new(name: 'None', colour: 'grey')
-  def passed = Status.new(name: 'Passed', colour: 'green')
-  def paused = Status.new(name: 'Induction paused', colour: 'pink')
-  def required_to_complete = Status.new(name: 'Required to complete', colour: 'yellow')
-  def unknown = Status.new(name: 'Unknown', colour: 'grey')
+  def exempt = Status.new(name: "Exempt", colour: "green")
+  def failed = Status.new(name: "Failed", colour: "red")
+  def failed_in_wales = Status.new(name: "Failed in Wales", colour: "red")
+  def in_progress = Status.new(name: "In progress", colour: "blue")
+  def none = Status.new(name: "None", colour: "grey")
+  def passed = Status.new(name: "Passed", colour: "green")
+  def paused = Status.new(name: "Induction paused", colour: "pink")
+  def required_to_complete = Status.new(name: "Required to complete", colour: "yellow")
+  def unknown = Status.new(name: "Unknown", colour: "grey")
 end

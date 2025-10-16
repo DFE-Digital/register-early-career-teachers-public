@@ -9,15 +9,15 @@ module Admin
     end
 
     def status_tag_kwargs
-      colour = { 'open' => 'blue', 'payable' => 'yellow', 'paid' => 'green' }.fetch(statement.status)
+      colour = {"open" => "blue", "payable" => "yellow", "paid" => "green"}.fetch(statement.status)
 
       text = if statement.output_fee? && statement.paid?
-               "Authorised for payment"
-             else
-               statement.status.capitalize
-             end
+        "Authorised for payment"
+      else
+        statement.status.capitalize
+      end
 
-      { text:, colour: }
+      {text:, colour:}
     end
 
     def page_title
@@ -42,7 +42,7 @@ module Admin
       statement.payment_date.to_fs(:govuk)
     end
 
-  private
+    private
 
     def statement
       __getobj__

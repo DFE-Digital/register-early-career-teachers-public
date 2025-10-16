@@ -22,7 +22,7 @@ module API
           lead_provider_id: current_lead_provider.id,
           contract_period_year: create_partnership_params[:cohort],
           school_api_id: create_partnership_params[:school_id],
-          delivery_partner_api_id: create_partnership_params[:delivery_partner_id],
+          delivery_partner_api_id: create_partnership_params[:delivery_partner_id]
         })
 
         respond_with_service(service:, action: :create)
@@ -33,29 +33,29 @@ module API
 
         service = API::SchoolPartnerships::Update.new({
           school_partnership_id: school_partnership.id,
-          delivery_partner_api_id: update_partnership_params[:delivery_partner_id],
+          delivery_partner_api_id: update_partnership_params[:delivery_partner_id]
         })
 
         respond_with_service(service:, action: :update)
       end
 
-    private
+      private
 
       def create_partnership_params
-        params.require(:data).expect({ attributes: %i[cohort school_id delivery_partner_id] })
+        params.require(:data).expect({attributes: %i[cohort school_id delivery_partner_id]})
       end
 
       def update_partnership_params
-        params.require(:data).expect({ attributes: %i[delivery_partner_id] })
+        params.require(:data).expect({attributes: %i[delivery_partner_id]})
       end
 
       def partnerships_query(conditions: {})
-        API::SchoolPartnerships::Query.new(**(default_query_conditions.merge(conditions)).compact)
+        API::SchoolPartnerships::Query.new(**default_query_conditions.merge(conditions).compact)
       end
 
       def default_query_conditions
         @default_query_conditions ||= {
-          lead_provider_id: current_lead_provider.id,
+          lead_provider_id: current_lead_provider.id
         }
       end
 
@@ -68,7 +68,7 @@ module API
       end
 
       def sort
-        sort_order(sort: partnerships_params[:sort], model: SchoolPartnership, default: { created_at: :asc })
+        sort_order(sort: partnerships_params[:sort], model: SchoolPartnership, default: {created_at: :asc})
       end
 
       def delivery_partner_api_ids

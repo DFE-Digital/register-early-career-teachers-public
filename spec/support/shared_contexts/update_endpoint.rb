@@ -18,7 +18,7 @@ RSpec.shared_examples "an API update endpoint" do
   end
 
   it "returns a 422 response if the service has errors" do
-    errors = instance_double(ActiveModel::Errors, messages: { attr: %w[message] })
+    errors = instance_double(ActiveModel::Errors, messages: {attr: %w[message]})
     service_double = instance_double(service, valid?: false, errors:)
     allow(service).to receive(:new).and_return(service_double)
 
@@ -26,15 +26,15 @@ RSpec.shared_examples "an API update endpoint" do
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq({ errors: [{ title: "attr", detail: "message" }] }.to_json)
+    expect(response.body).to eq({errors: [{title: "attr", detail: "message"}]}.to_json)
   end
 
   it "returns a 400 response if the request body is malformed" do
-    authenticated_api_put(path, params: { not_a_valid: :body })
+    authenticated_api_put(path, params: {not_a_valid: :body})
 
     expect(response).to have_http_status(:bad_request)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq({ errors: [{ title: "Bad request", detail: "Correct json data structure required. See API docs for reference." }] }.to_json)
+    expect(response.body).to eq({errors: [{title: "Bad request", detail: "Correct json data structure required. See API docs for reference."}]}.to_json)
   end
 
   it "returns a 404 response if the resource does not belong to the lead provider" do
@@ -44,6 +44,6 @@ RSpec.shared_examples "an API update endpoint" do
 
     expect(response).to have_http_status(:not_found)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq({ errors: [{ title: "Resource not found", detail: "Nothing could be found for the provided details" }] }.to_json)
+    expect(response.body).to eq({errors: [{title: "Resource not found", detail: "Nothing could be found for the provided details"}]}.to_json)
   end
 end

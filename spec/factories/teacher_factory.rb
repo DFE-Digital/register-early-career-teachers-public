@@ -10,7 +10,7 @@ FactoryBot.define do
     end
 
     trait :with_corrected_name do
-      corrected_name { [trs_first_name, Faker::Name.middle_name, trs_last_name].join(' ') }
+      corrected_name { [trs_first_name, Faker::Name.middle_name, trs_last_name].join(" ") }
     end
 
     trait :with_sparsity_uplift do
@@ -32,7 +32,7 @@ FactoryBot.define do
 
     trait :early_roll_out_mentor do
       mentor_became_ineligible_for_funding_on { Date.new(2021, 4, 19) }
-      mentor_became_ineligible_for_funding_reason { 'completed_during_early_roll_out' }
+      mentor_became_ineligible_for_funding_reason { "completed_during_early_roll_out" }
     end
 
     trait :ineligible_for_mentor_funding do

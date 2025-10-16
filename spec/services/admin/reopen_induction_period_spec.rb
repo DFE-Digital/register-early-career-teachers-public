@@ -3,7 +3,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
     described_class.new(author:, induction_period:, note:, zendesk_ticket_id:)
   end
 
-  let(:admin) { FactoryBot.create(:user, email: 'admin-user@education.gov.uk') }
+  let(:admin) { FactoryBot.create(:user, email: "admin-user@education.gov.uk") }
 
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
   let(:note) { "Original outcome recorded in error" }

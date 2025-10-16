@@ -3,10 +3,10 @@ module API
     class SidebarComponent < ApplicationComponent
       GUIDANCE_PREFIX = "guidance-for-lead-providers"
       GUIDANCE_PAGES = [
-        { title: "API IDs explained", path: "api-ids-explained" },
-        { title: "API data states", path: "api-data-states" },
-        { title: "Create, view and update partnerships", path: "create-view-and-update-partnerships" },
-        { title: "Syncing data best practice", path: "data-syncing" },
+        {title: "API IDs explained", path: "api-ids-explained"},
+        {title: "API data states", path: "api-data-states"},
+        {title: "Create, view and update partnerships", path: "create-view-and-update-partnerships"},
+        {title: "Syncing data best practice", path: "data-syncing"}
       ].freeze
 
       attr_reader :current_path, :page

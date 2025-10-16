@@ -12,8 +12,8 @@ module ECTAtSchoolPeriods
 
     def latest_mentorship_period
       @latest_mentorship_period ||= ect_at_school_period.mentorship_periods
-                                                        .latest_first
-                                                        .first
+        .latest_first
+        .first
     end
 
     # current_mentor

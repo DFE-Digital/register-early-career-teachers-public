@@ -1,11 +1,11 @@
 RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :component do
   include TeacherHelper
 
-  let(:school)            { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school) }
   let(:mentor_start_date) { Date.new(2023, 1, 1) }
 
   let(:teacher) { FactoryBot.create(:teacher, mentor_became_ineligible_for_funding_on: nil, mentor_became_ineligible_for_funding_reason: nil) }
-  let(:mentor)  { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: mentor_start_date, finished_on: nil) }
+  let(:mentor) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: mentor_start_date, finished_on: nil) }
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Hidden leaf village") }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }

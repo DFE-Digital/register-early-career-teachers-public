@@ -34,7 +34,7 @@ module Migrators
                                    ::Migration::School.includes(:local_authority).eligible_or_cip_only_except_welsh.distinct,
                                    ::Migration::School.not_open.with_induction_records.distinct
                                  ])
-                         .from("eligible_or_cip_or_with_irs AS schools")
+        .from("eligible_or_cip_or_with_irs AS schools")
     end
 
     def migrate!
@@ -45,13 +45,13 @@ module Migrators
         if check_gias_school(gias_school:, ecf_school:)
           [
             compare_fields(gias_school:, ecf_school:),
-            update_school!(school: gias_school.school, ecf_school:),
+            update_school!(school: gias_school.school, ecf_school:)
           ].all?
         end
       end
     end
 
-  private
+    private
 
     def check_gias_school(gias_school:, ecf_school:)
       return true if gias_school

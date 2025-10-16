@@ -13,7 +13,7 @@ module API
           "contract-closure" => "orange",
           "removed-field" => "pink",
           "production-release" => "purple",
-          "sandbox-release" => "grey",
+          "sandbox-release" => "grey"
         }.freeze
 
         attr_accessor :tags
@@ -28,7 +28,7 @@ module API
           render_tags
         end
 
-      private
+        private
 
         def render?
           tags.present?

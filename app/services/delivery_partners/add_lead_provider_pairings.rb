@@ -20,7 +20,7 @@ module DeliveryPartners
       false
     end
 
-  private
+    private
 
     def current_partnerships
       @current_partnerships ||= delivery_partner

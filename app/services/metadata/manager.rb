@@ -18,7 +18,7 @@ module Metadata
       end
     end
 
-  private
+    private
 
     def resolve_handler(object)
       Resolver.resolve_handler(object)

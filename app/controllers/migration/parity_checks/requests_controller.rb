@@ -10,7 +10,7 @@ module Migration::ParityChecks
       @breadcrumbs = {
         "Run a parity check" => new_migration_parity_check_path,
         "Completed parity checks" => completed_migration_parity_checks_path,
-        "Parity check run ##{@request.run_id}" => migration_parity_check_path(@request.run),
+        "Parity check run ##{@request.run_id}" => migration_parity_check_path(@request.run)
       }
     end
   end

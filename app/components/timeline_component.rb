@@ -26,7 +26,7 @@ class TimelineComponent < ApplicationComponent
       end
     end
 
-  private
+    private
 
     def header
       tag.div(class: "app-timeline__header") do
@@ -54,12 +54,12 @@ class TimelineComponent < ApplicationComponent
       return if event.body.blank? && event.zendesk_ticket_id.blank?
 
       zendesk_url = if event.zendesk_ticket_id.present?
-                      govuk_link_to(
-                        "Zendesk ticket",
-                        zendesk_url(event.zendesk_ticket_id),
-                        new_tab: true
-                      )
-                    end
+        govuk_link_to(
+          "Zendesk ticket",
+          zendesk_url(event.zendesk_ticket_id),
+          new_tab: true
+        )
+      end
 
       tag.p do
         safe_join([event.body, tag.br, zendesk_url].compact)
@@ -75,7 +75,7 @@ class TimelineComponent < ApplicationComponent
 
       safe_join(
         [
-          tag.h3('Changes', class: 'govuk-heading-s'),
+          tag.h3("Changes", class: "govuk-heading-s"),
           govuk_list(event.modifications)
         ]
       )

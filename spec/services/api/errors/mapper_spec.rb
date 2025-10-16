@@ -6,7 +6,7 @@ RSpec.describe API::Errors::Mapper do
   describe "#map_error" do
     subject(:map_error) { instance.map_error(**error) }
 
-    let(:error) { { title: "a title with a rect_term", detail: "a message with a rect_term" } }
+    let(:error) { {title: "a title with a rect_term", detail: "a message with a rect_term"} }
 
     it "maps error keys using the YAML mappings" do
       result = map_error
@@ -16,7 +16,7 @@ RSpec.describe API::Errors::Mapper do
     end
 
     context "when there are multiple occurrences of mappable terms" do
-      let(:error) { { title: "rect_term and rect_term", detail: "rect_term or rect_term" } }
+      let(:error) { {title: "rect_term and rect_term", detail: "rect_term or rect_term"} }
 
       it "replaces all occurrences" do
         result = map_error

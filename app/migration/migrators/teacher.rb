@@ -45,7 +45,7 @@ module Migrators
       teacher
     end
 
-  private
+    private
 
     def name_does_not_match?(teacher, full_name)
       [teacher.trs_first_name, teacher.trs_last_name].join(" ") != full_name

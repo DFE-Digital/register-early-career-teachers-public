@@ -6,9 +6,9 @@ RSpec.describe "Admin amending number of terms of an induction period" do
 
   let!(:induction_period) do
     FactoryBot.create(:induction_period, :ongoing,
-                      teacher:,
-                      appropriate_body:,
-                      started_on: Date.new(2024, 1, 1))
+      teacher:,
+      appropriate_body:,
+      started_on: Date.new(2024, 1, 1))
   end
 
   before do
@@ -16,7 +16,7 @@ RSpec.describe "Admin amending number of terms of an induction period" do
     page.goto(admin_teacher_path(teacher))
   end
 
-  scenario 'Happy path - updating number of terms' do
+  scenario "Happy path - updating number of terms" do
     given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
@@ -32,7 +32,7 @@ RSpec.describe "Admin amending number of terms of an induction period" do
     )
   end
 
-  scenario 'Validation - cannot enter invalid number of terms' do
+  scenario "Validation - cannot enter invalid number of terms" do
     given_i_am_on_the_teacher_page
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
@@ -41,10 +41,10 @@ RSpec.describe "Admin amending number of terms of an induction period" do
     then_i_should_see_validation_errors
   end
 
-  scenario 'Can edit number of terms when period has outcome' do
+  scenario "Can edit number of terms when period has outcome" do
     # Set up induction period with an outcome and required number_of_terms
     induction_period.update!(
-      outcome: 'pass',
+      outcome: "pass",
       finished_on: 1.month.ago,
       number_of_terms: 3
     )
@@ -60,9 +60,9 @@ RSpec.describe "Admin amending number of terms of an induction period" do
     and_an_event_should_have_been_recorded("Number of terms changed from '3.0' to '5.0'")
   end
 
-  scenario 'Only number of terms field is shown when period has outcome' do
+  scenario "Only number of terms field is shown when period has outcome" do
     induction_period.update!(
-      outcome: 'pass',
+      outcome: "pass",
       finished_on: 1.month.ago,
       number_of_terms: 3 # Add initial number of terms
     )
@@ -74,8 +74,8 @@ RSpec.describe "Admin amending number of terms of an induction period" do
     then_i_should_see_only_number_of_terms_field
   end
 
-  scenario 'Can edit induction period with outcome' do
-    induction_period.update!(outcome: 'pass')
+  scenario "Can edit induction period with outcome" do
+    induction_period.update!(outcome: "pass")
 
     given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
@@ -83,22 +83,22 @@ RSpec.describe "Admin amending number of terms of an induction period" do
     then_i_should_be_on_the_edit_induction_period_page
   end
 
-private
+  private
 
   def given_i_am_on_the_teacher_page
     expect(page).to have_path("/admin/teachers/#{teacher.id}")
   end
 
   def then_i_should_see_the_edit_link
-    expect(page.locator('.govuk-summary-card').get_by_role('link', name: 'Edit')).to be_visible
+    expect(page.locator(".govuk-summary-card").get_by_role("link", name: "Edit")).to be_visible
   end
 
   def then_i_should_not_see_the_edit_link
-    expect(page.locator('.govuk-summary-card').get_by_role('link', name: 'Edit')).not_to be_visible
+    expect(page.locator(".govuk-summary-card").get_by_role("link", name: "Edit")).not_to be_visible
   end
 
   def when_i_click_edit_link
-    page.locator('.govuk-summary-card').get_by_role('link', name: 'Edit').click
+    page.locator(".govuk-summary-card").get_by_role("link", name: "Edit").click
   end
 
   def then_i_should_be_on_the_edit_induction_period_page
@@ -106,10 +106,10 @@ private
   end
 
   def when_i_set_end_date(end_date)
-    end_date_group = page.get_by_role('group', name: 'End date')
-    end_date_group.get_by_label('Day').fill(end_date.day.to_s)
-    end_date_group.get_by_label('Month').fill(end_date.month.to_s)
-    end_date_group.get_by_label('Year').fill(end_date.year.to_s)
+    end_date_group = page.get_by_role("group", name: "End date")
+    end_date_group.get_by_label("Day").fill(end_date.day.to_s)
+    end_date_group.get_by_label("Month").fill(end_date.month.to_s)
+    end_date_group.get_by_label("Year").fill(end_date.year.to_s)
   end
 
   def when_i_update_the_number_of_terms(number)
@@ -117,12 +117,12 @@ private
   end
 
   def and_i_click_submit
-    page.get_by_role('button', name: "Update").click
+    page.get_by_role("button", name: "Update").click
   end
 
   def then_i_should_be_on_the_success_page
     expect(page).to have_path("/admin/teachers/#{teacher.id}")
-    expect(page.get_by_text('Induction period updated successfully')).to be_visible
+    expect(page.get_by_text("Induction period updated successfully")).to be_visible
   end
 
   def and_the_induction_period_should_have_been_updated
@@ -141,16 +141,16 @@ private
   end
 
   def then_i_should_see_validation_errors
-    expect(page.locator('.govuk-error-summary')).to be_visible
-    expect(page.get_by_role('alert').get_by_text("Number of terms must be between 0 and 16")).to be_visible
+    expect(page.locator(".govuk-error-summary")).to be_visible
+    expect(page.get_by_role("alert").get_by_text("Number of terms must be between 0 and 16")).to be_visible
   end
 
   def then_i_should_see_outcome_error_message
-    expect(page.get_by_role('alert')).to have_text("Only number of terms can be edited when outcome is recorded")
+    expect(page.get_by_role("alert")).to have_text("Only number of terms can be edited when outcome is recorded")
   end
 
   def then_i_should_not_see_end_date_field
-    expect(page.get_by_role('group', name: 'End date')).not_to be_visible
+    expect(page.get_by_role("group", name: "End date")).not_to be_visible
   end
 
   def then_i_should_see_only_number_of_terms_field

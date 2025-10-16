@@ -19,14 +19,14 @@ class MigrateEntity
 
     # lead_provider_delivery_partnership
     ecf_lpdp = Migration::ProviderRelationship.find_by!(lead_provider: ecf_partnership.lead_provider,
-                                                        delivery_partner: ecf_partnership.delivery_partner,
-                                                        cohort: ecf_partnership.cohort)
+      delivery_partner: ecf_partnership.delivery_partner,
+      cohort: ecf_partnership.cohort)
 
     Migrators::LeadProviderDeliveryPartnership.new.migrate_one!(ecf_lpdp)
 
     # school_partnership
     Migrators::SchoolPartnership.new.migrate_one!(ecf_partnership)
-  rescue StandardError => e
+  rescue => e
     logger.error(e.message)
   end
 
@@ -39,7 +39,7 @@ class MigrateEntity
       Migrators::ContractPeriod.new.migrate_one!(cohort)
       Migrators::ActiveLeadProvider.new.migrate_one!(alp.new(id: ecf_lead_provider.id, start_year: cohort.start_year))
     end
-  rescue StandardError => e
+  rescue => e
     logger.error(e.message)
   end
 
@@ -83,11 +83,11 @@ class MigrateEntity
     Migrators::TrainingPeriod.new.migrate_one!(teacher_profile)
 
     teacher
-  rescue StandardError => e
+  rescue => e
     logger.error(e.message)
   end
 
-private
+  private
 
   def fetch_partnerships(participant_profile:)
     Migration::Partnership.where(id: participant_profile.induction_records.joins(induction_programme: :partnership).select(:partnership_id))

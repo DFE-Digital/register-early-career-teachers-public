@@ -8,7 +8,7 @@ module Rules
       raise NotImplementedError, "#{self.class} must implement #show_row_in_check_your_answers?"
     end
 
-  private
+    private
 
     attr_reader :subject
   end

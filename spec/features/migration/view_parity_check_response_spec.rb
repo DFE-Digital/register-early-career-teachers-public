@@ -3,7 +3,7 @@ RSpec.describe "View parity check response" do
 
   before do
     sign_in_as_dfe_user(role: :admin)
-    allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: true })
+    allow(Rails.application.config).to receive(:parity_check).and_return({enabled: true})
   end
 
   scenario "Viewing a parity check response" do
@@ -43,8 +43,8 @@ RSpec.describe "View parity check response" do
 
   scenario "Viewing a parity check response with different IDs" do
     run = FactoryBot.create(:parity_check_run, :completed)
-    rect_body = { data: { id: 456 } }.to_json
-    ecf_body = { data: { id: 123 } }.to_json
+    rect_body = {data: {id: 456}}.to_json
+    ecf_body = {data: {id: 123}}.to_json
     response = FactoryBot.create(:parity_check_response, ecf_body:, rect_body:)
     FactoryBot.create(:parity_check_request, :completed, run:, responses: [response])
 
@@ -62,8 +62,8 @@ RSpec.describe "View parity check response" do
   end
 
   scenario "Viewing a parity check response where the bodies are filterable", :js do
-    ecf_body = { key: { nested: :value, additional_nested: :nested_data } }.to_json
-    rect_body = { key: { nested: :different_value }, additional: :data }.to_json
+    ecf_body = {key: {nested: :value, additional_nested: :nested_data}}.to_json
+    rect_body = {key: {nested: :different_value}, additional: :data}.to_json
     response = FactoryBot.create(:parity_check_response, ecf_body:, rect_body:)
 
     page.goto(migration_parity_check_response_path(response.run, response))

@@ -16,19 +16,19 @@ FactoryBot.define do
     end
 
     trait :finished do
-      started_on  { ect_at_school_period&.started_on || 1.year.ago }
+      started_on { ect_at_school_period&.started_on || 1.year.ago }
       finished_on { ect_at_school_period&.started_on&.+(1.month) || 2.weeks.ago }
     end
 
     trait(:school_led) do
-      training_programme { 'school_led' }
+      training_programme { "school_led" }
       school_partnership { nil }
       expression_of_interest { nil }
       schedule { nil }
     end
 
     trait(:provider_led) do
-      training_programme { 'provider_led' }
+      training_programme { "provider_led" }
     end
 
     trait :with_school_partnership do
@@ -56,8 +56,8 @@ FactoryBot.define do
     trait :with_expression_of_interest do
       after(:build) do |training_period|
         training_period.expression_of_interest = FactoryBot.create(:active_lead_provider,
-                                                                   contract_period: training_period.contract_period ||
-                                                                   FactoryBot.create(:contract_period, :current))
+          contract_period: training_period.contract_period ||
+          FactoryBot.create(:contract_period, :current))
       end
     end
 
@@ -83,12 +83,12 @@ FactoryBot.define do
     end
 
     trait :withdrawn do
-      withdrawn_at { Faker::Date.between(from: started_on, to: (finished_on || Date.current)) }
+      withdrawn_at { Faker::Date.between(from: started_on, to: finished_on || Date.current) }
       withdrawal_reason { TrainingPeriod.withdrawal_reasons.values.sample }
     end
 
     trait :deferred do
-      deferred_at { Faker::Date.between(from: started_on, to: (finished_on || Date.current)) }
+      deferred_at { Faker::Date.between(from: started_on, to: finished_on || Date.current) }
       deferral_reason { TrainingPeriod.deferral_reasons.values.sample }
     end
   end

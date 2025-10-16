@@ -1,7 +1,7 @@
 RSpec.describe "View parity check" do
   before do
     sign_in_as_dfe_user(role: :admin)
-    allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: true })
+    allow(Rails.application.config).to receive(:parity_check).and_return({enabled: true})
   end
 
   scenario "Viewing a parity check" do

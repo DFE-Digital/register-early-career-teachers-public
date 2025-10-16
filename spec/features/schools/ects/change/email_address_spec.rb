@@ -21,7 +21,7 @@ describe "School user can change ECTs email address", :enable_schools_interface 
     then_i_see_the_confirmation_message
   end
 
-private
+  private
 
   def given_there_is_a_school
     @school = FactoryBot.create(:school)

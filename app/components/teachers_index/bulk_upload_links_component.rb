@@ -5,7 +5,7 @@ class TeachersIndex::BulkUploadLinksComponent < ApplicationComponent
     @appropriate_body = appropriate_body
   end
 
-private
+  private
 
   attr_reader :appropriate_body
 

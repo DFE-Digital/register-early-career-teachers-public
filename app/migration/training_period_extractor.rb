@@ -15,7 +15,7 @@ class TrainingPeriodExtractor
     @training_periods ||= build_training_periods
   end
 
-private
+  private
 
   def build_training_periods
     current_period = nil
@@ -44,15 +44,15 @@ private
         school_urn = current_programme.school_cohort.school.urn
 
         current_period = Migration::TrainingPeriodData.new(training_programme:,
-                                                           school_urn:,
-                                                           lead_provider:,
-                                                           delivery_partner:,
-                                                           core_materials:,
-                                                           cohort_year: induction_record.schedule.cohort.start_year,
-                                                           start_date: induction_record.start_date,
-                                                           end_date: induction_record.end_date,
-                                                           start_source_id: induction_record.id,
-                                                           end_source_id: induction_record.id)
+          school_urn:,
+          lead_provider:,
+          delivery_partner:,
+          core_materials:,
+          cohort_year: induction_record.schedule.cohort.start_year,
+          start_date: induction_record.start_date,
+          end_date: induction_record.end_date,
+          start_source_id: induction_record.id,
+          end_source_id: induction_record.id)
         periods << current_period
       else
         current_period.end_date = induction_record.end_date

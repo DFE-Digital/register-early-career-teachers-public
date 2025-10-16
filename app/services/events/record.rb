@@ -5,31 +5,31 @@ module Events
 
   class Record
     attr_reader :author,
-                :event_type,
-                :heading,
-                :body,
-                :happened_at,
-                :school,
-                :induction_period,
-                :teacher,
-                :appropriate_body,
-                :induction_extension,
-                :ect_at_school_period,
-                :mentor_at_school_period,
-                :training_period,
-                :mentorship_period,
-                :school_partnership,
-                :lead_provider,
-                :delivery_partner,
-                :pending_induction_submission_batch,
-                :active_lead_provider,
-                :lead_provider_delivery_partnership,
-                :statement,
-                :statement_adjustment,
-                :user,
-                :modifications,
-                :metadata,
-                :zendesk_ticket_id
+      :event_type,
+      :heading,
+      :body,
+      :happened_at,
+      :school,
+      :induction_period,
+      :teacher,
+      :appropriate_body,
+      :induction_extension,
+      :ect_at_school_period,
+      :mentor_at_school_period,
+      :training_period,
+      :mentorship_period,
+      :school_partnership,
+      :lead_provider,
+      :delivery_partner,
+      :pending_induction_submission_batch,
+      :active_lead_provider,
+      :lead_provider_delivery_partnership,
+      :statement,
+      :statement_adjustment,
+      :user,
+      :modifications,
+      :metadata,
+      :zendesk_ticket_id
 
     def initialize(
       author:,
@@ -118,15 +118,15 @@ module Events
 
     def self.record_induction_period_updated_event!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
       event_type = :induction_period_updated
-      heading = 'Induction period updated by admin' if author.dfe_user?
-      heading = 'Induction period updated by appropriate body' if author.appropriate_body_user?
+      heading = "Induction period updated by admin" if author.dfe_user?
+      heading = "Induction period updated by appropriate body" if author.appropriate_body_user?
 
       new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
     end
 
     def self.record_induction_period_deleted_event!(author:, modifications:, teacher:, appropriate_body:, body: nil, zendesk_ticket_id: nil, happened_at: Time.zone.now)
       event_type = :induction_period_deleted
-      heading = 'Induction period deleted by admin'
+      heading = "Induction period deleted by admin"
 
       new(event_type:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
@@ -267,7 +267,7 @@ module Events
       event_type = :induction_period_reopened
       happened_at = Time.zone.now
 
-      heading = 'Induction period reopened'
+      heading = "Induction period reopened"
 
       new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
@@ -309,7 +309,7 @@ module Events
 
       event_type = :teacher_starts_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = (ect_at_school_period.present?) ? 'ECT' : 'mentor'
+      training_type = ect_at_school_period.present? ? "ECT" : "mentor"
       heading = "#{teacher_name} started a new #{training_type} training period"
 
       new(event_type:, author:, heading:, training_period:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
@@ -326,7 +326,7 @@ module Events
 
       event_type = :teacher_finishes_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = (ect_at_school_period.present?) ? 'ECT' : 'mentor'
+      training_type = ect_at_school_period.present? ? "ECT" : "mentor"
       heading = "#{teacher_name} finished their #{training_type} training period"
 
       new(event_type:, author:, heading:, training_period:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
@@ -337,7 +337,7 @@ module Events
       mentor_name = Teachers::Name.new(mentor).full_name
       mentee_name = Teachers::Name.new(mentee).full_name
       heading = "#{mentor_name} started mentoring #{mentee_name}"
-      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+      metadata = {mentor_id: mentor.id, mentee_id: mentee.id}
 
       new(event_type:, author:, heading:, mentorship_period:, mentor_at_school_period:, teacher: mentor, school:, metadata:, happened_at:).record_event!
     end
@@ -347,7 +347,7 @@ module Events
       mentor_name = Teachers::Name.new(mentor).full_name
       mentee_name = Teachers::Name.new(mentee).full_name
       heading = "#{mentee_name} is being mentored by #{mentor_name}"
-      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+      metadata = {mentor_id: mentor.id, mentee_id: mentee.id}
 
       new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
     end
@@ -357,7 +357,7 @@ module Events
       mentor_name = Teachers::Name.new(mentor).full_name
       mentee_name = Teachers::Name.new(mentee).full_name
       heading = "#{mentor_name} finished mentoring #{mentee_name}"
-      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+      metadata = {mentor_id: mentor.id, mentee_id: mentee.id}
 
       new(event_type:, author:, heading:, mentorship_period:, mentor_at_school_period:, teacher: mentor, school:, metadata:, happened_at:).record_event!
     end
@@ -367,7 +367,7 @@ module Events
       mentor_name = Teachers::Name.new(mentor).full_name
       mentee_name = Teachers::Name.new(mentee).full_name
       heading = "#{mentee_name} is no longer being mentored by #{mentor_name}"
-      metadata = { mentor_id: mentor.id, mentee_id: mentee.id }
+      metadata = {mentor_id: mentor.id, mentee_id: mentee.id}
 
       new(event_type:, author:, heading:, mentorship_period:, ect_at_school_period:, teacher: mentee, school:, metadata:, happened_at:).record_event!
     end
@@ -423,16 +423,16 @@ module Events
       happened_at: Time.zone.now
     )
       if ect_at_school_period.present? && mentor_at_school_period.present?
-        fail(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
       end
 
       if ect_at_school_period.nil? && mentor_at_school_period.nil?
-        fail(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period is required")
       end
 
       event_type = :training_period_assigned_to_school_partnership
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = ect_at_school_period.present? ? 'ECT' : 'mentor'
+      training_type = ect_at_school_period.present? ? "ECT" : "mentor"
       heading = "#{teacher_name}’s #{training_type} training period was assigned to a school partnership"
 
       new(
@@ -481,7 +481,7 @@ module Events
       event_type = :lead_provider_api_token_created
       lead_provider = api_token.lead_provider
       heading = "An API token was created for lead provider: #{lead_provider.name}"
-      metadata = { description: api_token.description }
+      metadata = {description: api_token.description}
 
       new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
     end
@@ -490,7 +490,7 @@ module Events
       event_type = :lead_provider_api_token_revoked
       lead_provider = api_token.lead_provider
       heading = "An API token was revoked for lead provider: #{lead_provider.name}"
-      metadata = { description: api_token.description }
+      metadata = {description: api_token.description}
 
       new(event_type:, author:, heading:, lead_provider:, happened_at: Time.zone.now, metadata:).record_event!
     end
@@ -505,7 +505,7 @@ module Events
       contract_period = school_partnership.contract_period
       heading = "#{school.name} partnered with #{delivery_partner.name} (via #{lead_provider.name}) for #{contract_period.year}"
       metadata = {
-        contract_period_year: contract_period.year,
+        contract_period_year: contract_period.year
       }
 
       new(
@@ -529,7 +529,7 @@ module Events
       contract_period = school_partnership.contract_period
       heading = "#{school.name} changed partnership from #{previous_delivery_partner.name} to #{delivery_partner.name} (via #{lead_provider.name}) for #{contract_period.year}"
       metadata = {
-        contract_period_year: contract_period.year,
+        contract_period_year: contract_period.year
       }
 
       new(
@@ -552,8 +552,8 @@ module Events
       event_type = :statement_authorised_for_payment
 
       active_lead_provider = statement.active_lead_provider
-      lead_provider        = active_lead_provider.lead_provider
-      heading              = "Statement authorised for payment"
+      lead_provider = active_lead_provider.lead_provider
+      heading = "Statement authorised for payment"
 
       metadata = {
         contract_period_year: active_lead_provider.contract_period_year
@@ -578,7 +578,7 @@ module Events
       heading = "Statement adjustment added: #{statement_adjustment.payment_type}"
       metadata = {
         payment_type: statement_adjustment.payment_type,
-        amount: statement_adjustment.amount,
+        amount: statement_adjustment.amount
       }
 
       statement = statement_adjustment.statement
@@ -603,7 +603,7 @@ module Events
       heading = "Statement adjustment updated: #{statement_adjustment.payment_type}"
       metadata = {
         payment_type: statement_adjustment.payment_type,
-        amount: statement_adjustment.amount,
+        amount: statement_adjustment.amount
       }
 
       statement = statement_adjustment.statement
@@ -628,7 +628,7 @@ module Events
       heading = "Statement adjustment deleted: #{statement_adjustment.payment_type}"
       metadata = {
         payment_type: statement_adjustment.payment_type,
-        amount: statement_adjustment.amount,
+        amount: statement_adjustment.amount
       }
 
       statement = statement_adjustment.statement
@@ -682,9 +682,9 @@ module Events
     # Delivery Partner Events
 
     def self.record_delivery_partner_name_changed_event!(author:, delivery_partner:, from:, to:, happened_at: Time.zone.now)
-      event_type    = :delivery_partner_name_changed
-      heading       = "Delivery partner name changed"
-      modifications = { "name" => [from, to] }
+      event_type = :delivery_partner_name_changed
+      heading = "Delivery partner name changed"
+      modifications = {"name" => [from, to]}
 
       new(
         event_type:,
@@ -712,10 +712,10 @@ module Events
       new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
     end
 
-  private
+    private
 
     def attributes
-      { **event_attributes, **author_attributes, **relationship_attributes, **changelog_attributes }
+      {**event_attributes, **author_attributes, **relationship_attributes, **changelog_attributes}
     end
 
     def event_attributes
@@ -724,7 +724,7 @@ module Events
         heading:,
         body:,
         happened_at:,
-        zendesk_ticket_id:,
+        zendesk_ticket_id:
       }.compact
     end
 
@@ -763,12 +763,12 @@ module Events
         statement:,
         statement_adjustment:,
         user:,
-        pending_induction_submission_batch:,
+        pending_induction_submission_batch:
       }.compact
     end
 
     def changelog_attributes
-      { modifications:, metadata: }.compact
+      {modifications:, metadata:}.compact
     end
 
     def check_relationship_attributes_are_persisted

@@ -19,7 +19,7 @@ module Admin::AppropriateBodies
       @pending_induction_submission_batch = PendingInductionSubmissionBatch.for_appropriate_body(@appropriate_body).find(params[:id])
     end
 
-  private
+    private
 
     def set_appropriate_body
       @appropriate_body = AppropriateBody.find(params[:appropriate_body_id])

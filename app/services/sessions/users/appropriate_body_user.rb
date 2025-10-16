@@ -28,14 +28,14 @@ module Sessions
         {
           author_email: email,
           author_name: name,
-          author_type: USER_TYPE,
+          author_type: USER_TYPE
         }
       end
 
       # @return [String]
       def organisation_name
         if has_multiple_roles?
-          appropriate_body.name + ' (appropriate body)'
+          appropriate_body.name + " (appropriate body)"
         else
           appropriate_body.name
         end
@@ -43,7 +43,7 @@ module Sessions
 
       # @return [String]
       def sign_out_path
-        '/auth/dfe_sign_in/logout'
+        "/auth/dfe_sign_in/logout"
       end
 
       # @return [Hash] session data
@@ -56,7 +56,7 @@ module Sessions
           "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id,
           "dfe_sign_in_user_id" => dfe_sign_in_user_id,
           "dfe_sign_in_roles" => dfe_sign_in_roles,
-          "last_active_role" => last_active_role,
+          "last_active_role" => last_active_role
         }
       end
 
@@ -73,7 +73,7 @@ module Sessions
       # @return [Array<String>]
       alias_method :roles, :dfe_sign_in_roles
 
-    private
+      private
 
       def appropriate_body_from(dfe_sign_in_organisation_id)
         ::AppropriateBody.find_by(dfe_sign_in_organisation_id:).tap do |appropriate_body|

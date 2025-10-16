@@ -22,16 +22,16 @@ module Migration
       @teacher ||= teacher_migration_failure.teacher
     end
 
-  private
+    private
 
     def load_participant_profile
       pid = if teacher_migration_failure.migration_item_type == "Migration::ParticipantProfile"
-              teacher_migration_failure.migration_item_id
-            elsif teacher.api_ect_training_record_id.present?
-              teacher.api_ect_training_record_id
-            elsif teacher.api_mentor_training_record_id.present?
-              teacher.api_mentor_training_record_id
-            end
+        teacher_migration_failure.migration_item_id
+      elsif teacher.api_ect_training_record_id.present?
+        teacher.api_ect_training_record_id
+      elsif teacher.api_mentor_training_record_id.present?
+        teacher.api_mentor_training_record_id
+      end
       Migration::ParticipantProfilePresenter.new(Migration::ParticipantProfile.find(pid)) if pid.present?
     end
   end

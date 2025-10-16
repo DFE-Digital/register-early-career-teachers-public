@@ -14,24 +14,24 @@ RSpec.describe API::Request do
       {
         path: "/api/v3/endpoints",
         method: "POST",
-        params: { "foo" => "bar" },
+        params: {"foo" => "bar"},
         body: '{"foo":"bar"}',
         headers: {
-          "HTTP_AUTHORIZATION" => "Bearer #{token}",
+          "HTTP_AUTHORIZATION" => "Bearer #{token}"
         }
       }
     end
 
     let(:response_data) do
       {
-        headers: { "Content-Type" => "application/json" },
-        body: { message: "Success" }.to_json
+        headers: {"Content-Type" => "application/json"},
+        body: {message: "Success"}.to_json
       }
     end
 
     context "dfe_analytics is enabled" do
       before do
-        stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true")
+        stub_const("ENV", "DFE_ANALYTICS_ENABLED" => "true")
       end
 
       context "when authorization header is missing" do
@@ -69,11 +69,11 @@ RSpec.describe API::Request do
             data = events.first["data"]
 
             expect(data).to include(
-              { "key" => "request_path", "value" => ["/api/v3/endpoints"] },
-              { "key" => "request_method", "value" => %w[POST] },
-              { "key" => "status_code", "value" => [200] },
+              {"key" => "request_path", "value" => ["/api/v3/endpoints"]},
+              {"key" => "request_method", "value" => %w[POST]},
+              {"key" => "status_code", "value" => [200]},
               hash_including("key" => "lead_provider", "value" => [lead_provider.to_json]),
-              { "key" => "request_body", "value" => ['{"foo":"bar"}'] }
+              {"key" => "request_body", "value" => ['{"foo":"bar"}']}
             )
           end
         end
@@ -91,7 +91,7 @@ RSpec.describe API::Request do
             response_body_entry = data_array.find { |entry| entry["key"] == "response_body" }
 
             expect(response_body_entry).not_to be_nil
-            expect(response_body_entry["value"]).to eq([{ "body" => "500 did not respond with JSON" }.to_json])
+            expect(response_body_entry["value"]).to eq([{"body" => "500 did not respond with JSON"}.to_json])
           end
         end
       end
@@ -108,7 +108,7 @@ RSpec.describe API::Request do
             request_body_entry = data_array.find { |entry| entry["key"] == "request_body" }
 
             expect(request_body_entry).not_to be_nil
-            expect(request_body_entry["value"]).to eq([{ error: "request data did not contain valid JSON" }.to_json])
+            expect(request_body_entry["value"]).to eq([{error: "request data did not contain valid JSON"}.to_json])
           end
         end
       end
@@ -137,7 +137,7 @@ RSpec.describe API::Request do
 
     context "dfe_analytics is enabled" do
       before do
-        stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true")
+        stub_const("ENV", "DFE_ANALYTICS_ENABLED" => "true")
       end
 
       it "sends a throttled web_request event with user if available" do

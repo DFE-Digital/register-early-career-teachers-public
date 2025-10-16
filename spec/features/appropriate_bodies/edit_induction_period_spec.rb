@@ -13,7 +13,7 @@ RSpec.describe "Appropriate body editing an induction period" do
     page.goto(ab_teacher_path(teacher))
   end
 
-  scenario 'valid start date' do
+  scenario "valid start date" do
     given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
@@ -24,17 +24,17 @@ RSpec.describe "Appropriate body editing an induction period" do
     and_i_should_see_success_banner
   end
 
-  scenario 'invalid start date' do
+  scenario "invalid start date" do
     given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
     when_i_set_start_date(2.years.ago)
     and_i_click_submit
-    then_i_should_see_an_error('Start date cannot be before QTS award date')
+    then_i_should_see_an_error("Start date cannot be before QTS award date")
   end
 
-  scenario 'programme type' do
+  scenario "programme type" do
     given_i_am_on_the_teacher_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
@@ -55,7 +55,7 @@ RSpec.describe "Appropriate body editing an induction period" do
     and_an_event_should_have_been_recorded("Training programme changed from 'provider_led' to 'school_led'")
   end
 
-private
+  private
 
   def given_i_am_on_the_teacher_page
     expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}")
@@ -76,18 +76,18 @@ private
   end
 
   def when_i_set_start_date(start_date)
-    end_date_group = page.get_by_role('group', name: 'Start date')
-    end_date_group.get_by_label('Day').fill(start_date.day.to_s)
-    end_date_group.get_by_label('Month').fill(start_date.month.to_s)
-    end_date_group.get_by_label('Year').fill(start_date.year.to_s)
+    end_date_group = page.get_by_role("group", name: "Start date")
+    end_date_group.get_by_label("Day").fill(start_date.day.to_s)
+    end_date_group.get_by_label("Month").fill(start_date.month.to_s)
+    end_date_group.get_by_label("Year").fill(start_date.year.to_s)
   end
 
   def and_i_click_submit
-    page.get_by_role('button', name: "Update").click
+    page.get_by_role("button", name: "Update").click
   end
 
   def and_i_should_see_success_banner
-    expect(page.get_by_text('Induction period updated successfully')).to be_visible
+    expect(page.get_by_text("Induction period updated successfully")).to be_visible
   end
 
   def and_an_event_should_have_been_recorded(*expected_modification)
@@ -101,11 +101,11 @@ private
   end
 
   def then_i_should_see_an_error(error_message)
-    expect(page.locator('.govuk-error-summary')).to be_visible
-    expect(page.get_by_role('alert').get_by_text(error_message)).to be_visible
+    expect(page.locator(".govuk-error-summary")).to be_visible
+    expect(page.get_by_role("alert").get_by_text(error_message)).to be_visible
   end
 
   def edit_link
-    page.locator('.govuk-summary-card').get_by_role('link', name: 'Edit')
+    page.locator(".govuk-summary-card").get_by_role("link", name: "Edit")
   end
 end

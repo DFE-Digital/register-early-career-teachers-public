@@ -2,9 +2,9 @@ RSpec.describe Migrators::ECTAtSchoolPeriod do
   it_behaves_like "a migrator", :ect_at_school_period, %i[teacher school] do
     def create_migration_resource
       ect = FactoryBot.create(:migration_participant_profile,
-                              :ect,
-                              sparsity_uplift: [true, false].sample,
-                              pupil_premium_uplift: [true, false].sample)
+        :ect,
+        sparsity_uplift: [true, false].sample,
+        pupil_premium_uplift: [true, false].sample)
       FactoryBot.create(:migration_induction_record, participant_profile: ect)
       ect.teacher_profile
     end
@@ -20,7 +20,7 @@ RSpec.describe Migrators::ECTAtSchoolPeriod do
     end
 
     describe "#migrate!" do
-      it 'creates an ECTAtSchoolPeriod records for each school period found in the ECF induction records' do
+      it "creates an ECTAtSchoolPeriod records for each school period found in the ECF induction records" do
         instance.migrate!
 
         Migration::TeacherProfile.find_each do |teacher_profile|

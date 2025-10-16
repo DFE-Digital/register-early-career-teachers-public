@@ -11,16 +11,16 @@ module Auditable
 
     validates :author, presence: true
     validates :zendesk_ticket_id,
-              numericality: {
-                only_integer: true,
-                message: "ID must be a number"
-              },
-              if: -> { author.dfe_user? && zendesk_ticket_id.present? }
+      numericality: {
+        only_integer: true,
+        message: "ID must be a number"
+      },
+      if: -> { author.dfe_user? && zendesk_ticket_id.present? }
 
     validate :note_or_zendesk_ticket_present, if: -> { author.dfe_user? }
   end
 
-private
+  private
 
   def note_or_zendesk_ticket_present
     unless note.present? || zendesk_ticket_id.present?

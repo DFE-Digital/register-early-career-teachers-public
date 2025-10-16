@@ -3,13 +3,13 @@ describe Builders::GIAS::School do
 
   let(:ecf_school) do
     FactoryBot.create(:ecf_migration_school,
-                      school_status_code: 2,
-                      school_type_code: 10,
-                      school_status_name: 'closed',
-                      school_type_name: 'Community school')
+      school_status_code: 2,
+      school_type_code: 10,
+      school_status_name: "closed",
+      school_type_name: "Community school")
   end
 
-  describe '#build' do
+  describe "#build" do
     it "creates a new GIAS::School with an associated School record" do
       expect { subject.build }
         .to change(GIAS::School, :count).by(1)

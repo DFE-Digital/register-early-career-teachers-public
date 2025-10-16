@@ -8,7 +8,7 @@ module Shared
     end
 
     delegate :from, :to, :count,
-             to: :pagy
+      to: :pagy
 
     def render?
       pagy.pages > 1

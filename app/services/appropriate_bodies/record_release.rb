@@ -10,7 +10,7 @@ module AppropriateBodies
       end
     end
 
-  private
+    private
 
     def record_close_induction_event!
       Events::Record.record_induction_period_closed_event!(

@@ -29,15 +29,15 @@ module Events
       end
     end
 
-  private
+    private
 
     def format(value)
       formatted_value = case value
-                        when Date
-                          value.to_formatted_s(:govuk_short)
-                        else
-                          value
-                        end
+      when Date
+        value.to_formatted_s(:govuk_short)
+      else
+        value
+      end
 
       %('#{formatted_value}')
     end

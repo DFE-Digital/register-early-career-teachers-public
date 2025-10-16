@@ -13,7 +13,7 @@ module SandboxSeedData
       end
     end
 
-  private
+    private
 
     def create_school(urn:)
       school_type = SCHOOL_TYPES.sample

@@ -41,7 +41,7 @@ module Migrators
       statement_adjustment
     end
 
-  private
+    private
 
     def preload_caches
       cache_manager.cache_statements

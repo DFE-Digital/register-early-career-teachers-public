@@ -3,9 +3,9 @@ module AppropriateBodies
     class ClaimsController < PendingInductionSubmissionBatchController
       def index
         @pending_induction_submission_batches = PendingInductionSubmissionBatch
-            .for_appropriate_body(@appropriate_body)
-            .claim
-            .order(id: :desc)
+          .for_appropriate_body(@appropriate_body)
+          .claim
+          .order(id: :desc)
       end
 
       def create
@@ -27,10 +27,10 @@ module AppropriateBodies
           render :new, status: :unprocessable_content
         end
       rescue ActionController::ParameterMissing
-        @pending_induction_submission_batch.errors.add(:csv_file, 'Select a file')
+        @pending_induction_submission_batch.errors.add(:csv_file, "Select a file")
         render :new, status: :unprocessable_content
       rescue CSV::MalformedCSVError
-        @pending_induction_submission_batch.errors.add(:csv_file, 'The selected file is malformed')
+        @pending_induction_submission_batch.errors.add(:csv_file, "The selected file is malformed")
         render :new, status: :unprocessable_content
       end
 
@@ -50,7 +50,7 @@ module AppropriateBodies
         redirect_to ab_batch_claim_path(@pending_induction_submission_batch)
       end
 
-    private
+      private
 
       def new_batch_claim
         PendingInductionSubmissionBatch.new_claim_for(appropriate_body: @appropriate_body)

@@ -39,7 +39,7 @@ RSpec.describe ParityCheck::TokenProvider do
       end
 
       context "when the tokens don't match the lead providers" do
-        let(:tokens) { { "non_existent_ecf_id" => SecureRandom.uuid } }
+        let(:tokens) { {"non_existent_ecf_id" => SecureRandom.uuid} }
 
         it { expect { generate }.not_to change(API::Token, :count) }
       end
@@ -65,7 +65,7 @@ RSpec.describe ParityCheck::TokenProvider do
     end
 
     context "when the keys are present" do
-      let(:tokens) { { lead_provider.ecf_id => "token" } }
+      let(:tokens) { {lead_provider.ecf_id => "token"} }
 
       it { is_expected.to eq("token") }
     end

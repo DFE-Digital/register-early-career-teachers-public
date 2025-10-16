@@ -25,7 +25,7 @@ module API
         LeadProvider.find_by(name: lead_provider_name_or_id)
     end
 
-  private
+    private
 
     def add_api_token_to_lead_provider(lead_provider)
       logger.info "AddAPITokenToLeadProvider: Adding API Token for Lead provider #{lead_provider.name}"

@@ -3,28 +3,28 @@ RSpec.describe Admin::AppropriateBodies::Batches::InductionDetailsComponent, typ
 
   let(:batch) do
     FactoryBot.create(:pending_induction_submission_batch, :claim, :completed,
-                      processed_count:,
-                      errored_count:)
+      processed_count:,
+      errored_count:)
   end
 
   before do
     render_inline(component)
   end
 
-  context 'without records' do
+  context "without records" do
     let(:processed_count) { 0 }
     let(:errored_count) { 1 }
 
-    it 'does not render content' do
+    it "does not render content" do
       expect(rendered_content).to be_empty
     end
   end
 
-  context 'with records' do
+  context "with records" do
     let(:processed_count) { 1 }
     let(:errored_count) { 0 }
 
-    it 'renders content' do
+    it "renders content" do
       expect(rendered_content).not_to be_empty
     end
   end

@@ -24,7 +24,7 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
 
   describe "POST /admin/teachers/:teacher_id/extensions" do
     context "with valid parameters" do
-      let(:valid_params) { { induction_extension: { number_of_terms: 1.5 } } }
+      let(:valid_params) { {induction_extension: {number_of_terms: 1.5}} }
 
       it "creates a new extension and redirects to the teacher's page" do
         expect {
@@ -50,7 +50,7 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
     let!(:extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 1.0) }
 
     context "with valid parameters" do
-      let(:valid_params) { { induction_extension: { number_of_terms: 2.5 } } }
+      let(:valid_params) { {induction_extension: {number_of_terms: 2.5}} }
 
       it "updates the extension and redirects to the teacher's page" do
         patch admin_teacher_extension_path(teacher, extension), params: valid_params

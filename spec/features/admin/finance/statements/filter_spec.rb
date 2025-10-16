@@ -39,14 +39,14 @@ RSpec.describe "Admin finance statement filter" do
     @active_lead_provider2 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider1, contract_period: @contract_period2)
     @active_lead_provider3 = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider2, contract_period: @contract_period2)
 
-    @statement1 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, fee_type: 'output', year: 2025, month: 5)
-    @statement2 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, fee_type: 'service', year: 2023, month: 5)
+    @statement1 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, fee_type: "output", year: 2025, month: 5)
+    @statement2 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider1, fee_type: "service", year: 2023, month: 5)
 
-    @statement3 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, fee_type: 'output', year: 2022, month: 5)
-    @statement4 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, fee_type: 'service', year: 2024, month: 5)
+    @statement3 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, fee_type: "output", year: 2022, month: 5)
+    @statement4 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider2, fee_type: "service", year: 2024, month: 5)
 
-    @statement5 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider3, fee_type: 'output', year: 2025, month: 8)
-    @statement6 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider3, fee_type: 'service', year: 2026, month: 8)
+    @statement5 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider3, fee_type: "output", year: 2025, month: 8)
+    @statement6 = FactoryBot.create(:statement, active_lead_provider: @active_lead_provider3, fee_type: "service", year: 2026, month: 8)
   end
 
   def when_i_visit_the_statements_page
@@ -57,7 +57,7 @@ RSpec.describe "Admin finance statement filter" do
     expect(table_statement_ids).to eq([
       @statement3.id,
       @statement1.id,
-      @statement5.id,
+      @statement5.id
     ])
   end
 
@@ -67,13 +67,13 @@ RSpec.describe "Admin finance statement filter" do
     elem = filter.get_by_label("Lead provider", exact: true)
     elem.select_option(label: @lead_provider1.name)
 
-    filter.get_by_role('button', name: "View").click
+    filter.get_by_role("button", name: "View").click
   end
 
   def then_i_see_statements_filtered_by_lead_provider
     expect(table_statement_ids).to eq([
       @statement3.id,
-      @statement1.id,
+      @statement1.id
     ])
   end
 
@@ -83,13 +83,13 @@ RSpec.describe "Admin finance statement filter" do
     elem = filter.get_by_label("Contract year", exact: true)
     elem.select_option(label: @contract_period2.year.to_s)
 
-    filter.get_by_role('button', name: "View").click
+    filter.get_by_role("button", name: "View").click
   end
 
   def then_i_see_statements_filtered_by_contract_period
     expect(table_statement_ids).to eq([
       @statement3.id,
-      @statement5.id,
+      @statement5.id
     ])
   end
 
@@ -99,12 +99,12 @@ RSpec.describe "Admin finance statement filter" do
     elem = filter.get_by_label("Statement date", exact: true)
     elem.select_option(label: "May 2022")
 
-    filter.get_by_role('button', name: "View").click
+    filter.get_by_role("button", name: "View").click
   end
 
   def then_i_see_statements_filtered_by_statement_date
     expect(table_statement_ids).to eq([
-      @statement3.id,
+      @statement3.id
     ])
   end
 
@@ -114,7 +114,7 @@ RSpec.describe "Admin finance statement filter" do
     elem = filter.get_by_label("Statement type", exact: true)
     elem.select_option(label: "All")
 
-    filter.get_by_role('button', name: "View").click
+    filter.get_by_role("button", name: "View").click
   end
 
   def then_i_see_statements_filtered_by_statement_type
@@ -124,7 +124,7 @@ RSpec.describe "Admin finance statement filter" do
       @statement4.id,
       @statement1.id,
       @statement5.id,
-      @statement6.id,
+      @statement6.id
     ])
   end
 

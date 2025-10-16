@@ -38,7 +38,7 @@ module TRS
 
       update_induction_status(
         trn:,
-        status: 'InProgress',
+        status: "InProgress",
         start_date: start_date.iso8601,
         modified_at: modified_at.utc.iso8601(3)
       )
@@ -49,7 +49,7 @@ module TRS
 
       update_induction_status(
         trn:,
-        status: 'Passed',
+        status: "Passed",
         start_date: start_date.iso8601,
         completed_date: completed_date.iso8601,
         modified_at: modified_at.utc.iso8601(3)
@@ -61,7 +61,7 @@ module TRS
 
       update_induction_status(
         trn:,
-        status: 'Failed',
+        status: "Failed",
         start_date: start_date.iso8601,
         completed_date: completed_date.iso8601,
         modified_at: modified_at.utc.iso8601(3)
@@ -73,7 +73,7 @@ module TRS
 
       update_induction_status(
         trn:,
-        status: 'RequiredToComplete',
+        status: "RequiredToComplete",
         start_date: nil,
         completed_date: nil,
         modified_at: modified_at.utc.iso8601(3)
@@ -85,17 +85,17 @@ module TRS
 
       update_induction_status(
         trn:,
-        status: 'InProgress',
+        status: "InProgress",
         start_date: start_date.iso8601,
         completed_date: nil,
         modified_at: modified_at.utc.iso8601(3)
       )
     end
 
-  private
+    private
 
     def redis_client
-      @redis_client ||= Redis.new(url: ENV.fetch('REDIS_CACHE_URL', 'redis://localhost:6379'))
+      @redis_client ||= Redis.new(url: ENV.fetch("REDIS_CACHE_URL", "redis://localhost:6379"))
     end
 
     def redis_induction_key(trn)
@@ -103,10 +103,10 @@ module TRS
     end
 
     def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
-      payload = { 'status' => status,
-                  'startDate' => start_date,
-                  'completedDate' => completed_date,
-                  'modifiedOn' => modified_at }.transform_values { |v| (v.present?) ? v : '' }
+      payload = {"status" => status,
+                 "startDate" => start_date,
+                 "completedDate" => completed_date,
+                 "modifiedOn" => modified_at}.transform_values { |v| v.present? ? v : "" }
 
       redis_client.mapped_hmset(redis_induction_key(trn), payload)
     end
@@ -116,7 +116,7 @@ module TRS
     def retrieve_induction_status(trn)
       redis_client
         .hgetall(redis_induction_key(trn))
-        .transform_values { |v| (v.present?) ? v : nil }
+        .transform_values { |v| v.present? ? v : nil }
     end
 
     def build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
@@ -146,10 +146,10 @@ module TRS
       when 7_000_004 then raise(TRS::Errors::TeacherDeactivated)
       when 7_000_005 then @has_alerts_but_not_prohibited = true
       when 7_000_006 then nil # teacher with TRN 7000006 is seeded as an early roll out mentor
-      when 7_000_007 then @induction_status = 'Passed'
-      when 7_000_008 then @induction_status = 'Failed'
-      when 7_000_009 then @induction_status = 'Exempt'
-      when 7_000_010 then @induction_status = 'FailedInWales'
+      when 7_000_007 then @induction_status = "Passed"
+      when 7_000_008 then @induction_status = "Failed"
+      when 7_000_009 then @induction_status = "Exempt"
+      when 7_000_010 then @induction_status = "FailedInWales"
       else
         @has_itt = true
         @is_prohibited_from_teaching = false
@@ -157,76 +157,76 @@ module TRS
       end
     end
 
-    def teacher_params(trn:, date_of_birth:, national_insurance_number:, first_name: 'Kirk', last_name: 'Van Houten')
+    def teacher_params(trn:, date_of_birth:, national_insurance_number:, first_name: "Kirk", last_name: "Van Houten")
       if (teacher = ::Teacher.find_by(trn:))
         {
-          'trn' => teacher.trn,
-          'firstName' => teacher.trs_first_name,
-          'lastName' => teacher.trs_last_name,
-          'dateOfBirth' => date_of_birth,
-          'nationalInsuranceNumber' => national_insurance_number,
+          "trn" => teacher.trn,
+          "firstName" => teacher.trs_first_name,
+          "lastName" => teacher.trs_last_name,
+          "dateOfBirth" => date_of_birth,
+          "nationalInsuranceNumber" => national_insurance_number
         }
       else
         first_name, last_name = *random_name
 
         {
-          'trn' => trn,
-          'firstName' => first_name,
-          'lastName' => last_name,
-          'dateOfBirth' => date_of_birth,
-          'nationalInsuranceNumber' => national_insurance_number,
+          "trn" => trn,
+          "firstName" => first_name,
+          "lastName" => last_name,
+          "dateOfBirth" => date_of_birth,
+          "nationalInsuranceNumber" => national_insurance_number
         }
       end
     end
 
     def random_name
-      File.read(Rails.root.join('lib/trs/fake_api_names.yml')).split("\n").sample.split(" ", 2)
+      File.read(Rails.root.join("lib/trs/fake_api_names.yml")).split("\n").sample.split(" ", 2)
     end
 
     def qts_data
       if @has_qts
         {
-          'qts' => {
-            'awarded' => Time.zone.today - 3.years,
-            'certificateUrl' => 'https://fancy-certificates.example.com/1234',
-            'statusDescription' => 'Passed'
+          "qts" => {
+            "awarded" => Time.zone.today - 3.years,
+            "certificateUrl" => "https://fancy-certificates.example.com/1234",
+            "statusDescription" => "Passed"
           }
         }
       else
-        { 'qts' => nil }
+        {"qts" => nil}
       end
     end
 
     def prohibited_from_teaching_data
       {
-        'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID } } }]
+        "alerts" => [{"alertType" => {"alertCategory" => {"alertCategoryId" => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID}}}]
       }
     end
 
     def other_alert_data
       {
         # Conditional Registration Order - unacceptable professional conduct
-        'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => '5562a5b7-3e32-eb11-a814-000d3a23980a' } } }]
+        "alerts" => [{"alertType" => {"alertCategory" => {"alertCategoryId" => "5562a5b7-3e32-eb11-a814-000d3a23980a"}}}]
       }
     end
 
     def induction_data(trn)
-      return { 'induction' => { 'status' => @induction_status } } if @induction_status
+      return {"induction" => {"status" => @induction_status}} if @induction_status
 
       if redis_client.connected? && (induction_status = retrieve_induction_status(trn)) && induction_status.present?
         {
-          'induction' => {
-            'status' => induction_status['status'],
-            'startDate' => induction_status['startDate'],
-            'completedDate' => induction_status['completedDate']
+          "induction" => {
+            "status" => induction_status["status"],
+            "startDate" => induction_status["startDate"],
+            "completedDate" => induction_status["completedDate"]
           }
         }
       else
         {
-          'induction' => {
-            'status' => 'InProgress',
-            'startDate' => 2.years.ago.to_date.to_s,
-            'completedDate' => 1.year.ago.to_date.to_s
+          "induction" => {
+            "status" => "InProgress",
+            "startDate" => 2.years.ago.to_date.to_s,
+            "completedDate" => 1.year.ago.to_date.to_s
           }
         }
       end
@@ -237,7 +237,7 @@ module TRS
         {
           "initialTeacherTraining" => [
             {
-              "qualification" => { "name" => "Postgraduate Certificate in Education" },
+              "qualification" => {"name" => "Postgraduate Certificate in Education"},
               "startDate" => "2020-12-31",
               "result" => "Pass",
               "subjects" => [],
@@ -245,12 +245,12 @@ module TRS
               "programmeType" => nil,
               "programmeTypeDescription" => nil,
               "ageRange" => nil,
-              "provider" => { "name" => "Example Provider Ltd." },
+              "provider" => {"name" => "Example Provider Ltd."}
             }
           ]
         }
       else
-        { "initialTeacherTraining" => [] }
+        {"initialTeacherTraining" => []}
       end
     end
   end

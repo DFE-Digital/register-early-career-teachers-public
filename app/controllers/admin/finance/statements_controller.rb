@@ -1,6 +1,6 @@
 module Admin::Finance
   class StatementsController < AdminController
-    layout 'full'
+    layout "full"
 
     def index
       @pagy, statements = pagy(
@@ -38,7 +38,7 @@ module Admin::Finance
       end
     end
 
-  private
+    private
 
     def statements_query
       opts = {
@@ -46,7 +46,7 @@ module Admin::Finance
         contract_period_years:,
         statement_date:,
         fee_type:,
-        order: :statement_date,
+        order: :statement_date
       }
       Statements::Search.new(**opts.compact)
     end

@@ -17,7 +17,7 @@ module Teachers
 
     delegate :count, to: :scope
 
-  private
+    private
 
     def order
       case @sort_order
@@ -26,10 +26,10 @@ module Teachers
         # at the school, latest first
         [
           Arel::Nodes::Case.new
-                          .when(MentorshipPeriod.arel_table[:id].eq(nil)).then(0)
-                          .else(1)
-                          .asc,
-          { ect_at_school_periods: { created_at: 'desc' } }
+            .when(MentorshipPeriod.arel_table[:id].eq(nil)).then(0)
+            .else(1)
+            .asc,
+          {ect_at_school_periods: {created_at: "desc"}}
         ]
       else
         %i[trs_last_name trs_first_name id]
@@ -42,7 +42,7 @@ module Teachers
 
       trns = query_string.scan(%r(\d{7}))
 
-      (trns.any?) ? with_trns(trns) : where_query_matches(query_string)
+      trns.any? ? with_trns(trns) : where_query_matches(query_string)
     end
 
     def where_appropriate_bodies_in(appropriate_bodies, status)
@@ -68,7 +68,7 @@ module Teachers
       @scope.merge!(
         @scope
           .eager_load(current_or_next_ect_at_school_period: :mentorship_periods)
-          .where(ect_at_school_periods: { school: })
+          .where(ect_at_school_periods: {school:})
       )
 
       @sort_order = :mentorless_first_then_by_registration_date
@@ -79,7 +79,7 @@ module Teachers
 
       @scope = @scope
         .joins(:mentor_at_school_periods)
-        .where(mentor_at_school_periods: { school_id: school.id })
+        .where(mentor_at_school_periods: {school_id: school.id})
         .distinct
         .includes(:mentor_at_school_periods)
     end

@@ -14,7 +14,7 @@ describe Metadata::SchoolContractPeriod do
   end
 
   describe "enums" do
-    let(:expected_choices) { { not_yet_known: "not_yet_known", provider_led: "provider_led", school_led: "school_led" } }
+    let(:expected_choices) { {not_yet_known: "not_yet_known", provider_led: "provider_led", school_led: "school_led"} }
 
     it { is_expected.to define_enum_for(:induction_programme_choice).with_values(expected_choices).backed_by_column_of_type(:enum) }
   end

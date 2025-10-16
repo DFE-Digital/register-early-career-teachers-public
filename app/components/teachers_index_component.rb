@@ -31,7 +31,7 @@ class TeachersIndexComponent < ApplicationComponent
 
   attr_reader :appropriate_body, :teachers, :pagy, :status, :query
 
-  def initialize(appropriate_body:, teachers:, pagy:, status: 'open', query: nil)
+  def initialize(appropriate_body:, teachers:, pagy:, status: "open", query: nil)
     @appropriate_body = appropriate_body
     @teachers = teachers
     @pagy = pagy
@@ -39,7 +39,7 @@ class TeachersIndexComponent < ApplicationComponent
     @query = query
   end
 
-private
+  private
 
   def before_render
     with_bulk_upload_links
@@ -49,13 +49,13 @@ private
   end
 
   def normalize_status(status)
-    return 'open' if status.blank?
+    return "open" if status.blank?
 
-    %w[open closed].include?(status) ? status : 'open'
+    %w[open closed].include?(status) ? status : "open"
   end
 
   def showing_closed?
-    status == 'closed'
+    status == "closed"
   end
 
   def teachers_present?
@@ -100,7 +100,7 @@ private
     @filtered_open_count ||= Teachers::Search.new(
       query_string: query,
       appropriate_bodies: appropriate_body,
-      status: 'open'
+      status: "open"
     ).count
   end
 
@@ -108,7 +108,7 @@ private
     @filtered_closed_count ||= Teachers::Search.new(
       query_string: query,
       appropriate_bodies: appropriate_body,
-      status: 'closed'
+      status: "closed"
     ).count
   end
 end

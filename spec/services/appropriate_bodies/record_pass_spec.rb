@@ -9,11 +9,11 @@ RSpec.describe AppropriateBodies::RecordPass do
     )
   end
 
-  include_context 'test trs api client'
+  include_context "test trs api client"
 
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
   end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -21,18 +21,18 @@ RSpec.describe AppropriateBodies::RecordPass do
 
   let(:pending_induction_submission) do
     FactoryBot.create(:pending_induction_submission,
-                      trn: teacher.trn,
-                      finished_on: 1.day.ago.to_date,
-                      number_of_terms: 6)
+      trn: teacher.trn,
+      finished_on: 1.day.ago.to_date,
+      number_of_terms: 6)
   end
 
   describe "#pass!" do
     context "with an ongoing induction period" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing,
-                          appropriate_body:,
-                          teacher:,
-                          started_on: '2024-1-1')
+          appropriate_body:,
+          teacher:,
+          started_on: "2024-1-1")
       end
 
       it "updates the induction period with pass outcome" do
@@ -45,7 +45,7 @@ RSpec.describe AppropriateBodies::RecordPass do
         )
       end
 
-      it 'sets the pending_induction_submission delete_at timestamp to 24h in the future' do
+      it "sets the pending_induction_submission delete_at timestamp to 24h in the future" do
         freeze_time do
           service.pass!
           pending_induction_submission.reload
@@ -81,7 +81,7 @@ RSpec.describe AppropriateBodies::RecordPass do
       end
 
       context "when the author is a DfE user" do
-        let(:dfe_user) { FactoryBot.create(:user, email: 'dfe_user@education.gov.uk') }
+        let(:dfe_user) { FactoryBot.create(:user, email: "dfe_user@education.gov.uk") }
         let(:author) { Sessions::Users::DfEUser.new(email: dfe_user.email) }
 
         it "records an induction passed event" do
@@ -105,9 +105,9 @@ RSpec.describe AppropriateBodies::RecordPass do
       context "when induction submission is invalid" do
         let(:pending_induction_submission) do
           FactoryBot.create(:pending_induction_submission,
-                            trn: teacher.trn,
-                            finished_on: '2020-1-1',
-                            number_of_terms: 6)
+            trn: teacher.trn,
+            finished_on: "2020-1-1",
+            number_of_terms: 6)
         end
 
         it "does not update the induction period" do
@@ -138,17 +138,17 @@ RSpec.describe AppropriateBodies::RecordPass do
     context "when ongoing induction period only has the legacy programme type" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
-                          appropriate_body:,
-                          teacher:,
-                          started_on: '2024-1-1')
+          appropriate_body:,
+          teacher:,
+          started_on: "2024-1-1")
       end
 
       it "populates the new programme type and outcome" do
         service.pass!
 
         expect(induction_period.reload).to have_attributes(
-          training_programme: 'provider_led',
-          outcome: 'pass'
+          training_programme: "provider_led",
+          outcome: "pass"
         )
       end
     end

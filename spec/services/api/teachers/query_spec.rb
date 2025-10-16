@@ -314,7 +314,7 @@ RSpec.describe API::Teachers::Query, :with_metadata do
 
       describe "order by created_at, in descending order" do
         it "returns teachers in correct order" do
-          query = described_class.new(sort: { created_at: :desc })
+          query = described_class.new(sort: {created_at: :desc})
           expect(query.teachers).to eq([teacher1, teacher2])
         end
       end
@@ -323,14 +323,14 @@ RSpec.describe API::Teachers::Query, :with_metadata do
         before { teacher2.update!(updated_at: 1.day.from_now) }
 
         it "returns teachers in correct order" do
-          query = described_class.new(sort: { updated_at: :asc })
+          query = described_class.new(sort: {updated_at: :asc})
           expect(query.teachers).to eq([teacher1, teacher2])
         end
       end
 
       describe "order by updated_at, in descending order" do
         it "returns teachers in correct order" do
-          query = described_class.new(sort: { updated_at: :desc })
+          query = described_class.new(sort: {updated_at: :desc})
           expect(query.teachers).to eq([teacher1, teacher2])
         end
       end

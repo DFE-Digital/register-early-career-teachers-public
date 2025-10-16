@@ -16,7 +16,7 @@ module Metadata::Handlers
       end
     end
 
-  private
+    private
 
     def upsert_lead_provider_metadata!
       lead_provider_ids.each do |lead_provider_id|
@@ -33,7 +33,7 @@ module Metadata::Handlers
       delivery_partner
         .lead_provider_delivery_partnerships
         .joins(:active_lead_provider)
-        .where(active_lead_providers: { lead_provider_id: })
+        .where(active_lead_providers: {lead_provider_id:})
         .pluck("active_lead_providers.contract_period_year")
     end
   end

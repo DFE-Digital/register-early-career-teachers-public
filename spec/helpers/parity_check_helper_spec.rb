@@ -7,7 +7,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
         FactoryBot.build(:parity_check_endpoint, path: "/api/v1/users"),
         FactoryBot.build(:parity_check_endpoint, path: "/api/v3/users/create"),
         FactoryBot.build(:parity_check_endpoint, path: "/api/v2/participant-declarations"),
-        FactoryBot.build(:parity_check_endpoint, path: "/login"),
+        FactoryBot.build(:parity_check_endpoint, path: "/login")
       ]
     end
 
@@ -15,7 +15,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
       expect(grouping.to_a).to eq([
         [:miscellaneous, [endpoints[3]]],
         [:"participant-declarations", [endpoints[2]]],
-        [:users, endpoints[0..1]],
+        [:users, endpoints[0..1]]
       ])
     end
   end
@@ -28,7 +28,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
         FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v1/users")),
         FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v3/users/create")),
         FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/api/v2/participant-declarations")),
-        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/login")),
+        FactoryBot.build(:parity_check_request, endpoint: FactoryBot.build(:parity_check_endpoint, path: "/login"))
       ]
     end
 
@@ -36,7 +36,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
       expect(grouping.to_a).to eq([
         [:miscellaneous, [requests[3]]],
         [:"participant-declarations", [requests[2]]],
-        [:users, requests[0..1]],
+        [:users, requests[0..1]]
       ])
     end
   end
@@ -54,7 +54,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
 
     before { allow(run).to receive(:request_group_names).and_return(%i[participant-declarations users]) }
 
-    it { is_expected.to eq(%(<ul class=\"govuk-list\"><li>Participant declarations</li><li>Users</li></ul>)) }
+    it { is_expected.to eq(%(<ul class="govuk-list"><li>Participant declarations</li><li>Users</li></ul>)) }
   end
 
   describe "#id_count_in_words" do
@@ -92,7 +92,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
       context "when match rate is #{match_rate}%" do
         subject { helper.match_rate_tag(match_rate) }
 
-        it { is_expected.to eq(%(<strong class=\"govuk-tag govuk-tag--#{colour}\">#{match_rate}%</strong>)) }
+        it { is_expected.to eq(%(<strong class="govuk-tag govuk-tag--#{colour}">#{match_rate}%</strong>)) }
       end
     end
   end
@@ -103,12 +103,12 @@ RSpec.describe ParityCheckHelper, type: :helper do
       299 => "green",
       300 => "yellow",
       399 => "yellow",
-      400 => "red",
+      400 => "red"
     }.each do |status_code, colour|
       context "when status code is #{status_code}%" do
         subject { helper.status_code_tag(status_code) }
 
-        it { is_expected.to eq(%(<strong class=\"govuk-tag govuk-tag--#{colour}\">#{status_code}</strong>)) }
+        it { is_expected.to eq(%(<strong class="govuk-tag govuk-tag--#{colour}">#{status_code}</strong>)) }
       end
     end
   end
@@ -188,8 +188,8 @@ RSpec.describe ParityCheckHelper, type: :helper do
     subject { helper.sanitize_diff(html) }
 
     let(:html) { response.body_diff.to_s(:html) }
-    let(:ecf_body) { { key1: { subkey: "value1" } }.to_json }
-    let(:rect_body) { { key1: { subkey: "value2" } }.to_json }
+    let(:ecf_body) { {key1: {subkey: "value1"}}.to_json }
+    let(:rect_body) { {key1: {subkey: "value2"}}.to_json }
     let(:response) { FactoryBot.build(:parity_check_response, rect_body:, ecf_body:) }
 
     it { is_expected.to eq(CGI.unescapeHTML(html.html_safe)) }

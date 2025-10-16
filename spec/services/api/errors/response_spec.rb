@@ -5,7 +5,7 @@ RSpec.describe API::Errors::Response do
   let(:messages) do
     [
       "Error 1",
-      "Error 2",
+      "Error 2"
     ]
   end
 
@@ -22,7 +22,7 @@ RSpec.describe API::Errors::Response do
       expect(result[1][:detail]).to eql("Error 2")
     end
 
-    context 'when `params` is not an Array' do
+    context "when `params` is not an Array" do
       let(:messages) { "Error 1" }
 
       it "returns formatted errors" do
@@ -42,7 +42,7 @@ RSpec.describe API::Errors::Response do
       let(:messages) do
         [
           "a rect_term message",
-          "another rect_term message",
+          "another rect_term message"
         ]
       end
 
@@ -65,8 +65,8 @@ RSpec.describe API::Errors::Response do
 
     it "returns a hash with formatted errors" do
       expect(response[:errors]).to include(
-        { title: "cohort", detail: "Enter a '#/cohort'." },
-        { title: "school_id", detail: "Enter a '#/school_id'." }
+        {title: "cohort", detail: "Enter a '#/cohort'."},
+        {title: "school_id", detail: "Enter a '#/school_id'."}
       )
     end
   end

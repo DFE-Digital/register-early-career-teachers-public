@@ -30,7 +30,7 @@ module AppropriateBodies
         )
       end
 
-    private
+      private
 
       def check_for_ongoing_induction_period
         trn = PendingInductionSubmission.find(arguments.first).trn

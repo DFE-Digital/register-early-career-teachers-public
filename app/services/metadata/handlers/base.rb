@@ -15,7 +15,7 @@ module Metadata::Handlers
         NotImplementedError
       end
 
-    protected
+      protected
 
       def truncate_models!(*models)
         models.each { it.connection.execute("TRUNCATE #{it.table_name} RESTART IDENTITY") }
@@ -26,7 +26,7 @@ module Metadata::Handlers
       @alert_on_changes = true
     end
 
-  protected
+    protected
 
     def upsert(metadata, attributes)
       metadata.assign_attributes(attributes)
@@ -46,7 +46,7 @@ module Metadata::Handlers
       attrs = {
         class: metadata.class.name,
         id: metadata.id,
-        attributes:,
+        attributes:
       }
 
       Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")

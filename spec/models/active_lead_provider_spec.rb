@@ -5,7 +5,7 @@ describe ActiveLeadProvider do
     it { is_expected.to have_many(:statements) }
     it { is_expected.to have_many(:lead_provider_delivery_partnerships) }
     it { is_expected.to have_many(:delivery_partners).through(:lead_provider_delivery_partnerships) }
-    it { is_expected.to have_many(:expressions_of_interest).class_name('TrainingPeriod').inverse_of(:expression_of_interest) }
+    it { is_expected.to have_many(:expressions_of_interest).class_name("TrainingPeriod").inverse_of(:expression_of_interest) }
     it { is_expected.to have_many(:events) }
   end
 
@@ -51,44 +51,44 @@ describe ActiveLeadProvider do
       # Create an existing partnership for one of the ALPs
       let!(:existing_partnership) do
         FactoryBot.create(:lead_provider_delivery_partnership,
-                          delivery_partner:,
-                          active_lead_provider: assigned_alp)
+          delivery_partner:,
+          active_lead_provider: assigned_alp)
       end
 
-      it 'returns available lead providers for the delivery partner and contract period' do
+      it "returns available lead providers for the delivery partner and contract period" do
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
         expect(result).to contain_exactly(available_alp_1, available_alp_2)
       end
 
-      it 'excludes already assigned lead providers' do
+      it "excludes already assigned lead providers" do
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
         expect(result).not_to include(assigned_alp)
       end
 
-      it 'excludes lead providers from different contract periods' do
+      it "excludes lead providers from different contract periods" do
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
         expect(result).not_to include(different_year_alp)
       end
 
-      it 'includes lead providers assigned to other delivery partners' do
+      it "includes lead providers assigned to other delivery partners" do
         FactoryBot.create(:lead_provider_delivery_partnership,
-                          delivery_partner: other_delivery_partner,
-                          active_lead_provider: available_alp_1)
+          delivery_partner: other_delivery_partner,
+          active_lead_provider: available_alp_1)
 
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
         expect(result).to include(available_alp_1)
       end
 
-      it 'orders results by lead provider name' do
+      it "orders results by lead provider name" do
         # Update lead provider names to test ordering
-        available_alp_1.lead_provider.update!(name: 'Zebra Lead Provider')
-        available_alp_2.lead_provider.update!(name: 'Alpha Lead Provider')
+        available_alp_1.lead_provider.update!(name: "Zebra Lead Provider")
+        available_alp_2.lead_provider.update!(name: "Alpha Lead Provider")
 
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period)
-        expect(result.map { |alp| alp.lead_provider.name }).to eq(['Alpha Lead Provider', 'Zebra Lead Provider'])
+        expect(result.map { |alp| alp.lead_provider.name }).to eq(["Alpha Lead Provider", "Zebra Lead Provider"])
       end
 
-      it 'includes the lead provider relationship' do
+      it "includes the lead provider relationship" do
         result = described_class.available_for_delivery_partner(delivery_partner, contract_period).first
         expect(result.association(:lead_provider)).to be_loaded
       end
@@ -109,8 +109,8 @@ describe ActiveLeadProvider do
 
       before do
         FactoryBot.create(:lead_provider_delivery_partnership,
-                          delivery_partner:,
-                          active_lead_provider: partnered_alp)
+          delivery_partner:,
+          active_lead_provider: partnered_alp)
       end
 
       it "returns active lead providers without existing partnerships for the delivery partner and contract period" do
@@ -128,8 +128,8 @@ describe ActiveLeadProvider do
         other_delivery_partner = FactoryBot.create(:delivery_partner)
         other_partnered_alp = FactoryBot.create(:active_lead_provider, contract_period:)
         FactoryBot.create(:lead_provider_delivery_partnership,
-                          delivery_partner: other_delivery_partner,
-                          active_lead_provider: other_partnered_alp)
+          delivery_partner: other_delivery_partner,
+          active_lead_provider: other_partnered_alp)
 
         result = described_class.without_existing_partnership_for(delivery_partner, contract_period)
         expect(result).to include(other_partnered_alp)

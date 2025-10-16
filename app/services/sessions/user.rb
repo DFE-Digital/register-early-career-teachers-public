@@ -15,9 +15,9 @@ module Sessions
     # @return [Sessions::Users::SchoolUser]
     # @return [Sessions::Users::SchoolPersona]
     def self.from_session(user_session)
-      return unless (type = user_session&.dig('type'))
+      return unless (type = user_session&.dig("type"))
 
-      user_props = user_session.except('type').symbolize_keys
+      user_props = user_session.except("type").symbolize_keys
       type.constantize.new(**user_props)
     rescue NameError
       fail(UnrecognisedType, type)
@@ -39,7 +39,7 @@ module Sessions
 
     # @return [String] all user types except DfE Sign In
     def sign_out_path
-      '/sign-out'
+      "/sign-out"
     end
 
     # @raise [NotImplementedError]

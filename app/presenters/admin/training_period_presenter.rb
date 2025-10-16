@@ -22,7 +22,7 @@ module Admin
       training_period.finished_on.to_fs(:govuk)
     end
 
-  private
+    private
 
     def training_period
       __getobj__

@@ -28,12 +28,12 @@ class GIAS::SchoolLink < ApplicationRecord
 
   # Validations
   validates :link_type,
-            inclusion: { in: LINK_TYPES }
+    inclusion: {in: LINK_TYPES}
 
   validates :link_urn,
-            presence: true,
-            uniqueness: { scope: :urn }
+    presence: true,
+    uniqueness: {scope: :urn}
 
   validates :urn,
-            numericality: { only_integer: true }
+    numericality: {only_integer: true}
 end

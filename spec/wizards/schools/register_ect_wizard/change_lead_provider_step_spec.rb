@@ -1,7 +1,7 @@
 RSpec.describe Schools::RegisterECTWizard::ChangeLeadProviderStep, type: :model do
   subject { described_class.new(wizard:, lead_provider_id:) }
 
-  let(:lead_provider_id) { '1' }
+  let(:lead_provider_id) { "1" }
   let(:school) { FactoryBot.create(:school, :independent) }
   let(:wizard) do
     FactoryBot.build(:register_ect_wizard, current_step: :change_lead_provider, school:)

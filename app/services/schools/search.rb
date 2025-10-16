@@ -8,7 +8,7 @@ module Schools
       query.order("gias_schools.name")
     end
 
-  private
+    private
 
     def all_schools
       School.includes(:gias_school).references(:gias_schools).all

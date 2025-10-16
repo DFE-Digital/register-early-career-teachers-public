@@ -37,7 +37,7 @@ module Teachers
       outcome_type == :failed
     end
 
-  private
+    private
 
     def user_type
       is_admin ? :admin : :ab
@@ -48,11 +48,11 @@ module Teachers
     end
 
     def outcome_text
-      outcome_type == :passed ? "passed" : "failed"
+      (outcome_type == :passed) ? "passed" : "failed"
     end
 
     def outcome_verb
-      outcome_type == :passed ? "pass" : "failing"
+      (outcome_type == :passed) ? "pass" : "failing"
     end
   end
 end

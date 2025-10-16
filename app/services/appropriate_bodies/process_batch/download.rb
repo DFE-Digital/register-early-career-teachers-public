@@ -16,7 +16,7 @@ module AppropriateBodies
 
       # @return [String]
       def type
-        'text/csv'
+        "text/csv"
       end
 
       # @raise [AppropriateBodies::ProcessBatch::Download::MissingCSVDataError]
@@ -37,7 +37,7 @@ module AppropriateBodies
         end
       end
 
-    private
+      private
 
       # @return [Array<String>]
       def headers

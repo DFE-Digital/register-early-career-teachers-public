@@ -4,7 +4,7 @@ module API::DeliveryPartners
 
     attr_reader :scope, :lead_provider_id
 
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: { created_at: :asc })
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, sort: {created_at: :asc})
       @lead_provider_id = lead_provider_id
       @scope = DeliveryPartner.distinct
 
@@ -29,7 +29,7 @@ module API::DeliveryPartners
       fail(ArgumentError, "id needed")
     end
 
-  private
+    private
 
     def preload_associations(results)
       preloaded_results = results
@@ -39,7 +39,7 @@ module API::DeliveryPartners
       unless ignore?(filter: lead_provider_id)
         preloaded_results = preloaded_results
           .references(:metadata_delivery_partners_lead_providers)
-          .where(metadata_delivery_partners_lead_providers: { lead_provider_id: })
+          .where(metadata_delivery_partners_lead_providers: {lead_provider_id:})
       end
 
       preloaded_results
@@ -50,7 +50,7 @@ module API::DeliveryPartners
 
       delivery_partners_with_lead_provider = DeliveryPartner
         .joins(lead_provider_delivery_partnerships: :active_lead_provider)
-        .where(active_lead_provider: { lead_provider_id: })
+        .where(active_lead_provider: {lead_provider_id:})
 
       scope.merge!(delivery_partners_with_lead_provider)
     end
@@ -59,8 +59,8 @@ module API::DeliveryPartners
       return if ignore?(filter: contract_period_years)
 
       delivery_partners_with_contract_periods = DeliveryPartner
-        .joins(lead_provider_delivery_partnerships: { active_lead_provider: :contract_period })
-        .where(active_lead_provider: { contract_period_year: contract_period_years })
+        .joins(lead_provider_delivery_partnerships: {active_lead_provider: :contract_period})
+        .where(active_lead_provider: {contract_period_year: contract_period_years})
 
       scope.merge!(delivery_partners_with_contract_periods)
     end

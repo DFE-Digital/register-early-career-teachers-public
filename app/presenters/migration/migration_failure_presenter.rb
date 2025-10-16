@@ -34,7 +34,7 @@ module Migration
       participant_profile_id || item["id"]
     end
 
-  private
+    private
 
     def migration_failure
       __getobj__

@@ -5,80 +5,80 @@ RSpec.describe EnvironmentHelper, type: :helper do
   include ApplicationHelper
 
   before do
-    stub_const('ENVIRONMENT_COLOUR', nil)
-    stub_const('ENVIRONMENT_PHASE_BANNER_TAG', nil)
-    stub_const('ENVIRONMENT_PHASE_BANNER_CONTENT', nil)
+    stub_const("ENVIRONMENT_COLOUR", nil)
+    stub_const("ENVIRONMENT_PHASE_BANNER_TAG", nil)
+    stub_const("ENVIRONMENT_PHASE_BANNER_CONTENT", nil)
   end
 
-  describe '#environment_specific_header_colour_class' do
-    it('is nil when no colour is set (defaults to blue)') do
+  describe "#environment_specific_header_colour_class" do
+    it("is nil when no colour is set (defaults to blue)") do
       expect(environment_specific_header_colour_class).to be_nil
     end
 
     context "when ENVIRONMENT_COLOUR is set to 'pink'" do
-      it 'returns a pink modifier class' do
-        stub_const('ENVIRONMENT_COLOUR', 'pink')
+      it "returns a pink modifier class" do
+        stub_const("ENVIRONMENT_COLOUR", "pink")
         expect(environment_specific_header_colour_class).to eql("app-header--pink")
       end
     end
   end
 
-  describe '#environment_specific_phase_banner' do
+  describe "#environment_specific_phase_banner" do
     subject { environment_specific_phase_banner }
 
     it "is 'Beta' by default" do
       expect(subject).to include("Beta")
     end
 
-    it 'has a govuk tag with no colour modifier' do
+    it "has a govuk tag with no colour modifier" do
       expect(subject).not_to match(/govuk-tag--\w+/)
     end
 
-    context 'when ENVIRONMENT_PHASE_BANNER_TAG is not set' do
-      it 'includes the default text' do
-        expect(subject).to match('This is a new service')
+    context "when ENVIRONMENT_PHASE_BANNER_TAG is not set" do
+      it "includes the default text" do
+        expect(subject).to match("This is a new service")
       end
 
-      it 'includes the support email address' do
-        expect(subject).to match('teacher.induction@education.gov.uk')
+      it "includes the support email address" do
+        expect(subject).to match("teacher.induction@education.gov.uk")
       end
     end
 
-    context 'when ENVIRONMENT_COLOUR, ENVIRONMENT_PHASE_BANNER_CONTENT and ENVIRONMENT_PHASE_BANNER_TAG are set' do
+    context "when ENVIRONMENT_COLOUR, ENVIRONMENT_PHASE_BANNER_CONTENT and ENVIRONMENT_PHASE_BANNER_TAG are set" do
       before do
-        stub_const('ENVIRONMENT_COLOUR', 'yellow')
-        stub_const('ENVIRONMENT_PHASE_BANNER_TAG', 'Wow')
-        stub_const('ENVIRONMENT_PHASE_BANNER_CONTENT', 'What a nice service')
+        stub_const("ENVIRONMENT_COLOUR", "yellow")
+        stub_const("ENVIRONMENT_PHASE_BANNER_TAG", "Wow")
+        stub_const("ENVIRONMENT_PHASE_BANNER_CONTENT", "What a nice service")
       end
 
-      it 'overwrites the default with the provided value' do
-        expect(subject).to include('Wow')
+      it "overwrites the default with the provided value" do
+        expect(subject).to include("Wow")
       end
 
-      it 'has a govuk tag with a yellow modifier class' do
+      it "has a govuk tag with a yellow modifier class" do
         expect(subject).to match(/govuk-tag govuk-tag--yellow govuk-phase-banner__content__tag/)
       end
 
       it "contains the text 'Give feedback about this service'" do
-        expect(subject).to include('What a nice service')
+        expect(subject).to include("What a nice service")
       end
     end
 
-    describe 'passing custom HTML attributes through' do
+    describe "passing custom HTML attributes through" do
       subject do
         Nokogiri.parse(
           environment_specific_phase_banner(
-            html_attributes: { hello: 'world' },
-            tag_html_attributes: { bonjour: 'le monde' }
+            html_attributes: {hello: "world"},
+            tag_html_attributes: {bonjour: "le monde"}
           )
         )
       end
 
-      it 'sets the custom attributes on the rendered phase banner' do
+      it "sets the custom attributes on the rendered phase banner" do
         expect(subject).to have_css(%(div.govuk-phase-banner[hello='world']))
       end
 
-      it 'sets the custom attributes on the rendered phase banner tag' do
+      it "sets the custom attributes on the rendered phase banner tag" do
         expect(subject).to have_css(%(strong[bonjour='le monde']))
       end
     end

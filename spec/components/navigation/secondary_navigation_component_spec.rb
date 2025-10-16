@@ -3,9 +3,9 @@ RSpec.describe Navigation::SecondaryNavigationComponent, type: :component do
 
   let(:items) do
     [
-      { text: "Overview", href: "/overview", current: true },
-      { text: "Teachers", href: "/teachers", current: false },
-      { text: "Settings", href: "/settings", current: false, classes: "custom-class" }
+      {text: "Overview", href: "/overview", current: true},
+      {text: "Teachers", href: "/teachers", current: false},
+      {text: "Settings", href: "/settings", current: false, classes: "custom-class"}
     ]
   end
 
@@ -77,7 +77,7 @@ RSpec.describe Navigation::SecondaryNavigationComponent, type: :component do
         labelled_by: "page-title",
         visually_hidden_title: "Custom Menu",
         classes: "custom-nav-class",
-        attributes: { "data-module" => "custom-module" }
+        attributes: {"data-module" => "custom-module"}
       )
     end
 
@@ -85,7 +85,7 @@ RSpec.describe Navigation::SecondaryNavigationComponent, type: :component do
 
     it "uses labelled_by instead of aria-label" do
       expect(rendered_content).to have_css('nav[aria-labelledby="page-title"]')
-      expect(rendered_content).not_to have_css('nav[aria-label]')
+      expect(rendered_content).not_to have_css("nav[aria-label]")
     end
 
     it "applies custom classes" do

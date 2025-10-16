@@ -13,8 +13,8 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
 
   let(:context) do
     instance_double(Schools::Shared::MentorAssignmentContext,
-                    ect_at_school_period:,
-                    mentor_at_school_period:)
+      ect_at_school_period:,
+      mentor_at_school_period:)
   end
 
   let(:wizard) do
@@ -25,13 +25,13 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
     )
   end
 
-  describe '#next_step' do
-    it 'returns :confirmation' do
+  describe "#next_step" do
+    it "returns :confirmation" do
       expect(step.next_step).to eq(:confirmation)
     end
   end
 
-  describe '#save' do
+  describe "#save" do
     let(:store) { OpenStruct.new }
 
     let(:wizard) do
@@ -58,36 +58,36 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
         lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
       )
       FactoryBot.create(:training_period, :ongoing, :provider_led,
-                        ect_at_school_period:,
-                        started_on:,
-                        school_partnership:)
+        ect_at_school_period:,
+        started_on:,
+        school_partnership:)
     end
 
-    it 'assigns the mentor to the ECT' do
+    it "assigns the mentor to the ECT" do
       expect { step.save! }.to change { mentor_at_school_period.reload.mentorship_periods.count }.from(0).to(1)
 
       mentorship_period = mentor_at_school_period.mentorship_periods.last
       expect(mentorship_period.mentee).to eq(ect_at_school_period)
     end
 
-    it 'creates a training period for the mentor using ECT current lead provider' do
+    it "creates a training period for the mentor using ECT current lead provider" do
       expect { step.save! }.to change { mentor_at_school_period.reload.training_periods.count }.from(0).to(1)
 
       training_period = mentor_at_school_period.training_periods.last
       expect(training_period).to have_attributes(
         started_on: Date.new(2023, 9, 1),
-        training_programme: 'provider_led'
+        training_programme: "provider_led"
       )
     end
 
-    it 'records training and mentoring events' do
+    it "records training and mentoring events" do
       step.save!
 
       events = Event.where(teacher: [mentor_at_school_period.teacher, ect_at_school_period.teacher])
       expect(events.pluck(:event_type)).to contain_exactly(
-        'teacher_starts_training_period',
-        'teacher_starts_mentoring',
-        'teacher_starts_being_mentored'
+        "teacher_starts_training_period",
+        "teacher_starts_mentoring",
+        "teacher_starts_being_mentored"
       )
     end
   end

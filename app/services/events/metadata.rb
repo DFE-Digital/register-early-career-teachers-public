@@ -26,7 +26,7 @@ module Events
     end
 
     def to_hash
-      { author:, appropriate_body: }
+      {author:, appropriate_body:}
     end
   end
 end

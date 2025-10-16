@@ -17,13 +17,13 @@ class SchoolPartnership < ApplicationRecord
   # Validations
   validates :lead_provider_delivery_partnership_id, presence: true
   validates :school_id,
-            presence: true,
-            uniqueness: {
-              scope: :lead_provider_delivery_partnership_id,
-              message: 'School and lead provider delivery partnership combination must be unique'
-            }
+    presence: true,
+    uniqueness: {
+      scope: :lead_provider_delivery_partnership_id,
+      message: "School and lead provider delivery partnership combination must be unique"
+    }
 
   # Scopes
-  scope :for_contract_period, ->(year) { joins(:contract_period).where(contract_periods: { year: }) }
-  scope :earliest_first, -> { order(created_at: 'asc') }
+  scope :for_contract_period, ->(year) { joins(:contract_period).where(contract_periods: {year:}) }
+  scope :earliest_first, -> { order(created_at: "asc") }
 end

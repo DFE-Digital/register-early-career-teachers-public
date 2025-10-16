@@ -23,7 +23,7 @@ module AppropriateBodies
         redirect_to edit_ab_claim_an_ect_check_path(@pending_induction_submission)
       end
 
-    private
+      private
 
       def find_pending_induction_submission
         PendingInductionSubmissions::Search.new(appropriate_body: @appropriate_body).pending_induction_submissions.find(params[:id])

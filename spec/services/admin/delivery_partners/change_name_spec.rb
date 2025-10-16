@@ -8,8 +8,8 @@ RSpec.describe Admin::DeliveryPartners::ChangeName do
   end
 
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Alpha") }
-  let(:user)             { FactoryBot.create(:user, :admin) }
-  let(:author)           { Sessions::Users::DfEPersona.new(email: user.email) }
+  let(:user) { FactoryBot.create(:user, :admin) }
+  let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
 
   before do
     allow(Events::Record).to receive(:record_delivery_partner_name_changed_event!)

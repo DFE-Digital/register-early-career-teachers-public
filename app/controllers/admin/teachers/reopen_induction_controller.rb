@@ -7,7 +7,7 @@ module Admin
 
       before_action -> do
         redirect_to admin_teacher_path(@teacher),
-                    notice: "No completed induction period found"
+          notice: "No completed induction period found"
       end, unless: :induction_complete_with_outcome?
 
       def confirm = @reopen_induction = ReopenInductionPeriod.new
@@ -20,12 +20,12 @@ module Admin
         @reopen_induction.reopen_induction_period!
 
         redirect_to admin_teacher_path(@teacher),
-                    alert: "Induction was successfully reopened"
+          alert: "Induction was successfully reopened"
       rescue ActiveModel::ValidationError
         render :confirm, status: :unprocessable_content
       end
 
-    private
+      private
 
       def set_teacher
         @teacher = Teacher

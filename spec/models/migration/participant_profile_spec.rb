@@ -8,9 +8,9 @@ describe Migration::ParticipantProfile, type: :model do
 
     let(:participant_profile) do
       FactoryBot.create(:migration_participant_profile,
-                        :ect,
-                        school_cohort: current_school_cohort,
-                        cohort_changed_after_payments_frozen:)
+        :ect,
+        school_cohort: current_school_cohort,
+        cohort_changed_after_payments_frozen:)
     end
 
     context "when cohort_changed_after_payments_frozen flag is not set" do
@@ -31,20 +31,20 @@ describe Migration::ParticipantProfile, type: :model do
 
         before do
           FactoryBot.create(:migration_induction_record,
-                            participant_profile:,
-                            induction_programme: initial_school_cohort.default_induction_programme,
-                            start_date: Date.new(2023, 9, 1),
-                            end_date: Date.new(2023, 10, 1))
+            participant_profile:,
+            induction_programme: initial_school_cohort.default_induction_programme,
+            start_date: Date.new(2023, 9, 1),
+            end_date: Date.new(2023, 10, 1))
           FactoryBot.create(:migration_induction_record,
-                            participant_profile:,
-                            induction_programme: frozen_school_cohort.default_induction_programme,
-                            start_date: Date.new(2023, 10, 1),
-                            end_date: Date.new(2024, 9, 1))
+            participant_profile:,
+            induction_programme: frozen_school_cohort.default_induction_programme,
+            start_date: Date.new(2023, 10, 1),
+            end_date: Date.new(2024, 9, 1))
           FactoryBot.create(:migration_induction_record,
-                            participant_profile:,
-                            induction_programme: target_school_cohort.default_induction_programme,
-                            start_date: Date.new(2024, 9, 1),
-                            end_date: nil)
+            participant_profile:,
+            induction_programme: target_school_cohort.default_induction_programme,
+            start_date: Date.new(2024, 9, 1),
+            end_date: nil)
         end
 
         it { is_expected.to eq(2021) }
@@ -55,22 +55,22 @@ describe Migration::ParticipantProfile, type: :model do
 
         before do
           FactoryBot.create(:migration_induction_record,
-                            participant_profile:,
-                            induction_programme: frozen_school_cohort.default_induction_programme,
-                            start_date: Date.new(2021, 10, 1),
-                            end_date: Date.new(2024, 9, 1))
+            participant_profile:,
+            induction_programme: frozen_school_cohort.default_induction_programme,
+            start_date: Date.new(2021, 10, 1),
+            end_date: Date.new(2024, 9, 1))
 
           FactoryBot.create(:migration_induction_record,
-                            participant_profile:,
-                            induction_programme: target_school_cohort.default_induction_programme,
-                            start_date: Date.new(2024, 9, 1),
-                            end_date: Date.new(2024, 10, 1))
+            participant_profile:,
+            induction_programme: target_school_cohort.default_induction_programme,
+            start_date: Date.new(2024, 9, 1),
+            end_date: Date.new(2024, 10, 1))
 
           FactoryBot.create(:migration_induction_record,
-                            participant_profile:,
-                            induction_programme: frozen_school_cohort.default_induction_programme,
-                            start_date: Date.new(2024, 10, 1),
-                            end_date: nil)
+            participant_profile:,
+            induction_programme: frozen_school_cohort.default_induction_programme,
+            start_date: Date.new(2024, 10, 1),
+            end_date: nil)
         end
 
         it { is_expected.to be_nil }

@@ -1,7 +1,7 @@
 module Admin
   module ImportECT
     class FindECTController < AdminController
-      layout 'full'
+      layout "full"
 
       def new
         @pending_induction_submission = PendingInductionSubmission.new
@@ -32,7 +32,7 @@ module Admin
         redirect_to admin_teacher_path(existing_teacher), notice: "Teacher #{existing_teacher.trn} already exists in the system"
       end
 
-    private
+      private
 
       def pending_induction_submission_params
         params.expect(pending_induction_submission: %i[trn date_of_birth])

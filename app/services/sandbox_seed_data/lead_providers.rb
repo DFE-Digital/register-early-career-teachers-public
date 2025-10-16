@@ -7,7 +7,7 @@ module SandboxSeedData
       "Teach First" => 2021..2025,
       "National Institute of Teaching" => 2021..2025,
       "Education Development Trust" => 2021..2025,
-      "UCL Institute of Education" => 2021..2025,
+      "UCL Institute of Education" => 2021..2025
     }.freeze
 
     def plant
@@ -25,11 +25,11 @@ module SandboxSeedData
             FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
         end
 
-        log_seed_info("#{Colourize.text(name, colour(index))} (#{active_years.to_a.join(', ')})")
+        log_seed_info("#{Colourize.text(name, colour(index))} (#{active_years.to_a.join(", ")})")
       end
     end
 
-  private
+    private
 
     def colour(index)
       Colourize::COLOURS.keys[index % Colourize::COLOURS.size]

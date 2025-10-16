@@ -9,7 +9,7 @@ module MentorAtSchoolPeriods
     def training_period
       @training_period ||= ::TrainingPeriod
         .includes(mentor_at_school_period: [:teacher])
-        .where(teacher: { trn: })
+        .where(teacher: {trn:})
         .latest_first
         .first
     end
@@ -22,7 +22,7 @@ module MentorAtSchoolPeriods
       school_partnership&.school || training_period&.mentor_at_school_period&.school
     end
 
-  private
+    private
 
     delegate :delivery_partner, to: :school_partnership, allow_nil: true
     delegate :school_partnership, to: :training_period, allow_nil: true

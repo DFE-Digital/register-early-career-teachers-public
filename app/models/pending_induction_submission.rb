@@ -4,14 +4,14 @@
 # It is intended to be a short-lived record that we will process, verify and
 # eventually write to the actual database before deleting the record here.
 class PendingInductionSubmission < ApplicationRecord
-  VALID_NUMBER_OF_TERMS = { min: 0, max: 16 }.freeze
+  VALID_NUMBER_OF_TERMS = {min: 0, max: 16}.freeze
   include Interval
   include SharedInductionPeriodValidation
   include SharedNumberOfTermsValidation
 
   attribute :confirmed
 
-  enum :outcome, { pass: "pass", fail: "fail" }
+  enum :outcome, {pass: "pass", fail: "fail"}
 
   # Scopes
   scope :passed, -> { without_errors.pass.where.not(finished_on: nil, delete_at: nil) }
@@ -31,85 +31,85 @@ class PendingInductionSubmission < ApplicationRecord
 
   # Validations
   validates :trn,
-            presence: { message: "Enter a TRN" },
-            format: {
-              with: Teacher::TRN_FORMAT,
-              message: "TRN must be 7 numeric digits"
-            },
-            on: :find_ect
+    presence: {message: "Enter a TRN"},
+    format: {
+      with: Teacher::TRN_FORMAT,
+      message: "TRN must be 7 numeric digits"
+    },
+    on: :find_ect
 
   validates :establishment_id,
-            format: {
-              with: /\A\d{4}\/\d{3}\z/,
-              message: "Enter an establishment ID in the format 1234/567"
-            },
-            allow_nil: true
+    format: {
+      with: /\A\d{4}\/\d{3}\z/,
+      message: "Enter an establishment ID in the format 1234/567"
+    },
+    allow_nil: true
 
   validates :induction_programme,
-            inclusion: {
-              in: %w[fip cip diy unknown], # pre-2025
-              message: "Choose an induction programme"
-            },
-            on: :register_ect
+    inclusion: {
+      in: %w[fip cip diy unknown], # pre-2025
+      message: "Choose an induction programme"
+    },
+    on: :register_ect
 
   validates :training_programme,
-            inclusion: {
-              in: ::TRAINING_PROGRAMME.keys.map(&:to_s), # post-2025
-              message: "Choose an induction training programme"
-            },
-            on: :register_ect
+    inclusion: {
+      in: ::TRAINING_PROGRAMME.keys.map(&:to_s), # post-2025
+      message: "Choose an induction training programme"
+    },
+    on: :register_ect
 
   validates :started_on,
-            presence: { message: "Enter a start date" },
-            on: :register_ect
+    presence: {message: "Enter a start date"},
+    on: :register_ect
 
   validates :finished_on,
-            presence: { message: "Enter a finish date" },
-            on: %i[release_ect record_outcome]
+    presence: {message: "Enter a finish date"},
+    on: %i[release_ect record_outcome]
 
   validates :date_of_birth,
-            presence: { message: "Enter a date of birth" },
-            inclusion: {
-              in: 100.years.ago.to_date..18.years.ago.to_date,
-              message: "Teacher must be between 18 and 100 years old",
-            },
-            on: :find_ect
+    presence: {message: "Enter a date of birth"},
+    inclusion: {
+      in: 100.years.ago.to_date..18.years.ago.to_date,
+      message: "Teacher must be between 18 and 100 years old"
+    },
+    on: :find_ect
 
   validates :confirmed,
-            acceptance: { message: "Confirm if these details are correct or try your search again" },
-            on: :check_ect
+    acceptance: {message: "Confirm if these details are correct or try your search again"},
+    on: :check_ect
 
   validates :outcome,
-            inclusion: {
-              in: ::INDUCTION_OUTCOMES.keys.map(&:to_s),
-              message: "Outcome must be either 'passed' or 'failed'"
-            },
-            on: :record_outcome
+    inclusion: {
+      in: ::INDUCTION_OUTCOMES.keys.map(&:to_s),
+      message: "Outcome must be either 'passed' or 'failed'"
+    },
+    on: :record_outcome
 
   validates :trs_qts_awarded_on,
-            presence: { message: "QTS has not been awarded" },
-            on: :register_ect
+    presence: {message: "QTS has not been awarded"},
+    on: :register_ect
 
   validate :start_date_after_qts_date, on: :register_ect
 
   validates :trs_induction_status,
-            inclusion: {
-              in: TRS::Teacher::INDUCTION_STATUSES,
-              message: "TRS Induction Status is not known",
-            },
-            on: :register_ect
+    inclusion: {
+      in: TRS::Teacher::INDUCTION_STATUSES,
+      message: "TRS Induction Status is not known"
+    },
+    on: :register_ect
 
   validate :no_future_induction_periods,
-           if: -> { started_on.present? },
-           on: :register_ect
+    if: -> { started_on.present? },
+    on: :register_ect
 
   validate :no_end_date_before_start_date,
-           if: -> { finished_on.present? },
-           on: %i[release_ect record_outcome]
+    if: -> { finished_on.present? },
+    on: %i[release_ect record_outcome]
 
   # Instance methods
-  def exempt? = trs_induction_status.eql?('Exempt')
-  def passed? = trs_induction_status.eql?('Passed')
+  def exempt? = trs_induction_status.eql?("Exempt")
+  def passed? = trs_induction_status.eql?("Passed")
   def failed? = %w[Failed FailedInWales].include?(trs_induction_status)
   def no_qts? = trs_qts_awarded_on.blank?
   def prohibited_from_teaching? = trs_prohibited_from_teaching
@@ -141,7 +141,7 @@ class PendingInductionSubmission < ApplicationRecord
     super || ::PROGRAMME_MAPPER[induction_programme]
   end
 
-private
+  private
 
   def start_date_after_qts_date
     return if trs_qts_awarded_on.blank?

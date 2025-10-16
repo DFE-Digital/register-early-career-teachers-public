@@ -2,7 +2,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
   before { FactoryBot.create(:lead_provider) } # Needed for metadata.
 
   it_behaves_like "a query that avoids includes" do
-    let(:params) { { contract_period_year: FactoryBot.create(:contract_period).year } }
+    let(:params) { {contract_period_year: FactoryBot.create(:contract_period).year} }
 
     before { FactoryBot.create(:school, :eligible) }
   end
@@ -74,7 +74,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
 
     let(:query_params) do
       {
-        contract_period_year:,
+        contract_period_year:
       }
     end
 
@@ -121,7 +121,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
 
         let(:query_params) do
           {
-            contract_period_year:,
+            contract_period_year:
           }
         end
 
@@ -192,7 +192,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
         context "when `updated_since` param is omitted" do
           let(:query_params) do
             {
-              contract_period_year: contract_period.year,
+              contract_period_year: contract_period.year
             }
           end
 
@@ -219,7 +219,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
         let(:query_params) do
           {
             contract_period_year: contract_period.year,
-            urn:,
+            urn:
           }
         end
 
@@ -230,7 +230,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
         context "when `urn` param is omitted" do
           let(:query_params) do
             {
-              contract_period_year: contract_period.year,
+              contract_period_year: contract_period.year
             }
           end
 
@@ -263,20 +263,20 @@ RSpec.describe API::Schools::Query, :with_metadata do
       let(:query_params) do
         {
           contract_period_year: contract_period.year,
-          sort:,
+          sort:
         }
       end
 
       it { is_expected.to eq([school2, school1, school3]) }
 
       context "when sorting by created at, descending" do
-        let(:sort) { { created_at: :desc } }
+        let(:sort) { {created_at: :desc} }
 
         it { is_expected.to eq([school3, school1, school2]) }
       end
 
       context "when sorting by updated at, ascending" do
-        let(:sort) { { updated_at: :asc } }
+        let(:sort) { {updated_at: :asc} }
 
         before do
           school1.update!(updated_at: 1.day.from_now)
@@ -287,7 +287,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
       end
 
       context "when sorting by multiple attributes" do
-        let(:sort) { { updated_at: :asc, created_at: :desc } }
+        let(:sort) { {updated_at: :asc, created_at: :desc} }
 
         before do
           school1.update!(updated_at: 1.day.from_now)
@@ -309,7 +309,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
     let!(:contract_period) { FactoryBot.create(:contract_period) }
     let(:query_params) do
       {
-        contract_period_year: contract_period.id,
+        contract_period_year: contract_period.id
       }
     end
 
@@ -334,7 +334,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
     let!(:contract_period) { FactoryBot.create(:contract_period) }
     let(:query_params) do
       {
-        contract_period_year: contract_period.id,
+        contract_period_year: contract_period.id
       }
     end
 

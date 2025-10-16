@@ -11,7 +11,7 @@ module TeachersIndex
       @query = query
     end
 
-  private
+    private
 
     attr_reader :teachers, :pagy, :status, :query
 

@@ -11,10 +11,10 @@ module AppropriateBodies
 
     # @see [BatchRows::CLAIM_CSV_HEADINGS, BatchRows::ACTION_CSV_HEADINGS]
     attr_accessor :headers,
-                  :file_name,
-                  :file_size,
-                  :file_type,
-                  :file_content
+      :file_name,
+      :file_size,
+      :file_type,
+      :file_content
 
     # Attribute validations
     validates :file_name, presence: true
@@ -52,13 +52,13 @@ module AppropriateBodies
 
     # @return [Hash{Symbol => String}]
     def metadata
-      { file_name:, file_size: file_size.to_s, file_type: }
+      {file_name:, file_size: file_size.to_s, file_type:}
     end
 
-  private
+    private
 
     def rows
-      parse.reject { |row| row['TRN'].blank? }
+      parse.reject { |row| row["TRN"].blank? }
     end
 
     # NB: lines can be commented out for easier dev and testing
@@ -69,24 +69,24 @@ module AppropriateBodies
     # Validation messages
 
     def csv_file
-      errors.add(:csv_file, 'The selected file must be a CSV') unless is_a_csv?
+      errors.add(:csv_file, "The selected file must be a CSV") unless is_a_csv?
     end
 
     def csv_file_size
-      errors.add(:csv_file, 'File size must be less than 100KB') if is_too_large?
+      errors.add(:csv_file, "File size must be less than 100KB") if is_too_large?
     end
 
     def row_count
       errors.add(:csv_file, "The selected file must have fewer than #{MAX_ROW_SIZE} rows") if has_too_many_rows?
-      errors.add(:csv_file, 'The selected file is empty') if has_too_few_rows?
+      errors.add(:csv_file, "The selected file is empty") if has_too_few_rows?
     end
 
     def unique_trns
-      errors.add(:csv_file, 'The selected file has duplicate ECTs') unless has_unique_trns?
+      errors.add(:csv_file, "The selected file has duplicate ECTs") unless has_unique_trns?
     end
 
     def template
-      errors.add(:csv_file, 'The selected file must follow the template') unless has_valid_headers?
+      errors.add(:csv_file, "The selected file must follow the template") unless has_valid_headers?
     end
 
     # Validation checks
@@ -117,7 +117,7 @@ module AppropriateBodies
     end
 
     def has_unique_trns?
-      trns = rows.map { |row| row['TRN'] }
+      trns = rows.map { |row| row["TRN"] }
       trns.uniq.count.eql?(trns.count)
     end
   end

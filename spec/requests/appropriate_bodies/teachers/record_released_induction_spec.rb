@@ -1,26 +1,26 @@
-RSpec.describe 'Appropriate body releasing an ECT' do
+RSpec.describe "Appropriate body releasing an ECT" do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
-  describe 'GET /appropriate-body/teachers/:id/release/new' do
-    context 'when not signed in' do
-      it 'redirects to the root page' do
+  describe "GET /appropriate-body/teachers/:id/release/new" do
+    context "when not signed in" do
+      it "redirects to the root page" do
         get("/appropriate-body/teachers/#{teacher.id}/release/new")
         expect(response).to redirect_to(root_url)
       end
     end
 
-    context 'when signed in as an appropriate body user' do
+    context "when signed in as an appropriate body user" do
       before do
         sign_in_as(:appropriate_body_user, appropriate_body:)
       end
 
-      context 'and a teacher actively training' do
+      context "and a teacher actively training" do
         before do
           FactoryBot.create(:induction_period, :ongoing, appropriate_body:, teacher:)
         end
 
-        it 'instantiates a new PendingInductionSubmission and renders the page' do
+        it "instantiates a new PendingInductionSubmission and renders the page" do
           allow(PendingInductionSubmission).to receive(:new).and_call_original
 
           get("/appropriate-body/teachers/#{teacher.id}/release/new")
@@ -32,15 +32,15 @@ RSpec.describe 'Appropriate body releasing an ECT' do
     end
   end
 
-  describe 'POST /appropriate-body/teachers/:id/release' do
-    context 'when not signed in' do
-      it 'redirects to the root page' do
+  describe "POST /appropriate-body/teachers/:id/release" do
+    context "when not signed in" do
+      it "redirects to the root page" do
         post("/appropriate-body/teachers/#{teacher.id}/release")
         expect(response).to redirect_to(root_url)
       end
     end
 
-    context 'when signed in as an appropriate body user' do
+    context "when signed in as an appropriate body user" do
       before do
         sign_in_as(:appropriate_body_user, appropriate_body:)
         allow(AppropriateBodies::RecordRelease).to receive(:new).and_call_original
@@ -64,7 +64,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
           }
         end
 
-        it 'uses PendingInductionSubmissions::Build to instantiate the PendingInductionSubmission' do
+        it "uses PendingInductionSubmissions::Build to instantiate the PendingInductionSubmission" do
           post(
             "/appropriate-body/teachers/#{teacher.id}/release",
             params: release_params
@@ -73,7 +73,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
           expect(PendingInductionSubmissions::Build).to have_received(:closing_induction_period).once
         end
 
-        it 'updates the induction period and redirects to show page' do
+        it "updates the induction period and redirects to show page" do
           post(
             "/appropriate-body/teachers/#{teacher.id}/release",
             params: release_params
@@ -86,7 +86,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
           expect(response).to redirect_to("/appropriate-body/teachers/#{teacher.id}/release")
         end
 
-        context 'with missing params' do
+        context "with missing params" do
           let(:invalid_params) do
             {
               pending_induction_submission: {
@@ -96,17 +96,17 @@ RSpec.describe 'Appropriate body releasing an ECT' do
             }
           end
 
-          it 'renders the new form with errors' do
+          it "renders the new form with errors" do
             post(
               "/appropriate-body/teachers/#{teacher.id}/release",
               params: invalid_params
             )
 
-            expect(response.body).to include('There is a problem')
+            expect(response.body).to include("There is a problem")
           end
         end
 
-        context 'when finished_on is before started_on' do
+        context "when finished_on is before started_on" do
           let(:invalid_params) do
             {
               pending_induction_submission: {
@@ -122,7 +122,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
               params: invalid_params
             )
 
-            expect(response.body).to include('The end date must be later than the start date')
+            expect(response.body).to include("The end date must be later than the start date")
           end
         end
       end

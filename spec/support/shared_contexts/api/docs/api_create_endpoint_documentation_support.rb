@@ -7,15 +7,15 @@ RSpec.shared_context "an API create endpoint documentation", :exceptions_app do 
       security [api_key: []]
 
       parameter name: :params,
-                in: :body,
-                style: :deepObject,
-                required: false,
-                schema: {
-                  "$ref": options[:request_schema_ref],
-                }
+        in: :body,
+        style: :deepObject,
+        required: false,
+        schema: {
+          "$ref": options[:request_schema_ref]
+        }
 
       response "200", "The created #{options[:resource_description]}" do
-        schema({ "$ref": options[:response_schema_ref] })
+        schema({"$ref": options[:response_schema_ref]})
 
         run_test!
       end
@@ -23,15 +23,15 @@ RSpec.shared_context "an API create endpoint documentation", :exceptions_app do 
       response "401", "Unauthorized" do
         let(:token) { "invalid" }
 
-        schema({ "$ref": "#/components/schemas/UnauthorisedResponse" })
+        schema({"$ref": "#/components/schemas/UnauthorisedResponse"})
 
         run_test!
       end
 
       response "400", "Bad request" do
-        let(:params) { { data: {} } }
+        let(:params) { {data: {}} }
 
-        schema({ "$ref": "#/components/schemas/BadRequestResponse" })
+        schema({"$ref": "#/components/schemas/BadRequestResponse"})
 
         run_test!
       end
@@ -39,7 +39,7 @@ RSpec.shared_context "an API create endpoint documentation", :exceptions_app do 
       response "422", "Unprocessable entity" do
         let(:params) { invalid_params }
 
-        schema({ "$ref": "#/components/schemas/UnprocessableContentResponse" })
+        schema({"$ref": "#/components/schemas/UnprocessableContentResponse"})
 
         run_test!
       end

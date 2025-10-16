@@ -20,7 +20,7 @@ module Admin
         end
       end
 
-    private
+      private
 
       def find_pending_induction_submission
         @pending_induction_submission = PendingInductionSubmission.find(params[:id])

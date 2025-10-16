@@ -1,34 +1,35 @@
 module Schools
   class RegisterECT
     include TrainingPeriodSources
+
     attr_reader :school_reported_appropriate_body,
-                :corrected_name,
-                :email,
-                :lead_provider,
-                :training_programme,
-                :school,
-                :started_on,
-                :teacher,
-                :trn,
-                :trs_first_name,
-                :trs_last_name,
-                :working_pattern,
-                :author,
-                :ect_at_school_period,
-                :training_period
+      :corrected_name,
+      :email,
+      :lead_provider,
+      :training_programme,
+      :school,
+      :started_on,
+      :teacher,
+      :trn,
+      :trs_first_name,
+      :trs_last_name,
+      :working_pattern,
+      :author,
+      :ect_at_school_period,
+      :training_period
 
     def initialize(school_reported_appropriate_body:,
-                   corrected_name:,
-                   email:,
-                   lead_provider:,
-                   training_programme:,
-                   school:,
-                   started_on:,
-                   trn:,
-                   trs_first_name:,
-                   trs_last_name:,
-                   working_pattern:,
-                   author:)
+      corrected_name:,
+      email:,
+      lead_provider:,
+      training_programme:,
+      school:,
+      started_on:,
+      trn:,
+      trs_first_name:,
+      trs_last_name:,
+      working_pattern:,
+      author:)
       @school_reported_appropriate_body = school_reported_appropriate_body
       @corrected_name = corrected_name
       @email = email
@@ -58,7 +59,7 @@ module Schools
       @ect_at_school_period
     end
 
-  private
+    private
 
     def already_registered_as_an_ect?
       # Check if ECT is already registered at THIS school to prevent duplicates
@@ -76,19 +77,19 @@ module Schools
 
     def create_training_period!
       @training_period = case training_programme
-                         when 'school_led'
-                           ::TrainingPeriods::Create.school_led(
-                             period: ect_at_school_period,
-                             started_on: ect_at_school_period.started_on
-                           ).call
-                         when 'provider_led'
-                           ::TrainingPeriods::Create.provider_led(
-                             period: ect_at_school_period,
-                             started_on: ect_at_school_period.started_on,
-                             school_partnership:,
-                             expression_of_interest:
-                           ).call
-                         end
+      when "school_led"
+        ::TrainingPeriods::Create.school_led(
+          period: ect_at_school_period,
+          started_on: ect_at_school_period.started_on
+        ).call
+      when "provider_led"
+        ::TrainingPeriods::Create.provider_led(
+          period: ect_at_school_period,
+          started_on: ect_at_school_period.started_on,
+          school_partnership:,
+          expression_of_interest:
+        ).call
+      end
     end
 
     def school_partnership
@@ -97,18 +98,18 @@ module Schools
 
     def start_at_school!
       teacher.ect_at_school_periods.build(school_reported_appropriate_body:,
-                                          email:,
-                                          school:,
-                                          started_on:,
-                                          working_pattern:) do |ect|
+        email:,
+        school:,
+        started_on:,
+        working_pattern:) do |ect|
         ect.save!(context: :register_ect)
       end
     end
 
     def update_school_last_choices!
       school.update!(last_chosen_appropriate_body: school_reported_appropriate_body,
-                     last_chosen_lead_provider: lead_provider,
-                     last_chosen_training_programme: training_programme)
+        last_chosen_lead_provider: lead_provider,
+        last_chosen_training_programme: training_programme)
     end
 
     def close_ongoing_ect_period!

@@ -48,23 +48,23 @@ describe GIAS::School do
   describe "enums" do
     it {
       is_expected.to define_enum_for(:funding_eligibility)
-                       .with_values(eligible_for_fip: "eligible_for_fip",
-                                    eligible_for_cip: "eligible_for_cip",
-                                    ineligible: "ineligible")
-                       .backed_by_column_of_type(:enum)
-                       .with_prefix(:funding)
-                       .validating
+        .with_values(eligible_for_fip: "eligible_for_fip",
+          eligible_for_cip: "eligible_for_cip",
+          ineligible: "ineligible")
+        .backed_by_column_of_type(:enum)
+        .with_prefix(:funding)
+        .validating
     }
 
     it {
       is_expected.to define_enum_for(:status)
-                       .with_values(open: "open",
-                                    closed: "closed",
-                                    proposed_to_close: "proposed_to_close",
-                                    proposed_to_open: "proposed_to_open")
-                       .backed_by_column_of_type(:enum)
-                       .with_suffix
-                       .validating
+        .with_values(open: "open",
+          closed: "closed",
+          proposed_to_close: "proposed_to_close",
+          proposed_to_open: "proposed_to_open")
+        .backed_by_column_of_type(:enum)
+        .with_suffix
+        .validating
     }
   end
 
@@ -82,8 +82,8 @@ describe GIAS::School do
 
     it {
       is_expected.to validate_inclusion_of(:type_name)
-                       .in_array(GIAS::Types::ALL_TYPES)
-                       .with_message("is not a valid school type")
+        .in_array(GIAS::Types::ALL_TYPES)
+        .with_message("is not a valid school type")
     }
 
     it { is_expected.to validate_numericality_of(:ukprn).only_integer.allow_nil }

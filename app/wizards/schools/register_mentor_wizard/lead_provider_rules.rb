@@ -2,11 +2,11 @@ module Schools
   module RegisterMentorWizard
     class LeadProviderRules < ::Rules::Base
       delegate :provider_led_ect?,
-               :mentoring_at_new_school_only?,
-               :funding_available?,
-               :ect_lead_provider_invalid?,
-               :previously_registered_as_mentor?,
-               to: :subject
+        :mentoring_at_new_school_only?,
+        :funding_available?,
+        :ect_lead_provider_invalid?,
+        :previously_registered_as_mentor?,
+        to: :subject
 
       def show_row_in_check_your_answers?
         provider_led_ect? && (mentoring_at_new_school_with_funding? || ect_lead_provider_invalid?)
@@ -22,7 +22,7 @@ module Schools
         previously_registered_as_mentor? ? :previous_training_period_details : :email_address
       end
 
-    private
+      private
 
       def mentoring_at_new_school_with_funding? = mentoring_at_new_school_only? && funding_available?
     end

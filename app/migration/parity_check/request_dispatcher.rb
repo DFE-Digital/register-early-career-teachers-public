@@ -28,7 +28,7 @@ module ParityCheck
       end
     end
 
-  private
+    private
 
     def finalise_run
       failed_requests.any? ? run.halt! : run.complete!

@@ -14,7 +14,7 @@ module Schools
         value_as_date.strftime(Date::DATE_FORMATS[:govuk])
       end
 
-    private
+      private
 
       attr_reader :current_date
 

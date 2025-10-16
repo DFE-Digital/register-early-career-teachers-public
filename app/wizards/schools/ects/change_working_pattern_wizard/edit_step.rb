@@ -5,14 +5,14 @@ module Schools
         attribute :working_pattern, :string
 
         validates :working_pattern,
-                  presence: { message: "Select a working pattern" }
+          presence: {message: "Select a working pattern"}
 
         validates :working_pattern,
-                  comparison: {
-                    other_than: ->(record) { record.ect_at_school_period.working_pattern },
-                    message: "The working pattern must be different from the current working pattern",
-                    allow_blank: true
-                  }
+          comparison: {
+            other_than: ->(record) { record.ect_at_school_period.working_pattern },
+            message: "The working pattern must be different from the current working pattern",
+            allow_blank: true
+          }
 
         def self.permitted_params = [:working_pattern]
 
@@ -30,7 +30,7 @@ module Schools
           store.working_pattern = working_pattern if valid_step?
         end
 
-      private
+        private
 
         def pre_populate_attributes
           self.working_pattern = store.working_pattern.presence ||

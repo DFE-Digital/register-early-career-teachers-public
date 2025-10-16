@@ -24,7 +24,7 @@ module Sessions
         {
           author_email: email,
           author_name: name,
-          author_type: USER_TYPE,
+          author_type: USER_TYPE
         }
       end
 
@@ -39,11 +39,11 @@ module Sessions
           "email" => email,
           "name" => name,
           "last_active_at" => last_active_at,
-          "school_urn" => school_urn.presence,
+          "school_urn" => school_urn.presence
         }
       end
 
-    private
+      private
 
       def school_from(urn)
         ::School.find_by(urn:).tap do |school|

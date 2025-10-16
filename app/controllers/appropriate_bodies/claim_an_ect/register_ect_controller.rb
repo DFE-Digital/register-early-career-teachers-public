@@ -26,7 +26,7 @@ module AppropriateBodies
         @pending_induction_submission = find_pending_induction_submission
       end
 
-    private
+      private
 
       def update_params
         params.expect(

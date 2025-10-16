@@ -13,7 +13,7 @@ class CreateActiveStorageVariantRecords < ActiveRecord::Migration[6.0]
     end
   end
 
-private
+  private
 
   def primary_key_type
     config = Rails.configuration.generators

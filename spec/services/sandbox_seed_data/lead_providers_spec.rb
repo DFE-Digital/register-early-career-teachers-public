@@ -1,7 +1,7 @@
 RSpec.describe SandboxSeedData::LeadProviders do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
-  let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
+  let(:logger) { instance_double(Logger, :info => nil, "formatter=" => nil, "level=" => nil) }
   let(:all_registration_years) { described_class::DATA.values.map(&:to_a).flatten }
 
   before do

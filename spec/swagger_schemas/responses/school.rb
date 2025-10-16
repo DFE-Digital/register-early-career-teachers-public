@@ -4,7 +4,7 @@ SCHOOL_RESPONSE = {
   required: %i[data],
   properties: {
     data: {
-      "$ref": "#/components/schemas/School",
-    },
-  },
+      "$ref": "#/components/schemas/School"
+    }
+  }
 }.freeze

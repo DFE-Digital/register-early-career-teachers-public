@@ -13,7 +13,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
   end
 
   describe ".lead_provider_id" do
-    let(:filter_params) { { lead_provider_id: 123 } }
+    let(:filter_params) { {lead_provider_id: 123} }
 
     it "returns filter param lead_provider_id" do
       expect(component.lead_provider_id).to eq(123)
@@ -31,7 +31,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
   end
 
   describe ".contract_period_year" do
-    let(:filter_params) { { contract_period_year: 2025 } }
+    let(:filter_params) { {contract_period_year: 2025} }
 
     it "returns filter param contract_period_year" do
       expect(component.contract_period_year).to eq(2025)
@@ -57,7 +57,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
   end
 
   describe ".statement_date" do
-    let(:filter_params) { { statement_date: "2025-01" } }
+    let(:filter_params) { {statement_date: "2025-01"} }
 
     it "returns filter param statement_date" do
       expect(component.statement_date).to eq("2025-01")
@@ -79,7 +79,7 @@ RSpec.describe Admin::Statements::FilterComponent, type: :component do
   end
 
   describe ".statement_type" do
-    let(:filter_params) { { statement_type: "all" } }
+    let(:filter_params) { {statement_type: "all"} }
 
     it "returns filter param statement_type" do
       expect(component.statement_type).to eq("all")

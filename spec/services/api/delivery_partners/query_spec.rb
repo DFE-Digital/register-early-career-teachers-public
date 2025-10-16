@@ -177,21 +177,21 @@ RSpec.describe API::DeliveryPartners::Query do
 
       describe "order by created_at, in descending order" do
         it "returns delivery partners in correct order" do
-          query = described_class.new(sort: { created_at: :desc })
+          query = described_class.new(sort: {created_at: :desc})
           expect(query.delivery_partners).to eq([lead_provider_delivery_partnership1.delivery_partner, lead_provider_delivery_partnership2.delivery_partner])
         end
       end
 
       describe "order by updated_at, in ascending order" do
         it "returns delivery partners in correct order" do
-          query = described_class.new(sort: { updated_at: :asc })
+          query = described_class.new(sort: {updated_at: :asc})
           expect(query.delivery_partners).to eq([lead_provider_delivery_partnership2.delivery_partner, lead_provider_delivery_partnership1.delivery_partner])
         end
       end
 
       describe "order by updated_at, in descending order" do
         it "returns delivery partners in correct order" do
-          query = described_class.new(sort: { updated_at: :desc })
+          query = described_class.new(sort: {updated_at: :desc})
           expect(query.delivery_partners).to eq([lead_provider_delivery_partnership1.delivery_partner, lead_provider_delivery_partnership2.delivery_partner])
         end
       end

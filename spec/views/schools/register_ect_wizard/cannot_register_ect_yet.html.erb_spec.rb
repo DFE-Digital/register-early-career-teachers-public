@@ -1,6 +1,6 @@
 RSpec.describe "schools/register_ect_wizard/cannot_register_ect_yet" do
-  let(:formatted_year) { '2024 to 2025' }
-  let(:ect) { double('ECT', full_name: 'John Doe', start_date: '15 May 2025') }
+  let(:formatted_year) { "2024 to 2025" }
+  let(:ect) { double("ECT", full_name: "John Doe", start_date: "15 May 2025") }
 
   before do
     FactoryBot.create(:contract_period, year: 2024, enabled: true)
@@ -9,7 +9,7 @@ RSpec.describe "schools/register_ect_wizard/cannot_register_ect_yet" do
   end
 
   it "sets the page title" do
-    expect(sanitize(view.content_for(:page_title))).to eql('You cannot register John Doe yet')
+    expect(sanitize(view.content_for(:page_title))).to eql("You cannot register John Doe yet")
   end
 
   it "displays the cannot register ECT message" do

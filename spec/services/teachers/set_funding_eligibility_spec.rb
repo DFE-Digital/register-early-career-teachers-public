@@ -63,9 +63,9 @@ RSpec.describe Teachers::SetFundingEligibility do
         freeze_time do
           expect(Events::Record).to receive(:record_teacher_set_funding_eligibility_event!)
             .with(author:,
-                  teacher:,
-                  happened_at: Time.zone.now,
-                  modifications: { "mentor_first_became_eligible_for_training_at" => [nil, Time.zone.now] })
+              teacher:,
+              happened_at: Time.zone.now,
+              modifications: {"mentor_first_became_eligible_for_training_at" => [nil, Time.zone.now]})
 
           service.set!
         end

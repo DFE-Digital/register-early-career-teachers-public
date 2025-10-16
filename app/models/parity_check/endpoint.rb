@@ -5,7 +5,7 @@ module ParityCheck
     has_many :requests
 
     validates :path, presence: true
-    validates :method, presence: true, inclusion: { in: %i[get post put] }
+    validates :method, presence: true, inclusion: {in: %i[get post put]}
     validate :options_is_a_hash
     validate :path_does_not_contain_query_params
 
@@ -33,7 +33,7 @@ module ParityCheck
       "#{method.to_s.upcase} #{path}#{query_string}#{pagination_note}"
     end
 
-  private
+    private
 
     def options_is_a_hash
       errors.add(:options, "Options must be a hash") unless options.is_a?(Hash)

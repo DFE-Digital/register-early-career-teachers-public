@@ -229,8 +229,8 @@ describe ParityCheck::Request do
   describe "#response_body_ids_different?/#response_body_ids_matching?" do
     subject(:request) { FactoryBot.create(:parity_check_request) }
 
-    let(:matching_body) { { data: [{ id: 1 }, { id: 2 }] }.to_json }
-    let(:different_body) { { data: [{ id: 2 }] }.to_json }
+    let(:matching_body) { {data: [{id: 1}, {id: 2}]}.to_json }
+    let(:different_body) { {data: [{id: 2}]}.to_json }
 
     it { is_expected.not_to be_response_body_ids_different }
     it { is_expected.to be_response_body_ids_matching }
@@ -275,9 +275,9 @@ describe ParityCheck::Request do
 
     context "when there are responses" do
       before do
-        FactoryBot.create(:parity_check_response, ecf_body: { data: [{ id: 1 }, { id: 2 }] }.to_json, request:)
-        FactoryBot.create(:parity_check_response, ecf_body: { data: [{ id: 3 }] }.to_json, request:)
-        FactoryBot.create(:parity_check_response, ecf_body: { data: { id: 4 } }.to_json, request:)
+        FactoryBot.create(:parity_check_response, ecf_body: {data: [{id: 1}, {id: 2}]}.to_json, request:)
+        FactoryBot.create(:parity_check_response, ecf_body: {data: [{id: 3}]}.to_json, request:)
+        FactoryBot.create(:parity_check_response, ecf_body: {data: {id: 4}}.to_json, request:)
       end
 
       it { is_expected.to contain_exactly(1, 2, 3, 4) }
@@ -293,9 +293,9 @@ describe ParityCheck::Request do
 
     context "when there are responses" do
       before do
-        FactoryBot.create(:parity_check_response, rect_body: { data: [{ id: 1 }, { id: 2 }] }.to_json, request:)
-        FactoryBot.create(:parity_check_response, rect_body: { data: [{ id: 3 }] }.to_json, request:)
-        FactoryBot.create(:parity_check_response, rect_body: { data: { id: 4 } }.to_json, request:)
+        FactoryBot.create(:parity_check_response, rect_body: {data: [{id: 1}, {id: 2}]}.to_json, request:)
+        FactoryBot.create(:parity_check_response, rect_body: {data: [{id: 3}]}.to_json, request:)
+        FactoryBot.create(:parity_check_response, rect_body: {data: {id: 4}}.to_json, request:)
       end
 
       it { is_expected.to contain_exactly(1, 2, 3, 4) }
@@ -308,12 +308,12 @@ describe ParityCheck::Request do
     let(:request) { FactoryBot.create(:parity_check_request) }
 
     before do
-      ecf_body_1 = { data: [{ id: 123 }, { id: 456 }] }.to_json
-      rect_body_1 = { data: [{ id: 456 }] }.to_json
+      ecf_body_1 = {data: [{id: 123}, {id: 456}]}.to_json
+      rect_body_1 = {data: [{id: 456}]}.to_json
       FactoryBot.create(:parity_check_response, ecf_body: ecf_body_1, rect_body: rect_body_1, request:)
 
-      ecf_body_1 = { data: [{ id: 789 }] }.to_json
-      rect_body_1 = { data: [{ id: 111 }] }.to_json
+      ecf_body_1 = {data: [{id: 789}]}.to_json
+      rect_body_1 = {data: [{id: 111}]}.to_json
       FactoryBot.create(:parity_check_response, ecf_body: ecf_body_1, rect_body: rect_body_1, request:)
     end
 
@@ -326,12 +326,12 @@ describe ParityCheck::Request do
     let(:request) { FactoryBot.create(:parity_check_request) }
 
     before do
-      ecf_body_1 = { data: [{ id: 123 }, { id: 456 }] }.to_json
-      rect_body_1 = { data: [{ id: 456 }] }.to_json
+      ecf_body_1 = {data: [{id: 123}, {id: 456}]}.to_json
+      rect_body_1 = {data: [{id: 456}]}.to_json
       FactoryBot.create(:parity_check_response, ecf_body: ecf_body_1, rect_body: rect_body_1, request:)
 
-      ecf_body_1 = { data: [{ id: 789 }] }.to_json
-      rect_body_1 = { data: [{ id: 111 }] }.to_json
+      ecf_body_1 = {data: [{id: 789}]}.to_json
+      rect_body_1 = {data: [{id: 111}]}.to_json
       FactoryBot.create(:parity_check_response, ecf_body: ecf_body_1, rect_body: rect_body_1, request:)
     end
 

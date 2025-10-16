@@ -6,7 +6,7 @@ module API::Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, fee_type: 'output', sort: { payment_date: :asc })
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, fee_type: "output", sort: {payment_date: :asc})
       @scope = Statement.distinct
 
       where_lead_provider_is(lead_provider_id)
@@ -32,7 +32,7 @@ module API::Statements
       fail(ArgumentError, "id needed")
     end
 
-  private
+    private
 
     def preload_associations(results)
       results
@@ -43,13 +43,13 @@ module API::Statements
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
 
-      @scope = scope.joins(:lead_provider).where(lead_providers: { id: lead_provider_id })
+      @scope = scope.joins(:lead_provider).where(lead_providers: {id: lead_provider_id})
     end
 
     def where_contract_period_year_in(contract_period_years)
       return if ignore?(filter: contract_period_years)
 
-      @scope = scope.joins(:active_lead_provider).where(active_lead_provider: { contract_period_year: contract_period_years })
+      @scope = scope.joins(:active_lead_provider).where(active_lead_provider: {contract_period_year: contract_period_years})
     end
 
     def where_updated_since(updated_since)

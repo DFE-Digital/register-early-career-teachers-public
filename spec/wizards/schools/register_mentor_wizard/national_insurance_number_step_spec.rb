@@ -3,130 +3,130 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
 
   let(:store) do
     FactoryBot.build(:session_repository,
-                     trn: '1234567',
-                     trs_first_name: 'John',
-                     trs_last_name: 'Wayne',
-                     change_name: 'yes',
-                     corrected_name: 'Jim Wayne',
-                     date_of_birth: '01/01/1990',
-                     email: 'initial@email.com',
-                     national_insurance_number: 'Ab123456A')
+      trn: "1234567",
+      trs_first_name: "John",
+      trs_last_name: "Wayne",
+      change_name: "yes",
+      corrected_name: "Jim Wayne",
+      date_of_birth: "01/01/1990",
+      email: "initial@email.com",
+      national_insurance_number: "Ab123456A")
   end
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number, store:) }
 
-  describe '#initialisation' do
+  describe "#initialisation" do
     subject { described_class.new(wizard:, **params) }
 
-    let(:national_insurance_number) { 'ZZ123456A' }
+    let(:national_insurance_number) { "ZZ123456A" }
 
-    context 'when the national insurance number is provided' do
-      let(:params) { { national_insurance_number: } }
+    context "when the national insurance number is provided" do
+      let(:params) { {national_insurance_number:} }
 
-      it 'populate the instance from it' do
+      it "populate the instance from it" do
         expect(subject.national_insurance_number).to eq(national_insurance_number)
       end
     end
 
-    context 'when no national_insurance_number is provided' do
+    context "when no national_insurance_number is provided" do
       let(:params) { {} }
 
-      it 'populate it from the wizard store' do
-        expect(subject.national_insurance_number).to eq('Ab123456A')
+      it "populate it from the wizard store" do
+        expect(subject.national_insurance_number).to eq("Ab123456A")
       end
     end
   end
 
-  describe 'validations' do
-    ['Ab123456A',
-     'AB123456   A',
-     'ab 12 34 56 A',
-     'A B 1 2 3 4 5 6 a',].each do |dob|
+  describe "validations" do
+    ["Ab123456A",
+      "AB123456   A",
+      "ab 12 34 56 A",
+      "A B 1 2 3 4 5 6 a"].each do |dob|
       it { is_expected.to allow_value(dob).for(:national_insurance_number) }
     end
 
     %w[DA456A
-       FA123456A
-       IA123456A
-       QA13456A
-       UA123456A
-       va1256A
-       kn123456A
-       TN123456A
-       ZZ123456A].each do |dob|
+      FA123456A
+      IA123456A
+      QA13456A
+      UA123456A
+      va1256A
+      kn123456A
+      TN123456A
+      ZZ123456A].each do |dob|
       it { is_expected.not_to allow_value(dob).for(:national_insurance_number) }
     end
   end
 
-  describe '#next_step' do
+  describe "#next_step" do
     subject { wizard.current_step }
 
     let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number, step_params:) }
     let(:step_params) do
       ActionController::Parameters.new(
         "national_insurance_number" => {
-          "national_insurance_number" => 'AB123456A'
+          "national_insurance_number" => "AB123456A"
         }
       )
     end
 
-    context 'when the mentor is not found in TRS' do
+    context "when the mentor is not found in TRS" do
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_not_found: true))
         subject.save!
       end
 
-      it 'returns :not_found' do
+      it "returns :not_found" do
         expect(subject.next_step).to eq(:not_found)
       end
     end
 
-    context 'when the mentor is already active at the school' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+    context "when the mentor is already active at the school" do
+      let(:teacher) { FactoryBot.create(:teacher, trn: "1234568") }
       let(:ongoing_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
 
       before do
-        wizard.store.update!(trn: '1234568', school_urn: ongoing_mentor_period.school.urn)
+        wizard.store.update!(trn: "1234568", school_urn: ongoing_mentor_period.school.urn)
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         subject.save!
       end
 
-      it 'returns :already_active_at_school' do
+      it "returns :already_active_at_school" do
         expect(subject.next_step).to eq(:already_active_at_school)
       end
     end
 
-    context 'when the mentor is already active at the school' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+    context "when the mentor is already active at the school" do
+      let(:teacher) { FactoryBot.create(:teacher, trn: "1234568") }
       let(:ongoing_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
 
       before do
-        wizard.store.update!(trn: '1234568', school_urn: ongoing_mentor_period.school.urn)
+        wizard.store.update!(trn: "1234568", school_urn: ongoing_mentor_period.school.urn)
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
         subject.save!
       end
 
-      it 'returns :already_active_at_school' do
+      it "returns :already_active_at_school" do
         expect(subject.next_step).to eq(:already_active_at_school)
       end
     end
 
-    context 'when the mentor is prohibited from teaching' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+    context "when the mentor is prohibited from teaching" do
+      let(:teacher) { FactoryBot.create(:teacher, trn: "1234568") }
 
       before do
         test_client = TRS::TestAPIClient.new
 
         allow(test_client).to receive(:find_teacher).and_return(
           TRS::Teacher.new(
-            'trn' => '1234568',
-            'firstName' => 'Jane',
-            'lastName' => 'Smith',
-            'dateOfBirth' => '1977-02-03',
-            'alerts' => [
+            "trn" => "1234568",
+            "firstName" => "Jane",
+            "lastName" => "Smith",
+            "dateOfBirth" => "1977-02-03",
+            "alerts" => [
               {
-                'alertType' => {
-                  'alertCategory' => {
-                    'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
+                "alertType" => {
+                  "alertCategory" => {
+                    "alertCategoryId" => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
                   }
                 }
               }
@@ -137,12 +137,12 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
         subject.save!
       end
 
-      it 'returns :cannot_register_mentor' do
+      it "returns :cannot_register_mentor" do
         expect(subject.next_step).to eq(:cannot_register_mentor)
       end
     end
 
-    context 'otherwise' do
+    context "otherwise" do
       let(:school) { FactoryBot.create(:school) }
 
       before do
@@ -151,41 +151,41 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
         subject.save!
       end
 
-      it 'returns :review_mentor_details' do
+      it "returns :review_mentor_details" do
         expect(subject.next_step).to eq(:review_mentor_details)
       end
     end
   end
 
-  describe '#previous_step' do
+  describe "#previous_step" do
     subject { wizard.current_step }
 
-    it 'returns :find_mentor' do
+    it "returns :find_mentor" do
       expect(subject.previous_step).to eq(:find_mentor)
     end
   end
 
-  describe '#save!' do
-    context 'when the step is not valid' do
+  describe "#save!" do
+    context "when the step is not valid" do
       subject { wizard.current_step }
 
       let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number) }
 
-      it 'does not update any data in the wizard mentor' do
+      it "does not update any data in the wizard mentor" do
         expect { subject.save! }.not_to change(subject.mentor, :national_insurance_number)
         expect { subject.save! }.not_to change(subject.mentor, :trs_first_name)
         expect { subject.save! }.not_to change(subject.mentor, :trs_last_name)
       end
     end
 
-    context 'when the step is valid' do
+    context "when the step is valid" do
       subject { wizard.current_step }
 
       let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :national_insurance_number, step_params:) }
       let(:step_params) do
         ActionController::Parameters.new(
           "national_insurance_number" => {
-            "national_insurance_number" => 'AB123456A'
+            "national_insurance_number" => "AB123456A"
           }
         )
       end
@@ -194,11 +194,11 @@ describe Schools::RegisterMentorWizard::NationalInsuranceNumberStep, type: :mode
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
       end
 
-      it 'updates the wizard mentor national insurance number and TRS data' do
+      it "updates the wizard mentor national insurance number and TRS data" do
         expect { subject.save! }
-          .to change(subject.mentor, :national_insurance_number).from(nil).to('AB123456A')
-          .and change(subject.mentor, :trs_first_name).from(nil).to('Kirk')
-          .and change(subject.mentor, :trs_last_name).from(nil).to('Van Houten')
+          .to change(subject.mentor, :national_insurance_number).from(nil).to("AB123456A")
+          .and change(subject.mentor, :trs_first_name).from(nil).to("Kirk")
+          .and change(subject.mentor, :trs_last_name).from(nil).to("Van Houten")
       end
     end
   end

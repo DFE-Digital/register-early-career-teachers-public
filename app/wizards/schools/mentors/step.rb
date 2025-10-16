@@ -3,7 +3,7 @@ module Schools
     class Step < ApplicationWizardStep
       def self.permitted_params = []
 
-    private
+      private
 
       delegate :mentor_at_school_period, :author, :valid_step?, to: :wizard
 

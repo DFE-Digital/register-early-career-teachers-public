@@ -9,8 +9,8 @@ describe ParityCheck::Endpoint do
     it { is_expected.to validate_presence_of(:path) }
     it { is_expected.to validate_presence_of(:method) }
     it { is_expected.to validate_inclusion_of(:method).in_array(%w[get post put]) }
-    it { is_expected.to allow_values({}, { foo: "bar" }).for(:options) }
-    it { is_expected.not_to allow_values([], [{ foo: :bar }]).for(:options).with_message("Options must be a hash") }
+    it { is_expected.to allow_values({}, {foo: "bar"}).for(:options) }
+    it { is_expected.not_to allow_values([], [{foo: :bar}]).for(:options).with_message("Options must be a hash") }
 
     it "validates that the path does not contain query parameters" do
       instance = FactoryBot.build(:parity_check_endpoint, path: "/a/path?with=query")
@@ -28,7 +28,7 @@ describe ParityCheck::Endpoint do
   describe "#options" do
     subject { described_class.new(options:).options }
 
-    let(:options) { { "foo" => "bar", "nested" => { "key" => "value" } } }
+    let(:options) { {"foo" => "bar", "nested" => {"key" => "value"}} }
 
     it { is_expected.to eq(options.deep_symbolize_keys) }
   end
@@ -50,19 +50,19 @@ describe ParityCheck::Endpoint do
     it { is_expected.to eq("GET /a/path") }
 
     context "when pagination is enabled" do
-      let(:options) { { paginate: true, } }
+      let(:options) { {paginate: true} }
 
       it { is_expected.to eq("GET /a/path (all pages)") }
     end
 
     context "when query parameters are specified" do
-      let(:options) { { query: { filter: { cohort: 2022, active: true } }, } }
+      let(:options) { {query: {filter: {cohort: 2022, active: true}}} }
 
       it { is_expected.to eq("GET /a/path?filter[active]=true&filter[cohort]=2022") }
     end
 
     context "when pagination is enabled and query parameters are specified" do
-      let(:options) { { paginate: true, query: { filter: { cohort: 2022, active: true } }, } }
+      let(:options) { {paginate: true, query: {filter: {cohort: 2022, active: true}}} }
 
       it { is_expected.to eq("GET /a/path?filter[active]=true&filter[cohort]=2022 (all pages)") }
     end

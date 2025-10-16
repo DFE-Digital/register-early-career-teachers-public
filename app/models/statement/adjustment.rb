@@ -1,15 +1,15 @@
 class Statement::Adjustment < ApplicationRecord
   belongs_to :statement
 
-  validates :payment_type, presence: { message: "Payment type is required" }
-  validates :amount, presence: { message: "Amount is required" }
-  validates :amount, numericality: { other_than: 0, message: "Amount must be greater than 0" }
+  validates :payment_type, presence: {message: "Payment type is required"}
+  validates :amount, presence: {message: "Amount is required"}
+  validates :amount, numericality: {other_than: 0, message: "Amount must be greater than 0"}
   validate :amount_min_and_max_values
 
   # Only needed for migrating data from ECF; can be removed later.
-  validates :ecf_id, uniqueness: { case_sensitive: false, message: "ECF id already exists for another statement adjustment" }, allow_nil: true
+  validates :ecf_id, uniqueness: {case_sensitive: false, message: "ECF id already exists for another statement adjustment"}, allow_nil: true
 
-private
+  private
 
   def amount_min_and_max_values
     return if errors.any?

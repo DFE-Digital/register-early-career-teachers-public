@@ -8,33 +8,33 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
 
       if params[:filter_schema_ref]
         parameter name: :filter,
-                  in: :query,
-                  required: false,
-                  schema: {
-                    "$ref": params[:filter_schema_ref],
-                  },
-                  style: "deepObject"
+          in: :query,
+          required: false,
+          schema: {
+            "$ref": params[:filter_schema_ref]
+          },
+          style: "deepObject"
       end
 
       parameter name: :page,
-                in: :query,
-                required: false,
-                schema: {
-                  "$ref": "#/components/schemas/PaginationFilter",
-                },
-                style: "deepObject"
+        in: :query,
+        required: false,
+        schema: {
+          "$ref": "#/components/schemas/PaginationFilter"
+        },
+        style: "deepObject"
 
       if params[:sorting_schema_ref]
         parameter name: :sort,
-                  in: :query,
-                  required: false,
-                  schema: {
-                    "$ref": params[:sorting_schema_ref],
-                  }
+          in: :query,
+          required: false,
+          schema: {
+            "$ref": params[:sorting_schema_ref]
+          }
       end
 
       response "200", "A list of #{params[:resource_description]}" do
-        schema({ "$ref": params[:response_schema_ref] })
+        schema({"$ref": params[:response_schema_ref]})
 
         run_test!
       end
@@ -42,7 +42,7 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
       response "401", "Unauthorized" do
         let(:token) { "invalid" }
 
-        schema({ "$ref": "#/components/schemas/UnauthorisedResponse" })
+        schema({"$ref": "#/components/schemas/UnauthorisedResponse"})
 
         run_test!
       end

@@ -28,7 +28,7 @@ module Schools
         end
       end
 
-    private
+      private
 
       def persist
         mentor.update!(started_on: started_on_formatted)
