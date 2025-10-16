@@ -42,16 +42,14 @@ module API::Teachers
   private
 
     def preload_associations(results)
-      preloaded_results = results
+      results
         .strict_loading
         .includes(
           :teacher_id_changes,
           :started_induction_period,
           :finished_induction_period,
           :earliest_ect_at_school_period,
-          :earliest_mentor_at_school_period
-        )
-        .eager_load(
+          :earliest_mentor_at_school_period,
           lead_provider_metadata: {
             latest_ect_training_period: {
               school_partnership: [
@@ -69,14 +67,6 @@ module API::Teachers
             }
           }
         )
-
-      unless ignore?(filter: lead_provider_id)
-        preloaded_results = preloaded_results
-          .references(:lead_provider_metadata)
-          .where(lead_provider_metadata: { lead_provider_id: })
-      end
-
-      preloaded_results
     end
 
     def where_lead_provider_is(lead_provider_id)
