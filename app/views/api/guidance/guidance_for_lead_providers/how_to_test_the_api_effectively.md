@@ -83,9 +83,9 @@ Test posting `started`, `retained-1`, and `completed` declarations for the same 
 
 ## Testing checklist 
 
-- [ ] Happy paths pass for partnerships, participants, and declarations 
-- [ ] Error paths handled with retries/back-off where appropriate 
-- [ ] Both full syncs and partial syncs using the `updated_since` filter implemented 
+- [ ] All standard processes for partnerships, participants, and declarations work as expected 
+- [ ] Error paths have been tested successfully 
+- [ ] Both full syncs (all records) and partial syncs (only new or updated records using the `updated_since` filter) have been implemented 
 - [ ] Multiple partnerships per school/cohort supported 
 - [ ] New fields such as `expression_of_interest` and `participants_currently_training` work correctly
 - [ ] Access keys secured 
