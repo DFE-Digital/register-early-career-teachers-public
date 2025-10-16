@@ -28,9 +28,8 @@ RSpec.describe TRS::Teacher do
       ],
       'induction' => {
         'startDate' => '2024-09-18',
-        'endDate' => '2024-09-18',
-        'status' => 'InProgress',
         'completedDate' => '2024-09-18',
+        'status' => 'InProgress',
         'statusDescription' => 'Induction Status Description',
         'certificateUrl' => 'induction_certificate_url'
       },
@@ -84,8 +83,7 @@ RSpec.describe TRS::Teacher do
   describe '#to_h' do
     it 'returns a hash of attributes' do
       expect(service.to_h).to eq({
-        trn: '1234567',
-        date_of_birth: '1980-01-01',
+        trs_date_of_birth: '1980-01-01',
         trs_first_name: 'John',
         trs_last_name: 'Doe',
         trs_email_address: 'john.doe@example.com',
@@ -98,7 +96,6 @@ RSpec.describe TRS::Teacher do
         trs_initial_teacher_training_provider_name: "Provider Name",
         trs_qts_awarded_on: '2024-09-18',
         trs_qts_status_description: 'qts_status',
-        trs_national_insurance_number: "AB123456C",
         trs_prohibited_from_teaching: false,
       })
     end

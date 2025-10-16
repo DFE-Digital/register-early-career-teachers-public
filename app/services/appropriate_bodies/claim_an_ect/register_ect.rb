@@ -1,7 +1,11 @@
 module AppropriateBodies
   module ClaimAnECT
     class RegisterECT
-      attr_reader :appropriate_body, :pending_induction_submission, :induction_period, :author
+      include ::Teachers::Manageable
+
+      attr_reader :appropriate_body,
+                  :pending_induction_submission,
+                  :author
 
       def initialize(appropriate_body:, pending_induction_submission:, author:)
         @appropriate_body = appropriate_body
@@ -16,18 +20,12 @@ module AppropriateBodies
         induction_programme = ::PROGRAMME_MAPPER[pending_induction_submission_params[:training_programme]]
         pending_induction_submission.assign_attributes(induction_programme:) if induction_programme.present?
 
-        # FIXME: I think the behaviour here should be to still allow the AB to claim
-        #        the ECT, but we shouldn't report the starting of induction to TRS
-        # if teacher.persisted? && teacher.induction_periods.present?
-        #   raise AppropriateBodies::Errors::TeacherAlreadyClaimedError, "Teacher already claimed"
-        # end
         ActiveRecord::Base.transaction do
           steps = [
-            update_name,
-            update_qts_awarded_on,
-            update_itt_provider_name,
-            update_trs_induction_status,
             pending_induction_submission.save(context: :register_ect),
+            update_name!,
+            update_trs_induction_status!,
+            update_trs_attributes!,
             create_induction_period
           ]
 
@@ -37,31 +35,9 @@ module AppropriateBodies
 
     private
 
-      def update_name
-        manage_teacher.update_name!(
-          trs_first_name: pending_induction_submission.trs_first_name,
-          trs_last_name: pending_induction_submission.trs_last_name
-        )
-      end
+      alias_method :trs_data, :pending_induction_submission
 
-      def update_qts_awarded_on
-        manage_teacher.update_qts_awarded_on!(
-          trs_qts_awarded_on: pending_induction_submission.trs_qts_awarded_on
-        )
-      end
-
-      def update_trs_induction_status
-        manage_teacher.update_trs_induction_status!(
-          trs_induction_status: 'InProgress'
-        )
-      end
-
-      def update_itt_provider_name
-        manage_teacher.update_itt_provider_name!(
-          trs_initial_teacher_training_provider_name: pending_induction_submission.trs_initial_teacher_training_provider_name
-        )
-      end
-
+      # @return [Teachers::Manage]
       def manage_teacher
         @manage_teacher ||= ::Teachers::Manage.find_or_initialize_by(
           trn: pending_induction_submission.trn,
@@ -71,12 +47,21 @@ module AppropriateBodies
         )
       end
 
-      def teacher
-        @manage_teacher.teacher
+      # @return [Teacher]
+      delegate :teacher, to: :manage_teacher
+
+      # @return [Boolean]
+      def update_trs_induction_status!
+        manage_teacher.update_trs_induction_status!(
+          trs_induction_status: 'InProgress',
+          trs_induction_start_date: pending_induction_submission.trs_induction_start_date,
+          trs_induction_completed_date: nil
+        )
       end
 
+      # @return [Boolean]
       def create_induction_period
-        @induction_period = InductionPeriods::CreateInductionPeriod.new(
+        InductionPeriods::CreateInductionPeriod.new(
           author:,
           teacher:,
           params: {

@@ -19,14 +19,9 @@ module Admin
       def import_from_trs!
         return false unless pending_induction_submission.valid?(:find_ect)
 
-        pending_induction_submission.assign_attributes(
-          **trs_teacher.to_h.except(:trs_national_insurance_number, :trs_induction_completed_date)
-        )
-
+        pending_induction_submission.assign_attributes(**trs_teacher.to_h)
         check_if_teacher_already_exists!
-
         trs_teacher.check_eligibility!
-
         pending_induction_submission.save(context: :find_ect)
       end
 

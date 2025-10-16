@@ -151,6 +151,8 @@ erDiagram
     integer mentor_payments_frozen_year
     boolean ect_pupil_premium_uplift
     boolean ect_sparsity_uplift
+    date trs_induction_start_date
+    date trs_induction_completed_date
     datetime ect_first_became_eligible_for_training_at
     datetime mentor_first_became_eligible_for_training_at
   }
@@ -184,6 +186,7 @@ erDiagram
     array[string] error_messages
     enum training_programme
     boolean trs_prohibited_from_teaching
+    date trs_induction_completed_date
   }
   PendingInductionSubmission }o--|| AppropriateBody : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to

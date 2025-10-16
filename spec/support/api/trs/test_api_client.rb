@@ -91,10 +91,18 @@ module TRS
     end
 
     def induction_data
-      if @induction_status
-        { 'induction' => { 'status' => @induction_status } }
-      else
+      if @induction_status.nil?
         { 'induction' => { 'status' => 'RequiredToComplete' } }
+      elsif @induction_status.in?(%w[Passed Failed FailedInWales])
+        {
+          'induction' => {
+            'status' => @induction_status,
+            'startDate' => '2021-01-01',
+            'completedDate' => '2022-01-01',
+          }
+        }
+      else
+        { 'induction' => { 'status' => @induction_status } }
       end
     end
 
