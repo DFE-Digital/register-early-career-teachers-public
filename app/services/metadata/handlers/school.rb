@@ -20,31 +20,57 @@ module Metadata::Handlers
   private
 
     def upsert_contract_period_metadata!
+      existing_metadata = Metadata::SchoolContractPeriod
+              .where(school:, contract_period_year: contract_period_years)
+              .index_by(&:contract_period_year)
+
+      changes_to_upsert = []
+
       contract_period_years.each do |contract_period_year|
-        metadata = Metadata::SchoolContractPeriod.find_or_initialize_by(
-          school:,
-          contract_period_year:
-        )
+        metadata = existing_metadata[contract_period_year] ||
+          Metadata::SchoolContractPeriod.new(school:, contract_period_year:)
 
-        in_partnership = school.school_partnerships.for_contract_period(contract_period_year).exists?
-        induction_programme_choice = school.training_programme_for(contract_period_year)
+        changes = {
+          school_id: school.id,
+          contract_period_year:,
+          in_partnership: school.school_partnerships.for_contract_period(contract_period_year).exists?,
+          induction_programme_choice: school.training_programme_for(contract_period_year)
+        }
 
-        upsert(metadata, in_partnership:, induction_programme_choice:)
+        next if metadata.attributes.slice(*changes.keys) == changes
+
+        alert_on_changes(metadata:, changes:)
+        changes_to_upsert << changes
       end
+
+      Metadata::SchoolContractPeriod.upsert_all(changes_to_upsert, unique_by: %i[school_id contract_period_year])
     end
 
     def upsert_lead_provider_contract_period_metadata!
+      existing_metadata = Metadata::SchoolLeadProviderContractPeriod
+              .where(school:, lead_provider_id: lead_provider_ids, contract_period_year: contract_period_years)
+              .index_by { |m| [m.lead_provider_id, m.contract_period_year] }
+
+      changes_to_upsert = []
+
       lead_provider_id_contract_period_years.each do |lead_provider_id, contract_period_year|
-        metadata = Metadata::SchoolLeadProviderContractPeriod.find_or_initialize_by(
-          school:,
+        metadata = existing_metadata[[lead_provider_id, contract_period_year]] ||
+          Metadata::SchoolLeadProviderContractPeriod.new(school:, lead_provider_id:, contract_period_year:)
+
+        changes = {
+          school_id: school.id,
           lead_provider_id:,
-          contract_period_year:
-        )
+          contract_period_year:,
+          expression_of_interest: school.expression_of_interest_for?(lead_provider_id, contract_period_year)
+        }
 
-        expression_of_interest = school.expression_of_interest_for?(lead_provider_id, contract_period_year)
+        next if metadata.attributes.slice(*changes.keys) == changes
 
-        upsert(metadata, expression_of_interest:)
+        alert_on_changes(metadata:, changes:)
+        changes_to_upsert << changes
       end
+
+      Metadata::SchoolLeadProviderContractPeriod.upsert_all(changes_to_upsert, unique_by: %i[school_id lead_provider_id contract_period_year])
     end
 
     def lead_provider_id_contract_period_years

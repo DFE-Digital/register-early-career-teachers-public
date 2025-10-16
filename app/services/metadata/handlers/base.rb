@@ -28,25 +28,17 @@ module Metadata::Handlers
 
   protected
 
-    def upsert(metadata, attributes)
-      metadata.assign_attributes(attributes)
-      return unless metadata.changed?
-
-      metadata.save!
-      alert_on_changes(metadata:, attributes:)
-    end
-
     def lead_provider_ids
       @lead_provider_ids ||= LeadProvider.pluck(:id)
     end
 
-    def alert_on_changes(metadata:, attributes:)
+    def alert_on_changes(metadata:, changes:)
       return unless @alert_on_changes
 
       attrs = {
         class: metadata.class.name,
         id: metadata.id,
-        attributes:,
+        changes:,
       }
 
       Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
