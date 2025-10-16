@@ -20,7 +20,7 @@ describe TRS::FakeAPIClient do
       end
 
       it 'returns a teacher with a qts_awarded_on date' do
-        expect(trs_teacher.qts_awarded_on).not_to be_nil
+        expect(trs_teacher.trs_qts_awarded_on).not_to be_nil
       end
 
       it 'returns a teacher who is not prohibited from teaching' do
@@ -36,7 +36,7 @@ describe TRS::FakeAPIClient do
       end
 
       it 'returns a teacher without a qts_awarded_on date' do
-        expect(trs_teacher.qts_awarded_on).to be_nil
+        expect(trs_teacher.trs_qts_awarded_on).to be_nil
       end
     end
 
@@ -88,7 +88,7 @@ describe TRS::FakeAPIClient do
       let(:trn) { 7_000_007 }
 
       it 'returns a teacher who has passed' do
-        expect(trs_teacher.induction_status).to eql('Passed')
+        expect(trs_teacher.trs_induction_status).to eql('Passed')
       end
     end
 
@@ -96,7 +96,7 @@ describe TRS::FakeAPIClient do
       let(:trn) { 7_000_008 }
 
       it 'returns a teacher who has failed' do
-        expect(trs_teacher.induction_status).to eql('Failed')
+        expect(trs_teacher.trs_induction_status).to eql('Failed')
       end
     end
 
@@ -104,7 +104,7 @@ describe TRS::FakeAPIClient do
       let(:trn) { 7_000_009 }
 
       it 'returns a teacher who is exempt' do
-        expect(trs_teacher.induction_status).to eql('Exempt')
+        expect(trs_teacher.trs_induction_status).to eql('Exempt')
       end
     end
 
@@ -116,8 +116,8 @@ describe TRS::FakeAPIClient do
       end
 
       it 'returns the TRS teacher with name of the existing teacher' do
-        expect(trs_teacher.first_name).to eql('Christopher')
-        expect(trs_teacher.last_name).to eql('Eccleston')
+        expect(trs_teacher.trs_first_name).to eql('Christopher')
+        expect(trs_teacher.trs_last_name).to eql('Eccleston')
       end
     end
   end
@@ -145,7 +145,7 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        expect(trs_teacher.induction_status).to eql('InProgress')
+        expect(trs_teacher.trs_induction_status).to eql('InProgress')
       end
     end
 
@@ -165,7 +165,7 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        expect(trs_teacher.induction_status).to eql('Passed')
+        expect(trs_teacher.trs_induction_status).to eql('Passed')
       end
     end
 
@@ -185,7 +185,7 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        expect(trs_teacher.induction_status).to eql('Failed')
+        expect(trs_teacher.trs_induction_status).to eql('Failed')
       end
     end
 
@@ -205,7 +205,7 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        expect(trs_teacher.induction_status).to eql('RequiredToComplete')
+        expect(trs_teacher.trs_induction_status).to eql('RequiredToComplete')
       end
     end
 
@@ -225,7 +225,7 @@ describe TRS::FakeAPIClient do
       end
 
       it 'retrieves the teacher record with the updated info' do
-        expect(trs_teacher.induction_status).to eql('InProgress')
+        expect(trs_teacher.trs_induction_status).to eql('InProgress')
       end
     end
   end

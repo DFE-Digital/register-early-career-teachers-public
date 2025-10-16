@@ -25,10 +25,10 @@ module Schools
 
       def persist
         mentor.update(national_insurance_number:,
-                      prohibited_from_teaching: trs_teacher.prohibited_from_teaching?,
-                      trs_date_of_birth: trs_teacher.date_of_birth,
-                      trs_first_name: trs_teacher.first_name,
-                      trs_last_name: trs_teacher.last_name)
+                      trs_date_of_birth: trs_teacher.trs_date_of_birth,
+                      trs_first_name: trs_teacher.trs_first_name,
+                      trs_last_name: trs_teacher.trs_last_name,
+                      trs_prohibited_from_teaching: trs_teacher.trs_prohibited_from_teaching)
       end
 
       def trs_teacher

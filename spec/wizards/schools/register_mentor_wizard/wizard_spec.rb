@@ -5,7 +5,7 @@ describe Schools::RegisterMentorWizard::Wizard do
   let(:ect_id) { ect.id }
   let(:mentor_trn) { "1234567" }
   let(:mentor_date_of_birth) { "1977-02-03" }
-  let(:prohibited_from_teaching) { false }
+  let(:trs_prohibited_from_teaching) { false }
   let(:school_urn) { '1212121' }
   let(:trs_date_of_birth) { "1977-02-03" }
   let(:trs_first_name) { "Mentor" }
@@ -39,14 +39,14 @@ describe Schools::RegisterMentorWizard::Wizard do
                          school_urn:,
                          trn: mentor_trn,
                          date_of_birth: mentor_date_of_birth,
-                         prohibited_from_teaching:,
+                         trs_prohibited_from_teaching:,
                          trs_date_of_birth:,
                          trs_first_name:,
                          trs_last_name:)
       end
 
       context 'when the mentor has not been found in TRS' do
-        let(:prohibited_from_teaching) { nil }
+        let(:trs_prohibited_from_teaching) { nil }
         let(:trs_date_of_birth) { nil }
         let(:trs_first_name) { nil }
         let(:trs_last_name) { nil }
@@ -75,7 +75,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context 'when the mentor is prohibited from teaching' do
-        let(:prohibited_from_teaching) { true }
+        let(:trs_prohibited_from_teaching) { true }
 
         it { is_expected.to eq(%i[find_mentor cannot_register_mentor]) }
       end
@@ -92,7 +92,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                          school_urn:,
                          trn: mentor_trn,
                          date_of_birth: mentor_date_of_birth,
-                         prohibited_from_teaching:,
+                         trs_prohibited_from_teaching:,
                          trs_date_of_birth:,
                          trs_first_name:,
                          trs_last_name:,
@@ -100,7 +100,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context 'when the mentor has not been found in TRS' do
-        let(:prohibited_from_teaching) { nil }
+        let(:trs_prohibited_from_teaching) { nil }
         let(:trs_date_of_birth) { nil }
         let(:trs_first_name) { nil }
         let(:trs_last_name) { nil }
@@ -117,7 +117,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context 'when the mentor is prohibited from teaching' do
-        let(:prohibited_from_teaching) { true }
+        let(:trs_prohibited_from_teaching) { true }
 
         it { is_expected.to eq(%i[find_mentor national_insurance_number cannot_register_mentor]) }
       end
@@ -137,7 +137,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                          school_urn:,
                          trn: mentor_trn,
                          date_of_birth: mentor_date_of_birth,
-                         prohibited_from_teaching:,
+                         trs_prohibited_from_teaching:,
                          trs_date_of_birth:,
                          trs_first_name:,
                          trs_last_name:,
@@ -158,7 +158,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                          school_urn:,
                          trn: mentor_trn,
                          date_of_birth: mentor_date_of_birth,
-                         prohibited_from_teaching:,
+                         trs_prohibited_from_teaching:,
                          trs_date_of_birth:,
                          trs_first_name:,
                          trs_last_name:,
@@ -175,7 +175,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                          school_urn:,
                          trn: mentor_trn,
                          date_of_birth: mentor_date_of_birth,
-                         prohibited_from_teaching:,
+                         trs_prohibited_from_teaching:,
                          trs_date_of_birth:,
                          trs_first_name:,
                          trs_last_name:,
@@ -193,7 +193,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                          trn: mentor_trn,
                          date_of_birth: mentor_date_of_birth,
                          national_insurance_number: 'ZZ123456A',
-                         prohibited_from_teaching:,
+                         trs_prohibited_from_teaching:,
                          trs_date_of_birth:,
                          trs_first_name:,
                          trs_last_name:,
@@ -210,7 +210,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                          school_urn:,
                          trn: mentor_trn,
                          date_of_birth: mentor_date_of_birth,
-                         prohibited_from_teaching:,
+                         trs_prohibited_from_teaching:,
                          trs_date_of_birth:,
                          trs_first_name:,
                          trs_last_name:,
@@ -259,7 +259,7 @@ describe Schools::RegisterMentorWizard::Wizard do
                          trn: mentor_trn,
                          date_of_birth: mentor_date_of_birth,
                          national_insurance_number: 'ZZ123456A',
-                         prohibited_from_teaching:,
+                         trs_prohibited_from_teaching:,
                          trs_date_of_birth:,
                          trs_first_name:,
                          trs_last_name:,

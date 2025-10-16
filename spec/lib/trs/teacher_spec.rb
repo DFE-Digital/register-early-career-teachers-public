@@ -83,8 +83,7 @@ RSpec.describe TRS::Teacher do
   describe '#to_h' do
     it 'returns a hash of attributes' do
       expect(service.to_h).to eq({
-        trn: '1234567',
-        date_of_birth: '1980-01-01',
+        trs_date_of_birth: '1980-01-01',
         trs_first_name: 'John',
         trs_last_name: 'Doe',
         trs_email_address: 'john.doe@example.com',

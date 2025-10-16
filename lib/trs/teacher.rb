@@ -11,70 +11,61 @@ module TRS
     ELIGIBLE_INDUCTION_STATUSES = %w[None RequiredToComplete InProgress].freeze
     INDUCTION_STATUSES = (ELIGIBLE_INDUCTION_STATUSES + INELIGIBLE_INDUCTION_STATUSES).freeze
 
-    attr_reader :trn,
-                :date_of_birth,
-                :first_name,
-                :last_name,
-                :email_address,
-                :national_insurance_number,
-                :alerts,
-                :induction_start_date,
-                :induction_completed_date,
-                :induction_status,
-                :induction_status_description,
-                :qts_awarded_on,
-                :qts_status_description,
-                :initial_teacher_training_provider_name,
-                :initial_teacher_training_end_date
+    attr_reader :trs_trn,
+                :trs_date_of_birth,
+                :trs_first_name,
+                :trs_last_name,
+                :trs_email_address,
+                :trs_national_insurance_number,
+                :trs_alerts,
+                :trs_induction_start_date,
+                :trs_induction_completed_date,
+                :trs_induction_status,
+                :trs_induction_status_description,
+                :trs_qts_awarded_on,
+                :trs_qts_status_description,
+                :trs_initial_teacher_training_provider_name,
+                :trs_initial_teacher_training_end_date
 
     # @param data [Hash{String=>Mixed}] TRS API response
     def initialize(data)
-      @trn = data['trn']
-      @date_of_birth = data['dateOfBirth']
-      @first_name = data['firstName']
-      @last_name = data['lastName']
-      @email_address = data['emailAddress']
-      @national_insurance_number = data['nationalInsuranceNumber']
-      @alerts = data.fetch('alerts', []).map { |a| a.dig(*%w[alertType alertCategory alertCategoryId]) }
-      @induction_start_date = data.dig('induction', 'startDate')
-      @induction_completed_date = data.dig('induction', 'completedDate')
-      @induction_status = data.dig('induction', 'status')
-      @induction_status_description = data.dig('induction', 'statusDescription')
-      @qts_awarded_on = data.dig('qts', 'awarded')
-      @qts_status_description = data.dig('qts', 'statusDescription')
-      @initial_teacher_training_provider_name = data.dig('initialTeacherTraining', -1, 'provider', 'name')
-      @initial_teacher_training_end_date = data.dig('initialTeacherTraining', -1, 'endDate')
+      @trs_trn = data['trn']
+      @trs_date_of_birth = data['dateOfBirth']
+      @trs_first_name = data['firstName']
+      @trs_last_name = data['lastName']
+      @trs_email_address = data['emailAddress']
+      @trs_national_insurance_number = data['nationalInsuranceNumber']
+      @trs_alerts = data.fetch('alerts', []).map { |a| a.dig(*%w[alertType alertCategory alertCategoryId]) }
+      @trs_induction_start_date = data.dig('induction', 'startDate')
+      @trs_induction_completed_date = data.dig('induction', 'completedDate')
+      @trs_induction_status = data.dig('induction', 'status')
+      @trs_induction_status_description = data.dig('induction', 'statusDescription')
+      @trs_qts_awarded_on = data.dig('qts', 'awarded')
+      @trs_qts_status_description = data.dig('qts', 'statusDescription')
+      @trs_initial_teacher_training_provider_name = data.dig('initialTeacherTraining', -1, 'provider', 'name')
+      @trs_initial_teacher_training_end_date = data.dig('initialTeacherTraining', -1, 'endDate')
     end
-
-    # TODO: Have all TRS::Teacher methods use the "trs_" prefix (same as PendingInductionSubmission)
-    alias_method :trs_first_name, :first_name
-    alias_method :trs_last_name, :last_name
-    alias_method :trs_induction_start_date, :induction_start_date
-    alias_method :trs_induction_completed_date, :induction_completed_date
-    alias_method :trs_induction_status, :induction_status
-    alias_method :trs_qts_status_description, :qts_status_description
-    alias_method :trs_initial_teacher_training_provider_name, :initial_teacher_training_provider_name
-    alias_method :trs_initial_teacher_training_end_date, :initial_teacher_training_end_date
-    alias_method :trs_qts_awarded_on, :qts_awarded_on
 
     # @return [Boolean]
     def prohibited_from_teaching?
-      PROHIBITED_FROM_TEACHING_CATEGORY_ID.in?(alerts)
+      PROHIBITED_FROM_TEACHING_CATEGORY_ID.in?(trs_alerts)
     end
+
+    alias_method :trs_prohibited_from_teaching, :prohibited_from_teaching?
 
     # @return [Boolean]
     def no_qts?
-      qts_awarded_on.blank?
+      trs_qts_awarded_on.blank?
     end
 
     # @return [Boolean]
     def already_completed?
-      INELIGIBLE_INDUCTION_STATUSES.include?(induction_status)
+      INELIGIBLE_INDUCTION_STATUSES.include?(trs_induction_status)
     end
 
     # @return [Boolean]
     def has_alerts?
-      alerts.any?
+      trs_alerts.any?
     end
 
     # @raise [Errors::InductionAlreadyCompleted, Errors::ProhibitedFromTeaching, Errors::QTSNotAwarded]
@@ -87,24 +78,23 @@ module TRS
       true
     end
 
-    # @return [Hash] saved to PendingInductionSubmission record
+    # @return [Hash] splatted into PendingInductionSubmissions and wizard SessionRepositories
     def to_h
       {
-        trn:,
-        date_of_birth:,
-        trs_first_name: first_name,
-        trs_last_name: last_name,
-        trs_email_address: email_address,
-        trs_alerts: alerts,
-        trs_induction_start_date: induction_start_date,
-        trs_induction_completed_date: induction_completed_date,
-        trs_induction_status: induction_status,
-        trs_induction_status_description: induction_status_description,
-        trs_qts_awarded_on: qts_awarded_on,
-        trs_qts_status_description: qts_status_description,
-        trs_initial_teacher_training_provider_name: initial_teacher_training_provider_name,
-        trs_initial_teacher_training_end_date: initial_teacher_training_end_date,
-        trs_prohibited_from_teaching: prohibited_from_teaching?,
+        trs_date_of_birth:,
+        trs_first_name:,
+        trs_last_name:,
+        trs_email_address:,
+        trs_induction_start_date:,
+        trs_induction_completed_date:,
+        trs_induction_status:,
+        trs_induction_status_description:,
+        trs_qts_awarded_on:,
+        trs_qts_status_description:,
+        trs_initial_teacher_training_provider_name:,
+        trs_initial_teacher_training_end_date:,
+        trs_alerts:,
+        trs_prohibited_from_teaching:,
       }
     end
   end
