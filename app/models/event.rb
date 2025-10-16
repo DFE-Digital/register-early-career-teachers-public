@@ -19,6 +19,7 @@ class Event < ApplicationRecord
     statement_adjustment_added
     statement_adjustment_deleted
     statement_adjustment_updated
+    teacher_training_period_deferred
     teacher_email_address_updated
     teacher_working_pattern_updated
     teacher_training_programme_updated
