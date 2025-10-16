@@ -38,33 +38,19 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           end
         end
       end
-
-      context "when a lead_provider_id is specified" do
-        let(:lead_provider_id) { lead_provider.id }
-
-        before { FactoryBot.create(:teacher_lead_provider_metadata, lead_provider:, teacher:) }
-
-        it "only contains relevant metadata" do
-          expect(result.lead_provider_metadata).to contain_exactly(lead_provider_metadata)
-        end
-      end
     end
 
-    let(:lead_provider_id) { :ignore }
-    let(:instance) { described_class.new(lead_provider_id:) }
-
-    let!(:teacher) { FactoryBot.create(:teacher) }
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
-    let!(:lead_provider_metadata) { FactoryBot.create(:teacher_lead_provider_metadata, :with_latest_ect_training_period, :with_latest_mentor_training_period, teacher:, lead_provider:) }
-
-    before do
-      # Ensure other metadata exists.
-      other_lead_provider = FactoryBot.create(:lead_provider)
-      FactoryBot.create(:teacher_lead_provider_metadata, teacher:, lead_provider: other_lead_provider)
-    end
+    let(:instance) { described_class.new }
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: 1.year.ago, finished_on: nil) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 1.year.ago, finished_on: nil) }
+    let!(:latest_ect_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
+    let!(:latest_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
 
     describe "#teachers" do
-      subject(:result) { instance.teachers.first }
+      subject(:result) do
+        instance.teachers.first
+      end
 
       include_context "preloaded associations"
     end
