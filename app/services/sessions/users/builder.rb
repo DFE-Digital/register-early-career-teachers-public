@@ -18,6 +18,9 @@ module Sessions
         payload.credentials.id_token
       end
 
+      # @return [String]
+      delegate :name, to: :organisation, prefix: true
+
       # Determine user session type
       #
       # NB: Sessions::Users::DfEUser is only returned for local development currently
