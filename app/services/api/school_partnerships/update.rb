@@ -47,10 +47,14 @@ module API::SchoolPartnerships
     end
 
     def delivery_partner_exists
+      return if errors[:delivery_partner_api_id].any?
+
       errors.add(:delivery_partner_api_id, "The '#/delivery_partner_api_id' you have entered is invalid. Check delivery partner details and try again.") unless delivery_partner
     end
 
     def school_partnership_exists
+      return if errors[:school_partnership_id].any?
+
       errors.add(:school_partnership_id, "The '#/school_partnership_id' you have entered is invalid. Check partnership details and try again.") unless school_partnership
     end
 
