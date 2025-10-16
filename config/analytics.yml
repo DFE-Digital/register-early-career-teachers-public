@@ -39,6 +39,8 @@ shared:
     - trs_initial_teacher_training_end_date
     - trs_data_last_refreshed_at
     - trs_deactivated
+    - trs_induction_start_date
+    - trs_induction_completed_date
   :pending_induction_submission_batches:
     - id
     - appropriate_body_id

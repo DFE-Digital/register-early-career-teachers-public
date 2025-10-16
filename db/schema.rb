@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_14_131805) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_15_110055) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -540,6 +540,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_131805) do
     t.string "error_messages", default: [], array: true
     t.enum "training_programme", enum_type: "training_programme"
     t.boolean "trs_prohibited_from_teaching"
+    t.date "trs_induction_completed_date"
+    t.date "trs_date_of_birth"
     t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
     t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
@@ -779,6 +781,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_131805) do
     t.integer "mentor_payments_frozen_year"
     t.boolean "ect_pupil_premium_uplift", default: false, null: false
     t.boolean "ect_sparsity_uplift", default: false, null: false
+    t.date "trs_induction_start_date"
+    t.date "trs_induction_completed_date"
     t.datetime "ect_first_became_eligible_for_training_at"
     t.datetime "mentor_first_became_eligible_for_training_at"
     t.boolean "trnless", default: false, null: false

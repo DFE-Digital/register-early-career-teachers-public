@@ -141,7 +141,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
           date_of_birth: '1990-01-01',
           trs_first_name: 'John',
           trs_date_of_birth: '1990-01-01',
-          prohibited_from_teaching: true
+          trs_prohibited_from_teaching: true
         )
         allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false)
       end
