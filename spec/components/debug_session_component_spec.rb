@@ -1,18 +1,23 @@
 RSpec.describe DebugSessionComponent, type: :component do
-  subject(:component) do
-    described_class.new(current_session:, current_user:)
+  subject(:component) { described_class.new }
+
+  let(:current_user) do
+    FactoryBot.create(:dfe_user,
+                      name: 'Patch Adams',
+                      role: 'super_admin')
   end
 
   let(:current_session) do
     {
-      'Type'	=> 'Sessions::Users::DfEUser',
+      'Type'	=> current_user.class.name,
       'Email'	=> current_user.email,
       'Last active at' =>	'1999-01-01 00:00:01 +0100'
     }
   end
 
-  let(:current_user) do
-    FactoryBot.create(:dfe_user, role: 'super_admin')
+  before do
+    Current.user = current_user
+    Current.session = current_session
   end
 
   context 'when disabled' do
@@ -42,6 +47,8 @@ RSpec.describe DebugSessionComponent, type: :component do
         expect(rendered_content).to have_text('1999-01-01 00:00:01 +0100')
         expect(rendered_content).to have_text('Role')
         expect(rendered_content).to have_text('Super admin')
+        expect(rendered_content).to have_text('Administrator')
+        expect(rendered_content).to have_text('Patch Adams')
       end
     end
 
@@ -52,8 +59,9 @@ RSpec.describe DebugSessionComponent, type: :component do
                           dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
       end
 
-      it 'does not display role information' do
-        expect(rendered_content).to have_text('RoleN/A')
+      it 'does not display admin information' do
+        expect(rendered_content).not_to have_text('Administrator')
+        expect(rendered_content).not_to have_text('Role')
       end
     end
   end
