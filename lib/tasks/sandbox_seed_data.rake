@@ -11,11 +11,16 @@ namespace :sandbox_seed_data do
       SandboxSeedData::SchoolPartnerships,
       SandboxSeedData::Teachers,
       SandboxSeedData::TeacherHistories,
+      SandboxSeedData::APITeachers,
     ]
 
-    seeds.each do |seed_class|
-      seed = seed_class.new
-      seed.plant
+    DeclarativeUpdates.skip do
+      seeds.each do |seed_class|
+        seed = seed_class.new
+        seed.plant
+      end
     end
+
+    Metadata::Manager.refresh_all_metadata!(async: true)
   end
 end
