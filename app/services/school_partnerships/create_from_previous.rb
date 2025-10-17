@@ -4,7 +4,7 @@ module SchoolPartnerships
 
     # Returns the new SchoolPartnership or nil
     def call(previous_school_partnership_id:, school:, author:, current_contract_period_year:)
-      return nil unless valid_args?(previous_school_partnership_id, school, author, current_contract_period_year)
+      return nil unless valid_params?(previous_school_partnership_id, school, author, current_contract_period_year)
 
       current_year = to_year(current_contract_period_year)
 
@@ -40,11 +40,11 @@ module SchoolPartnerships
 
   private
 
-    def valid_args?(previous_school_partnership_id, school, author, year_like)
+    def valid_params?(previous_school_partnership_id, school, author, current_contract_period_year)
       previous_school_partnership_id.present? &&
         school.present? &&
         author.present? &&
-        year_like.present?
+        current_contract_period_year.present?
     end
 
     def find_previous_school_partnership(id)
