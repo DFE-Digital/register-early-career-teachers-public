@@ -1063,6 +1063,61 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe '.record_teacher_withdraws_training_period_event' do
+    let(:teacher) { training_period.trainee.teacher }
+    let(:lead_provider) { training_period.lead_provider }
+    let(:reason) { "left_teaching_profession" }
+    let(:teacher_name) { Teachers::Name.new(teacher).full_name }
+    let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
+    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+
+    context 'when ECT training' do
+      let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
+      let(:course_identifier) { "ecf-induction" }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, course_identifier:, reason:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            training_period:,
+            teacher:,
+            lead_provider:,
+            course_identifier:,
+            reason:,
+            heading: "#{teacher_name}’s ECT training period was withdrawn by #{lead_provider.name}",
+            event_type: :teacher_withdraws_training_period,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when Mentor training' do
+      let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing) }
+      let(:course_identifier) { "ecf-mentor" }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, course_identifier:, reason:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            training_period:,
+            teacher:,
+            lead_provider:,
+            course_identifier:,
+            reason:,
+            heading: "#{teacher_name}’s mentor training period was withdrawn by #{lead_provider.name}",
+            event_type: :teacher_withdraws_training_period,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+  end
+
   describe '.record_bulk_upload_started_event!' do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
 

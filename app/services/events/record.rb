@@ -29,7 +29,9 @@ module Events
                 :user,
                 :modifications,
                 :metadata,
-                :zendesk_ticket_id
+                :zendesk_ticket_id,
+                :course_identifier,
+                :reason
 
     def initialize(
       author:,
@@ -57,7 +59,9 @@ module Events
       user: nil,
       modifications: nil,
       metadata: nil,
-      zendesk_ticket_id: nil
+      zendesk_ticket_id: nil,
+      course_identifier: nil,
+      reason: nil
     )
       @author = author
       @event_type = event_type
@@ -85,6 +89,8 @@ module Events
       @modifications = DescribeModifications.new(modifications).describe
       @metadata = metadata || modifications
       @zendesk_ticket_id = zendesk_ticket_id
+      @course_identifier = course_identifier
+      @reason = reason
     end
 
     def record_event!
@@ -408,6 +414,15 @@ module Events
       heading = "#{teacher_name} left #{school_name}"
 
       new(event_type:, author:, heading:, mentor_at_school_period:, teacher:, school:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, course_identifier:, reason:, happened_at: Time.zone.now)
+      event_type = :teacher_withdraws_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name}’s #{training_type} training period was withdrawn by #{lead_provider.name}"
+
+      new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, course_identifier:, reason:, happened_at:).record_event!
     end
 
     def self.record_training_period_assigned_to_school_partnership_event!(
@@ -768,7 +783,7 @@ module Events
     end
 
     def changelog_attributes
-      { modifications:, metadata: }.compact
+      { modifications:, metadata:, course_identifier:, reason: }.compact
     end
 
     def check_relationship_attributes_are_persisted
