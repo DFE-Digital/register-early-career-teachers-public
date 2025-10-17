@@ -6,6 +6,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
     create_contract_period_for_start_date
     create_lead_provider_and_active_lead_provider
     create_school_with_previous_choices
+    create_previous_period_and_partnership
     create_appropriate_bodies
   end
 
@@ -98,8 +99,6 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
     then_i_should_be_taken_to_the_confirmation_page
   end
 
-private
-
   def create_contract_period_for_start_date
     @contract_period = FactoryBot.create(
       :contract_period,
@@ -109,11 +108,46 @@ private
   end
 
   def create_lead_provider_and_active_lead_provider
-    @lead_provider = FactoryBot.create(:lead_provider, name: "Orange Institute")
-    FactoryBot.create(
-      :active_lead_provider,
+    @lead_provider    = FactoryBot.create(:lead_provider, name: "Orange Institute")
+    @delivery_partner = FactoryBot.create(:delivery_partner, name: "Jaskolski College Delivery Partner 1")
+
+    current_cp   = @contract_period
+    current_year = current_cp.year
+
+    @prev_cp = FactoryBot.create(
+      :contract_period,
+      started_on: (current_cp.started_on - 1.year).beginning_of_month,
+      finished_on: (current_cp.started_on - 1.day).end_of_day
+    )
+    prev_year = @prev_cp.year
+
+    Metadata::DeliveryPartnerLeadProvider.where(
+      lead_provider: @lead_provider, delivery_partner: @delivery_partner
+    ).delete_all
+
+    Metadata::DeliveryPartnerLeadProvider.create!(
       lead_provider: @lead_provider,
-      contract_period: @contract_period
+      delivery_partner: @delivery_partner,
+      contract_period_years: [prev_year, current_year]
+    )
+
+    @active_lead_provider_prev = FactoryBot.create(
+      :active_lead_provider, lead_provider: @lead_provider, contract_period: @prev_cp
+    )
+    @active_lead_provider = FactoryBot.create(
+      :active_lead_provider, lead_provider: @lead_provider, contract_period: current_cp
+    )
+
+    @previous_lpd = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: @active_lead_provider_prev,
+      delivery_partner: @delivery_partner
+    )
+
+    @current_lpd = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: @active_lead_provider,
+      delivery_partner: @delivery_partner
     )
   end
 
@@ -127,6 +161,12 @@ private
     )
   end
 
+  def create_previous_period_and_partnership
+    FactoryBot.create(:school_partnership,
+                      school: @school,
+                      lead_provider_delivery_partnership: @previous_lpd)
+  end
+
   def create_appropriate_bodies
     FactoryBot.create(:appropriate_body, name: "Golden Leaf Teaching Hub")
     FactoryBot.create(:appropriate_body, name: "Umber Teaching Hub")
@@ -138,6 +178,12 @@ private
 
   def given_i_am_logged_in_as_a_state_funded_school_user
     sign_in_as_school_user(school: @school)
+    @school.reload
+
+    expect(@school.independent?).to be(false)
+    expect(@school.last_chosen_training_programme).to eq("provider_led")
+    expect(@school.last_chosen_appropriate_body_id).to be_present
+    expect(@school.last_programme_choices?).to be(true)
   end
 
   def and_i_am_on_the_schools_landing_page
@@ -237,10 +283,10 @@ private
     expect(page).to have_path("/schools/register-ect/state-school-appropriate-body")
   end
 
-  def when_i_select_an_appropriate_body
+  def when_i_select_an_appropriate_body(value: @school.last_chosen_appropriate_body.name)
     page.get_by_role("combobox", name: "Enter appropriate body name")
         .first
-        .select_option(value: "Golden Leaf Teaching Hub")
+        .select_option(value:)
   end
 
   def then_i_should_be_taken_to_the_training_programme_page

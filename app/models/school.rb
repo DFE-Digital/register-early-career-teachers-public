@@ -131,7 +131,7 @@ class School < ApplicationRecord
     }.compact
   end
 
-  def last_programme_choices? = last_chosen_appropriate_body_id && last_chosen_training_programme
+  def last_programme_choices? = last_chosen_appropriate_body_id.present? && last_chosen_training_programme.present?
 
   def to_param = urn
 

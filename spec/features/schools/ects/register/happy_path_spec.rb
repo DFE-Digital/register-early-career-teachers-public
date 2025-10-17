@@ -6,6 +6,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
     create_lead_provider_and_active_lead_provider
     create_school_with_previous_choices
     create_appropriate_bodies
+    create_reusable_previous_partnership
   end
 
   scenario 'happy path' do
@@ -141,6 +142,46 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   def create_appropriate_bodies
     FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
     FactoryBot.create(:appropriate_body, name: 'Umber Teaching Hub')
+  end
+
+  def create_reusable_previous_partnership
+    previous_contract_period = FactoryBot.create(
+      :contract_period,
+      started_on: @contract_period.started_on - 1.year,
+      finished_on: @contract_period.started_on - 1.day,
+      enabled: true
+    )
+
+    previous_active_lead_provider = FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @lead_provider,
+      contract_period: previous_contract_period
+    )
+
+    delivery_partner = FactoryBot.create(:delivery_partner)
+
+    previous_lead_provider_delivery_partnership = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: previous_active_lead_provider,
+      delivery_partner:
+    )
+
+    FactoryBot.create(
+      :school_partnership,
+      school: @school,
+      lead_provider_delivery_partnership: previous_lead_provider_delivery_partnership
+    )
+
+    current_active_lead_provider = ActiveLeadProvider.find_by!(
+      lead_provider: @lead_provider,
+      contract_period: @contract_period
+    )
+
+    FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: current_active_lead_provider,
+      delivery_partner:
+    )
   end
 
   def trn
