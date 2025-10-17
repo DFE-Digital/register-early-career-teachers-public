@@ -7,31 +7,39 @@ module Schools
                 inclusion: {
                   in: [true, false],
                   message: "Select 'Yes' or 'No' to confirm whether to use the programme choices used by your school previously"
-                }
+                },
+                if: :reusable_available?
 
-      def self.permitted_params
-        %i[use_previous_ect_choices]
-      end
+      def self.permitted_params = %i[use_previous_ect_choices]
 
       def next_step
-        return :check_answers if use_previous_ect_choices
-        return :independent_school_appropriate_body if school.independent?
-
-        :state_school_appropriate_body
+        use_previous_ect_choices ? :check_answers : fallback_step
       end
 
-      def previous_step
-        :working_pattern
+      def previous_step = :working_pattern
+
+      def fallback_step
+        school.independent? ? :independent_school_appropriate_body : :state_school_appropriate_body
+      end
+
+      def reusable_available?
+        provider_led_programme_chosen? &&
+          last_chosen_lead_provider_present? &&
+          current_contract_year.present? &&
+          reusable_partnership_id.present?
       end
 
       def reusable_partnership_preview
-        return nil unless preview_eligible?
+        SchoolPartnership.find_by(id: reusable_partnership_id)
+      end
 
-        @reusable_partnership_preview ||= SchoolPartnerships::FindPreviousReusable.new.call(
-          school:,
-          last_lead_provider: school.last_chosen_lead_provider,
-          current_contract_period: ect.contract_start_date
-        )
+      def reusable_partnership_id
+        @reusable_partnership_id ||= find_previous_year_reusable_id
+      end
+
+      def current_contract_year
+        @current_contract_year ||= ect.contract_start_date&.year ||
+          (store[:start_date].is_a?(Date) ? store[:start_date].year : nil)
       end
 
     private
@@ -39,27 +47,43 @@ module Schools
       def persist
         return false unless ect.update(use_previous_ect_choices:, **choices)
 
-        store.school_partnership_to_reuse_id =
-          use_previous_ect_choices ? reusable_partnership_preview&.id : nil
+        store.school_partnership_to_reuse_id = use_previous_ect_choices ? reusable_partnership_id : nil
         true
-      end
-
-      def preview_eligible?
-        return false unless school.provider_led_training_programme_chosen?
-        return false if school.last_chosen_lead_provider.blank?
-        return false if current_year_partnership_exists?
-
-        true
-      end
-
-      def current_year_partnership_exists?
-        SchoolPartnerships::Search
-          .new(school:, contract_period: ect.contract_start_date, lead_provider: school.last_chosen_lead_provider)
-          .exists?
       end
 
       def choices
         use_previous_ect_choices ? school.last_programme_choices : {}
+      end
+
+      def current_year_partnership_id
+        last_lead_provider = school.last_chosen_lead_provider or return nil
+        year = current_contract_year or return nil
+
+        SchoolPartnerships::Search
+          .new(school:, contract_period: year, lead_provider: last_lead_provider)
+          .school_partnerships
+          .order("school_partnerships.created_at DESC, school_partnerships.id DESC")
+          .limit(1)
+          .pick(:id)
+      end
+
+      def find_previous_year_reusable_id
+        SchoolPartnerships::FindPreviousReusable
+          .new
+          .call(
+            school:,
+            last_lead_provider: school.last_chosen_lead_provider,
+            current_contract_period: current_contract_year
+          )
+          &.id
+      end
+
+      def provider_led_programme_chosen?
+        school.provider_led_training_programme_chosen?
+      end
+
+      def last_chosen_lead_provider_present?
+        school.last_chosen_lead_provider.present?
       end
     end
   end

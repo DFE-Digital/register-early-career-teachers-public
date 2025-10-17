@@ -3,6 +3,7 @@ module Schools
     before_action :initialize_wizard, only: %i[new create]
     before_action :reset_wizard, only: :new
     before_action :check_allowed_step, except: %i[start]
+    before_action :guard_use_previous_choices, only: %i[new create]
 
     FORM_KEY = :register_ect_wizard
     WIZARD_CLASS = Schools::RegisterECTWizard::Wizard.freeze
@@ -49,6 +50,16 @@ module Schools
 
     def reset_wizard
       @wizard.reset if current_step == :find_ect
+      store.delete(:start_date) if current_step == :find_ect
+    end
+
+    def guard_use_previous_choices
+      return unless @wizard.current_step_name == :use_previous_ect_choices
+
+      step = @wizard.current_step
+      return if step.reusable_available?
+
+      redirect_to public_send(:"schools_register_ect_wizard_#{step.fallback_step}_path")
     end
 
     def store

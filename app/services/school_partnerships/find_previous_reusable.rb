@@ -1,35 +1,72 @@
 module SchoolPartnerships
   class FindPreviousReusable
+    include ContractPeriodYearConcern
+
+    # Returns SchoolPartnership or nil
     def call(school:, last_lead_provider:, current_contract_period:)
-      return nil if school.blank? || last_lead_provider.blank? || current_contract_period.blank?
+      return nil unless valid_args?(school, last_lead_provider, current_contract_period)
 
-      current_year = current_contract_period.year
-
-      active_lead_provider =
-        ActiveLeadProvider
-          .for_lead_provider(last_lead_provider.id)
-          .for_contract_period_year(current_year)
-          .take
+      current_year         = to_year(current_contract_period)
+      active_lead_provider = current_active_lead_provider_for(lead_provider: last_lead_provider, year: current_year)
       return nil unless active_lead_provider
 
-      previous_partnerships =
-        SchoolPartnerships::Search
-          .new(school:, lead_provider: last_lead_provider)
-          .school_partnerships
-          .excluding_contract_period_year(current_year)
-          .latest_by_contract_year
-          .includes(:lead_provider_delivery_partnership)
+      current_delivery_partner_ids = current_delivery_partner_ids_for(active_lead_provider:)
+      return nil if current_delivery_partner_ids.empty?
 
-      current_year_delivery_partner_ids =
-        LeadProviderDeliveryPartnership
-          .for_contract_period(current_contract_period)
-          .with_active_lead_provider(active_lead_provider.id)
-          .select(:delivery_partner_id)
+      previous_scope = previous_partnerships_scope(
+        school:,
+        lead_provider: last_lead_provider,
+        exclude_year: current_year
+      )
 
-      previous_partnerships
-        .joins(:lead_provider_delivery_partnership)
-        .where(lead_provider_delivery_partnership: { delivery_partner_id: current_year_delivery_partner_ids })
-        .first
+      overlapping_scope = overlapping_delivery_partners_scope(previous_scope, current_delivery_partner_ids)
+      ordered_scope     = order_latest_year_then_newest_created(overlapping_scope)
+
+      ordered_scope.first
+    end
+
+  private
+
+    def valid_args?(school, lead_provider, period)
+      school.present? && lead_provider.present? && period.present?
+    end
+
+    def current_active_lead_provider_for(lead_provider:, year:)
+      ActiveLeadProvider
+        .for_lead_provider(lead_provider.id)
+        .for_contract_period_year(year)
+        .take
+    end
+
+    def current_delivery_partner_ids_for(active_lead_provider:)
+      LeadProviderDeliveryPartnership
+        .where(active_lead_provider_id: active_lead_provider.id)
+        .pluck(:delivery_partner_id)
+    end
+
+    def previous_partnerships_scope(school:, lead_provider:, exclude_year:)
+      SchoolPartnerships::Search
+        .new(school:, lead_provider:)
+        .school_partnerships
+        .excluding_contract_period_year(exclude_year)
+        .latest_by_contract_year
+    end
+
+    def overlapping_delivery_partners_scope(base_scope, current_delivery_partner_ids)
+      base_scope.where(
+        lead_provider_delivery_partnership_id: LeadProviderDeliveryPartnership
+          .where(delivery_partner_id: current_delivery_partner_ids)
+          .select(:id)
+      )
+    end
+
+    def order_latest_year_then_newest_created(base_scope)
+      base_scope
+        .reorder(nil)
+        .joins(lead_provider_delivery_partnership: :active_lead_provider)
+        .order("active_lead_providers.contract_period_year DESC")
+        .order("school_partnerships.created_at DESC")
+        .order("school_partnerships.id DESC")
     end
   end
 end
