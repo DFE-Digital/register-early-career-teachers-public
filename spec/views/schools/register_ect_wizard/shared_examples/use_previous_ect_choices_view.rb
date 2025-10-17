@@ -36,6 +36,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
 
   context "when the input data is invalid" do
     before do
+      allow(wizard.current_step).to receive(:reusable_available?).and_return(true)
       wizard.current_step.use_previous_ect_choices = nil
       wizard.valid_step?
       render
