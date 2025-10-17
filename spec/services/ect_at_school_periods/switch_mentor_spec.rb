@@ -176,6 +176,34 @@ module ECTAtSchoolPeriods
           end
         end
       end
+
+      context "when the ECT has a mentorship period starting on the same day" do
+        let(:existing_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :ongoing,
+            school: ect_at_school_period.school,
+            started_on: ect_at_school_period.started_on - 1.month
+          )
+        end
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: existing_mentor_at_school_period,
+            started_on: Date.current
+          )
+        end
+        let(:lead_provider) { nil }
+
+        it "assigns a mentor" do
+          expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
+
+          ect_at_school_period.reload
+          expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
+            .to eq(selected_mentor_at_school_period)
+        end
+      end
     end
   end
 end
