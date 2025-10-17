@@ -34,12 +34,19 @@ describe Migrators::SchoolPartnership do
           delivery_partner = school_partnership.lead_provider_delivery_partnership.delivery_partner
           school = school_partnership.school
 
+          expected_api_updated_at = [
+            partnership.updated_at,
+            partnership.school.updated_at,
+            partnership.delivery_partner.updated_at,
+            partnership.school.induction_coordinators&.first&.updated_at,
+          ].compact.max.rfc3339
+
           expect(lead_provider.ecf_id).to eq partnership.lead_provider_id
           expect(delivery_partner.api_id).to eq partnership.delivery_partner_id
           expect(year).to eq partnership.cohort.start_year
           expect(school.urn.to_s).to eq partnership.school.urn
           expect(school_partnership.created_at).to eq partnership.created_at
-          expect(school_partnership.api_updated_at).to eq partnership.updated_at
+          expect(school_partnership.api_updated_at).to eq expected_api_updated_at
         end
       end
     end
