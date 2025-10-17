@@ -8,7 +8,9 @@ describe SchoolPartnership do
         FactoryBot.create(:lead_provider_delivery_partnership, id: new_value) if attribute_to_change == :lead_provider_delivery_partnership
       end
 
-      it_behaves_like "a declarative touch model", when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
+      it_behaves_like "a declarative touch model",
+                      when_changing: %i[lead_provider_delivery_partnership_id],
+                      timestamp_attribute: :api_updated_at
     end
 
     describe "declarative metadata" do
@@ -54,36 +56,87 @@ describe SchoolPartnership do
 
     it { is_expected.to validate_presence_of(:lead_provider_delivery_partnership_id) }
     it { is_expected.to validate_presence_of(:school_id) }
-    it { is_expected.to validate_uniqueness_of(:school_id).scoped_to(:lead_provider_delivery_partnership_id).with_message('School and lead provider delivery partnership combination must be unique') }
+
+    it do
+      expect(subject).to validate_uniqueness_of(:school_id)
+        .scoped_to(:lead_provider_delivery_partnership_id)
+        .with_message("School and lead provider delivery partnership combination must be unique")
+    end
   end
 
-  describe 'scopes' do
-    describe ".for_contract_period" do
-      let(:contract_period_1) { FactoryBot.create(:contract_period) }
-      let(:contract_period_2) { FactoryBot.create(:contract_period) }
-      let(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_1) }
-      let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2) }
-      let(:lead_provider_delivery_partnership_1) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_1) }
-      let(:lead_provider_delivery_partnership_2) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2) }
-      let!(:school_partnership_1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_1) }
-      let!(:school_partnership_2) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_2) }
-
-      it "returns school partnerships only for the specified contract period" do
-        expect(described_class.for_contract_period(contract_period_2.id)).to contain_exactly(school_partnership_2)
-      end
-    end
-
-    describe '.earliest_first' do
-      let!(:school_partnership_first) { FactoryBot.create(:school_partnership, created_at: 3.weeks.ago) }
+  describe "scopes" do
+    describe ".earliest_first" do
+      let!(:school_partnership_first)  { FactoryBot.create(:school_partnership, created_at: 3.weeks.ago) }
       let!(:school_partnership_second) { FactoryBot.create(:school_partnership, created_at: 2.weeks.ago) }
-      let!(:school_partnership_third) { FactoryBot.create(:school_partnership, created_at: 1.week.ago) }
+      let!(:school_partnership_third)  { FactoryBot.create(:school_partnership, created_at: 1.week.ago) }
 
-      it 'orders with earliest created records first' do
-        expect(SchoolPartnership.earliest_first).to eq([
+      it "orders with earliest created records first" do
+        expect(SchoolPartnership.earliest_first.to_a).to eq([
           school_partnership_first,
           school_partnership_second,
           school_partnership_third,
         ])
+      end
+    end
+
+    context "with contract period data" do
+      let(:contract_period_1) { FactoryBot.create(:contract_period) }
+      let(:contract_period_2) { FactoryBot.create(:contract_period) }
+
+      let(:active_lead_provider_1) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_1) }
+      let(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2) }
+
+      let(:lead_provider_delivery_partnership_1) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_1) }
+      let(:lead_provider_delivery_partnership_2) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2) }
+
+      let!(:school_partnership_1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_1) }
+      let!(:school_partnership_2) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_2) }
+
+      describe ".for_contract_period" do
+        it "returns school partnerships only for the specified contract period" do
+          expect(described_class.for_contract_period(contract_period_2.id)).to contain_exactly(school_partnership_2)
+        end
+      end
+
+      describe ".for_contract_period_year" do
+        it "returns partnerships only for the specified contract period year" do
+          result = described_class.for_contract_period_year(contract_period_1.year)
+          expect(result).to contain_exactly(school_partnership_1)
+          expect(result).not_to include(school_partnership_2)
+        end
+      end
+
+      describe ".excluding_contract_period_year" do
+        it "excludes partnerships from the specified contract period year" do
+          result = described_class.excluding_contract_period_year(contract_period_1.year)
+          expect(result).to contain_exactly(school_partnership_2)
+          expect(result).not_to include(school_partnership_1)
+        end
+      end
+
+      describe ".latest_by_contract_year" do
+        let!(:school_partnership_for_contract_period_1_newer) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_1, created_at: 1.day.ago) }
+        let!(:school_partnership_for_contract_period_1_older) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_1, created_at: 3.days.ago) }
+        let!(:school_partnership_for_contract_period_2_newer) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_2, created_at: Time.current) }
+        let!(:school_partnership_for_contract_period_2_older) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership_2, created_at: 2.days.ago) }
+
+        before do
+          school_partnership_1.update!(created_at: 4.days.ago)
+          school_partnership_2.update!(created_at: 5.days.ago)
+        end
+
+        it "orders by contract period year desc, then created_at desc" do
+          result = described_class.latest_by_contract_year.to_a
+
+          expect(result).to eq([
+            school_partnership_for_contract_period_2_newer,
+            school_partnership_for_contract_period_2_older,
+            school_partnership_2,
+            school_partnership_for_contract_period_1_newer,
+            school_partnership_for_contract_period_1_older,
+            school_partnership_1
+          ])
+        end
       end
     end
   end
