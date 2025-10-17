@@ -11,7 +11,7 @@ RSpec.describe "Participant transfers API", type: :request do
   end
 
   describe "#show" do
-    let(:path) { api_v3_participant_transfers_path(123) }
+    let(:path) { transfers_api_v3_participant_path(123) }
 
     it_behaves_like "a token authenticated endpoint", :get
 
