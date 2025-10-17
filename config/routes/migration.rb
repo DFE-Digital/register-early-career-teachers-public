@@ -11,6 +11,7 @@ namespace :migration do
   resources :model_failures, path: "migrator-failures", only: %i[index]
   resources :teacher_failures, path: "teacher-failures", only: %i[index]
   resources :teachers, only: %i[index show]
+  resources :induction_record_export, only: %i[index]
 
   constraints -> { Rails.application.config.parity_check[:enabled] } do
     resources :parity_checks, path: "parity-checks", only: %i[new create show], param: :run_id do

@@ -4,7 +4,69 @@ module Migration
       Migration::Base.connection.execute(query)
     end
 
+    def stream_csv_to(output_stream)
+      output_stream.write CSV.generate_line(csv_headers)
+      ar_query.limit(10).find_each(batch_size: 2000) do |induction_record|
+        output_stream.write CSV.generate_line(csv_row(induction_record))
+      end
+    end
+
   private
+
+    def csv_headers
+      attributes.map(&:humanize)
+    end
+
+    def attributes
+      %w[id start_date end_date right_way_round duration training_status school_transfer induction_record_creaated ect_participant_profile_id mentor_participant_profile_id urn challenged lead_provider_name].freeze
+    end
+
+    def csv_row(induction_record)
+      [
+        induction_record.id,
+        induction_record.start_date.to_date,
+        induction_record.end_date&.to_date,
+        right_way_round?(induction_record),
+        duration_of(induction_record),
+        induction_record.training_status,
+        induction_record.school_transfer,
+        induction_record.created_at.to_date,
+        ect_profile_id(induction_record),
+        mentor_profile_id(induction_record),
+        induction_record.induction_programme.school_cohort.school.urn,
+        challenged?(induction_record),
+        induction_record.induction_programme&.partnership&.lead_provider&.name,
+      ]
+    end
+
+    def ect_profile_id(induction_record)
+      induction_record.participant_profile_id if induction_record.participant_profile.type == "ParticipantProfile::ECT"
+    end
+
+    def mentor_profile_id(induction_record)
+      induction_record.participant_profile_id if induction_record.participant_profile.type == "ParticipantProfile::Mentor"
+    end
+
+    def challenged?(induction_record)
+      return nil unless induction_record.induction_programme&.partnership.present?
+
+      induction_record.induction_programme.partnership.challenged_at.present?
+    end
+
+    def right_way_round?(induction_record)
+      return true if induction_record.end_date.blank?
+      induction_record.start_date < induction_record.end_date
+    end
+
+    def duration_of(induction_record)
+      return nil if induction_record.end_date.blank?
+
+      (induction_record.end_date.to_date - induction_record.start_date.to_date).to_i
+    end
+
+    def ar_query
+      InductionRecord.eager_load(:participant_profile, :preferred_identity, induction_programme: { school_cohort: :school, partnership: :lead_provider } ).order(:participant_profile_id)
+    end
 
     def query
       <<~SQL
