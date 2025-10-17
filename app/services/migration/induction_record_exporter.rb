@@ -6,7 +6,7 @@ module Migration
 
     def stream_csv_to(output_stream)
       output_stream.write CSV.generate_line(csv_headers)
-      ar_query.limit(10).find_each(batch_size: 2000) do |induction_record|
+      ar_query.find_each(batch_size: 5_000) do |induction_record|
         output_stream.write CSV.generate_line(csv_row(induction_record))
       end
     end
@@ -14,11 +14,11 @@ module Migration
   private
 
     def csv_headers
-      attributes.map(&:humanize)
+      attributes
     end
 
     def attributes
-      %w[id start_date end_date right_way_round duration training_status school_transfer induction_record_creaated ect_participant_profile_id mentor_participant_profile_id urn challenged lead_provider_name].freeze
+      %w[induction_record_id start_date end_date right_way_round duration training_status school_transfer induction_record_created ect_participant_profile_id mentor_participant_profile_id urn challenged lead_provider_name].freeze
     end
 
     def csv_row(induction_record)
