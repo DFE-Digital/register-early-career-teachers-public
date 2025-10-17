@@ -10,3 +10,7 @@
 <% else %>
   <%= govuk_button_to "Run migration", { action: :create }, warning: true, disabled: @data_migrations.present? %>
 <% end %>
+
+<h2 class="govuk-heading-m">Export data</h2>
+
+<%= govuk_button_to('Download anonymised induction data', '#', secondary: true) %>
