@@ -1,6 +1,8 @@
 class AddCourseIdentifierAndReasonToEvents < ActiveRecord::Migration[8.0]
   def change
-    add_column :events, :course_identifier, :string
-    add_column :events, :reason, :string
+    change_table :events, bulk: true do |t|
+      t.string :course_identifier
+      t.string :reason
+    end
   end
 end
