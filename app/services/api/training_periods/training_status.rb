@@ -15,5 +15,9 @@ module API::TrainingPeriods
         :active
       end
     end
+
+    def withdrawn?
+      status == :withdrawn
+    end
   end
 end
