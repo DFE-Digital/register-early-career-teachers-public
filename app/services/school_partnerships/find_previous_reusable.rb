@@ -4,9 +4,9 @@ module SchoolPartnerships
 
     # Returns SchoolPartnership or nil
     def call(school:, last_lead_provider:, current_contract_period:)
-      return nil unless valid_args?(school, last_lead_provider, current_contract_period)
+      return nil unless valid_params?(school, last_lead_provider, current_contract_period)
 
-      current_year         = to_year(current_contract_period)
+      current_year = to_year(current_contract_period)
       active_lead_provider = current_active_lead_provider_for(lead_provider: last_lead_provider, year: current_year)
       return nil unless active_lead_provider
 
@@ -20,15 +20,15 @@ module SchoolPartnerships
       )
 
       overlapping_scope = overlapping_delivery_partners_scope(previous_scope, current_delivery_partner_ids)
-      ordered_scope     = order_latest_year_then_newest_created(overlapping_scope)
+      ordered_scope = order_latest_year_then_newest_created(overlapping_scope)
 
       ordered_scope.first
     end
 
   private
 
-    def valid_args?(school, lead_provider, period)
-      school.present? && lead_provider.present? && period.present?
+    def valid_params?(school, lead_provider, current_contract_period)
+      school.present? && lead_provider.present? && current_contract_period.present?
     end
 
     def current_active_lead_provider_for(lead_provider:, year:)
