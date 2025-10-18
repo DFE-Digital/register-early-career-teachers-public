@@ -45,10 +45,6 @@ class MentorAtSchoolPeriod < ApplicationRecord
     })
     .where(contract_periods: { year: })
   }
-  scope :with_expressions_of_interest_for_lead_provider_and_contract_period, ->(year, lead_provider_id) {
-    with_expressions_of_interest_for_contract_period(year)
-    .where(expression_of_interest: { lead_provider_id: })
-  }
 
   # Instance methods
   def siblings

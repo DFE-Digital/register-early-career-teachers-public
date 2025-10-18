@@ -57,10 +57,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
     })
     .where(contract_periods: { year: })
   }
-  scope :with_expressions_of_interest_for_lead_provider_and_contract_period, ->(year, lead_provider_id) {
-    with_expressions_of_interest_for_contract_period(year)
-    .where(expression_of_interest: { lead_provider_id: })
-  }
 
   def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
 

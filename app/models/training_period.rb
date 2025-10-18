@@ -76,14 +76,29 @@ class TrainingPeriod < ApplicationRecord
   }
 
   scope :ect_training_periods_latest_first, ->(teacher:, lead_provider:) {
-    includes(:ect_at_school_period, :lead_provider)
+    includes(:ect_at_school_period, lead_provider_delivery_partnership: { active_lead_provider: :lead_provider })
     .where(ect_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
     .latest_first
   }
+  scope :latest_ect_training_periods_by_lead_provider, ->(teacher:) {
+    includes(:ect_at_school_period, lead_provider_delivery_partnership: { active_lead_provider: :lead_provider })
+      .where(ect_at_school_period: { teacher: })
+      .select("DISTINCT ON (lead_provider_id) #{table_name}.*")
+      .order("lead_provider_id, #{table_name}.started_on DESC")
+      .index_by { it.lead_provider&.id }
+  }
+
   scope :mentor_training_periods_latest_first, ->(teacher:, lead_provider:) {
-    includes(:mentor_at_school_period, :lead_provider)
+    includes(:mentor_at_school_period, lead_provider_delivery_partnership: { active_lead_provider: :lead_provider })
     .where(mentor_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
     .latest_first
+  }
+  scope :latest_mentor_training_periods_by_lead_provider, ->(teacher:) {
+    includes(:mentor_at_school_period, lead_provider_delivery_partnership: { active_lead_provider: :lead_provider })
+      .where(mentor_at_school_period: { teacher: })
+      .select("DISTINCT ON (lead_provider_id) #{table_name}.*")
+      .order("lead_provider_id, #{table_name}.started_on DESC")
+      .index_by { it.lead_provider&.id }
   }
 
   # Delegations
