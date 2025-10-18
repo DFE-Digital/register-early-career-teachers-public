@@ -32,7 +32,7 @@ module Metadata::Handlers
         changes = {
           delivery_partner_id: delivery_partner.id,
           lead_provider_id:,
-          contract_period_years: contract_period_years(lead_provider_id)
+          contract_period_years: contract_period_years_by_lead_provider[lead_provider_id] || []
         }
 
         next if metadata.attributes.slice(*changes.keys) == changes
@@ -44,12 +44,15 @@ module Metadata::Handlers
       Metadata::DeliveryPartnerLeadProvider.upsert_all(changes_to_upsert, unique_by: %i[delivery_partner_id lead_provider_id])
     end
 
-    def contract_period_years(lead_provider_id)
-      delivery_partner
-        .lead_provider_delivery_partnerships
-        .joins(:active_lead_provider)
-        .where(active_lead_providers: { lead_provider_id: })
-        .pluck("active_lead_providers.contract_period_year")
+    def contract_period_years_by_lead_provider
+      @contract_period_years_by_lead_provider ||= delivery_partner
+          .lead_provider_delivery_partnerships
+          .joins(:active_lead_provider)
+          .group("active_lead_providers.lead_provider_id")
+          .pluck(
+            Arel.sql("active_lead_providers.lead_provider_id"),
+            Arel.sql("ARRAY_AGG(DISTINCT active_lead_providers.contract_period_year ORDER BY active_lead_providers.contract_period_year)")
+          ).to_h
     end
   end
 end

@@ -1,5 +1,5 @@
 describe Schools::TrainingProgramme do
-  subject { described_class.new(school:, contract_period_year:) }
+  subject { described_class.new(school:).training_programme_for(contract_period_year:) }
 
   let(:school) { FactoryBot.create(:school, urn: "123456") }
   let(:contract_period) { FactoryBot.create(:contract_period) }
@@ -8,7 +8,7 @@ describe Schools::TrainingProgramme do
   describe "#training_programme" do
     context "when school has no ects or mentors for the given contract period" do
       it "returns `not_yet_known`" do
-        expect(subject.training_programme).to eq("not_yet_known")
+        expect(subject).to eq("not_yet_known")
       end
     end
 
@@ -33,7 +33,7 @@ describe Schools::TrainingProgramme do
         end
 
         it "returns the correct `training_programme` choice" do
-          expect(subject.training_programme).to eq("provider_led")
+          expect(subject).to eq("provider_led")
         end
       end
 
@@ -59,7 +59,7 @@ describe Schools::TrainingProgramme do
         end
 
         it "returns the correct `training_programme` choice" do
-          expect(subject.training_programme).to eq("not_yet_known")
+          expect(subject).to eq("not_yet_known")
         end
       end
 
@@ -80,7 +80,7 @@ describe Schools::TrainingProgramme do
         end
 
         it "returns the correct `training_programme` choice" do
-          expect(subject.training_programme).to eq("provider_led")
+          expect(subject).to eq("provider_led")
         end
       end
 
@@ -102,7 +102,7 @@ describe Schools::TrainingProgramme do
           end
 
           it "returns the correct `training_programme` choice" do
-            expect(subject.training_programme).to eq("provider_led")
+            expect(subject).to eq("provider_led")
           end
         end
 
@@ -122,7 +122,7 @@ describe Schools::TrainingProgramme do
           end
 
           it "returns the correct `training_programme` choice" do
-            expect(subject.training_programme).to eq("school_led")
+            expect(subject).to eq("school_led")
           end
         end
 
@@ -157,7 +157,7 @@ describe Schools::TrainingProgramme do
           end
 
           it "returns the correct `training_programme` choice" do
-            expect(subject.training_programme).to eq("provider_led")
+            expect(subject).to eq("provider_led")
           end
         end
       end
@@ -178,7 +178,7 @@ describe Schools::TrainingProgramme do
         end
 
         it "returns the correct `training_programme` choice" do
-          expect(subject.training_programme).to eq("school_led")
+          expect(subject).to eq("school_led")
         end
       end
     end

@@ -26,6 +26,11 @@ module Metadata::Handlers
 
       changes_to_upsert = []
 
+      school_partnership_contract_period_years = school.school_partnerships
+        .includes(lead_provider_delivery_partnership: :active_lead_provider)
+        .pluck(:contract_period_year)
+        .uniq
+
       contract_period_years.each do |contract_period_year|
         metadata = existing_metadata[contract_period_year] ||
           Metadata::SchoolContractPeriod.new(school:, contract_period_year:)
@@ -33,7 +38,7 @@ module Metadata::Handlers
         changes = {
           school_id: school.id,
           contract_period_year:,
-          in_partnership: school.school_partnerships.for_contract_period(contract_period_year).exists?,
+          in_partnership: contract_period_year.in?(school_partnership_contract_period_years),
           induction_programme_choice: school.training_programme_for(contract_period_year)
         }
 
@@ -61,7 +66,7 @@ module Metadata::Handlers
           school_id: school.id,
           lead_provider_id:,
           contract_period_year:,
-          expression_of_interest: school.expression_of_interest_for?(lead_provider_id, contract_period_year)
+          expression_of_interest: [lead_provider_id, contract_period_year].in?(expressions_of_interest)
         }
 
         next if metadata.attributes.slice(*changes.keys) == changes
@@ -71,6 +76,10 @@ module Metadata::Handlers
       end
 
       Metadata::SchoolLeadProviderContractPeriod.upsert_all(changes_to_upsert, unique_by: %i[school_id lead_provider_id contract_period_year])
+    end
+
+    def expressions_of_interest
+      @expressions_of_interest ||= school.expressions_of_interest.map { [it.lead_provider_id, it.contract_period_year] }.to_set
     end
 
     def lead_provider_id_contract_period_years

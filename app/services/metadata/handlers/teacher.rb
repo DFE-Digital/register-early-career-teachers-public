@@ -29,8 +29,8 @@ module Metadata::Handlers
         metadata = existing_metadata[lead_provider_id] ||
           Metadata::TeacherLeadProvider.new(teacher:, lead_provider_id:)
 
-        latest_ect_training_period = TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider_id).first
-        latest_mentor_training_period = TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider_id).first
+        latest_ect_training_period = latest_ect_training_period_by_lead_provider(teacher:)[lead_provider_id]
+        latest_mentor_training_period = latest_mentor_training_period_by_lead_provider(teacher:)[lead_provider_id]
         api_mentor_id = latest_ect_training_period&.trainee&.latest_mentorship_period&.mentor&.teacher&.api_id
 
         changes = {
@@ -48,6 +48,14 @@ module Metadata::Handlers
       end
 
       Metadata::TeacherLeadProvider.upsert_all(changes_to_upsert, unique_by: %i[teacher_id lead_provider_id])
+    end
+
+    def latest_ect_training_period_by_lead_provider(teacher:)
+      @latest_ect_training_period_by_lead_provider ||= TrainingPeriod.latest_ect_training_periods_by_lead_provider(teacher:)
+    end
+
+    def latest_mentor_training_period_by_lead_provider(teacher:)
+      @latest_mentor_training_period_by_lead_provider ||= TrainingPeriod.latest_mentor_training_periods_by_lead_provider(teacher:)
     end
   end
 end

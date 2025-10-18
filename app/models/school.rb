@@ -133,7 +133,14 @@ class School < ApplicationRecord
   def to_param = urn
 
   def training_programme_for(contract_period_year)
-    Schools::TrainingProgramme.new(school: self, contract_period_year:).training_programme
+    training_programme.training_programme_for(contract_period_year:)
+  end
+
+  def expressions_of_interest
+    ActiveLeadProvider
+      .joins(expressions_of_interest: %i[ect_at_school_period mentor_at_school_period])
+      .where('ect_at_school_periods.school_id = ? OR mentor_at_school_periods.school_id = ?', id, id)
+      .distinct
   end
 
   def expression_of_interest_for?(lead_provider_id, contract_period_year)
@@ -142,5 +149,11 @@ class School < ApplicationRecord
       .where(expression_of_interest: { lead_provider_id:, contract_period_year: })
       .where("ect_at_school_periods.school_id = ? OR mentor_at_school_periods.school_id = ?", id, id)
       .exists?
+  end
+
+private
+
+  def training_programme
+    @training_programme ||= Schools::TrainingProgramme.new(school: self)
   end
 end
