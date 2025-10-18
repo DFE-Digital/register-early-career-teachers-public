@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_15_212520) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_18_153449) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -189,6 +189,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_212520) do
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
     t.index ["school_reported_appropriate_body_id"], name: "idx_on_school_reported_appropriate_body_id_01f5ffc90a"
+    t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_and_started_on"
     t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
     t.index ["teacher_id"], name: "index_ect_at_school_periods_on_teacher_id"
   end
@@ -309,6 +310,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_212520) do
     t.enum "outcome", enum_type: "induction_outcomes"
     t.enum "training_programme", enum_type: "training_programme"
     t.index ["appropriate_body_id"], name: "index_induction_periods_on_appropriate_body_id"
+    t.index ["teacher_id", "started_on"], name: "index_induction_periods_on_teacher_id_and_started_on"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
   end
 
@@ -347,6 +349,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_212520) do
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
+    t.index ["teacher_id", "started_on"], name: "index_mentor_at_school_periods_on_teacher_id_and_started_on"
     t.index ["teacher_id"], name: "index_mentor_at_school_periods_on_teacher_id"
   end
 
@@ -413,6 +416,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_212520) do
     t.uuid "api_mentor_id"
     t.index ["latest_ect_training_period_id"], name: "idx_on_latest_ect_training_period_id_2d0632b258"
     t.index ["latest_mentor_training_period_id"], name: "idx_on_latest_mentor_training_period_id_862127afaf"
+    t.index ["lead_provider_id", "teacher_id"], name: "idx_on_lead_provider_id_teacher_id_74c7a13188", where: "((latest_ect_training_period_id IS NOT NULL) OR (latest_mentor_training_period_id IS NOT NULL))"
     t.index ["lead_provider_id"], name: "index_metadata_teachers_lead_providers_on_lead_provider_id"
     t.index ["teacher_id", "lead_provider_id"], name: "idx_on_teacher_id_lead_provider_id_23bbab847a", unique: true
     t.index ["teacher_id"], name: "index_metadata_teachers_lead_providers_on_teacher_id"
@@ -791,6 +795,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_212520) do
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
+    t.index ["created_at"], name: "index_teachers_on_created_at"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
     t.index ["trs_first_name", "trs_last_name", "corrected_name"], name: "idx_on_trs_first_name_trs_last_name_corrected_name_6d0edad502", opclass: :gin_trgm_ops, using: :gin
