@@ -13,7 +13,7 @@ module API::Teachers
       sort: { created_at: :asc }
     )
       @lead_provider_id = lead_provider_id
-      @scope = Teacher.distinct
+      @scope = Teacher
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
@@ -90,6 +90,7 @@ module API::Teachers
       return if ignore?(filter: contract_period_years)
 
       @scope = scope
+          .distinct
           .left_joins(
             lead_provider_metadata: {
               latest_ect_training_period: {
@@ -119,6 +120,7 @@ module API::Teachers
       return if ignore?(filter: training_status)
 
       @scope = scope
+          .distinct
           .left_joins(
             lead_provider_metadata: %i[latest_ect_training_period latest_mentor_training_period]
           )
@@ -151,6 +153,7 @@ module API::Teachers
       return if ignore?(filter: api_from_teacher_id)
 
       @scope = scope
+        .distinct
         .joins(:teacher_id_changes)
         .where(teacher_id_changes: { api_from_teacher_id: })
     end
