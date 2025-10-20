@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_18_153449) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_20_070312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -824,6 +824,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_18_153449) do
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"
     t.index ["expression_of_interest_id"], name: "index_training_periods_on_expression_of_interest_id"
+    t.index ["id"], name: "idx_training_periods_active", where: "((withdrawn_at IS NULL) AND (deferred_at IS NULL))"
+    t.index ["id"], name: "idx_training_periods_deferred", where: "(deferred_at IS NOT NULL)"
+    t.index ["id"], name: "idx_training_periods_withdrawn", where: "(withdrawn_at IS NOT NULL)"
     t.index ["mentor_at_school_period_id"], name: "index_training_periods_on_mentor_at_school_period_id"
     t.index ["schedule_id"], name: "index_training_periods_on_schedule_id"
     t.index ["school_partnership_id", "ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "provider_partnership_trainings", unique: true
