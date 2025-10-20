@@ -10,7 +10,7 @@ Bookmark the [Swagger API documentation](/api/docs/v3). It includes:
 * required data fields and formats
 * response types and error messages 
 
-Read our [guidance on keeping data in sync](/api/guidance/keeping-data-in-sync). 
+Read our [guidance on keeping data in sync](/api/guidance/guidance-for-lead-providers/keeping-data-in-sync).
 
 ## Test in the sandbox
 
