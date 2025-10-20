@@ -161,7 +161,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
             expect(subject.withdraw).not_to be(false)
 
             training_period.reload
-            expect(training_period.withdrawn_at.to_date).to eq(training_period.finished_on)
+            expect(training_period.withdrawn_at).to eq(Time.zone.now)
             expect(training_period.withdrawal_reason.dasherize).to eq(reason)
             expect(training_period.finished_on).to eq(1.month.ago.to_date)
 
@@ -189,7 +189,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
             training_period.reload
             expect(training_period.withdrawn_at).to eq(Time.zone.now)
             expect(training_period.withdrawal_reason.dasherize).to eq(reason)
-            expect(training_period.finished_on).to eq(3.months.from_now.to_date)
+            expect(training_period.finished_on).to eq(Time.zone.today)
 
             expect(Events::Record).to have_received(:record_teacher_withdraws_training_period_event!)
           end
