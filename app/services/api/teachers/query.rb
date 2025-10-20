@@ -126,25 +126,27 @@ module API::Teachers
       # The latest_ect_training_period is joined as training_period and
       # latest_mentor_training_period as latest_mentor_training_periods_metadata_teachers_lead_providers
       # (using the alias names Rails creates for the join tables).
-      case training_status.to_sym
-      when :withdrawn
-        @scope = scope.where(
-          "training_periods.withdrawn_at IS NOT NULL
+      @scope = case training_status.to_sym
+               when :withdrawn
+                 scope.where(
+                   "training_periods.withdrawn_at IS NOT NULL
             OR latest_mentor_training_periods_metadata_teachers_lead_providers.withdrawn_at IS NOT NULL"
-        )
-      when :deferred
-        @scope = scope.where(
-          "training_periods.deferred_at IS NOT NULL
+                 )
+               when :deferred
+                 scope.where(
+                   "training_periods.deferred_at IS NOT NULL
             OR latest_mentor_training_periods_metadata_teachers_lead_providers.deferred_at IS NOT NULL"
-        )
-      when :active
-        @scope = scope.where(
-          "(training_periods.id IS NOT NULL AND training_periods.withdrawn_at IS NULL AND training_periods.deferred_at IS NULL)
+                 )
+               when :active
+                 scope.where(
+                   "(training_periods.id IS NOT NULL AND training_periods.withdrawn_at IS NULL AND training_periods.deferred_at IS NULL)
             OR (latest_mentor_training_periods_metadata_teachers_lead_providers.id IS NOT NULL AND
             latest_mentor_training_periods_metadata_teachers_lead_providers.deferred_at IS NULL AND
             latest_mentor_training_periods_metadata_teachers_lead_providers.withdrawn_at IS NULL)"
-        )
-      end
+                 )
+               else
+                 Teacher.none
+               end
     end
 
     def where_api_from_teacher_id_is(api_from_teacher_id)
