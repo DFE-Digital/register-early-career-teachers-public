@@ -61,3 +61,21 @@ capita__delivery_partner__2022 = find_lead_provider_delivery_partnership(deliver
   { school: brookfield_school, lead_provider_delivery_partnership: teach_first__grain__2022 },
   { school: brookfield_school, lead_provider_delivery_partnership: capita__delivery_partner__2022 },
 ].each { |kwargs| FactoryBot.create(:school_partnership, **kwargs).tap { |sp| describe_school_partnership(sp) } }
+
+# Create 3 school partnerships for each lead provider and contract period
+ActiveLeadProvider.find_each do |active_lead_provider|
+  3.times do
+    delivery_partner = DeliveryPartner.order("RANDOM()").first
+    lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.where(active_lead_provider:, delivery_partner:).first
+    lead_provider_delivery_partnership ||= FactoryBot.create(:lead_provider_delivery_partnership,
+                                                             active_lead_provider:,
+                                                             delivery_partner:)
+
+    school = School.order("RANDOM()").first
+    next if SchoolPartnership.where(school:, lead_provider_delivery_partnership:).exists?
+
+    FactoryBot.create(:school_partnership,
+                      school:,
+                      lead_provider_delivery_partnership:)
+  end
+end

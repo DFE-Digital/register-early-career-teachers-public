@@ -1,6 +1,3 @@
-ECT_COLOUR = :magenta
-MENTOR_COLOUR = :yellow
-
 def describe_period_duration(period)
   case
   when period.started_on.future?
@@ -45,18 +42,12 @@ def describe_mentor_at_school_period(sp)
 end
 
 def random_school_partnership(active_lead_provider:, excluding_school: nil)
-  delivery_partner = DeliveryPartner.order("RANDOM()").first
-  lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.where(active_lead_provider:, delivery_partner:).first
-  lead_provider_delivery_partnership ||= FactoryBot.create(:lead_provider_delivery_partnership,
-                                                           active_lead_provider:,
-                                                           delivery_partner:)
-
-  school = School.excluding(excluding_school).order("RANDOM()").first
-  school_partnership = SchoolPartnership.where(school:, lead_provider_delivery_partnership:).first
-  school_partnership ||= FactoryBot.create(:school_partnership,
-                                           school:,
-                                           lead_provider_delivery_partnership:)
-  school_partnership
+  SchoolPartnership
+    .includes(lead_provider_delivery_partnership: :active_lead_provider)
+    .where(lead_provider_delivery_partnership: { active_lead_provider: })
+    .where.not(school: excluding_school)
+    .order("RANDOM()")
+    .first!
 end
 
 def create_teacher(attrs:)
@@ -92,7 +83,7 @@ ActiveLeadProvider.find_each do |active_lead_provider|
     full_name = "#{teacher.trs_first_name} #{teacher.trs_last_name}"
 
     trainee_types.each do |trainee_type|
-      print_seed_info("#{full_name} (#{trainee_type.upcase})", indent: 2, colour: (trainee_type == :ect ? ECT_COLOUR : MENTOR_COLOUR))
+      print_seed_info("#{full_name} (#{trainee_type.upcase})", indent: 2, colour: (trainee_type == :ect ? :magenta : :yellow))
 
       if frozen_year && contract_period.year == 2024
         teacher.update!("#{trainee_type}_payments_frozen_year": frozen_year)
@@ -108,17 +99,17 @@ ActiveLeadProvider.find_each do |active_lead_provider|
       ).tap { |sp| send(:"describe_#{trainee_type}_at_school_period", sp) }
 
       school_partnership = random_school_partnership(active_lead_provider:)
-      # schedule = Schedule.where(contract_period:).order("RANDOM()").first
+      schedule = Schedule.where(contract_period:).order("RANDOM()").first
 
       FactoryBot.create(
         :training_period,
         :"for_#{trainee_type}",
         :provider_led,
-        # :with_schedule,
+        :with_schedule,
         "#{trainee_type}_at_school_period": at_school_period,
         started_on: at_school_period.started_on,
         finished_on: at_school_period.finished_on,
-        # schedule:,
+        schedule:,
         school_partnership:
       ).tap { |tp| describe_training_period(tp) }
     end
