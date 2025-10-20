@@ -22,6 +22,7 @@ class Event < ApplicationRecord
     teacher_email_address_updated
     teacher_working_pattern_updated
     teacher_training_programme_updated
+    teacher_training_lead_provider_updated
     teacher_fails_induction
     teacher_funding_eligibility_set
     teacher_imported_from_trs
