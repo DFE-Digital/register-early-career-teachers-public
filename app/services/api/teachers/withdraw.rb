@@ -22,17 +22,17 @@ module API::Teachers
       message: "The entered '#/course_identifier' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
     validates :reason, inclusion: {
-      in: TrainingPeriod.withdrawal_reasons.values,
+      in: TrainingPeriod.withdrawal_reasons.values.map(&:dasherize),
       message: "The entered '#/reason' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
-    validate :if_already_withdrawn
+    validate :not_already_withdrawn
 
     def withdraw
       return false unless valid?
 
       ActiveRecord::Base.transaction do
         training_period.withdrawn_at = earliest_withdrawn_at
-        training_period.withdrawal_reason = reason
+        training_period.withdrawal_reason = reason.underscore
         training_period.finished_on ||= earliest_withdrawn_at
 
         training_period.save!
@@ -62,7 +62,7 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return if training_period
 
-      errors.add(:teacher_api_id, "The '#/teacher_api_id' you have entered is invalid.")
+      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
     end
 
     def metadata
@@ -84,7 +84,7 @@ module API::Teachers
       @training_status ||= API::TrainingPeriods::TrainingStatus.new(training_period:) if training_period
     end
 
-    def if_already_withdrawn
+    def not_already_withdrawn
       return if errors[:teacher_api_id].any?
       return unless training_status&.withdrawn?
 
