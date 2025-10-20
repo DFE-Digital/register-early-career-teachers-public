@@ -10,7 +10,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
 
   let(:lead_provider_id) { training_period.lead_provider.id }
   let(:teacher_api_id) { training_period.trainee.teacher.api_id }
-  let(:reason) { TrainingPeriod.withdrawal_reasons.values.sample }
+  let(:reason) { TrainingPeriod.withdrawal_reasons.values.sample.dasherize }
 
   describe "validations" do
     %i[ect mentor].each do |trainee_type|
@@ -40,7 +40,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
 
           it "is invalid" do
             expect(subject).to be_invalid
-            expect(subject.errors[:teacher_api_id]).to eq(["The '#/teacher_api_id' you have entered is invalid."])
+            expect(subject.errors[:teacher_api_id]).to eq(["Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again."])
           end
         end
 
@@ -49,7 +49,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
 
           it "is invalid" do
             expect(subject).to be_invalid
-            expect(subject.errors[:teacher_api_id]).to eq(["The '#/teacher_api_id' you have entered is invalid."])
+            expect(subject.errors[:teacher_api_id]).to eq(["Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again."])
           end
         end
 
@@ -66,6 +66,25 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
           let(:reason) { "does-not-exist" }
 
           it "is invalid" do
+            expect(subject).to be_invalid
+            expect(subject.errors[:reason]).to eq(["The entered '#/reason' is not recognised for the given participant. Check details and try again."])
+          end
+        end
+
+        context "when reason values are dashed" do
+          TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).each do |reason_val|
+            let(:reason) { reason_val }
+
+            it "is valid when reason is '#{reason_val}'" do
+              expect(subject).to be_valid
+            end
+          end
+        end
+
+        context "when reason is underscored" do
+          let(:reason) { "left_teaching_profession" }
+
+          it "is invalid when reason is 'left_teaching_profession'" do
             expect(subject).to be_invalid
             expect(subject.errors[:reason]).to eq(["The entered '#/reason' is not recognised for the given participant. Check details and try again."])
           end
@@ -117,7 +136,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
 
             training_period.reload
             expect(training_period.withdrawn_at).to eq(Time.zone.now)
-            expect(training_period.withdrawal_reason).to eq(reason)
+            expect(training_period.withdrawal_reason.dasherize).to eq(reason)
             expect(training_period.finished_on).to eq(Time.zone.now.to_date)
 
             expect(Events::Record).to have_received(:record_teacher_withdraws_training_period_event!)
@@ -143,7 +162,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
 
             training_period.reload
             expect(training_period.withdrawn_at.to_date).to eq(training_period.finished_on)
-            expect(training_period.withdrawal_reason).to eq(reason)
+            expect(training_period.withdrawal_reason.dasherize).to eq(reason)
             expect(training_period.finished_on).to eq(1.month.ago.to_date)
 
             expect(Events::Record).to have_received(:record_teacher_withdraws_training_period_event!)
@@ -169,7 +188,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
 
             training_period.reload
             expect(training_period.withdrawn_at).to eq(Time.zone.now)
-            expect(training_period.withdrawal_reason).to eq(reason)
+            expect(training_period.withdrawal_reason.dasherize).to eq(reason)
             expect(training_period.finished_on).to eq(3.months.from_now.to_date)
 
             expect(Events::Record).to have_received(:record_teacher_withdraws_training_period_event!)
