@@ -42,49 +42,31 @@ module API::Teachers
   private
 
     def preload_associations(results)
-      preloaded_results = results
+      results
         .strict_loading
-        .eager_load(
+        .includes(
+          :teacher_id_changes,
+          :started_induction_period,
+          :finished_induction_period,
           :earliest_ect_at_school_period,
           :earliest_mentor_at_school_period,
-          :teacher_id_changes,
           lead_provider_metadata: {
             latest_ect_training_period: {
-              school_partnership: %i[
-                school
-                contract_period
-                delivery_partner
+              school_partnership: [
+                :school,
+                { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
               ],
-              ect_at_school_period: {
-                teacher: %i[
-                  started_induction_period
-                  finished_induction_period
-                ]
-              }
+              ect_at_school_period: []
             },
             latest_mentor_training_period: {
-              school_partnership: %i[
-                school
-                contract_period
-                delivery_partner
+              school_partnership: [
+                :school,
+                { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
               ],
-              mentor_at_school_period: {
-                teacher: %i[
-                  started_induction_period
-                  finished_induction_period
-                ]
-              }
+              mentor_at_school_period: []
             }
           }
         )
-
-      unless ignore?(filter: lead_provider_id)
-        preloaded_results = preloaded_results
-          .references(:lead_provider_metadata)
-          .where(lead_provider_metadata: { lead_provider_id: })
-      end
-
-      preloaded_results
     end
 
     def where_lead_provider_is(lead_provider_id)
@@ -134,9 +116,37 @@ module API::Teachers
     end
 
     def where_training_status_is(training_status)
-      nil if ignore?(filter: training_status)
+      return if ignore?(filter: training_status)
 
-      # TODO: implement when we have the training status field
+      @scope = scope
+          .left_joins(
+            lead_provider_metadata: %i[latest_ect_training_period latest_mentor_training_period]
+          )
+
+      # The latest_ect_training_period is joined as training_period and
+      # latest_mentor_training_period as latest_mentor_training_periods_metadata_teachers_lead_providers
+      # (using the alias names Rails creates for the join tables).
+      @scope = case training_status.to_sym
+               when :withdrawn
+                 scope.where(
+                   "training_periods.withdrawn_at IS NOT NULL
+            OR latest_mentor_training_periods_metadata_teachers_lead_providers.withdrawn_at IS NOT NULL"
+                 )
+               when :deferred
+                 scope.where(
+                   "training_periods.deferred_at IS NOT NULL
+            OR latest_mentor_training_periods_metadata_teachers_lead_providers.deferred_at IS NOT NULL"
+                 )
+               when :active
+                 scope.where(
+                   "(training_periods.id IS NOT NULL AND training_periods.withdrawn_at IS NULL AND training_periods.deferred_at IS NULL)
+            OR (latest_mentor_training_periods_metadata_teachers_lead_providers.id IS NOT NULL AND
+            latest_mentor_training_periods_metadata_teachers_lead_providers.deferred_at IS NULL AND
+            latest_mentor_training_periods_metadata_teachers_lead_providers.withdrawn_at IS NULL)"
+                 )
+               else
+                 Teacher.none
+               end
     end
 
     def where_api_from_teacher_id_is(api_from_teacher_id)
