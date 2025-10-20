@@ -29,7 +29,7 @@ private
         # FIXME: recording a FIP programme without a partnership means that we cannot
         # add a training_period for it, so it doesn't make sense to include these but
         # is that the correct approach?
-        next if record_programme.training_programme == "full_induction_programme" && record_programme.partnership.nil?
+        next if record_programme.training_programme == "full_induction_programme" && (record_programme.partnership.nil? || record_programme.partnership.forbidden?)
 
         # if we have e.g. CIP and switch to DIY it is still a school_led programme so don't need to create a new period
         # often this appears to be the SIT unsure what option to choose
