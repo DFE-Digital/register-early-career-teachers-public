@@ -3,7 +3,7 @@ module API
     class StatementsController < APIController
       def index
         conditions = {
-          contract_period_years: extract_conditions(contract_period_years),
+          contract_period_years: extract_conditions(contract_period_years, integers: true),
           updated_since:,
         }
         paginated_statements = statements_query(conditions:).statements { paginate(it) }

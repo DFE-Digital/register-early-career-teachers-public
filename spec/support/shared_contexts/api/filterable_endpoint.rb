@@ -45,6 +45,16 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
     expect(response.content_type).to eql("application/json; charset=utf-8")
     expect(response.body).to eq(serializer.render([resource.reload], root: "data", **options))
   end
+
+  it "returns no resources when cohort contains no valid contract period years" do
+    create_resource(active_lead_provider:)
+
+    authenticated_api_get(path, params: { filter: { cohort: "invalid" } })
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render([], root: "data", **options))
+  end
 end
 
 RSpec.shared_examples "a filter by updated_since endpoint" do

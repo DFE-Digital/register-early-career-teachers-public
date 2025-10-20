@@ -56,7 +56,7 @@ module API::DeliveryPartners
     end
 
     def where_contract_period_year_in(contract_period_years)
-      return if ignore?(filter: contract_period_years)
+      return if ignore?(filter: contract_period_years, ignore_empty_array: false)
 
       delivery_partners_with_contract_periods = DeliveryPartner
         .joins(lead_provider_delivery_partnerships: { active_lead_provider: :contract_period })
