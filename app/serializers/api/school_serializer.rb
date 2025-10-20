@@ -27,8 +27,8 @@ class API::SchoolSerializer < Blueprinter::Base
       end
 
       def lead_provider_contract_period_metadata(school:, options:)
-        school.lead_provider_contract_period_metadata.select { |it|
-          it.lead_provider_id == options[:lead_provider_id] && it.contract_period_year == options[:contract_period_year]
+        school.lead_provider_contract_period_metadata.select { |data|
+          data.lead_provider_id == options[:lead_provider_id] && data.contract_period_year == options[:contract_period_year]
         }.sole
       end
     end

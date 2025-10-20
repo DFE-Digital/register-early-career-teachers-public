@@ -10,7 +10,7 @@ module Schools
 
         validates :name,
           comparison: {
-            other_than: ->(it) { it.wizard.teacher_full_name },
+            other_than: ->(step) { step.wizard.teacher_full_name },
             case_sensitive: false,
             message: "The name must be different from the current name"
           }

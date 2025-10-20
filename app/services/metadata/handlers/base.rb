@@ -52,7 +52,7 @@ module Metadata::Handlers
       Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
 
       Sentry.with_scope do |scope|
-        scope.set_context("metadata_changes", attrs) if scope
+        scope&.set_context("metadata_changes", attrs)
         Sentry.capture_message("[Metadata] #{metadata.class.name} change")
       end
     end

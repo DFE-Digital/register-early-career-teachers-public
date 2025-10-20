@@ -17,7 +17,7 @@ RSpec.describe API::Teachers::Query, :with_metadata do
 
       it "preloads latest_ect_training_period and latest_mentor_training_period associations" do
         latest_training_periods = result.lead_provider_metadata
-          .map { |it| [it.latest_ect_training_period, it.latest_mentor_training_period] }
+          .map { |data| [data.latest_ect_training_period, data.latest_mentor_training_period] }
           .flatten
           .compact
 
