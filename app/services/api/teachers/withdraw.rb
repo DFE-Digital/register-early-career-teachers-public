@@ -101,8 +101,10 @@ module API::Teachers
         training_period:,
         teacher:,
         lead_provider:,
-        course_identifier:,
-        reason:
+        metadata: {
+          course_identifier:,
+          reason:
+        }
       )
     end
   end

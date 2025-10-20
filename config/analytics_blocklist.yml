@@ -357,8 +357,6 @@
   - metadata
   - modifications
   - zendesk_ticket_id
-  - course_identifier
-  - reason
   :ect_at_school_periods:
   - id
   - school_id

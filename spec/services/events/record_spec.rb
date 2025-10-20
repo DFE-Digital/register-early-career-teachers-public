@@ -1070,6 +1070,7 @@ RSpec.describe Events::Record do
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
     let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
     let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+    let(:metadata) { { course_identifier:, reason: } }
 
     context 'when ECT training' do
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
@@ -1077,14 +1078,13 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, course_identifier:, reason:)
+          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, metadata:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period:,
             teacher:,
             lead_provider:,
-            course_identifier:,
-            reason:,
+            metadata:,
             heading: "#{teacher_name}’s ECT training period was withdrawn by #{lead_provider.name}",
             event_type: :teacher_withdraws_training_period,
             happened_at: Time.zone.now,
@@ -1100,14 +1100,13 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, course_identifier:, reason:)
+          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, metadata:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period:,
             teacher:,
             lead_provider:,
-            course_identifier:,
-            reason:,
+            metadata:,
             heading: "#{teacher_name}’s mentor training period was withdrawn by #{lead_provider.name}",
             event_type: :teacher_withdraws_training_period,
             happened_at: Time.zone.now,
