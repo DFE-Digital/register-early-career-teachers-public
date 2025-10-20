@@ -6,7 +6,8 @@ module API
         { title: "API IDs explained", path: "api-ids-explained" },
         { title: "API data states", path: "api-data-states" },
         { title: "Create, view and update partnerships", path: "create-view-and-update-partnerships" },
-        { title: "Syncing data best practice", path: "data-syncing" },
+        { title: "Keeping data in sync", path: "keeping-data-in-sync" },
+        { title: "How to test the API effectively", path: "how-to-test-the-api-effectively" },
       ].freeze
 
       attr_reader :current_path, :page
