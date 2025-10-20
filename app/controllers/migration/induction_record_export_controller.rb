@@ -1,27 +1,35 @@
 class Migration::InductionRecordExportController < ::AdminController
   include ActionController::Live
 
-  def index
-    # respond_to do |format|
-    #   format.csv do
-        set_csv_headers
-        stream_csv
-      # end
-    # end
+  CSV_FILE = "induction-record-data.csv"
+
+  def download
+    set_csv_headers
+    stream_csv
   end
 
 private
 
   def set_csv_headers
-    response.headers["Content-Type"] = "text/event-stream"
-    response.headers["Content-Disposition"] = "attachment; filename=induction-records-#{Date.today}.csv"
+    response.headers["Content-Type"] = "text/csv"
+    response.headers["Content-Disposition"] = "attachment; filename=#{CSV_FILE}"
     response.headers["Cache-Control"] = "no-cache"
-    response.headers["Last-Modified"] = Time.now.httpdate
+    response.headers["Last-Modified"] = Time.zone.now.httpdate
   end
 
   def stream_csv
-    Migration::InductionRecordExporter.new.stream_csv_to(response.stream)
+    # Stream in chunks to avoid loading entire file into memory
+    csv_io = StringIO.new(csv_data)
+    while (chunk = csv_io.read(1024))
+      response.stream.write(chunk)
+    end
   ensure
     response.stream.close
+  end
+
+  def csv_data
+    Rails.cache.fetch(CSV_FILE, expires_in: 12.hours) do
+      Migration::InductionRecordExporter.new.generate_csv
+    end
   end
 end
