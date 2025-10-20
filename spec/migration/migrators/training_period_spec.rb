@@ -6,8 +6,9 @@ describe Migrators::TrainingPeriod do
       school = ect.school_cohort.school
       cohort = ect.school_cohort.cohort
       induction_programme = ect.school_cohort.default_induction_programme
-
-      induction_programme.update!(partnership: FactoryBot.create(:migration_partnership, school:, cohort:))
+      partnership = FactoryBot.create(:migration_partnership, school:, cohort:)
+      induction_programme.update!(partnership:)
+      FactoryBot.create(:migration_provider_relationship, lead_provider: partnership.lead_provider, delivery_partner: partnership.delivery_partner, cohort: partnership.cohort)
       ect.teacher_profile
     end
 
