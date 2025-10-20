@@ -34,9 +34,16 @@ module Migrators
       result = true
 
       teacher_profile
-        .participant_profiles
-        .ect_or_mentor
-        .eager_load(induction_records: [induction_programme: [school_cohort: :school]])
+      .participant_profiles
+      .ect_or_mentor
+      .eager_load(induction_records: [schedule:
+                                        :cohort,
+                                      induction_programme: [
+                                        partnership:
+                                          %i[cohort lead_provider delivery_partner school],
+                                        school_cohort:
+                                          :school
+                                      ]])
         .find_each do |participant_profile|
           sanitizer = InductionRecordSanitizer.new(participant_profile:, group_by: :school)
 
