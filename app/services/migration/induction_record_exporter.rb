@@ -4,6 +4,15 @@ module Migration
       Migration::Base.connection.execute(query)
     end
 
+    def generate_csv
+      CSV.generate(headers: true) do |csv|
+        csv << csv_headers
+        ar_query.find_each(batch_size: 5_000) do |induction_record|
+          csv << csv_row(induction_record)
+        end
+      end
+    end
+
     def stream_csv_to(output_stream)
       output_stream.write CSV.generate_line(csv_headers)
       ar_query.find_each(batch_size: 5_000) do |induction_record|
@@ -48,13 +57,14 @@ module Migration
     end
 
     def challenged?(induction_record)
-      return nil unless induction_record.induction_programme&.partnership.present?
+      return nil if induction_record.induction_programme&.partnership.blank?
 
       induction_record.induction_programme.partnership.challenged_at.present?
     end
 
     def right_way_round?(induction_record)
       return true if induction_record.end_date.blank?
+
       induction_record.start_date < induction_record.end_date
     end
 
@@ -65,7 +75,7 @@ module Migration
     end
 
     def ar_query
-      InductionRecord.eager_load(:participant_profile, :preferred_identity, induction_programme: { school_cohort: :school, partnership: :lead_provider } ).order(:participant_profile_id)
+      InductionRecord.eager_load(:participant_profile, :preferred_identity, induction_programme: { school_cohort: :school, partnership: :lead_provider }).order(:participant_profile_id)
     end
 
     def query
