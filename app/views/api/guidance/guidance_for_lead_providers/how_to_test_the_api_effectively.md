@@ -56,7 +56,7 @@ By default, the API returns up to 100 items per page. You need to test fetching 
  
 ### Example 
 
-Try calling `GET /participants?page[size]=100&page[number]=2` to make sure your system correctly follows pagination links and doesn’t stop after the first batch. 
+Try calling `GET /participants?page[per_page]=100&page[page]=2` to make sure your system correctly follows pagination links and doesn’t stop after the first batch.
 
 ## Check seed data is adequate or request seed data that’s more tailored to your needs 
 
@@ -83,10 +83,12 @@ Test posting `started`, `retained-1`, and `completed` declarations for the same 
 
 ## Testing checklist 
 
-- [ ] All standard processes for partnerships, participants, and declarations work as expected 
-- [ ] Error paths have been tested successfully 
-- [ ] Both full syncs (all records) and partial syncs (only new or updated records using the `updated_since` filter) have been implemented 
-- [ ] Multiple partnerships per school/cohort supported 
-- [ ] New fields such as `expression_of_interest` and `participants_currently_training` work correctly
-- [ ] Access keys secured 
-- [ ] Sandbox tests recorded with sample requests, responses and timestamps 
+Use this checklist to confirm your integration works correctly and securely:
+
+- all standard processes for partnerships, participants, and declarations work as expected
+- error paths have been tested successfully
+- both full syncs (all records) and partial syncs (only new or updated records using the `updated_since` filter) have been implemented
+- multiple partnerships per school/cohort supported
+- new fields such as `expression_of_interest` and `participants_currently_training` work correctly
+- access keys secured
+- sandbox tests recorded with sample requests, responses and timestamps
