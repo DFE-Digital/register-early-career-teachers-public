@@ -17,6 +17,14 @@ module Schools
       def previous_step
         :find_ect
       end
+
+    private
+
+      def persist
+        return super if change_name == 'yes'
+
+        ect.update!(corrected_name: nil, change_name: 'no')
+      end
     end
   end
 end
