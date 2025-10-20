@@ -211,15 +211,15 @@ RSpec.shared_examples "a filter by training_status endpoint" do
   end
 
   it "returns no resources if the training_status is not found" do
-    deferred_resource = create_resource(active_lead_provider:, training_status: :deferred)
-    withdrawn_resource = create_resource(active_lead_provider:, training_status: :withdrawn)
+    create_resource(active_lead_provider:, training_status: :deferred)
+    create_resource(active_lead_provider:, training_status: :withdrawn)
 
     params = { filter: { training_status: "invalid" } }
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render([deferred_resource, withdrawn_resource], root: "data", **serializer_options))
+    expect(response.body).to eq(serializer.render([], root: "data", **serializer_options))
   end
 end
 

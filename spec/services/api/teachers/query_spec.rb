@@ -235,10 +235,10 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           expect(query.teachers).to contain_exactly(active_teacher)
         end
 
-        it "returns all teachers if an invalid `training_status` is supplied" do
+        it "returns no teachers if an invalid `training_status` is supplied" do
           query = described_class.new(training_status: "invalid")
 
-          expect(query.teachers).to contain_exactly(deferred_teacher, withdrawn_teacher, active_teacher)
+          expect(query.teachers).to be_empty
         end
 
         it "does not filter by `training_status` if an empty string is supplied" do
