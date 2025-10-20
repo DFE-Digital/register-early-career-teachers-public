@@ -151,10 +151,7 @@ module Migrators
     end
 
     def find_lead_provider_delivery_partnership_by_key!(active_lead_provider_id:, delivery_partner_id:)
-      lpdp = cache_manager.find_lead_provider_delivery_partnership_by_key(active_lead_provider_id:, delivery_partner_id:)
-      raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProviderDeliveryPartnership with active_lead_provider_id #{active_lead_provider_id} and delivery_partner_id #{delivery_partner_id}") unless lpdp
-
-      lpdp
+      cache_manager.find_lead_provider_delivery_partnership_by_key(active_lead_provider_id:, delivery_partner_id:)
     end
 
     def find_lead_provider_by_ecf_id!(ecf_id)
