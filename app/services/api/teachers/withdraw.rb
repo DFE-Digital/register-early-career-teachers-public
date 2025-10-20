@@ -31,10 +31,9 @@ module API::Teachers
       return false unless valid?
 
       ActiveRecord::Base.transaction do
-        training_period.withdrawn_at = earliest_withdrawn_at
+        training_period.withdrawn_at = Time.zone.now
         training_period.withdrawal_reason = reason.underscore
-        training_period.finished_on ||= earliest_withdrawn_at
-
+        training_period.finished_on = [training_period.finished_on, Time.zone.today].compact.min
         training_period.save!
 
         record_withdraw_event!
@@ -89,10 +88,6 @@ module API::Teachers
       return unless training_status&.withdrawn?
 
       errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.")
-    end
-
-    def earliest_withdrawn_at
-      @earliest_withdrawn_at ||= [training_period.finished_on, Time.zone.now].compact.min
     end
 
     def record_withdraw_event!
