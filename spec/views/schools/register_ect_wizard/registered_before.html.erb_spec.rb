@@ -1,4 +1,4 @@
-RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
+RSpec.describe "schools/register_ect_wizard/registered_before.html.erb" do
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -21,8 +21,8 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
   let(:store) do
     FactoryBot.build(
       :session_repository,
-      trs_first_name: 'Konohamaru',
-      trs_last_name: 'Sarutobi',
+      trs_first_name: "Konohamaru",
+      trs_last_name: "Sarutobi",
       ect_at_school_period_id: ect_at_school_period.id,
       trn: teacher.trn
     )
@@ -39,7 +39,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
 
   let(:wizard_ect) { Schools::RegisterECTWizard::ECT.new(store) }
 
-  context 'Provider-led' do
+  context "Provider-led" do
     before do
       FactoryBot.create(
         :training_period,
@@ -66,42 +66,42 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
       render
     end
 
-    it 'renders the full name in the page title' do
-      expect(view.content_for(:page_title)).to include('Konohamaru Sarutobi has been registered before')
+    it "renders the full name in the page title" do
+      expect(view.content_for(:page_title)).to include("Konohamaru Sarutobi has been registered before")
     end
 
-    it 'shows the previously used school name' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'School name')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Really cool school')
+    it "shows the previously used school name" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "School name")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Really cool school")
     end
 
-    it 'shows the previously used induction start date' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Induction start date')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: '1 September 2023')
+    it "shows the previously used induction start date" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Induction start date")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "1 September 2023")
     end
 
-    it 'shows the previously used appropriate body' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Appropriate body')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: appropriate_body.name)
+    it "shows the previously used appropriate body" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Appropriate body")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: appropriate_body.name)
     end
 
-    it 'shows the previously used training programme' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Training programme')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Provider-led')
+    it "shows the previously used training programme" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Training programme")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Provider-led")
     end
 
-    it 'shows the previously used lead provider' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Confirmed LP')
+    it "shows the previously used lead provider" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Confirmed LP")
     end
 
-    it 'shows the previously used delivery partner' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Delivery partner')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: delivery_partner.name)
+    it "shows the previously used delivery partner" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: delivery_partner.name)
     end
   end
 
-  context 'School-led' do
+  context "School-led" do
     before do
       FactoryBot.create(
         :training_period,
@@ -127,37 +127,37 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
       render
     end
 
-    it 'renders the full name in the page title' do
-      expect(view.content_for(:page_title)).to include('Konohamaru Sarutobi has been registered before')
+    it "renders the full name in the page title" do
+      expect(view.content_for(:page_title)).to include("Konohamaru Sarutobi has been registered before")
     end
 
-    it 'shows the previously used school name' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'School name')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'Really cool school')
+    it "shows the previously used school name" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "School name")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Really cool school")
     end
 
-    it 'shows the previously used induction start date' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Induction start date')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: '1 September 2023')
+    it "shows the previously used induction start date" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Induction start date")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "1 September 2023")
     end
 
-    it 'shows the previously used appropriate body' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Appropriate body')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: appropriate_body.name)
+    it "shows the previously used appropriate body" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Appropriate body")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: appropriate_body.name)
     end
 
-    it 'shows the previously used training programme' do
-      expect(rendered).to have_css('dt.govuk-summary-list__key', text: 'Training programme')
-      expect(rendered).to have_css('dd.govuk-summary-list__value', text: 'School-led')
+    it "shows the previously used training programme" do
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Training programme")
+      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "School-led")
     end
 
-    it 'does not show the previously used lead provider' do
-      expect(rendered).not_to have_css('dt.govuk-summary-list__key', text: 'Lead provider')
+    it "does not show the previously used lead provider" do
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
     end
 
-    it 'does not show the previously used delivery partner' do
-      expect(rendered).not_to have_css('dt.govuk-summary-list__key', text: 'Delivery partner')
-      expect(rendered).not_to have_css('dd.govuk-summary-list__value', text: delivery_partner.name)
+    it "does not show the previously used delivery partner" do
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+      expect(rendered).not_to have_css("dd.govuk-summary-list__value", text: delivery_partner.name)
     end
   end
 end

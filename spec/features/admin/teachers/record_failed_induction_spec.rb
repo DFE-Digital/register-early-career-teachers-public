@@ -7,9 +7,9 @@ RSpec.describe "Admin recording a failed outcome for an ECT" do
 
   before { sign_in_as_dfe_user(role: :admin) }
 
-  scenario 'Happy path' do
+  scenario "Happy path" do
     given_i_am_on_the_ect_page(teacher)
-    when_i_click_link('Fail induction')
+    when_i_click_link("Fail induction")
     then_i_should_be_on_the_record_outcome_page(teacher)
 
     when_i_enter_the_finish_date
@@ -21,7 +21,7 @@ RSpec.describe "Admin recording a failed outcome for an ECT" do
     and_the_induction_period_should_have_been_closed_with_the_right_data
   end
 
-private
+  private
 
   def given_i_am_on_the_ect_page(teacher)
     path = "/admin/teachers/#{teacher.id}"
@@ -30,7 +30,7 @@ private
   end
 
   def when_i_click_link(text)
-    page.get_by_role('link', name: text).click
+    page.get_by_role("link", name: text).click
   end
 
   def then_i_should_be_on_the_record_outcome_page(teacher)
@@ -38,9 +38,9 @@ private
   end
 
   def when_i_enter_the_finish_date
-    page.get_by_label('Day', exact: true).fill(today.day.to_s)
-    page.get_by_label('Month', exact: true).fill(today.month.to_s)
-    page.get_by_label('Year', exact: true).fill(today.year.to_s)
+    page.get_by_label("Day", exact: true).fill(today.day.to_s)
+    page.get_by_label("Month", exact: true).fill(today.month.to_s)
+    page.get_by_label("Year", exact: true).fill(today.year.to_s)
   end
 
   def and_i_enter_a_terms_value_of(number)
@@ -51,12 +51,12 @@ private
 
   def and_i_click_submit
     teacher_name = Teachers::Name.new(teacher).full_name
-    page.get_by_role('button', name: "Record failing outcome for #{teacher_name}").click
+    page.get_by_role("button", name: "Record failing outcome for #{teacher_name}").click
   end
 
   def then_i_should_be_on_the_success_page
     expect(page).to have_path("/admin/teachers/#{teacher.id}/record-failed-outcome")
-    expect(page.locator('.govuk-panel')).to be_visible
+    expect(page.locator(".govuk-panel")).to be_visible
   end
 
   def and_the_pending_induction_submission_record_should_have_the_right_data_in_it
@@ -64,13 +64,13 @@ private
 
     expect(pending_induction_submission.number_of_terms).to eq(number_of_completed_terms)
     expect(pending_induction_submission.finished_on).to eql(today)
-    expect(pending_induction_submission.outcome).to eql('fail')
+    expect(pending_induction_submission.outcome).to eql("fail")
   end
 
   def and_the_induction_period_should_have_been_closed_with_the_right_data
     induction_period.reload
 
-    expect(induction_period.outcome).to eql('fail')
+    expect(induction_period.outcome).to eql("fail")
     expect(induction_period.number_of_terms).to eq(number_of_completed_terms)
     expect(induction_period.finished_on).to eql(today)
   end

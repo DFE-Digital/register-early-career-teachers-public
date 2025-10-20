@@ -1,12 +1,12 @@
 module Schools
   module Validation
     class DateOfBirth < HashDate
-      DATE_MISSING_MESSAGE   = "Enter a date of birth"
+      DATE_MISSING_MESSAGE = "Enter a date of birth"
       INVALID_FORMAT_MESSAGE = "Enter the date of birth in the correct format, for example 12 03 1998"
-      TOO_OLD_MESSAGE        = "The teacher cannot be more than 100 years old"
-      TOO_YOUNG_MESSAGE      = "The teacher cannot be less than 18 years old"
+      TOO_OLD_MESSAGE = "The teacher cannot be more than 100 years old"
+      TOO_YOUNG_MESSAGE = "The teacher cannot be less than 18 years old"
 
-    private
+      private
 
       def date_too_young?
         value_as_date > 18.years.ago.to_date

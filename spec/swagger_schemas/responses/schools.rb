@@ -5,7 +5,7 @@ SCHOOLS_RESPONSE = {
   properties: {
     data: {
       type: :array,
-      items: { "$ref": "#/components/schemas/School" },
-    },
-  },
+      items: {"$ref": "#/components/schemas/School"}
+    }
+  }
 }.freeze

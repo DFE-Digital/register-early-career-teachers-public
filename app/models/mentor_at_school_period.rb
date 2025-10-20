@@ -9,25 +9,25 @@ class MentorAtSchoolPeriod < ApplicationRecord
   has_many :training_periods, inverse_of: :mentor_at_school_period
   has_many :events
   has_many :currently_assigned_ects,
-           -> { ongoing.includes(:teacher) },
-           through: :mentorship_periods,
-           source: :mentee
+    -> { ongoing.includes(:teacher) },
+    through: :mentorship_periods,
+    source: :mentee
 
   refresh_metadata -> { school }, on_event: %i[create destroy update]
 
   # Validations
   validates :email,
-            notify_email: true,
-            allow_nil: true
+    notify_email: true,
+    allow_nil: true
 
   validates :started_on,
-            presence: true
+    presence: true
 
   validates :school_id,
-            presence: true
+    presence: true
 
   validates :teacher_id,
-            presence: true
+    presence: true
 
   validate :teacher_school_distinct_period
 
@@ -37,17 +37,17 @@ class MentorAtSchoolPeriod < ApplicationRecord
   scope :with_partnerships_for_contract_period, ->(year) {
     joins(training_periods: {
       active_lead_provider: :contract_period
-    }).where(contract_periods: { year: })
+    }).where(contract_periods: {year:})
   }
   scope :with_expressions_of_interest_for_contract_period, ->(year) {
     joins(training_periods: {
       expression_of_interest: :contract_period
     })
-    .where(contract_periods: { year: })
+      .where(contract_periods: {year:})
   }
   scope :with_expressions_of_interest_for_lead_provider_and_contract_period, ->(year, lead_provider_id) {
     with_expressions_of_interest_for_contract_period(year)
-    .where(expression_of_interest: { lead_provider_id: })
+      .where(expression_of_interest: {lead_provider_id:})
   }
 
   # Instance methods
@@ -57,9 +57,9 @@ class MentorAtSchoolPeriod < ApplicationRecord
     teacher.mentor_at_school_periods.for_school(school_id).excluding(self)
   end
 
-private
+  private
 
   def teacher_school_distinct_period
-    overlap_validation(name: 'Teacher School Mentor')
+    overlap_validation(name: "Teacher School Mentor")
   end
 end

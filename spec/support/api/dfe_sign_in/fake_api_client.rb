@@ -6,18 +6,18 @@ module DfESignIn
       @role_codes = role_codes
     end
 
-    def access_levels(organisation_id:, user_id:, service_id: 'abc123')
+    def access_levels(organisation_id:, user_id:, service_id: "abc123")
       DfESignIn::AccessLevel.from_response_body(
         {
           "userId" => user_id,
           "serviceId" => service_id,
           "organisationId" => organisation_id,
-          "roles" => roles,
+          "roles" => roles
         }
       )
     end
 
-  private
+    private
 
     def roles
       role_codes.map do |role_code|

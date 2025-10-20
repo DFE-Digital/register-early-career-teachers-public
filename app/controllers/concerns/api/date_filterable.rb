@@ -2,13 +2,13 @@ module API
   module DateFilterable
     extend ActiveSupport::Concern
 
-  protected
+    protected
 
     def updated_since
       parse_date_filter(filter_name: :updated_since)
     end
 
-  private
+    private
 
     def parse_date_filter(filter_name:)
       date_param = params.dig(:filter, filter_name)

@@ -1,5 +1,5 @@
-RSpec.describe 'Add a mentor to a school led ECT', :enable_schools_interface do
-  scenario 'happy path' do
+RSpec.describe "Add a mentor to a school led ECT", :enable_schools_interface do
+  scenario "happy path" do
     given_there_is_a_school_in_the_service
     and_there_is_a_school_led_ect_with_no_mentor_registered_at_the_school
     and_there_is_a_mentor_registered_at_the_school_eligible_to_mentor_the_ect
@@ -36,13 +36,13 @@ RSpec.describe 'Add a mentor to a school led ECT', :enable_schools_interface do
   end
 
   def and_i_am_on_the_schools_landing_page
-    path = '/school/home/ects'
+    path = "/school/home/ects"
     page.goto path
     expect(page).to have_path(path)
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
-    page.get_by_role(:link, name: 'Assign a mentor for this ECT').click
+    page.get_by_role(:link, name: "Assign a mentor for this ECT").click
   end
 
   def then_i_am_in_the_who_will_mentor_page
@@ -52,7 +52,7 @@ RSpec.describe 'Add a mentor to a school led ECT', :enable_schools_interface do
 
   def when_i_select_the_mentor
     page.get_by_role(:radio, name: @mentor_name).check
-    page.get_by_role(:button, name: 'Continue').click
+    page.get_by_role(:button, name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_mentorship_confirmation_page
@@ -61,16 +61,16 @@ RSpec.describe 'Add a mentor to a school led ECT', :enable_schools_interface do
   end
 
   def when_i_click_on_back_to_your_ects
-    page.get_by_role(:link, name: 'Back to your ECTs').click
+    page.get_by_role(:link, name: "Back to your ECTs").click
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page).to have_path('/school/home/ects')
+    expect(page).to have_path("/school/home/ects")
   end
 
   def and_the_ect_is_shown_linked_to_the_mentor_just_registered
     expect(page.get_by_role(:link, name: @ect_name)).to be_visible
-    expect(page.locator('dt', hasText: 'Mentor')).to be_visible
-    expect(page.locator('dd', hasText: @mentor_name)).to be_visible
+    expect(page.locator("dt", hasText: "Mentor")).to be_visible
+    expect(page.locator("dd", hasText: @mentor_name)).to be_visible
   end
 end

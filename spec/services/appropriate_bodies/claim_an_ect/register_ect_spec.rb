@@ -1,8 +1,9 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   include ActiveJob::TestHelper
+
   subject { described_class.new(appropriate_body:, pending_induction_submission:, author:) }
 
-  include_context 'test trs api client'
+  include_context "test trs api client"
 
   before do
     allow(Events::Record).to receive(:new).and_call_original
@@ -14,7 +15,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
   end
 
   describe "#initialize" do
@@ -101,7 +102,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       end
     end
 
-    describe 'rolling back transactions' do
+    describe "rolling back transactions" do
       let(:pending_induction_submission_params) do
         {
           induction_programme: "fip",
@@ -130,7 +131,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
       end
     end
 
-    context 'when registering an existing teacher' do
+    context "when registering an existing teacher" do
       context "when the teacher has no induction period" do
         let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567") }
 
@@ -163,14 +164,14 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         end
       end
 
-      context 'when the teacher has no existing induction periods' do
+      context "when the teacher has no existing induction periods" do
         it "does enqueues BeginECTInductionJob" do
           subject.register(pending_induction_submission_params)
           expect(BeginECTInductionJob).to have_been_enqueued
         end
       end
 
-      context 'when the teacher has an existing induction period' do
+      context "when the teacher has an existing induction period" do
         let!(:existing_teacher) { FactoryBot.create(:teacher, trn:) }
         let!(:induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher, finished_on: Date.new(2025, 4, 21)) }
         let(:pending_induction_submission_params) do
@@ -208,7 +209,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           existing_teacher.reload
         end
 
-        it 'records the name change' do
+        it "records the name change" do
           expect(existing_teacher.trs_first_name).to eql(pending_induction_submission_params[:trs_first_name])
           expect(existing_teacher.trs_last_name).to eql(pending_induction_submission_params[:trs_last_name])
           expect(Events::Record).to have_received(:new).with(
@@ -232,7 +233,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           ])
         end
 
-        it 'saves the pending_induction_submission' do
+        it "saves the pending_induction_submission" do
           induction_period = InductionPeriod.last
           expect(induction_period.teacher).to eq(existing_teacher)
           expect(induction_period.started_on).to eq(Date.new(2023, 5, 2))

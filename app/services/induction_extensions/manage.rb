@@ -2,9 +2,9 @@
 #
 class InductionExtensions::Manage
   attr_reader :author,
-              :teacher,
-              :appropriate_body,
-              :induction_extension
+    :teacher,
+    :appropriate_body,
+    :induction_extension
 
   def initialize(author:, teacher:, appropriate_body:)
     @author = author
@@ -18,10 +18,10 @@ class InductionExtensions::Manage
 
     InductionExtension.transaction do
       success = if induction_extension.new_record?
-                  induction_extension.save && record_create_event!
-                else
-                  induction_extension.save && record_update_event!
-                end
+        induction_extension.save && record_create_event!
+      else
+        induction_extension.save && record_update_event!
+      end
 
       success or raise ActiveRecord::Rollback
     end
@@ -38,7 +38,7 @@ class InductionExtensions::Manage
     end
   end
 
-private
+  private
 
   def record_create_event!
     Events::Record.record_induction_extension_created_event!(**event_params)

@@ -7,9 +7,9 @@ RSpec.describe MigrateEntity do
     let(:ecf_delivery_partner) { FactoryBot.create(:migration_delivery_partner) }
     let!(:ecf_provider_relationship) do
       FactoryBot.create(:migration_provider_relationship,
-                        lead_provider: ecf_lead_provider,
-                        delivery_partner: ecf_delivery_partner,
-                        cohort: ecf_cohort)
+        lead_provider: ecf_lead_provider,
+        delivery_partner: ecf_delivery_partner,
+        cohort: ecf_cohort)
     end
     let!(:ecf_partnership) { FactoryBot.create(:migration_partnership, lead_provider: ecf_lead_provider, delivery_partner: ecf_delivery_partner, cohort: ecf_cohort) }
     let!(:school) { FactoryBot.create(:school, :eligible, urn: ecf_partnership.school.urn) }

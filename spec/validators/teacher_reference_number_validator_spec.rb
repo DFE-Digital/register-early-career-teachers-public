@@ -2,6 +2,7 @@ RSpec.describe TeacherReferenceNumberValidator, type: :model do
   let(:test_class) do
     Class.new do
       include ActiveModel::Model
+
       attr_accessor :trn
 
       validates :trn, teacher_reference_number: true
@@ -21,9 +22,9 @@ RSpec.describe TeacherReferenceNumberValidator, type: :model do
   end
 
   context "when the trn is invalid" do
-    invalid_trns = [{ trn: "1234", error_message: "Teacher reference number must include at least 5 digits" },
-                    { trn: "RP99/123457", error_message: "Teacher reference number cannot include more than 7 digits" },
-                    { trn: "No-numbers", error_message: "Teacher reference number must include at least 5 digits" }]
+    invalid_trns = [{trn: "1234", error_message: "Teacher reference number must include at least 5 digits"},
+      {trn: "RP99/123457", error_message: "Teacher reference number cannot include more than 7 digits"},
+      {trn: "No-numbers", error_message: "Teacher reference number must include at least 5 digits"}]
 
     invalid_trns.each do |item|
       it "adds an error for trn - #{item[:trn]} " do

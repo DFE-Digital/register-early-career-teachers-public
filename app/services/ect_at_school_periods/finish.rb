@@ -16,7 +16,7 @@ module ECTAtSchoolPeriods
       end
     end
 
-  private
+    private
 
     def finish_ect_at_school_period!
       ect_at_school_period.finish!(finished_on)

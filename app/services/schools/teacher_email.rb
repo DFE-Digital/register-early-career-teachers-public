@@ -9,16 +9,16 @@ module Schools
       email_in_use_by_ongoing_ect? || email_in_use_by_ongoing_mentor?
     end
 
-  private
+    private
 
     attr_reader :email, :trn
 
     def email_in_use_by_ongoing_mentor?
-      MentorAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).ongoing.exists?
+      MentorAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: {trn:}).ongoing.exists?
     end
 
     def email_in_use_by_ongoing_ect?
-      ECTAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: { trn: }).ongoing.exists?
+      ECTAtSchoolPeriod.joins(:teacher).where(email:).where.not(teacher: {trn:}).ongoing.exists?
     end
   end
 end

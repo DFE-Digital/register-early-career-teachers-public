@@ -9,14 +9,14 @@ UNPROCESSABLE_CONTENT_RESPONSE = {
         properties: {
           title: {
             type: :string,
-            example: "example_attribute",
+            example: "example_attribute"
           },
           detail: {
             type: :string,
-            example: "An '#/example_attribute' must be specified.",
-          },
-        },
-      },
-    },
-  },
+            example: "An '#/example_attribute' must be specified."
+          }
+        }
+      }
+    }
+  }
 }.freeze

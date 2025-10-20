@@ -15,15 +15,15 @@ RSpec.configure do |config|
   # document below. You can override this behavior by adding a openapi_spec tag to the
   # the root example_group in your specs, e.g. describe '...', openapi_spec: 'v2/swagger.json'
   config.openapi_specs = {
-    'v3/swagger.yaml' => {
+    "v3/swagger.yaml" => {
       openapi: "3.0.1",
       info: {
         title: "Lead Provider API",
-        version: "v3",
+        version: "v3"
       },
       externalDocs: {
         description: "Find out more about Swagger",
-        url: "https://swagger.io/",
+        url: "https://swagger.io/"
       },
       paths: {},
 
@@ -32,8 +32,8 @@ RSpec.configure do |config|
           api_key: {
             type: :http,
             scheme: :bearer,
-            description: "Bearer token",
-          },
+            description: "Bearer token"
+          }
         },
 
         schemas: {
@@ -71,7 +71,7 @@ RSpec.configure do |config|
           PartnershipResponse: PARTNERSHIP_RESPONSE,
           PartnershipCreateRequest: PARTNERSHIP_CREATE_REQUEST,
           PartnershipUpdateRequest: PARTNERSHIP_UPDATE_REQUEST,
-          PartnershipsResponse: PARTNERSHIPS_RESPONSE,
+          PartnershipsResponse: PARTNERSHIPS_RESPONSE
         }
       }
     }

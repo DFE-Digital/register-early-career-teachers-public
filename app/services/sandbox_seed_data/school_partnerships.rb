@@ -20,7 +20,7 @@ module SandboxSeedData
       end
     end
 
-  private
+    private
 
     def create_school_partnership(active_lead_provider, school: nil)
       school ||= find_available_school(active_lead_provider)
@@ -45,7 +45,7 @@ module SandboxSeedData
     def school_partnerships(active_lead_provider)
       SchoolPartnership
         .includes(:lead_provider_delivery_partnership)
-        .where(lead_provider_delivery_partnership: { active_lead_provider: })
+        .where(lead_provider_delivery_partnership: {active_lead_provider:})
     end
 
     def find_available_school(active_lead_provider)

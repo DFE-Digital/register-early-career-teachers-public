@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-bundle exec rubocop --auto-gen-config --no-auto-gen-timestamp

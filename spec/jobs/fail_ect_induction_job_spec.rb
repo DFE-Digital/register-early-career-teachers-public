@@ -15,7 +15,7 @@ RSpec.describe FailECTInductionJob, type: :job do
     allow(refresh_service).to receive(:refresh!)
   end
 
-  describe '#perform' do
+  describe "#perform" do
     context "when the API call is successful" do
       before do
         allow(api_client).to receive(:fail_induction!).with(trn:, start_date:, completed_date:)

@@ -7,7 +7,7 @@ module Schools
         persist if wizard.valid_step?
       end
 
-    private
+      private
 
       def pre_populate_attributes
         # Pre-populate form fields from the MentorAssignmentContext object

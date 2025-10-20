@@ -1,4 +1,4 @@
-RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface do
+RSpec.describe "Add a mentor to a provider led ECT", :enable_schools_interface do
   before do
     given_there_is_a_school_in_the_service
     and_the_school_has_a_provider_led_ect_with_no_mentor
@@ -8,7 +8,7 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
     then_i_am_on_the_who_will_mentor_page
   end
 
-  scenario 'Same lead provider' do
+  scenario "Same lead provider" do
     given_i_select_the_mentor
     and_i_click_continue
     then_i_should_be_taken_to_the_eligibility_page
@@ -26,7 +26,7 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
     and_the_ect_is_shown_linked_to_the_mentor_just_registered
   end
 
-  scenario 'New lead provider' do
+  scenario "New lead provider" do
     given_i_select_the_mentor
     and_i_click_continue
     then_i_should_be_taken_to_the_eligibility_page
@@ -47,7 +47,7 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
     and_the_ect_is_shown_linked_to_the_mentor_just_registered
   end
 
-  scenario 'Mentor already has an ongoing training period' do
+  scenario "Mentor already has an ongoing training period" do
     given_the_mentor_already_has_an_ongoing_training_period
     and_i_select_the_mentor
     and_i_click_continue
@@ -74,11 +74,11 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
   end
 
   def and_the_back_link_links_to_the_who_will_mentor_page
-    expect(page.get_by_role(:link, name: 'Back').get_attribute('href')).to end_with("/school/ects/#{@ect.id}/mentorship/new")
+    expect(page.get_by_role(:link, name: "Back").get_attribute("href")).to end_with("/school/ects/#{@ect.id}/mentorship/new")
   end
 
   def and_the_back_link_links_to_the_eligibility_page
-    expect(page.get_by_role(:link, name: 'Back', exact: true).get_attribute('href')).to end_with('/school/assign-existing-mentor/review-mentor-eligibility')
+    expect(page.get_by_role(:link, name: "Back", exact: true).get_attribute("href")).to end_with("/school/assign-existing-mentor/review-mentor-eligibility")
   end
 
   def and_i_choose_the_lead_provider_vegeta
@@ -86,7 +86,7 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
   end
 
   def and_i_click_on_the_my_lead_provider_is_not_providing_mentor_training_link
-    page.get_by_role('link', name: "#{@lead_provider.name} will not be providing mentor training to #{@mentor_name}").click
+    page.get_by_role("link", name: "#{@lead_provider.name} will not be providing mentor training to #{@mentor_name}").click
   end
 
   def given_there_is_a_school_in_the_service
@@ -133,7 +133,7 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
-    page.get_by_role(:link, name: 'Assign a mentor for this ECT').click
+    page.get_by_role(:link, name: "Assign a mentor for this ECT").click
   end
 
   def then_i_am_on_the_who_will_mentor_page
@@ -167,16 +167,16 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
   end
 
   def given_i_click_on_back_to_your_ects
-    page.get_by_role(:link, name: 'Back to your ECTs').click
+    page.get_by_role(:link, name: "Back to your ECTs").click
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page).to have_path('/school/home/ects')
+    expect(page).to have_path("/school/home/ects")
   end
 
   def and_the_ect_is_shown_linked_to_the_mentor_just_registered
     expect(page.get_by_role(:link, name: @ect_name)).to be_visible
-    expect(page.locator('dt', hasText: 'Mentor')).to be_visible
-    expect(page.locator('dd', hasText: @mentor_name)).to be_visible
+    expect(page.locator("dt", hasText: "Mentor")).to be_visible
+    expect(page.locator("dd", hasText: @mentor_name)).to be_visible
   end
 end

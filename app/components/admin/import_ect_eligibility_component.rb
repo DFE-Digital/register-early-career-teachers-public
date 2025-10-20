@@ -9,11 +9,11 @@ module Admin
     end
 
     delegate :exempt?,
-             :passed?,
-             :failed?,
-             :no_qts?,
-             :prohibited_from_teaching?,
-             to: :pending_induction_submission
+      :passed?,
+      :failed?,
+      :no_qts?,
+      :prohibited_from_teaching?,
+      to: :pending_induction_submission
 
     # @return [Boolean]
     def render?

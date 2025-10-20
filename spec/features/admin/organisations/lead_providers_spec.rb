@@ -22,7 +22,7 @@ RSpec.describe "Admin organisations lead providers" do
   end
 
   def when_i_click_organisations_on_the_top_menu
-    page.locator('section.govuk-service-navigation').get_by_role('link', name: 'Organisations').click
+    page.locator("section.govuk-service-navigation").get_by_role("link", name: "Organisations").click
   end
 
   def then_i_should_see_the_admin_organisations_page
@@ -30,7 +30,7 @@ RSpec.describe "Admin organisations lead providers" do
   end
 
   def when_i_click_lead_providers_link
-    page.locator('main.govuk-main-wrapper').get_by_role('link', name: 'Lead providers').click
+    page.locator("main.govuk-main-wrapper").get_by_role("link", name: "Lead providers").click
   end
 
   def then_i_should_see_the_admin_lead_providers_page
@@ -38,7 +38,7 @@ RSpec.describe "Admin organisations lead providers" do
   end
 
   def and_i_should_see_lead_providers
-    table = page.locator('main.govuk-main-wrapper table.govuk-table')
+    table = page.locator("main.govuk-main-wrapper table.govuk-table")
     @lead_providers.each do |lp|
       expect(table.get_by_text(lp.name)).to be_visible
     end

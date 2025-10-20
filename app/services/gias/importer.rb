@@ -48,15 +48,15 @@ module GIAS
 
       if gias_school
         link = gias_school.gias_school_links
-                          .create_with(link_date:, link_type:, link_urn:)
-                          .find_or_create_by!(link_urn:)
+          .create_with(link_date:, link_type:, link_urn:)
+          .find_or_create_by!(link_urn:)
         link.update!(link_type:) if link.link_type != link_type
       end
 
       true
     end
 
-  private
+    private
 
     attr_reader :gias_school, :school_row
 

@@ -1,5 +1,5 @@
-RSpec.describe 'Admin::InductionPeriodsController', type: :request do
-  include_context 'sign in as DfE user'
+RSpec.describe "Admin::InductionPeriodsController", type: :request do
+  include_context "sign in as DfE user"
 
   let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -17,9 +17,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
-            appropriate_body_id: appropriate_body.id,
-            number_of_terms: 2
+            :induction_programme => "fip",
+            :appropriate_body_id => appropriate_body.id,
+            :number_of_terms => 2
           }
         }
       end
@@ -33,7 +33,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         post admin_teacher_induction_periods_path(teacher), params: valid_params
 
         expect(response).to redirect_to(admin_teacher_path(teacher))
-        expect(flash[:alert]).to eq('Induction period created successfully')
+        expect(flash[:alert]).to eq("Induction period created successfully")
       end
 
       it "records an 'admin creates induction period' event" do
@@ -52,7 +52,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
                 appropriate_body:,
                 author: kind_of(Sessions::User),
                 induction_period: kind_of(InductionPeriod),
-                teacher:,
+                teacher:
               }
             )
           )
@@ -64,7 +64,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         period = InductionPeriod.last
         expect(period.started_on).to eq(started_on.to_date)
         expect(period.finished_on).to eq(finished_on.to_date)
-        expect(period.induction_programme).to eq('fip')
+        expect(period.induction_programme).to eq("fip")
       end
     end
 
@@ -80,9 +80,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
-            appropriate_body_id: appropriate_body.id,
-            number_of_terms: 2
+            :induction_programme => "fip",
+            :appropriate_body_id => appropriate_body.id,
+            :number_of_terms => 2
           }
         }
       end
@@ -90,7 +90,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
       it "does not create a new induction period" do
         expect {
           post admin_teacher_induction_periods_path(teacher),
-               params: invalid_params
+            params: invalid_params
         }.not_to change(InductionPeriod, :count)
       end
 
@@ -109,9 +109,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
     context "with overlapping dates" do
       let!(:existing_period) do
         FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 6.months.ago,
-                          finished_on: 3.months.ago)
+          teacher:,
+          started_on: 6.months.ago,
+          finished_on: 3.months.ago)
       end
 
       let(:overlapping_params) do
@@ -119,7 +119,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           induction_period: {
             started_on: 4.months.ago,
             finished_on: 1.month.ago,
-            induction_programme: 'fip',
+            induction_programme: "fip",
             appropriate_body_id: appropriate_body.id,
             number_of_terms: 2
           }
@@ -156,9 +156,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
-            appropriate_body_id: nil,
-            number_of_terms: 2
+            :induction_programme => "fip",
+            :appropriate_body_id => nil,
+            :number_of_terms => 2
           }
         }
       end
@@ -193,9 +193,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
-            appropriate_body_id: appropriate_body.id,
-            number_of_terms: 2
+            :induction_programme => "fip",
+            :appropriate_body_id => appropriate_body.id,
+            :number_of_terms => 2
           }
         }
       end
@@ -230,9 +230,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
-            appropriate_body_id: appropriate_body.id,
-            number_of_terms: 2
+            :induction_programme => "fip",
+            :appropriate_body_id => appropriate_body.id,
+            :number_of_terms => 2
           }
         }
       end
@@ -258,10 +258,10 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
     context "with multiple induction periods" do
       before do
         FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 9.months.ago,
-                          finished_on: 6.months.ago,
-                          induction_programme: "fip")
+          teacher:,
+          started_on: 9.months.ago,
+          finished_on: 6.months.ago,
+          induction_programme: "fip")
       end
 
       let(:started_on) { 6.months.ago }
@@ -275,9 +275,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
-            appropriate_body_id: appropriate_body.id,
-            number_of_terms: 2
+            :induction_programme => "fip",
+            :appropriate_body_id => appropriate_body.id,
+            :number_of_terms => 2
           }
         }
       end
@@ -293,18 +293,18 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         period = InductionPeriod.last
         expect(period.started_on).to eq(started_on.to_date)
         expect(period.finished_on).to eq(finished_on.to_date)
-        expect(period.induction_programme).to eq('fip')
-        expect(period.training_programme).to eq('provider_led')
+        expect(period.induction_programme).to eq("fip")
+        expect(period.training_programme).to eq("provider_led")
       end
     end
 
     context "with no earlier induction periods" do
       before do
         FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 9.months.ago,
-                          finished_on: 6.months.ago,
-                          induction_programme: "fip")
+          teacher:,
+          started_on: 9.months.ago,
+          finished_on: 6.months.ago,
+          induction_programme: "fip")
       end
 
       let(:started_on) { 12.months.ago }
@@ -318,9 +318,9 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
-            appropriate_body_id: appropriate_body.id,
-            number_of_terms: 2
+            :induction_programme => "fip",
+            :appropriate_body_id => appropriate_body.id,
+            :number_of_terms => 2
           }
         }
       end
@@ -388,7 +388,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           expect(induction_period.finished_on).to eq(valid_params[:induction_period][:finished_on].to_date)
           expect(induction_period.number_of_terms).to eq(valid_params[:induction_period][:number_of_terms])
           expect(induction_period.induction_programme).to eq(valid_params[:induction_period][:induction_programme])
-          expect(induction_period.training_programme).to eq('provider_led')
+          expect(induction_period.training_programme).to eq("provider_led")
           expect(induction_period.appropriate_body).to eq(appropriate_body)
         end
 
@@ -407,7 +407,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
                 teacher: induction_period.teacher,
                 appropriate_body: induction_period.appropriate_body,
                 modifications: expected_modifications,
-                author: kind_of(Sessions::User),
+                author: kind_of(Sessions::User)
               }
             )
           )
@@ -416,17 +416,17 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         context "when dates would cause overlap" do
           let!(:first_period) do
             FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: 1.year.ago,
-                              finished_on: 8.months.ago,
-                              induction_programme: "cip")
+              teacher:,
+              started_on: 1.year.ago,
+              finished_on: 8.months.ago,
+              induction_programme: "cip")
           end
 
           let(:induction_period) do
             FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: 6.months.ago,
-                              finished_on: 3.months.ago)
+              teacher:,
+              started_on: 6.months.ago,
+              finished_on: 3.months.ago)
           end
 
           let(:params) do
@@ -454,10 +454,10 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
 
           let!(:earliest_period) do
             FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: 12.months.ago,
-                              finished_on: nil,
-                              number_of_terms: nil)
+              teacher:,
+              started_on: 12.months.ago,
+              finished_on: nil,
+              number_of_terms: nil)
           end
 
           let(:params) do
@@ -503,7 +503,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
 
           it "returns error" do
             patch admin_teacher_induction_period_path(induction_period.teacher, induction_period), params: {
-              induction_period: { started_on: 2.years.ago, appropriate_body_id: appropriate_body.id }
+              induction_period: {started_on: 2.years.ago, appropriate_body_id: appropriate_body.id}
             }
             expect(response).to be_unprocessable
             expect(response.body).to include("Start date cannot be before QTS award date")
@@ -515,11 +515,11 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
     context "when induction period has an outcome" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 9.months.ago,
-                          finished_on: 6.months.ago,
-                          outcome: "pass",
-                          number_of_terms: 3)
+          teacher:,
+          started_on: 9.months.ago,
+          finished_on: 6.months.ago,
+          outcome: "pass",
+          number_of_terms: 3)
       end
 
       context "when updating dates" do
@@ -549,7 +549,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           expect(induction_period.finished_on).to eq(params[:induction_period][:finished_on].to_date)
           expect(induction_period.number_of_terms).to eq(params[:induction_period][:number_of_terms])
           expect(induction_period.induction_programme).to eq(params[:induction_period][:induction_programme])
-          expect(induction_period.training_programme).to eq('provider_led')
+          expect(induction_period.training_programme).to eq("provider_led")
         end
 
         it "notifies TRS of the updated dates" do
@@ -600,7 +600,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
 
           induction_period.reload
           expect(induction_period.induction_programme).to eq("cip")
-          expect(induction_period.training_programme).to eq('provider_led')
+          expect(induction_period.training_programme).to eq("provider_led")
         end
       end
     end
@@ -608,11 +608,11 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
     context "when induction period has a fail outcome" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period,
-                          teacher:,
-                          started_on: 9.months.ago,
-                          finished_on: 6.months.ago,
-                          outcome: "fail",
-                          number_of_terms: 3)
+          teacher:,
+          started_on: 9.months.ago,
+          finished_on: 6.months.ago,
+          outcome: "fail",
+          number_of_terms: 3)
       end
 
       context "when updating end date" do
@@ -653,7 +653,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
 
   describe "DELETE /admin/induction_periods/:id" do
     let(:params) do
-      { induction_periods_delete_induction_period: { zendesk_ticket_id:, note: } }
+      {induction_periods_delete_induction_period: {zendesk_ticket_id:, note:}}
     end
     let(:zendesk_ticket_id) { "12345" }
     let(:note) { "A reason we are deleting this induction period" }

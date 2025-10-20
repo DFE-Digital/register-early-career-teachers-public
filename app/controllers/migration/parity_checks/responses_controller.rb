@@ -11,16 +11,16 @@ module Migration::ParityChecks
         "Run a parity check" => new_migration_parity_check_path,
         "Completed parity checks" => completed_migration_parity_checks_path,
         "Parity check run ##{@run.id}" => migration_parity_check_path(@run),
-        @request.description => migration_parity_check_request_path(@run, @request),
+        @request.description => migration_parity_check_request_path(@run, @request)
       }
     end
 
-  private
+    private
 
     def selected_key_path_params
-      return { selected_key_paths: nil } unless params[:parity_check_filter_response_body]
+      return {selected_key_paths: nil} unless params[:parity_check_filter_response_body]
 
-      params.expect(parity_check_filter_response_body: { selected_key_paths: [] })
+      params.expect(parity_check_filter_response_body: {selected_key_paths: []})
     end
   end
 end

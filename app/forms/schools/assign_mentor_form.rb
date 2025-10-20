@@ -4,8 +4,8 @@ module Schools
 
     attr_accessor :ect, :mentor_id
 
-    validates :ect, presence: { message: "ECT missing or not registered at this school" }
-    validates :mentor_id, presence: { message: "Select a mentor from the list provided or choose to register a new mentor" }
+    validates :ect, presence: {message: "ECT missing or not registered at this school"}
+    validates :mentor_id, presence: {message: "Select a mentor from the list provided or choose to register a new mentor"}
     validate :mentor_at_school, if: :mentor_id
     validate :mentorship_authorized, if: -> { ect && mentor }
 
@@ -21,7 +21,7 @@ module Schools
       valid? && assign!(author:)
     end
 
-  private
+    private
 
     delegate :school, to: :ect, allow_nil: true
 
@@ -36,7 +36,7 @@ module Schools
     def assign!(author:)
       AssignMentor.new(ect:, mentor:, author:).assign!
       true
-    rescue StandardError => e
+    rescue => e
       errors.add(:base, e.to_s)
       false
     end

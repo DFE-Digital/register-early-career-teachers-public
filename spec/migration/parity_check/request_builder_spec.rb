@@ -2,7 +2,7 @@ RSpec.describe ParityCheck::RequestBuilder do
   let(:lead_provider) { request.lead_provider }
   let(:path) { "/test-path" }
   let(:method) { :get }
-  let(:options) { { foo: :bar } }
+  let(:options) { {foo: :bar} }
   let(:endpoint) { ParityCheck::Endpoint.new(method:, path:, options:) }
   let(:request) { FactoryBot.create(:parity_check_request, endpoint:) }
   let(:per_page) { described_class::PAGINATION_PER_PAGE }
@@ -23,7 +23,7 @@ RSpec.describe ParityCheck::RequestBuilder do
 
   describe "instance methods" do
     let(:dynamic_request_content) { instance_double(ParityCheck::DynamicRequestContent) }
-    let(:tokens) { { lead_provider.ecf_id => "test_token" } }
+    let(:tokens) { {lead_provider.ecf_id => "test_token"} }
     let(:ecf_url) { "https://ecf.example.com" }
     let(:rect_url) { "https://rect.example.com" }
 
@@ -34,7 +34,7 @@ RSpec.describe ParityCheck::RequestBuilder do
           enabled: true,
           tokens: tokens.to_json,
           ecf_url:,
-          rect_url:,
+          rect_url:
         }
       end
     end
@@ -54,7 +54,7 @@ RSpec.describe ParityCheck::RequestBuilder do
 
       context "when the path contains an ID and the options specify an identifier" do
         let(:path) { "/test-path/:id" }
-        let(:options) { { id: ":example_id" } }
+        let(:options) { {id: ":example_id"} }
         let(:id) { SecureRandom.uuid }
 
         before { allow(dynamic_request_content).to receive(:fetch).with("example_id").and_return(id) }
@@ -65,7 +65,7 @@ RSpec.describe ParityCheck::RequestBuilder do
       context "when the options specify an ecf-specific path" do
         let(:app) { :ecf }
         let(:path) { "/default-path" }
-        let(:options) { { ecf_path: "/ecf-path" } }
+        let(:options) { {ecf_path: "/ecf-path"} }
 
         it { is_expected.to eq("#{ecf_url}/ecf-path") }
 
@@ -79,7 +79,7 @@ RSpec.describe ParityCheck::RequestBuilder do
       context "when the options specify a rect-specific path" do
         let(:app) { :rect }
         let(:path) { "/default-path" }
-        let(:options) { { rect_path: "/rect-path" } }
+        let(:options) { {rect_path: "/rect-path"} }
 
         it { is_expected.to eq("#{rect_url}/rect-path") }
 
@@ -107,8 +107,8 @@ RSpec.describe ParityCheck::RequestBuilder do
       subject(:body) { instance.body }
 
       context "when the body contains an identifier" do
-        let(:options) { { body: "example_body" } }
-        let(:example_body) { { data: { type: "example", attributes: { content: "This is an example body." } } } }
+        let(:options) { {body: "example_body"} }
+        let(:example_body) { {data: {type: "example", attributes: {content: "This is an example body."}}} }
 
         before { allow(dynamic_request_content).to receive(:fetch).with(options[:body]).and_return(example_body) }
 
@@ -128,31 +128,31 @@ RSpec.describe ParityCheck::RequestBuilder do
       subject(:query) { instance.query }
 
       context "when the query is a hash" do
-        let(:options) { { query: { filter: { cohort: 2022 } } } }
+        let(:options) { {query: {filter: {cohort: 2022}}} }
 
         it { is_expected.to eq(options[:query]) }
       end
 
       context "when the query is not a hash" do
-        let(:options) { { query: "filter=test" } }
+        let(:options) { {query: "filter=test"} }
 
         it { expect { query }.to raise_error(described_class::UnrecognizedQueryError, "Query must be a Hash: filter=test") }
       end
 
       context "when pagination is enabled" do
-        let(:options) { { paginate: true } }
+        let(:options) { {paginate: true} }
 
-        it { is_expected.to eq({ page: { page: 1, per_page: } }) }
+        it { is_expected.to eq({page: {page: 1, per_page:}}) }
       end
 
       context "when pagination is enabled and there are query parameters" do
-        let(:options) { { paginate: true, query: { filter: { cohort: 2022 } } } }
+        let(:options) { {paginate: true, query: {filter: {cohort: 2022}}} }
 
-        it { is_expected.to eq({ filter: { cohort: 2022 }, page: { page: 1, per_page: } }) }
+        it { is_expected.to eq({filter: {cohort: 2022}, page: {page: 1, per_page:}}) }
       end
 
       context "when any query filter has a dynamic value" do
-        let(:options) { { query: { filter: { cohort: ":cohort", delivery_partner_id: ":delivery_partner_id", key: "value" } } } }
+        let(:options) { {query: {filter: {cohort: ":cohort", delivery_partner_id: ":delivery_partner_id", key: "value"}}} }
         let(:delivery_partner_id) { SecureRandom.uuid }
 
         before do
@@ -160,7 +160,7 @@ RSpec.describe ParityCheck::RequestBuilder do
           allow(dynamic_request_content).to receive(:fetch).with("delivery_partner_id").and_return(delivery_partner_id)
         end
 
-        it { is_expected.to eq({ filter: { cohort: 2025, delivery_partner_id:, key: "value" } }) }
+        it { is_expected.to eq({filter: {cohort: 2025, delivery_partner_id:, key: "value"}}) }
       end
     end
 
@@ -168,13 +168,13 @@ RSpec.describe ParityCheck::RequestBuilder do
       subject { instance.page }
 
       context "when pagination is enabled" do
-        let(:options) { { paginate: true } }
+        let(:options) { {paginate: true} }
 
         it { is_expected.to eq(1) }
       end
 
       context "when pagination is not enabled" do
-        let(:options) { { paginate: false } }
+        let(:options) { {paginate: false} }
 
         it { is_expected.to be_nil }
       end
@@ -184,11 +184,11 @@ RSpec.describe ParityCheck::RequestBuilder do
       subject(:advance_page) { instance.advance_page(previous_response) }
 
       let(:previous_response) { FactoryBot.build(:parity_check_response) }
-      let(:partial_page_of_data) { { data: Array.new(per_page / 2, { key: :value }) }.to_json }
-      let(:full_page_of_data) { { data: Array.new(per_page, { key: :value }) }.to_json }
+      let(:partial_page_of_data) { {data: Array.new(per_page / 2, {key: :value})}.to_json }
+      let(:full_page_of_data) { {data: Array.new(per_page, {key: :value})}.to_json }
 
       context "when pagination is enabled" do
-        let(:options) { { paginate: true } }
+        let(:options) { {paginate: true} }
 
         context "when there is another page (both APIs return full sets of data)" do
           let(:previous_response) { FactoryBot.build(:parity_check_response, ecf_body: full_page_of_data, rect_body: full_page_of_data) }
@@ -237,7 +237,7 @@ RSpec.describe ParityCheck::RequestBuilder do
       end
 
       context "when pagination is disabled" do
-        let(:options) { { paginate: false } }
+        let(:options) { {paginate: false} }
 
         it { is_expected.to be_falsy }
         it { expect(instance.page).to be_nil }

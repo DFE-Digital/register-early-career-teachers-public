@@ -20,14 +20,14 @@ module Schools
         @value_as_date ||= Time.zone.local(*date_as_hash.values_at(1, 2, 3).map(&:to_i)).to_date
       end
 
-    private
+      private
 
       def integerize_keys!(hash)
         hash.transform_keys(&:to_i)
       end
 
       def convert_to_hash(date)
-        { 3 => date.day, 2 => date.month, 1 => date.year } if date
+        {3 => date.day, 2 => date.month, 1 => date.year} if date
       end
 
       def date_missing?

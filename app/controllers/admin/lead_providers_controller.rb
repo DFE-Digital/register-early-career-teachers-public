@@ -1,11 +1,11 @@
 module Admin
   class LeadProvidersController < AdminController
-    layout 'full'
+    layout "full"
 
     def index
       @breadcrumbs = {
         "Organisations" => admin_organisations_path,
-        "Lead providers" => nil,
+        "Lead providers" => nil
       }
       @lead_providers = ::LeadProvider.alphabetical
     end

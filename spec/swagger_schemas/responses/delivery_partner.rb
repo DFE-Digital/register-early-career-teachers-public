@@ -4,7 +4,7 @@ DELIVERY_PARTNER_RESPONSE = {
   required: %i[data],
   properties: {
     data: {
-      "$ref": "#/components/schemas/DeliveryPartner",
-    },
-  },
+      "$ref": "#/components/schemas/DeliveryPartner"
+    }
+  }
 }.freeze

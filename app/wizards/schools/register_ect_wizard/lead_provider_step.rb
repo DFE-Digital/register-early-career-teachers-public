@@ -4,8 +4,8 @@ module Schools
       attr_accessor :lead_provider_id
 
       validates :lead_provider_id,
-                presence: { message: "Select which lead provider will be training the ECT" },
-                lead_provider: { message: "Enter the name of a known lead provider" }
+        presence: {message: "Select which lead provider will be training the ECT"},
+        lead_provider: {message: "Enter the name of a known lead provider"}
 
       def self.permitted_params
         %i[lead_provider_id]
@@ -19,7 +19,7 @@ module Schools
         :training_programme
       end
 
-    private
+      private
 
       def persist
         ect.update!(lead_provider_id:)

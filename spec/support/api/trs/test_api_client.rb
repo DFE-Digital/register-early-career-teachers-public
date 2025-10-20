@@ -35,7 +35,7 @@ module TRS
     def reset_teacher_induction!(...) = nil
     def reopen_teacher_induction!(...) = nil
 
-  private
+    private
 
     def build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
       TRS::Teacher.new(
@@ -54,55 +54,55 @@ module TRS
       )
     end
 
-    def teacher_params(trn:, date_of_birth:, national_insurance_number:, first_name: 'Kirk', last_name: 'Van Houten')
+    def teacher_params(trn:, date_of_birth:, national_insurance_number:, first_name: "Kirk", last_name: "Van Houten")
       {
-        'trn' => trn,
-        'firstName' => first_name,
-        'lastName' => last_name,
-        'dateOfBirth' => date_of_birth,
-        'nationalInsuranceNumber' => national_insurance_number,
+        "trn" => trn,
+        "firstName" => first_name,
+        "lastName" => last_name,
+        "dateOfBirth" => date_of_birth,
+        "nationalInsuranceNumber" => national_insurance_number
       }
     end
 
     def qts_data
       if @has_qts
         {
-          'qts' => {
-            'awarded' => Time.zone.today - 3.years,
-            'certificateUrl' => 'https://fancy-certificates.example.com/1234',
-            'statusDescription' => 'Passed'
+          "qts" => {
+            "awarded" => Time.zone.today - 3.years,
+            "certificateUrl" => "https://fancy-certificates.example.com/1234",
+            "statusDescription" => "Passed"
           }
         }
       else
-        { 'qts' => nil }
+        {"qts" => nil}
       end
     end
 
     def prohibited_from_teaching_data
       {
-        'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID } } }]
+        "alerts" => [{"alertType" => {"alertCategory" => {"alertCategoryId" => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID}}}]
       }
     end
 
     def other_alert_data
       {
-        'alerts' => [{ 'alertType' => { 'alertCategory' => { 'alertCategoryId' => TRS::Teacher::UNACCEPTABLE_CONDUCT_CATEGORY_ID } } }]
+        "alerts" => [{"alertType" => {"alertCategory" => {"alertCategoryId" => TRS::Teacher::UNACCEPTABLE_CONDUCT_CATEGORY_ID}}}]
       }
     end
 
     def induction_data
       if @induction_status.nil?
-        { 'induction' => { 'status' => 'RequiredToComplete' } }
+        {"induction" => {"status" => "RequiredToComplete"}}
       elsif @induction_status.in?(%w[Passed Failed FailedInWales])
         {
-          'induction' => {
-            'status' => @induction_status,
-            'startDate' => '2021-01-01',
-            'completedDate' => '2022-01-01',
+          "induction" => {
+            "status" => @induction_status,
+            "startDate" => "2021-01-01",
+            "completedDate" => "2022-01-01"
           }
         }
       else
-        { 'induction' => { 'status' => @induction_status } }
+        {"induction" => {"status" => @induction_status}}
       end
     end
 
@@ -111,7 +111,7 @@ module TRS
         {
           "initialTeacherTraining" => [
             {
-              "qualification" => { "name" => "Postgraduate Certificate in Education" },
+              "qualification" => {"name" => "Postgraduate Certificate in Education"},
               "startDate" => "2020-12-31",
               "result" => "Pass",
               "subjects" => [],
@@ -119,12 +119,12 @@ module TRS
               "programmeType" => nil,
               "programmeTypeDescription" => nil,
               "ageRange" => nil,
-              "provider" => { "name" => "Example Provider Ltd." },
+              "provider" => {"name" => "Example Provider Ltd."}
             }
           ]
         }
       else
-        { "initialTeacherTraining" => [] }
+        {"initialTeacherTraining" => []}
       end
     end
   end

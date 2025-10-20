@@ -5,7 +5,7 @@ DELIVERY_PARTNERS_FILTER = {
     cohort: {
       description: "Return delivery partners from the specified cohort or cohorts. This is a comma delimited string of years.",
       type: "string",
-      example: "2021,2022",
-    },
-  },
+      example: "2021,2022"
+    }
+  }
 }.freeze

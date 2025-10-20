@@ -44,7 +44,7 @@ module Admin
         [
           statement_type.new(name: "All", id: "all"),
           statement_type.new(name: "Output statements", id: "output_fee"),
-          statement_type.new(name: "Service fee statements", id: "service_fee"),
+          statement_type.new(name: "Service fee statements", id: "service_fee")
         ]
       end
 

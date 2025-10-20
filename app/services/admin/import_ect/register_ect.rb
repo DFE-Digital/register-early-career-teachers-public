@@ -23,7 +23,7 @@ module Admin
         end
       end
 
-    private
+      private
 
       def check_if_teacher_already_exists!
         existing_teacher = Teacher.find_by(trn: pending_induction_submission.trn)

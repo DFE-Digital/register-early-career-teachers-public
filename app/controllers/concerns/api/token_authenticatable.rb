@@ -7,7 +7,7 @@ module API
       before_action :authenticate
     end
 
-  private
+    private
 
     def authenticate
       authenticate_token || render_unauthorized
@@ -20,7 +20,7 @@ module API
     end
 
     def render_unauthorized
-      render json: { error: "HTTP Token: Access denied" }.to_json, status: :unauthorized
+      render json: {error: "HTTP Token: Access denied"}.to_json, status: :unauthorized
     end
 
     def current_lead_provider

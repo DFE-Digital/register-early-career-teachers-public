@@ -8,7 +8,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get index_path
@@ -17,14 +17,14 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       context "with search query" do
         let!(:matching_delivery_partner) { FactoryBot.create(:delivery_partner, name: "Test Delivery Partner") }
         let!(:other_delivery_partner) { FactoryBot.create(:delivery_partner, name: "Other Partner") }
 
         it "filters delivery partners by name" do
-          get index_path, params: { q: "Test Delivery" }
+          get index_path, params: {q: "Test Delivery"}
 
           expect(response.status).to eq(200)
           expect(response.body).to include("Test Delivery Partner")
@@ -50,7 +50,7 @@ RSpec.describe "Admin delivery partners", type: :request do
         end
 
         it "shows search empty state" do
-          get index_path, params: { q: "nonexistent" }
+          get index_path, params: {q: "nonexistent"}
 
           expect(response.body).to include("There are no delivery partners that match your search.")
         end
@@ -68,7 +68,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get show_path
@@ -77,7 +77,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "returns http success" do
         get show_path
@@ -162,7 +162,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get new_path
@@ -171,7 +171,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       context "with valid contract period" do
         let!(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
@@ -241,33 +241,33 @@ RSpec.describe "Admin delivery partners", type: :request do
     let!(:active_lead_provider_2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_2, contract_period:) }
 
     it "redirects to sign in path" do
-      post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
+      post create_path, params: {lead_provider_ids: [active_lead_provider_1.id]}
       expect(response).to redirect_to(sign_in_path)
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
-        post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
+        post create_path, params: {lead_provider_ids: [active_lead_provider_1.id]}
         expect(response.status).to eq(401)
       end
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       context "with valid parameters" do
         let(:lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id] }
 
         it "updates lead provider partnerships" do
           expect {
-            post create_path, params: { lead_provider_ids: }
+            post create_path, params: {lead_provider_ids:}
           }.to change(LeadProviderDeliveryPartnership, :count).by(2)
         end
 
         it "redirects to show page with success message" do
-          post create_path, params: { lead_provider_ids: }
+          post create_path, params: {lead_provider_ids:}
           expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
           follow_redirect!
           expect(response.body).to include("Lead provider partners updated")
@@ -278,7 +278,7 @@ RSpec.describe "Admin delivery partners", type: :request do
           allow(DeliveryPartners::UpdateLeadProviderPairings).to receive(:new).and_return(service_double)
           expect(service_double).to receive(:update!)
 
-          post create_path, params: { lead_provider_ids: }
+          post create_path, params: {lead_provider_ids:}
         end
       end
 
@@ -304,7 +304,7 @@ RSpec.describe "Admin delivery partners", type: :request do
 
           it "removes unchecked partnerships" do
             expect {
-              post create_path, params: { lead_provider_ids: }
+              post create_path, params: {lead_provider_ids:}
             }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
 
             remaining_partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
@@ -312,7 +312,7 @@ RSpec.describe "Admin delivery partners", type: :request do
           end
 
           it "redirects with success message" do
-            post create_path, params: { lead_provider_ids: }
+            post create_path, params: {lead_provider_ids:}
             expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
             follow_redirect!
             expect(response.body).to include("Lead provider partners updated")
@@ -326,7 +326,7 @@ RSpec.describe "Admin delivery partners", type: :request do
 
           it "keeps existing partnerships and adds new ones" do
             expect {
-              post create_path, params: { lead_provider_ids: }
+              post create_path, params: {lead_provider_ids:}
             }.to change(LeadProviderDeliveryPartnership, :count).by(1)
 
             partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
@@ -354,7 +354,7 @@ RSpec.describe "Admin delivery partners", type: :request do
 
           it "persists checkbox state after form submission and reopening" do
             # Submit form with only one provider selected (removing the second one)
-            post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
+            post create_path, params: {lead_provider_ids: [active_lead_provider_1.id]}
             expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
 
             # Verify the partnerships were updated correctly
@@ -376,8 +376,8 @@ RSpec.describe "Admin delivery partners", type: :request do
             # Verify checkbox 1 is checked and checkbox 2 is not checked
             expect(checkbox_1).to be_present
             expect(checkbox_2).to be_present
-            expect(checkbox_1['checked']).to eq('checked')
-            expect(checkbox_2['checked']).to be_nil
+            expect(checkbox_1["checked"]).to eq("checked")
+            expect(checkbox_2["checked"]).to be_nil
           end
         end
       end
@@ -432,7 +432,7 @@ RSpec.describe "Admin delivery partners", type: :request do
         let(:invalid_create_path) { admin_delivery_partner_delivery_partnership_path(delivery_partner, 9999) }
 
         it "redirects with error message" do
-          post invalid_create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
+          post invalid_create_path, params: {lead_provider_ids: [active_lead_provider_1.id]}
           expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
           follow_redirect!
           expect(response.body).to include("Contract period for year 9999 not found")
@@ -449,7 +449,7 @@ RSpec.describe "Admin delivery partners", type: :request do
         end
 
         it "redirects with error message" do
-          post create_path, params: { lead_provider_ids: }
+          post create_path, params: {lead_provider_ids:}
           expect(response).to redirect_to(admin_delivery_partner_path(delivery_partner))
           follow_redirect!
           expect(response.body).to include("Unable to update lead provider partners")

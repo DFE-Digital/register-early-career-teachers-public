@@ -9,7 +9,7 @@ module Admin
     def index
       @breadcrumbs = {
         "Organisations" => admin_organisations_path,
-        "Delivery partners" => nil,
+        "Delivery partners" => nil
       }
       page = params[:page].presence
       @pagy, @delivery_partners = pagy(::DeliveryPartners::Search.new(params[:q]).search, page:)
@@ -35,7 +35,7 @@ module Admin
 
       @contract_period_partnerships = contract_periods_with_providers.map do |contract_period|
         partnerships = existing_partnerships.select { |p| p.contract_period.year == contract_period.year }
-        { contract_period:, partnerships: }
+        {contract_period:, partnerships:}
       end
     end
 
@@ -52,12 +52,12 @@ module Admin
       change_name_service.rename!
 
       redirect_to admin_delivery_partner_path(@delivery_partner, page: @page, q: @q),
-                  alert: "Delivery partner name changed"
+        alert: "Delivery partner name changed"
     rescue ActiveRecord::RecordInvalid
       render :edit, status: :unprocessable_content
     end
 
-  private
+    private
 
     def set_delivery_partner
       @delivery_partner = DeliveryPartner.find(params[:id])
@@ -65,7 +65,7 @@ module Admin
 
     def assign_backlink_params
       @page = params[:page]
-      @q    = params[:q]
+      @q = params[:q]
     end
 
     def change_name_service

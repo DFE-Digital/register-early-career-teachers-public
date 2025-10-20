@@ -1,11 +1,11 @@
-require 'optparse'
+require "optparse"
 
 namespace :appropriate_body do
   desc "Import Appropriate Body data from the old AB Portal"
   task import: :environment do
-    appropriate_bodies_csv = 'db/samples/appropriate-body-portal/appropriate-body.csv'
-    teachers_csv = 'db/samples/appropriate-body-portal/teachers.csv'
-    induction_periods_csv = 'db/samples/appropriate-body-portal/induction-periods.csv'
+    appropriate_bodies_csv = "db/samples/appropriate-body-portal/appropriate-body.csv"
+    teachers_csv = "db/samples/appropriate-body-portal/teachers.csv"
+    induction_periods_csv = "db/samples/appropriate-body-portal/induction-periods.csv"
 
     files = {}
 

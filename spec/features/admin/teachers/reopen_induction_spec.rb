@@ -29,7 +29,7 @@ describe "Admins can reopen a teacher's closed induction" do
     and_i_can_see_the_zendesk_url
   end
 
-private
+  private
 
   def when_i_go_to_the_teacher_page
     page.goto(admin_teacher_path(teacher))

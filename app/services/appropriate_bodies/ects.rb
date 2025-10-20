@@ -4,16 +4,16 @@ module AppropriateBodies
 
     def initialize(appropriate_body)
       @scope = Teacher.joins(:induction_periods)
-                      .merge(InductionPeriod.for_appropriate_body(appropriate_body))
+        .merge(InductionPeriod.for_appropriate_body(appropriate_body))
 
       @appropriate_body = appropriate_body
     end
 
     def with_status(status)
       case status
-      when 'closed'
+      when "closed"
         completed_while_at_appropriate_body
-      when 'open'
+      when "open"
         current
       else
         current_or_completed_while_at_appropriate_body

@@ -38,7 +38,7 @@ module Migrators
       contract_period
     end
 
-  private
+    private
 
     def contract_period_enabled?(cohort)
       cohort.start_year.to_s != "2020" &&

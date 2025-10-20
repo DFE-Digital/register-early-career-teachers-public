@@ -5,7 +5,7 @@ class SchoolsController < ApplicationController
 
   before_action :set_school
 
-private
+  private
 
   attr_reader :school
 

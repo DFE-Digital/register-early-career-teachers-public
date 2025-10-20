@@ -1,7 +1,7 @@
 RSpec.describe SandboxSeedData::ContractPeriods do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
-  let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
+  let(:logger) { instance_double(Logger, :info => nil, "formatter=" => nil, "level=" => nil) }
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }

@@ -17,7 +17,7 @@ module Metadata::Handlers
       end
     end
 
-  private
+    private
 
     def upsert_contract_period_metadata!
       contract_period_years.each do |contract_period_year|

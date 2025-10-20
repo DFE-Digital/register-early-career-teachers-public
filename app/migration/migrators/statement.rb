@@ -50,7 +50,7 @@ module Migrators
       statement
     end
 
-  private
+    private
 
     def status(ecf_statement)
       case ecf_statement.type
@@ -64,7 +64,7 @@ module Migrators
     end
 
     def fee_type(ecf_statement)
-      ecf_statement.output_fee ? 'output' : 'service'
+      ecf_statement.output_fee ? "output" : "service"
     end
   end
 end

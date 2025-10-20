@@ -15,7 +15,7 @@ describe "School user can change ECTs working pattern", :enable_schools_interfac
     then_i_see_the_confirmation_message
   end
 
-private
+  private
 
   def given_there_is_a_school
     @school = FactoryBot.create(:school)

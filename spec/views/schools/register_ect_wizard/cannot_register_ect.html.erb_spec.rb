@@ -1,5 +1,5 @@
 RSpec.describe "schools/register_ect_wizard/cannot_register_ect" do
-  let(:ect) { double('ECT', full_name: 'John Doe') }
+  let(:ect) { double("ECT", full_name: "John Doe") }
 
   before do
     assign(:ect, ect)
@@ -7,7 +7,7 @@ RSpec.describe "schools/register_ect_wizard/cannot_register_ect" do
   end
 
   it "sets the page title" do
-    expect(sanitize(view.content_for(:page_title))).to eql('You cannot register John Doe')
+    expect(sanitize(view.content_for(:page_title))).to eql("You cannot register John Doe")
   end
 
   it "displays the cannot register ECT message" do

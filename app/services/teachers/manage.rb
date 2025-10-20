@@ -88,7 +88,7 @@ class Teachers::Manage
     end
   end
 
-private
+  private
 
   def full_name
     ::Teachers::Name.new(teacher).full_name_in_trs

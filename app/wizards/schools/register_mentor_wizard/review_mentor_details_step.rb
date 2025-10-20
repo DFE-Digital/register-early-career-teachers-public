@@ -4,10 +4,10 @@ module Schools
       attr_accessor :change_name, :corrected_name
 
       validates :change_name,
-                inclusion: { in: %w[yes no],
-                             message: "Select 'Yes' or 'No' to confirm whether the details are correct" }
+        inclusion: {in: %w[yes no],
+                    message: "Select 'Yes' or 'No' to confirm whether the details are correct"}
 
-      validates :corrected_name, corrected_name: true, if: -> { change_name == 'no' }
+      validates :corrected_name, corrected_name: true, if: -> { change_name == "no" }
 
       def self.permitted_params
         %i[change_name corrected_name]
@@ -23,7 +23,7 @@ module Schools
         :national_insurance_number
       end
 
-    private
+      private
 
       def formatted_name
         return nil if change_name == "yes"

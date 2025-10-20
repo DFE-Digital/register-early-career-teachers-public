@@ -6,11 +6,11 @@ module Sessions
 
     attr_accessor :email, :code
 
-    validates :email, presence: { message: "Enter your email address" }, notify_email: true
+    validates :email, presence: {message: "Enter your email address"}, notify_email: true
     validate :code_is_verified, on: :verify
 
     def attributes
-      { email:, code: }
+      {email:, code:}
     end
 
     def generate_and_email_code_to_user!
@@ -21,7 +21,7 @@ module Sessions
       @user ||= ::User.find_by(email:)
     end
 
-  private
+    private
 
     def code_is_verified
       errors.delete(:email) # prevent leaking info when the email does not match a known User

@@ -28,7 +28,7 @@ module Schools
 
       alias_method :context, :mentor_assignment_context
 
-    private
+      private
 
       def allowed_steps = %i[review_mentor_eligibility lead_provider confirmation]
 

@@ -1,5 +1,5 @@
 RSpec.describe Schools::RegisterECTWizard::ChangeWorkingPatternStep, type: :model do
-  subject { described_class.new(working_pattern: 'full_time') }
+  subject { described_class.new(working_pattern: "full_time") }
 
   describe "inheritance" do
     it "inherits from WorkingPatternStep" do

@@ -3,7 +3,7 @@ RSpec.shared_examples "a sortable endpoint" do |additional_sorts = []|
     [
       travel_to(2.days.ago) { create_resource(active_lead_provider:) }.tap { it.update!(updated_at: 1.day.ago, api_updated_at: 2.hours.ago) },
       create_resource(active_lead_provider:).tap { it.update!(updated_at: 1.minute.ago, api_updated_at: 3.hours.ago) },
-      travel_to(5.days.ago) { create_resource(active_lead_provider:) }.tap { it.update!(updated_at: 5.days.ago, api_updated_at: 1.day.ago) },
+      travel_to(5.days.ago) { create_resource(active_lead_provider:) }.tap { it.update!(updated_at: 5.days.ago, api_updated_at: 1.day.ago) }
     ]
   end
 
@@ -20,7 +20,7 @@ RSpec.shared_examples "a sortable endpoint" do |additional_sorts = []|
       sort_attribute = transform_sort_attribute(sort[1..])
       resources.sort_by!(&:"#{sort_attribute}").tap { |l| l.reverse! if sort[0] == "-" }
 
-      authenticated_api_get(path, params: { sort: })
+      authenticated_api_get(path, params: {sort:})
 
       expect(response).to have_http_status(:ok)
       expect(response.content_type).to eql("application/json; charset=utf-8")

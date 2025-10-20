@@ -36,13 +36,13 @@ module Migration
     def eligible_type? = ELIGIBLE_TYPE_CODES.include?(school_type_code)
 
     def funding_eligibility
-      return 'eligible_for_fip' if open? && in_england? && (eligible_type? || (independent_school_type? && section_41_approved?))
-      return 'eligible_for_cip' if open? && cip_only_type? && !section_41_approved?
+      return "eligible_for_fip" if open? && in_england? && (eligible_type? || (independent_school_type? && section_41_approved?))
+      return "eligible_for_cip" if open? && cip_only_type? && !section_41_approved?
 
-      'ineligible'
+      "ineligible"
     end
 
-    def induction_eligibility = funding_eligibility != 'ineligible'
+    def induction_eligibility = funding_eligibility != "ineligible"
 
     def independent_school_type? = GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(school_type_name)
 

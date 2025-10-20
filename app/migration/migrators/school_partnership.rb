@@ -44,7 +44,7 @@ module Migrators
       school_partnership
     end
 
-  private
+    private
 
     def preload_caches
       cache_manager.cache_lead_providers_by_ecf_id

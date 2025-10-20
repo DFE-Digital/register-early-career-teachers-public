@@ -10,7 +10,7 @@ namespace :sandbox_seed_data do
       SandboxSeedData::LeadProviderDeliveryPartnerships,
       SandboxSeedData::SchoolPartnerships,
       SandboxSeedData::Teachers,
-      SandboxSeedData::TeacherHistories,
+      SandboxSeedData::TeacherHistories
     ]
 
     seeds.each do |seed_class|

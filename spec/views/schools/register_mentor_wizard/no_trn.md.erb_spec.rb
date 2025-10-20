@@ -9,22 +9,22 @@ RSpec.describe "schools/register_mentor_wizard/no_trn.md.erb" do
   end
 
   context "page title" do
-    it { expect(sanitize(view.content_for(:page_title))).to eql('You cannot register a mentor without a TRN') }
+    it { expect(sanitize(view.content_for(:page_title))).to eql("You cannot register a mentor without a TRN") }
   end
 
-  it 'includes no back button' do
+  it "includes no back button" do
     expect(view.content_for(:backlink_or_breadcrumb)).to be_blank
   end
 
-  it 'includes a link to the Find a lost TRN service' do
-    expect(rendered).to have_link('Find a lost TRN service', href: find_a_lost_trn_path)
+  it "includes a link to the Find a lost TRN service" do
+    expect(rendered).to have_link("Find a lost TRN service", href: find_a_lost_trn_path)
   end
 
-  it 'includes a link to request a TRN' do
-    expect(rendered).to have_link('request a TRN', href: request_a_trn_path)
+  it "includes a link to request a TRN" do
+    expect(rendered).to have_link("request a TRN", href: request_a_trn_path)
   end
 
   it 'includes a "Return to your ECTs" link that goes to the school home page' do
-    expect(rendered).to have_link('Return to your ECTs', href: school_home_path)
+    expect(rendered).to have_link("Return to your ECTs", href: school_home_path)
   end
 end

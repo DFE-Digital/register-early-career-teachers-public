@@ -1,7 +1,7 @@
 module EmptyStateMessage
   extend ActiveSupport::Concern
 
-private
+  private
 
   def empty_state_message
     base_message = "No #{status} inductions found"
@@ -14,6 +14,6 @@ private
   end
 
   def highlighted_query
-    tag.strong(query, class: 'govuk-!-font-weight-bold')
+    tag.strong(query, class: "govuk-!-font-weight-bold")
   end
 end

@@ -54,21 +54,21 @@ module Migrators
             teacher.save!
 
             result = Builders::Mentor::SchoolPeriods
-                       .new(teacher:, school_periods: school_periods.flatten, created_at: participant_profile.created_at)
-                       .build
+              .new(teacher:, school_periods: school_periods.flatten, created_at: participant_profile.created_at)
+              .build
           else
             ::TeacherMigrationFailure.create!(teacher:,
-                                              model: :mentor_at_school_period,
-                                              message: sanitizer.error,
-                                              migration_item_id: participant_profile.id,
-                                              migration_item_type: participant_profile.class.name)
+              model: :mentor_at_school_period,
+              message: sanitizer.error,
+              migration_item_id: participant_profile.id,
+              migration_item_type: participant_profile.class.name)
             result = false
           end
         end
       result
     end
 
-  private
+    private
 
     def preload_caches
       cache_manager.cache_schools

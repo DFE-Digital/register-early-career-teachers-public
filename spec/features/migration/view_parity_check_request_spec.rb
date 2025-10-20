@@ -3,14 +3,14 @@ RSpec.describe "View parity check request" do
 
   before do
     sign_in_as_dfe_user(role: :admin)
-    allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: true })
+    allow(Rails.application.config).to receive(:parity_check).and_return({enabled: true})
   end
 
   scenario "Viewing a parity check request" do
     run = FactoryBot.create(:parity_check_run, :completed)
     responses = [
       FactoryBot.create(:parity_check_response, :matching, page: 1),
-      FactoryBot.create(:parity_check_response, :different, page: 2),
+      FactoryBot.create(:parity_check_response, :different, page: 2)
     ]
     request = FactoryBot.create(:parity_check_request, :completed, run:, responses:)
 
@@ -51,7 +51,7 @@ RSpec.describe "View parity check request" do
 
   scenario "Viewing a parity check request with different IDs in the responses" do
     run = FactoryBot.create(:parity_check_run, :completed)
-    response = FactoryBot.create(:parity_check_response, ecf_body: { data: [{ id: 123 }] }.to_json, rect_body: { data: [{ id: 456 }] }.to_json)
+    response = FactoryBot.create(:parity_check_response, ecf_body: {data: [{id: 123}]}.to_json, rect_body: {data: [{id: 456}]}.to_json)
     request = FactoryBot.create(:parity_check_request, :completed, run:, responses: [response])
 
     page.goto(migration_parity_check_request_path(run, request))

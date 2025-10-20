@@ -26,14 +26,14 @@ module Sessions
         {
           author_email: email,
           author_name: name,
-          author_type: USER_TYPE,
+          author_type: USER_TYPE
         }
       end
 
       # @return [String]
       def organisation_name
         if has_multiple_roles?
-          school.name + ' (school)'
+          school.name + " (school)"
         else
           school.name
         end
@@ -43,7 +43,7 @@ module Sessions
 
       # @return [String]
       def sign_out_path
-        '/auth/dfe_sign_in/logout'
+        "/auth/dfe_sign_in/logout"
       end
 
       # @return [Hash] session data
@@ -57,7 +57,7 @@ module Sessions
           "dfe_sign_in_organisation_id" => dfe_sign_in_organisation_id,
           "dfe_sign_in_user_id" => dfe_sign_in_user_id,
           "dfe_sign_in_roles" => dfe_sign_in_roles,
-          "last_active_role" => last_active_role,
+          "last_active_role" => last_active_role
         }
       end
 
@@ -74,7 +74,7 @@ module Sessions
       # @return [Array<String>]
       alias_method :roles, :dfe_sign_in_roles
 
-    private
+      private
 
       def school_from(urn)
         ::School.find_by(urn:).tap do |school|

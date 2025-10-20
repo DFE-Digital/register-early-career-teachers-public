@@ -76,18 +76,18 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
     @school = FactoryBot.create(:school, urn: "1234567")
     @mentor_teacher = FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki")
     @mentor = FactoryBot.create(:mentor_at_school_period,
-                                teacher: @mentor_teacher,
-                                school: @school,
-                                started_on: start_date,
-                                finished_on: nil,
-                                id: 1)
+      teacher: @mentor_teacher,
+      school: @school,
+      started_on: start_date,
+      finished_on: nil,
+      id: 1)
 
     @ect_teacher = FactoryBot.create(:teacher, trs_first_name: "Boruto", trs_last_name: "Uzumaki")
     @ect = FactoryBot.create(:ect_at_school_period,
-                             teacher: @ect_teacher,
-                             school: @school,
-                             started_on: start_date,
-                             finished_on: nil)
+      teacher: @ect_teacher,
+      school: @school,
+      started_on: start_date,
+      finished_on: nil)
 
     FactoryBot.create(:training_period, :ongoing, :provider_led, :for_ect, ect_at_school_period: @ect)
     FactoryBot.create(:mentorship_period, mentor: @mentor, mentee: @ect, started_on: start_date, finished_on: nil)
@@ -122,11 +122,11 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
   end
 
   def given_i_click_the_back_link
-    page.locator('a.govuk-back-link').first.click
+    page.locator("a.govuk-back-link").first.click
   end
 
   def when_i_click_the_back_link
-    page.locator('a.govuk-back-link').first.click
+    page.locator("a.govuk-back-link").first.click
   end
 
   def then_i_am_on_the_mentors_index_page
@@ -137,45 +137,45 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
     @school = FactoryBot.create(:school, urn: "1234567")
     @mentor_teacher = FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki")
     @mentor = FactoryBot.create(:mentor_at_school_period,
-                                teacher: @mentor_teacher,
-                                school: @school,
-                                started_on: Date.new(2023, 9, 1),
-                                finished_on: nil,
-                                id: 1)
+      teacher: @mentor_teacher,
+      school: @school,
+      started_on: Date.new(2023, 9, 1),
+      finished_on: nil,
+      id: 1)
     @ects = []
   end
 
   def lp_dp_and_partnership
     @lead_provider = FactoryBot.create(:lead_provider, name: "Hidden leaf village")
-    @active_lp     = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider)
-    @dp            = FactoryBot.create(:delivery_partner, name: "Artisan Education Group")
-    @lpdp          = FactoryBot.create(:lead_provider_delivery_partnership,
-                                       active_lead_provider: @active_lp,
-                                       delivery_partner: @dp)
+    @active_lp = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider)
+    @dp = FactoryBot.create(:delivery_partner, name: "Artisan Education Group")
+    @lpdp = FactoryBot.create(:lead_provider_delivery_partnership,
+      active_lead_provider: @active_lp,
+      delivery_partner: @dp)
     @school_partnership = FactoryBot.create(:school_partnership,
-                                            lead_provider_delivery_partnership: @lpdp,
-                                            school: @school)
+      lead_provider_delivery_partnership: @lpdp,
+      school: @school)
   end
 
   def given_an_eligible_mentor_with_eoi_training
     build_school_and_mentor
     lp_dp_and_partnership
     FactoryBot.create(:training_period, :provider_led, :for_mentor,
-                      mentor_at_school_period: @mentor,
-                      started_on: Time.zone.today.beginning_of_month,
-                      finished_on: nil,
-                      school_partnership: nil,
-                      expression_of_interest: @active_lp)
+      mentor_at_school_period: @mentor,
+      started_on: Time.zone.today.beginning_of_month,
+      finished_on: nil,
+      school_partnership: nil,
+      expression_of_interest: @active_lp)
   end
 
   def given_an_eligible_mentor_with_confirmed_training
     build_school_and_mentor
     lp_dp_and_partnership
     FactoryBot.create(:training_period, :provider_led, :for_mentor,
-                      mentor_at_school_period: @mentor,
-                      started_on: Time.zone.today.beginning_of_month,
-                      finished_on: nil,
-                      school_partnership: @school_partnership)
+      mentor_at_school_period: @mentor,
+      started_on: Time.zone.today.beginning_of_month,
+      finished_on: nil,
+      school_partnership: @school_partnership)
   end
 
   def given_an_ineligible_mentor_completed_on(date)
@@ -197,12 +197,12 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
   def given_an_eligible_mentor_with_only_past_training
     build_school_and_mentor
     lp_dp_and_partnership
-    started  = Date.new(2023, 10, 1)
+    started = Date.new(2023, 10, 1)
     finished = Date.new(2023, 12, 1)
     FactoryBot.create(:training_period, :provider_led, :for_mentor,
-                      mentor_at_school_period: @mentor,
-                      started_on: started, finished_on: finished,
-                      school_partnership: @school_partnership)
+      mentor_at_school_period: @mentor,
+      started_on: started, finished_on: finished,
+      school_partnership: @school_partnership)
   end
 
   def and_i_click_on_the_current_mentor
@@ -219,13 +219,13 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
 
   def and_i_see_lead_provider(name)
     row = page.locator('.govuk-summary-list__row:has(dt.govuk-summary-list__key:has-text("Lead provider"))')
-    expect(row.locator('dd.govuk-summary-list__value')).to be_visible
+    expect(row.locator("dd.govuk-summary-list__value")).to be_visible
     expect(row.locator(%(dd.govuk-summary-list__value:has-text("#{name}")))).to be_visible
   end
 
   def and_i_see_delivery_partner(text_or_name)
     row = page.locator('.govuk-summary-list__row:has(dt.govuk-summary-list__key:has-text("Delivery partner"))')
-    expect(row.locator('dd.govuk-summary-list__value')).to be_visible
+    expect(row.locator("dd.govuk-summary-list__value")).to be_visible
     expect(row.locator(%(dd.govuk-summary-list__value:has-text("#{text_or_name}")))).to be_visible
   end
 

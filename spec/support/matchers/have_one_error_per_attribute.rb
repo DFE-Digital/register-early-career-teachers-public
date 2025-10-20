@@ -8,7 +8,7 @@ RSpec::Matchers.define :have_one_error_per_attribute do
 
   failure_message do |_actual|
     "expected each attribute to have exactly one error, but found:\n" +
-      @multiple_errors.map { |attr, messages| "#{attr}: #{messages.size} errors (#{messages.join(', ')})" }.join("\n")
+      @multiple_errors.map { |attr, messages| "#{attr}: #{messages.size} errors (#{messages.join(", ")})" }.join("\n")
   end
 
   failure_message_when_negated do |_actual|

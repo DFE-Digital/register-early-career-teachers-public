@@ -13,7 +13,7 @@ class SchoolMentorsToSchoolPeriods
     school_periods.each(&block)
   end
 
-private
+  private
 
   def school_periods
     @school_periods ||= school_mentors_to_school_periods
@@ -22,11 +22,11 @@ private
   def school_mentors_to_school_periods
     participant_profile.school_mentors.order(:created_at).map do |school_mentor|
       Migration::SchoolPeriod.new(urn: school_mentor.school.urn,
-                                  start_date: school_mentor.created_at.to_date,
-                                  end_date: nil,
-                                  start_source_id: school_mentor.id,
-                                  end_source_id: nil,
-                                  training_programme: nil)
+        start_date: school_mentor.created_at.to_date,
+        end_date: nil,
+        start_source_id: school_mentor.id,
+        end_source_id: nil,
+        training_programme: nil)
     end
   end
 end

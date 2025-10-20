@@ -8,7 +8,7 @@ SCHOOL_FILTER = {
     cohort: {
       description: "Return schools within the specified cohort.",
       type: "string",
-      example: "2021",
-    },
-  },
+      example: "2021"
+    }
+  }
 }.freeze

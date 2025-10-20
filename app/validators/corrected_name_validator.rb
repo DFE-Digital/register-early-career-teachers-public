@@ -4,7 +4,7 @@ class CorrectedNameValidator < ActiveModel::EachValidator
     record.errors.add(attribute, error_message) unless @corrected_name.valid?
   end
 
-private
+  private
 
   def error_message
     @corrected_name.error

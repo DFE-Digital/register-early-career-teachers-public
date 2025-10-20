@@ -14,7 +14,7 @@ module Schools
 
       # @return [Hash]
       def default_path_arguments
-        { ect_id: ect_at_school_period.id }
+        {ect_id: ect_at_school_period.id}
       end
 
       delegate :save!, to: :current_step

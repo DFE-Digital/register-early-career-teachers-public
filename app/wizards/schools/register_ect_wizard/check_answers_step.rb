@@ -11,7 +11,7 @@ module Schools
         ect.provider_led? ? :lead_provider : :training_programme
       end
 
-    private
+      private
 
       def persist
         ect_at_school_period_id = ect.register!(school, author: wizard.author).id

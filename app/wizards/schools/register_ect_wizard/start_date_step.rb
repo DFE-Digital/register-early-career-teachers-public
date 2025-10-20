@@ -20,7 +20,7 @@ module Schools
         :email_address
       end
 
-    private
+      private
 
       def start_date_not_before_previous_school
         return if skip_start_date_validation?

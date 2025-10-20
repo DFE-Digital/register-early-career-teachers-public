@@ -80,7 +80,7 @@ class InductionRecordSanitizer
     @induction_records ||= ordered_induction_records
   end
 
-private
+  private
 
   def ordered_induction_records
     case group_by

@@ -63,7 +63,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
 
   describe "POST #create" do
     let(:new_training_programme) { "provider_led" }
-    let(:params) { { edit: { training_programme: new_training_programme } } }
+    let(:params) { {edit: {training_programme: new_training_programme}} }
 
     context "when not signed in" do
       it "redirects to the root path" do
@@ -168,7 +168,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
         end
         let(:new_training_programme) { "provider_led" }
         let(:lead_provider_params) do
-          { lead_provider: { lead_provider_id: lead_provider.id } }
+          {lead_provider: {lead_provider_id: lead_provider.id}}
         end
 
         it "switches the training to provider-led" do
@@ -219,7 +219,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
     end
   end
 
-private
+  private
 
   def path_for_step(step)
     "/school/ects/#{ect_at_school_period.id}/change-training-programme/#{step}"

@@ -15,16 +15,16 @@ class ContractPeriod < ApplicationRecord
 
   # Validations
   validates :year,
-            presence: true,
-            uniqueness: true,
-            numericality: {
-              only_integer: true,
-              greater_than_or_equal_to: ECF_FIRST_YEAR,
-            }
+    presence: true,
+    uniqueness: true,
+    numericality: {
+      only_integer: true,
+      greater_than_or_equal_to: ECF_FIRST_YEAR
+    }
 
   validate :no_overlaps
-  validates :started_on, presence: { message: "Enter a start date" }
-  validates :finished_on, presence: { message: "Enter an end date" }
+  validates :started_on, presence: {message: "Enter a start date"}
+  validates :finished_on, presence: {message: "Enter an end date"}
 
   def self.containing_date(date)
     find_by(*date_in_range(date))
@@ -46,7 +46,7 @@ class ContractPeriod < ApplicationRecord
     started_on <= Time.zone.today
   end
 
-private
+  private
 
   def siblings
     ContractPeriod.all.excluding(self)

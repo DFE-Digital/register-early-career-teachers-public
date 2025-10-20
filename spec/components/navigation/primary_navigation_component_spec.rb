@@ -3,7 +3,7 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
   let(:current_path) { "/" }
   let(:current_user_type) { nil }
-  let(:nav_selector) { 'nav.govuk-service-navigation__wrapper' }
+  let(:nav_selector) { "nav.govuk-service-navigation__wrapper" }
   let(:nav_list_selector) { "#{nav_selector} ul#register-early-career-teachers-service-navigation-list" }
 
   def validate_navigation_items(expected_items)
@@ -33,24 +33,24 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
         render_inline(subject)
 
         expected_items = [
-          { text: "Teachers", href: "/admin/teachers" },
-          { text: "Schools", href: "/admin/schools" },
-          { text: "Organisations", href: "/admin/organisations" },
-          { text: "Finance", href: "/admin/finance" },
-          { text: "Users", href: "/admin/users" }
+          {text: "Teachers", href: "/admin/teachers"},
+          {text: "Schools", href: "/admin/schools"},
+          {text: "Organisations", href: "/admin/organisations"},
+          {text: "Finance", href: "/admin/finance"},
+          {text: "Users", href: "/admin/users"}
         ]
 
         validate_navigation_items(expected_items)
       end
     end
 
-    context 'when inverse: true' do
+    context "when inverse: true" do
       subject { described_class.new(current_path:, current_user_type:, inverse: true) }
 
       before { render_inline(subject) }
 
-      it 'adds the inverse class to the nav' do
-        expect(rendered_content).to have_css('section.govuk-service-navigation.govuk-service-navigation--inverse')
+      it "adds the inverse class to the nav" do
+        expect(rendered_content).to have_css("section.govuk-service-navigation.govuk-service-navigation--inverse")
       end
     end
 
@@ -62,7 +62,7 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
         render_inline(subject)
 
         expected_items = [
-          { text: "ECTs", href: "/school/home/ects" },
+          {text: "ECTs", href: "/school/home/ects"}
         ]
 
         validate_navigation_items(expected_items)

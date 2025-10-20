@@ -43,7 +43,7 @@ module Schools
             state_school_appropriate_body: StateSchoolAppropriateBodyStep,
             trn_not_found: TRNNotFoundStep,
             use_previous_ect_choices: UsePreviousECTChoicesStep,
-            working_pattern: WorkingPatternStep,
+            working_pattern: WorkingPatternStep
           }
         ]
       end
@@ -67,7 +67,7 @@ module Schools
         @ect ||= ECT.new(store)
       end
 
-    private
+      private
 
       def calculate_allowed_steps
         return [:confirmation] if ect.registered?
@@ -118,10 +118,10 @@ module Schools
 
         unless school.last_programme_choices? && ect.use_previous_ect_choices
           steps << if school.independent?
-                     :independent_school_appropriate_body
-                   else
-                     :state_school_appropriate_body
-                   end
+            :independent_school_appropriate_body
+          else
+            :state_school_appropriate_body
+          end
           return steps unless ect.appropriate_body_id
 
           steps << :training_programme

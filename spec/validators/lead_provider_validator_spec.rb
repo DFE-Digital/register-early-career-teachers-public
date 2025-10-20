@@ -4,6 +4,7 @@ RSpec.describe LeadProvider, type: :validator do
   let(:model_class) do
     Class.new do
       include ActiveModel::Model
+
       attr_accessor :lead_provider_id
 
       validates :lead_provider_id, lead_provider: true
@@ -42,9 +43,10 @@ RSpec.describe LeadProvider, type: :validator do
     let(:model_class) do
       Class.new do
         include ActiveModel::Model
+
         attr_accessor :lead_provider_id
 
-        validates :lead_provider_id, lead_provider: { message: "custom validation message" }
+        validates :lead_provider_id, lead_provider: {message: "custom validation message"}
       end
     end
 

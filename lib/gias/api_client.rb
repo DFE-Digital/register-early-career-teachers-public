@@ -7,13 +7,13 @@ module GIAS
       temp_files_from_zipped_response(data)
     end
 
-  private
+    private
 
     def fetch_extract
       client = Savon.client(wsdl: ENV["GIAS_API_SCHEMA"])
       res = client.call(
         :get_extract,
-        message: { "tns:Id" => ENV["GIAS_EXTRACT_ID"] },
+        message: {"tns:Id" => ENV["GIAS_EXTRACT_ID"]},
         wsse_auth: [ENV["GIAS_API_USER"], ENV["GIAS_API_PASSWORD"]],
         wsse_timestamp: true
       )

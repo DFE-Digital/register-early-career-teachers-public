@@ -2,7 +2,7 @@ module API
   class ReleaseNotesController < ApplicationController
     include ReleaseNotes
 
-    layout 'api_guidance'
+    layout "api_guidance"
 
     def index
     end
@@ -11,7 +11,7 @@ module API
       @release_note = release_notes.find { |note| note.slug == params[:slug] }
 
       unless @release_note
-        render 'errors/not_found', status: :not_found
+        render "errors/not_found", status: :not_found
       end
     end
   end

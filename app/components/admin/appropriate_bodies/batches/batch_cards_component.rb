@@ -8,7 +8,7 @@ module Admin
           @batch = batch
         end
 
-      private
+        private
 
         def error_rate
           ratio = batch.tally[:errored_count] / batch.tally[:uploaded_count].to_f * 100

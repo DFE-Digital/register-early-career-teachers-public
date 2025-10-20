@@ -53,7 +53,7 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController", :enable_schools
 
   describe "POST #create" do
     let(:new_email) { "mentor@example.com" }
-    let(:params) { { edit: { email: new_email } } }
+    let(:params) { {edit: {email: new_email}} }
 
     context "when not signed in" do
       it "redirects to the root path" do
@@ -129,7 +129,7 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController", :enable_schools
     end
   end
 
-private
+  private
 
   def path_for_step(step)
     "/school/mentors/#{mentor_at_school_period.id}/change-email-address/#{step}"

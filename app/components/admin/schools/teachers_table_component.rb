@@ -15,7 +15,7 @@ module Admin
         teacher_data[:latest_contract_period]
       end
 
-    private
+      private
 
       def teacher_full_name(teacher)
         ::Teachers::Name.new(teacher).full_name

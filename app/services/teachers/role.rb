@@ -14,7 +14,7 @@ class Teachers::Role
     @roles ||= determine_roles
   end
 
-private
+  private
 
   def determine_roles
     result = []

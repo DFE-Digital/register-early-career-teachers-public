@@ -6,7 +6,7 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, fee_type: 'output', statement_date: :ignore, order: :payment_date)
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, fee_type: "output", statement_date: :ignore, order: :payment_date)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
 
       where_lead_provider_is(lead_provider_id)
@@ -20,18 +20,18 @@ module Statements
       scope
     end
 
-  private
+    private
 
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
 
-      @scope = scope.joins(:lead_provider).where(lead_providers: { id: lead_provider_id })
+      @scope = scope.joins(:lead_provider).where(lead_providers: {id: lead_provider_id})
     end
 
     def where_contract_period_year_in(contract_period_years)
       return if ignore?(filter: contract_period_years)
 
-      @scope = scope.joins(:contract_period).where(contract_periods: { year: contract_period_years })
+      @scope = scope.joins(:contract_period).where(contract_periods: {year: contract_period_years})
     end
 
     def where_fee_type_is(fee_type)

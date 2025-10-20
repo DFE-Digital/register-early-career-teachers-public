@@ -47,17 +47,17 @@ module Schools
 
       def register!(author:)
         Schools::RegisterMentor.new(trs_first_name:,
-                                    trs_last_name:,
-                                    corrected_name:,
-                                    trn:,
-                                    school_urn:,
-                                    email:,
-                                    author:,
-                                    started_on:,
-                                    finish_existing_at_school_periods:,
-                                    lead_provider:)
-                               .register!
-                               .tap { self.registered = true }
+          trs_last_name:,
+          corrected_name:,
+          trn:,
+          school_urn:,
+          email:,
+          author:,
+          started_on:,
+          finish_existing_at_school_periods:,
+          lead_provider:)
+          .register!
+          .tap { self.registered = true }
       end
 
       def school
@@ -130,7 +130,7 @@ module Schools
         elsif mentor_at_school_periods.any?
           :previously_a_mentor
         else
-          raise 'Unexpected state: no mentor_at_school_periods found for previously registered mentor'
+          raise "Unexpected state: no mentor_at_school_periods found for previously registered mentor"
         end
       end
 
@@ -158,7 +158,7 @@ module Schools
         store.fetch("mentoring_at_new_school_only", "yes") == "yes"
       end
 
-    private
+      private
 
       def mentor_at_school_periods
         ::MentorAtSchoolPeriods::Search.new.mentor_periods(trn:)

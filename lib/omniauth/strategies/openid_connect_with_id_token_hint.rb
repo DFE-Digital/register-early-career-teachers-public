@@ -1,9 +1,9 @@
-require 'omniauth_openid_connect'
+require "omniauth_openid_connect"
 
 module OmniAuth
   module Strategies
     class OpenIDConnectWithIdTokenHint < OmniAuth::Strategies::OpenIDConnect
-      option :name, 'openid_connect_with_id_token_hint'
+      option :name, "openid_connect_with_id_token_hint"
 
       def encoded_post_logout_redirect_uri
         return unless options.post_logout_redirect_uri
@@ -14,7 +14,7 @@ module OmniAuth
         )
       end
 
-    private
+      private
 
       def decrypt_token(encrypted_token)
         secret_key = Rails.application.secret_key_base.byteslice(0, 32)

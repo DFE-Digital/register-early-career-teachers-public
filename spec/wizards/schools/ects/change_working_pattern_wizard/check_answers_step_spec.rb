@@ -45,8 +45,8 @@ describe Schools::ECTs::ChangeWorkingPatternWizard::CheckAnswersStep, type: :mod
   describe "#save!" do
     it "updates the ECT's working pattern" do
       expect { current_step.save! }
-      .to change(ect_at_school_period, :working_pattern)
-      .to("part_time")
+        .to change(ect_at_school_period, :working_pattern)
+        .to("part_time")
     end
 
     it "records a `teacher_working_pattern_updated` event" do

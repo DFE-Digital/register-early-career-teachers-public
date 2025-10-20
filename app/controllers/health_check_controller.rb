@@ -1,19 +1,19 @@
 class HealthCheckController < ApplicationController
   def show = render(json:)
 
-private
+  private
 
   def json
-    { commit_sha:, database: }.to_json
+    {commit_sha:, database:}.to_json
   end
 
   def commit_sha
-    ENV.fetch('COMMIT_SHA', 'UNKNOWN')
+    ENV.fetch("COMMIT_SHA", "UNKNOWN")
   end
 
   def database
-    'connected' if ActiveRecord::Base.connection.execute('select 1 as ok').tuple(0)['ok'] == 1
+    "connected" if ActiveRecord::Base.connection.execute("select 1 as ok").tuple(0)["ok"] == 1
   rescue PG::ConnectionBad
-    'not connected'
+    "not connected"
   end
 end

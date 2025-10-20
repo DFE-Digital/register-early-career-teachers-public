@@ -16,19 +16,19 @@ module Schools
       class_attribute :wizardable_type
 
       before_action :set_steps,
-                    :set_store,
-                    :set_record,
-                    :set_wizard
+        :set_store,
+        :set_record,
+        :set_wizard
 
       before_action -> { redirect_to "/404", as: :not_found },
-                    unless: -> { wizard_class.step?(@current_step) }
+        unless: -> { wizard_class.step?(@current_step) }
 
       before_action -> { @wizard.reset },
-                    if: -> { @current_step == :edit },
-                    unless: -> { wizard_class.step?(@previous_step) },
-                    only: :new
+        if: -> { @current_step == :edit },
+        unless: -> { wizard_class.step?(@previous_step) },
+        only: :new
 
-    private
+      private
 
       def set_steps
         @current_step = request.path.split("/").last.underscore.to_sym
@@ -50,10 +50,10 @@ module Schools
 
       def set_wizard
         @wizard = wizard_class.new(
-          current_step: @current_step,
-          author: current_user,
-          step_params: params,
-          store: @store,
+          :current_step => @current_step,
+          :author => current_user,
+          :step_params => params,
+          :store => @store,
           wizard_record_name => instance_variable_get("@#{wizard_record_name}")
         )
       end

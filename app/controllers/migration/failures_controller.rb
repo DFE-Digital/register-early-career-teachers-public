@@ -6,7 +6,7 @@ class Migration::FailuresController < ::AdminController
     @failures = generic_grouped_failures
   end
 
-private
+  private
 
   def teacher_grouped_failures
     failures = TeacherMigrationFailure.all
@@ -25,7 +25,7 @@ private
   end
 
   def migration_failures_for_model(model:)
-    MigrationFailure.joins(:data_migration).where(data_migration: { model: })
+    MigrationFailure.joins(:data_migration).where(data_migration: {model:})
   end
 
   def migrator_models

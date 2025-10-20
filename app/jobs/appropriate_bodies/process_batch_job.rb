@@ -21,7 +21,7 @@ module AppropriateBodies
 
       batch_service.complete! if pending_induction_submission_batch.completing?
       batch_service.process! if pending_induction_submission_batch.processing?
-    rescue StandardError => e
+    rescue => e
       Rails.logger.debug("Attempt #{executions}: #{e.message}")
 
       pending_induction_submission_batch.update!(error_message: e.message)
@@ -29,7 +29,7 @@ module AppropriateBodies
       Sentry.capture_exception(e)
     end
 
-  private
+    private
 
     # @param pending_induction_submission_batch [PendingInductionSubmissionBatch]
     # @param email [String]

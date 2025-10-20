@@ -9,14 +9,14 @@ class APIController < ActionController::API
   include API::ConditionExtractable
   include DfE::Analytics::Requests
 
-private
+  private
 
   # `current_user` needed for DfE::Analytics
   def current_user
     current_lead_provider
   end
 
-protected
+  protected
 
   def respond_with_service(service:, action:)
     if service.valid?

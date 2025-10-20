@@ -12,7 +12,7 @@ module Migration
       @induction_records ||= fetch_induction_records
     end
 
-  private
+    private
 
     def participant_profile
       __getobj__

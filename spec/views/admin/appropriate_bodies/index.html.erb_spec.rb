@@ -1,4 +1,4 @@
-RSpec.describe 'admin/appropriate_bodies/index.html.erb' do
+RSpec.describe "admin/appropriate_bodies/index.html.erb" do
   include Pagy::Backend
 
   let(:number_of_appropriate_bodies) { 2 }
@@ -10,23 +10,23 @@ RSpec.describe 'admin/appropriate_bodies/index.html.erb' do
     assign(:pagy, pagy)
     assign(:breadcrumbs, {
       "Organisations" => admin_organisations_path,
-      "Appropriate bodies" => nil,
+      "Appropriate bodies" => nil
     })
   end
 
   it %(sets the main heading and page title to 'Appropriate bodies') do
     render
 
-    expect(view.content_for(:page_title)).to eql('Appropriate bodies')
-    expect(view.content_for(:page_header)).to have_css('h1', text: 'Appropriate bodies')
+    expect(view.content_for(:page_title)).to eql("Appropriate bodies")
+    expect(view.content_for(:page_header)).to have_css("h1", text: "Appropriate bodies")
   end
 
-  it 'renders breadcrumbs' do
+  it "renders breadcrumbs" do
     render
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Organisations', href: admin_organisations_path)
-    expect(view.content_for(:backlink_or_breadcrumb)).to include('Appropriate bodies')
-    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link('Appropriate bodies')
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Organisations", href: admin_organisations_path)
+    expect(view.content_for(:backlink_or_breadcrumb)).to include("Appropriate bodies")
+    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link("Appropriate bodies")
   end
 
   it "renders a link to view all bulk uploads" do
@@ -35,13 +35,13 @@ RSpec.describe 'admin/appropriate_bodies/index.html.erb' do
     expect(rendered).to have_link("View all bulk uploads", href: admin_batches_path)
   end
 
-  it 'renders a list of appropriate bodies' do
+  it "renders a list of appropriate bodies" do
     render
 
-    expect(rendered).to have_css('.govuk-summary-card', count: number_of_appropriate_bodies)
+    expect(rendered).to have_css(".govuk-summary-card", count: number_of_appropriate_bodies)
   end
 
-  it 'includes links by name to the individual appropriate body pages' do
+  it "includes links by name to the individual appropriate body pages" do
     render
 
     appropriate_bodies.each do |appropriate_body|

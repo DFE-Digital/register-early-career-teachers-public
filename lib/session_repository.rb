@@ -12,7 +12,7 @@ class SessionRepository
   end
   alias_method :update!, :update
 
-private
+  private
 
   def initialize(session:, form_key:)
     @session = session

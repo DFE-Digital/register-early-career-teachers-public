@@ -28,7 +28,7 @@ module Migration
       results
     end
 
-  private
+    private
 
     def validate_participant_profiles(participant_profiles)
       unless participant_profiles.respond_to?(:each)
@@ -83,7 +83,7 @@ module Migration
           provider_periods:,
           total_days: calculate_total_days(provider_periods),
           schools: extract_unique_schools(records),
-          programme_types: extract_unique_programme_types(records),
+          programme_types: extract_unique_programme_types(records)
         }
 
         participant_results << result
@@ -96,7 +96,7 @@ module Migration
       provider_records.map.with_index { |record, index|
         begin
           build_period(record, provider_records, index)
-        rescue StandardError => e
+        rescue => e
           Rails.logger.error "InductionSequenceAnalyser: Failed to process record #{record.id}: #{e.message}"
           nil
         end
@@ -129,7 +129,7 @@ module Migration
         partnership_id: record.induction_programme&.partnership_id,
         delivery_partner: record.delivery_partner&.name,
         induction_status: record.induction_status,
-        training_status: record.training_status,
+        training_status: record.training_status
       }
     end
 

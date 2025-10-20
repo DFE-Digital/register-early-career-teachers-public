@@ -55,7 +55,7 @@ module ParityCheck::Filter
       end
     end
 
-  private
+    private
 
     def verify_selected_key_paths!
       return if selected_key_paths.blank?
@@ -79,12 +79,12 @@ module ParityCheck::Filter
         next unless selected?(current_path)
 
         filtered[key] = if value.is_a?(Hash)
-                          apply_filter(value, current_path)
-                        elsif value.is_a?(Array)
-                          value.map { |item| apply_filter(item, current_path) }
-                        else
-                          value
-                        end
+          apply_filter(value, current_path)
+        elsif value.is_a?(Array)
+          value.map { |item| apply_filter(item, current_path) }
+        else
+          value
+        end
       end
     end
 
@@ -108,12 +108,12 @@ module ParityCheck::Filter
       item.keys.sort.each do |key|
         value = item[key]
         result[key] = if value.is_a?(Hash) && value.any?
-                        nested_key_hash(value)
-                      elsif value.is_a?(Array) && value.any?
-                        value.map { nested_key_hash(it) }.reduce(:merge)
-                      else
-                        {}
-                      end
+          nested_key_hash(value)
+        elsif value.is_a?(Array) && value.any?
+          value.map { nested_key_hash(it) }.reduce(:merge)
+        else
+          {}
+        end
       end
 
       result

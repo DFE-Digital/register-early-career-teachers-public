@@ -22,7 +22,7 @@ module ParityCheck
       known_tokens_by_lead_provider_ecf_id.fetch(lead_provider.ecf_id)
     end
 
-  private
+    private
 
     def known_tokens_by_lead_provider_ecf_id
       JSON.parse(parity_check_tokens) || {}

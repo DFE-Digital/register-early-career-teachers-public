@@ -50,7 +50,7 @@ module Migration
       export_results(results, filename)
     end
 
-  private
+    private
 
     def analyser
       @analyser ||= InductionSequenceAnalyser.new(@participant_profiles, batch_size: @batch_size)

@@ -38,22 +38,22 @@ def create_response(request, response_type, page)
   generate_response = -> {
     items = Array.new(num_items) { generate_response_item.call }
     {
-      data: items.size == 1 ? items.first : items
+      data: (items.size == 1) ? items.first : items
     }.to_json
   }
 
   ecf_body = generate_response.call
-  rect_body = response_type == :matching ? ecf_body : generate_response.call
+  rect_body = (response_type == :matching) ? ecf_body : generate_response.call
 
   FactoryBot.create(:parity_check_response,
-                    request:,
-                    ecf_status_code: 200,
-                    ecf_time_ms: rand(100..2000),
-                    ecf_body:,
-                    rect_status_code: 200,
-                    rect_body:,
-                    rect_time_ms: rand(100..2000),
-                    page:)
+    request:,
+    ecf_status_code: 200,
+    ecf_time_ms: rand(100..2000),
+    ecf_body:,
+    rect_status_code: 200,
+    rect_body:,
+    rect_time_ms: rand(100..2000),
+    page:)
 end
 
 def random_endpoint(run:)
@@ -62,7 +62,7 @@ end
 
 def random_response_types
   # 20% change of all matching response types, otherwise weight towards most matching.
-  response_type_options = rand < 0.8 ? %i[matching matching different] : %i[matching]
+  response_type_options = (rand < 0.8) ? %i[matching matching different] : %i[matching]
   Array.new(rand(1..3)) { response_type_options.sample }.flatten
 end
 

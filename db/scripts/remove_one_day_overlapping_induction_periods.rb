@@ -28,9 +28,8 @@
 # )
 # and (finished_on - started_on) = 1
 
-# rubocop:disable Style/NumericLiterals, Layout/MultilineArrayLineBreaks
 induction_periods_to_delete = [
-  1032,  1195,  2740,  4300,  5039,  5040,  5983,  10154, 10155, 10519,
+  1032, 1195, 2740, 4300, 5039, 5040, 5983, 10154, 10155, 10519,
   14562, 14637, 14669, 15110, 16456, 17101, 17212, 17440, 17696, 17879,
   20660, 20661, 22474, 22646, 23237, 23285, 23963, 24010, 24227, 24253,
   24410, 24648, 25696, 25718, 25719, 25925, 26534, 27024, 27508, 27513,
@@ -41,6 +40,5 @@ induction_periods_to_delete = [
   59988, 61071, 61911, 62458, 62579, 67165, 69195, 70721, 72260, 72282,
   72427, 75084, 75917, 75923, 77277, 77283, 77741, 79774, 80008, 85472
 ]
-# rubocop:enable Style/NumericLiterals, Layout/MultilineArrayLineBreaks
 
 InductionPeriod.where(id: induction_periods_to_delete).delete_all

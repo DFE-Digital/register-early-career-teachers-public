@@ -16,7 +16,7 @@ module Navigation
         section.name,
         section.href,
         class: "x-govuk-sub-navigation__link",
-        aria: { current: current?(section.prefix) }
+        aria: {current: current?(section.prefix)}
       )
     end
 
@@ -27,7 +27,7 @@ module Navigation
       )
     end
 
-  private
+    private
 
     def current?(prefix)
       # return nil instead of false so Rails' link helper drops the

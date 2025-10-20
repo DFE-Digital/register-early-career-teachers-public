@@ -23,15 +23,15 @@ module API
       def resume = head(:method_not_allowed)
       def withdraw = head(:method_not_allowed)
 
-    private
+      private
 
       def teachers_query(conditions: {})
-        API::Teachers::Query.new(**(default_query_conditions.merge(conditions)).compact)
+        API::Teachers::Query.new(**default_query_conditions.merge(conditions).compact)
       end
 
       def default_query_conditions
         @default_query_conditions ||= {
-          lead_provider_id: current_lead_provider.id,
+          lead_provider_id: current_lead_provider.id
         }
       end
 
@@ -58,7 +58,7 @@ module API
       end
 
       def sort
-        sort_order(sort: participants_params[:sort], model: Teacher, default: { created_at: :asc })
+        sort_order(sort: participants_params[:sort], model: Teacher, default: {created_at: :asc})
       end
 
       def to_json(obj)

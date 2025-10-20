@@ -14,7 +14,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
-  let(:params) { { lead_provider_id: Random.rand(1..100) } }
+  let(:params) { {lead_provider_id: Random.rand(1..100)} }
 
   describe ".permitted_params" do
     it "returns the permitted parameters" do
@@ -37,7 +37,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
   describe "validations" do
     context "when the lead_provider_id is blank" do
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }
-      let(:params) { { lead_provider_id: "" } }
+      let(:params) { {lead_provider_id: ""} }
 
       it "is invalid" do
         expect(current_step).to be_invalid
@@ -48,7 +48,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
 
     context "when the lead_provider_id is invalid" do
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }
-      let(:params) { { lead_provider_id: "invalid" } }
+      let(:params) { {lead_provider_id: "invalid"} }
 
       it "is invalid" do
         expect(current_step).to be_invalid
@@ -59,7 +59,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
 
     context "when the lead_provider_id is valid" do
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }
-      let(:params) { { lead_provider_id: lead_provider.id } }
+      let(:params) { {lead_provider_id: lead_provider.id} }
 
       it "is valid" do
         expect(current_step).to be_valid
@@ -70,7 +70,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
 
   describe "#save!" do
     context "when the step is invalid" do
-      let(:params) { { lead_provider_id: "" } }
+      let(:params) { {lead_provider_id: ""} }
 
       it "does not store the lead provider" do
         expect { current_step.save! }.not_to(change(store, :lead_provider_id))
@@ -83,7 +83,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
 
     context "when the lead_provider_id is valid" do
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }
-      let(:params) { { lead_provider_id: lead_provider.id } }
+      let(:params) { {lead_provider_id: lead_provider.id} }
 
       it "stores the lead provider" do
         expect { current_step.save! }

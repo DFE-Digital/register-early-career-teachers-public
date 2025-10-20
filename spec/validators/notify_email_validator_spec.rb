@@ -57,8 +57,8 @@ RSpec.describe NotifyEmailValidator, type: :model do
       "local-with-”-quotes@domain.com",
       "domain-starts-with-a-dot@.domain.com",
       "brackets(in)local@domain.com",
-      "email-too-long-#{'a' * 320}@example.com",
-      "incorrect-punycode@xn---something.com",
+      "email-too-long-#{"a" * 320}@example.com",
+      "incorrect-punycode@xn---something.com"
     ]
     invalid_email_addresses.each do |email|
       expect(User.new(name: "Brian Jacks", email:)).not_to be_valid

@@ -25,7 +25,7 @@ RSpec.describe "Release notes" do
     then_i_should_see_not_found
   end
 
-private
+  private
 
   def given_i_am_on_the_api_guidance_page
     path = "/api/guidance"
@@ -55,12 +55,12 @@ private
   end
 
   def and_i_click_on_a_release_note
-    page.get_by_role('link', name: release_note_2.title, exact: true).click
+    page.get_by_role("link", name: release_note_2.title, exact: true).click
     expect(page).to have_path("/api/guidance/release-notes/#{release_note_2.slug}")
   end
 
   def then_i_should_see_the_release_note
     expect(page.get_by_role("heading", name: release_note_2.title)).to be_visible
-    expect(page.locator('span', hasText: release_note_2.date)).to be_visible
+    expect(page.locator("span", hasText: release_note_2.date)).to be_visible
   end
 end

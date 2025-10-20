@@ -27,13 +27,13 @@ module AppropriateBodyHelper
       card.with_summary_list(
         actions: false,
         rows: [
-          { key: { text: "TRN" }, value: { text: teacher.trn } },
+          {key: {text: "TRN"}, value: {text: teacher.trn}},
           {
-            key: { text: "Induction start date" },
-            value: { text: Teachers::InductionPeriod.new(teacher).formatted_induction_start_date },
+            key: {text: "Induction start date"},
+            value: {text: Teachers::InductionPeriod.new(teacher).formatted_induction_start_date}
           },
           {
-            key: { text: "Status" },
+            key: {text: "Status"},
             value: {
               text: govuk_tag(
                 **Teachers::InductionStatus.new(
@@ -41,16 +41,16 @@ module AppropriateBodyHelper
                   induction_periods: teacher.induction_periods,
                   trs_induction_status: teacher.trs_induction_status
                 ).status_tag_kwargs
-              ),
-            },
-          },
+              )
+            }
+          }
         ]
       )
     end
   end
 
   def claimed_inductions_text(count)
-    "#{number_with_delimiter(count)} claimed #{'induction'.pluralize(count)}"
+    "#{number_with_delimiter(count)} claimed #{"induction".pluralize(count)}"
   end
 
   def induction_extensions(teacher)
@@ -63,7 +63,7 @@ module AppropriateBodyHelper
     induction_extensions(teacher)&.extended?
   end
 
-private
+  private
 
   def pending_induction_submission_full_name(pending_induction_submission)
     PendingInductionSubmissions::Name.new(pending_induction_submission).full_name

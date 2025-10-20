@@ -39,7 +39,7 @@ class FailureManager
     end
   end
 
-private
+  private
 
   attr_reader :data_migration
 

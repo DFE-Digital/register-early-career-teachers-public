@@ -5,37 +5,37 @@ describe Teachers::RefreshTRSAttributes do
 
   let(:teacher) do
     FactoryBot.create(:teacher,
-                      trs_first_name: "Kermit",
-                      trs_last_name: "Van Bouten")
+      trs_first_name: "Kermit",
+      trs_last_name: "Van Bouten")
   end
   let(:enable_trs_teacher_refresh) { true }
 
-  include_context 'test trs api client that finds teacher that has passed their induction'
+  include_context "test trs api client that finds teacher that has passed their induction"
 
   before do
     allow(Rails.application.config).to receive(:enable_trs_teacher_refresh)
-    .and_return(enable_trs_teacher_refresh)
+      .and_return(enable_trs_teacher_refresh)
   end
 
-  describe '#refresh!' do
-    it 'updates the relevant TRS attributes' do
+  describe "#refresh!" do
+    it "updates the relevant TRS attributes" do
       freeze_time do
         expect(service.refresh!).to eq(:teacher_updated)
 
         teacher.reload
         # these values are returned by the fake API client
-        expect(teacher.trs_first_name).to eql('Kirk')
-        expect(teacher.trs_last_name).to eql('Van Houten')
-        expect(teacher.trs_induction_status).to eql('Passed')
+        expect(teacher.trs_first_name).to eql("Kirk")
+        expect(teacher.trs_last_name).to eql("Van Houten")
+        expect(teacher.trs_induction_status).to eql("Passed")
         expect(teacher.trs_qts_awarded_on).to eql(3.years.ago.to_date)
-        expect(teacher.trs_qts_status_description).to eql('Passed')
-        expect(teacher.trs_initial_teacher_training_provider_name).to eql('Example Provider Ltd.')
+        expect(teacher.trs_qts_status_description).to eql("Passed")
+        expect(teacher.trs_initial_teacher_training_provider_name).to eql("Example Provider Ltd.")
         expect(teacher.trs_initial_teacher_training_end_date).to eql(Date.new(2021, 4, 5))
         expect(teacher.trs_data_last_refreshed_at).to eql(Time.zone.now)
       end
     end
 
-    it 'adds a teacher_name_updated_by_trs event' do
+    it "adds a teacher_name_updated_by_trs event" do
       expect(teacher.events).to be_empty
 
       service.refresh!
@@ -48,7 +48,7 @@ describe Teachers::RefreshTRSAttributes do
       ])
     end
 
-    describe 'delegation' do
+    describe "delegation" do
       before do
         allow(Teachers::Manage).to receive(:new).with(
           hash_including(
@@ -59,21 +59,21 @@ describe Teachers::RefreshTRSAttributes do
         ).and_return(fake_manage)
       end
 
-      context 'when the teacher is found in TRS' do
+      context "when the teacher is found in TRS" do
         let(:fake_manage) do
           double(Teachers::Manage,
-                 update_name!: true,
-                 update_trs_attributes!: true,
-                 update_trs_induction_status!: true)
+            update_name!: true,
+            update_trs_attributes!: true,
+            update_trs_induction_status!: true)
         end
 
-        it 'delegates to Teachers::Manage service' do
+        it "delegates to Teachers::Manage service" do
           freeze_time do
             service.refresh!
 
             expect(fake_manage).to have_received(:update_name!).once.with(
-              trs_first_name: 'Kirk',
-              trs_last_name: 'Van Houten'
+              trs_first_name: "Kirk",
+              trs_last_name: "Van Houten"
             )
             expect(fake_manage).to have_received(:update_trs_attributes!).once.with({
               trs_data_last_refreshed_at: Time.zone.now,
@@ -83,7 +83,7 @@ describe Teachers::RefreshTRSAttributes do
               trs_qts_status_description: "Passed"
             })
             expect(fake_manage).to have_received(:update_trs_induction_status!).once.with(
-              trs_induction_status: 'Passed',
+              trs_induction_status: "Passed",
               trs_induction_start_date: "2021-01-01",
               trs_induction_completed_date: "2022-01-01"
             )
@@ -91,12 +91,12 @@ describe Teachers::RefreshTRSAttributes do
         end
       end
 
-      context 'when the teacher has been deactivated in TRS' do
-        include_context 'test trs api client deactivated teacher'
+      context "when the teacher has been deactivated in TRS" do
+        include_context "test trs api client deactivated teacher"
 
         let(:fake_manage) do
           double(Teachers::Manage,
-                 mark_teacher_as_deactivated!: true)
+            mark_teacher_as_deactivated!: true)
         end
 
         it "marks the teacher as deactivated when the TRS reports the teacher as 'gone'" do

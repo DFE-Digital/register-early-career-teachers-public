@@ -4,7 +4,7 @@ module API
       filter_validation required_filters: %i[cohort]
 
       def index
-        conditions = { updated_since:, urn:, sort: }
+        conditions = {updated_since:, urn:, sort:}
         paginated_schools = schools_query(conditions:).schools { paginate(it) }
 
         render json: to_json(paginated_schools)
@@ -14,10 +14,10 @@ module API
         render json: to_json(schools_query.school_by_api_id(api_id))
       end
 
-    private
+      private
 
       def schools_query(conditions: {})
-        API::Schools::Query.new(**(default_query_conditions.merge(conditions.compact)))
+        API::Schools::Query.new(**default_query_conditions.merge(conditions.compact))
       end
 
       def default_query_conditions
@@ -43,7 +43,7 @@ module API
       end
 
       def sort
-        sort_order(sort: school_params[:sort], model: School, default: { created_at: :asc })
+        sort_order(sort: school_params[:sort], model: School, default: {created_at: :asc})
       end
 
       def urn

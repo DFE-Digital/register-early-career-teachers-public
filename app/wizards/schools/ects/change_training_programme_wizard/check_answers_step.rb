@@ -39,7 +39,7 @@ module Schools
           true
         end
 
-      private
+        private
 
         def switch_training_programme_to_provider_led!
           ECTAtSchoolPeriods::SwitchTraining.to_provider_led(

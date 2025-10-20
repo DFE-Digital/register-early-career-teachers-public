@@ -6,8 +6,8 @@ module Schools
       attr_accessor :lead_provider_id
 
       validates :lead_provider_id,
-                presence: { message: 'Select a lead provider to contact your school' },
-                lead_provider: { message: 'Select a lead provider to contact your school' }
+        presence: {message: "Select a lead provider to contact your school"},
+        lead_provider: {message: "Select a lead provider to contact your school"}
 
       def self.permitted_params = %i[lead_provider_id]
 
@@ -15,7 +15,7 @@ module Schools
 
       def next_step = :confirmation
 
-    private
+      private
 
       def persist
         store.lead_provider_id = lead_provider_id

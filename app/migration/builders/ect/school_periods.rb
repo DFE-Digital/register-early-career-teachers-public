@@ -36,7 +36,7 @@ module Builders
         success
       end
 
-    private
+      private
 
       def find_school_by_urn!(urn)
         school = CacheManager.instance.find_school_by_urn(urn)

@@ -13,7 +13,7 @@ RSpec.describe ECTHelper, type: :helper do
         let(:trs_induction_status) { "Passed" }
 
         it "returns a green 'Registered' tag" do
-          expect(helper.ect_status(ect_at_school_period)).to have_css('strong.govuk-tag.govuk-tag--blue', text: 'Completed induction')
+          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--blue", text: "Completed induction")
         end
       end
 
@@ -21,7 +21,7 @@ RSpec.describe ECTHelper, type: :helper do
         let(:trs_induction_status) { "Failed" }
 
         it "returns a green 'Registered' tag" do
-          expect(helper.ect_status(ect_at_school_period)).to have_css('strong.govuk-tag.govuk-tag--pink', text: 'Failed induction')
+          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--pink", text: "Failed induction")
         end
       end
 
@@ -29,7 +29,7 @@ RSpec.describe ECTHelper, type: :helper do
         let(:trs_induction_status) { "Exempt" }
 
         it "returns a green 'Registered' tag" do
-          expect(helper.ect_status(ect_at_school_period)).to have_css('strong.govuk-tag.govuk-tag--grey', text: 'Exempt')
+          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--grey", text: "Exempt")
         end
       end
     end
@@ -39,13 +39,13 @@ RSpec.describe ECTHelper, type: :helper do
         let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on:) }
 
         it "returns a green 'Registered' tag" do
-          expect(helper.ect_status(ect_at_school_period)).to have_css('strong.govuk-tag.govuk-tag--green', text: 'Registered')
+          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--green", text: "Registered")
         end
       end
 
       context "when the ECT does not have a current mentor" do
         it "returns a red 'Mentor required' tag" do
-          expect(helper.ect_status(ect_at_school_period)).to have_css('strong.govuk-tag.govuk-tag--red', text: 'Mentor required')
+          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--red", text: "Mentor required")
         end
       end
     end

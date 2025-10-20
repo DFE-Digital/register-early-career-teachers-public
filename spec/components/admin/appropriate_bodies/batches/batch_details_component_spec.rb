@@ -9,10 +9,10 @@ RSpec.describe Admin::AppropriateBodies::Batches::BatchDetailsComponent, type: :
     render_inline(component)
   end
 
-  it 'renders content' do
-    expect(rendered_content).to have_text('File name')
-    expect(rendered_content).to have_text('Submitted')
-    expect(rendered_content).to have_text('Completed')
-    expect(rendered_content).to have_text('Status')
+  it "renders content" do
+    expect(rendered_content).to have_text("File name")
+    expect(rendered_content).to have_text("Submitted")
+    expect(rendered_content).to have_text("Completed")
+    expect(rendered_content).to have_text("Status")
   end
 end

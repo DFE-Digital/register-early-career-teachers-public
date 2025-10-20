@@ -2,10 +2,10 @@ class CacheManager
   include Singleton
 
   attr_reader :active_lead_providers_by_key, :delivery_partners_by_name,
-              :lead_providers_by_name, :school_partnerships_by_key,
-              :schools_by_urn, :statements_by_api_id, :teachers_by_trn,
-              :lead_provider_delivery_partnerships_by_key, :lead_providers_by_ecf_id,
-              :delivery_partners_by_api_id, :contract_periods_by_year
+    :lead_providers_by_name, :school_partnerships_by_key,
+    :schools_by_urn, :statements_by_api_id, :teachers_by_trn,
+    :lead_provider_delivery_partnerships_by_key, :lead_providers_by_ecf_id,
+    :delivery_partners_by_api_id, :contract_periods_by_year
 
   def initialize
     # Caches to store the records
@@ -80,7 +80,7 @@ class CacheManager
 
     @active_lead_providers_by_key =
       ActiveLeadProvider.includes(:lead_provider)
-                        .index_by { |alp| [alp.lead_provider_id, alp.contract_period_year] }
+        .index_by { |alp| [alp.lead_provider_id, alp.contract_period_year] }
 
     @cache_loads[:active_lead_providers] += 1
   end
@@ -90,7 +90,7 @@ class CacheManager
 
     @school_partnerships_by_key =
       SchoolPartnership.includes(:lead_provider_delivery_partnership, :school)
-                       .index_by { |sp| [sp.lead_provider_delivery_partnership_id, sp.school_id] }
+        .index_by { |sp| [sp.lead_provider_delivery_partnership_id, sp.school_id] }
 
     @cache_loads[:school_partnerships] += 1
   end
@@ -116,7 +116,7 @@ class CacheManager
 
     @lead_provider_delivery_partnerships_by_key =
       LeadProviderDeliveryPartnership.includes(:active_lead_provider, :delivery_partner)
-                                     .index_by { |lpdp| [lpdp.active_lead_provider_id, lpdp.delivery_partner_id] }
+        .index_by { |lpdp| [lpdp.active_lead_provider_id, lpdp.delivery_partner_id] }
 
     @cache_loads[:lead_provider_delivery_partnerships] += 1
   end
@@ -322,7 +322,7 @@ class CacheManager
         lead_providers_by_ecf_id: cache_hit_rate_percentage(:lead_providers_by_ecf_id),
         delivery_partners_by_api_id: cache_hit_rate_percentage(:delivery_partners_by_api_id),
         contract_periods: cache_hit_rate_percentage(:contract_periods_by_year),
-        overall: overall_cache_hit_rate,
+        overall: overall_cache_hit_rate
       },
       cache_sizes: {
         active_lead_providers: @active_lead_providers_by_key.size,
@@ -335,14 +335,14 @@ class CacheManager
         lead_provider_delivery_partnerships: @lead_provider_delivery_partnerships_by_key.size,
         lead_providers_by_ecf_id: @lead_providers_by_ecf_id.size,
         delivery_partners_by_api_id: @delivery_partners_by_api_id.size,
-        contract_periods_by_year: @contract_periods_by_year.size,
+        contract_periods_by_year: @contract_periods_by_year.size
       },
       cache_hits: @cache_hits,
       cache_misses: @cache_misses,
       cache_loads: @cache_loads,
       caches_loaded: @cache_loads.keys,
       total_hits: @cache_hits.values.sum,
-      total_misses: @cache_misses.values.sum,
+      total_misses: @cache_misses.values.sum
     }
   end
 end

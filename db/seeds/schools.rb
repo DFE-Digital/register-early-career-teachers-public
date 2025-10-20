@@ -5,7 +5,7 @@ end
 [
   {
     urn: 141_666,
-    name: 'Angel Oak Academy', # Used by developers for DfE Sign In
+    name: "Angel Oak Academy", # Used by developers for DfE Sign In
     type: :state_school_type
   },
   {

@@ -11,13 +11,13 @@ module Schools
       search = Teachers::Search.new(mentor_at_school: school, query_string: params[:q])
 
       @pagy, @filtered_mentors = pagy_array(search.search, limit: 20)
-      @number_of_mentors       = search.count
+      @number_of_mentors = search.count
     end
 
     def show
     end
 
-  private
+    private
 
     def set_school_home
       @school_home = Schools::Home.new(school:)

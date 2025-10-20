@@ -12,14 +12,14 @@ class Teachers::InductionExtensions
   def formatted_number_of_terms
     return "None" if number_of_terms.zero?
 
-    "#{number_of_terms} #{'term'.pluralize(number_of_terms)}"
+    "#{number_of_terms} #{"term".pluralize(number_of_terms)}"
   end
 
   def extended?
     number_of_terms.positive?
   end
 
-private
+  private
 
   def number_of_terms
     teacher.induction_extensions.sum(:number_of_terms)

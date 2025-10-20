@@ -28,7 +28,7 @@ module Teachers
       Rails.application.config.enable_trs_teacher_refresh
     end
 
-  private
+    private
 
     # @return [TRS::Teacher]
     def trs_teacher

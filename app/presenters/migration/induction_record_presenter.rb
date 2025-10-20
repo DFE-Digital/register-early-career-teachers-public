@@ -79,7 +79,7 @@ module Migration
       fetch_migrated_periods_by_type(MentorshipPeriod)
     end
 
-  private
+    private
 
     def induction_record
       __getobj__

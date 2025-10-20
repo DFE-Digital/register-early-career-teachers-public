@@ -12,7 +12,7 @@ module Teachers::Details
       Teachers::InductionPeriod.new(teacher).ongoing_induction_period.present?
     end
 
-  private
+    private
 
     def record_failed_outcome_path
       if admin_mode?

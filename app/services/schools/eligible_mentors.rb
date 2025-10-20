@@ -8,7 +8,7 @@ module Schools
       @school.mentor_at_school_periods.ongoing.excluding(ect_as_mentor_at_school(ect))
     end
 
-  private
+    private
 
     def ect_as_mentor_at_school(ect)
       ect.mentor_at_school_periods.for_school(@school).ongoing

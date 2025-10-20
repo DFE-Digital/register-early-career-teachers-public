@@ -8,7 +8,7 @@ module HaveSummaryListRow
     def matches?(page)
       @page = page
       @rows = @page.find_all("dl.govuk-summary-list dt.govuk-summary-list__key")
-      @matching_row = @rows.find { |it| it.text == @key }
+      @matching_row = @rows.find { |row| row.text == @key }
 
       if @value.blank?
         @matching_row && @matching_row.text == @key
@@ -24,7 +24,7 @@ module HaveSummaryListRow
         .join("\n\n")
     end
 
-  private
+    private
 
     def generic_failure_message
       <<~TXT.squish
@@ -36,8 +36,8 @@ module HaveSummaryListRow
     def matching_row_failure_message
       if @rows.present? && @matching_row.blank?
         <<~TXT.squish
-          Found #{@rows.size} #{'summary list row'.pluralize(@rows.size)} with
-          keys: #{@rows.map { "\"#{it.text}\"" }.join(', ')}.
+          Found #{@rows.size} #{"summary list row".pluralize(@rows.size)} with
+          keys: #{@rows.map { "\"#{it.text}\"" }.join(", ")}.
         TXT
       end
     end

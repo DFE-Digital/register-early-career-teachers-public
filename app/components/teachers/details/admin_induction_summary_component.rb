@@ -13,10 +13,10 @@ module Teachers::Details
     end
 
     def extensions_action_text
-      (induction_extensions.extended?) ? 'View' : 'Add'
+      induction_extensions.extended? ? "View" : "Add"
     end
 
-  private
+    private
 
     def induction_extensions
       @induction_extensions ||= Teachers::InductionExtensions.new(teacher)

@@ -1,9 +1,9 @@
 RSpec.describe Migration::CachePerformanceTableComponent, type: :component do
   let(:combined_stats) do
     {
-      cache_hits: { schools: 90, teachers: 10 },
-      cache_misses: { schools: 10, teachers: 0 },
-      cache_loads: { schools: 1, teachers: 1 }
+      cache_hits: {schools: 90, teachers: 10},
+      cache_misses: {schools: 10, teachers: 0},
+      cache_loads: {schools: 1, teachers: 1}
     }
   end
 

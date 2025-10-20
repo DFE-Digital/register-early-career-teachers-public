@@ -1,5 +1,5 @@
 class InductionPeriod < ApplicationRecord
-  VALID_NUMBER_OF_TERMS = { min: 0, max: 16 }.freeze
+  VALID_NUMBER_OF_TERMS = {min: 0, max: 16}.freeze
 
   include Interval
   include SharedInductionPeriodValidation
@@ -11,32 +11,32 @@ class InductionPeriod < ApplicationRecord
   has_many :events
 
   # Validations
-  validates :appropriate_body_id, presence: { message: "Select an appropriate body" }
+  validates :appropriate_body_id, presence: {message: "Select an appropriate body"}
 
   validates :started_on,
-            presence: { message: "Enter a start date" }
+    presence: {message: "Enter a start date"}
 
   validates :induction_programme,
-            inclusion: {
-              in: %w[fip cip diy unknown pre_september_2021],
-              message: "Choose an induction programme"
-            }
+    inclusion: {
+      in: %w[fip cip diy unknown pre_september_2021],
+      message: "Choose an induction programme"
+    }
 
   validates :training_programme,
-            inclusion: {
-              in: ::TRAINING_PROGRAMME.keys.map(&:to_s),
-              message: "Choose an induction programme"
-            },
-            unless: ->(ip) {
-              ip.induction_programme.in?(%w[unknown pre_september_2021])
-            }
+    inclusion: {
+      in: ::TRAINING_PROGRAMME.keys.map(&:to_s),
+      message: "Choose an induction programme"
+    },
+    unless: ->(ip) {
+      ip.induction_programme.in?(%w[unknown pre_september_2021])
+    }
 
   validates :outcome,
-            inclusion: {
-              in: ::INDUCTION_OUTCOMES.keys.map(&:to_s),
-              message: "Outcome must be either pass or fail",
-              allow_nil: true
-            }
+    inclusion: {
+      in: ::INDUCTION_OUTCOMES.keys.map(&:to_s),
+      message: "Outcome must be either pass or fail",
+      allow_nil: true
+    }
 
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
@@ -65,7 +65,7 @@ class InductionPeriod < ApplicationRecord
     super
   end
 
-private
+  private
 
   # Ensure admin users inserting new induction periods include end dates.
   def end_date_admin_only
@@ -93,6 +93,6 @@ private
   end
 
   def teacher_distinct_period
-    overlap_validation(name: 'induction')
+    overlap_validation(name: "induction")
   end
 end

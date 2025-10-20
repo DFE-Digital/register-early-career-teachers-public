@@ -1,7 +1,7 @@
 RSpec.describe InductionPeriods::UpdateInductionPeriod do
   subject(:service) { described_class.new(author:, induction_period:, params:) }
 
-  let(:user) { FactoryBot.create(:user, email: 'user@education.gov.uk') }
+  let(:user) { FactoryBot.create(:user, email: "user@education.gov.uk") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -38,16 +38,16 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
     context "when induction period has an outcome" do
       let(:induction_period) do
         FactoryBot.create(:induction_period,
-                          teacher:,
-                          appropriate_body:,
-                          started_on: "2023-01-01",
-                          finished_on: "2023-12-31",
-                          outcome: "pass",
-                          number_of_terms: 3)
+          teacher:,
+          appropriate_body:,
+          started_on: "2023-01-01",
+          finished_on: "2023-12-31",
+          outcome: "pass",
+          number_of_terms: 3)
       end
 
       context "when updating dates" do
-        let(:params) { { started_on: "2023-02-01", finished_on: "2024-01-31" } }
+        let(:params) { {started_on: "2023-02-01", finished_on: "2024-01-31"} }
 
         before do
           allow(PassECTInductionJob).to receive(:perform_later)
@@ -71,7 +71,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
         end
 
         context "when trying to set end date to nil" do
-          let(:params) { { finished_on: nil } }
+          let(:params) { {finished_on: nil} }
 
           it "raises an error" do
             expect { service.update_induction_period! }.to raise_error(
@@ -82,7 +82,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
         end
 
         context "when updating other fields with nil dates" do
-          let(:params) { { number_of_terms: 3.5, started_on: nil } }
+          let(:params) { {number_of_terms: 3.5, started_on: nil} }
 
           it "raises an error" do
             expect { service.update_induction_period! }.to raise_error(
@@ -94,7 +94,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
       end
 
       context "when updating number of terms" do
-        let(:params) { { number_of_terms: 3.5 } }
+        let(:params) { {number_of_terms: 3.5} }
 
         it "allows updating number of terms" do
           service.update_induction_period!
@@ -104,7 +104,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
       end
 
       context "when updating induction programme" do
-        let(:params) { { induction_programme: "cip" } }
+        let(:params) { {induction_programme: "cip"} }
 
         it "allows updating induction programme" do
           service.update_induction_period!
@@ -117,16 +117,16 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
     context "when induction period has a fail outcome" do
       let(:induction_period) do
         FactoryBot.create(:induction_period,
-                          teacher:,
-                          appropriate_body:,
-                          started_on: "2023-01-01",
-                          finished_on: "2023-12-31",
-                          outcome: "fail",
-                          number_of_terms: 3)
+          teacher:,
+          appropriate_body:,
+          started_on: "2023-01-01",
+          finished_on: "2023-12-31",
+          outcome: "fail",
+          number_of_terms: 3)
       end
 
       context "when updating end date" do
-        let(:params) { { finished_on: "2024-01-31" } }
+        let(:params) { {finished_on: "2024-01-31"} }
 
         before do
           allow(FailECTInductionJob).to receive(:perform_later)
@@ -163,7 +163,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
 
       context "when start date is before QTS award date" do
         let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: Date.parse("2023-01-01")) }
-        let(:params) { { started_on: "2022-12-31" } }
+        let(:params) { {started_on: "2022-12-31"} }
 
         it "raises an error" do
           expect { service.update_induction_period! }.to raise_error(
@@ -177,13 +177,13 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
         context "when overlapping with previous period" do
           let!(:previous_period) do
             FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: "2023-01-01",
-                              finished_on: "2023-07-01",
-                              induction_programme: "cip")
+              teacher:,
+              started_on: "2023-01-01",
+              finished_on: "2023-07-01",
+              induction_programme: "cip")
           end
 
-          let(:params) { { started_on: "2023-05-01" } }
+          let(:params) { {started_on: "2023-05-01"} }
 
           it "raises an error" do
             expect { service.update_induction_period! }.to raise_error(
@@ -196,13 +196,13 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
         context "when overlapping with next period" do
           let!(:next_period) do
             FactoryBot.create(:induction_period,
-                              teacher:,
-                              started_on: "2023-11-01",
-                              finished_on: "2024-05-01",
-                              induction_programme: "cip")
+              teacher:,
+              started_on: "2023-11-01",
+              finished_on: "2024-05-01",
+              induction_programme: "cip")
           end
 
-          let(:params) { { finished_on: "2023-12-01" } }
+          let(:params) { {finished_on: "2023-12-01"} }
 
           it "raises an error" do
             expect { service.update_induction_period! }.to raise_error(
@@ -215,7 +215,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
     end
 
     context "when updating earliest period start date" do
-      let(:params) { { started_on: "2023-01-01" } }
+      let(:params) { {started_on: "2023-01-01"} }
 
       before do
         allow(BeginECTInductionJob).to receive(:perform_later)
@@ -315,7 +315,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
         )
       end
 
-      let(:params) { { finished_on: "2024-01-31" } }
+      let(:params) { {finished_on: "2024-01-31"} }
 
       before do
         allow(PassECTInductionJob).to receive(:perform_later)

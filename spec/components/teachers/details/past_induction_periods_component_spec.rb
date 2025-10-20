@@ -16,12 +16,12 @@ RSpec.describe Teachers::Details::PastInductionPeriodsComponent, type: :componen
     let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Past AB") }
     let!(:past_induction_period) do
       FactoryBot.create(:induction_period,
-                        teacher:,
-                        appropriate_body:,
-                        started_on: Date.new(2021, 9, 1),
-                        finished_on: 1.year.ago,
-                        induction_programme: "cip",
-                        number_of_terms: 3)
+        teacher:,
+        appropriate_body:,
+        started_on: Date.new(2021, 9, 1),
+        finished_on: 1.year.ago,
+        induction_programme: "cip",
+        number_of_terms: 3)
     end
 
     before { render_inline(component) }

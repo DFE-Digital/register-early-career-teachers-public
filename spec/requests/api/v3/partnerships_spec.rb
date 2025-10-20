@@ -1,6 +1,6 @@
 RSpec.describe "Partnerships API", type: :request do
   let(:serializer) { API::SchoolPartnershipSerializer }
-  let(:serializer_options) { { lead_provider: } }
+  let(:serializer_options) { {lead_provider:} }
   let(:query) { API::SchoolPartnerships::Query }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
@@ -49,7 +49,7 @@ RSpec.describe "Partnerships API", type: :request do
         lead_provider_id: active_lead_provider.lead_provider_id,
         contract_period_year: active_lead_provider.contract_period_year.to_s,
         school_api_id: school.api_id,
-        delivery_partner_api_id: delivery_partnership.delivery_partner.api_id,
+        delivery_partner_api_id: delivery_partnership.delivery_partner.api_id
       }
     end
     let(:params) do
@@ -59,7 +59,7 @@ RSpec.describe "Partnerships API", type: :request do
           attributes: {
             school_id: school.api_id,
             delivery_partner_id: delivery_partnership.delivery_partner.api_id,
-            cohort: active_lead_provider.contract_period_year,
+            cohort: active_lead_provider.contract_period_year
           }
         }
       }
@@ -82,7 +82,7 @@ RSpec.describe "Partnerships API", type: :request do
     let(:service_args) do
       {
         school_partnership_id: resource.id,
-        delivery_partner_api_id: other_delivery_partner.api_id,
+        delivery_partner_api_id: other_delivery_partner.api_id
       }
     end
     let(:params) do
@@ -90,7 +90,7 @@ RSpec.describe "Partnerships API", type: :request do
         data: {
           type: "partnership",
           attributes: {
-            delivery_partner_id: other_delivery_partner.api_id,
+            delivery_partner_id: other_delivery_partner.api_id
           }
         }
       }

@@ -7,7 +7,7 @@
 Event.transaction do
   # Empty JSON object when converted to varchar is '{}'
   Event
-    .where(event_type: 'teacher_trs_attributes_updated')
-    .where('length(modifications::varchar) = 2')
+    .where(event_type: "teacher_trs_attributes_updated")
+    .where("length(modifications::varchar) = 2")
     .delete_all
 end

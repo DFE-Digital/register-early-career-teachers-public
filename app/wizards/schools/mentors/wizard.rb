@@ -14,7 +14,7 @@ module Schools
 
       # @return [Hash]
       def default_path_arguments
-        { mentor_id: mentor_at_school_period.id }
+        {mentor_id: mentor_at_school_period.id}
       end
 
       delegate :save!, to: :current_step

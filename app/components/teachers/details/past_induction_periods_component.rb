@@ -12,7 +12,7 @@ module Teachers::Details
       past_periods.any?
     end
 
-  private
+    private
 
     def past_periods
       @past_periods ||= induction.past_induction_periods
@@ -29,12 +29,12 @@ module Teachers::Details
 
       [
         govuk_link_to(
-          'Edit',
+          "Edit",
           helpers.edit_admin_teacher_induction_period_path(teacher, period),
           no_visited_state: true
         ),
         govuk_link_to(
-          'Delete',
+          "Delete",
           helpers.confirm_delete_admin_teacher_induction_period_path(teacher, period),
           no_visited_state: true
         )

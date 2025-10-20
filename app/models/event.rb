@@ -49,7 +49,7 @@ class Event < ApplicationRecord
     statement_authorised_for_payment
   ].freeze
 
-  belongs_to :author, class_name: 'User'
+  belongs_to :author, class_name: "User"
   belongs_to :user
   belongs_to :teacher
   belongs_to :school
@@ -81,27 +81,27 @@ class Event < ApplicationRecord
 
   validates :heading, presence: true
   validates :happened_at, presence: true
-  validates :event_type, presence: true, inclusion: { in: EVENT_TYPES }
+  validates :event_type, presence: true, inclusion: {in: EVENT_TYPES}
 
   validate :check_author_present
   validate :event_happened_in_the_past
 
-  scope :earliest_first, -> { order(happened_at: 'asc') }
-  scope :latest_first, -> { order(happened_at: 'desc') }
+  scope :earliest_first, -> { order(happened_at: "asc") }
+  scope :latest_first, -> { order(happened_at: "desc") }
 
-private
+  private
 
   def check_author_present
     return if author_type.in?(%w[system lead_provider_api])
     return if author_id.present? || author_email.present?
 
-    errors.add(:base, 'Author is missing')
+    errors.add(:base, "Author is missing")
   end
 
   def event_happened_in_the_past
     return if happened_at.blank?
     return if happened_at <= Time.zone.now
 
-    errors.add(:happened_at, 'Event must have already happened')
+    errors.add(:happened_at, "Event must have already happened")
   end
 end

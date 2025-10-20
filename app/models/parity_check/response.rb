@@ -9,11 +9,11 @@ module ParityCheck
     before_validation :clear_bodies, if: :bodies_matching?
 
     validates :request, presence: true
-    validates :ecf_status_code, inclusion: { in: 100..599 }
-    validates :rect_status_code, inclusion: { in: 100..599 }
-    validates :ecf_time_ms, numericality: { greater_than: 0 }
-    validates :rect_time_ms, numericality: { greater_than: 0 }
-    validates :page, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true, uniqueness: { scope: :request_id }
+    validates :ecf_status_code, inclusion: {in: 100..599}
+    validates :rect_status_code, inclusion: {in: 100..599}
+    validates :ecf_time_ms, numericality: {greater_than: 0}
+    validates :rect_time_ms, numericality: {greater_than: 0}
+    validates :page, numericality: {only_integer: true, greater_than: 0}, allow_nil: true, uniqueness: {scope: :request_id}
 
     scope :status_codes_matching, -> { where("ecf_status_code = rect_status_code") }
     scope :status_codes_different, -> { where("ecf_status_code != rect_status_code") }
@@ -28,7 +28,7 @@ module ParityCheck
 
       ratio = ecf_time_ms.to_f / rect_time_ms
 
-      (ratio < 1 ? -(1 / ratio) : ratio).round(1)
+      ((ratio < 1) ? -(1 / ratio) : ratio).round(1)
     end
 
     def match_rate
@@ -107,7 +107,7 @@ module ParityCheck
       rect_body_ids - ecf_body_ids
     end
 
-  private
+    private
 
     def format_body(body)
       parsed_json = parse_json_body(body)

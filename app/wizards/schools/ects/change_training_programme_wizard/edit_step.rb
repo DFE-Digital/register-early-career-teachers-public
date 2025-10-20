@@ -20,7 +20,7 @@ module Schools
           store.training_programme = training_programme if valid_step?
         end
 
-      private
+        private
 
         def pre_populate_attributes
           self.training_programme = store.training_programme

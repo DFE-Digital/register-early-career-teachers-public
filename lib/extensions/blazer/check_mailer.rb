@@ -6,12 +6,12 @@ module Extensions
       #
       # @return [Mail::Message] with essential Notify variables
       def mail(*args)
-        mail_message = super(*args)
+        mail_message = super
         mail_message.template_id = ::ApplicationMailer::NOTIFY_TEMPLATE_ID
         mail_message.from = ::Blazer.from_email
         mail_message.personalisation = {
           subject: mail_message.subject,
-          body: "[Manage checks](#{root_url}checks)",
+          body: "[Manage checks](#{root_url}checks)"
         }
         mail_message
       end

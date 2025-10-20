@@ -1,15 +1,15 @@
 module ApplicationHelper
   include Pagy::Frontend
 
-  def page_data(title:, header: :use_title, header_size: "l", error: false, backlink_href: nil, breadcrumbs: nil, caption: nil, caption_size: 'm', header_classes: [])
+  def page_data(title:, header: :use_title, header_size: "l", error: false, backlink_href: nil, breadcrumbs: nil, caption: nil, caption_size: "m", header_classes: [])
     page_title = title_with_error_prefix(title, error:)
     content_for(:page_title) { page_title }
 
     backlink_or_breadcrumb = if breadcrumbs
-                               govuk_breadcrumbs(breadcrumbs:)
-                             elsif backlink_href
-                               govuk_back_link(href: backlink_href)
-                             end
+      govuk_breadcrumbs(breadcrumbs:)
+    elsif backlink_href
+      govuk_back_link(href: backlink_href)
+    end
     content_for(:backlink_or_breadcrumb) { backlink_or_breadcrumb }
 
     if (page_header_text = (header == :use_title) ? title : header)
@@ -38,15 +38,15 @@ module ApplicationHelper
   end
 
   def support_mailto_link(text = Rails.application.config.support_email_address)
-    govuk_link_to(text, 'mailto:' + Rails.application.config.support_email_address)
+    govuk_link_to(text, "mailto:" + Rails.application.config.support_email_address)
   end
 
   def ruby_pants_options
     {
-      double_left_quote: '“',
-      double_right_quote: '”',
-      single_left_quote: '‘',
-      single_right_quote: '’',
+      double_left_quote: "“",
+      double_right_quote: "”",
+      single_left_quote: "‘",
+      single_right_quote: "’"
     }
   end
 
@@ -62,7 +62,7 @@ module ApplicationHelper
 
   def trs_alerts_text(alerts_present)
     if alerts_present
-      link = govuk_link_to("Check a teacher's record service", 'https://www.gov.uk/guidance/check-a-teachers-record')
+      link = govuk_link_to("Check a teacher's record service", "https://www.gov.uk/guidance/check-a-teachers-record")
 
       safe_join(["Yes", %(Use the #{link} to get more information.).html_safe], tag.br)
     else
@@ -71,6 +71,6 @@ module ApplicationHelper
   end
 
   def govuk_html_element(&block)
-    tag.html(lang: 'en', class: %w[govuk-template govuk-template--rebranded], &block)
+    tag.html(lang: "en", class: %w[govuk-template govuk-template--rebranded], &block)
   end
 end

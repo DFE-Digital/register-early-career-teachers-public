@@ -18,7 +18,7 @@ closure_events = %w[
 
 Event.transaction do
   Event
-    .where(created_at: since_go_live_date, event_type: 'appropriate_body_claims_teacher')
+    .where(created_at: since_go_live_date, event_type: "appropriate_body_claims_teacher")
     .find_each { |e| e.update!(happened_at: e.induction_period.started_on) }
 
   Event

@@ -6,8 +6,8 @@ module API::SchoolPartnerships
     attribute :school_partnership_id
     attribute :delivery_partner_api_id
 
-    validates :school_partnership_id, presence: { message: "Enter a '#/school_partnership_id'." }
-    validates :delivery_partner_api_id, presence: { message: "Enter a '#/delivery_partner_api_id'." }
+    validates :school_partnership_id, presence: {message: "Enter a '#/school_partnership_id'."}
+    validates :delivery_partner_api_id, presence: {message: "Enter a '#/delivery_partner_api_id'."}
     validate :delivery_partner_exists
     validate :school_partnership_exists
     validate :lead_provider_delivery_partnership_exists
@@ -22,7 +22,7 @@ module API::SchoolPartnerships
       ).update
     end
 
-  private
+    private
 
     def school_partnership
       @school_partnership ||= SchoolPartnership.find_by(id: school_partnership_id) if school_partnership_id

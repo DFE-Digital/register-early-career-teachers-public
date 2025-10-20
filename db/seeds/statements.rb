@@ -1,7 +1,7 @@
 STATEMENT_STATE_COLOURS = {
   open: :blue,
   payable: :cyan,
-  paid: :green,
+  paid: :green
 }.freeze
 
 OUTPUT_FEE_MONTHS = [1, 4, 8, 10].freeze
@@ -28,7 +28,7 @@ def describe_group_of_statements(lead_provider, statements, month_col_width: 15,
         offset = coloured_statuses.sum(&:length) - statuses.sum(&:length)
         row << coloured_statuses.join(", ").rjust(year_col_width + offset)
       else
-        row << 'none'.rjust(year_col_width)
+        row << "none".rjust(year_col_width)
       end
     end
 
@@ -51,12 +51,12 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
       payment_date = Date.new(year, month, 25)
       fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
       status = if payment_date.past? && fee_type == "output"
-                 :paid
-               elsif deadline_date.past?
-                 :payable
-               else
-                 :open
-               end
+        :paid
+      elsif deadline_date.past?
+        :payable
+      else
+        :open
+      end
 
       FactoryBot.create(
         :statement,

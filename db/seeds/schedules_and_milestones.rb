@@ -3,22 +3,22 @@ def describe_schedule_and_milestones(schedule:, year:, milestones:)
     .map { |m| m[:declaration_type] }
     .map do |dt|
       case dt
-      when 'started'
+      when "started"
         Colourize.text(shorten(dt), :green)
       when /retained/
         Colourize.text(shorten(dt), :yellow)
-      when 'completed'
+      when "completed"
         Colourize.text(shorten(dt), :red)
       when /extended/
         Colourize.text(shorten(dt), :cyan)
       end
     end
 
-  print_seed_info("Added schedule #{colourize_year(year)} - #{schedule.identifier} (#{milestone_description.join(', ')})", indent: 2)
+  print_seed_info("Added schedule #{colourize_year(year)} - #{schedule.identifier} (#{milestone_description.join(", ")})", indent: 2)
 end
 
 def colourize_year(year)
-  (year.odd?) ? Colourize.text(year, :magenta) : year
+  year.odd? ? Colourize.text(year, :magenta) : year
 end
 
 def shorten(declaration_type)
@@ -29,17 +29,17 @@ def shorten(declaration_type)
 end
 
 def build(identifier:, contract_period_year:, start_date:)
-  _, type, = identifier.split('-')
+  _, type, = identifier.split("-")
 
   {
     identifier:,
     contract_period_year:,
-    milestones: declaration_types(type).map { |declaration_type| { declaration_type:, start_date:, milestone_date: nil } }
+    milestones: declaration_types(type).map { |declaration_type| {declaration_type:, start_date:, milestone_date: nil} }
   }
 end
 
 def declaration_types(type)
-  (type == 'extended') ? started_to_extended_3 : started_to_completed
+  (type == "extended") ? started_to_extended_3 : started_to_completed
 end
 
 def started_to_extended_3
@@ -78,36 +78,36 @@ def schedule_and_milestone_data
       identifier: "ecf-standard-september",
       contract_period_year: 2021,
       milestones: [
-        { declaration_type: "started", start_date: "2021-11-30", milestone_date: "2021-11-30" },
-        { declaration_type: "retained-1", start_date: "2022-02-28", milestone_date: "2022-01-31" },
-        { declaration_type: "retained-2", start_date: "2022-05-31", milestone_date: "2022-04-30" },
-        { declaration_type: "retained-3", start_date: "2022-10-31", milestone_date: "2022-09-30" },
-        { declaration_type: "retained-4", start_date: "2023-02-28", milestone_date: "2023-01-31" },
-        { declaration_type: "completed", start_date: "2023-05-31", milestone_date: "2023-04-30" }
+        {declaration_type: "started", start_date: "2021-11-30", milestone_date: "2021-11-30"},
+        {declaration_type: "retained-1", start_date: "2022-02-28", milestone_date: "2022-01-31"},
+        {declaration_type: "retained-2", start_date: "2022-05-31", milestone_date: "2022-04-30"},
+        {declaration_type: "retained-3", start_date: "2022-10-31", milestone_date: "2022-09-30"},
+        {declaration_type: "retained-4", start_date: "2023-02-28", milestone_date: "2023-01-31"},
+        {declaration_type: "completed", start_date: "2023-05-31", milestone_date: "2023-04-30"}
       ]
     },
     {
       identifier: "ecf-standard-january",
       contract_period_year: 2021,
       milestones: [
-        { declaration_type: "started", start_date: "2022-02-28", milestone_date: "2022-01-31" },
-        { declaration_type: "retained-1", start_date: "2022-05-31", milestone_date: "2022-04-30" },
-        { declaration_type: "retained-2", start_date: "2022-10-31", milestone_date: "2022-09-30" },
-        { declaration_type: "retained-3", start_date: "2023-02-28", milestone_date: "2023-01-31" },
-        { declaration_type: "retained-4", start_date: "2023-05-31", milestone_date: "2023-04-30" },
-        { declaration_type: "completed", start_date: "2023-11-30", milestone_date: "2023-09-30" }
+        {declaration_type: "started", start_date: "2022-02-28", milestone_date: "2022-01-31"},
+        {declaration_type: "retained-1", start_date: "2022-05-31", milestone_date: "2022-04-30"},
+        {declaration_type: "retained-2", start_date: "2022-10-31", milestone_date: "2022-09-30"},
+        {declaration_type: "retained-3", start_date: "2023-02-28", milestone_date: "2023-01-31"},
+        {declaration_type: "retained-4", start_date: "2023-05-31", milestone_date: "2023-04-30"},
+        {declaration_type: "completed", start_date: "2023-11-30", milestone_date: "2023-09-30"}
       ]
     },
     {
       identifier: "ecf-standard-april",
       contract_period_year: 2021,
       milestones: [
-        { declaration_type: "started", start_date: "2022-05-31", milestone_date: "2022-05-31" },
-        { declaration_type: "retained-1", start_date: "2022-10-31", milestone_date: "2022-09-30" },
-        { declaration_type: "retained-2", start_date: "2023-02-28", milestone_date: "2023-01-31" },
-        { declaration_type: "retained-3", start_date: "2023-05-31", milestone_date: "2023-04-30" },
-        { declaration_type: "retained-4", start_date: "2023-11-30", milestone_date: "2023-09-30" },
-        { declaration_type: "completed", start_date: "2024-02-28", milestone_date: "2024-01-31" }
+        {declaration_type: "started", start_date: "2022-05-31", milestone_date: "2022-05-31"},
+        {declaration_type: "retained-1", start_date: "2022-10-31", milestone_date: "2022-09-30"},
+        {declaration_type: "retained-2", start_date: "2023-02-28", milestone_date: "2023-01-31"},
+        {declaration_type: "retained-3", start_date: "2023-05-31", milestone_date: "2023-04-30"},
+        {declaration_type: "retained-4", start_date: "2023-11-30", milestone_date: "2023-09-30"},
+        {declaration_type: "completed", start_date: "2024-02-28", milestone_date: "2024-01-31"}
       ]
     },
 
@@ -137,36 +137,36 @@ def schedule_and_milestone_data
       identifier: "ecf-standard-september",
       contract_period_year: 2022,
       milestones: [
-        { declaration_type: "started", start_date: "2022-11-30", milestone_date: "2022-12-31" },
-        { declaration_type: "retained-1", start_date: "2023-04-30", milestone_date: "2023-03-31" },
-        { declaration_type: "retained-2", start_date: "2023-08-31", milestone_date: "2023-07-31" },
-        { declaration_type: "retained-3", start_date: "2024-01-31", milestone_date: "2023-12-31" },
-        { declaration_type: "retained-4", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-        { declaration_type: "completed", start_date: "2024-08-31", milestone_date: "2024-07-31" }
+        {declaration_type: "started", start_date: "2022-11-30", milestone_date: "2022-12-31"},
+        {declaration_type: "retained-1", start_date: "2023-04-30", milestone_date: "2023-03-31"},
+        {declaration_type: "retained-2", start_date: "2023-08-31", milestone_date: "2023-07-31"},
+        {declaration_type: "retained-3", start_date: "2024-01-31", milestone_date: "2023-12-31"},
+        {declaration_type: "retained-4", start_date: "2024-04-30", milestone_date: "2024-03-31"},
+        {declaration_type: "completed", start_date: "2024-08-31", milestone_date: "2024-07-31"}
       ]
     },
     {
       identifier: "ecf-standard-january",
       contract_period_year: 2022,
       milestones: [
-        { declaration_type: "started", start_date: "2023-04-30", milestone_date: "2023-03-31" },
-        { declaration_type: "retained-1", start_date: "2023-08-31", milestone_date: "2023-07-31" },
-        { declaration_type: "retained-2", start_date: "2024-01-31", milestone_date: "2023-12-31" },
-        { declaration_type: "retained-3", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-        { declaration_type: "retained-4", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-        { declaration_type: "completed", start_date: "2025-01-31", milestone_date: "2024-12-31" }
+        {declaration_type: "started", start_date: "2023-04-30", milestone_date: "2023-03-31"},
+        {declaration_type: "retained-1", start_date: "2023-08-31", milestone_date: "2023-07-31"},
+        {declaration_type: "retained-2", start_date: "2024-01-31", milestone_date: "2023-12-31"},
+        {declaration_type: "retained-3", start_date: "2024-04-30", milestone_date: "2024-03-31"},
+        {declaration_type: "retained-4", start_date: "2024-08-31", milestone_date: "2024-07-31"},
+        {declaration_type: "completed", start_date: "2025-01-31", milestone_date: "2024-12-31"}
       ]
     },
     {
       identifier: "ecf-standard-april",
       contract_period_year: 2022,
       milestones: [
-        { declaration_type: "started", start_date: "2023-08-31", milestone_date: "2023-07-31" },
-        { declaration_type: "retained-1", start_date: "2024-01-31", milestone_date: "2023-12-31" },
-        { declaration_type: "retained-2", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-        { declaration_type: "retained-3", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-        { declaration_type: "retained-4", start_date: "2025-01-31", milestone_date: "2024-12-31" },
-        { declaration_type: "completed", start_date: "2025-04-30", milestone_date: "2025-03-31" }
+        {declaration_type: "started", start_date: "2023-08-31", milestone_date: "2023-07-31"},
+        {declaration_type: "retained-1", start_date: "2024-01-31", milestone_date: "2023-12-31"},
+        {declaration_type: "retained-2", start_date: "2024-04-30", milestone_date: "2024-03-31"},
+        {declaration_type: "retained-3", start_date: "2024-08-31", milestone_date: "2024-07-31"},
+        {declaration_type: "retained-4", start_date: "2025-01-31", milestone_date: "2024-12-31"},
+        {declaration_type: "completed", start_date: "2025-04-30", milestone_date: "2025-03-31"}
       ]
     },
 
@@ -194,36 +194,36 @@ def schedule_and_milestone_data
       identifier: "ecf-standard-september",
       contract_period_year: 2023,
       milestones: [
-        { declaration_type: "started", start_date: "2023-11-30", milestone_date: "2023-12-31" },
-        { declaration_type: "retained-1", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-        { declaration_type: "retained-2", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-        { declaration_type: "retained-3", start_date: "2025-01-31", milestone_date: "2024-12-31" },
-        { declaration_type: "retained-4", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-        { declaration_type: "completed", start_date: "2025-08-31", milestone_date: "2025-07-31" }
+        {declaration_type: "started", start_date: "2023-11-30", milestone_date: "2023-12-31"},
+        {declaration_type: "retained-1", start_date: "2024-04-30", milestone_date: "2024-03-31"},
+        {declaration_type: "retained-2", start_date: "2024-08-31", milestone_date: "2024-07-31"},
+        {declaration_type: "retained-3", start_date: "2025-01-31", milestone_date: "2024-12-31"},
+        {declaration_type: "retained-4", start_date: "2025-04-30", milestone_date: "2025-03-31"},
+        {declaration_type: "completed", start_date: "2025-08-31", milestone_date: "2025-07-31"}
       ]
     },
     {
       identifier: "ecf-standard-january",
       contract_period_year: 2023,
       milestones: [
-        { declaration_type: "started", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-        { declaration_type: "retained-1", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-        { declaration_type: "retained-2", start_date: "2025-01-31", milestone_date: "2024-12-31" },
-        { declaration_type: "retained-3", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-        { declaration_type: "retained-4", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-        { declaration_type: "completed", start_date: "2026-01-31", milestone_date: "2025-12-31" }
+        {declaration_type: "started", start_date: "2024-04-30", milestone_date: "2024-03-31"},
+        {declaration_type: "retained-1", start_date: "2024-08-31", milestone_date: "2024-07-31"},
+        {declaration_type: "retained-2", start_date: "2025-01-31", milestone_date: "2024-12-31"},
+        {declaration_type: "retained-3", start_date: "2025-04-30", milestone_date: "2025-03-31"},
+        {declaration_type: "retained-4", start_date: "2025-08-31", milestone_date: "2025-07-31"},
+        {declaration_type: "completed", start_date: "2026-01-31", milestone_date: "2025-12-31"}
       ]
     },
     {
       identifier: "ecf-standard-april",
       contract_period_year: 2023,
       milestones: [
-        { declaration_type: "started", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-        { declaration_type: "retained-1", start_date: "2025-01-31", milestone_date: "2024-12-31" },
-        { declaration_type: "retained-2", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-        { declaration_type: "retained-3", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-        { declaration_type: "retained-4", start_date: "2026-01-31", milestone_date: "2025-12-31" },
-        { declaration_type: "completed", start_date: "2026-04-30", milestone_date: "2026-03-31" }
+        {declaration_type: "started", start_date: "2024-08-31", milestone_date: "2024-07-31"},
+        {declaration_type: "retained-1", start_date: "2025-01-31", milestone_date: "2024-12-31"},
+        {declaration_type: "retained-2", start_date: "2025-04-30", milestone_date: "2025-03-31"},
+        {declaration_type: "retained-3", start_date: "2025-08-31", milestone_date: "2025-07-31"},
+        {declaration_type: "retained-4", start_date: "2026-01-31", milestone_date: "2025-12-31"},
+        {declaration_type: "completed", start_date: "2026-04-30", milestone_date: "2026-03-31"}
       ]
     },
 
@@ -252,36 +252,36 @@ def schedule_and_milestone_data
       identifier: "ecf-standard-september",
       contract_period_year: 2024,
       milestones: [
-        { declaration_type: "started", start_date: "2024-11-30", milestone_date: "2024-12-31" },
-        { declaration_type: "retained-1", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-        { declaration_type: "retained-2", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-        { declaration_type: "retained-3", start_date: "2026-01-31", milestone_date: "2025-12-31" },
-        { declaration_type: "retained-4", start_date: "2026-04-30", milestone_date: "2026-03-31" },
-        { declaration_type: "completed", start_date: "2026-08-31", milestone_date: "2026-07-31" }
+        {declaration_type: "started", start_date: "2024-11-30", milestone_date: "2024-12-31"},
+        {declaration_type: "retained-1", start_date: "2025-04-30", milestone_date: "2025-03-31"},
+        {declaration_type: "retained-2", start_date: "2025-08-31", milestone_date: "2025-07-31"},
+        {declaration_type: "retained-3", start_date: "2026-01-31", milestone_date: "2025-12-31"},
+        {declaration_type: "retained-4", start_date: "2026-04-30", milestone_date: "2026-03-31"},
+        {declaration_type: "completed", start_date: "2026-08-31", milestone_date: "2026-07-31"}
       ]
     },
     {
       identifier: "ecf-standard-january",
       contract_period_year: 2024,
       milestones: [
-        { declaration_type: "started", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-        { declaration_type: "retained-1", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-        { declaration_type: "retained-2", start_date: "2026-01-31", milestone_date: "2025-12-31" },
-        { declaration_type: "retained-3", start_date: "2026-04-30", milestone_date: "2026-03-31" },
-        { declaration_type: "retained-4", start_date: "2026-08-31", milestone_date: "2026-07-31" },
-        { declaration_type: "completed", start_date: "2027-01-31", milestone_date: "2026-12-31" }
+        {declaration_type: "started", start_date: "2025-04-30", milestone_date: "2025-03-31"},
+        {declaration_type: "retained-1", start_date: "2025-08-31", milestone_date: "2025-07-31"},
+        {declaration_type: "retained-2", start_date: "2026-01-31", milestone_date: "2025-12-31"},
+        {declaration_type: "retained-3", start_date: "2026-04-30", milestone_date: "2026-03-31"},
+        {declaration_type: "retained-4", start_date: "2026-08-31", milestone_date: "2026-07-31"},
+        {declaration_type: "completed", start_date: "2027-01-31", milestone_date: "2026-12-31"}
       ]
     },
     {
       identifier: "ecf-standard-april",
       contract_period_year: 2024,
       milestones: [
-        { declaration_type: "started", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-        { declaration_type: "retained-1", start_date: "2026-01-31", milestone_date: "2025-12-31" },
-        { declaration_type: "retained-2", start_date: "2026-04-30", milestone_date: "2026-03-31" },
-        { declaration_type: "retained-3", start_date: "2026-08-31", milestone_date: "2026-07-31" },
-        { declaration_type: "retained-4", start_date: "2027-01-31", milestone_date: "2026-12-31" },
-        { declaration_type: "completed", start_date: "2027-04-30", milestone_date: "2027-03-31" }
+        {declaration_type: "started", start_date: "2025-08-31", milestone_date: "2025-07-31"},
+        {declaration_type: "retained-1", start_date: "2026-01-31", milestone_date: "2025-12-31"},
+        {declaration_type: "retained-2", start_date: "2026-04-30", milestone_date: "2026-03-31"},
+        {declaration_type: "retained-3", start_date: "2026-08-31", milestone_date: "2026-07-31"},
+        {declaration_type: "retained-4", start_date: "2027-01-31", milestone_date: "2026-12-31"},
+        {declaration_type: "completed", start_date: "2027-04-30", milestone_date: "2027-03-31"}
       ]
     },
 
@@ -309,7 +309,7 @@ def schedule_and_milestone_data
 
     build(identifier: "ecf-standard-september", contract_period_year: 2025, start_date: "2025-06-01"),
     build(identifier: "ecf-standard-january", contract_period_year: 2025, start_date: "2026-01-01"),
-    build(identifier: "ecf-standard-april", contract_period_year: 2025, start_date: "2026-04-01"),
+    build(identifier: "ecf-standard-april", contract_period_year: 2025, start_date: "2026-04-01")
   ]
 end
 
@@ -325,7 +325,7 @@ schedule_and_milestone_data.sort_by { |sd| [sd[:contract_period_year], sd[:ident
   ).tap do |schedule|
     describe_schedule_and_milestones(schedule:, year: schedule_data[:contract_period_year], milestones: schedule_data[:milestones])
 
-    milestones << schedule_data[:milestones].map { |m| { **m, schedule_id: schedule.id } }
+    milestones << schedule_data[:milestones].map { |m| {**m, schedule_id: schedule.id} }
   end
 end
 

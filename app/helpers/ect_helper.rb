@@ -6,7 +6,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_delivery_partner_name(ect)
-    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || 'Their lead provider will confirm this'
+    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || "Their lead provider will confirm this"
   end
 
   # @param ect [ECTAtSchoolPeriod]
@@ -36,7 +36,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def ect_start_date(ect)
-    date_as_hash = { 1 => ect.started_on.year, 2 => ect.started_on.month, 3 => ect.started_on.day }
+    date_as_hash = {1 => ect.started_on.year, 2 => ect.started_on.month, 3 => ect.started_on.day}
     Schools::Validation::ECTStartDate.new(date_as_hash:).formatted_date
   end
 
@@ -69,7 +69,7 @@ module ECTHelper
     eligible_mentors_for_ect?(ect) ? new_schools_ect_mentorship_path(ect) : schools_ects_home_path
   end
 
-private
+  private
 
   def assign_or_create_mentor_link(ect)
     govuk_link_to("Assign a mentor for this ECT", assign_or_create_mentor_path(ect), no_visited_state: true)

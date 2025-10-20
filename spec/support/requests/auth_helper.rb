@@ -1,13 +1,13 @@
 module AuthHelper
   def sign_in_as(user_type,
-                 method: :persona,
-                 appropriate_body: nil,
-                 school: nil,
-                 user: nil,
-                 email: Faker::Internet.email,
-                 first_name: Faker::Name.first_name,
-                 last_name: Faker::Name.last_name,
-                 uid: Faker::Internet.uuid)
+    method: :persona,
+    appropriate_body: nil,
+    school: nil,
+    user: nil,
+    email: Faker::Internet.email,
+    first_name: Faker::Name.first_name,
+    last_name: Faker::Name.last_name,
+    uid: Faker::Internet.uuid)
     Rails.logger.info("logging in as #{user_type}")
 
     name = "#{first_name} #{last_name}"
@@ -19,7 +19,7 @@ module AuthHelper
     end
   end
 
-private
+  private
 
   def sign_in_with_dfe_sign_in(user_type, email:, first_name:, last_name:, uid:)
     case user_type
@@ -31,13 +31,13 @@ private
   end
 
   def sign_in_with_otp(user)
-    post(otp_sign_in_path, params: { sessions_otp_sign_in_form: { email: user.email } })
+    post(otp_sign_in_path, params: {sessions_otp_sign_in_form: {email: user.email}})
     post(otp_sign_in_verify_path,
-         params: {
-           sessions_otp_sign_in_form: {
-             code: Sessions::OneTimePassword.new(user:).generate
-           }
-         })
+      params: {
+        sessions_otp_sign_in_form: {
+          code: Sessions::OneTimePassword.new(user:).generate
+        }
+      })
   end
 
   def sign_in_with_persona(user_type, appropriate_body:, user:, school:, email:, name:)
@@ -55,10 +55,10 @@ private
     Rails.logger.debug("Signing in with dfe sign in as appropriate body user")
     allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: %w[AppropriateBodyUser]))
     omniauth_hash = mock_dfe_sign_in_provider!(email:,
-                                               uid:,
-                                               first_name:,
-                                               last_name:,
-                                               organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+      uid:,
+      first_name:,
+      last_name:,
+      organisation_id: appropriate_body.dfe_sign_in_organisation_id)
 
     post("/auth/dfe/callback")
     stop_mocking_dfe_sign_in_provider!
@@ -70,10 +70,10 @@ private
     Rails.logger.debug("Signing in with dfe sign in as appropriate body user")
     allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: %w[SchoolUser]))
     omniauth_hash = mock_dfe_sign_in_provider!(email:,
-                                               uid:,
-                                               first_name:,
-                                               last_name:,
-                                               organisation_urn: school.urn)
+      uid:,
+      first_name:,
+      last_name:,
+      organisation_urn: school.urn)
 
     post("/auth/dfe/callback")
     stop_mocking_dfe_sign_in_provider!
@@ -83,21 +83,21 @@ private
 
   def sign_in_with_appropriate_body_persona(appropriate_body:, email:, name:)
     Rails.logger.debug("Signing in with persona as appropriate body user")
-    post("/auth/persona/callback", params: { email:, name:, appropriate_body_id: appropriate_body.id })
+    post("/auth/persona/callback", params: {email:, name:, appropriate_body_id: appropriate_body.id})
 
     Sessions::Users::AppropriateBodyPersona.new(appropriate_body_id: appropriate_body.id, email:, name:)
   end
 
   def sign_in_with_dfe_persona(user:)
     Rails.logger.debug("Signing in with persona as dfe user")
-    post('/auth/persona/callback', params: { email: user.email, name: user.name, dfe_staff: true })
+    post("/auth/persona/callback", params: {email: user.email, name: user.name, dfe_staff: true})
 
     Sessions::Users::DfEPersona.new(email: user.email)
   end
 
   def sign_in_with_school_persona(school:, name:, email:)
     Rails.logger.debug("Signing in with persona as school user")
-    post("/auth/persona/callback", params: { email:, name:, school_urn: school.urn })
+    post("/auth/persona/callback", params: {email:, name:, school_urn: school.urn})
 
     Sessions::Users::SchoolPersona.new(school_urn: school.urn, email:, name:)
   end

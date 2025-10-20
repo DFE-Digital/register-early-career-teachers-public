@@ -32,11 +32,11 @@ RSpec.describe "Create adjustment for statement" do
   end
 
   def then_i_see_adjustments_section
-    expect(page.locator('#adjustments.govuk-summary-card h2').text_content).to eq("Additional adjustments")
+    expect(page.locator("#adjustments.govuk-summary-card h2").text_content).to eq("Additional adjustments")
   end
 
   def when_i_click_link(name)
-    page.get_by_role('link', name:).click
+    page.get_by_role("link", name:).click
   end
 
   def then_i_see(string)
@@ -51,7 +51,7 @@ RSpec.describe "Create adjustment for statement" do
 
   def and_i_click_button(name)
     perform_enqueued_jobs do
-      page.get_by_role('button', name:).click
+      page.get_by_role("button", name:).click
     end
   end
 

@@ -1,9 +1,9 @@
 class AddTypeToAppropriateBodies < ActiveRecord::Migration[8.0]
   def up
-    rename_enum_value :appropriate_body_type, from: 'teaching_induction_panel', to: 'national'
-    add_enum_value :appropriate_body_type, 'local_authority', before: 'national', if_not_exists: true
+    rename_enum_value :appropriate_body_type, from: "teaching_induction_panel", to: "national"
+    add_enum_value :appropriate_body_type, "local_authority", before: "national", if_not_exists: true
 
-    add_column :appropriate_bodies, :body_type, :appropriate_body_type, default: 'teaching_school_hub'
+    add_column :appropriate_bodies, :body_type, :appropriate_body_type, default: "teaching_school_hub"
 
     execute <<-SQL.squish
       UPDATE appropriate_bodies
@@ -25,6 +25,6 @@ class AddTypeToAppropriateBodies < ActiveRecord::Migration[8.0]
     add_column :ect_at_school_periods, :appropriate_body_type, :appropriate_body_type
     remove_column :appropriate_bodies, :body_type, :appropriate_body_type
 
-    rename_enum_value :appropriate_body_type, from: 'national', to: 'teaching_induction_panel'
+    rename_enum_value :appropriate_body_type, from: "national", to: "teaching_induction_panel"
   end
 end

@@ -44,11 +44,11 @@ Rails.application.configure do
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
-  config.ssl_options = { redirect: { exclude: ->(request) { request.path.include?("/healthcheck") } } }
+  config.ssl_options = {redirect: {exclude: ->(request) { request.path.include?("/healthcheck") }}}
 
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new($stdout)
-    .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
+    .tap { |logger| logger.formatter = ::Logger::Formatter.new }
     .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
 
   # Prepend all log lines with the following tags.
@@ -60,7 +60,7 @@ Rails.application.configure do
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Use a different cache store in production.
-  config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_CACHE_URL") }
+  config.cache_store = :redis_cache_store, {url: ENV.fetch("REDIS_CACHE_URL")}
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :solid_queue
@@ -71,14 +71,14 @@ Rails.application.configure do
   # GOVUK Notify
   config.action_mailer.delivery_method = :notify
   config.action_mailer.notify_settings = {
-    api_key: ENV.fetch("GOVUK_NOTIFY_API_KEY"),
+    api_key: ENV.fetch("GOVUK_NOTIFY_API_KEY")
   }
 
   # For review apps extract everything but the last segment.
   #   Ex: "cpd-ec2-review-154-web-9cc9fdbbf-gkd22" => cpd-ec2-review-154-web.test.teacherservices.cloud
   #
   # For the rest of environments get the value from ENV['SERVICE_URL']
-  config.action_mailer.default_url_options = { host: ENV['SERVICE_URL'] || ENV['HOSTNAME']&.split(/-(web|worker)/)&.first&.concat('-web.test.teacherservices.cloud') }
+  config.action_mailer.default_url_options = {host: ENV["SERVICE_URL"] || ENV["HOSTNAME"]&.split(/-(web|worker)/)&.first&.concat("-web.test.teacherservices.cloud")}
 
   config.action_mailer.perform_caching = false
 

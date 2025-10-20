@@ -60,8 +60,8 @@ RSpec.describe ParityCheck::RequestDispatcher do
     describe "request dispatch concurrency" do
       before do
         stub_const("#{described_class}::REQUEST_PRIORITY_MODE", {
-          %i[get] => { concurrent: get_concurrency },
-          %i[post put] => { concurrent: post_put_concurrency }
+          %i[get] => {concurrent: get_concurrency},
+          %i[post put] => {concurrent: post_put_concurrency}
         })
       end
 

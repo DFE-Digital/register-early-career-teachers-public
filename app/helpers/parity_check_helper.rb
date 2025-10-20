@@ -12,7 +12,7 @@ module ParityCheckHelper
 
     [
       mode.new(value: :concurrent, name: "Concurrent", description: "Send requests in parallel for a faster run."),
-      mode.new(value: :sequential, name: "Sequential", description: "Send requests one at a time for accurate performance benchmarking."),
+      mode.new(value: :sequential, name: "Sequential", description: "Send requests one at a time for accurate performance benchmarking.")
     ]
   end
 
@@ -27,28 +27,28 @@ module ParityCheckHelper
 
   def match_rate_tag(match_rate)
     colour = case match_rate
-             when 0..49
-               "red"
-             when 50..74
-               "orange"
-             when 75..99
-               "yellow"
-             else
-               "green"
-             end
+    when 0..49
+      "red"
+    when 50..74
+      "orange"
+    when 75..99
+      "yellow"
+    else
+      "green"
+    end
 
     govuk_tag(text: "#{match_rate}%", colour:)
   end
 
   def status_code_tag(status_code)
     colour = case status_code
-             when 0...300
-               "green"
-             when 300...400
-               "yellow"
-             else
-               "red"
-             end
+    when 0...300
+      "green"
+    when 300...400
+      "yellow"
+    else
+      "red"
+    end
 
     govuk_tag(text: status_code, colour:)
   end
@@ -69,7 +69,7 @@ module ParityCheckHelper
   end
 
   def id_count_in_words(ids)
-    %(#{number_with_delimiter(ids.count)} #{'ID'.pluralize(ids.count)})
+    %(#{number_with_delimiter(ids.count)} #{"ID".pluralize(ids.count)})
   end
 
   def comparison_in_words(matching)

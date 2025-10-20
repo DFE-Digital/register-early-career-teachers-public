@@ -17,7 +17,7 @@ RSpec.describe Migrators::MentorAtSchoolPeriod do
     end
 
     describe "#migrate!" do
-      it 'creates a MentorAtSchoolPeriod records for each school period found in the ECF induction records' do
+      it "creates a MentorAtSchoolPeriod records for each school period found in the ECF induction records" do
         instance.migrate!
 
         Migration::TeacherProfile.find_each do |teacher_profile|

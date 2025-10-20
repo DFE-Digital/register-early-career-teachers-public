@@ -1,5 +1,4 @@
 class RemoveNotNullFromTRSTeacherNames < ActiveRecord::Migration[8.0]
-  # rubocop:disable Rails/BulkChangeTable
   def up
     remove_column :teachers, :search, :tsvector, type: :tsvector, as: "to_tsvector('unaccented', #{tsvector_columns})", stored: true
     change_column :teachers, :trs_first_name, :string, null: true
@@ -19,5 +18,4 @@ class RemoveNotNullFromTRSTeacherNames < ActiveRecord::Migration[8.0]
   def tsvector_columns
     %w[trs_first_name trs_last_name corrected_name].map { |col| "coalesce(#{col}, '')" }.join(" || ' ' || ")
   end
-  # rubocop:enable Rails/BulkChangeTable
 end

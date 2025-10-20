@@ -8,7 +8,7 @@ module Migration
 
   class SchoolPeriod
     attr_accessor :urn, :start_date, :end_date, :start_source_id, :end_source_id,
-                  :training_programme, :lead_provider_id
+      :training_programme, :lead_provider_id
 
     def initialize(urn:, start_date:, end_date:, start_source_id:, end_source_id:, training_programme:)
       @urn = urn

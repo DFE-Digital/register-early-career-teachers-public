@@ -43,7 +43,7 @@ module Admin
         teacher.teacher_migration_failures.any?
     end
 
-  private
+    private
 
     def teacher
       __getobj__

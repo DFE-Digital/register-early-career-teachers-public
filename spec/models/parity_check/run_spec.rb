@@ -55,7 +55,7 @@ describe ParityCheck::Run do
         in_progress_run:,
         completed_runs: described_class.completed,
         pending_runs: described_class.pending,
-        failed_runs: described_class.failed,
+        failed_runs: described_class.failed
       }
       html = "<div>sidebar content</div>"
       allow(::Migration::ParityChecksController.renderer).to receive(:render).with(partial:, locals:) { html }
@@ -198,7 +198,7 @@ describe ParityCheck::Run do
       [
         FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching]),
         FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching different]),
-        FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching]),
+        FactoryBot.create(:parity_check_request, :completed, response_types: %i[matching])
       ]
     end
     let(:run) { FactoryBot.create(:parity_check_run, :completed, requests:) }

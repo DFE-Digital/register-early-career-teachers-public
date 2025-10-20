@@ -30,7 +30,7 @@ module Sessions
           author_email: email,
           author_id: id,
           author_name: name,
-          author_type: USER_TYPE,
+          author_type: USER_TYPE
         }
       end
 
@@ -45,7 +45,7 @@ module Sessions
         }
       end
 
-    private
+      private
 
       def user_from(email)
         ::User.find_by(email:).tap do |user|

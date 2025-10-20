@@ -26,8 +26,8 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
 
   let(:contract_period_partnerships) do
     [
-      { contract_period: contract_period_2024, partnerships: partnerships_2024 },
-      { contract_period: contract_period_2025, partnerships: partnerships_2025 }
+      {contract_period: contract_period_2024, partnerships: partnerships_2024},
+      {contract_period: contract_period_2025, partnerships: partnerships_2025}
     ]
   end
 
@@ -79,8 +79,8 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
     context "when some contract periods have no partnerships" do
       let(:contract_period_partnerships) do
         [
-          { contract_period: contract_period_2024, partnerships: partnerships_2024 },
-          { contract_period: contract_period_2025, partnerships: [] }
+          {contract_period: contract_period_2024, partnerships: partnerships_2024},
+          {contract_period: contract_period_2025, partnerships: []}
         ]
       end
 

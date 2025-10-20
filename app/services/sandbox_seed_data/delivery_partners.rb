@@ -10,7 +10,7 @@ module SandboxSeedData
       NUMBER_OF_RECORDS.times { create_delivery_partner }
     end
 
-  private
+    private
 
     def create_delivery_partner
       delivery_partner = FactoryBot.build(:delivery_partner).tap do

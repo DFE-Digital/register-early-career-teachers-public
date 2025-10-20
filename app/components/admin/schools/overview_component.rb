@@ -18,7 +18,7 @@ class Admin::Schools::OverviewComponent < ApplicationComponent
   end
 
   def section_41_status
-    (school.section_41_approved?) ? 'Approved' : 'Not approved'
+    school.section_41_approved? ? "Approved" : "Not approved"
   end
 
   def establishment_type

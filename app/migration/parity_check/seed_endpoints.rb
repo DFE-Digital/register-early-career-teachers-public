@@ -10,7 +10,7 @@ module ParityCheck
       seed_endpoints!
     end
 
-  private
+    private
 
     def clear_endpoints!
       ParityCheck::Endpoint.destroy_all

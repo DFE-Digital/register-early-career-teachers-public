@@ -11,7 +11,7 @@ module ParityCheck
 
     attribute :mode, default: -> { "concurrent" }
 
-    validates :mode, presence: true, inclusion: { in: %w[concurrent sequential] }
+    validates :mode, presence: true, inclusion: {in: %w[concurrent sequential]}
     validates :state, uniqueness: true, if: -> { state == "in_progress" }
 
     scope :in_progress, -> { with_states(:in_progress) }
@@ -26,7 +26,7 @@ module ParityCheck
 
       state :completed do
         validate :all_requests_are_completed
-        validates :completed_at, comparison: { greater_than_or_equal_to: :started_at }
+        validates :completed_at, comparison: {greater_than_or_equal_to: :started_at}
       end
 
       event :in_progress do
@@ -87,7 +87,7 @@ module ParityCheck
         in_progress_run: ParityCheck::Run.in_progress.first,
         completed_runs: ParityCheck::Run.completed,
         pending_runs: ParityCheck::Run.pending,
-        failed_runs: ParityCheck::Run.failed,
+        failed_runs: ParityCheck::Run.failed
       }
 
       html = ::Migration::ParityChecksController.renderer.render(
@@ -98,7 +98,7 @@ module ParityCheck
       broadcast_update_to :run_states, html:, target: :run_states
     end
 
-  private
+    private
 
     def all_requests_are_completed
       errors.add(:requests, "Not all requests have been completed.") if requests.incomplete.any?

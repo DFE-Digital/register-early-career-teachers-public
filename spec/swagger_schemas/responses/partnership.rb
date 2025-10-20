@@ -4,7 +4,7 @@ PARTNERSHIP_RESPONSE = {
   required: %i[data],
   properties: {
     data: {
-      "$ref": "#/components/schemas/Partnership",
-    },
-  },
+      "$ref": "#/components/schemas/Partnership"
+    }
+  }
 }.freeze

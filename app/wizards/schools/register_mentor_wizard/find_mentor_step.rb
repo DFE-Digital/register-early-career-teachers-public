@@ -4,8 +4,8 @@ module Schools
       attr_accessor :trn, :date_of_birth
 
       validates :trn,
-                teacher_reference_number: true,
-                presence: { message: 'Enter the teacher reference number (TRN)' }
+        teacher_reference_number: true,
+        presence: {message: "Enter the teacher reference number (TRN)"}
       validates :date_of_birth, date_of_birth: true
 
       def self.permitted_params
@@ -22,7 +22,7 @@ module Schools
         :review_mentor_details
       end
 
-    private
+      private
 
       def formatted_trn
         @formatted_trn ||= Validation::TeacherReferenceNumber.new(trn).formatted_trn
@@ -30,7 +30,7 @@ module Schools
 
       def persist
         mentor.update(trn: formatted_trn,
-                      date_of_birth: date_of_birth.values.join("-"),
+          date_of_birth: date_of_birth.values.join("-"),
                       **trs_teacher.to_h)
       end
 

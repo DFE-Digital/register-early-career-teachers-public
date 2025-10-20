@@ -8,19 +8,19 @@ class GIAS::School < ApplicationRecord
 
   # Enums
   enum :funding_eligibility,
-       { eligible_for_fip: "eligible_for_fip",
-         eligible_for_cip: "eligible_for_cip",
-         ineligible: "ineligible" },
-       prefix: :funding,
-       validate: true
+    {eligible_for_fip: "eligible_for_fip",
+     eligible_for_cip: "eligible_for_cip",
+     ineligible: "ineligible"},
+    prefix: :funding,
+    validate: true
 
   enum :status,
-       { open: "open",
-         closed: "closed",
-         proposed_to_close: "proposed_to_close",
-         proposed_to_open: "proposed_to_open" },
-       suffix: true,
-       validate: true
+    {open: "open",
+     closed: "closed",
+     proposed_to_close: "proposed_to_close",
+     proposed_to_open: "proposed_to_open"},
+    suffix: true,
+    validate: true
 
   # Associations
   has_one :school, foreign_key: :urn, primary_key: :urn, inverse_of: :gias_school
@@ -28,34 +28,34 @@ class GIAS::School < ApplicationRecord
 
   # Validations
   validates :establishment_number,
-            numericality: { only_integer: true, allow_nil: true }
+    numericality: {only_integer: true, allow_nil: true}
 
   validates :local_authority_code,
-            numericality: { only_integer: true }
+    numericality: {only_integer: true}
 
   validates :name,
-            presence: true
+    presence: true
 
   validates :type_name,
-            inclusion: {
-              in: GIAS::Types::ALL_TYPES,
-              message: "is not a valid school type",
-            }
+    inclusion: {
+      in: GIAS::Types::ALL_TYPES,
+      message: "is not a valid school type"
+    }
 
   validates :ukprn,
-            numericality: {
-              only_integer: true,
-              allow_nil: true,
-            },
-            uniqueness: {
-              allow_nil: true,
-            }
+    numericality: {
+      only_integer: true,
+      allow_nil: true
+    },
+    uniqueness: {
+      allow_nil: true
+    }
 
   validates :urn,
-            numericality: {
-              only_integer: true,
-            },
-            uniqueness: true
+    numericality: {
+      only_integer: true
+    },
+    uniqueness: true
 
   # Scopes
   scope :search, ->(q) { where("gias_schools.search @@ websearch_to_tsquery('unaccented', ?)", q) }

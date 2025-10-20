@@ -4,26 +4,26 @@ class MentorshipPeriod < ApplicationRecord
 
   # Associations
   belongs_to :mentee,
-             class_name: "ECTAtSchoolPeriod",
-             foreign_key: :ect_at_school_period_id,
-             inverse_of: :mentorship_periods
+    class_name: "ECTAtSchoolPeriod",
+    foreign_key: :ect_at_school_period_id,
+    inverse_of: :mentorship_periods
 
   belongs_to :mentor,
-             class_name: "MentorAtSchoolPeriod",
-             foreign_key: :mentor_at_school_period_id,
-             inverse_of: :mentorship_periods
+    class_name: "MentorAtSchoolPeriod",
+    foreign_key: :mentor_at_school_period_id,
+    inverse_of: :mentorship_periods
 
   has_many :events
 
   # Validations
   validates :started_on,
-            presence: true
+    presence: true
 
   validates :ect_at_school_period_id,
-            presence: true
+    presence: true
 
   validates :mentor_at_school_period_id,
-            presence: true
+    presence: true
 
   validate :not_self_mentoring
   validate :mentee_distinct_period
@@ -43,7 +43,7 @@ class MentorshipPeriod < ApplicationRecord
     mentee.mentorship_periods.excluding(self)
   end
 
-private
+  private
 
   def enveloped_by_ect_at_school_period
     return if (mentee.started_on..mentee.finished_on).cover?(started_on..finished_on)
@@ -58,7 +58,7 @@ private
   end
 
   def mentee_distinct_period
-    overlap_validation(name: 'Mentee')
+    overlap_validation(name: "Mentee")
   end
 
   def not_self_mentoring

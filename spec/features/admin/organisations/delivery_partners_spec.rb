@@ -26,7 +26,7 @@ RSpec.describe "Admin organisations delivery partners" do
   end
 
   def when_i_click_organisations_on_the_top_menu
-    page.locator('section.govuk-service-navigation').get_by_role('link', name: 'Organisations').click
+    page.locator("section.govuk-service-navigation").get_by_role("link", name: "Organisations").click
   end
 
   def then_i_should_see_the_admin_organisations_page
@@ -34,7 +34,7 @@ RSpec.describe "Admin organisations delivery partners" do
   end
 
   def when_i_click_delivery_partners_link
-    page.locator('main.govuk-main-wrapper').get_by_role('link', name: 'Delivery partners').click
+    page.locator("main.govuk-main-wrapper").get_by_role("link", name: "Delivery partners").click
   end
 
   def then_i_should_see_the_admin_delivery_partners_page
@@ -42,7 +42,7 @@ RSpec.describe "Admin organisations delivery partners" do
   end
 
   def and_i_should_see_delivery_partners
-    table = page.locator('main.govuk-main-wrapper table.govuk-table')
+    table = page.locator("main.govuk-main-wrapper table.govuk-table")
     @delivery_partners.each do |lp|
       expect(table.get_by_text(lp.name)).to be_visible
     end
@@ -50,11 +50,11 @@ RSpec.describe "Admin organisations delivery partners" do
 
   def when_i_search_for_delivery_partner
     page.get_by_label("Search for delivery partner", exact: true).fill(@searchable_delivery_partner.name)
-    page.get_by_role('button', name: 'Search').click
+    page.get_by_role("button", name: "Search").click
   end
 
   def then_i_should_see_the_searched_delivery_partner
-    table = page.locator('main.govuk-main-wrapper table.govuk-table')
+    table = page.locator("main.govuk-main-wrapper table.govuk-table")
     expect(table.get_by_text(@searchable_delivery_partner.name)).to be_visible
     @delivery_partners.each do |lp|
       expect(table.get_by_text(lp.name)).not_to be_visible

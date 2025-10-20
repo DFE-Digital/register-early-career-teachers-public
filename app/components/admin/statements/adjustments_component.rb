@@ -4,7 +4,7 @@ module Admin
       delegate :number_to_pounds, to: :helpers
 
       delegate :adjustment_editable?,
-               to: :statement
+        to: :statement
 
       attr_accessor :statement
 

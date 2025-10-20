@@ -25,7 +25,7 @@ module Admin
         pending_induction_submission.save(context: :find_ect)
       end
 
-    private
+      private
 
       # @return [TRS::Teacher]
       def trs_teacher

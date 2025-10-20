@@ -16,7 +16,7 @@ module ParityCheck
     scope :incomplete, -> { without_state(:completed, :failed) }
     scope :failed, -> { with_state(:failed) }
     scope :queued_or_in_progress, -> { with_states(:queued, :in_progress) }
-    scope :with_method, ->(method:) { joins(:endpoint).where(endpoint: { method: }) }
+    scope :with_method, ->(method:) { joins(:endpoint).where(endpoint: {method:}) }
     scope :with_all_responses_matching, -> { joins(:responses).where.not(id: ParityCheck::Response.different.pluck(:request_id)).distinct }
     scope :with_lead_provider, ->(lead_provider) { where(lead_provider:) }
 
@@ -30,7 +30,7 @@ module ParityCheck
       end
 
       state :completed do
-        validates :completed_at, comparison: { greater_than_or_equal_to: :started_at }
+        validates :completed_at, comparison: {greater_than_or_equal_to: :started_at}
         validates :responses, presence: true
       end
 

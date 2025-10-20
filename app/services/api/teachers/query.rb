@@ -10,7 +10,7 @@ module API::Teachers
       training_status: :ignore,
       api_from_teacher_id: :ignore,
       updated_since: :ignore,
-      sort: { created_at: :asc }
+      sort: {created_at: :asc}
     )
       @lead_provider_id = lead_provider_id
       @scope = Teacher.distinct
@@ -39,7 +39,7 @@ module API::Teachers
       fail(ArgumentError, "id needed")
     end
 
-  private
+    private
 
     def preload_associations(results)
       results
@@ -54,14 +54,14 @@ module API::Teachers
             latest_ect_training_period: {
               school_partnership: [
                 :school,
-                { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
+                {lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider]}
               ],
               ect_at_school_period: []
             },
             latest_mentor_training_period: {
               school_partnership: [
                 :school,
-                { lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider] }
+                {lead_provider_delivery_partnership: %i[delivery_partner active_lead_provider]}
               ],
               mentor_at_school_period: []
             }
@@ -74,7 +74,7 @@ module API::Teachers
 
       @scope = scope
         .joins(:lead_provider_metadata)
-        .where(lead_provider_metadata: { lead_provider_id: })
+        .where(lead_provider_metadata: {lead_provider_id:})
         # Metadata exists for all lead provider/teacher combinations, but when
         # filtering by lead provider we only want teachers who have a training period
         # with that lead provider.
@@ -90,7 +90,7 @@ module API::Teachers
       return if ignore?(filter: contract_period_years)
 
       @scope = scope
-          .left_joins(
+        .left_joins(
             lead_provider_metadata: {
               latest_ect_training_period: {
                 school_partnership: {
@@ -104,22 +104,22 @@ module API::Teachers
               }
             }
           )
-          .where(
-            # The first where conditional is for ECTs and the second for mentors
-            # (using the alias names Rails creates for the join tables).
-            <<~SQL.squish,
-              active_lead_providers.contract_period_year IN (:years)
-              OR active_lead_providers_lead_provider_delivery_partnerships.contract_period_year IN (:years)
-            SQL
-            years: contract_period_years
-          )
+        .where(
+          # The first where conditional is for ECTs and the second for mentors
+          # (using the alias names Rails creates for the join tables).
+          <<~SQL.squish,
+            active_lead_providers.contract_period_year IN (:years)
+            OR active_lead_providers_lead_provider_delivery_partnerships.contract_period_year IN (:years)
+          SQL
+          years: contract_period_years
+        )
     end
 
     def where_training_status_is(training_status)
       return if ignore?(filter: training_status)
 
       @scope = scope
-          .left_joins(
+        .left_joins(
             lead_provider_metadata: %i[latest_ect_training_period latest_mentor_training_period]
           )
 
@@ -127,26 +127,26 @@ module API::Teachers
       # latest_mentor_training_period as latest_mentor_training_periods_metadata_teachers_lead_providers
       # (using the alias names Rails creates for the join tables).
       @scope = case training_status.to_sym
-               when :withdrawn
-                 scope.where(
-                   "training_periods.withdrawn_at IS NOT NULL
+      when :withdrawn
+        scope.where(
+          "training_periods.withdrawn_at IS NOT NULL
             OR latest_mentor_training_periods_metadata_teachers_lead_providers.withdrawn_at IS NOT NULL"
-                 )
-               when :deferred
-                 scope.where(
-                   "training_periods.deferred_at IS NOT NULL
+        )
+      when :deferred
+        scope.where(
+          "training_periods.deferred_at IS NOT NULL
             OR latest_mentor_training_periods_metadata_teachers_lead_providers.deferred_at IS NOT NULL"
-                 )
-               when :active
-                 scope.where(
-                   "(training_periods.id IS NOT NULL AND training_periods.withdrawn_at IS NULL AND training_periods.deferred_at IS NULL)
+        )
+      when :active
+        scope.where(
+          "(training_periods.id IS NOT NULL AND training_periods.withdrawn_at IS NULL AND training_periods.deferred_at IS NULL)
             OR (latest_mentor_training_periods_metadata_teachers_lead_providers.id IS NOT NULL AND
             latest_mentor_training_periods_metadata_teachers_lead_providers.deferred_at IS NULL AND
             latest_mentor_training_periods_metadata_teachers_lead_providers.withdrawn_at IS NULL)"
-                 )
-               else
-                 Teacher.none
-               end
+        )
+      else
+        Teacher.none
+      end
     end
 
     def where_api_from_teacher_id_is(api_from_teacher_id)
@@ -154,7 +154,7 @@ module API::Teachers
 
       @scope = scope
         .joins(:teacher_id_changes)
-        .where(teacher_id_changes: { api_from_teacher_id: })
+        .where(teacher_id_changes: {api_from_teacher_id:})
     end
 
     def where_updated_since(updated_since)

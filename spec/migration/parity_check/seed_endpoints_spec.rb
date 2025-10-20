@@ -2,7 +2,7 @@ RSpec.describe ParityCheck::SeedEndpoints do
   let(:enabled) { true }
   let(:instance) { described_class.new }
 
-  before { allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: }) }
+  before { allow(Rails.application.config).to receive(:parity_check).and_return({enabled:}) }
 
   describe "#plant!" do
     subject(:plant) { instance.plant! }
@@ -23,10 +23,10 @@ RSpec.describe ParityCheck::SeedEndpoints do
       expect { plant }.to change(ParityCheck::Endpoint, :count).by(4)
 
       expect(ParityCheck::Endpoint.all).to include(
-        have_attributes(method: :get, path: "/a-path", options: { foo: "bar" }),
+        have_attributes(method: :get, path: "/a-path", options: {foo: "bar"}),
         have_attributes(method: :get, path: "/another-path", options: {}),
-        have_attributes(method: :get, path: "/another-path", options: { corge: "grault" }),
-        have_attributes(method: :post, path: "/yet-another-path", options: { baz: "qux" })
+        have_attributes(method: :get, path: "/another-path", options: {corge: "grault"}),
+        have_attributes(method: :post, path: "/yet-another-path", options: {baz: "qux"})
       )
     end
 

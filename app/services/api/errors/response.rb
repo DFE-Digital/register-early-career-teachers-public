@@ -20,7 +20,7 @@ module API
         }
       end
 
-    private
+      private
 
       def mapper
         @mapper ||= API::Errors::Mapper.new

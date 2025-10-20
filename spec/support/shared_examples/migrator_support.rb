@@ -137,7 +137,7 @@ RSpec.shared_examples "a migrator" do |model, dependencies, multiple_workers: tr
 
     it "sets the started_at, total_count of the migration" do
       expect { migrate! }.to change { data_migration.reload.started_at }.from(nil).to(be_within(5.seconds).of(Time.zone.now))
-      .and(change(data_migration, :total_count).from(nil).to(2))
+        .and(change(data_migration, :total_count).from(nil).to(2))
     end
 
     it "increments the processed count" do

@@ -32,7 +32,7 @@ module AppropriateBodies
         end
       end
 
-    private
+      private
 
       def manage_extensions
         @manage_extensions ||= ::InductionExtensions::Manage.new(

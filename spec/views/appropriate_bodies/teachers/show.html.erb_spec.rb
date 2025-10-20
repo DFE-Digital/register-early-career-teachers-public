@@ -1,4 +1,4 @@
-RSpec.describe 'appropriate_bodies/teachers/show.html.erb' do
+RSpec.describe "appropriate_bodies/teachers/show.html.erb" do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -10,17 +10,17 @@ RSpec.describe 'appropriate_bodies/teachers/show.html.erb' do
     assign(:appropriate_body, appropriate_body)
   end
 
-  it 'shows a list of past induction periods' do
+  it "shows a list of past induction periods" do
     render
 
-    expect(rendered).to have_css('ul#past-induction-periods li', count: 2)
+    expect(rendered).to have_css("ul#past-induction-periods li", count: 2)
   end
 
   it "the past induction periods don't have edit links" do
     render
 
-    past_induction_period_list = rendered.html.at('ul#past-induction-periods')
+    past_induction_period_list = rendered.html.at("ul#past-induction-periods")
 
-    expect(past_induction_period_list).not_to have_link('Edit')
+    expect(past_induction_period_list).not_to have_link("Edit")
   end
 end

@@ -45,7 +45,7 @@ class Teachers::InductionPeriod
 
   delegate :first_induction_period, to: :teacher
 
-private
+  private
 
   def last_induction_period = teacher.last_induction_period
 end

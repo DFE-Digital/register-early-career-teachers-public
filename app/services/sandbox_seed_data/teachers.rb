@@ -10,7 +10,7 @@ module SandboxSeedData
       NUMBER_OF_RECORDS.times { create_teacher }
     end
 
-  private
+    private
 
     def create_teacher
       teacher = FactoryBot.build(:teacher, :with_realistic_name).tap do

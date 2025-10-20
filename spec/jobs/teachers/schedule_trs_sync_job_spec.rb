@@ -15,7 +15,7 @@ RSpec.describe Teachers::ScheduleTRSSyncJob, type: :job do
         [teacher2, 6],
         [teacher3, 9],
         [teacher4, 12],
-        [teacher5, 15],
+        [teacher5, 15]
       ].each do |teacher, wait_time|
         allow(Teachers::SyncTeacherWithTRSJob).to receive(:set).with(wait: wait_time.seconds).and_return(Teachers::SyncTeacherWithTRSJob)
 

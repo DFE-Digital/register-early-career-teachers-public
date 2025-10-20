@@ -1,4 +1,4 @@
-RSpec.describe 'schools/ects/index.html.erb' do
+RSpec.describe "schools/ects/index.html.erb" do
   let(:school) { FactoryBot.create(:school) }
 
   before do
@@ -8,30 +8,30 @@ RSpec.describe 'schools/ects/index.html.erb' do
     render
   end
 
-  it 'shows the Register an ECT starting at your school button' do
-    expect(rendered).to have_css('a.govuk-button', text: 'Register an ECT starting at your school')
+  it "shows the Register an ECT starting at your school button" do
+    expect(rendered).to have_css("a.govuk-button", text: "Register an ECT starting at your school")
   end
 
-  context 'when there are no teachers' do
-    it 'shows a message that there are no registered ECTs' do
-      expect(rendered).to have_css('div.govuk-grid-column-two-thirds p.govuk-body', text: 'Your school currently has no registered early career teachers.')
+  context "when there are no teachers" do
+    it "shows a message that there are no registered ECTs" do
+      expect(rendered).to have_css("div.govuk-grid-column-two-thirds p.govuk-body", text: "Your school currently has no registered early career teachers.")
     end
 
-    it 'shows the Register an ECT starting at your school button' do
-      expect(rendered).to have_css('a.govuk-button', text: 'Register an ECT starting at your school')
+    it "shows the Register an ECT starting at your school button" do
+      expect(rendered).to have_css("a.govuk-button", text: "Register an ECT starting at your school")
     end
 
-    it 'does not render the summary component' do
-      expect(rendered).not_to have_css('.govuk-summary-card')
+    it "does not render the summary component" do
+      expect(rendered).not_to have_css(".govuk-summary-card")
     end
 
-    it 'does not render the search box' do
-      expect(rendered).not_to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
+    it "does not render the search box" do
+      expect(rendered).not_to have_css(".govuk-form-group label", text: "Search by name or teacher reference number (TRN)")
     end
   end
 
-  context 'when there are teachers' do
-    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Johnnie', trs_last_name: 'Walker') }
+  context "when there are teachers" do
+    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Johnnie", trs_last_name: "Walker") }
     let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
     let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
@@ -44,26 +44,26 @@ RSpec.describe 'schools/ects/index.html.erb' do
       render
     end
 
-    it 'renders the summary component' do
-      expect(rendered).to have_css('.govuk-summary-card__title', text: 'Johnnie Walker')
+    it "renders the summary component" do
+      expect(rendered).to have_css(".govuk-summary-card__title", text: "Johnnie Walker")
     end
 
-    it 'renders the search box' do
-      expect(rendered).to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
+    it "renders the search box" do
+      expect(rendered).to have_css(".govuk-form-group label", text: "Search by name or teacher reference number (TRN)")
     end
 
-    context 'when there are no matching teachers' do
+    context "when there are no matching teachers" do
       before do
         assign(:teachers, [])
         render
       end
 
-      it 'renders the no ects text' do
-        expect(rendered).to have_css('.govuk-body', text: 'There are no ECTs that match your search.')
+      it "renders the no ects text" do
+        expect(rendered).to have_css(".govuk-body", text: "There are no ECTs that match your search.")
       end
 
-      it 'renders the search box' do
-        expect(rendered).to have_css('.govuk-form-group label', text: 'Search by name or teacher reference number (TRN)')
+      it "renders the search box" do
+        expect(rendered).to have_css(".govuk-form-group label", text: "Search by name or teacher reference number (TRN)")
       end
     end
   end

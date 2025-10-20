@@ -1,6 +1,6 @@
 RSpec.describe "schools/mentors/show.html.erb" do
-  let(:school)      { FactoryBot.create(:school) }
-  let(:start_date)  { Date.new(2023, 9, 1) }
+  let(:school) { FactoryBot.create(:school) }
+  let(:start_date) { Date.new(2023, 9, 1) }
 
   let(:mentor_teacher) do
     FactoryBot.create(
@@ -20,10 +20,10 @@ RSpec.describe "schools/mentors/show.html.erb" do
 
   let(:ects) { [] }
 
-  let(:lead_provider)                  { FactoryBot.create(:lead_provider, name: "Hidden leaf village") }
-  let(:active_lead_provider)           { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Hidden leaf village") }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:lead_provider_delivery_partner) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-  let(:school_partnership)             { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partner, school:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partner, school:) }
 
   def render_view
     assign(:mentor, mentor_period)

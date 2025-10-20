@@ -4,7 +4,7 @@ STATEMENT_RESPONSE = {
   required: %i[data],
   properties: {
     data: {
-      "$ref": "#/components/schemas/Statement",
-    },
-  },
+      "$ref": "#/components/schemas/Statement"
+    }
+  }
 }.freeze

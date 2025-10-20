@@ -13,7 +13,7 @@ module Migration
       Migration::InductionRecordPresenter.wrap(Migration::InductionRecord.where(id: source_ids).order(:start_date))
     end
 
-  private
+    private
 
     def school_period
       __getobj__

@@ -86,7 +86,7 @@ module Migrators
       end
     end
 
-  protected
+    protected
 
     def migrate(collection, &block)
       DeclarativeUpdates.skip do
@@ -185,12 +185,12 @@ module Migrators
       school
     end
 
-  private
+    private
 
     def process_item(item)
       success = yield(item)
       DataMigration.update_counters(data_migration.id, processed_count: 1, failure_count: success ? 0 : 1)
-    rescue StandardError => e
+    rescue => e
       DataMigration.update_counters(data_migration.id, failure_count: 1, processed_count: 1)
       failure_manager.record_failure(item, e.message)
     end

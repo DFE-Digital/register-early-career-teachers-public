@@ -9,14 +9,14 @@ RSpec.describe ParityCheck::Client do
   let(:token) { "test_token" }
   let(:per_page) { ParityCheck::RequestBuilder::PAGINATION_PER_PAGE }
   let(:instance) { described_class.new(request:) }
-  let(:tokens) { { lead_provider.ecf_id => token }.to_json }
+  let(:tokens) { {lead_provider.ecf_id => token}.to_json }
 
   before do
     allow(Rails.application.config).to receive(:parity_check).and_return({
       enabled: true,
       ecf_url:,
       rect_url:,
-      tokens:,
+      tokens:
     })
   end
 
@@ -53,7 +53,7 @@ RSpec.describe ParityCheck::Client do
       it "makes requests with the correct query parameters" do
         options_query_parameters = endpoint.options[:query]
         path_query_parameters = Addressable::URI.parse(endpoint.path).query_values
-        page_query_parameters = { page: { page: 1, per_page: } }
+        page_query_parameters = {page: {page: 1, per_page:}}
         all_query_parameters = path_query_parameters.merge(options_query_parameters, page_query_parameters).to_query
 
         instance.perform_requests {}
@@ -69,17 +69,17 @@ RSpec.describe ParityCheck::Client do
       include_examples "client performs requests"
 
       it "makes multiple requests with the correct pagination parameters" do
-        full_page_of_data = { data: Array.new(per_page, { key: :value }) }.to_json
-        partial_page_of_data = { data: Array.new(per_page / 2, { key: :value }) }.to_json
+        full_page_of_data = {data: Array.new(per_page, {key: :value})}.to_json
+        partial_page_of_data = {data: Array.new(per_page / 2, {key: :value})}.to_json
 
         stub_request(endpoint.method, %r{#{ecf_url + path_without_query_parameters}.*}).to_return(
-          { status: 200, body: full_page_of_data },
-          { status: 200, body: partial_page_of_data }
+          {status: 200, body: full_page_of_data},
+          {status: 200, body: partial_page_of_data}
         )
 
         stub_request(endpoint.method, %r{#{rect_url + path_without_query_parameters}.*}).to_return(
-          { status: 201, body: full_page_of_data },
-          { status: 200, body: partial_page_of_data }
+          {status: 201, body: full_page_of_data},
+          {status: 200, body: partial_page_of_data}
         )
 
         yielded_responses = []
@@ -87,11 +87,11 @@ RSpec.describe ParityCheck::Client do
 
         expect(yielded_responses.count).to eq(2)
 
-        first_page_query = { page: { page: 1, per_page: } }.to_query
+        first_page_query = {page: {page: 1, per_page:}}.to_query
         expect(ecf_requests.first.uri.query).to include(first_page_query)
         expect(rect_requests.first.uri.query).to include(first_page_query)
 
-        second_page_query = { page: { page: 2, per_page: } }.to_query
+        second_page_query = {page: {page: 2, per_page:}}.to_query
         expect(ecf_requests.last.uri.query).to include(second_page_query)
         expect(rect_requests.last.uri.query).to include(second_page_query)
 
@@ -106,7 +106,7 @@ RSpec.describe ParityCheck::Client do
         before { allow(ParityCheck::RequestBuilder).to receive(:new).with(request:).and_return(request_builder) }
 
         context "when the requests have different bodies" do
-          before { allow(request_builder).to receive(:body).and_return({ foo: :bar }.to_json, { foo: :baz }.to_json) }
+          before { allow(request_builder).to receive(:body).and_return({foo: :bar}.to_json, {foo: :baz}.to_json) }
 
           it "raises an error" do
             expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
@@ -126,7 +126,7 @@ RSpec.describe ParityCheck::Client do
         end
 
         context "when the requests have different headers" do
-          before { allow(request_builder).to receive(:headers).and_return({ "Authorization" => "Bearer token1" }, { "Authorization" => "Bearer token2" }) }
+          before { allow(request_builder).to receive(:headers).and_return({"Authorization" => "Bearer token1"}, {"Authorization" => "Bearer token2"}) }
 
           it "raises an error" do
             expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
@@ -134,7 +134,7 @@ RSpec.describe ParityCheck::Client do
         end
 
         context "when the requests have different query parameters" do
-          before { allow(request_builder).to receive(:query).and_return({ foo: :bar }, { foo: :baz }) }
+          before { allow(request_builder).to receive(:query).and_return({foo: :bar}, {foo: :baz}) }
 
           it "raises an error" do
             expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
@@ -178,7 +178,7 @@ RSpec.describe ParityCheck::Client do
   end
 
   context "when the RequestBuilder raises an error" do
-    let(:endpoint) { FactoryBot.build(:parity_check_endpoint, path: "/with/:id", options: { without: :id }) }
+    let(:endpoint) { FactoryBot.build(:parity_check_endpoint, path: "/with/:id", options: {without: :id}) }
 
     it "raises an RequestError" do
       expect {
@@ -188,7 +188,7 @@ RSpec.describe ParityCheck::Client do
   end
 
   context "when the DynamicRequestContent raises an error" do
-    let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :post, options: { body: :missing }) }
+    let(:endpoint) { FactoryBot.build(:parity_check_endpoint, :post, options: {body: :missing}) }
 
     it "raises an RequestError" do
       expect {
@@ -198,7 +198,7 @@ RSpec.describe ParityCheck::Client do
   end
 
   context "when the TokenProvider raises an error" do
-    let(:tokens) { { "other-id": "token" }.to_json }
+    let(:tokens) { {"other-id": "token"}.to_json }
 
     it "raises an RequestError" do
       expect {

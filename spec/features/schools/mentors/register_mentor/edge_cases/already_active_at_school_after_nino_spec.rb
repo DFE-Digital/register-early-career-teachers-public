@@ -1,7 +1,7 @@
-RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
-  include_context 'test trs api client'
+RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
+  include_context "test trs api client"
 
-  scenario 'mentor already active at the school from trn and nino' do
+  scenario "mentor already active at the school from trn and nino" do
     given_there_is_a_school_in_the_service
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
     and_there_is_an_active_mentor_registered_at_the_school
@@ -42,7 +42,7 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
   end
 
   def and_there_is_an_active_mentor_registered_at_the_school
-    teacher = FactoryBot.create(:teacher, trs_first_name: 'Kirk', trs_last_name: 'Van Houten', corrected_name: nil)
+    teacher = FactoryBot.create(:teacher, trs_first_name: "Kirk", trs_last_name: "Van Houten", corrected_name: nil)
     @mentor = FactoryBot.create(:mentor_at_school_period, :ongoing, school: @school, teacher:)
     @mentor_name = Teachers::Name.new(teacher).full_name
   end
@@ -52,13 +52,13 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
   end
 
   def then_i_am_on_the_schools_landing_page
-    path = '/school/home/ects'
+    path = "/school/home/ects"
     page.goto path
     expect(page).to have_path(path)
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
-    page.get_by_role('link', name: 'Assign a mentor for this ECT').click
+    page.get_by_role("link", name: "Assign a mentor for this ECT").click
   end
 
   def then_i_am_in_the_who_will_mentor_page
@@ -68,7 +68,7 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
 
   def when_i_select_register_a_new_mentor
     page.get_by_role(:radio, name: "Register a new mentor").check
-    page.get_by_role(:button, name: 'Continue').click
+    page.get_by_role(:button, name: "Continue").click
   end
 
   def then_i_am_in_the_requirements_page
@@ -77,49 +77,49 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
   end
 
   def when_i_click_continue
-    page.get_by_role('link', name: 'Continue').click
+    page.get_by_role("link", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_find_mentor_page
-    path = '/school/register-mentor/find-mentor'
+    path = "/school/register-mentor/find-mentor"
     expect(page).to have_path(path)
   end
 
   def when_i_submit_a_trn_and_a_date_of_birth_that_does_not_match
-    page.get_by_label('trn').fill(@mentor.teacher.trn)
-    page.get_by_label('day').fill('1')
-    page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1980')
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("trn").fill(@mentor.teacher.trn)
+    page.get_by_label("day").fill("1")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1980")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_national_insurance_number_step
-    expect(page).to have_path('/school/register-mentor/national-insurance-number')
+    expect(page).to have_path("/school/register-mentor/national-insurance-number")
   end
 
   def when_i_enter_a_matching_national_insurance_number_for_the_existing_mentor
     page.get_by_label("National Insurance Number").fill("OA647867D")
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_role("button", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_already_active_at_school_page
-    expect(page).to have_path('/school/register-mentor/already-active-at-school')
+    expect(page).to have_path("/school/register-mentor/already-active-at-school")
   end
 
   def when_i_click_to_assign_the_existing_mentor_to_the_ect
-    page.get_by_role('button', name: "Assign #{@mentor_name} to mentor #{@ect_name}").click
+    page.get_by_role("button", name: "Assign #{@mentor_name} to mentor #{@ect_name}").click
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page).to have_path('/school/register-mentor/confirmation')
+    expect(page).to have_path("/school/register-mentor/confirmation")
   end
 
   def when_i_click_on_back_to_ects
-    page.get_by_role('link', name: 'Back to ECTs').click
+    page.get_by_role("link", name: "Back to ECTs").click
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page).to have_path('/school/home/ects')
+    expect(page).to have_path("/school/home/ects")
   end
 
   def and_the_ect_is_shown_linked_to_the_existing_mentor

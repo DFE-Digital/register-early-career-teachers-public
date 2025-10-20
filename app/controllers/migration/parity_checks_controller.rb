@@ -22,7 +22,7 @@ class Migration::ParityChecksController < ::AdminController
 
   def completed
     @breadcrumbs = {
-      "Run a parity check" => new_migration_parity_check_path,
+      "Run a parity check" => new_migration_parity_check_path
     }
   end
 
@@ -30,11 +30,11 @@ class Migration::ParityChecksController < ::AdminController
     @run = ParityCheck::Run.includes(requests: %i[lead_provider responses endpoint]).completed.find(params[:run_id])
     @breadcrumbs = {
       "Run a parity check" => new_migration_parity_check_path,
-      "Completed parity checks" => completed_migration_parity_checks_path,
+      "Completed parity checks" => completed_migration_parity_checks_path
     }
   end
 
-private
+  private
 
   def load_endpoints
     @endpoints = ParityCheck::Endpoint.all
@@ -59,6 +59,6 @@ private
   end
 
   def runner_params
-    params.expect(parity_check_runner: [:mode, { endpoint_ids: [] }])
+    params.expect(parity_check_runner: [:mode, {endpoint_ids: []}])
   end
 end

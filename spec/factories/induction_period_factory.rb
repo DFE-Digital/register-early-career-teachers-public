@@ -7,7 +7,7 @@ FactoryBot.define do
     finished_on { 1.month.ago }
     number_of_terms { 1 }
     induction_programme { "fip" }
-    training_programme { 'provider_led' }
+    training_programme { "provider_led" }
 
     trait :ongoing do
       finished_on { nil }

@@ -1,5 +1,5 @@
 RSpec.describe Schools::RegisterECTWizard::ChangeStartDateStep, type: :model do
-  subject { described_class.new(start_date: { 1 => "2025", 2 => "01" }) }
+  subject { described_class.new(start_date: {1 => "2025", 2 => "01"}) }
 
   describe "inheritance" do
     it "inherits from StartDateStep" do

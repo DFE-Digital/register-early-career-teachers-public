@@ -1,7 +1,7 @@
-RSpec.describe 'Registering an ECT', :enable_schools_interface do
-  include_context 'test trs api client that finds teacher prohibited from teaching'
+RSpec.describe "Registering an ECT", :enable_schools_interface do
+  include_context "test trs api client that finds teacher prohibited from teaching"
 
-  scenario 'The ECT is prohibited from teaching' do
+  scenario "The ECT is prohibited from teaching" do
     given_i_am_logged_in_as_a_school_user
     when_i_am_on_the_find_ect_step_page
     and_i_submit_details_of_a_prohibited_teacher
@@ -17,30 +17,30 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def when_i_am_on_the_find_ect_step_page
-    path = '/school/register-ect/find-ect'
+    path = "/school/register-ect/find-ect"
     page.goto path
     expect(page).to have_path(path)
   end
 
   def and_i_submit_details_of_a_prohibited_teacher
-    page.get_by_label('trn').fill('9876543')
-    page.get_by_label('day').fill('3')
-    page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1977')
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("trn").fill("9876543")
+    page.get_by_label("day").fill("3")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1977")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_cannot_register_ect_page
-    path = '/school/register-ect/cannot-register-ect'
+    path = "/school/register-ect/cannot-register-ect"
     expect(page).to have_path(path)
   end
 
   def when_i_click_back_to_ects
-    page.get_by_role('link', name: 'Back to ECTs').click
+    page.get_by_role("link", name: "Back to ECTs").click
   end
 
   def then_i_should_be_taken_to_the_school_ects_page
-    path = '/school/home/ects'
+    path = "/school/home/ects"
     expect(page).to have_path(path)
   end
 end

@@ -1,5 +1,5 @@
 describe "Admin::AppropriateBodies::BatchesController", type: :request do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Busy Body') }
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Busy Body") }
 
   describe "GET /admin/organisations/appropriate-bodies/:appropriate_body_id/batches" do
     context "when not authenticated" do
@@ -11,7 +11,7 @@ describe "Admin::AppropriateBodies::BatchesController", type: :request do
     end
 
     context "when authenticated as a non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get admin_appropriate_body_batches_path(appropriate_body)

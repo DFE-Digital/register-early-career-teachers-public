@@ -4,29 +4,29 @@ module Schools
     include TrainingPeriodSources
 
     attr_reader :author,
-                :trs_first_name,
-                :trs_last_name,
-                :corrected_name,
-                :school_urn,
-                :teacher,
-                :trn,
-                :email,
-                :started_on,
-                :mentor_at_school_period,
-                :lead_provider,
-                :training_period,
-                :finish_existing_at_school_periods
+      :trs_first_name,
+      :trs_last_name,
+      :corrected_name,
+      :school_urn,
+      :teacher,
+      :trn,
+      :email,
+      :started_on,
+      :mentor_at_school_period,
+      :lead_provider,
+      :training_period,
+      :finish_existing_at_school_periods
 
     def initialize(trs_first_name:,
-                   trs_last_name:,
-                   corrected_name:,
-                   trn:,
-                   school_urn:,
-                   email:,
-                   author:,
-                   finish_existing_at_school_periods: false,
-                   started_on: nil,
-                   lead_provider: nil)
+      trs_last_name:,
+      corrected_name:,
+      trn:,
+      school_urn:,
+      email:,
+      author:,
+      finish_existing_at_school_periods: false,
+      started_on: nil,
+      lead_provider: nil)
       @author = author
       @trs_first_name = trs_first_name
       @trs_last_name = trs_last_name
@@ -52,27 +52,27 @@ module Schools
       mentor_at_school_period
     end
 
-  private
+    private
 
     def training_programme
-      (lead_provider.present?) ? 'provider_led' : 'school_led'
+      lead_provider.present? ? "provider_led" : "school_led"
     end
 
     def create_training_period!
-      return if training_programme == 'school_led'
+      return if training_programme == "school_led"
 
       ensure_mentor_is_eligible!
 
       @training_period = ::TrainingPeriods::Create.provider_led(period: mentor_at_school_period,
-                                                                started_on: mentor_at_school_period.started_on,
-                                                                school_partnership:,
-                                                                expression_of_interest:).call
+        started_on: mentor_at_school_period.started_on,
+        school_partnership:,
+        expression_of_interest:).call
     end
 
     def ensure_mentor_is_eligible!
       if Teachers::MentorFundingEligibility.new(trn: teacher.trn).ineligible?
         raise MentorIneligibleForTraining,
-              "Mentor #{teacher.id} is not eligible for funded training"
+          "Mentor #{teacher.id} is not eligible for funded training"
       end
     end
 

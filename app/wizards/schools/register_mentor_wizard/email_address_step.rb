@@ -3,7 +3,7 @@ module Schools
     class EmailAddressStep < Step
       attr_accessor :email
 
-      validates :email, presence: { message: "Enter the email address" }, notify_email: true
+      validates :email, presence: {message: "Enter the email address"}, notify_email: true
 
       def self.permitted_params
         %i[email]
@@ -34,7 +34,7 @@ module Schools
         Schools::RegisterMentorWizard::LeadProviderRules.new(mentor)
       end
 
-    private
+      private
 
       def eligible_for_review?
         ect.provider_led_training_programme? && mentor.funding_available? && !mentor.previously_registered_as_mentor? && !mentor.ect_lead_provider_invalid?

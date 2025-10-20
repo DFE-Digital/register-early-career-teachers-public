@@ -19,7 +19,7 @@ module Admin
         redirect_to admin_teacher_path(existing_teacher), notice: "Teacher #{existing_teacher.trn} already exists in the system"
       end
 
-    private
+      private
 
       def find_pending_induction_submission
         @pending_induction_submission = PendingInductionSubmission.find(params[:id])

@@ -2,9 +2,9 @@ module Schools
   class ECTTrainingDetailsComponent < ApplicationComponent
     include ProgrammeHelper
 
-    NOT_AVAILABLE = 'Not available'
-    YET_TO_BE_REPORTED = 'Yet to be reported by the lead provider'
-    DELIVERY_PARTNER_CHANGE_HINT = 'To change the delivery partner, you must contact the lead provider'
+    NOT_AVAILABLE = "Not available"
+    YET_TO_BE_REPORTED = "Yet to be reported by the lead provider"
+    DELIVERY_PARTNER_CHANGE_HINT = "To change the delivery partner, you must contact the lead provider"
 
     attr_reader :ect_at_school_period, :training_period
 
@@ -17,12 +17,12 @@ module Schools
 
     def call
       safe_join([
-        tag.h2('Training details', class: 'govuk-heading-m'),
+        tag.h2("Training details", class: "govuk-heading-m"),
         govuk_summary_list(rows:)
       ])
     end
 
-  private
+    private
 
     def rows
       base_rows = [training_programme_row]
@@ -37,8 +37,8 @@ module Schools
 
     def training_programme_row
       {
-        key: { text: 'Training programme' },
-        value: { text: training_programme_display_name },
+        key: {text: "Training programme"},
+        value: {text: training_programme_display_name},
         actions: [{
           text: "Change",
           visually_hidden_text: "training programme",
@@ -50,15 +50,15 @@ module Schools
 
     def lead_provider_row
       {
-        key: { text: 'Lead provider' },
-        value: { text: lead_provider_display_text }
+        key: {text: "Lead provider"},
+        value: {text: lead_provider_display_text}
       }
     end
 
     def delivery_partner_row
       {
-        key: { text: 'Delivery partner' },
-        value: { text: delivery_partner_display_text }
+        key: {text: "Delivery partner"},
+        value: {text: delivery_partner_display_text}
       }
     end
 
@@ -83,24 +83,22 @@ module Schools
       safe_join([
         provider_name,
         tag.br,
-        tag.span(status_text, class: 'govuk-hint')
+        tag.span(status_text, class: "govuk-hint")
       ])
     end
 
     def lead_provider_name
-      case
-      when partnership_confirmed?
+      if partnership_confirmed?
         training_period.lead_provider_name
-      when training_period.only_expression_of_interest?
+      elsif training_period.only_expression_of_interest?
         training_period.expression_of_interest_lead_provider&.name
       end
     end
 
     def lead_provider_status_text(provider_name)
-      case
-      when partnership_confirmed?
+      if partnership_confirmed?
         "Confirmed by #{provider_name}"
-      when training_period.only_expression_of_interest?
+      elsif training_period.only_expression_of_interest?
         "Awaiting confirmation by #{provider_name}"
       end
     end
@@ -110,7 +108,7 @@ module Schools
     end
 
     def training_programme_display_name
-      TRAINING_PROGRAMME.fetch(training_period.training_programme, 'Unknown')
+      TRAINING_PROGRAMME.fetch(training_period.training_programme, "Unknown")
     end
   end
 end

@@ -61,7 +61,7 @@ module AppropriateBodies
             end_date: 1.year.ago.to_date - 40.days,
             subjects: %w[Maths English],
             age_range: "5-11"
-          ),
+          )
           # ITTData.new(
           #   provider_name: "Some provider",
           #   programme_type: "Teach First Programme",
@@ -73,7 +73,7 @@ module AppropriateBodies
         ]
       end
 
-    private
+      private
 
       def find_teacher
         AppropriateBodies::ECTs.new(@appropriate_body).current.find_by!(id: params[:teacher_id])

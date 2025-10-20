@@ -6,7 +6,7 @@ class CreateEvents < ActiveRecord::Migration[7.2]
       t.text :heading
       t.text :body
       t.text :event_type
-      t.datetime :happened_at, default: -> { 'current_timestamp' }
+      t.datetime :happened_at, default: -> { "current_timestamp" }
 
       # AB related, will be used soon
       t.integer :teacher_id, index: true
@@ -26,7 +26,7 @@ class CreateEvents < ActiveRecord::Migration[7.2]
       t.integer :user_id, index: true
 
       # What kind of person did it? (probably useful for filtering/display purposes)
-      t.enum :author_type, enum_type: 'event_author_types', null: false
+      t.enum :author_type, enum_type: "event_author_types", null: false
 
       # Linking to users if they're OTP
       t.integer :author_id, index: true
@@ -53,6 +53,6 @@ class CreateEvents < ActiveRecord::Migration[7.2]
     add_foreign_key :events, :delivery_partners, on_delete: :nullify
     add_foreign_key :events, :users, on_delete: :nullify
 
-    add_foreign_key :events, :users, column: 'author_id', on_delete: :nullify
+    add_foreign_key :events, :users, column: "author_id", on_delete: :nullify
   end
 end

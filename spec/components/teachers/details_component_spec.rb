@@ -1,5 +1,6 @@
 RSpec.describe Teachers::DetailsComponent, type: :component do
   include ActionView::Helpers::TagHelper
+
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:mode) { :appropriate_body }
   let(:component) { described_class.new(teacher:, mode:) }
@@ -88,24 +89,24 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
       allow(Teachers::Details::CurrentInductionPeriodComponent).to receive(:new).and_call_original
     end
 
-    it 'passes mode and teacher to slot component and defaults enable flags to false' do
+    it "passes mode and teacher to slot component and defaults enable flags to false" do
       render_inline(component.with_current_induction_period)
 
       expect(Teachers::Details::CurrentInductionPeriodComponent).to have_received(:new).with(mode:,
-                                                                                             teacher:,
-                                                                                             enable_delete: false,
-                                                                                             enable_edit: false,
-                                                                                             enable_release: false)
+        teacher:,
+        enable_delete: false,
+        enable_edit: false,
+        enable_release: false)
     end
 
-    it 'sets enable edit, delete and release flags' do
+    it "sets enable edit, delete and release flags" do
       render_inline(component.with_current_induction_period(enable_release: true, enable_edit: true, enable_delete: true))
 
       expect(Teachers::Details::CurrentInductionPeriodComponent).to have_received(:new).with(mode:,
-                                                                                             teacher:,
-                                                                                             enable_delete: true,
-                                                                                             enable_edit: true,
-                                                                                             enable_release: true)
+        teacher:,
+        enable_delete: true,
+        enable_edit: true,
+        enable_release: true)
     end
   end
 

@@ -227,21 +227,21 @@ describe API::SchoolPartnerships::Query do
 
       describe "order by created_at, in descending order" do
         it "returns school partnerships in correct order" do
-          query = described_class.new(sort: { created_at: :desc })
+          query = described_class.new(sort: {created_at: :desc})
           expect(query.school_partnerships).to eq([school_partnership1, school_partnership2])
         end
       end
 
       describe "order by updated_at, in ascending order" do
         it "returns school partnerships in correct order" do
-          query = described_class.new(sort: { updated_at: :asc })
+          query = described_class.new(sort: {updated_at: :asc})
           expect(query.school_partnerships).to eq([school_partnership2, school_partnership1])
         end
       end
 
       describe "order by updated_at, in descending order" do
         it "returns school partnerships in correct order" do
-          query = described_class.new(sort: { updated_at: :desc })
+          query = described_class.new(sort: {updated_at: :desc})
           expect(query.school_partnerships).to eq([school_partnership1, school_partnership2])
         end
       end
@@ -306,7 +306,7 @@ describe API::SchoolPartnerships::Query do
     end
   end
 
-  describe '#exists?' do
+  describe "#exists?" do
     subject { described_class.new(**query_params) }
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -322,14 +322,14 @@ describe API::SchoolPartnerships::Query do
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
     let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
-    let(:query_params) { { lead_provider_id:, school_id:, delivery_partner_api_ids:, contract_period_years: } }
+    let(:query_params) { {lead_provider_id:, school_id:, delivery_partner_api_ids:, contract_period_years:} }
 
-    it 'returns true when a school partnership matches lead provider, delivery partner and school for the given registration period' do
+    it "returns true when a school partnership matches lead provider, delivery partner and school for the given registration period" do
       expect(described_class.new(**query_params)).to exist
     end
 
-    describe 'registration periods' do
-      context 'when contract_period differs' do
+    describe "registration periods" do
+      context "when contract_period differs" do
         subject { described_class.new(**query_params.merge(contract_period_years: other_contract_period.year)) }
 
         let(:other_contract_period) { FactoryBot.create(:contract_period, year: 2028) }
@@ -337,15 +337,15 @@ describe API::SchoolPartnerships::Query do
         it { is_expected.not_to(exist) }
       end
 
-      context 'when contract_period omitted' do
+      context "when contract_period omitted" do
         subject { described_class.new(**query_params.except(:contract_period_years)) }
 
         it { is_expected.to(exist) }
       end
     end
 
-    describe 'lead providers' do
-      context 'when lead_provider differs' do
+    describe "lead providers" do
+      context "when lead_provider differs" do
         subject { described_class.new(**query_params.merge(lead_provider_id: other_lead_provider.id)) }
 
         let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
@@ -353,15 +353,15 @@ describe API::SchoolPartnerships::Query do
         it { is_expected.not_to(exist) }
       end
 
-      context 'when lead_provider omitted' do
+      context "when lead_provider omitted" do
         subject { described_class.new(**query_params.except(:lead_provider_id)) }
 
         it { is_expected.to(exist) }
       end
     end
 
-    describe 'schools' do
-      context 'when school differs' do
+    describe "schools" do
+      context "when school differs" do
         subject { described_class.new(**query_params.merge(school_id: other_school.id)) }
 
         let(:other_school) { FactoryBot.create(:school) }
@@ -369,15 +369,15 @@ describe API::SchoolPartnerships::Query do
         it { is_expected.not_to(exist) }
       end
 
-      context 'when school omitted' do
+      context "when school omitted" do
         subject { described_class.new(**query_params.except(:school_id)) }
 
         it { is_expected.to(exist) }
       end
     end
 
-    describe 'delivery partners' do
-      context 'when delivery partner differs' do
+    describe "delivery partners" do
+      context "when delivery partner differs" do
         subject { described_class.new(**query_params.merge(delivery_partner_api_ids: other_delivery_partner.api_id)) }
 
         let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -385,7 +385,7 @@ describe API::SchoolPartnerships::Query do
         it { is_expected.not_to(exist) }
       end
 
-      context 'when delivery_partner omitted' do
+      context "when delivery_partner omitted" do
         subject { described_class.new(**query_params.except(:delivery_partner_api_ids)) }
 
         it { is_expected.to(exist) }

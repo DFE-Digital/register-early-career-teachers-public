@@ -53,7 +53,7 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
 
   describe "POST #create" do
     let(:new_working_pattern) { "part_time" }
-    let(:params) { { edit: { working_pattern: new_working_pattern } } }
+    let(:params) { {edit: {working_pattern: new_working_pattern}} }
 
     context "when not signed in" do
       it "redirects to the root path" do
@@ -131,7 +131,7 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
     end
   end
 
-private
+  private
 
   def path_for_step(step)
     "/school/ects/#{ect_at_school_period.id}/change-working-pattern/#{step}"

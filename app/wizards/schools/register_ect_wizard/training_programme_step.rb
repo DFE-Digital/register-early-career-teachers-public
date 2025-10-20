@@ -19,7 +19,7 @@ module Schools
         :state_school_appropriate_body
       end
 
-    private
+      private
 
       def persist
         ect.update!(training_programme:)

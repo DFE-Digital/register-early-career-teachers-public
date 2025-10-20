@@ -38,7 +38,7 @@ module InductionPeriods
       true
     end
 
-  private
+    private
 
     delegate :teacher, to: :induction_period
 

@@ -18,7 +18,7 @@ class MentorAtSchoolPeriods::Finish
     end
   end
 
-private
+  private
 
   def finish_mentorship_periods!(period)
     period.mentorship_periods.ongoing_on(finished_on).each do |mentorship_period|

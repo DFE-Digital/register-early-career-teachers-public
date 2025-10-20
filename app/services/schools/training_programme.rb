@@ -11,7 +11,7 @@ module Schools
       ect_training_programme || not_yet_known
     end
 
-  private
+    private
 
     attr_reader :school, :contract_period_year
 
@@ -52,8 +52,8 @@ module Schools
 
     def school_led_ect_at_school_periods
       @school_led_ect_at_school_periods ||= school.ect_at_school_periods.joins(:training_periods)
-        .where(training_periods: { training_programme: 'school_led' })
-        .where(training_periods: { expression_of_interest_id: nil, school_partnership_id: nil })
+        .where(training_periods: {training_programme: "school_led"})
+        .where(training_periods: {expression_of_interest_id: nil, school_partnership_id: nil})
         .distinct
     end
   end

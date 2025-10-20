@@ -51,14 +51,14 @@ module Builders
       success
     end
 
-  private
+    private
 
     def log_period_error(period:, message:)
       ::TeacherMigrationFailure.create!(teacher:,
-                                        model: :mentorship_period,
-                                        message:,
-                                        migration_item_id: period.start_source_id,
-                                        migration_item_type: "Migration::InductionRecord")
+        model: :mentorship_period,
+        message:,
+        migration_item_id: period.start_source_id,
+        migration_item_type: "Migration::InductionRecord")
     end
   end
 end

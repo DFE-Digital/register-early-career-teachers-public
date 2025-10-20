@@ -24,13 +24,13 @@ class Migration::DataMigrationPerformanceTableComponent < Migration::BaseCompone
     }
   end
 
-private
+  private
 
   def caches_hit(stats)
-    (stats["cache_hits"] || {}).keys.uniq.sort.map(&:humanize).join(', ')
+    (stats["cache_hits"] || {}).keys.uniq.sort.map(&:humanize).join(", ")
   end
 
   def caches_missed(stats)
-    (stats["cache_misses"] || {}).keys.uniq.sort.map(&:humanize).join(', ')
+    (stats["cache_misses"] || {}).keys.uniq.sort.map(&:humanize).join(", ")
   end
 end

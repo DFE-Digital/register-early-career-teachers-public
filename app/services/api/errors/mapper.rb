@@ -12,10 +12,10 @@ module API
       end
 
       def map_error(title:, detail:)
-        { title:, detail: }.transform_values { replace(it) }
+        {title:, detail:}.transform_values { replace(it) }
       end
 
-    private
+      private
 
       def load_mappings!
         raise MappingsFileNotFoundError, "Mappings file not found: #{YAML_FILE_PATH}" unless File.exist?(YAML_FILE_PATH)

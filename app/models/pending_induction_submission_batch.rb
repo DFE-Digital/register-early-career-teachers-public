@@ -3,27 +3,27 @@ class PendingInductionSubmissionBatch < ApplicationRecord
 
   # @return [PendingInductionSubmissionBatch] type "claim"
   def self.new_claim_for(appropriate_body:, **)
-    new(appropriate_body:, batch_type: 'claim', **)
+    new(appropriate_body:, batch_type: "claim", **)
   end
 
   # @return [PendingInductionSubmissionBatch] type "action"
   def self.new_action_for(appropriate_body:, **)
-    new(appropriate_body:, batch_type: 'action', **)
+    new(appropriate_body:, batch_type: "action", **)
   end
 
   # Enums
   enum :batch_status, {
-    pending: 'pending',
-    processing: 'processing',
-    processed: 'processed',
-    completing: 'completing',
-    completed: 'completed',
-    failed: 'failed'
+    pending: "pending",
+    processing: "processing",
+    processed: "processed",
+    completing: "completing",
+    completed: "completed",
+    failed: "failed"
   }
 
   enum :batch_type, {
-    action: 'action',
-    claim: 'claim'
+    action: "action",
+    claim: "claim"
   }
 
   # Associations
@@ -117,7 +117,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
     batch_status.to_sym
   end
 
-private
+  private
 
   def update_batch_progress
     if processing?
@@ -131,7 +131,7 @@ private
         "batch_progress_stream_#{id}",
         target: "batch_progress_status_#{id}",
         partial: "appropriate_bodies/process_batch/#{batch_type.pluralize}/#{batch_status}",
-        locals: { batch: self }
+        locals: {batch: self}
       )
     end
   end

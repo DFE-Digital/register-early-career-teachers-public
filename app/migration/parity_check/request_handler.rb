@@ -25,7 +25,7 @@ module ParityCheck
       RequestDispatcher.new(run:).dispatch
     end
 
-  private
+    private
 
     def client
       @client ||= Client.new(request:)

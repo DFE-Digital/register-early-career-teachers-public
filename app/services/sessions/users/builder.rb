@@ -53,7 +53,7 @@ module Sessions
         raise(UnknownProvider, provider)
       end
 
-    private
+      private
 
       delegate :appropriate_body_id, to: :user_info
 
@@ -70,17 +70,17 @@ module Sessions
       # @return [Sessions::Users::AppropriateBodyUser]
       def appropriate_body_user
         AppropriateBodyUser.new(email:,
-                                name: full_name,
-                                dfe_sign_in_organisation_id: organisation.id,
-                                dfe_sign_in_user_id: uid,
-                                dfe_sign_in_roles:)
+          name: full_name,
+          dfe_sign_in_organisation_id: organisation.id,
+          dfe_sign_in_user_id: uid,
+          dfe_sign_in_roles:)
       end
 
       # @return [Boolean]
       def appropriate_body_user?
         organisation.id.present? &&
           ::AppropriateBody.exists?(dfe_sign_in_organisation_id: organisation.id) &&
-          dfe_sign_in_roles.include?('AppropriateBodyUser')
+          dfe_sign_in_roles.include?("AppropriateBodyUser")
       end
 
       # @return [Sessions::Users::DfEPersona]
@@ -161,18 +161,18 @@ module Sessions
       # @return [Sessions::Users::SchoolUser]
       def school_user
         SchoolUser.new(email:,
-                       name: full_name,
-                       school_urn: organisation.urn,
-                       dfe_sign_in_organisation_id: organisation.id,
-                       dfe_sign_in_user_id: uid,
-                       dfe_sign_in_roles:)
+          name: full_name,
+          school_urn: organisation.urn,
+          dfe_sign_in_organisation_id: organisation.id,
+          dfe_sign_in_user_id: uid,
+          dfe_sign_in_roles:)
       end
 
       # @return [Boolean]
       def school_user?
         organisation.urn.present? &&
           School.exists?(urn: organisation.urn) &&
-          dfe_sign_in_roles.include?('SchoolUser')
+          dfe_sign_in_roles.include?("SchoolUser")
       end
 
       # @return [String]

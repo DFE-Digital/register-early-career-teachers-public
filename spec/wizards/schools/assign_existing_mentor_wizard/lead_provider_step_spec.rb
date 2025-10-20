@@ -28,32 +28,32 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
     )
   end
 
-  describe '#valid?' do
-    context 'when lead_provider_id is nil' do
+  describe "#valid?" do
+    context "when lead_provider_id is nil" do
       let(:lead_provider_id) { nil }
 
-      it 'is invalid with correct error' do
+      it "is invalid with correct error" do
         expect(step).not_to be_valid
-        expect(step.errors[:lead_provider_id]).to include('Select a lead provider to contact your school')
+        expect(step.errors[:lead_provider_id]).to include("Select a lead provider to contact your school")
       end
     end
 
-    context 'when lead_provider_id is present' do
-      it 'is valid' do
+    context "when lead_provider_id is present" do
+      it "is valid" do
         expect(step).to be_valid
       end
     end
   end
 
-  describe '#next_step' do
+  describe "#next_step" do
     it { expect(step.next_step).to eq(:confirmation) }
   end
 
-  describe '#previous_step' do
+  describe "#previous_step" do
     it { expect(step.previous_step).to eq(:review_mentor_eligibility) }
   end
 
-  describe '#save' do
+  describe "#save" do
     let(:store) { OpenStruct.new(lead_provider_id: nil) }
 
     let(:wizard) do
@@ -75,35 +75,35 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
       FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
     end
 
-    it 'persists the selected lead_provider_id to the store' do
+    it "persists the selected lead_provider_id to the store" do
       expect { step.save! }.to change(store, :lead_provider_id).from(nil).to(lead_provider_id)
     end
 
-    it 'assigns the mentor to the ECT' do
+    it "assigns the mentor to the ECT" do
       expect { step.save! }.to change { mentor_at_school_period.reload.mentorship_periods.count }.from(0).to(1)
 
       mentorship_period = mentor_at_school_period.mentorship_periods.last
       expect(mentorship_period.mentee).to eq(ect_at_school_period)
     end
 
-    it 'creates a training period for the mentor' do
+    it "creates a training period for the mentor" do
       expect { step.save! }.to change { mentor_at_school_period.reload.training_periods.count }.from(0).to(1)
 
       training_period = mentor_at_school_period.training_periods.last
       expect(training_period).to have_attributes(
         started_on: Date.new(2023, 9, 1),
-        training_programme: 'provider_led'
+        training_programme: "provider_led"
       )
     end
 
-    it 'records training and mentoring events' do
+    it "records training and mentoring events" do
       step.save!
 
       events = Event.where(teacher: [mentor_at_school_period.teacher, ect_at_school_period.teacher])
       expect(events.pluck(:event_type)).to contain_exactly(
-        'teacher_starts_training_period',
-        'teacher_starts_mentoring',
-        'teacher_starts_being_mentored'
+        "teacher_starts_training_period",
+        "teacher_starts_mentoring",
+        "teacher_starts_being_mentored"
       )
     end
   end

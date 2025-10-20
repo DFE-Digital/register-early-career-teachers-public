@@ -15,7 +15,7 @@ module ParityCheck
       @fetch[identifier] ||= send(identifier)
     end
 
-  private
+    private
 
     # Path ID methods
 
@@ -72,9 +72,9 @@ module ParityCheck
           attributes: {
             cohort: contract_period.year,
             school_id: school.api_id,
-            delivery_partner_id: delivery_partner.api_id,
-          },
-        },
+            delivery_partner_id: delivery_partner.api_id
+          }
+        }
       }
     end
 
@@ -93,9 +93,9 @@ module ParityCheck
         data: {
           type: "partnerships",
           attributes: {
-            delivery_partner_id: delivery_partner.api_id,
-          },
-        },
+            delivery_partner_id: delivery_partner.api_id
+          }
+        }
       }
     end
 
@@ -104,7 +104,7 @@ module ParityCheck
     def random_school_partnership(lead_provider:)
       SchoolPartnership
         .joins(lead_provider_delivery_partnership: :active_lead_provider)
-        .where(active_lead_provider: { lead_provider: })
+        .where(active_lead_provider: {lead_provider:})
         .order("RANDOM()")
         .first
     end
@@ -113,7 +113,7 @@ module ParityCheck
       lead_provider
         .lead_provider_delivery_partnerships
         .joins(:contract_period)
-        .where(contract_period: { enabled: true })
+        .where(contract_period: {enabled: true})
         .order("RANDOM()")
         .first
         &.contract_period
@@ -123,7 +123,7 @@ module ParityCheck
       lead_provider
         .lead_provider_delivery_partnerships
         .joins(:active_lead_provider)
-        .where(active_lead_provider: { contract_period: })
+        .where(active_lead_provider: {contract_period:})
     end
 
     def random_other_eligible_school(lead_provider_delivery_partnerships:)

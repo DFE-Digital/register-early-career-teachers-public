@@ -36,7 +36,7 @@ module ParityCheck
       raise RequestError, e.message
     end
 
-  private
+    private
 
     def requests_consistent?(ecf_response, rect_response)
       return false unless %i[method request_body request_headers].all? { ecf_response.env[it] == rect_response.env[it] }

@@ -7,7 +7,7 @@ module Schools
             {
               edit: EditStep,
               check_answers: CheckAnswersStep,
-              confirmation: ConfirmationStep,
+              confirmation: ConfirmationStep
             }
           ]
         end

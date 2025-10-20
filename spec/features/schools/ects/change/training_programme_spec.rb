@@ -45,7 +45,7 @@ describe "School user can change ECTs training programme", :enable_schools_inter
     then_i_see_the_provider_led_confirmation_message
   end
 
-private
+  private
 
   def given_there_is_a_school
     @school = FactoryBot.create(:school)

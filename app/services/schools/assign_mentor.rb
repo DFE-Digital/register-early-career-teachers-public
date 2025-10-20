@@ -16,7 +16,7 @@ module Schools
       end
     end
 
-  private
+    private
 
     def add_new_mentorship!
       @mentorship_period = ect.mentorship_periods.create!(mentor:, started_on: earliest_possible_start, finished_on: latest_possible_finish)
@@ -35,7 +35,7 @@ module Schools
     end
 
     def record_events!
-      common_arguments = { author:, mentorship_period: }
+      common_arguments = {author:, mentorship_period:}
 
       Events::Record.record_teacher_starts_being_mentored_event!(
         school: ect.school,

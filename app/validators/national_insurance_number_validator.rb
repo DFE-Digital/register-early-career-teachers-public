@@ -6,7 +6,7 @@ class NationalInsuranceNumberValidator < ActiveModel::EachValidator
     record.errors.add(attribute, error_message) unless national_insurance_number.valid?
   end
 
-private
+  private
 
   def error_message
     national_insurance_number.error

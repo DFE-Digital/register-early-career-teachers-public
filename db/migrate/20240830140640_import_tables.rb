@@ -1,19 +1,19 @@
 class ImportTables < ActiveRecord::Migration[7.2]
   def change
     create_table :academic_years, id: false do |t|
-      t.integer :year, primary_key: true, null: false, index: { unique: true }
+      t.integer :year, primary_key: true, null: false, index: {unique: true}
 
       t.timestamps
     end
 
     create_table :lead_providers do |t|
-      t.string :name, null: false, index: { unique: true }
+      t.string :name, null: false, index: {unique: true}
 
       t.timestamps
     end
 
     create_table :delivery_partners do |t|
-      t.string :name, null: false, index: { unique: true }
+      t.string :name, null: false, index: {unique: true}
 
       t.timestamps
     end
@@ -25,7 +25,7 @@ class ImportTables < ActiveRecord::Migration[7.2]
     end
 
     create_table :appropriate_bodies do |t|
-      t.string :name, null: false, index: { unique: true }
+      t.string :name, null: false, index: {unique: true}
 
       t.timestamps
     end
@@ -61,8 +61,8 @@ class ImportTables < ActiveRecord::Migration[7.2]
     end
 
     create_table :schools do |t|
-      t.integer :urn, null: false, index: { unique: true, name: "schools_unique_urn" }
-      t.string :name, null: false, index: { unique: true }
+      t.integer :urn, null: false, index: {unique: true, name: "schools_unique_urn"}
+      t.string :name, null: false, index: {unique: true}
 
       t.timestamps
     end
@@ -110,7 +110,7 @@ class ImportTables < ActiveRecord::Migration[7.2]
     end
 
     create_table :provider_partnerships do |t|
-      t.references :academic_year, null: false, foreign_key: { primary_key: :year }
+      t.references :academic_year, null: false, foreign_key: {primary_key: :year}
       t.references :lead_provider, null: false, foreign_key: true
       t.references :delivery_partner, null: false, foreign_key: true
 

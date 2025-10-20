@@ -39,7 +39,7 @@ module Teachers
       @teacher = teacher
     end
 
-  private
+    private
 
     def admin_mode?
       mode == :admin

@@ -2,7 +2,7 @@ class CreateActiveLeadProviders < ActiveRecord::Migration[8.0]
   def change
     create_table :active_lead_providers do |t|
       t.references :lead_provider, null: false, foreign_key: true
-      t.references :registration_period, null: false, foreign_key: { primary_key: :year }
+      t.references :registration_period, null: false, foreign_key: {primary_key: :year}
 
       t.timestamps
     end

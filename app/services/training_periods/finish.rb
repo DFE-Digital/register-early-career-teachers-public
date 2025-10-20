@@ -1,12 +1,12 @@
 module TrainingPeriods
   class Finish
     attr_reader :training_period,
-                :finished_on,
-                :author,
-                :ect_at_school_period,
-                :mentor_at_school_period,
-                :teacher,
-                :school
+      :finished_on,
+      :author,
+      :ect_at_school_period,
+      :mentor_at_school_period,
+      :teacher,
+      :school
 
     private_class_method :new
 

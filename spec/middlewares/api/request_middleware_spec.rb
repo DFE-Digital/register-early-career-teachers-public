@@ -3,7 +3,7 @@ RSpec.describe API::RequestMiddleware do
 
   let(:request) { Rack::MockRequest.new(middleware) }
   let(:status) { 200 }
-  let(:headers) { { "Content-Type" => "application/json" } }
+  let(:headers) { {"Content-Type" => "application/json"} }
   let(:mock_response) { %w[Success] }
   let(:mock_request_uuid) { "9f170ae9-2fd5-42b6-869f-08e5064c52a3" }
 
@@ -14,7 +14,7 @@ RSpec.describe API::RequestMiddleware do
   end
 
   before do
-    stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true")
+    stub_const("ENV", "DFE_ANALYTICS_ENABLED" => "true")
 
     allow(API::Request).to receive(:send_persist_api_request)
     allow(RequestLocals).to receive(:fetch).with(:dfe_analytics_request_id).and_return(mock_request_uuid)
@@ -30,9 +30,9 @@ RSpec.describe API::RequestMiddleware do
 
   describe "#call on an API path" do
     it "fires an API::Request" do
-      request.get "/api/v3/statements", params: { foo: "bar" }
+      request.get "/api/v3/statements", params: {foo: "bar"}
 
-      request_data = hash_including("body", "headers", "path" => "/api/v3/statements", "params" => { "foo" => "bar" }, "method" => "GET")
+      request_data = hash_including("body", "headers", "path" => "/api/v3/statements", "params" => {"foo" => "bar"}, "method" => "GET")
       response_data = hash_including("body", "headers")
       expect(API::Request).to have_received(:send_persist_api_request).with(request_data, response_data, status, anything, mock_request_uuid)
     end
@@ -40,7 +40,7 @@ RSpec.describe API::RequestMiddleware do
 
   describe "#call on an API path with POST data" do
     it "fires an API::Request including post data" do
-      request.post "/api/v3/partnerships", input: { foo: "bar" }.to_json, 'CONTENT_TYPE' => 'application/json'
+      request.post "/api/v3/partnerships", :input => {foo: "bar"}.to_json, "CONTENT_TYPE" => "application/json"
 
       request_data = hash_including("headers", "path" => "/api/v3/partnerships", "method" => "POST", "body" => '{"foo":"bar"}')
       response_data = hash_including("body", "headers")

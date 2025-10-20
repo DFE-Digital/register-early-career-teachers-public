@@ -34,7 +34,7 @@ describe Migrators::TrainingPeriod do
     end
 
     describe "#migrate!" do
-      it 'creates a TrainingPeriod record for each partnership period found in the ECF induction records' do
+      it "creates a TrainingPeriod record for each partnership period found in the ECF induction records" do
         instance.migrate!
 
         Migration::TeacherProfile.find_each do |teacher_profile|

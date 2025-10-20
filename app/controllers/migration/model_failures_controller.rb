@@ -11,28 +11,28 @@ class Migration::ModelFailuresController < ::AdminController
     @failures = fetch_failures_for_model
   end
 
-private
+  private
 
   def fetch_failures_for_model
     model = @model.downcase.to_sym
 
     {
       model_failures: model_grouped_failures(model),
-      linked_failures: teacher_grouped_failures(model),
+      linked_failures: teacher_grouped_failures(model)
     }
   end
 
   def teacher_grouped_failures(model)
     failures = if model == :teacher
-                 TeacherMigrationFailure.all
-               else
-                 TeacherMigrationFailure.where(model:)
-               end
+      TeacherMigrationFailure.all
+    else
+      TeacherMigrationFailure.where(model:)
+    end
     failure_group.new(model, failures.count, failures.group(:message).count.sort.to_h)
   end
 
   def model_grouped_failures(model)
-    failures = MigrationFailure.joins(:data_migration).where(data_migration: { model: })
+    failures = MigrationFailure.joins(:data_migration).where(data_migration: {model:})
     failure_group.new(model, failures.count, failures.group(:failure_message).count.sort.to_h)
   end
 

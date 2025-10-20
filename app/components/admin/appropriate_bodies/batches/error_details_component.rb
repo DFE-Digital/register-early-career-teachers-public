@@ -13,7 +13,7 @@ module Admin
           batch.errored?
         end
 
-      private
+        private
 
         # @return [String]
         def caption

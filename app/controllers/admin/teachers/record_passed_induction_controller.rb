@@ -3,7 +3,7 @@ module Admin
     class RecordPassedInductionController < CloseInductionController
       def create
         if @teacher.ongoing_induction_period.present?
-          @pending_induction_submission = build_closing_induction_period(outcome: 'pass')
+          @pending_induction_submission = build_closing_induction_period(outcome: "pass")
 
           PendingInductionSubmission.transaction do
             if @pending_induction_submission.save(context: :record_outcome) && record_passed_induction!
@@ -18,7 +18,7 @@ module Admin
         end
       end
 
-    private
+      private
 
       def record_passed_induction!
         ::AppropriateBodies::RecordPass.new(

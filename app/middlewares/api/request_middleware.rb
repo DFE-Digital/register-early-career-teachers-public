@@ -28,10 +28,10 @@ module API
         if trace_request?
           # dfe_analytics_request_id is explicitly being sent to API::Request as background jobs does not share the same locals of the main app
           # and dfe_analytics_request_id is used to set request_uuid value for analytics events
-          request_uuid = RequestLocals.fetch(:dfe_analytics_request_id) { nil } # rubocop:disable Style/RedundantFetchBlock
+          request_uuid = RequestLocals.fetch(:dfe_analytics_request_id) { nil }
           API::Request.send_persist_api_request(request_data.stringify_keys, response_data.stringify_keys, status, Time.zone.now.to_s, request_uuid)
         end
-      rescue StandardError => e
+      rescue => e
         Rails.logger.warn e.message
         Sentry.capture_exception(e)
       end
@@ -39,7 +39,7 @@ module API
       [status, @headers, @response]
     end
 
-  private
+    private
 
     def response_data
       body = @response.respond_to?(:body) ? @response.body : @response.join
@@ -47,7 +47,7 @@ module API
 
       {
         headers: @headers,
-        body:,
+        body:
       }
     end
 
@@ -57,7 +57,7 @@ module API
         params: @request.params,
         body: @request.body&.read&.dup&.force_encoding("utf-8"),
         headers: request_headers,
-        method: @request.request_method,
+        method: @request.request_method
       }
     end
 

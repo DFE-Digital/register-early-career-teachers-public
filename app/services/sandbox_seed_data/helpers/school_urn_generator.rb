@@ -10,7 +10,7 @@ module SandboxSeedData
           sprintf("%06d", next_urn)
         end
 
-      private
+        private
 
         def add_to_taken_stack(next_urn)
           taken.push(next_urn)

@@ -1,41 +1,41 @@
-RSpec.describe 'Sessions', type: :request do
+RSpec.describe "Sessions", type: :request do
   include ActionView::Helpers::SanitizeHelper
 
-  describe 'GET /sign-in' do
-    let(:school) { FactoryBot.create(:school, urn: '123456') }
+  describe "GET /sign-in" do
+    let(:school) { FactoryBot.create(:school, urn: "123456") }
 
-    context 'when not signed in' do
+    context "when not signed in" do
       before do
-        get('/sign-in')
+        get("/sign-in")
       end
 
-      it 'renders the sign in page' do
+      it "renders the sign in page" do
         expect(response).to be_successful
-        expect(sanitize(response.body)).to include('Select a sign in method')
+        expect(sanitize(response.body)).to include("Select a sign in method")
       end
     end
 
-    context 'when signed in' do
+    context "when signed in" do
       before do
         sign_in_as(:school_user, school:)
-        get('/sign-in')
+        get("/sign-in")
       end
 
-      it 'renders the sign in page' do
+      it "renders the sign in page" do
         expect(response).to be_successful
-        expect(sanitize(response.body)).to include('Select a sign in method')
+        expect(sanitize(response.body)).to include("Select a sign in method")
       end
     end
   end
 
-  describe 'POST /auth/:provider/callback' do
+  describe "POST /auth/:provider/callback" do
     let(:email) { Faker::Internet.email }
     let(:first_name) { Faker::Name.first_name }
     let(:last_name) { Faker::Name.last_name }
     let(:name) { [first_name, last_name].join(" ").strip }
     let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
     let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
-    let(:school_urn) { '123456' }
+    let(:school_urn) { "123456" }
 
     before do
       allow(DfESignIn::APIClient).to receive(:new).and_return(
@@ -43,14 +43,14 @@ RSpec.describe 'Sessions', type: :request do
       )
     end
 
-    context 'when using an appropriate body user' do
+    context "when using an appropriate body user" do
       let(:params) do
         {
           email:,
           name:,
           dfe_sign_in_organisation_id:,
           dfe_sign_in_user_id:,
-          dfe_sign_in_roles: %w[AppropriateBodyUser],
+          dfe_sign_in_roles: %w[AppropriateBodyUser]
         }
       end
 
@@ -58,25 +58,25 @@ RSpec.describe 'Sessions', type: :request do
         FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:)
 
         mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
-                                   email:,
-                                   first_name:,
-                                   last_name:,
-                                   organisation_id: dfe_sign_in_organisation_id)
+          email:,
+          first_name:,
+          last_name:,
+          organisation_id: dfe_sign_in_organisation_id)
       end
 
       after do
         stop_mocking_dfe_sign_in_provider!
       end
 
-      it 'authenticates and redirects to the appropriate body home page' do
+      it "authenticates and redirects to the appropriate body home page" do
         allow(Sessions::Users::AppropriateBodyUser).to receive(:new).and_call_original
-        post('/auth/dfe/callback')
+        post("/auth/dfe/callback")
         expect(Sessions::Users::AppropriateBodyUser).to have_received(:new).with(**params).once
         expect(response).to redirect_to(ab_teachers_path)
       end
     end
 
-    context 'when using a school user' do
+    context "when using a school user" do
       let(:params) do
         {
           email:,
@@ -84,7 +84,7 @@ RSpec.describe 'Sessions', type: :request do
           school_urn:,
           dfe_sign_in_organisation_id:,
           dfe_sign_in_user_id:,
-          dfe_sign_in_roles: %w[SchoolUser],
+          dfe_sign_in_roles: %w[SchoolUser]
         }
       end
 
@@ -92,26 +92,26 @@ RSpec.describe 'Sessions', type: :request do
         FactoryBot.create(:school, urn: school_urn)
 
         mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
-                                   email:,
-                                   first_name:,
-                                   last_name:,
-                                   organisation_id: dfe_sign_in_organisation_id,
-                                   organisation_urn: school_urn)
+          email:,
+          first_name:,
+          last_name:,
+          organisation_id: dfe_sign_in_organisation_id,
+          organisation_urn: school_urn)
       end
 
       after do
         stop_mocking_dfe_sign_in_provider!
       end
 
-      it 'authenticates and redirects to the school home page' do
+      it "authenticates and redirects to the school home page" do
         allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
-        post('/auth/dfe/callback')
+        post("/auth/dfe/callback")
         expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
         expect(response).to redirect_to(schools_ects_home_path)
       end
     end
 
-    context 'when using a multi-role user' do
+    context "when using a multi-role user" do
       let(:params) do
         {
           email:,
@@ -128,72 +128,72 @@ RSpec.describe 'Sessions', type: :request do
         FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:, name: school.name)
 
         mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
-                                   email:,
-                                   first_name:,
-                                   last_name:,
-                                   organisation_id: dfe_sign_in_organisation_id,
-                                   organisation_urn: school_urn)
+          email:,
+          first_name:,
+          last_name:,
+          organisation_id: dfe_sign_in_organisation_id,
+          organisation_urn: school_urn)
       end
 
       after do
         stop_mocking_dfe_sign_in_provider!
       end
 
-      it 'authenticates and redirects to the school home page' do
+      it "authenticates and redirects to the school home page" do
         allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
-        post('/auth/dfe/callback')
+        post("/auth/dfe/callback")
         expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
         expect(response).to redirect_to(schools_ects_home_path)
       end
     end
 
-    context 'when using an appropriate body persona' do
+    context "when using an appropriate body persona" do
       let(:appropriate_body_id) { FactoryBot.create(:appropriate_body).id.to_s }
-      let(:params) { { email:, name:, appropriate_body_id: } }
+      let(:params) { {email:, name:, appropriate_body_id:} }
 
-      it 'authenticates and redirects to the appropriate body home page' do
+      it "authenticates and redirects to the appropriate body home page" do
         allow(Sessions::Users::AppropriateBodyPersona).to receive(:new).and_call_original
-        post('/auth/persona/callback', params:)
+        post("/auth/persona/callback", params:)
         expect(Sessions::Users::AppropriateBodyPersona).to have_received(:new).with(**params).once
         expect(response).to redirect_to(ab_teachers_path)
       end
     end
 
-    context 'when using a school persona' do
+    context "when using a school persona" do
       let(:school_urn) { FactoryBot.create(:school).urn.to_s }
-      let(:params) { { email:, name:, school_urn: } }
+      let(:params) { {email:, name:, school_urn:} }
 
-      it 'authenticates and redirects to the school home page' do
+      it "authenticates and redirects to the school home page" do
         allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original
-        post('/auth/persona/callback', params:)
+        post("/auth/persona/callback", params:)
         expect(Sessions::Users::SchoolPersona).to have_received(:new).with(**params).once
         expect(response).to redirect_to(schools_ects_home_path)
       end
     end
 
-    context 'when using a DfE persona' do
+    context "when using a DfE persona" do
       let(:params) { {} }
 
       before do
         FactoryBot.create(:user, email:, name:)
       end
 
-      it 'authenticates and redirects to the admin home page' do
+      it "authenticates and redirects to the admin home page" do
         allow(Sessions::Users::DfEPersona).to receive(:new).and_call_original
-        post('/auth/persona/callback', params: { dfe_staff: true, email:, name: })
+        post("/auth/persona/callback", params: {dfe_staff: true, email:, name:})
         expect(Sessions::Users::DfEPersona).to have_received(:new).with(email:).once
         expect(response).to redirect_to(admin_path)
       end
     end
   end
 
-  describe 'GET /sign-out' do
-    let(:session_manager) { double('Sessions::Manager', current_user: nil, end_session!: true) }
+  describe "GET /sign-out" do
+    let(:session_manager) { double("Sessions::Manager", current_user: nil, end_session!: true) }
 
-    context 'when not signed in' do
-      it 'redirects to the sign in page' do
+    context "when not signed in" do
+      it "redirects to the sign in page" do
         allow(Sessions::Manager).to receive(:new).and_return(session_manager)
-        get('/sign-out')
+        get("/sign-out")
         expect(session_manager).to have_received(:end_session!).once
         expect(response).to redirect_to(root_path)
       end

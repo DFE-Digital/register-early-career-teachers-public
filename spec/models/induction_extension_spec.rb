@@ -4,16 +4,16 @@ describe InductionExtension do
     it { is_expected.to have_many(:events) }
   end
 
-  describe 'validation' do
-    describe 'number_of_terms' do
-      it 'allows valid values to be saved' do
+  describe "validation" do
+    describe "number_of_terms" do
+      it "allows valid values to be saved" do
         # NOTE: we're actually saving them here to ensure PostgreSQL's column accepts the necessary
         #       precision and scale
         expect(FactoryBot.create(:induction_extension, number_of_terms: 0.1)).to be_valid
         expect(FactoryBot.create(:induction_extension, number_of_terms: 15.9)).to be_valid
       end
 
-      it 'prohibits numbers outside the range 1..16' do
+      it "prohibits numbers outside the range 1..16" do
         expect(subject).not_to allow_value(0).for(:number_of_terms)
         expect(subject).not_to allow_value(16.1).for(:number_of_terms)
       end

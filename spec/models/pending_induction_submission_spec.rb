@@ -2,7 +2,7 @@ RSpec.describe PendingInductionSubmission do
   it { is_expected.to be_a_kind_of(Interval) }
   it { is_expected.to be_a_kind_of(SharedInductionPeriodValidation) }
 
-  it_behaves_like 'an induction period'
+  it_behaves_like "an induction period"
 
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
@@ -16,7 +16,7 @@ RSpec.describe PendingInductionSubmission do
     let!(:released) { FactoryBot.create(:pending_induction_submission, :released) }
 
     describe ".with_errors" do
-      let!(:errored) { FactoryBot.create(:pending_induction_submission, error_messages: ['something went wrong']) }
+      let!(:errored) { FactoryBot.create(:pending_induction_submission, error_messages: ["something went wrong"]) }
 
       it "returns submissions with errors" do
         expect(described_class.with_errors).to contain_exactly(errored)
@@ -121,7 +121,7 @@ RSpec.describe PendingInductionSubmission do
     describe "#number_of_terms" do
       subject { FactoryBot.build(:pending_induction_submission, finished_on: Date.current) }
 
-      it { is_expected.to validate_presence_of(:number_of_terms).with_message('Enter a number of terms').on(%i[release_ect record_outcome]) }
+      it { is_expected.to validate_presence_of(:number_of_terms).with_message("Enter a number of terms").on(%i[release_ect record_outcome]) }
       it { is_expected.to validate_inclusion_of(:number_of_terms).in_range(0..16).with_message("Number of terms must be between 0 and 16").on(%i[release_ect record_outcome]) }
 
       context "when finished_on is blank" do
@@ -282,32 +282,32 @@ RSpec.describe PendingInductionSubmission do
     end
   end
 
-  context 'when ending an induction period' do
-    describe '#release?' do
+  context "when ending an induction period" do
+    describe "#release?" do
       subject { FactoryBot.build(:pending_induction_submission, outcome: nil) }
 
       it { is_expected.to be_release }
     end
 
-    describe '#fail?' do
-      subject { FactoryBot.build(:pending_induction_submission, outcome: 'fail') }
+    describe "#fail?" do
+      subject { FactoryBot.build(:pending_induction_submission, outcome: "fail") }
 
       it { is_expected.to be_fail }
     end
 
-    describe '#pass?' do
-      subject { FactoryBot.build(:pending_induction_submission, outcome: 'pass') }
+    describe "#pass?" do
+      subject { FactoryBot.build(:pending_induction_submission, outcome: "pass") }
 
       it { is_expected.to be_pass }
     end
   end
 
-  describe 'eligibility' do
+  describe "eligibility" do
     subject do
       FactoryBot.build(:pending_induction_submission,
-                       trs_induction_status: 'RequiredToComplete',
-                       trs_qts_awarded_on: 1.year.ago,
-                       trs_prohibited_from_teaching: false)
+        trs_induction_status: "RequiredToComplete",
+        trs_qts_awarded_on: 1.year.ago,
+        trs_prohibited_from_teaching: false)
     end
 
     it { is_expected.not_to be_no_qts }
@@ -319,42 +319,42 @@ RSpec.describe PendingInductionSubmission do
     it { is_expected.not_to be_ineligible }
   end
 
-  describe 'ineligibility' do
+  describe "ineligibility" do
     subject { FactoryBot.build(:pending_induction_submission, trs_induction_status:) }
 
-    context 'when exempt from induction' do
-      let(:trs_induction_status) { 'Exempt' }
+    context "when exempt from induction" do
+      let(:trs_induction_status) { "Exempt" }
 
       it { is_expected.to be_exempt }
       it { is_expected.to be_already_completed }
       it { is_expected.to be_ineligible }
     end
 
-    context 'when induction is already passed' do
-      let(:trs_induction_status) { 'Passed' }
+    context "when induction is already passed" do
+      let(:trs_induction_status) { "Passed" }
 
       it { is_expected.to be_passed }
       it { is_expected.to be_already_completed }
       it { is_expected.to be_ineligible }
     end
 
-    context 'when induction is already failed' do
-      let(:trs_induction_status) { 'Failed' }
+    context "when induction is already failed" do
+      let(:trs_induction_status) { "Failed" }
 
       it { is_expected.to be_failed }
       it { is_expected.to be_already_completed }
       it { is_expected.to be_ineligible }
     end
 
-    context 'when induction is already failed (in Wales)' do
-      let(:trs_induction_status) { 'FailedInWales' }
+    context "when induction is already failed (in Wales)" do
+      let(:trs_induction_status) { "FailedInWales" }
 
       it { is_expected.to be_failed }
       it { is_expected.to be_already_completed }
       it { is_expected.to be_ineligible }
     end
 
-    context 'when QTS has not been awarded' do
+    context "when QTS has not been awarded" do
       subject { FactoryBot.build(:pending_induction_submission, trs_qts_awarded_on: nil) }
 
       it { is_expected.to be_no_qts }
@@ -362,7 +362,7 @@ RSpec.describe PendingInductionSubmission do
       it { is_expected.to be_ineligible }
     end
 
-    context 'when prohibited from teaching' do
+    context "when prohibited from teaching" do
       subject { FactoryBot.build(:pending_induction_submission, trs_prohibited_from_teaching: true) }
 
       it { is_expected.to be_prohibited_from_teaching }
@@ -371,16 +371,16 @@ RSpec.describe PendingInductionSubmission do
     end
   end
 
-  describe '#teacher' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
+  describe "#teacher" do
+    let(:teacher) { FactoryBot.create(:teacher, trn: "1234567") }
     let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
 
-    it 'returns the teacher associated with the trn' do
+    it "returns the teacher associated with the trn" do
       expect(pending_induction_submission.teacher).to eq(teacher)
     end
   end
 
-  describe '#playback_errors' do
+  describe "#playback_errors" do
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
     let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, appropriate_body:, finished_on: 1.day.ago) }
 
@@ -388,10 +388,10 @@ RSpec.describe PendingInductionSubmission do
       pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
     end
 
-    it 'persists error messages' do
+    it "persists error messages" do
       expect(pending_induction_submission.errors).to be_empty
       expect(pending_induction_submission.error_messages).to eq([
-        'Enter a number of terms',
+        "Enter a number of terms",
         "Outcome must be either 'passed' or 'failed'"
       ])
       expect(pending_induction_submission.save).to be(true)

@@ -9,10 +9,10 @@ module AppropriateBodies
     end
 
     attr_reader :appropriate_body,
-                :pending_induction_submission,
-                :author,
-                :teacher,
-                :induction_period
+      :pending_induction_submission,
+      :author,
+      :teacher,
+      :induction_period
 
     def initialize(appropriate_body:, pending_induction_submission:, author:)
       @appropriate_body = appropriate_body
@@ -22,7 +22,7 @@ module AppropriateBodies
       @induction_period = @teacher.ongoing_induction_period
     end
 
-  private
+    private
 
     def close_induction_period(outcome: nil)
       induction_period.update!(

@@ -2,7 +2,7 @@ module Admin
   class BatchesController < AdminController
     include Pagy::Backend
 
-    layout 'full'
+    layout "full"
 
     def index
       @pagy, @batches = pagy(

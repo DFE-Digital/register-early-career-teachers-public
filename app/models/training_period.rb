@@ -4,10 +4,10 @@ class TrainingPeriod < ApplicationRecord
 
   # Enums
   enum :training_programme,
-       { provider_led: "provider_led",
-         school_led: "school_led" },
-       validate: { message: "Must be provider_led or school_led" },
-       suffix: :training_programme
+    {provider_led: "provider_led",
+     school_led: "school_led"},
+    validate: {message: "Must be provider_led or school_led"},
+    suffix: :training_programme
 
   enum :withdrawal_reason, {
     left_teaching_profession: "left_teaching_profession",
@@ -15,7 +15,7 @@ class TrainingPeriod < ApplicationRecord
     mentor_no_longer_being_mentor: "mentor_no_longer_being_mentor",
     switched_to_school_led: "switched_to_school_led",
     other: "other"
-  }, validate: { message: "Must be a valid withdrawal reason", allow_nil: true }, suffix: :withdrawal_reason
+  }, validate: {message: "Must be a valid withdrawal reason", allow_nil: true}, suffix: :withdrawal_reason
 
   enum :deferral_reason, {
     bereavement: "bereavement",
@@ -23,7 +23,7 @@ class TrainingPeriod < ApplicationRecord
     parental_leave: "parental_leave",
     career_break: "career_break",
     other: "other"
-  }, validate: { message: "Must be a valid deferral reason", allow_nil: true }, suffix: :deferral_reason
+  }, validate: {message: "Must be a valid deferral reason", allow_nil: true}, suffix: :deferral_reason
 
   # Associations
   belongs_to :ect_at_school_period, class_name: "ECTAtSchoolPeriod", inverse_of: :training_periods
@@ -37,7 +37,7 @@ class TrainingPeriod < ApplicationRecord
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
   has_one :contract_period, through: :active_lead_provider
 
-  belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
+  belongs_to :expression_of_interest, class_name: "ActiveLeadProvider"
   has_one :expression_of_interest_lead_provider, through: :expression_of_interest, source: :lead_provider
   has_one :expression_of_interest_contract_period, through: :expression_of_interest, source: :contract_period
 
@@ -49,7 +49,7 @@ class TrainingPeriod < ApplicationRecord
 
   # Validations
   validates :started_on,
-            presence: true
+    presence: true
 
   validate :one_id_of_trainee_present
   validate :at_least_expression_of_interest_or_school_partnership_present, if: :provider_led_training_programme?
@@ -77,13 +77,13 @@ class TrainingPeriod < ApplicationRecord
 
   scope :ect_training_periods_latest_first, ->(teacher:, lead_provider:) {
     includes(:ect_at_school_period, :lead_provider)
-    .where(ect_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
-    .latest_first
+      .where(ect_at_school_period: {teacher:}, lead_provider: {id: lead_provider})
+      .latest_first
   }
   scope :mentor_training_periods_latest_first, ->(teacher:, lead_provider:) {
     includes(:mentor_at_school_period, :lead_provider)
-    .where(mentor_at_school_period: { teacher: }, lead_provider: { id: lead_provider })
-    .latest_first
+      .where(mentor_at_school_period: {teacher:}, lead_provider: {id: lead_provider})
+      .latest_first
   }
 
   # Delegations
@@ -112,7 +112,7 @@ class TrainingPeriod < ApplicationRecord
     school_partnership_id.blank? && expression_of_interest.present?
   end
 
-private
+  private
 
   def one_id_of_trainee_present
     ids = [ect_at_school_period_id, mentor_at_school_period_id]
@@ -121,7 +121,7 @@ private
   end
 
   def trainee_distinct_period
-    overlap_validation(name: 'Trainee')
+    overlap_validation(name: "Trainee")
   end
 
   def enveloped_by_trainee_at_school_period
@@ -142,25 +142,25 @@ private
   def at_least_expression_of_interest_or_school_partnership_present
     return if expression_of_interest.present? || school_partnership.present?
 
-    errors.add(:base, 'Either expression of interest or school partnership required')
+    errors.add(:base, "Either expression of interest or school partnership required")
   end
 
   def only_provider_led_mentor_training
     if mentor_at_school_period.present? && school_led_training_programme?
-      errors.add(:training_programme, 'Mentor training periods can only be provider-led')
+      errors.add(:training_programme, "Mentor training periods can only be provider-led")
     end
   end
 
   def expression_of_interest_absent_for_school_led
     return if expression_of_interest.blank?
 
-    errors.add(:expression_of_interest, 'Expression of interest must be absent for school-led training programmes')
+    errors.add(:expression_of_interest, "Expression of interest must be absent for school-led training programmes")
   end
 
   def school_partnership_absent_for_school_led
     return if school_partnership.blank?
 
-    errors.add(:school_partnership, 'School partnership must be absent for school-led training programmes')
+    errors.add(:school_partnership, "School partnership must be absent for school-led training programmes")
   end
 
   def withdrawn_deferred_are_mutually_exclusive
@@ -182,6 +182,6 @@ private
   def schedule_absent_for_school_led
     return if schedule.blank?
 
-    errors.add(:schedule, 'Schedule must be absent for school-led training programmes')
+    errors.add(:schedule, "Schedule must be absent for school-led training programmes")
   end
 end

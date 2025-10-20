@@ -9,13 +9,13 @@ RSpec.describe Migrators::Teacher do
     end
 
     def setup_failure_state
-      invalid_trn = '123'
+      invalid_trn = "123"
       teacher_profile = FactoryBot.create(:migration_teacher_profile, trn: invalid_trn)
       FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
     end
 
     describe "#migrate!" do
-      it 'creates a Teacher records for each ECF TeacherProfile' do
+      it "creates a Teacher records for each ECF TeacherProfile" do
         instance.migrate!
 
         Migration::TeacherProfile.find_each do |teacher_profile|

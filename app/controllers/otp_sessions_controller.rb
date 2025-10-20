@@ -39,7 +39,7 @@ class OTPSessionsController < ApplicationController
     end
   end
 
-private
+  private
 
   def build_otp_form
     @otp_form = Sessions::OTPSignInForm.new(email:, code:)

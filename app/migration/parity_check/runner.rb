@@ -7,8 +7,8 @@ module ParityCheck
     attribute :endpoint_ids
     attribute :mode, default: -> { :concurrent }
 
-    validates :mode, presence: true, inclusion: { in: %w[concurrent sequential] }
-    validates :endpoint_ids, presence: { message: "Select at least one endpoint." }
+    validates :mode, presence: true, inclusion: {in: %w[concurrent sequential]}
+    validates :endpoint_ids, presence: {message: "Select at least one endpoint."}
     validate :endpoints_exist
     validate :lead_providers_exist
 
@@ -30,7 +30,7 @@ module ParityCheck
       super(ids&.compact_blank)
     end
 
-  private
+    private
 
     def endpoints
       @endpoints ||= Endpoint.where(id: endpoint_ids)

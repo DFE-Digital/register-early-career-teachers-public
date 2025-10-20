@@ -33,7 +33,7 @@ module Schools
       end
     end
 
-  private
+    private
 
     def matching_partnerships
       @matching_partnerships ||= SchoolPartnerships::Search

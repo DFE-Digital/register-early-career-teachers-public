@@ -21,7 +21,7 @@ module Teachers::Details
       current_period.present?
     end
 
-  private
+    private
 
     alias_method :enable_delete?, :enable_delete
     alias_method :enable_edit?, :enable_edit
@@ -49,14 +49,14 @@ module Teachers::Details
       return unless enable_release?
       return if admin_mode?
 
-      govuk_link_to('Release', new_ab_teacher_release_ect_path(teacher), no_visited_state: true)
+      govuk_link_to("Release", new_ab_teacher_release_ect_path(teacher), no_visited_state: true)
     end
 
     # @return [String, nil]
     def edit_link
       return unless enable_edit?
 
-      govuk_link_to('Edit', edit_path, no_visited_state: true)
+      govuk_link_to("Edit", edit_path, no_visited_state: true)
     end
 
     # @return [String]
@@ -74,7 +74,7 @@ module Teachers::Details
       return unless admin_mode?
 
       delete_path = confirm_delete_admin_teacher_induction_period_path(teacher_id: teacher.id, id: current_period.id)
-      govuk_link_to('Delete', delete_path, method: :get, class: 'govuk-link--destructive', no_visited_state: true)
+      govuk_link_to("Delete", delete_path, method: :get, class: "govuk-link--destructive", no_visited_state: true)
     end
 
     # @return [Boolean]

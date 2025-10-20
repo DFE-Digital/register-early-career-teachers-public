@@ -25,9 +25,9 @@ class AnalyticsBatchJob < ApplicationJob
     events.map do |db_event|
       data = db_event.attributes
       event = DfE::Analytics::Event.new
-                                   .with_type(:bulk_upload_action)
-                                   .with_entity_table_name(:bulk_upload_actions)
-                                   .with_data(data:)
+        .with_type(:bulk_upload_action)
+        .with_entity_table_name(:bulk_upload_actions)
+        .with_data(data:)
 
       DfE::Analytics::SendEvents.do(Array.wrap(event.as_json))
     end

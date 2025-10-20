@@ -20,16 +20,16 @@ describe Schools::TrainingProgramme do
       context "when school has at least one mentor in training" do
         let(:mentor_at_school_period) do
           FactoryBot.create(:mentor_at_school_period,
-                            :ongoing,
-                            school:,
-                            started_on: '2021-01-01')
+            :ongoing,
+            school:,
+            started_on: "2021-01-01")
         end
         let!(:training_period) do
           FactoryBot.create(:training_period,
-                            :for_mentor,
-                            mentor_at_school_period:,
-                            school_partnership:,
-                            started_on: mentor_at_school_period.started_on)
+            :for_mentor,
+            mentor_at_school_period:,
+            school_partnership:,
+            started_on: mentor_at_school_period.started_on)
         end
 
         it "returns the correct `training_programme` choice" do
@@ -40,22 +40,22 @@ describe Schools::TrainingProgramme do
       context "when school has mentors not in training (only mentoring)" do
         let(:mentor_at_school_period) do
           FactoryBot.create(:mentor_at_school_period,
-                            :ongoing,
-                            school:,
-                            started_on: '2021-01-01')
+            :ongoing,
+            school:,
+            started_on: "2021-01-01")
         end
         let(:ect_at_school_period) do
           FactoryBot.create(:ect_at_school_period,
-                            :ongoing,
-                            school:,
-                            started_on: '2021-01-01')
+            :ongoing,
+            school:,
+            started_on: "2021-01-01")
         end
         let!(:mentorship_period) do
           FactoryBot.create(:mentorship_period,
-                            :ongoing,
-                            started_on: mentor_at_school_period.started_on,
-                            mentor: mentor_at_school_period,
-                            mentee: ect_at_school_period)
+            :ongoing,
+            started_on: mentor_at_school_period.started_on,
+            mentor: mentor_at_school_period,
+            mentee: ect_at_school_period)
         end
 
         it "returns the correct `training_programme` choice" do
@@ -66,17 +66,17 @@ describe Schools::TrainingProgramme do
       context "when school has at least one expression of interest for training from a mentor" do
         let(:mentor_at_school_period) do
           FactoryBot.create(:mentor_at_school_period,
-                            :ongoing,
-                            school:,
-                            started_on: '2021-01-01')
+            :ongoing,
+            school:,
+            started_on: "2021-01-01")
         end
         let!(:training_period) do
           FactoryBot.create(:training_period,
-                            :for_mentor,
-                            school_partnership: nil,
-                            expression_of_interest: FactoryBot.create(:active_lead_provider, contract_period:),
-                            mentor_at_school_period:,
-                            started_on: mentor_at_school_period.started_on)
+            :for_mentor,
+            school_partnership: nil,
+            expression_of_interest: FactoryBot.create(:active_lead_provider, contract_period:),
+            mentor_at_school_period:,
+            started_on: mentor_at_school_period.started_on)
         end
 
         it "returns the correct `training_programme` choice" do
@@ -88,17 +88,17 @@ describe Schools::TrainingProgramme do
         context "when there is only `provider_led` as the ects training programmes" do
           let(:ect_at_school_period) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
-                              school:,
-                              started_on: '2021-01-01')
+              :ongoing,
+              school:,
+              started_on: "2021-01-01")
           end
           let!(:training_period) do
             FactoryBot.create(:training_period,
-                              :for_ect,
-                              :provider_led,
-                              ect_at_school_period:,
-                              school_partnership:,
-                              started_on: ect_at_school_period.started_on)
+              :for_ect,
+              :provider_led,
+              ect_at_school_period:,
+              school_partnership:,
+              started_on: ect_at_school_period.started_on)
           end
 
           it "returns the correct `training_programme` choice" do
@@ -109,16 +109,16 @@ describe Schools::TrainingProgramme do
         context "when there is only `school_led` as the ects training programmes" do
           let(:ect_at_school_period) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
-                              school:,
-                              started_on: '2021-01-01')
+              :ongoing,
+              school:,
+              started_on: "2021-01-01")
           end
           let!(:training_period) do
             FactoryBot.create(:training_period,
-                              :school_led,
-                              ect_at_school_period:,
-                              started_on: '2022-01-01',
-                              finished_on: '2022-06-01')
+              :school_led,
+              ect_at_school_period:,
+              started_on: "2022-01-01",
+              finished_on: "2022-06-01")
           end
 
           it "returns the correct `training_programme` choice" do
@@ -129,31 +129,31 @@ describe Schools::TrainingProgramme do
         context "when there is a mix of `provider_led` and `school_led` as the ects training programmes" do
           let(:ect_at_school_period_1) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
-                              school:,
-                              started_on: '2021-01-01')
+              :ongoing,
+              school:,
+              started_on: "2021-01-01")
           end
           let!(:training_period_1) do
             FactoryBot.create(:training_period,
-                              :provider_led,
-                              ect_at_school_period: ect_at_school_period_1,
-                              school_partnership:,
-                              started_on: '2022-01-01',
-                              finished_on: '2022-06-01')
+              :provider_led,
+              ect_at_school_period: ect_at_school_period_1,
+              school_partnership:,
+              started_on: "2022-01-01",
+              finished_on: "2022-06-01")
           end
 
           let(:ect_at_school_period_2) do
             FactoryBot.create(:ect_at_school_period,
-                              :ongoing,
-                              school:,
-                              started_on: '2021-01-01')
+              :ongoing,
+              school:,
+              started_on: "2021-01-01")
           end
           let!(:training_period) do
             FactoryBot.create(:training_period,
-                              :school_led,
-                              ect_at_school_period: ect_at_school_period_2,
-                              started_on: '2022-01-01',
-                              finished_on: '2022-06-01')
+              :school_led,
+              ect_at_school_period: ect_at_school_period_2,
+              started_on: "2022-01-01",
+              finished_on: "2022-06-01")
           end
 
           it "returns the correct `training_programme` choice" do
@@ -165,16 +165,16 @@ describe Schools::TrainingProgramme do
       context "when school has at least one expression of interest for training from an ect" do
         let(:ect_at_school_period) do
           FactoryBot.create(:ect_at_school_period,
-                            :ongoing,
-                            school:,
-                            started_on: '2021-01-01')
+            :ongoing,
+            school:,
+            started_on: "2021-01-01")
         end
         let!(:training_period) do
           FactoryBot.create(:training_period,
-                            :for_ect,
-                            :school_led,
-                            ect_at_school_period:,
-                            started_on: ect_at_school_period.started_on)
+            :for_ect,
+            :school_led,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on)
         end
 
         it "returns the correct `training_programme` choice" do

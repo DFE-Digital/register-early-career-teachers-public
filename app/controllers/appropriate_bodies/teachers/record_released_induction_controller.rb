@@ -18,7 +18,7 @@ module AppropriateBodies
         end
       end
 
-    private
+      private
 
       def pending_induction_submission_params
         params.expect(pending_induction_submission: %i[finished_on number_of_terms])

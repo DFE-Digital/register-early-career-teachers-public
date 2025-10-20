@@ -30,7 +30,7 @@ module Admin
       mentorship_period.finished_on.to_fs(:govuk)
     end
 
-  private
+    private
 
     def mentorship_period
       __getobj__

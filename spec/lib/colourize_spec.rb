@@ -17,7 +17,7 @@ RSpec.describe Colourize do
     it "handles multiple mode options" do
       modes = %i[bold underline]
 
-      expect(Colourize.text("Ka-pow!", :green, modes)).to eq "\e[#{Colourize::COLOURS[:green]};#{Colourize::MODES.values_at(*modes).join(';')}mKa-pow!\e[#{Colourize::MODES[:clear]}m"
+      expect(Colourize.text("Ka-pow!", :green, modes)).to eq "\e[#{Colourize::COLOURS[:green]};#{Colourize::MODES.values_at(*modes).join(";")}mKa-pow!\e[#{Colourize::MODES[:clear]}m"
     end
 
     it "handles a nil mode param" do

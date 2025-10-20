@@ -94,9 +94,9 @@ RSpec.describe ParityCheck::DynamicRequestContent do
             attributes: {
               cohort: active_lead_provider.contract_period_year,
               school_id: school.api_id,
-              delivery_partner_id: lead_provider_delivery_partnership.delivery_partner.api_id,
-            },
-          },
+              delivery_partner_id: lead_provider_delivery_partnership.delivery_partner.api_id
+            }
+          }
         })
       end
 
@@ -140,9 +140,9 @@ RSpec.describe ParityCheck::DynamicRequestContent do
           data: {
             type: "partnerships",
             attributes: {
-              delivery_partner_id: other_delivery_partner.api_id,
-            },
-          },
+              delivery_partner_id: other_delivery_partner.api_id
+            }
+          }
         })
       end
 

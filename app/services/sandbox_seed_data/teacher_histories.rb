@@ -3,7 +3,7 @@ module SandboxSeedData
     TRAINING_STATUS_COLOURS = {
       active: :green,
       withdrawn: :red,
-      deferred: :yellow,
+      deferred: :yellow
     }.freeze
 
     def plant
@@ -14,7 +14,7 @@ module SandboxSeedData
       Teacher.find_each { create_history(it) }
     end
 
-  private
+    private
 
     def create_history(teacher)
       log_seed_info(::Teachers::Name.new(teacher).full_name, indent: 2)
@@ -75,7 +75,7 @@ module SandboxSeedData
 
       finished_on = finished_on.present? ? rand(started_on..finished_on) : nil
 
-      { started_on:, finished_on: }
+      {started_on:, finished_on:}
     end
 
     def random_school_partnership
@@ -99,7 +99,7 @@ module SandboxSeedData
     end
 
     def log_training_period(training_period:)
-      prefix = (training_period.started_on.future?) ? "will be" : "was"
+      prefix = training_period.started_on.future? ? "will be" : "was"
 
       if training_period.provider_led_training_programme? && training_period.school_partnership.present?
         training_status = ::API::TrainingPeriods::TrainingStatus.new(training_period:).status
@@ -112,10 +112,9 @@ module SandboxSeedData
     end
 
     def describe_period_duration(period)
-      case
-      when period.started_on.future?
+      if period.started_on.future?
         "from #{period.started_on}"
-      when period.finished_on
+      elsif period.finished_on
         "between #{period.started_on} and #{period.finished_on}"
       else
         "since #{period.started_on}"

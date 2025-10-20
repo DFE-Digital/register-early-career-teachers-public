@@ -11,7 +11,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get admin_teacher_path(teacher)
@@ -20,7 +20,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "returns http success" do
         get admin_teacher_path(teacher)
@@ -29,7 +29,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
 
       context "when teacher has migration failures" do
         before do
-          MigrationFailure.create!(parent_type: "Teacher", parent_id: teacher.id, failure_message: "foo", item: { foo: :bar }, data_migration_id: 1)
+          MigrationFailure.create!(parent_type: "Teacher", parent_id: teacher.id, failure_message: "foo", item: {foo: :bar}, data_migration_id: 1)
         end
 
         it "displays migration warning" do

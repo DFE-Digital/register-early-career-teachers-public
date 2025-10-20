@@ -23,7 +23,7 @@ module Admin
       end
     end
 
-  private
+    private
 
     def record_induction_period_deleted_event!(author:, teacher:, appropriate_body:, modifications:)
       Events::Record.record_induction_period_deleted_event!(

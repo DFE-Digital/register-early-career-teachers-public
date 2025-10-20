@@ -8,7 +8,7 @@ class Migration::TeacherFailuresController < ::AdminController
     @teachers = Admin::TeacherPresenter.wrap(teachers)
   end
 
-private
+  private
 
   def find_matching_failures(failure_message)
     scope = ::Teacher.joins(:teacher_migration_failures)

@@ -17,7 +17,7 @@ module Admin
         update_lead_provider_pairings
       end
 
-    private
+      private
 
       def validate_delivery_partner
         @delivery_partner = DeliveryPartner.find(delivery_partner_id)
@@ -44,22 +44,22 @@ module Admin
 
       def update_lead_provider_pairings
         result = if @contract_period.started_on_or_before_today?
-                   # For current/past periods: only add new partnerships, preserve existing ones
-                   ::DeliveryPartners::AddLeadProviderPairings.new(
-                     delivery_partner: @delivery_partner,
-                     contract_period: @contract_period,
-                     active_lead_provider_ids: @active_lead_provider_ids,
-                     author:
-                   ).add!
-                 else
-                   # For future periods: replace all partnerships
-                   ::DeliveryPartners::UpdateLeadProviderPairings.new(
-                     delivery_partner: @delivery_partner,
-                     contract_period: @contract_period,
-                     active_lead_provider_ids: @active_lead_provider_ids,
-                     author:
-                   ).update!
-                 end
+          # For current/past periods: only add new partnerships, preserve existing ones
+          ::DeliveryPartners::AddLeadProviderPairings.new(
+            delivery_partner: @delivery_partner,
+            contract_period: @contract_period,
+            active_lead_provider_ids: @active_lead_provider_ids,
+            author:
+          ).add!
+        else
+          # For future periods: replace all partnerships
+          ::DeliveryPartners::UpdateLeadProviderPairings.new(
+            delivery_partner: @delivery_partner,
+            contract_period: @contract_period,
+            active_lead_provider_ids: @active_lead_provider_ids,
+            author:
+          ).update!
+        end
 
         raise ValidationError, "Unable to update lead provider partners" unless result
       end

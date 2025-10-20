@@ -2,9 +2,9 @@ module AppropriateBodies
   # Renders a message if an ECT cannot be claimed or a CTA if they can
   class ClaimECTEligibilityComponent < ApplicationComponent
     attr_reader :pending_induction_submission,
-                :appropriate_body,
-                :teacher,
-                :name
+      :appropriate_body,
+      :teacher,
+      :name
 
     def initialize(pending_induction_submission:, appropriate_body:, teacher:)
       @pending_induction_submission = pending_induction_submission
@@ -14,11 +14,11 @@ module AppropriateBodies
     end
 
     delegate :exempt?,
-             :passed?,
-             :failed?,
-             :no_qts?,
-             :prohibited_from_teaching?,
-             to: :pending_induction_submission
+      :passed?,
+      :failed?,
+      :no_qts?,
+      :prohibited_from_teaching?,
+      to: :pending_induction_submission
 
     # @return [String, nil]
     def blocked_message
@@ -37,7 +37,7 @@ module AppropriateBodies
       end
     end
 
-  private
+    private
 
     # @return [Boolean]
     def claimed_by_another_ab?

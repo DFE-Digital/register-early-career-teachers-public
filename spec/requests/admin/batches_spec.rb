@@ -1,5 +1,5 @@
 RSpec.describe "Admin::BatchesController", type: :request do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: 'Busy Body') }
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Busy Body") }
 
   before do
     FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
@@ -7,7 +7,7 @@ RSpec.describe "Admin::BatchesController", type: :request do
 
   describe "GET /admin/batches" do
     context "when signed in as admin" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "renders successfully" do
         get admin_batches_path
@@ -17,13 +17,13 @@ RSpec.describe "Admin::BatchesController", type: :request do
 
       it "shows batches in the table" do
         get admin_batches_path
-        expect(response.body).to include('Busy Body')
-        expect(response.body).to include('Action')
+        expect(response.body).to include("Busy Body")
+        expect(response.body).to include("Action")
       end
     end
 
     context "when signed in as a non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get admin_batches_path

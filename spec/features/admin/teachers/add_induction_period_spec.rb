@@ -55,7 +55,7 @@ describe "Admin adds an induction period" do
     )
   end
 
-private
+  private
 
   def given_an_appropriate_body_exists(name:)
     FactoryBot.create(:appropriate_body, name:)

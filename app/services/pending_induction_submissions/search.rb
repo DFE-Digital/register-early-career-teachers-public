@@ -12,7 +12,7 @@ module PendingInductionSubmissions
       @scope
     end
 
-  private
+    private
 
     def where_appropriate_body_is(appropriate_body)
       return unless appropriate_body

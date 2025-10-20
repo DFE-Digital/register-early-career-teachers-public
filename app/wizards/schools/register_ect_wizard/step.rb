@@ -11,7 +11,7 @@ module Schools
         persist if valid_step?
       end
 
-    private
+      private
 
       def fetch_trs_teacher(**args)
         ::TRS::APIClient.build.find_teacher(**args)

@@ -10,20 +10,19 @@ describe Migrators::GIASImport do
   def create_gias_school(csv_row)
     school_row = create_school_row(csv_row)
     FactoryBot.create(:gias_school, :with_school,
-                      urn: school_row.urn,
-                      administrative_district_name: school_row.administrative_district_name,
-                      funding_eligibility: school_row.funding_eligibility,
-                      induction_eligibility: school_row.induction_eligibility,
-                      in_england: school_row.in_england,
-                      name: school_row.name,
-                      phase_name: school_row.phase_name,
-                      section_41_approved: school_row.section_41_approved,
-                      status: school_row.status,
-                      type_name: school_row.type_name,
-                      ukprn: school_row.ukprn)
+      urn: school_row.urn,
+      administrative_district_name: school_row.administrative_district_name,
+      funding_eligibility: school_row.funding_eligibility,
+      induction_eligibility: school_row.induction_eligibility,
+      in_england: school_row.in_england,
+      name: school_row.name,
+      phase_name: school_row.phase_name,
+      section_41_approved: school_row.section_41_approved,
+      status: school_row.status,
+      type_name: school_row.type_name,
+      ukprn: school_row.ukprn)
   end
 
-  # rubocop:disable RSpec/AnyInstance
   def stub_gias_importer
     allow_any_instance_of(GIAS::Importer).to receive(:schools_file_path).and_return("schools.csv")
     allow_any_instance_of(GIAS::Importer).to receive(:school_links_file_path).and_return("school_links.csv")
@@ -32,7 +31,6 @@ describe Migrators::GIASImport do
     allow(CSV).to receive(:foreach).with("schools.csv", any_args).and_invoke(school_row_lambda)
     allow(CSV).to receive(:foreach).with("school_links.csv", any_args).and_invoke(school_link_row_lambda)
   end
-  # rubocop:enable RSpec/AnyInstance
 
   let(:csv_rows) { [create_csv_row, create_csv_row] }
   let(:school_row_lambda) { ->(*_, &block) { csv_rows.each(&block) } }

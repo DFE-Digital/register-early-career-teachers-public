@@ -22,11 +22,11 @@ module Schools
         :find_ect
       end
 
-    private
+      private
 
       def persist
         ect.update(national_insurance_number:,
-                   trs_national_insurance_number: trs_teacher.trs_national_insurance_number,
+          trs_national_insurance_number: trs_teacher.trs_national_insurance_number,
                    **trs_teacher.to_h)
       end
 

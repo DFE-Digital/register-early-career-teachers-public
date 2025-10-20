@@ -8,18 +8,18 @@ RSpec.describe API::Guidance::ReleaseNotes::TagsComponent, type: :component do
 
     let(:tags) { %w[bug-fix new-feature] }
 
-    describe '#initialize' do
-      it 'sets it to the injected object if provided' do
+    describe "#initialize" do
+      it "sets it to the injected object if provided" do
         expect(component.tags).to eq(tags)
       end
     end
 
     describe "#render" do
       let(:expected_output) do
-        %(<div class=\"release-notes-tags\">) +
-          %(<div class=\"tag-group\">) +
-          %(<strong class=\"govuk-tag govuk-tag--green\">New feature</strong>\n) +
-          %(<strong class=\"govuk-tag govuk-tag--yellow\">Bug fix</strong></div></div>\n)
+        %(<div class="release-notes-tags">) +
+          %(<div class="tag-group">) +
+          %(<strong class="govuk-tag govuk-tag--green">New feature</strong>\n) +
+          %(<strong class="govuk-tag govuk-tag--yellow">Bug fix</strong></div></div>\n)
       end
 
       it "renders the correct output" do
