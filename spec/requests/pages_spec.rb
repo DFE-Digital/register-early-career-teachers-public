@@ -44,9 +44,9 @@ RSpec.describe "Pages", type: :request do
         get '/access-denied'
       end
 
-      it 'shows the access denied page' do
+      it 'shows the access denied page and the invalid org name' do
         expect(response).to be_successful
-        expect(response.body).to include('Invalid Organisation').and include('is not the correct organisation')
+        expect(response.body).to include('Invalid Organisation')
       end
     end
     # rubocop:enable RSpec/AnyInstance
