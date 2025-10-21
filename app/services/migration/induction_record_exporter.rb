@@ -1,13 +1,21 @@
 module Migration
   class InductionRecordExporter
+    CACHE_KEY = "induction-record-data"
+
     def run
       Migration::Base.connection.execute(query)
+    end
+
+    def generate_and_cache_csv
+      Rails.cache.fetch(CACHE_KEY, expires_in: 24.hours) do
+        generate_csv
+      end
     end
 
     def generate_csv
       CSV.generate(headers: true) do |csv|
         csv << csv_headers
-        ar_query.find_each(batch_size: 5_000) do |induction_record|
+        ar_query.find_each(batch_size: 2_000) do |induction_record|
           csv << csv_row(induction_record)
         end
       end
@@ -15,7 +23,7 @@ module Migration
 
     def stream_csv_to(output_stream)
       output_stream.write CSV.generate_line(csv_headers)
-      ar_query.find_each(batch_size: 5_000) do |induction_record|
+      ar_query.find_each(batch_size: 2_000) do |induction_record|
         output_stream.write CSV.generate_line(csv_row(induction_record))
       end
     end
