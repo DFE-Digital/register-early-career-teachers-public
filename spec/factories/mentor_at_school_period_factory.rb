@@ -5,6 +5,13 @@ FactoryBot.define do
     association :school
     teacher { association :teacher, api_mentor_training_record_id: SecureRandom.uuid }
 
+    after(:create) do |mentor_at_school_period|
+      teacher = mentor_at_school_period.teacher
+      if teacher&.api_mentor_training_record_id.blank?
+        teacher.update!(api_mentor_training_record_id: SecureRandom.uuid)
+      end
+    end
+
     started_on { generate(:base_mentor_date) }
     finished_on { started_on + 1.day }
     email { Faker::Internet.email }
