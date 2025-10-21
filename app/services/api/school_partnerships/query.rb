@@ -52,7 +52,7 @@ module API::SchoolPartnerships
     end
 
     def where_contract_period_year_in(contract_period_years)
-      return if ignore?(filter: contract_period_years)
+      return if ignore?(filter: contract_period_years, ignore_empty_array: false)
 
       @scope = scope
         .joins(:active_lead_provider)

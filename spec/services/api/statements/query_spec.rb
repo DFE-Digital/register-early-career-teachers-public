@@ -118,7 +118,17 @@ RSpec.describe API::Statements::Query do
         end
 
         it "returns no statements if no `contract_period_years` are found" do
+          FactoryBot.create(:statement, contract_period: contract_period1)
+
           query = described_class.new(contract_period_years: "0000")
+
+          expect(query.statements).to be_empty
+        end
+
+        it "returns no statements if `contract_period_years` is an empty array" do
+          FactoryBot.create(:statement, contract_period: contract_period1)
+
+          query = described_class.new(contract_period_years: [])
 
           expect(query.statements).to be_empty
         end

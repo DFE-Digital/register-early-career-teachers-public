@@ -127,6 +127,12 @@ describe API::SchoolPartnerships::Query do
           expect(query.school_partnerships).to be_empty
         end
 
+        it "returns no school partnerships if `contract_period_years` is an empty array" do
+          query = described_class.new(contract_period_years: [])
+
+          expect(query.school_partnerships).to be_empty
+        end
+
         it "ignores invalid `contract_period_years`" do
           query = described_class.new(contract_period_years: [contract_period1.year, 1099])
 

@@ -140,9 +140,28 @@ RSpec.describe API::DeliveryPartners::Query do
         end
 
         it "returns no delivery partners if no `contract_period_years` are found" do
+          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
+
           query = described_class.new(contract_period_years: "0000")
 
           expect(query.delivery_partners).to be_empty
+        end
+
+        it "returns no delivery partners if `contract_period_years` is an empty array" do
+          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
+
+          query = described_class.new(contract_period_years: [])
+
+          expect(query.delivery_partners).to be_empty
+        end
+
+        it "returns all delivery partners if `contract_period_years` is an empty string" do
+          delivery_partner1 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1).delivery_partner
+          delivery_partner2 = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2).delivery_partner
+
+          query = described_class.new(contract_period_years: "")
+
+          expect(query.delivery_partners).to contain_exactly(delivery_partner1, delivery_partner2)
         end
 
         it "ignores invalid `contract_period_years`" do
