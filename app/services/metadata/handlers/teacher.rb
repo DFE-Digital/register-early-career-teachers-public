@@ -25,6 +25,8 @@ module Metadata::Handlers
 
         latest_ect_training_period = latest_ect_training_period_by_lead_provider(teacher:)[lead_provider_id]
         latest_mentor_training_period = latest_mentor_training_period_by_lead_provider(teacher:)[lead_provider_id]
+        latest_ect_contract_period = latest_ect_training_period&.contract_period
+        latest_mentor_contract_period = latest_mentor_training_period&.contract_period
         api_mentor_id = latest_ect_training_period&.trainee&.latest_mentorship_period&.mentor&.teacher&.api_id
 
         changes = {
@@ -32,6 +34,8 @@ module Metadata::Handlers
           lead_provider_id:,
           latest_ect_training_period_id: latest_ect_training_period&.id,
           latest_mentor_training_period_id: latest_mentor_training_period&.id,
+          latest_ect_contract_period_year: latest_ect_contract_period&.year,
+          latest_mentor_contract_period_year: latest_mentor_contract_period&.year,
           api_mentor_id:
         }
 
