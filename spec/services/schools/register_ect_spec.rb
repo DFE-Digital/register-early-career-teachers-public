@@ -28,6 +28,23 @@ RSpec.describe Schools::RegisterECT do
   let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
 
   describe '#register!' do
+    context "when a Teacher record with the same TRN does not exist" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:training_programme) { 'provider_led' }
+
+      before { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+
+      it "creates a new Teacher record" do
+        expect { service.register! }.to change(Teacher, :count).by(1)
+
+        created_teacher = Teacher.find_by(trn:)
+        expect(created_teacher.trs_first_name).to eq(trs_first_name)
+        expect(created_teacher.trs_last_name).to eq(trs_last_name)
+        expect(created_teacher.corrected_name).to eq(corrected_name)
+        expect(created_teacher.api_ect_training_record_id).to be_present
+      end
+    end
+
     context 'when provider led' do
       let(:training_programme) { 'provider_led' }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }

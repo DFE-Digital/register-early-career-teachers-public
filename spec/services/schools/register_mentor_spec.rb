@@ -42,6 +42,7 @@ RSpec.describe Schools::RegisterMentor do
           expect(teacher.trs_first_name).to eq(trs_first_name)
           expect(teacher.trs_last_name).to eq(trs_last_name)
           expect(teacher.corrected_name).to eq(corrected_name)
+          expect(teacher.api_mentor_training_record_id).to be_present
           expect(teacher.trn).to eq(trn)
         end
 
