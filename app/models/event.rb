@@ -19,7 +19,6 @@ class Event < ApplicationRecord
     statement_adjustment_added
     statement_adjustment_deleted
     statement_adjustment_updated
-    teacher_training_period_deferred
     teacher_email_address_updated
     teacher_working_pattern_updated
     teacher_training_programme_updated
@@ -44,6 +43,7 @@ class Event < ApplicationRecord
     teacher_trs_induction_end_date_updated
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
+    teacher_defers_training_period
     teacher_withdraws_training_period
     training_period_assigned_to_school_partnership
     dfe_user_created

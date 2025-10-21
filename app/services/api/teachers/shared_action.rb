@@ -17,6 +17,7 @@ module API::Teachers
       validates :course_identifier, presence: { message: "Enter a '#/course_identifier'." }
 
       validate :lead_provider_exists
+      validate :teacher_exists
       validate :teacher_training_exists
       validates :course_identifier, inclusion: {
         in: COURSE_IDENTIFIERS,
@@ -39,6 +40,13 @@ module API::Teachers
       return if lead_provider
 
       errors.add(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.")
+    end
+
+    def teacher_exists
+      return if errors[:teacher_api_id].any?
+      return if teacher
+
+      errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
     end
 
     def teacher_training_exists
