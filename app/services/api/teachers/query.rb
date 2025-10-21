@@ -89,30 +89,11 @@ module API::Teachers
     def where_contract_period_year_in(contract_period_years)
       return if ignore?(filter: contract_period_years, ignore_empty_array: false)
 
-      @scope = scope
-          .left_joins(
-            lead_provider_metadata: {
-              latest_ect_training_period: {
-                school_partnership: {
-                  lead_provider_delivery_partnership: :active_lead_provider
-                }
-              },
-              latest_mentor_training_period: {
-                school_partnership: {
-                  lead_provider_delivery_partnership: :active_lead_provider
-                }
-              }
-            }
-          )
-          .where(
-            # The first where conditional is for ECTs and the second for mentors
-            # (using the alias names Rails creates for the join tables).
-            <<~SQL.squish,
-              active_lead_providers.contract_period_year IN (:years)
-              OR active_lead_providers_lead_provider_delivery_partnerships.contract_period_year IN (:years)
-            SQL
-            years: contract_period_years
-          )
+      @scope = scope.joins(:lead_provider_metadata)
+      ect_contract_period_scope = @scope.where(lead_provider_metadata: { latest_ect_contract_period_year: contract_period_years })
+      mentor_contract_period_scope = @scope.where(lead_provider_metadata: { latest_mentor_contract_period_year: contract_period_years })
+
+      @scope = scope.merge(ect_contract_period_scope.or(mentor_contract_period_scope))
     end
 
     def where_training_status_is(training_status)

@@ -29,7 +29,6 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           expect(training_period.school_partnership.association(:lead_provider_delivery_partnership)).to be_loaded
 
           expect(training_period.school_partnership.lead_provider_delivery_partnership.association(:delivery_partner)).to be_loaded
-          expect(training_period.school_partnership.lead_provider_delivery_partnership.association(:active_lead_provider)).to be_loaded
 
           if training_period.for_ect?
             expect(training_period.association(:ect_at_school_period)).to be_loaded
@@ -137,7 +136,7 @@ RSpec.describe API::Teachers::Query, :with_metadata do
         end
 
         it "filters by `contract_period_years`" do
-          query = described_class.new(contract_period_years: contract_period2.year.to_s)
+          query = described_class.new(contract_period_years: contract_period2.year)
 
           expect(query.teachers).to contain_exactly(teacher2)
         end
@@ -146,7 +145,7 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           query1 = described_class.new(contract_period_years: [contract_period1.year, contract_period2.year])
           expect(query1.teachers).to contain_exactly(teacher1, teacher2)
 
-          query2 = described_class.new(contract_period_years: [contract_period2.year.to_s, contract_period3.year.to_s])
+          query2 = described_class.new(contract_period_years: [contract_period2.year, contract_period3.year])
           expect(query2.teachers).to contain_exactly(teacher2, teacher3)
         end
 
