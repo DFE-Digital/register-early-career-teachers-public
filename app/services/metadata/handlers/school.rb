@@ -41,14 +41,14 @@ module Metadata::Handlers
           contract_period_year:
         )
 
-        expression_of_interest = expressions_of_interest.include?([lead_provider_id, contract_period_year])
+        expression_of_interest_or_school_partnership = expression_of_interest_or_school_partnership_pairings.include?([lead_provider_id, contract_period_year])
 
-        upsert(metadata, expression_of_interest:)
+        upsert(metadata, expression_of_interest_or_school_partnership:)
       end
     end
 
-    def expressions_of_interest
-      @expressions_of_interest ||= school.lead_providers_and_contract_periods_with_expression_of_interest_or_school_partnership
+    def expression_of_interest_or_school_partnership_pairings
+      @expression_of_interest_or_school_partnership_pairings ||= school.lead_providers_and_contract_periods_with_expression_of_interest_or_school_partnership
     end
 
     def lead_provider_id_contract_period_years

@@ -5,6 +5,6 @@ FactoryBot.define do
     association :lead_provider
 
     updated_at { Faker::Time.between(from: 1.month.ago, to: Time.zone.now) }
-    expression_of_interest { Faker::Boolean.boolean }
+    expression_of_interest_or_school_partnership { Faker::Boolean.boolean }
   end
 end

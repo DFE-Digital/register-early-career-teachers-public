@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_15_110055) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_21_213209) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -394,7 +394,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_110055) do
     t.bigint "school_id", null: false
     t.bigint "lead_provider_id", null: false
     t.integer "contract_period_year"
-    t.boolean "expression_of_interest", null: false
+    t.boolean "expression_of_interest_or_school_partnership", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["contract_period_year"], name: "idx_on_contract_period_year_f5913b27f2"
