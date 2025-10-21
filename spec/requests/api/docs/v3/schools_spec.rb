@@ -10,12 +10,22 @@ RSpec.describe "Schools endpoint", :with_metadata, openapi_spec: "v3/swagger.yam
   let(:"filter[cohort]") { contract_period.year }
 
   before do |example|
+    # Required to send the required filter[cohort] parameter in the
+    # request to pass the filter validation. This is a workaround and
+    # the only way to pass nested query string parameters correctly.
     example.metadata[:example_group][:operation][:parameters] += [{
       name: "filter[cohort]",
       in: :query,
       style: :string,
       required: true
     }]
+  end
+
+  after do |example|
+    # When dry-run is `false` the above filter is appended to the schema.
+    # As we already define the full filter schema we need to remove it here
+    # to avoid duplication.
+    example.metadata[:example_group][:operation][:parameters].pop
   end
 
   it_behaves_like "an API index endpoint documentation",
