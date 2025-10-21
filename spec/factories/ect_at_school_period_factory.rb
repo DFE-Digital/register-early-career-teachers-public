@@ -4,6 +4,13 @@ FactoryBot.define do
   factory(:ect_at_school_period) do
     teacher { association :teacher, api_ect_training_record_id: SecureRandom.uuid }
 
+    after(:create) do |ect_at_school_period|
+      teacher = ect_at_school_period.teacher
+      if teacher&.api_ect_training_record_id.blank?
+        teacher.update!(api_ect_training_record_id: SecureRandom.uuid)
+      end
+    end
+
     independent_school
 
     started_on { generate(:base_ect_date) }
