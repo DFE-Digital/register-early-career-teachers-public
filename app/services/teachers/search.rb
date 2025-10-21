@@ -21,15 +21,15 @@ module Teachers
 
     def order
       case @sort_order
-      when :mentorless_first_then_by_registration_date
-        # mentorless teachers first, sorted by the registration date
+      when :mentorless_first_then_by_school_start_date
+        # mentorless teachers first, sorted by the school start date
         # at the school, latest first
         [
           Arel::Nodes::Case.new
                           .when(MentorshipPeriod.arel_table[:id].eq(nil)).then(0)
                           .else(1)
                           .asc,
-          { ect_at_school_periods: { created_at: 'desc' } }
+          { ect_at_school_periods: { started_on: :desc } }
         ]
       else
         %i[trs_last_name trs_first_name id]
@@ -71,7 +71,7 @@ module Teachers
           .where(ect_at_school_periods: { school: })
       )
 
-      @sort_order = :mentorless_first_then_by_registration_date
+      @sort_order = :mentorless_first_then_by_school_start_date
     end
 
     def where_mentor_at(school)
