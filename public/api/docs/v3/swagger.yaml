@@ -115,7 +115,7 @@ paths:
                       type: participant
                       attributes:
                         full_name: John Doe
-                        teacher_reference_number: '123456789'
+                        teacher_reference_number: '1234567'
                         enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -177,7 +177,7 @@ paths:
                       type: participant
                       attributes:
                         full_name: John Doe
-                        teacher_reference_number: '123456789'
+                        teacher_reference_number: '1234567'
                         enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
@@ -399,14 +399,6 @@ paths:
         required: false
         schema:
           "$ref": "#/components/schemas/SortingTimestamps"
-      - name: filter[cohort]
-        in: query
-        style: string
-        required: true
-      - name: filter[cohort]
-        in: query
-        style: string
-        required: true
       responses:
         '200':
           description: A list of schools scoped to cohort
@@ -439,18 +431,6 @@ paths:
         schema:
           "$ref": "#/components/schemas/SchoolFilter"
         style: deepObject
-      - name: filter[cohort]
-        in: query
-        style: string
-        required: true
-      - name: filter[cohort]
-        in: query
-        style: string
-        required: true
-      - name: filter[cohort]
-        in: query
-        style: string
-        required: true
       responses:
         '200':
           description: A single school scoped to cohort
@@ -695,6 +675,7 @@ components:
           description: Return schools within the specified cohort.
           type: string
           example: '2021'
+          required: true
         urn:
           description: Return a school with the specified Unique Reference Number
             (URN).
