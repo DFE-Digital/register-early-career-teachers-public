@@ -99,7 +99,7 @@ RSpec.describe Metadata::Handlers::School do
           school:,
           lead_provider:,
           contract_period:,
-          expression_of_interest: false
+          expression_of_interest_or_school_partnership: false
         )
       end
 
@@ -111,7 +111,7 @@ RSpec.describe Metadata::Handlers::School do
       end
 
       context "when metadata already exists for a school, lead provider and contract period" do
-        let!(:metadata) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, lead_provider:, contract_period:, expression_of_interest: false) }
+        let!(:metadata) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, lead_provider:, contract_period:, expression_of_interest_or_school_partnership: false) }
 
         it "does not create metadata" do
           expect { refresh_metadata }.not_to change(Metadata::SchoolLeadProviderContractPeriod, :count)
@@ -127,7 +127,7 @@ RSpec.describe Metadata::Handlers::School do
             started_on: mentor_at_school_period.started_on + 1.week
           )
 
-          expect { refresh_metadata }.to change { metadata.reload.expression_of_interest }.from(false).to(true)
+          expect { refresh_metadata }.to change { metadata.reload.expression_of_interest_or_school_partnership }.from(false).to(true)
         end
 
         it "does not update the metadata if no changes are made" do

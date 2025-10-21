@@ -289,7 +289,7 @@ describe School do
       it { is_expected.to be_empty }
     end
 
-    context "when there is a school partnership" do
+    context "when there is a school partnership with at least one training period" do
       let!(:training_period) do
         FactoryBot.create(
           :training_period,
@@ -302,6 +302,12 @@ describe School do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
 
       it { is_expected.to contain_exactly([training_period.school_partnership.lead_provider.id, training_period.school_partnership.contract_period.year]) }
+    end
+
+    context "when there is a school partnership without any training periods" do
+      before { FactoryBot.create(:school_partnership, school:) }
+
+      it { is_expected.to be_empty }
     end
 
     context "when there is a school partnership and expression of interest" do
