@@ -239,15 +239,16 @@ describe School do
     end
   end
 
-  describe "#expression_of_interest_for?" do
-    subject(:school) { FactoryBot.create(:school) }
+  describe "#lead_providers_and_contract_periods_with_expression_of_interest_or_school_partnership" do
+    subject { school.lead_providers_and_contract_periods_with_expression_of_interest_or_school_partnership }
 
+    let(:school) { FactoryBot.create(:school) }
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership) }
     let(:active_lead_provider) { lead_provider_delivery_partnership.active_lead_provider }
     let(:lead_provider) { active_lead_provider.lead_provider }
     let(:contract_period) { active_lead_provider.contract_period }
 
-    it { is_expected.not_to be_expression_of_interest_for(lead_provider.id, contract_period.year) }
+    it { is_expected.to be_empty }
 
     context "when there are ECTs with expressions of interest" do
       let!(:training_period) do
@@ -262,7 +263,7 @@ describe School do
       end
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
 
-      it { is_expected.to be_expression_of_interest_for(lead_provider.id, contract_period.year) }
+      it { is_expected.to contain_exactly([lead_provider.id, contract_period.year]) }
     end
 
     context "when there are mentors with expressions of interest" do
@@ -278,14 +279,60 @@ describe School do
       end
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, finished_on: nil) }
 
-      it { is_expected.to be_expression_of_interest_for(lead_provider.id, contract_period.year) }
+      it { is_expected.to contain_exactly([lead_provider.id, contract_period.year]) }
     end
 
     context "when there are ECTs and mentors without expressions of interest" do
       let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
       let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, finished_on: nil) }
 
-      it { is_expected.not_to be_expression_of_interest_for(lead_provider.id, contract_period.year) }
+      it { is_expected.to be_empty }
+    end
+
+    context "when there is a school partnership" do
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :with_school_partnership,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on + 1.week
+        )
+      end
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
+
+      it { is_expected.to contain_exactly([training_period.school_partnership.lead_provider.id, training_period.school_partnership.contract_period.year]) }
+    end
+
+    context "when there is a school partnership and expression of interest" do
+      let!(:ect_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          :with_school_partnership,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on + 1.week
+        )
+      end
+      let!(:mentor_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          school_partnership: nil,
+          expression_of_interest: active_lead_provider,
+          started_on: mentor_at_school_period.started_on + 1.week
+        )
+      end
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, finished_on: nil) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
+
+      it "includes both school partnerships and expressions of interest" do
+        is_expected.to contain_exactly(
+          [ect_training_period.school_partnership.lead_provider.id, ect_training_period.school_partnership.contract_period.year],
+          [lead_provider.id, contract_period.year]
+        )
+      end
     end
   end
 end
