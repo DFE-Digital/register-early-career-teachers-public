@@ -2,6 +2,7 @@ module InductionPeriods
   class DeleteInductionPeriod
     include Auditable
 
+    # @param induction_period [InductionPeriod]
     attribute :induction_period
 
     # @return [true]

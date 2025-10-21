@@ -21,10 +21,12 @@ module Admin
     private
 
       def record_failed_induction!
-        ::AppropriateBodies::RecordFail.new(
+        RecordFail.new(
           appropriate_body:,
           pending_induction_submission: @pending_induction_submission,
-          author: current_user
+          author: current_user,
+          note: 'bar',
+          zendesk_ticket_id: '#123456'
         ).fail!
       end
     end
