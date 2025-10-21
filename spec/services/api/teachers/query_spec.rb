@@ -150,8 +150,14 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           expect(query2.teachers).to contain_exactly(teacher2, teacher3)
         end
 
-        it "returns no delivery partners if no `contract_period_years` are found" do
+        it "returns no teachers if no `contract_period_years` are found" do
           query = described_class.new(contract_period_years: "0000")
+
+          expect(query.teachers).to be_empty
+        end
+
+        it "returns no teachers if `contract_period_years` is an empty array" do
+          query = described_class.new(contract_period_years: [])
 
           expect(query.teachers).to be_empty
         end
