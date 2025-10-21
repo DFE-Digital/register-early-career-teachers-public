@@ -8,8 +8,11 @@ module Auditable
   include ActiveRecord::Normalization
 
   included do
+    # @param author [Sessions::User]
     attribute :author
+    # @param note [String]
     attribute :note
+    # @param zendesk_ticket_id [String]
     attribute :zendesk_ticket_id
 
     validates :author, presence: true
