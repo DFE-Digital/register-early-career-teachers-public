@@ -56,3 +56,10 @@ review:
     class: PurgePendingInductionSubmissionsJob
     queue: default
     schedule: Every hour
+
+migration:
+  build_induction_record_export_csv:
+    class: BuildInductionRecordExportJob
+    queue: default
+    schedule: every day at 5am
+
