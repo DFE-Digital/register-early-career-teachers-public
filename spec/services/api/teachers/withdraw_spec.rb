@@ -137,7 +137,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
             training_period.reload
             expect(training_period.withdrawn_at).to eq(Time.zone.now)
             expect(training_period.withdrawal_reason.dasherize).to eq(reason)
-            expect(training_period.finished_on).to eq(Time.zone.now.to_date)
+            expect(training_period.finished_on).to eq(training_period.withdrawn_at.to_date)
 
             expect(Events::Record).to have_received(:record_teacher_withdraws_training_period_event!)
           end
@@ -155,7 +155,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
             )
           end
 
-          it "sets withdrawn_at to the finished_on date as it is in the past" do
+          it "sets withdrawn_at to the current date and doesn't change finished_on" do
             freeze_time
 
             expect(subject.withdraw).not_to be(false)
@@ -181,7 +181,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
             )
           end
 
-          it "sets withdrawn_at to Time.zone.now as it is before finished_on" do
+          it "sets withdrawn_at and finished_on to the current date" do
             freeze_time
 
             expect(subject.withdraw).not_to be(false)
@@ -189,7 +189,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
             training_period.reload
             expect(training_period.withdrawn_at).to eq(Time.zone.now)
             expect(training_period.withdrawal_reason.dasherize).to eq(reason)
-            expect(training_period.finished_on).to eq(Time.zone.today)
+            expect(training_period.finished_on).to eq(training_period.withdrawn_at.to_date)
 
             expect(Events::Record).to have_received(:record_teacher_withdraws_training_period_event!)
           end

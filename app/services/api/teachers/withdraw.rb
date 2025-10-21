@@ -33,7 +33,7 @@ module API::Teachers
       ActiveRecord::Base.transaction do
         training_period.withdrawn_at = Time.zone.now
         training_period.withdrawal_reason = reason.underscore
-        training_period.finished_on = [training_period.finished_on, Time.zone.today].compact.min
+        training_period.finished_on = [training_period.finished_on, training_period.withdrawn_at.to_date].compact.min
         training_period.save!
 
         record_withdraw_event!
