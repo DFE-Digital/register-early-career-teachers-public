@@ -14,6 +14,8 @@ Partnerships are agreements between schools, lead providers, and delivery partne
 4. Lead providers find schools they want to partner with using `GET /schools` API endpoint. Schools that have selected them will show as `expression_of_interest = true`. 
 5. Lead providers create partnerships via the `POST /partnerships` endpoint. They’ll then see any participants the school has assigned to them in `GET /participants`.
 
+Lead providers can create a partnership with a school as soon as the cohort opens, regardless of if the school has registered any ECTs or mentors with them yet. Schools can also choose to reuse partnerships from previous cohorts so lead providers do not need to create a new partnership.
+
 ## Understanding partnerships in the API 
 
 The API allows lead providers to confirm, view, and update these agreements so that participants are correctly assigned to training. 
@@ -38,6 +40,8 @@ To see if a school has any ECTs training with them, we've introduced a new field
 * no participants are registered for training with you by the school
 * all participants complete training
 * all participants are moved to another lead provider or school-led training
+* all participants have had their training withdrawn by the lead provider
+* all participants have had their training deferred by the lead provider 
 * there's any combination of the above 
 
 Because schools now make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership, we’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`) from partnership responses. 
