@@ -10,7 +10,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
 
   let(:lead_provider_id) { training_period.lead_provider.id }
   let(:teacher_api_id) { training_period.trainee.teacher.api_id }
-  let(:reason) { TrainingPeriod.withdrawal_reasons.values.sample.dasherize }
+  let(:reason) { API::Teachers::Withdraw::WITHDRAWAL_REASONS.sample }
 
   describe "validations" do
     %i[ect mentor].each do |trainee_type|
@@ -72,7 +72,7 @@ RSpec.describe API::Teachers::Withdraw, :with_metadata, type: :model do
         end
 
         context "when reason values are dashed" do
-          TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).each do |reason_val|
+          API::Teachers::Withdraw::WITHDRAWAL_REASONS.each do |reason_val|
             let(:reason) { reason_val }
 
             it "is valid when reason is '#{reason_val}'" do
