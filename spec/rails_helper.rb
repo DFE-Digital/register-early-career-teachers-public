@@ -24,6 +24,7 @@ RSpec.configure do |config|
   config.include Features::ViewHelpers, type: :feature
   config.include APIHelper, type: :request
   config.include HaveSummaryListRow, type: :component
+  config.include SwaggerExampleParser, type: :request
 
   config.use_transactional_fixtures = true
   config.infer_spec_type_from_file_location!
