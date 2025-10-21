@@ -163,15 +163,16 @@ RSpec.describe Events::Record do
   describe '.record_teacher_passes_induction_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body:, induction_period:)
+        Events::Record.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body:, induction_period:, body: 'Correcting an error')
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
-          heading: 'Rhys Ifans passed induction',
+          heading: 'Rhys Ifans passed induction by admin',
           event_type: :teacher_passes_induction,
           happened_at: induction_period.finished_on,
+          body: 'Correcting an error',
           **author_params
         )
       end
@@ -187,15 +188,16 @@ RSpec.describe Events::Record do
   describe '.record_teacher_fails_induction_event!' do
     it 'queues a RecordEventJob with the correct values' do
       freeze_time do
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period:)
+        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period:, zendesk_ticket_id: '#123456')
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
-          heading: 'Rhys Ifans failed induction',
+          heading: 'Rhys Ifans failed induction by admin',
           event_type: :teacher_fails_induction,
           happened_at: induction_period.finished_on,
+          zendesk_ticket_id: '#123456',
           **author_params
         )
       end
@@ -204,54 +206,6 @@ RSpec.describe Events::Record do
     it 'fails when induction period is missing' do
       expect {
         Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period: nil)
-      }.to raise_error(Events::NoInductionPeriod)
-    end
-  end
-
-  describe '.record_admin_passes_teacher_event!' do
-    it 'queues a RecordEventJob with the correct values' do
-      freeze_time do
-        Events::Record.record_admin_passes_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
-
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          induction_period:,
-          teacher:,
-          appropriate_body:,
-          heading: 'Rhys Ifans passed induction (admin)',
-          event_type: :teacher_passes_induction,
-          happened_at: induction_period.finished_on,
-          **author_params
-        )
-      end
-    end
-
-    it 'fails when induction period is missing' do
-      expect {
-        Events::Record.record_admin_passes_teacher_event!(author:, teacher:, appropriate_body:, induction_period: nil)
-      }.to raise_error(Events::NoInductionPeriod)
-    end
-  end
-
-  describe '.record_admin_fails_teacher_event!' do
-    it 'queues a RecordEventJob with the correct values' do
-      freeze_time do
-        Events::Record.record_admin_fails_teacher_event!(author:, teacher:, appropriate_body:, induction_period:)
-
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          induction_period:,
-          teacher:,
-          appropriate_body:,
-          heading: 'Rhys Ifans failed induction (admin)',
-          event_type: :teacher_fails_induction,
-          happened_at: induction_period.finished_on,
-          **author_params
-        )
-      end
-    end
-
-    it 'fails when induction period is missing' do
-      expect {
-        Events::Record.record_admin_fails_teacher_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
