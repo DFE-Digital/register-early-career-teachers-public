@@ -1,4 +1,4 @@
-RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
+RSpec.describe Metadata::Handlers::Teacher do
   let(:instance) { described_class.new(teacher1) }
 
   let!(:teacher1) { FactoryBot.create(:teacher) }
@@ -11,7 +11,7 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
     let(:object) { teacher1 }
   end
 
-  describe ".destroy_all_metadata!" do
+  describe ".destroy_all_metadata!", :with_metadata do
     subject(:destroy_all_metadata) { described_class.destroy_all_metadata! }
 
     before { instance.refresh_metadata! }
