@@ -8,6 +8,7 @@ module Migration
     belongs_to :schedule
     has_many :induction_records
     has_many :school_mentors # only ParticipantProfile::Mentor
+    has_many :participant_declarations
 
     scope :ect, -> { where(type: "ParticipantProfile::ECT") }
     scope :mentor, -> { where(type: "ParticipantProfile::Mentor") }

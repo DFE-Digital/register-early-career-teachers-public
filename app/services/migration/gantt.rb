@@ -1,9 +1,10 @@
 module Migration
   class Gantt
-    attr_reader :id, :induction_records
+    attr_reader :id, :induction_records, :declarations
 
-    def initialize(induction_records)
+    def initialize(induction_records, declarations)
       @induction_records = induction_records
+      @declarations = declarations
     end
 
     def build
@@ -16,6 +17,7 @@ module Migration
 
         #{academic_year_boundaries.join("\n")}
         #{induction_record_descriptions.join("\n")}
+        #{declaration_descriptions.join("\n")}
         #{legend}
 
         @endgantt
@@ -99,7 +101,7 @@ module Migration
     end
 
     def declaration_descriptions
-      ect_declaration_dates.compact.map { |name, date| %([#{name}] happens at #{date}) }
+      declarations.map { |d| %([#{d.declaration_type}] happens at #{d.declaration_date.to_date}) }
     end
   end
 end
