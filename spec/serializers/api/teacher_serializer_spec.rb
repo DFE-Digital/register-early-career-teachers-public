@@ -209,7 +209,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `schedule_identifier`" do
-            expect(ect_enrolment["schedule_identifier"]).to eq("ecf-extended-september")
+            expect(ect_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
           end
 
           it "serializes `delivery_partner_id`" do
@@ -340,7 +340,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `schedule_identifier`" do
-            expect(mentor_enrolment["schedule_identifier"]).to eq("ecf-extended-september")
+            expect(mentor_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
           end
 
           it "serializes `delivery_partner_id`" do
