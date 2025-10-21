@@ -42,7 +42,15 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                     response_schema_ref: "#/components/schemas/ParticipantsResponse",
                     filter_schema_ref: "#/components/schemas/ParticipantsFilter",
                     sorting_schema_ref: "#/components/schemas/SortingTimestamps",
-                  }
+                  } do
+                    let(:response_example) do
+                      extract_swagger_example(schema: "#/components/schemas/ParticipantsResponse", version: :v3).tap do |example|
+                        example[:data][0][:attributes][:enrolments][0][:training_status] = "active"
+                        example[:data][0][:attributes][:enrolments][0][:deferral] = nil
+                        example[:data][0][:attributes][:enrolments][0][:withdrawal] = nil
+                      end
+                    end
+                  end
 
   it_behaves_like "an API show endpoint documentation",
                   {
@@ -50,5 +58,13 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                     tag: "Participants",
                     resource_description: "participant",
                     response_schema_ref: "#/components/schemas/ParticipantResponse",
-                  }
+                  } do
+                    let(:response_example) do
+                      extract_swagger_example(schema: "#/components/schemas/ParticipantResponse", version: :v3).tap do |example|
+                        example[:data][:attributes][:enrolments][0][:training_status] = "active"
+                        example[:data][:attributes][:enrolments][0][:deferral] = nil
+                        example[:data][:attributes][:enrolments][0][:withdrawal] = nil
+                      end
+                    end
+                  end
 end
