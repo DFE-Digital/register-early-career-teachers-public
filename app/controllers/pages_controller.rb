@@ -10,8 +10,7 @@ class PagesController < ApplicationController
     if (@organisation_name = session.delete(:invalid_user_organisation_name)).nil?
       redirect_to root_path
     end
-    # TODO: dynamically set this based on environment
-    @dfe_user_account = 'https://test-services.signin.education.gov.uk/my-services'
+    @dfe_user_account = Rails.application.config.dfe_sign_in_user_account
   end
 
   def support
