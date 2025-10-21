@@ -1,5 +1,5 @@
 RSpec.describe Teachers::SetFundingEligibility do
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { FactoryBot.create(:teacher, api_ect_training_record_id: SecureRandom.uuid) }
   let(:author) { Events::SystemAuthor.new }
   let(:service) { described_class.new(teacher:, author:) }
 

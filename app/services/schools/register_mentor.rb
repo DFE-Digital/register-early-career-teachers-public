@@ -84,7 +84,8 @@ module Schools
       @teacher = ::Teacher.create_with(
         trs_first_name:,
         trs_last_name:,
-        corrected_name:
+        corrected_name:,
+        api_mentor_training_record_id: SecureRandom.uuid
       ).find_or_create_by!(trn:)
     end
 

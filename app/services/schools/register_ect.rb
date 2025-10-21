@@ -71,7 +71,12 @@ module Schools
     end
 
     def create_teacher!
-      @teacher = ::Teacher.create_with(trs_first_name:, trs_last_name:, corrected_name:).find_or_create_by!(trn:)
+      @teacher = ::Teacher.create_with(
+        trs_first_name:,
+        trs_last_name:,
+        corrected_name:,
+        api_ect_training_record_id: SecureRandom.uuid
+      ).find_or_create_by!(trn:)
     end
 
     def create_training_period!
