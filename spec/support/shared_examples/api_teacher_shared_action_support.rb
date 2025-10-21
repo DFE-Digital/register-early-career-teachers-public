@@ -1,7 +1,6 @@
-RSpec.shared_examples "a teacher action" do
-  include_context "with authorization for api request"
-
-  let(:author) { Events::SystemAuthor.new }
+RSpec.shared_examples "an API teacher shared action", :with_metadata do
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:lead_provider) { active_lead_provider.lead_provider }
   let(:lead_provider_delivery_partnership) do
     FactoryBot.create(
       :lead_provider_delivery_partnership,
@@ -31,39 +30,38 @@ RSpec.shared_examples "a teacher action" do
     )
   end
   let(:teacher) { ect_at_school_period.teacher }
-  let(:participant_id) { teacher.api_id }
+  let(:lead_provider_id) { lead_provider.id }
+  let(:teacher_api_id) { teacher.api_id }
   let(:course_identifier) { "ecf-induction" }
-
-  before { Metadata::Manager.refresh_all_metadata!(async: false) }
 
   it { expect(instance).to be_valid }
 
   describe "validations" do
     subject { instance }
 
-    it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Your update cannot be made as the '#/lead_provider' is not recognised. Check lead provider details and try again.") }
-    it { is_expected.to validate_presence_of(:participant_id).with_message("The property '#/participant_id' must be present") }
+    it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Enter a '#/lead_provider_id'.") }
+    it { is_expected.to validate_presence_of(:teacher_api_id).with_message("Enter a '#/teacher_api_id'.") }
     it { is_expected.to validate_inclusion_of(:course_identifier).in_array(%w[ecf-induction ecf-mentor]).with_message("The entered '#/course_identifier' is not recognised for the given participant. Check details and try again.") }
 
     context "when a matching training period does not exist (different course identifier)" do
       let(:course_identifier) { "ecf-mentor" }
 
       it { is_expected.to have_one_error_per_attribute }
-      it { is_expected.to have_error(:participant_id, "Your update cannot be made as the '#/participant_id' is not recognised. Check participant details and try again.") }
+      it { is_expected.to have_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") }
     end
 
     context "when a matching training period does not exist (different lead provider)" do
       let(:lead_provider_id) { FactoryBot.create(:lead_provider, name: "Different to #{lead_provider.name}").id }
 
       it { is_expected.to have_one_error_per_attribute }
-      it { is_expected.to have_error(:participant_id, "Your update cannot be made as the '#/participant_id' is not recognised. Check participant details and try again.") }
+      it { is_expected.to have_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") }
     end
 
     context "when the teacher does not exist" do
-      let(:participant_id) { "non-existent-participant-id" }
+      let(:teacher_api_id) { "non-existent-participant-id" }
 
       it { is_expected.to have_one_error_per_attribute }
-      it { is_expected.to have_error(:participant_id, "Your update cannot be made as the '#/participant_id' is not recognised. Check participant details and try again.") }
+      it { is_expected.to have_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") }
     end
 
     context "when a non-existent course identifier is provided" do
@@ -76,13 +74,13 @@ RSpec.shared_examples "a teacher action" do
     context "when an empty course identifier is provided" do
       let(:course_identifier) { "" }
 
-      it { is_expected.to have_error(:course_identifier, "Enter a '#/course_identifier' value for this participant.") }
+      it { is_expected.to have_error(:course_identifier, "Enter a '#/course_identifier'.") }
     end
 
     context "when a nil course identifier is provided" do
       let(:course_identifier) { nil }
 
-      it { is_expected.to have_error(:course_identifier, "Enter a '#/course_identifier' value for this participant.") }
+      it { is_expected.to have_error(:course_identifier, "Enter a '#/course_identifier'.") }
     end
   end
 end

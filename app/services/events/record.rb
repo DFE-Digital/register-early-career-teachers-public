@@ -182,14 +182,6 @@ module Events
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_teacher_training_period_deferred_event!(author:, teacher:, training_period:, modifications:, happened_at: Time.zone.now)
-      event_type = :teacher_training_period_deferred
-      teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s training period with id #{training_period.id} was deferred"
-
-      new(event_type:, author:, modifications:, teacher:, training_period:, heading:, happened_at:).record_event!
-    end
-
     # Teacher TRS Events
 
     def self.teacher_name_changed_in_trs_event!(old_name:, new_name:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
@@ -416,6 +408,15 @@ module Events
       heading = "#{teacher_name} left #{school_name}"
 
       new(event_type:, author:, heading:, mentor_at_school_period:, teacher:, school:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_defers_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:, happened_at: Time.zone.now)
+      event_type = :teacher_defers_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name}’s #{training_type} training period was deferred by #{lead_provider.name}"
+
+      new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, modifications:, happened_at:).record_event!
     end
 
     def self.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:, happened_at: Time.zone.now)

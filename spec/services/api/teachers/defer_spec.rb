@@ -1,8 +1,8 @@
 RSpec.describe API::Teachers::Defer, type: :model do
   let(:reason) { described_class::DEFERRAL_REASONS.sample }
-  let(:instance) { described_class.new(lead_provider_id:, participant_id:, course_identifier:, reason:, author:) }
+  let(:instance) { described_class.new(lead_provider_id:, teacher_api_id:, course_identifier:, reason:) }
 
-  it_behaves_like "a teacher action" do
+  it_behaves_like "an API teacher shared action" do
     describe "validations" do
       it { is_expected.to validate_inclusion_of(:reason).in_array(described_class::DEFERRAL_REASONS).with_message("The property '#/reason' must be a valid reason") }
 
@@ -20,7 +20,7 @@ RSpec.describe API::Teachers::Defer, type: :model do
           )
         end
 
-        it { expect(instance).to have_error(:participant_id, "The participant is already deferred") }
+        it { expect(instance).to have_error(:teacher_api_id, "The '#/teacher_api_id' is already deferred.") }
       end
 
       context "when the teacher training period is withdrawn" do
@@ -37,7 +37,7 @@ RSpec.describe API::Teachers::Defer, type: :model do
           )
         end
 
-        it { expect(instance).to have_error(:participant_id, "The participant is already withdrawn") }
+        it { expect(instance).to have_error(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.") }
       end
     end
 
@@ -72,7 +72,7 @@ RSpec.describe API::Teachers::Defer, type: :model do
     context "when training period `finished_on` date is later than the deferral date" do
       before { training_period.update!(finished_on: 1.week.from_now) }
 
-      it "defers the training period successfully" do
+      it "defers the training period and updates the training period `finished_on`" do
         freeze_time do
           expect(instance.defer).to be true
 
@@ -87,9 +87,10 @@ RSpec.describe API::Teachers::Defer, type: :model do
 
     it "records a teacher training period deferred event" do
       freeze_time do
-        expect(Events::Record).to receive(:record_teacher_training_period_deferred_event!)
-          .with(author:,
+        expect(Events::Record).to receive(:record_teacher_defers_training_period_event!)
+          .with(author: an_instance_of(Events::LeadProviderAPIAuthor),
                 teacher:,
+                lead_provider:,
                 training_period:,
                 modifications: {
                   deferral_reason: [nil, reason.underscore],

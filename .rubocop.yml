@@ -129,4 +129,4 @@ RSpec/EmptyExampleGroup:
 RSpec/VariableName:
   Exclude:
     - 'spec/requests/api/docs/**/*'
-    - 'spec/support/shared_contexts/api_request_auth.rb'
+    - 'spec/support/shared_contexts/api_doc_request_auth.rb'
