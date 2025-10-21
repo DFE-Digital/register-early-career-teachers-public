@@ -66,7 +66,7 @@ capita__delivery_partner__2022 = find_lead_provider_delivery_partnership(deliver
 ActiveLeadProvider.find_each do |active_lead_provider|
   3.times do
     delivery_partner = DeliveryPartner.order("RANDOM()").first
-    lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.where(active_lead_provider:, delivery_partner:).first
+    lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.find_by(active_lead_provider:, delivery_partner:)
     lead_provider_delivery_partnership ||= FactoryBot.create(:lead_provider_delivery_partnership,
                                                              active_lead_provider:,
                                                              delivery_partner:)
