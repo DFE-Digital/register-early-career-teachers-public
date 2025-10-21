@@ -410,13 +410,13 @@ module Events
       new(event_type:, author:, heading:, mentor_at_school_period:, teacher:, school:, happened_at:).record_event!
     end
 
-    def self.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, metadata:, happened_at: Time.zone.now)
+    def self.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:, happened_at: Time.zone.now)
       event_type = :teacher_withdraws_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
       training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
       heading = "#{teacher_name}’s #{training_type} training period was withdrawn by #{lead_provider.name}"
 
-      new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, metadata:, happened_at:).record_event!
+      new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, modifications:, happened_at:).record_event!
     end
 
     def self.record_training_period_assigned_to_school_partnership_event!(
