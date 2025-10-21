@@ -137,9 +137,20 @@ class School < ApplicationRecord
     @training_programme.training_programme(contract_period_year:)
   end
 
-  def expression_of_interest_for?(lead_provider_id, contract_period_year)
-    [ect_at_school_periods, mentor_at_school_periods].any? do |periods|
-      periods.with_expressions_of_interest_for_lead_provider_and_contract_period(contract_period_year, lead_provider_id).exists?
-    end
+  def lead_providers_and_contract_periods_with_expression_of_interest_or_school_partnership
+    expressions_of_interest = TrainingPeriod
+      .left_joins(:ect_at_school_period, :mentor_at_school_period, expression_of_interest: :contract_period, school_partnership: %i[lead_provider contract_period])
+      .where("ect_at_school_periods.school_id = :id OR mentor_at_school_periods.school_id = :id", id:)
+      .where.not(expression_of_interest: { id: nil })
+
+    school_partnerships = TrainingPeriod
+      .left_joins(:ect_at_school_period, :mentor_at_school_period, expression_of_interest: :contract_period, school_partnership: %i[lead_provider contract_period])
+      .where("ect_at_school_periods.school_id = :id OR mentor_at_school_periods.school_id = :id", id:)
+      .where.not(school_partnership: { id: nil })
+
+    expressions_of_interest.or(school_partnerships).pluck(
+      Arel.sql("COALESCE(expression_of_interest.lead_provider_id, lead_providers.id)"),
+      Arel.sql("COALESCE(expression_of_interest.contract_period_year, contract_periods_school_partnerships.year)")
+    ).uniq
   end
 end
