@@ -23,7 +23,7 @@ RSpec.describe "Admin deletes an induction period" do
       and_i_confirm_deletion
       then_there_is_an_error_message
 
-      when_i_add_a_zendesk_ticket_id
+      when_i_add_a_zendesk_ticket_id("#123456")
       and_i_add_a_note("This is a test reason for deleting")
       and_i_confirm_deletion
       then_i_should_be_on_the_success_page
@@ -51,7 +51,7 @@ RSpec.describe "Admin deletes an induction period" do
       and_i_confirm_deletion
       then_there_is_an_error_message
 
-      when_i_add_a_zendesk_ticket_id
+      when_i_add_a_zendesk_ticket_id("#123456")
       and_i_add_a_note("This is a test reason for deleting")
       and_i_confirm_deletion
       then_i_should_be_on_the_success_page
@@ -79,7 +79,7 @@ RSpec.describe "Admin deletes an induction period" do
       and_i_confirm_deletion
       then_there_is_an_error_message
 
-      when_i_add_a_zendesk_ticket_id
+      when_i_add_a_zendesk_ticket_id("#123456")
       and_i_add_a_note("This is a test reason for deleting")
       and_i_confirm_deletion
       then_i_should_be_on_the_success_page
@@ -127,10 +127,10 @@ RSpec.describe "Admin deletes an induction period" do
       .to have_text("There is a problem")
   end
 
-  def when_i_add_a_zendesk_ticket_id
+  def when_i_add_a_zendesk_ticket_id(ticket)
     page.locator("fieldset", hasText: "Explain why you're making this change")
-      .get_by_label("Enter the Zendesk ID")
-      .fill("123")
+      .get_by_label("Enter Zendesk ticket number")
+      .fill(ticket)
   end
 
   def and_i_add_a_note(reason)
