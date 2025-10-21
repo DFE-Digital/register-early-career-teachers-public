@@ -20,13 +20,12 @@ class API::TeacherSerializer < Blueprinter::Base
       end
       field(:school_urn) { |(training_period, _, _)| training_period.school_partnership.school.urn.to_s }
       field(:participant_type) { |(training_period, _, _)| training_period.for_ect? ? "ect" : "mentor" }
-      field(:cohort) do |(training_period, _, _)|
-        training_period
-          .school_partnership
-          .lead_provider_delivery_partnership
-          .active_lead_provider
-          .contract_period_year
-          .to_s
+      field(:cohort) do |(training_period, _, metadata)|
+        if training_period.for_ect?
+          metadata.latest_ect_contract_period_year.to_s
+        else
+          metadata.latest_mentor_contract_period_year.to_s
+        end
       end
       field(:training_status) { |(training_period, _, _)| API::TrainingPeriods::TrainingStatus.new(training_period:).status }
       field(:participant_status) { "active" } # TODO: implement when we have participant status service
