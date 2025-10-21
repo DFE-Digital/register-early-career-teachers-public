@@ -411,6 +411,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_23_080952) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "api_mentor_id"
+    t.integer "latest_ect_contract_period_year"
+    t.integer "latest_mentor_contract_period_year"
     t.index ["latest_ect_training_period_id"], name: "idx_on_latest_ect_training_period_id_2d0632b258"
     t.index ["latest_mentor_training_period_id"], name: "idx_on_latest_mentor_training_period_id_862127afaf"
     t.index ["lead_provider_id"], name: "index_metadata_teachers_lead_providers_on_lead_provider_id"
@@ -874,6 +876,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_23_080952) do
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "lead_providers"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "schools"
+  add_foreign_key "metadata_teachers_lead_providers", "contract_periods", column: "latest_ect_contract_period_year", primary_key: "year"
+  add_foreign_key "metadata_teachers_lead_providers", "contract_periods", column: "latest_mentor_contract_period_year", primary_key: "year"
   add_foreign_key "metadata_teachers_lead_providers", "lead_providers"
   add_foreign_key "metadata_teachers_lead_providers", "teachers"
   add_foreign_key "metadata_teachers_lead_providers", "training_periods", column: "latest_ect_training_period_id", on_delete: :nullify

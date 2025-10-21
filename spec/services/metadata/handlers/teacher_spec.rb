@@ -111,7 +111,9 @@ RSpec.describe Metadata::Handlers::Teacher do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: ect_training_period1,
+            latest_ect_contract_period: ect_training_period1.contract_period,
             latest_mentor_training_period: mentor_training_period1,
+            latest_mentor_contract_period: mentor_training_period1.contract_period,
             api_mentor_id: nil
           )
 
@@ -120,7 +122,9 @@ RSpec.describe Metadata::Handlers::Teacher do
             teacher: teacher1,
             lead_provider: lead_provider2,
             latest_ect_training_period: ect_training_period2,
+            latest_ect_contract_period: ect_training_period2.contract_period,
             latest_mentor_training_period: mentor_training_period2,
+            latest_mentor_contract_period: mentor_training_period2.contract_period,
             api_mentor_id: nil
           )
         end
@@ -195,7 +199,9 @@ RSpec.describe Metadata::Handlers::Teacher do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: ect_training_period2,
+            latest_ect_contract_period: ect_training_period2.contract_period,
             latest_mentor_training_period: mentor_training_period2,
+            latest_mentor_contract_period: mentor_training_period2.contract_period,
             api_mentor_id: nil
           )
         end
@@ -228,7 +234,9 @@ RSpec.describe Metadata::Handlers::Teacher do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: ect_training_period1,
+            latest_ect_contract_period: ect_training_period1.contract_period,
             latest_mentor_training_period: nil,
+            latest_mentor_contract_period: nil,
             api_mentor_id: nil
           )
         end
@@ -243,7 +251,9 @@ RSpec.describe Metadata::Handlers::Teacher do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: nil,
+            latest_ect_contract_period: nil,
             latest_mentor_training_period: nil,
+            latest_mentor_contract_period: nil,
             api_mentor_id: nil
           )
         end
