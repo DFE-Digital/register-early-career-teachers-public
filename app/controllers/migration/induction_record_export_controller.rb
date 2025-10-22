@@ -29,6 +29,6 @@ private
   end
 
   def csv_filename
-    "#{Migration::InductionRecordExporter.CACHE_KEY}.csv"
+    "#{Migration::InductionRecordExporter::CACHE_KEY}.csv"
   end
 end
