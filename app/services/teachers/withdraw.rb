@@ -19,6 +19,8 @@ module Teachers
 
         record_withdraw_event!
       end
+
+      teacher
     end
 
   private
