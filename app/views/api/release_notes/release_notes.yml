@@ -58,7 +58,7 @@
     
     We’ve introduced a new approach for setting default schedules for participants:
     
-    * default schedules will be based on school-provided start dates for ECTs and associated ECT start dates for mentors
+    * default schedules will be based on school-provided start dates for ECTs and when mentors are registered
     * existing records migrated from ‘Manage training for early career teachers’ will keep their current schedules
     
     #### Why we’ve made this change
