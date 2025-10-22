@@ -6,12 +6,12 @@ module API::Teachers
 
     attribute :reason
 
+    validates :reason, presence: { message: "Enter a '#/reason'." }
     validates :reason,
               inclusion: {
                 in: DEFERRAL_REASONS,
-                message: "The property '#/reason' must be a valid reason"
-              },
-              allow_blank: false
+                message: "The entered '#/reason' is not recognised for the given participant. Check details and try again."
+              }, allow_blank: true
     validate :not_already_deferred
     validate :not_already_withdrawn
 
