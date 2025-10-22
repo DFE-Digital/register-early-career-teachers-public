@@ -102,10 +102,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
     and_i_should_see_the_ect_i_registered
   end
 
-  def when_i_click_change_name
-    page.get_by_role('link', name: 'change name').first.click
-  end
-
   def and_i_choose_these_details_are_correct
     page.get_by_label('Yes').check
     and_i_click_confirm_and_continue
