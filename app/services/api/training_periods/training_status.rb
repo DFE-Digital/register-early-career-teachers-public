@@ -16,6 +16,14 @@ module API::TrainingPeriods
       end
     end
 
+    def active?
+      status == :active
+    end
+
+    def deferred?
+      status == :deferred
+    end
+
     def withdrawn?
       status == :withdrawn
     end
