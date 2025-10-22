@@ -37,7 +37,7 @@
     
     ### New induction start date field
     
-    We’ve introduced the `induction_start_date` field to show when an early career teacher (ECT) officially began their induction, as recorded by their appropriate body. Each ECT will only ever have one induction start date. 
+    We’ve introduced the `overall_induction_start_date` field to show when an early career teacher (ECT) officially began their induction, as recorded by their appropriate body. Each ECT will only ever have one induction start date. 
     This field will not be populated over the API until the appropriate body has submitted the induction start date. This may sometimes be after an ECT would be expected to start training. 
     
     #### Why we’ve made this change 
