@@ -72,6 +72,14 @@ RSpec.configure do |config|
           PartnershipCreateRequest: PARTNERSHIP_CREATE_REQUEST,
           PartnershipUpdateRequest: PARTNERSHIP_UPDATE_REQUEST,
           PartnershipsResponse: PARTNERSHIPS_RESPONSE,
+
+          # Participants
+          Participant: PARTICIPANT,
+          ParticipantsFilter: PARTICIPANTS_FILTER,
+          ParticipantResponse: PARTICIPANT_RESPONSE,
+          ParticipantsResponse: PARTICIPANTS_RESPONSE,
+          ParticipantEnrolment: PARTICIPANT_ENROLMENT,
+          ParticipantIDChange: PARTICIPANT_ID_CHANGE,
         }
       }
     }
