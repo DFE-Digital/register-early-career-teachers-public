@@ -37,3 +37,11 @@
     padding: 0.5rem;
   }
 }
+
+.da-pink-button {
+  background-color: govuk-colour("light-pink");
+
+  &:hover {
+    background-color: govuk-colour("pink");
+  }
+}
