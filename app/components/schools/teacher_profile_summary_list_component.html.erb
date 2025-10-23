@@ -26,6 +26,14 @@
   <% list.with_row do |row| %>
     <% row.with_key { "Mentor" } %>
     <% row.with_value { ect_mentor_details(@ect) } %>
+    <% if current_mentor.present? %>
+      <% row.with_action(
+          text: "Change",
+          visually_hidden_text: "mentor",
+          href: schools_ects_change_mentor_wizard_edit_path(@ect),
+          classes: "govuk-link--no-visited-state"
+        ) %>
+    <% end %>
   <% end %>
 
   <% list.with_row do |row| %>
