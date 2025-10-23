@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   get '/accessibility', to: 'pages#accessibility'
   get '/privacy', to: 'pages#privacy'
   get '/school-requirements', to: 'pages#school_requirements'
+  get '/access-denied', to: 'pages#access_denied'
   get '/healthcheck', to: 'health_check#show', as: :rails_health_check
 
   scope via: :all do
