@@ -271,12 +271,12 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
             it "assigns a mentor with training" do
               post(path_for_step("edit"), params:)
 
-              expect(response).to redirect_to(path_for_step("training"))
+              expect(response).to redirect_to(path_for_step("review-mentor-eligibility"))
 
               follow_redirect!
 
-              training_params = { training: { accepting_current_lead_provider: true } }
-              post(path_for_step("training"), params: training_params)
+              review_mentor_eligibility_params = { review_mentor_eligibility: { accepting_current_lead_provider: true } }
+              post(path_for_step("review-mentor-eligibility"), params: review_mentor_eligibility_params)
 
               expect(response).to redirect_to(path_for_step("check-answers"))
 
@@ -303,8 +303,8 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
 
               post(path_for_step("edit"), params:)
               follow_redirect!
-              training_params = { training: { accepting_current_lead_provider: true } }
-              post(path_for_step("training"), params: training_params)
+              review_mentor_eligibility_params = { review_mentor_eligibility: { accepting_current_lead_provider: true } }
+              post(path_for_step("review-mentor-eligibility"), params: review_mentor_eligibility_params)
               follow_redirect!
               post(path_for_step("check-answers"))
 
@@ -325,7 +325,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
             it "assigns a mentor with training" do
               post(path_for_step("edit"), params:)
 
-              expect(response).to redirect_to(path_for_step("training"))
+              expect(response).to redirect_to(path_for_step("review-mentor-eligibility"))
 
               follow_redirect!
 

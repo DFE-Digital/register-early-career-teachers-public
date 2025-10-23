@@ -4,7 +4,7 @@ module Schools
       class CheckAnswersStep < Step
         def previous_step
           return :edit unless mentor_eligible_for_training?
-          return :training if store.accepting_current_lead_provider
+          return :review_mentor_eligibility if store.accepting_current_lead_provider
 
           :lead_provider
         end
