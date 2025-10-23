@@ -65,8 +65,8 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
           .and_return(true)
       end
 
-      it "returns the training step" do
-        expect(current_step.next_step).to eq(:training)
+      it "returns the review_mentor_eligibility step" do
+        expect(current_step.next_step).to eq(:review_mentor_eligibility)
       end
     end
 

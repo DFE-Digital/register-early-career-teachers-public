@@ -10,7 +10,7 @@ module Schools
 
         def next_step
           if mentor_eligible_for_training?
-            :training
+            :review_mentor_eligibility
           else
             :check_answers
           end
