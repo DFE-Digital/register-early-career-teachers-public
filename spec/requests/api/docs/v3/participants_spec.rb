@@ -45,9 +45,9 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   } do
                     let(:response_example) do
                       extract_swagger_example(schema: "#/components/schemas/ParticipantsResponse", version: :v3).tap do |example|
-                        example[:data][0][:attributes][:enrolments][0][:training_status] = "active"
-                        example[:data][0][:attributes][:enrolments][0][:deferral] = nil
-                        example[:data][0][:attributes][:enrolments][0][:withdrawal] = nil
+                        example[:data][0][:attributes][:ecf_enrolments][0][:training_status] = "active"
+                        example[:data][0][:attributes][:ecf_enrolments][0][:deferral] = nil
+                        example[:data][0][:attributes][:ecf_enrolments][0][:withdrawal] = nil
                       end
                     end
                   end
@@ -61,9 +61,9 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   } do
                     let(:response_example) do
                       extract_swagger_example(schema: "#/components/schemas/ParticipantResponse", version: :v3).tap do |example|
-                        example[:data][:attributes][:enrolments][0][:training_status] = "active"
-                        example[:data][:attributes][:enrolments][0][:deferral] = nil
-                        example[:data][:attributes][:enrolments][0][:withdrawal] = nil
+                        example[:data][:attributes][:ecf_enrolments][0][:training_status] = "active"
+                        example[:data][:attributes][:ecf_enrolments][0][:deferral] = nil
+                        example[:data][:attributes][:ecf_enrolments][0][:withdrawal] = nil
                       end
                     end
                   end

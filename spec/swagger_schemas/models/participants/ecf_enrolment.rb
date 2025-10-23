@@ -1,4 +1,4 @@
-PARTICIPANT_ENROLMENT = {
+PARTICIPANT_ECF_ENROLMENT = {
   description: "The details of a participant enrolment",
   type: :object,
   required: %i[
@@ -166,6 +166,7 @@ PARTICIPANT_ENROLMENT = {
     mentor_ineligible_for_funding_reason: {
       description: "The reason why funding for a mentor's training has ended",
       type: :string,
+      nullable: true,
       enum: Teacher.mentor_became_ineligible_for_funding_reasons.keys,
       example: "completed_declaration_received"
     }
