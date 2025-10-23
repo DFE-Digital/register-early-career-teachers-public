@@ -13,18 +13,18 @@ module Statements
       ActiveRecord::Base.transaction do
         raise NotAuthorisable unless statement.can_authorise_payment?
 
-        return true if statement.marked_as_paid_at.present?
+        if statement.marked_as_paid_at.blank?
+          paid_at = Time.zone.now
 
-        paid_at = Time.zone.now
+          statement.update!(marked_as_paid_at: paid_at)
+          statement.mark_as_paid!
 
-        statement.update!(marked_as_paid_at: paid_at)
-        statement.mark_as_paid!
-
-        Events::Record.record_statement_authorised_for_payment_event!(
-          author:,
-          statement:,
-          happened_at: paid_at
-        )
+          Events::Record.record_statement_authorised_for_payment_event!(
+            author:,
+            statement:,
+            happened_at: paid_at
+          )
+        end
 
         true
       end
