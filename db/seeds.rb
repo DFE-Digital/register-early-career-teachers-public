@@ -25,7 +25,7 @@ seed_files = Dir["db/seeds/*.rb"].sort_by do |path|
   priority_seeds.index(filename.chomp(".rb")) || Float::INFINITY
 end
 
-DeclarativeUpdates.skip do
+DeclarativeUpdates.skip(:metadata) do
   seed_files.each do |seed_file|
     puts "\r\n🪴 planting #{seed_file}"
 
