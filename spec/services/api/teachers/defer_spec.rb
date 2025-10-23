@@ -82,6 +82,10 @@ RSpec.describe API::Teachers::Defer, type: :model do
           context "when valid" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
 
+            it "returns teacher" do
+              expect(instance.defer).to eq(teacher)
+            end
+
             it "defers the training period via defer service" do
               defer_service = double("Teachers::Defer")
               author = an_instance_of(Events::LeadProviderAPIAuthor)
