@@ -79,88 +79,19 @@ RSpec.describe API::Teachers::Defer, type: :model do
             it { expect { instance.defer }.not_to(change { training_period.reload.attributes }) }
           end
 
-          context "when training period ongoing" do
+          context "when valid" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
 
-            it "withdraws training period" do
-              freeze_time
+            it "defers the training period via defer service" do
+              defer_service = double("Teachers::Defer")
+              author = an_instance_of(Events::LeadProviderAPIAuthor)
 
-              expect(instance.defer).not_to be(false)
+              allow(Teachers::Defer).to receive(:new).with(author:, lead_provider:, reason:, teacher:, training_period:).and_return(defer_service)
+              allow(defer_service).to receive(:defer)
 
-              training_period.reload
-              expect(training_period.deferred_at).to eq(Time.zone.now)
-              expect(training_period.deferral_reason.dasherize).to eq(reason)
-              expect(training_period.finished_on).to eq(training_period.deferred_at.to_date)
-            end
-          end
+              instance.defer
 
-          context "when training period already finished in the past" do
-            let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :ongoing,
-                "#{trainee_type}_at_school_period": at_school_period,
-                started_on: at_school_period.started_on,
-                finished_on: 1.month.ago
-              )
-            end
-
-            it "sets `deferred_at` to the current date and doesn't change finished_on" do
-              freeze_time
-
-              expect(instance.defer).not_to be(false)
-
-              training_period.reload
-              expect(training_period.deferred_at).to eq(Time.zone.now)
-              expect(training_period.deferral_reason.dasherize).to eq(reason)
-              expect(training_period.finished_on).to eq(1.month.ago.to_date)
-            end
-          end
-
-          context "when training period will finished in the future" do
-            let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :ongoing,
-                "#{trainee_type}_at_school_period": at_school_period,
-                started_on: at_school_period.started_on,
-                finished_on: 3.months.from_now
-              )
-            end
-
-            it "sets `deferred_at` and finished_on to the current date" do
-              freeze_time
-
-              expect(instance.defer).not_to be(false)
-
-              training_period.reload
-              expect(training_period.deferred_at).to eq(Time.zone.now)
-              expect(training_period.deferral_reason.dasherize).to eq(reason)
-              expect(training_period.finished_on).to eq(training_period.deferred_at.to_date)
-            end
-          end
-
-          context "event recording" do
-            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
-
-            it "records a teacher defers training period event" do
-              freeze_time do
-                expect(Events::Record).to receive(:record_teacher_defers_training_period_event!)
-                  .with(author: an_instance_of(Events::LeadProviderAPIAuthor),
-                        teacher:,
-                        lead_provider:,
-                        training_period:,
-                        modifications: {
-                          finished_on: [nil, Time.zone.today],
-                          updated_at: [training_period.updated_at, Time.zone.now],
-                          deferral_reason: [nil, reason.underscore],
-                          deferred_at: [nil, Time.zone.now]
-                        })
-
-                instance.defer
-              end
+              expect(defer_service).to have_received(:defer).once
             end
           end
         end

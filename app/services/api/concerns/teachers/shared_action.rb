@@ -1,4 +1,4 @@
-module API::Teachers
+module API::Concerns::Teachers
   module SharedAction
     extend ActiveSupport::Concern
 
