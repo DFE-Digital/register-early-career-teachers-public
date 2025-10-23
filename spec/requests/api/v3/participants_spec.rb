@@ -79,11 +79,20 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
   end
 
   describe "#withdraw" do
-    let(:service) { API::Teachers::Withdraw }
-    let(:resource) { create_resource(active_lead_provider:) }
     let(:path) { withdraw_api_v3_participant_path(resource.api_id) }
+    let(:service) { API::Teachers::Withdraw }
+    let(:resource_type) { Teacher }
+    let(:resource) { create_resource(active_lead_provider:) }
     let(:reason) { service::WITHDRAWAL_REASONS.sample }
     let(:course_identifier) { "ecf-induction" }
+    let(:service_args) do
+      {
+        lead_provider_id: lead_provider.id,
+        teacher_api_id: resource.api_id,
+        reason:,
+        course_identifier:
+      }
+    end
     let(:params) do
       {
         data: {
@@ -97,46 +106,6 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
     end
 
     it_behaves_like "a token authenticated endpoint", :put
-
-    it "withdraws and returns the resource in a serialized format" do
-      authenticated_api_put(path, params:)
-
-      expect(response).to have_http_status(:ok)
-      expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq(serializer.render(resource, root: "data", **serializer_options))
-    end
-
-    it "calls the service with the correct arguments" do
-      allow(service).to receive(:new).and_call_original
-
-      authenticated_api_put(path, params:)
-
-      expect(service).to have_received(:new).with(
-        lead_provider_id: lead_provider.id,
-        teacher_api_id: resource.api_id,
-        reason:,
-        course_identifier:
-      )
-    end
-
-    it "returns a 422 response if the service has errors" do
-      errors = instance_double(ActiveModel::Errors, messages: { attr: %w[message] })
-      service_double = instance_double(service, valid?: false, errors:)
-      allow(service).to receive(:new).and_return(service_double)
-
-      authenticated_api_put(path, params:)
-
-      expect(response).to have_http_status(:unprocessable_content)
-      expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq({ errors: [{ title: "attr", detail: "message" }] }.to_json)
-    end
-
-    it "returns a 400 response if the request body is malformed" do
-      authenticated_api_put(path, params: { not_a_valid: :body })
-
-      expect(response).to have_http_status(:bad_request)
-      expect(response.content_type).to eql("application/json; charset=utf-8")
-      expect(response.body).to eq({ errors: [{ title: "Bad request", detail: "Correct json data structure required. See API docs for reference." }] }.to_json)
-    end
+    it_behaves_like "an API update endpoint"
   end
 end
