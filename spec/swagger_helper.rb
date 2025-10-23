@@ -8,6 +8,9 @@ RSpec.configure do |config|
   # to ensure that it's configured to serve Swagger from the same folder
   config.openapi_root = Rails.root.join("public/api/docs").to_s
 
+  # This will catch if we misname any properties in our schemas.
+  config.openapi_no_additional_properties = true
+
   # Define one or more Swagger documents and provide global metadata for each one
   # When you run the 'rswag:specs:swaggerize' rake task, the complete Swagger will
   # be generated at the provided relative path under openapi_root
@@ -78,7 +81,7 @@ RSpec.configure do |config|
           ParticipantsFilter: PARTICIPANTS_FILTER,
           ParticipantResponse: PARTICIPANT_RESPONSE,
           ParticipantsResponse: PARTICIPANTS_RESPONSE,
-          ParticipantEnrolment: PARTICIPANT_ENROLMENT,
+          ParticipantECFEnrolment: PARTICIPANT_ECF_ENROLMENT,
           ParticipantIDChange: PARTICIPANT_ID_CHANGE,
         }
       }
