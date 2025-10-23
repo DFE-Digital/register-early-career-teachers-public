@@ -28,11 +28,11 @@ PARTICIPANT = {
           nullable: true,
           example: "1234567",
         },
-        enrolments: {
+        ecf_enrolments: {
           type: :array,
           nullable: false,
           items: {
-            "$ref": "#/components/schemas/ParticipantEnrolment"
+            "$ref": "#/components/schemas/ParticipantECFEnrolment"
           }
         },
         participant_id_changes: {
