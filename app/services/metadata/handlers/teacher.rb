@@ -23,8 +23,8 @@ module Metadata::Handlers
         metadata = existing_lead_provider_metadata[lead_provider_id] ||
           Metadata::TeacherLeadProvider.new(teacher:, lead_provider_id:)
 
-        latest_ect_training_period = TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider_id).first
-        latest_mentor_training_period = TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider_id).first
+        latest_ect_training_period = latest_ect_training_period_by_lead_provider(teacher:)[lead_provider_id]
+        latest_mentor_training_period = latest_mentor_training_period_by_lead_provider(teacher:)[lead_provider_id]
         api_mentor_id = latest_ect_training_period&.trainee&.latest_mentorship_period&.mentor&.teacher&.api_id
 
         changes = {
@@ -45,6 +45,24 @@ module Metadata::Handlers
       @existing_lead_provider_metadata ||= Metadata::TeacherLeadProvider
         .where(teacher:, lead_provider_id: lead_provider_ids)
         .index_by(&:lead_provider_id)
+    end
+
+    def latest_ect_training_period_by_lead_provider(teacher:)
+      @latest_ect_training_period_by_lead_provider ||= TrainingPeriod
+        .includes(:ect_at_school_period, lead_provider_delivery_partnership: { active_lead_provider: :lead_provider })
+        .where(ect_at_school_period: { teacher: })
+        .select("DISTINCT ON (lead_provider_id) training_periods.*")
+        .order("lead_provider_id, training_periods.started_on DESC")
+        .index_by { it.lead_provider&.id }
+    end
+
+    def latest_mentor_training_period_by_lead_provider(teacher:)
+      @latest_mentor_training_period_by_lead_provider ||= TrainingPeriod
+      .includes(:mentor_at_school_period, lead_provider_delivery_partnership: { active_lead_provider: :lead_provider })
+      .where(mentor_at_school_period: { teacher: })
+      .select("DISTINCT ON (lead_provider_id) training_periods.*")
+      .order("lead_provider_id, training_periods.started_on DESC")
+      .index_by { it.lead_provider&.id }
     end
   end
 end
