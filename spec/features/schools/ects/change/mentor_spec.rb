@@ -1,4 +1,4 @@
-describe "School user can change ECTs email address", :enable_schools_interface do
+describe "School user can change ECTs mentor", :enable_schools_interface do
   context "when the mentor does not need mentor training" do
     it "changes the mentor to an existing mentor" do
       given_there_is_a_school
