@@ -142,7 +142,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           it "serializes `school_urn`" do
             expect(ect_enrolment["school_urn"]).to be_present
-            expect(ect_enrolment["school_urn"]).to eq(ect_training_period.school_partnership.school.urn)
+            expect(ect_enrolment["school_urn"]).to eq(ect_training_period.school_partnership.school.urn.to_s)
           end
 
           it "serializes `participant_type`" do
@@ -151,7 +151,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           it "serializes `cohort`" do
             expect(ect_enrolment["cohort"]).to be_present
-            expect(ect_enrolment["cohort"]).to eq(ect_training_period.school_partnership.contract_period.year)
+            expect(ect_enrolment["cohort"]).to eq(ect_training_period.school_partnership.contract_period.year.to_s)
           end
 
           it "serializes `training_status`" do
@@ -275,7 +275,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           it "serializes `school_urn`" do
             expect(mentor_enrolment["school_urn"]).to be_present
-            expect(mentor_enrolment["school_urn"]).to eq(mentor_training_period.school_partnership.school.urn)
+            expect(mentor_enrolment["school_urn"]).to eq(mentor_training_period.school_partnership.school.urn.to_s)
           end
 
           it "serializes `participant_type`" do
@@ -284,7 +284,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           it "serializes `cohort`" do
             expect(mentor_enrolment["cohort"]).to be_present
-            expect(mentor_enrolment["cohort"]).to eq(mentor_training_period.school_partnership.contract_period.year)
+            expect(mentor_enrolment["cohort"]).to eq(mentor_training_period.school_partnership.contract_period.year.to_s)
           end
 
           it "serializes `training_status`" do

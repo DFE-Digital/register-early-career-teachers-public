@@ -116,7 +116,7 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
-                        enrolments:
+                        ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
                           mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
@@ -178,7 +178,7 @@ paths:
                       attributes:
                         full_name: John Doe
                         teacher_reference_number: '1234567'
-                        enrolments:
+                        ecf_enrolments:
                         - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           email: jane.smith@example.com
                           mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
@@ -540,11 +540,17 @@ components:
       description: The requested resource was not found.
       type: object
       properties:
-        error:
-          type: string
-          description: Resource not found
-      example:
-        error: Resource not found
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                example: Resource not found
+              detail:
+                type: string
+                example: Nothing could be found for the provided details
     BadRequestResponse:
       description: The request body did not match the expected payload.
       type: object
@@ -1088,11 +1094,11 @@ components:
               type: string
               nullable: true
               example: '1234567'
-            enrolments:
+            ecf_enrolments:
               type: array
               nullable: false
               items:
-                "$ref": "#/components/schemas/ParticipantEnrolment"
+                "$ref": "#/components/schemas/ParticipantECFEnrolment"
             participant_id_changes:
               type: array
               nullable: false
@@ -1147,7 +1153,7 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Participant"
-    ParticipantEnrolment:
+    ParticipantECFEnrolment:
       description: The details of a participant enrolment
       type: object
       required:
@@ -1334,6 +1340,7 @@ components:
         mentor_ineligible_for_funding_reason:
           description: The reason why funding for a mentor's training has ended
           type: string
+          nullable: true
           enum:
           - completed_declaration_received
           - completed_during_early_roll_out
