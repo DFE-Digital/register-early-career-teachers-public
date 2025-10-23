@@ -98,5 +98,15 @@ RSpec.describe "Partnerships API", type: :request do
 
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
+
+    it "returns a 404 response if the resource does not belong to the lead provider" do
+      resource.update!(active_lead_provider: FactoryBot.create(:active_lead_provider))
+
+      authenticated_api_put(path, params:)
+
+      expect(response).to have_http_status(:not_found)
+      expect(response.content_type).to eql("application/json; charset=utf-8")
+      expect(response.body).to eq({ errors: [{ title: "Resource not found", detail: "Nothing could be found for the provided details" }] }.to_json)
+    end
   end
 end

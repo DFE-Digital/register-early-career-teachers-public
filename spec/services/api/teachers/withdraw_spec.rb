@@ -64,14 +64,6 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: nil) }
           let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
 
-          context "when valid" do
-            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
-
-            it "call returns teacher" do
-              expect(subject.withdraw).to eq(teacher)
-            end
-          end
-
           context "when invalid" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing) }
             let(:teacher_api_id) { SecureRandom.uuid }
@@ -82,6 +74,10 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
 
           context "when valid" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
+
+            it "call returns teacher" do
+              expect(subject.withdraw).to eq(teacher)
+            end
 
             it "withdraws the training period via withdraw service" do
               withdraw_service = double("Teachers::Withdraw")
