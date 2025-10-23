@@ -36,6 +36,21 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
       response "200", "A list of #{params[:resource_description]}" do
         schema({ "$ref": params[:response_schema_ref] })
 
+        after do |example|
+          if defined?(response_example)
+            example_spec = {
+              "application/json" => {
+                examples: {
+                  success: {
+                    value: response_example,
+                  },
+                },
+              },
+            }
+            example.metadata[:response][:content] = example_spec
+          end
+        end
+
         run_test!
       end
 
