@@ -1,27 +1,30 @@
-describe "School user can change ECTs mentor", :enable_schools_interface do
+describe "School user can change early career teachers mentor", :enable_schools_interface do
+  before do
+    given_there_is_a_school
+    and_there_is_a_mentee
+    and_i_am_logged_in_as_a_school_user
+  end
+
   context "when the mentor does not need mentor training" do
     it "changes the mentor to an existing mentor" do
-      given_there_is_a_school
-      and_there_is_an_ect
-      with_school_led_training
-      and_the_ect_has_an_assigned_mentor
+      and_the_mentee_is_on_school_led_training
+      and_the_mentee_has_an_assigned_mentor
       and_there_is_another_registered_mentor
-      and_i_am_logged_in_as_a_school_user
 
-      when_i_visit_the_ect_page
+      when_i_visit_the_early_career_teacher_show_page
       then_i_can_change_the_assigned_mentor
       and_i_see_the_change_mentor_form
       and_the_current_mentor_is_not_an_option
 
       when_i_change_the_mentor_to_another_registered_mentor
-      and_i_continue
+      and_i_click_continue
       then_i_am_asked_to_check_and_confirm_the_change
 
-      when_i_navigate_back_to_the_form
+      when_i_click_the_back_link
       and_i_see_the_change_mentor_form
       then_the_mentor_is_selected
 
-      when_i_continue
+      when_i_click_continue
       and_i_confirm_the_change
       then_i_see_the_confirmation_message
     end
@@ -29,77 +32,71 @@ describe "School user can change ECTs mentor", :enable_schools_interface do
 
   context "when the mentor can receive mentor training" do
     it "changes the mentor to an existing mentor with the same lead provider" do
-      given_there_is_a_school
-      and_there_is_an_ect
       and_there_is_a_contract_period
       with_provider_led_training
-      and_the_ect_has_an_assigned_mentor
+      and_the_mentee_has_an_assigned_mentor
       and_there_is_another_registered_mentor
       and_the_other_registered_mentor_can_receive_mentor_training
-      and_i_am_logged_in_as_a_school_user
 
-      when_i_visit_the_ect_page
+      when_i_visit_the_early_career_teacher_show_page
       then_i_can_change_the_assigned_mentor
       and_i_see_the_change_mentor_form
       and_the_current_mentor_is_not_an_option
 
       when_i_change_the_mentor_to_another_registered_mentor
-      and_i_continue
+      and_i_click_continue
       then_the_mentor_can_receive_mentor_training
 
-      when_i_navigate_back_to_the_form
+      when_i_click_the_back_link
       and_i_see_the_change_mentor_form
       then_the_mentor_is_selected
 
-      when_i_continue
-      and_i_continue
+      when_i_click_continue
+      and_i_click_continue
       then_i_am_asked_to_check_and_confirm_the_change
 
-      when_i_navigate_back_to_the_form
+      when_i_click_the_back_link
       then_the_mentor_can_receive_mentor_training
 
-      when_i_continue
+      when_i_click_continue
       and_i_confirm_the_change
       then_i_see_the_confirmation_message
     end
 
     it "changes the mentor to an existing mentor with a different lead provider" do
-      given_there_is_a_school
-      and_there_is_an_ect
       and_there_is_a_contract_period
       and_there_is_an_active_lead_provider
       with_provider_led_training
-      and_the_ect_has_an_assigned_mentor
+      and_the_mentee_has_an_assigned_mentor
       and_there_is_another_registered_mentor
       and_the_other_registered_mentor_can_receive_mentor_training
-      and_i_am_logged_in_as_a_school_user
 
-      when_i_visit_the_ect_page
+      when_i_visit_the_early_career_teacher_show_page
       then_i_can_change_the_assigned_mentor
       and_i_see_the_change_mentor_form
       and_the_current_mentor_is_not_an_option
 
       when_i_change_the_mentor_to_another_registered_mentor
-      and_i_continue
+      and_i_click_continue
       then_the_mentor_can_receive_mentor_training
 
-      when_i_navigate_back_to_the_form
+      when_i_click_the_back_link
       and_i_see_the_change_mentor_form
       then_the_mentor_is_selected
 
-      when_i_continue
+      when_i_click_continue
       then_i_change_lead_provider
       and_i_see_the_change_lead_provider_form
 
       when_i_choose_a_lead_provider
-      and_i_continue
+      and_i_click_continue
       then_i_am_asked_to_check_and_confirm_the_change
 
-      when_i_navigate_back_to_the_form
+      when_i_click_the_back_link
       and_i_see_the_change_lead_provider_form
       then_the_lead_provider_is_selected
 
-      when_i_continue
+      when_i_click_continue
       and_i_confirm_the_change
       then_i_see_the_confirmation_message
     end
@@ -111,13 +108,13 @@ private
     @school = FactoryBot.create(:school)
   end
 
-  def and_there_is_an_ect
+  def and_there_is_a_mentee
     @teacher = FactoryBot.create(
       :teacher,
       trs_first_name: "John",
       trs_last_name: "Doe"
     )
-    @ect = FactoryBot.create(
+    @ect_at_school_period = FactoryBot.create(
       :ect_at_school_period,
       :ongoing,
       teacher: @teacher,
@@ -140,14 +137,14 @@ private
     )
   end
 
-  def with_school_led_training
+  def and_the_mentee_is_on_school_led_training
     FactoryBot.create(
       :training_period,
       :school_led,
       :for_ect,
       :ongoing,
-      ect_at_school_period: @ect,
-      started_on: @ect.started_on
+      ect_at_school_period: @ect_at_school_period,
+      started_on: @ect_at_school_period.started_on
     )
   end
 
@@ -157,15 +154,15 @@ private
       :provider_led,
       :for_ect,
       :ongoing,
-      ect_at_school_period: @ect,
-      started_on: @ect.started_on
+      ect_at_school_period: @ect_at_school_period,
+      started_on: @ect_at_school_period.started_on
     )
     @provider_led_training_period
       .active_lead_provider
       .update!(contract_period: @contract_period)
   end
 
-  def and_the_ect_has_an_assigned_mentor
+  def and_the_mentee_has_an_assigned_mentor
     teacher = FactoryBot.create(
       :teacher,
       trs_first_name: "John",
@@ -176,14 +173,14 @@ private
       :ongoing,
       teacher:,
       school: @school,
-      started_on: @ect.started_on - 2.months
+      started_on: @ect_at_school_period.started_on - 2.months
     )
     FactoryBot.create(
       :mentorship_period,
       :ongoing,
-      mentee: @ect,
+      mentee: @ect_at_school_period,
       mentor: mentor_at_school_period,
-      started_on: @ect.started_on
+      started_on: @ect_at_school_period.started_on
     )
   end
 
@@ -198,7 +195,7 @@ private
       :ongoing,
       teacher: @mentor_teacher,
       school: @school,
-      started_on: @ect.started_on - 1.month
+      started_on: @ect_at_school_period.started_on - 1.month
     )
   end
 
@@ -213,8 +210,8 @@ private
     sign_in_as_school_user(school: @school)
   end
 
-  def when_i_visit_the_ect_page
-    page.goto(schools_ect_path(@ect))
+  def when_i_visit_the_early_career_teacher_show_page
+    page.goto(schools_ect_path(@ect_at_school_period))
   end
 
   def then_i_can_change_the_assigned_mentor
@@ -235,10 +232,6 @@ private
     page.get_by_label("Jane Smith").check
   end
 
-  def and_i_continue
-    page.get_by_role("button", name: "Continue").click
-  end
-
   def then_the_mentor_can_receive_mentor_training
     heading = page.locator("h1")
     expect(heading).to have_text("Jane Smith can receive mentor training")
@@ -249,16 +242,10 @@ private
     expect(heading).to have_text("Check and confirm change")
   end
 
-  def when_i_navigate_back_to_the_form
-    page.get_by_role("link", name: "Back", exact: true).click
-  end
-
   def then_the_mentor_is_selected
     mentor_radio = page.get_by_label("Jane Smith")
     expect(mentor_radio).to be_checked
   end
-
-  alias_method :when_i_continue, :and_i_continue
 
   def and_i_confirm_the_change
     page.get_by_role("button", name: "Confirm change").click
