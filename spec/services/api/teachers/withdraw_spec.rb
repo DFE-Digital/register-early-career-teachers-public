@@ -72,88 +72,19 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
             it { expect { instance.withdraw }.not_to(change { training_period.reload.attributes }) }
           end
 
-          context "when training period ongoing" do
+          context "when valid" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
 
-            it "withdraws training period" do
-              freeze_time
+            it "withdraws the training period via withdraw service" do
+              withdraw_service = double("Teachers::Withdraw")
+              author = an_instance_of(Events::LeadProviderAPIAuthor)
 
-              expect(instance.withdraw).not_to be(false)
+              allow(Teachers::Withdraw).to receive(:new).with(author:, lead_provider:, reason:, teacher:, training_period:).and_return(withdraw_service)
+              allow(withdraw_service).to receive(:withdraw)
 
-              training_period.reload
-              expect(training_period.withdrawn_at).to eq(Time.zone.now)
-              expect(training_period.withdrawal_reason.dasherize).to eq(reason)
-              expect(training_period.finished_on).to eq(training_period.withdrawn_at.to_date)
-            end
-          end
+              instance.withdraw
 
-          context "when training period already finished in the past" do
-            let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :ongoing,
-                "#{trainee_type}_at_school_period": at_school_period,
-                started_on: at_school_period.started_on,
-                finished_on: 1.month.ago
-              )
-            end
-
-            it "sets withdrawn_at to the current date and doesn't change finished_on" do
-              freeze_time
-
-              expect(instance.withdraw).not_to be(false)
-
-              training_period.reload
-              expect(training_period.withdrawn_at).to eq(Time.zone.now)
-              expect(training_period.withdrawal_reason.dasherize).to eq(reason)
-              expect(training_period.finished_on).to eq(1.month.ago.to_date)
-            end
-          end
-
-          context "when training period will finished in the future" do
-            let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :ongoing,
-                "#{trainee_type}_at_school_period": at_school_period,
-                started_on: at_school_period.started_on,
-                finished_on: 3.months.from_now
-              )
-            end
-
-            it "sets withdrawn_at and finished_on to the current date" do
-              freeze_time
-
-              expect(instance.withdraw).not_to be(false)
-
-              training_period.reload
-              expect(training_period.withdrawn_at).to eq(Time.zone.now)
-              expect(training_period.withdrawal_reason.dasherize).to eq(reason)
-              expect(training_period.finished_on).to eq(training_period.withdrawn_at.to_date)
-            end
-          end
-
-          context "event recording" do
-            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
-
-            it "records a teacher withdraws training period event" do
-              freeze_time do
-                expect(Events::Record).to receive(:record_teacher_withdraws_training_period_event!)
-                  .with(author: an_instance_of(Events::LeadProviderAPIAuthor),
-                        teacher:,
-                        lead_provider:,
-                        training_period:,
-                        modifications: {
-                          finished_on: [nil, Time.zone.today],
-                          updated_at: [training_period.updated_at, Time.zone.now],
-                          withdrawal_reason: [nil, reason.underscore],
-                          withdrawn_at: [nil, Time.zone.now]
-                        })
-
-                instance.withdraw
-              end
+              expect(withdraw_service).to have_received(:withdraw).once
             end
           end
         end
