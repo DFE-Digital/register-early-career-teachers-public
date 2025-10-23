@@ -10,7 +10,7 @@ module Schools
 
         def self.permitted_params = [:lead_provider_id]
 
-        def previous_step = :training
+        def previous_step = :review_mentor_eligibility
         def next_step = :check_answers
 
         def new_mentor_name = name_for(selected_mentor_at_school_period.teacher)

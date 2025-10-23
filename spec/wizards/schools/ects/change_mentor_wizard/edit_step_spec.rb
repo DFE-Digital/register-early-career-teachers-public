@@ -65,8 +65,8 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
           .and_return(true)
       end
 
-      it "returns the training step" do
-        expect(current_step.next_step).to eq(:training)
+      it "returns the review_mentor_eligibility step" do
+        expect(current_step.next_step).to eq(:review_mentor_eligibility)
       end
     end
 
@@ -139,6 +139,58 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
 
       it "is falsy" do
         expect(current_step.save!).to be_falsy
+      end
+    end
+  end
+
+  describe "#mentors_for_select" do
+    let(:envelope_start) { Date.new(2098, 1, 1) }
+    let(:envelope_end)   { Date.new(2100, 12, 31) }
+
+    let(:ect_at_school_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        school:,
+        started_on: envelope_start,
+        finished_on: envelope_end
+      )
+    end
+
+    context "when there is no current mentorship period" do
+      let!(:current_mentorship_period) { nil }
+
+      # Two ongoing mentors at the same school -> both are eligible
+      let!(:mentor_at_school_period_1) do
+        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: envelope_start)
+      end
+
+      let!(:mentor_at_school_period_2) do
+        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: envelope_start)
+      end
+
+      it "returns all eligible mentors" do
+        expect(current_step.mentors_for_select.ids).to contain_exactly(mentor_at_school_period_1.id, mentor_at_school_period_2.id)
+      end
+    end
+
+    context "when there is a current mentorship period (current mentor not eligible)" do
+      let!(:mentor_at_school_period_1) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: envelope_start) }
+
+      # mentor 2 is the current mentor but is (not ongoing) -> not eligible
+      let!(:mentor_at_school_period_2) { FactoryBot.create(:mentor_at_school_period, school:, started_on: envelope_start, finished_on: envelope_end) }
+
+      let!(:current_mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentee: ect_at_school_period,
+          mentor: mentor_at_school_period_2,
+          started_on: envelope_start,
+          finished_on: envelope_end
+        )
+      end
+
+      it "returns only eligible mentors" do
+        expect(current_step.mentors_for_select.ids).to eq([mentor_at_school_period_1.id])
       end
     end
   end

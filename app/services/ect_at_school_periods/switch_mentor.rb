@@ -62,7 +62,7 @@ module ECTAtSchoolPeriods
     def started_on = mentor_at_school_period.started_on
 
     def earliest_possible_start_date
-      [Date.current, mentor_at_school_period.started_on].max
+      [Date.current, started_on].max
     end
 
     def mentor_eligible_for_training?

@@ -1,7 +1,7 @@
 module Schools
   module ECTs
     module ChangeMentorWizard
-      class TrainingStep < Step
+      class ReviewMentorEligibilityStep < Step
         attribute :accepting_current_lead_provider, :boolean
 
         def self.permitted_params = [:accepting_current_lead_provider]
