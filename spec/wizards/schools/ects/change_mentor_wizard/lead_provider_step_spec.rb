@@ -38,8 +38,8 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
   end
 
   describe "#previous_step" do
-    it "returns the edit step" do
-      expect(current_step.previous_step).to eq(:training)
+    it "returns the review_mentor_eligibility step" do
+      expect(current_step.previous_step).to eq(:review_mentor_eligibility)
     end
   end
 

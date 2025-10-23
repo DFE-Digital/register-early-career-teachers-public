@@ -61,8 +61,8 @@ describe Schools::ECTs::ChangeMentorWizard::CheckAnswersStep do
       context "when the current lead provider has been accepted" do
         let(:accepting_current_lead_provider) { true }
 
-        it "returns the training step" do
-          expect(current_step.previous_step).to eq(:training)
+        it "returns the review_mentor_eligibility step" do
+          expect(current_step.previous_step).to eq(:review_mentor_eligibility)
         end
       end
 

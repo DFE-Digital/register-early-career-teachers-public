@@ -5,7 +5,7 @@ module Schools
         steps do
           [{
             edit: EditStep,
-            training: TrainingStep,
+            review_mentor_eligibility: ReviewMentorEligibilityStep,
             lead_provider: LeadProviderStep,
             check_answers: CheckAnswersStep,
             confirmation: ConfirmationStep

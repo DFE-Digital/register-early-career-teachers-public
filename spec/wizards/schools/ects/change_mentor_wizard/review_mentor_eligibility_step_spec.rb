@@ -1,10 +1,10 @@
-describe Schools::ECTs::ChangeMentorWizard::TrainingStep do
+describe Schools::ECTs::ChangeMentorWizard::ReviewMentorEligibilityStep do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do
     Schools::ECTs::ChangeMentorWizard::Wizard.new(
-      current_step: :training,
-      step_params: ActionController::Parameters.new(training: params),
+      current_step: :review_mentor_eligibility,
+      step_params: ActionController::Parameters.new(review_mentor_eligibility: params),
       author:,
       store:,
       ect_at_school_period:
