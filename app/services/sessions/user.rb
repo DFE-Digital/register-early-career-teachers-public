@@ -3,7 +3,8 @@ module Sessions
   class User
     class UnrecognisedType < StandardError; end
 
-    MAX_SESSION_IDLE_TIME = 2.hours
+    # moved to a env var
+    # MAX_SESSION_IDLE_TIME = 2.hours
 
     # @raise [Sessions::User::UnrecognisedType]
     #
@@ -90,18 +91,23 @@ module Sessions
 
     # @return [Boolean]
     def expired?
-      last_active_at < MAX_SESSION_IDLE_TIME.ago
+      last_active_at < max_session_idle_time.ago
     end
 
     # @return [Time, nil]
     def expires_at
-      (last_active_at + MAX_SESSION_IDLE_TIME) if last_active_at
+      (last_active_at + max_session_idle_time) if last_active_at
     end
 
     # @param time [Time]
     # @return [Time]
     def record_new_activity(time)
       @last_active_at = time
+    end
+
+    # @return [ActiveSupport::Duration]
+    def max_session_idle_time
+      Rails.configuration.max_session_idle_time
     end
   end
 end
