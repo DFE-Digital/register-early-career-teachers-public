@@ -1,6 +1,6 @@
 module API::Teachers
   class Withdraw
-    include API::Teachers::SharedAction
+    include API::Concerns::Teachers::SharedAction
 
     WITHDRAWAL_REASONS = TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).freeze
 
@@ -16,14 +16,13 @@ module API::Teachers
     def withdraw
       return false unless valid?
 
-      ActiveRecord::Base.transaction do
-        training_period.withdrawn_at = Time.zone.now
-        training_period.withdrawal_reason = reason.underscore
-        training_period.finished_on = [training_period.finished_on, training_period.withdrawn_at.to_date].compact.min
-        training_period.save!
-
-        record_withdraw_event!
-      end
+      Teachers::Withdraw.new(
+        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
+        lead_provider:,
+        reason:,
+        teacher:,
+        training_period:
+      ).withdraw
     end
 
   private
@@ -33,18 +32,6 @@ module API::Teachers
       return unless training_status&.withdrawn?
 
       errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.")
-    end
-
-    def record_withdraw_event!
-      return unless training_period.saved_changes?
-
-      Events::Record.record_teacher_withdraws_training_period_event!(
-        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
-        training_period:,
-        teacher:,
-        lead_provider:,
-        modifications: training_period.saved_changes
-      )
     end
   end
 end
