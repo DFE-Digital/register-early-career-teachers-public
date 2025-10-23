@@ -1,0 +1,28 @@
+<% page_data(
+    title: "Mentor updated for #{@wizard.teacher_full_name}",
+    header: false
+) %>
+
+<%= govuk_panel(
+      title_text: <<~TXT
+        You have changed #{@wizard.teacher_full_name}’s mentor to
+        #{@wizard.current_step.current_mentor_name}
+      TXT
+    ) %>
+
+<h2 class="govuk-heading-m">
+ What happens next?
+</h2>
+
+<p class="govuk-body">
+  <%= @wizard.current_step.current_mentor_name %> is now responsible for mentoring
+  <%= @wizard.teacher_full_name %>.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Back to #{@wizard.teacher_full_name}’s details",
+        schools_ect_path(@wizard.ect_at_school_period),
+        no_visited_state: true
+      ) %>
+</p>

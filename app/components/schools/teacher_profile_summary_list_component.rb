@@ -20,7 +20,7 @@ module Schools
       when "Exempt"
         govuk_tag(text: "Exempt", colour: "grey")
       else
-        if current_mentor_name(@ect)
+        if current_mentor_name
           govuk_tag(text: "Registered", colour: "green")
         else
           govuk_tag(text: "Mentor required", colour: "red")
@@ -28,8 +28,9 @@ module Schools
       end
     end
 
-    def current_mentor_name(ect)
-      ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor_name
-    end
+    def current_mentor = mentorship.current_mentor
+    def current_mentor_name = mentorship.current_mentor_name
+
+    def mentorship = @mentorship ||= ECTAtSchoolPeriods::Mentorship.new(@ect)
   end
 end
