@@ -20,7 +20,7 @@ ECTs cannot start training until they’re registered. If registration happens l
 | 1 November to 28/29 February | `standard-january` | 
 | 1 March to 31 May | `standard-april` | 
 
-We’ll use the same date boundaries for mentors, based on when they start training. 
+We’ll use the same date boundaries for mentors, based on when they're first registered as an ECT's mentor.
 
 ## Extended schedules 
 
