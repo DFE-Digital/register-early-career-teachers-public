@@ -169,7 +169,7 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
       end
 
       it "returns all eligible mentors" do
-        expect(current_step.mentors_for_select.pluck(:id)).to contain_exactly(mentor_at_school_period_1.id, mentor_at_school_period_2.id)
+        expect(current_step.mentors_for_select.ids).to contain_exactly(mentor_at_school_period_1.id, mentor_at_school_period_2.id)
       end
     end
 
@@ -190,7 +190,7 @@ describe Schools::ECTs::ChangeMentorWizard::EditStep do
       end
 
       it "returns only eligible mentors" do
-        expect(current_step.mentors_for_select.pluck(:id)).to eq([mentor_at_school_period_1.id])
+        expect(current_step.mentors_for_select.ids).to eq([mentor_at_school_period_1.id])
       end
     end
   end
