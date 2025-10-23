@@ -18,3 +18,4 @@ DFE_ANALYTICS_ENABLED: true
 TRS_API_BASE_URL: "https://teacher-qualifications-api.education.gov.uk"
 TRS_API_VERSION: "20250203"
 RAILS_ENV: production
+MAX_SESSION_IDLE_TIME: 7200

@@ -64,7 +64,7 @@ module RegisterEarlyCareerTeachers
       ecf_url: ENV['PARITY_CHECK_ECF_URL'],
       rect_url: ENV['PARITY_CHECK_RECT_URL'],
     }
-
+    config.max_session_idle_time = ENV.fetch('MAX_SESSION_IDLE_TIME', 7200).to_i.seconds
     config.dfe_sign_in_issuer = ENV.fetch('DFE_SIGN_IN_ISSUER', 'https://test-oidc.signin.education.gov.uk')
     config.dfe_sign_in_client_id = ENV['DFE_SIGN_IN_CLIENT_ID']
     config.dfe_sign_in_secret = ENV['DFE_SIGN_IN_SECRET']
