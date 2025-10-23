@@ -27,7 +27,7 @@ module Metadata::Handlers
         changes = {
           school_id: school.id,
           contract_period_year:,
-          in_partnership: school.school_partnerships.for_contract_period(contract_period_year).exists?,
+          in_partnership: contract_period_year.in?(school_partnership_contract_period_years),
           induction_programme_choice: school.training_programme_for(contract_period_year)
         }
 
@@ -61,6 +61,13 @@ module Metadata::Handlers
 
     def contract_period_years
       @contract_period_years ||= ContractPeriod.pluck(:year)
+    end
+
+    def school_partnership_contract_period_years
+      @school_partnership_contract_period_years ||= school.school_partnerships
+        .includes(lead_provider_delivery_partnership: :active_lead_provider)
+        .pluck(:contract_period_year)
+        .uniq
     end
 
     def existing_contract_period_metadata
