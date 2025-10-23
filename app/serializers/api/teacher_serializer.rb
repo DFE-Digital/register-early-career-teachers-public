@@ -28,7 +28,7 @@ class API::TeacherSerializer < Blueprinter::Base
         end
       end
       field(:training_status) { |(training_period, _, _)| API::TrainingPeriods::TrainingStatus.new(training_period:).status }
-      field(:participant_status) { "active" } # TODO: implement when we have participant status service
+      field(:participant_status) { |(training_period, teacher, _)| API::TrainingPeriods::TeacherStatus.new(training_period:, teacher:).status }
       field(:eligible_for_funding) { true } # TODO: implement when we have eligibility service
       field(:pupil_premium_uplift) do |(training_period, teacher, _)|
         training_period.for_ect? && teacher.ect_pupil_premium_uplift

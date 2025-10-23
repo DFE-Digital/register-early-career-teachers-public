@@ -190,8 +190,32 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          it "serializes `participant_status`" do
-            expect(ect_enrolment["participant_status"]).to eq("active")
+          context "serializes `participant_status`" do
+            let(:teacher) { FactoryBot.create(:teacher) }
+
+            context "when `participant_status` is active" do
+              before { ect_training_period.update!(started_on: 1.week.ago, finished_on: nil) }
+
+              it { expect(ect_enrolment["participant_status"]).to eq("active") }
+            end
+
+            context "when `participant_status` is joining" do
+              before { ect_training_period.update!(started_on: 1.week.from_now, finished_on: nil) }
+
+              it { expect(ect_enrolment["participant_status"]).to eq("joining") }
+            end
+
+            context "when `participant_status` is leaving" do
+              before { ect_training_period.update!(started_on: 1.month.ago, finished_on: 3.months.from_now) }
+
+              it { expect(ect_enrolment["participant_status"]).to eq("leaving") }
+            end
+
+            context "when `participant_status` is left" do
+              before { ect_training_period.update!(started_on: 1.month.ago, finished_on: 1.week.ago) }
+
+              it { expect(ect_enrolment["participant_status"]).to eq("left") }
+            end
           end
 
           it "serializes `eligible_for_funding`" do
@@ -323,8 +347,32 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          it "serializes `participant_status`" do
-            expect(mentor_enrolment["participant_status"]).to eq("active")
+          context "serializes `participant_status`" do
+            let(:teacher) { FactoryBot.create(:teacher) }
+
+            context "when `participant_status` is active" do
+              before { mentor_training_period.update!(started_on: 1.week.ago, finished_on: nil) }
+
+              it { expect(mentor_enrolment["participant_status"]).to eq("active") }
+            end
+
+            context "when `participant_status` is joining" do
+              before { mentor_training_period.update!(started_on: 1.week.from_now, finished_on: nil) }
+
+              it { expect(mentor_enrolment["participant_status"]).to eq("joining") }
+            end
+
+            context "when `participant_status` is leaving" do
+              before { mentor_training_period.update!(started_on: 1.month.ago, finished_on: 3.months.from_now) }
+
+              it { expect(mentor_enrolment["participant_status"]).to eq("leaving") }
+            end
+
+            context "when `participant_status` is left" do
+              before { mentor_training_period.update!(started_on: 1.month.ago, finished_on: 1.week.ago) }
+
+              it { expect(mentor_enrolment["participant_status"]).to eq("left") }
+            end
           end
 
           it "serializes `eligible_for_funding`" do
