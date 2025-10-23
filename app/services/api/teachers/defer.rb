@@ -1,6 +1,6 @@
 module API::Teachers
   class Defer
-    include API::Teachers::SharedAction
+    include API::Concerns::Teachers::SharedAction
 
     DEFERRAL_REASONS = TrainingPeriod.deferral_reasons.values.map(&:dasherize).freeze
 
@@ -18,16 +18,13 @@ module API::Teachers
     def defer
       return false if invalid?
 
-      ActiveRecord::Base.transaction do
-        training_period.deferred_at = Time.zone.now
-        training_period.deferral_reason = reason.underscore
-        training_period.finished_on = [training_period.finished_on, training_period.deferred_at.to_date].compact.min
-        training_period.save!
-
-        record_deferred_event!
-      end
-
-      true
+      Teachers::Defer.new(
+        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
+        lead_provider:,
+        reason:,
+        teacher:,
+        training_period:
+      ).defer
     end
 
   private
@@ -44,18 +41,6 @@ module API::Teachers
       return unless training_status&.deferred?
 
       errors.add(:teacher_api_id, "The '#/teacher_api_id' is already deferred.")
-    end
-
-    def record_deferred_event!
-      return unless training_period.saved_changes?
-
-      Events::Record.record_teacher_defers_training_period_event!(
-        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
-        training_period:,
-        teacher:,
-        lead_provider:,
-        modifications: training_period.saved_changes
-      )
     end
   end
 end
