@@ -1,19 +1,30 @@
 ---
-title: User not found
-backlink_href: <%= root_path %>
+title: Access denied
 ---
 
-User sign in details do not match our records.
+<% if @organisation_name.present? %>
+You have tried to sign in to this service with <%= @organisation_name %>.
 
-Check you are using the correct DfE sign in details for the organisation you are signing in as.
+**Please check:**
 
-If you have not signed in before, you may need to ask an approver at your organisation to give you access.
+- you have selected the correct organisation
+- you have been granted access to this service by your organisation's approver
 
-If you are still having problems, please <%= govuk_link_to('contact support', no_visited_state: true, href: support_path) %>.
+**What can you do:**
 
----
+- go back and select a different organisation
+- contact the approver at <%= @organisation_name %> to request access
 
-If **<%= @organisation_name %>** is not the correct organisation, you can try signing in again.
+<%= govuk_link_to('Go back and try again', no_visited_state: true, href: root_path) %>
 
-First <%= govuk_link_to('go to DSI and sign out', no_visited_state: true, new_tab: true, href: @dfe_user_account) %>
-then <%= govuk_link_to('sign in again', no_visited_state: true, href: sign_in_path) %> with a different organisation.
+<% else %>
+
+You must be a user approved by an organisation to access this service.
+
+**What can you do:**
+
+Go to the 'Services' section of DfE Sign-In and 'request access to an organisation'.
+
+<% end %>
+
+<%= govuk_link_to('Go to DfE Sign-In profile', no_visited_state: true, new_tab: true, href: @dfe_sign_in_profile_url) %>

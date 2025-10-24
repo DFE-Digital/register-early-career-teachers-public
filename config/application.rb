@@ -69,7 +69,7 @@ module RegisterEarlyCareerTeachers
     requested_timeout = 7200 if requested_timeout <= 0
     config.max_session_idle_time = requested_timeout.seconds
 
-    config.dfe_sign_in_user_account = ENV.fetch('DFE_SIGN_IN_USER_ACCOUNT', 'https://test-services.signin.education.gov.uk/my-services')
+    config.dfe_sign_in_profile = ENV.fetch('DFE_SIGN_IN_PROFILE', 'https://test-profile.signin.education.gov.uk')
     config.dfe_sign_in_issuer = ENV.fetch('DFE_SIGN_IN_ISSUER', 'https://test-oidc.signin.education.gov.uk')
     config.dfe_sign_in_client_id = ENV['DFE_SIGN_IN_CLIENT_ID']
     config.dfe_sign_in_secret = ENV['DFE_SIGN_IN_SECRET']
