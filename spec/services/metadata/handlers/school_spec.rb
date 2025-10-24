@@ -1,4 +1,4 @@
-RSpec.describe Metadata::Handlers::School, :with_metadata do
+RSpec.describe Metadata::Handlers::School do
   let(:instance) { described_class.new(school) }
   let(:school) { FactoryBot.create(:school) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
@@ -9,7 +9,7 @@ RSpec.describe Metadata::Handlers::School, :with_metadata do
     let(:object) { school }
   end
 
-  describe ".destroy_all_metadata!" do
+  describe ".destroy_all_metadata!", :with_metadata do
     subject(:destroy_all_metadata) { described_class.destroy_all_metadata! }
 
     it "destroys all contract period metadata for the school" do
@@ -99,7 +99,7 @@ RSpec.describe Metadata::Handlers::School, :with_metadata do
           school:,
           lead_provider:,
           contract_period:,
-          expression_of_interest: false
+          expression_of_interest_or_school_partnership: false
         )
       end
 
@@ -111,16 +111,23 @@ RSpec.describe Metadata::Handlers::School, :with_metadata do
       end
 
       context "when metadata already exists for a school, lead provider and contract period" do
-        let!(:metadata) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, lead_provider:, contract_period:, expression_of_interest: false) }
+        let!(:metadata) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, lead_provider:, contract_period:, expression_of_interest_or_school_partnership: false) }
 
         it "does not create metadata" do
           expect { refresh_metadata }.not_to change(Metadata::SchoolLeadProviderContractPeriod, :count)
         end
 
         it "updates the metadata when the partnership changes" do
-          Metadata::SchoolLeadProviderContractPeriod.bypass_update_restrictions { metadata.update!(expression_of_interest: true) }
+          mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, school:, finished_on: nil)
+          FactoryBot.create(
+            :training_period,
+            :for_mentor,
+            mentor_at_school_period:,
+            school_partnership:,
+            started_on: mentor_at_school_period.started_on + 1.week
+          )
 
-          expect { refresh_metadata }.to change { metadata.reload.expression_of_interest }.from(true).to(false)
+          expect { refresh_metadata }.to change { metadata.reload.expression_of_interest_or_school_partnership }.from(false).to(true)
         end
 
         it "does not update the metadata if no changes are made" do

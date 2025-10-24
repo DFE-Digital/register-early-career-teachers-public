@@ -155,6 +155,7 @@ erDiagram
     date trs_induction_completed_date
     datetime ect_first_became_eligible_for_training_at
     datetime mentor_first_became_eligible_for_training_at
+    boolean trnless
   }
   PendingInductionSubmission {
     integer id
@@ -187,6 +188,7 @@ erDiagram
     enum training_programme
     boolean trs_prohibited_from_teaching
     date trs_induction_completed_date
+    date trs_date_of_birth
   }
   PendingInductionSubmission }o--|| AppropriateBody : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
@@ -350,7 +352,7 @@ erDiagram
     integer school_id
     integer lead_provider_id
     integer contract_period_year
-    boolean expression_of_interest
+    boolean expression_of_interest_or_school_partnership
     datetime created_at
     datetime updated_at
   }

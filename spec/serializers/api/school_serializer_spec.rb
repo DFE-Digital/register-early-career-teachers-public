@@ -53,7 +53,7 @@ describe API::SchoolSerializer, type: :serializer do
     end
 
     it "serializes `expression_of_interest`" do
-      expect(attributes["expression_of_interest"]).to eq(lead_provider_contract_period_metadata.expression_of_interest)
+      expect(attributes["expression_of_interest"]).to eq(lead_provider_contract_period_metadata.expression_of_interest_or_school_partnership)
     end
 
     it "serializes `created_at`" do
