@@ -1,10 +1,13 @@
 module Teachers::Details
   # Pass and Fail induction buttons
   class InductionOutcomeActionsComponent < ApplicationComponent
-    attr_reader :mode, :teacher
+    include UserModes
+
+    attr_reader :teacher
 
     def initialize(mode:, teacher:)
-      @mode = mode
+      super
+
       @teacher = teacher
     end
 
@@ -28,10 +31,6 @@ module Teachers::Details
       else
         new_ab_teacher_record_passed_outcome_path(teacher)
       end
-    end
-
-    def admin_mode?
-      mode == :admin
     end
   end
 end
