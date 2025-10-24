@@ -26,6 +26,21 @@ RSpec.shared_context "an API update endpoint documentation", :exceptions_app do 
       response "200", "The updated #{options[:resource_description]}" do
         schema({ "$ref": options[:response_schema_ref] })
 
+        after do |example|
+          if defined?(response_example)
+            example_spec = {
+              "application/json" => {
+                examples: {
+                  success: {
+                    value: response_example,
+                  },
+                },
+              },
+            }
+            example.metadata[:response][:content] = example_spec
+          end
+        end
+
         run_test!
       end
 

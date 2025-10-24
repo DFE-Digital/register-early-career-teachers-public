@@ -174,7 +174,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
 
             it "serializes `withdrawal` with the details of the withdrawal" do
-              expect(ect_enrolment["withdrawal"]).to eq({ "withdrawn_at" => ect_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
+              expect(ect_enrolment["withdrawal"]).to eq({ "date" => ect_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
             end
           end
 
@@ -307,7 +307,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
 
             it "serializes `withdrawal` with the details of the withdrawal" do
-              expect(mentor_enrolment["withdrawal"]).to eq({ "withdrawn_at" => mentor_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
+              expect(mentor_enrolment["withdrawal"]).to eq({ "date" => mentor_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
             end
           end
 
