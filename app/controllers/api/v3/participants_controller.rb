@@ -25,7 +25,7 @@ module API
       def withdraw
         service = API::Teachers::Withdraw.new(
           lead_provider_id: current_lead_provider.id,
-          teacher_api_id: api_id,
+          teacher_api_id: teacher.api_id,
           reason: withdraw_participant_params[:reason],
           course_identifier: withdraw_participant_params[:course_identifier]
         )
@@ -65,6 +65,10 @@ module API
 
       def training_status
         participants_params.dig(:filter, :training_status)
+      end
+
+      def teacher
+        teachers_query.teacher_by_api_id(api_id)
       end
 
       def api_id
