@@ -5,9 +5,9 @@
 ) %>
 
 <%= render Teachers::RecordOutcomeComponent.new(
+  mode: :appropriate_body,
+  outcome: :pass,
   teacher: @teacher,
   pending_induction_submission: @pending_induction_submission,
-  mode: :appropriate_body,
-  outcome_type: :passed,
   appropriate_body: @appropriate_body
 ) %>

@@ -9,6 +9,11 @@ FactoryBot.define do
       trs_last_name { Faker::Name.last_name }
     end
 
+    trait :with_name do
+      trs_first_name { "John" }
+      trs_last_name { "Keating" }
+    end
+
     trait :with_corrected_name do
       corrected_name { [trs_first_name, Faker::Name.middle_name, trs_last_name].join(' ') }
     end

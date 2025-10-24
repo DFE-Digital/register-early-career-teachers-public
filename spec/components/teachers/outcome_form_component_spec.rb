@@ -1,46 +1,40 @@
 RSpec.describe Teachers::OutcomeFormComponent, type: :component do
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
-  let(:form) { double("form", govuk_error_summary: "", govuk_date_field: "", govuk_number_field: "") }
+  subject(:component) do
+    described_class.new(form:, appropriate_body:)
+  end
 
-  context "when in admin mode" do
-    subject(:component) do
-      described_class.new(
-        form:,
-        teacher:,
-        is_admin: true
-      )
+  let(:form) do
+    GOVUKDesignSystemFormBuilder::FormBuilder.new(
+      :pending_induction_submission,
+      PendingInductionSubmission.new,
+      ActionView::Base.empty,
+      {}
+    )
+  end
+
+  before { render_inline(component) }
+
+  context "without appropriate body" do
+    let(:appropriate_body) { nil }
+
+    it "finished_on" do
+      expect(rendered_content).to have_text("When did they complete their induction?")
     end
 
-    it "returns the correct date legend text" do
-      expect(component.date_legend_text).to eq("When did they complete their induction?")
-    end
-
-    it "returns the correct terms label text" do
-      expect(component.terms_label_text).to eq("How many terms of induction did they complete?")
-    end
-
-    it "returns the correct date hint text" do
-      expect(component.teacher_induction_date_hint_text).to eq("For example, 20 4 #{Date.current.year.pred}")
+    it "number_of_terms" do
+      expect(rendered_content).to have_text("How many terms of induction did they complete?")
     end
   end
 
-  context "when in appropriate body mode" do
-    subject(:component) do
-      described_class.new(
-        form:,
-        teacher:,
-        is_admin: false,
-        appropriate_body:
-      )
+  context "with appropriate body" do
+    let(:appropriate_body) { FactoryBot.build(:appropriate_body, name: 'OmniCorp') }
+
+    it "finished_on" do
+      expect(rendered_content).to have_text("When did they move from OmniCorp?")
     end
 
-    it "returns the correct date legend text" do
-      expect(component.date_legend_text).to eq("When did they move from #{appropriate_body.name}?")
-    end
-
-    it "returns the correct terms label text" do
-      expect(component.terms_label_text).to eq("How many terms of induction did they spend with you?")
+    it "number_of_terms" do
+      expect(rendered_content).to have_text("How many terms of induction did they spend with you?")
     end
   end
 end
