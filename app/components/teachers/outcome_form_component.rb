@@ -1,33 +1,33 @@
 module Teachers
+  # Renders the form fields for recording an induction outcome
+  # and shared between admin console and appropriate bodies
   class OutcomeFormComponent < ApplicationComponent
-    attr_reader :form, :teacher, :is_admin, :appropriate_body
+    attr_reader :form,
+                :appropriate_body
 
-    # TODO: refactor to use `mode` and `admin_{mode}?` like other components when put to use
-    def initialize(form:, teacher:, is_admin:, appropriate_body: nil)
+    # @param form [GOVUKDesignSystemFormBuilder::FormBuilder]
+    # @param appropriate_body [AppropriateBody, nil]
+    def initialize(form:, appropriate_body: nil)
       @form = form
-      @teacher = teacher
-      @is_admin = is_admin
       @appropriate_body = appropriate_body
     end
 
-    def date_legend_text
-      if is_admin
-        "When did they complete their induction?"
-      else
-        "When did they move from #{appropriate_body.name}?"
-      end
+  private
+
+    def finished_on_legend
+      return "When did they move from #{appropriate_body.name}?" if appropriate_body_mode?
+
+      "When did they complete their induction?"
     end
 
-    def terms_label_text
-      if is_admin
-        "How many terms of induction did they complete?"
-      else
-        "How many terms of induction did they spend with you?"
-      end
+    def number_of_terms_label
+      return "How many terms of induction did they spend with you?" if appropriate_body_mode?
+
+      "How many terms of induction did they complete?"
     end
 
-    def teacher_induction_date_hint_text
-      "For example, 20 4 #{Date.current.year.pred}"
+    def appropriate_body_mode?
+      appropriate_body.present?
     end
   end
 end
