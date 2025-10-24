@@ -34,4 +34,4 @@ DeclarativeUpdates.skip(:metadata) do
 end
 
 # Refresh all metadata
-Metadata::Manager.refresh_all_metadata!(async: true, track_changes: false)
+Metadata::Manager.refresh_all_metadata!(async: false, track_changes: false)
