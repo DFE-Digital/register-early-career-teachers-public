@@ -1,9 +1,7 @@
-<%= content_for(:error_summary) { form.govuk_error_summary } %>
-
 <%=
   form.govuk_date_field :finished_on,
     legend: { text: finished_on_legend },
-    hint: { text: "For example, 20 4 #{Date.current.year.pred}" }
+    hint: { text: helpers.teacher_induction_date_hint_text }
 %>
 
 <%= form.govuk_number_field(:number_of_terms,
