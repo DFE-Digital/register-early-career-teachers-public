@@ -75,7 +75,7 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
           context "when valid" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
 
-            it "call returns teacher" do
+            it "returns teacher" do
               expect(subject.withdraw).to eq(teacher)
             end
 
