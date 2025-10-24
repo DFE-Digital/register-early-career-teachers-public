@@ -1,12 +1,12 @@
 module API::TrainingPeriods
   class TeacherStatus
-    attr_reader :training_period, :teacher
+    attr_reader :latest_training_period, :teacher
 
-    delegate :started_on, :finished_on, :trainee, to: :training_period, private: true
+    delegate :started_on, :finished_on, to: :latest_training_period, private: true
     delegate :finished_induction_period, :mentor_became_ineligible_for_funding_on, to: :teacher, private: true
 
-    def initialize(training_period:, teacher:)
-      @training_period = training_period
+    def initialize(latest_training_period:, teacher:)
+      @latest_training_period = latest_training_period
       @teacher = teacher
     end
 
