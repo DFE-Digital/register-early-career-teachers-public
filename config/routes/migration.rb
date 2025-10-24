@@ -10,7 +10,9 @@ namespace :migration do
   resources :failures, only: %i[index]
   resources :model_failures, path: "migrator-failures", only: %i[index]
   resources :teacher_failures, path: "teacher-failures", only: %i[index]
-  resources :teachers, only: %i[index show]
+  resources :teachers, only: %i[index show] do
+    resource :legacy_ect_gantt, only: :show, controller: 'teachers/legacy_ect_gantt'
+  end
   get "download-induction-records", action: :download, controller: :induction_record_export
 
   constraints -> { Rails.application.config.parity_check[:enabled] } do

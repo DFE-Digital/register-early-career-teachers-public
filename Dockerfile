@@ -23,6 +23,8 @@ RUN apk add --update --no-cache tzdata && \
 # postgresql-dev: postgres driver and libraries
 RUN apk add --no-cache build-base yaml-dev nodejs npm postgresql16-dev
 
+RUN apk add --no-cache plantuml # FIXME can be removed once the migration is done
+
 # Install gems defined in Gemfile
 COPY .ruby-version Gemfile Gemfile.lock ./
 
