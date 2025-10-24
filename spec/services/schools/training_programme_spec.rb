@@ -1,15 +1,15 @@
 describe Schools::TrainingProgramme do
-  subject { described_class.new(school:, contract_period_year:) }
+  let(:instance) { described_class.new(school:) }
 
   let(:school) { FactoryBot.create(:school, urn: "123456") }
   let(:contract_period) { FactoryBot.create(:contract_period) }
   let(:contract_period_year) { contract_period.year }
 
   describe "#training_programme" do
+    subject { instance.training_programme(contract_period_year:) }
+
     context "when school has no ects or mentors for the given contract period" do
-      it "returns `not_yet_known`" do
-        expect(subject.training_programme).to eq("not_yet_known")
-      end
+      it { is_expected.to eq("not_yet_known") }
     end
 
     context "when school has ects or mentors for the given contract period" do
@@ -32,9 +32,7 @@ describe Schools::TrainingProgramme do
                             started_on: mentor_at_school_period.started_on)
         end
 
-        it "returns the correct `training_programme` choice" do
-          expect(subject.training_programme).to eq("provider_led")
-        end
+        it { is_expected.to eq("provider_led") }
       end
 
       context "when school has mentors not in training (only mentoring)" do
@@ -58,9 +56,7 @@ describe Schools::TrainingProgramme do
                             mentee: ect_at_school_period)
         end
 
-        it "returns the correct `training_programme` choice" do
-          expect(subject.training_programme).to eq("not_yet_known")
-        end
+        it { is_expected.to eq("not_yet_known") }
       end
 
       context "when school has at least one expression of interest for training from a mentor" do
@@ -79,9 +75,7 @@ describe Schools::TrainingProgramme do
                             started_on: mentor_at_school_period.started_on)
         end
 
-        it "returns the correct `training_programme` choice" do
-          expect(subject.training_programme).to eq("provider_led")
-        end
+        it { is_expected.to eq("provider_led") }
       end
 
       context "when school has at least one ect in training" do
@@ -101,9 +95,7 @@ describe Schools::TrainingProgramme do
                               started_on: ect_at_school_period.started_on)
           end
 
-          it "returns the correct `training_programme` choice" do
-            expect(subject.training_programme).to eq("provider_led")
-          end
+          it { is_expected.to eq("provider_led") }
         end
 
         context "when there is only `school_led` as the ects training programmes" do
@@ -121,9 +113,7 @@ describe Schools::TrainingProgramme do
                               finished_on: '2022-06-01')
           end
 
-          it "returns the correct `training_programme` choice" do
-            expect(subject.training_programme).to eq("school_led")
-          end
+          it { is_expected.to eq("school_led") }
         end
 
         context "when there is a mix of `provider_led` and `school_led` as the ects training programmes" do
@@ -156,9 +146,7 @@ describe Schools::TrainingProgramme do
                               finished_on: '2022-06-01')
           end
 
-          it "returns the correct `training_programme` choice" do
-            expect(subject.training_programme).to eq("provider_led")
-          end
+          it { is_expected.to eq("provider_led") }
         end
       end
 
@@ -177,9 +165,7 @@ describe Schools::TrainingProgramme do
                             started_on: ect_at_school_period.started_on)
         end
 
-        it "returns the correct `training_programme` choice" do
-          expect(subject.training_programme).to eq("school_led")
-        end
+        it { is_expected.to eq("school_led") }
       end
     end
   end

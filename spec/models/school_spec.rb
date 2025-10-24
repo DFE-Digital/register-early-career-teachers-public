@@ -232,8 +232,8 @@ describe School do
     it "calls Schools::TrainingProgramme service with correct params" do
       training_programme_service = instance_double(Schools::TrainingProgramme)
 
-      allow(Schools::TrainingProgramme).to receive(:new).with(school:, contract_period_year:).and_return(training_programme_service)
-      expect(training_programme_service).to receive(:training_programme)
+      allow(Schools::TrainingProgramme).to receive(:new).with(school:).and_return(training_programme_service)
+      expect(training_programme_service).to receive(:training_programme).with(contract_period_year:)
 
       training_programme_for
     end
