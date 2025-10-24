@@ -39,6 +39,7 @@ FactoryBot.define do
         )
 
         metadata.public_send("latest_#{teacher_type}_training_period=", training_period)
+        metadata.public_send("latest_#{teacher_type}_contract_period=", contract_period)
       end
     end
 
