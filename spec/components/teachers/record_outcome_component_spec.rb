@@ -1,126 +1,136 @@
 RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
-  let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+  subject(:component) do
+    described_class.new(mode:, teacher:, outcome:, appropriate_body:, pending_induction_submission:)
+  end
+
+  let(:teacher) { FactoryBot.create(:teacher, :with_name) }
   let(:pending_induction_submission) { PendingInductionSubmission.new }
-  let(:teacher_name) { Teachers::Name.new(teacher).full_name }
 
-  describe "admin mode with passed outcome" do
-    subject(:component) do
-      described_class.new(
-        teacher:,
-        pending_induction_submission:,
-        mode: :admin,
-        outcome_type: :passed
-      )
+  describe "#render" do
+    before { render_inline(component) }
+
+    context "with appropriate body mode" do
+      let(:mode) { :appropriate_body }
+      let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+
+      context "and passed outcome" do
+        let(:outcome) { :pass }
+
+        it "targets the appropriate body pass action" do
+          expect(rendered_content).to have_selector("form[action='/appropriate-body/teachers/#{teacher.id}/record-passed-outcome'][method='post']")
+        end
+
+        it "renders a submit button", :aggregate_failures do
+          expect(rendered_content).to have_button("Record pass outcome for John Keating")
+          expect(rendered_content).to include('govuk-button')
+          expect(rendered_content).not_to include('govuk-button--warning')
+        end
+
+        it "hides appeal notice" do
+          expect(rendered_content).not_to include("John Keating can appeal this outcome.")
+        end
+      end
+
+      context "and failed outcome" do
+        let(:outcome) { :fail }
+
+        it "targets the appropriate body fail action" do
+          expect(rendered_content).to have_selector("form[action='/appropriate-body/teachers/#{teacher.id}/record-failed-outcome'][method='post']")
+        end
+
+        it "renders a warning button", :aggregate_failures do
+          expect(rendered_content).to have_button("Record failing outcome for John Keating")
+          expect(rendered_content).to include('govuk-button govuk-button--warning')
+        end
+
+        it "shows appeal notice" do
+          expect(rendered_content).to have_text("John Keating can appeal this outcome.")
+        end
+      end
     end
 
-    it "has the correct title" do
-      expect(component.title).to eq("Record passed outcome for #{teacher_name}")
-    end
+    context "with admin mode" do
+      let(:mode) { :admin }
+      let(:appropriate_body) { nil }
 
-    it "has the correct backlink" do
-      render_inline(component)
-      expect(component.backlink_href).to eq("/admin/teachers/#{teacher.id}")
-    end
+      context "and passed outcome" do
+        let(:outcome) { :pass }
 
-    it "has the correct form URL" do
-      render_inline(component)
-      expect(component.form_url).to eq("/admin/teachers/#{teacher.id}/record-passed-outcome")
-    end
+        it "targets the admin pass action" do
+          expect(rendered_content).to have_selector("form[action='/admin/teachers/#{teacher.id}/record-passed-outcome'][method='post']")
+        end
 
-    it "has the correct submit text" do
-      expect(component.submit_text).to eq("Record pass outcome for #{teacher_name}")
-    end
+        it "renders a submit button", :aggregate_failures do
+          expect(rendered_content).to have_button("Record pass outcome for John Keating")
+          expect(rendered_content).to include('govuk-button')
+          expect(rendered_content).not_to include('govuk-button--warning')
+        end
 
-    it "does not show appeal notice" do
-      expect(component.show_appeal_notice?).to be false
-    end
+        it "hides appeal notice" do
+          expect(rendered_content).not_to have_text("John Keating can appeal this outcome.")
+        end
+      end
 
-    it "is not a warning button" do
-      expect(component.warning?).to be false
-    end
-  end
+      context "and failed outcome" do
+        let(:outcome) { :fail }
 
-  describe "admin mode with failed outcome" do
-    subject(:component) do
-      described_class.new(
-        teacher:,
-        pending_induction_submission:,
-        mode: :admin,
-        outcome_type: :failed
-      )
-    end
+        it "targets the admin fail action" do
+          expect(rendered_content).to have_selector("form[action='/admin/teachers/#{teacher.id}/record-failed-outcome'][method='post']")
+        end
 
-    it "has the correct title" do
-      expect(component.title).to eq("Record failed outcome for #{teacher_name}")
-    end
+        it "renders a warning button", :aggregate_failures do
+          expect(rendered_content).to have_button("Record failing outcome for John Keating")
+          expect(rendered_content).to include('govuk-button govuk-button--warning')
+        end
 
-    it "has the correct form URL" do
-      render_inline(component)
-      expect(component.form_url).to eq("/admin/teachers/#{teacher.id}/record-failed-outcome")
-    end
-
-    it "has the correct submit text" do
-      expect(component.submit_text).to eq("Record failing outcome for #{teacher_name}")
-    end
-
-    it "does not show appeal notice" do
-      expect(component.show_appeal_notice?).to be false
-    end
-
-    it "is a warning button" do
-      expect(component.warning?).to be true
-    end
-  end
-
-  describe "appropriate body mode with passed outcome" do
-    subject(:component) do
-      described_class.new(
-        teacher:,
-        pending_induction_submission:,
-        mode: :appropriate_body,
-        outcome_type: :passed,
-        appropriate_body:
-      )
-    end
-
-    it "has the correct backlink" do
-      render_inline(component)
-      expect(component.backlink_href).to eq("/appropriate-body/teachers/#{teacher.id}")
-    end
-
-    it "has the correct form URL" do
-      render_inline(component)
-      expect(component.form_url).to eq("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome")
-    end
-
-    it "does not show appeal notice" do
-      expect(component.show_appeal_notice?).to be false
+        it "hides appeal notice" do
+          expect(rendered_content).not_to have_text("John Keating can appeal this outcome.")
+        end
+      end
     end
   end
 
-  describe "appropriate body mode with failed outcome" do
-    subject(:component) do
-      described_class.new(
-        teacher:,
-        pending_induction_submission:,
-        mode: :appropriate_body,
-        outcome_type: :failed,
-        appropriate_body:
-      )
+  describe "#initialize" do
+    let(:mode) { :admin }
+    let(:outcome) { :pass }
+    let(:appropriate_body) { nil }
+
+    context "when appropriate body is omitted in admin mode" do
+      subject(:component) do
+        described_class.new(mode:, teacher:, outcome:, pending_induction_submission:)
+      end
+
+      it do
+        expect { component }.not_to raise_error
+      end
     end
 
-    it "has the correct form URL" do
-      render_inline(component)
-      expect(component.form_url).to eq("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")
+    context "when appropriate body is omitted in appropriate body mode" do
+      subject(:component) do
+        described_class.new(mode:, teacher:, outcome:, pending_induction_submission:)
+      end
+
+      let(:mode) { :appropriate_body }
+
+      it do
+        expect { component }.to raise_error(Teachers::RecordOutcomeComponent::MissingAppropriateBodyError)
+      end
     end
 
-    it "shows appeal notice" do
-      expect(component.show_appeal_notice?).to be true
+    context "when outcome is not recognised" do
+      let(:outcome) { :foo }
+
+      it do
+        expect { component }.to raise_error(Teachers::RecordOutcomeComponent::InvalidOutcomeError)
+      end
     end
 
-    it "is a warning button" do
-      expect(component.warning?).to be true
+    context "when mode is not recognised" do
+      let(:mode) { :invalid_mode }
+
+      it do
+        expect { component }.to raise_error(UserModes::InvalidModeError)
+      end
     end
   end
 end

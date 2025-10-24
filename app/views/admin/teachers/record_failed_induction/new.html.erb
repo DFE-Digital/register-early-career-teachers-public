@@ -5,8 +5,8 @@
 ) %>
 
 <%= render Teachers::RecordOutcomeComponent.new(
+  mode: :admin,
+  outcome: :fail,
   teacher: @teacher,
   pending_induction_submission: @pending_induction_submission,
-  mode: :admin,
-  outcome_type: :failed
 ) %>

@@ -17,7 +17,7 @@ describe "Admins can reopen a teacher's closed induction" do
     and_i_am_sure_i_want_to_reopen_the_induction
     then_there_is_an_error_message
 
-    when_i_add_a_zendesk_ticket_id
+    when_i_add_a_zendesk_ticket_id("#123456")
     and_i_add_a_note("This is a test reason for reopening")
     and_i_am_sure_i_want_to_reopen_the_induction
     and_event_background_jobs_are_executed
@@ -51,10 +51,10 @@ private
       .to have_text("There is a problem")
   end
 
-  def when_i_add_a_zendesk_ticket_id
+  def when_i_add_a_zendesk_ticket_id(ticket)
     page.locator("fieldset", hasText: "Explain why you're making this change")
-      .get_by_label("Enter the Zendesk ID")
-      .fill("123")
+      .get_by_label("Enter Zendesk ticket number")
+      .fill(ticket)
   end
 
   def and_i_add_a_note(reason)

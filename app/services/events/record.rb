@@ -133,51 +133,34 @@ module Events
 
     # Teacher Status Events
 
-    def self.record_teacher_passes_induction_event!(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_teacher_passes_induction_event!(author:, appropriate_body:, induction_period:, teacher:, body: nil, zendesk_ticket_id: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_passes_induction
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} passed induction"
+      heading = "#{teacher_name} passed induction by admin" if author.dfe_user?
+      heading = "#{teacher_name} passed induction by #{appropriate_body.name}" if author.appropriate_body_user?
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
-    def self.record_teacher_fails_induction_event!(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_teacher_fails_induction_event!(author:, appropriate_body:, induction_period:, teacher:, body: nil, zendesk_ticket_id: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_fails_induction
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} failed induction"
+      heading = "#{teacher_name} failed induction by admin" if author.dfe_user?
+      heading = "#{teacher_name} failed induction by #{appropriate_body.name}" if author.appropriate_body_user?
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
-    end
-
-    def self.record_admin_passes_teacher_event!(author:, appropriate_body:, induction_period:, teacher:)
-      fail(NoInductionPeriod) unless induction_period
-
-      event_type = :teacher_passes_induction
-      heading = "#{Teachers::Name.new(teacher).full_name} passed induction (admin)"
-      happened_at = induction_period.finished_on
-
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
-    end
-
-    def self.record_admin_fails_teacher_event!(author:, appropriate_body:, induction_period:, teacher:)
-      fail(NoInductionPeriod) unless induction_period
-
-      event_type = :teacher_fails_induction
-      heading = "#{Teachers::Name.new(teacher).full_name} failed induction (admin)"
-      happened_at = induction_period.finished_on
-
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
     def self.record_teacher_induction_status_reset_event!(author:, appropriate_body:, teacher:, happened_at: Time.zone.now)
       event_type = :teacher_induction_status_reset
-      heading = "#{Teachers::Name.new(teacher).full_name} was unclaimed"
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name} was unclaimed"
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end

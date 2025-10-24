@@ -19,4 +19,7 @@ class Events::AppropriateBodyBatchAuthor
       pending_induction_submission_batch_id: batch_id,
     }
   end
+
+  def dfe_user? = false
+  def appropriate_body_user? = true
 end

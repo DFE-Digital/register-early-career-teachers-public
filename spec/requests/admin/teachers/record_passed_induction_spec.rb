@@ -62,10 +62,10 @@ RSpec.describe 'Admin recording a passed outcome for a teacher' do
       include_context 'sign in as DfE user'
 
       context 'with valid params' do
-        let(:fake_record_outcome) { double(AppropriateBodies::RecordPass, pass!: true) }
+        let(:fake_record_outcome) { double(Admin::RecordPass, pass!: true) }
 
         before do
-          allow(AppropriateBodies::RecordPass).to receive(:new).and_return(fake_record_outcome)
+          allow(Admin::RecordPass).to receive(:new).and_return(fake_record_outcome)
           allow(PendingInductionSubmissions::Build).to receive(:closing_induction_period).and_call_original
         end
 
@@ -93,10 +93,12 @@ RSpec.describe 'Admin recording a passed outcome for a teacher' do
             params: valid_params
           )
 
-          expect(AppropriateBodies::RecordPass).to have_received(:new).with(
+          expect(Admin::RecordPass).to have_received(:new).with(
             appropriate_body:,
             pending_induction_submission: an_instance_of(PendingInductionSubmission),
-            author: an_instance_of(Sessions::Users::DfEPersona)
+            author: an_instance_of(Sessions::Users::DfEPersona),
+            note: 'foo',
+            zendesk_ticket_id: '#123456'
           )
 
           expect(response).to redirect_to("/admin/teachers/#{teacher.id}/record-passed-outcome")
