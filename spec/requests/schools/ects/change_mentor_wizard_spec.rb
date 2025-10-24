@@ -53,6 +53,17 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
     context "when signed in as a School user" do
       before { sign_in_as(:school_user, school:) }
 
+      context "when there are no mentors registered at the school" do
+        let(:mentorship_period) { nil }
+
+        it "redirects to the register mentor wizard" do
+          get path_for_step("edit")
+          expect(response).to redirect_to(
+            schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id)
+          )
+        end
+      end
+
       context "when the current_step is invalid" do
         it "returns not found" do
           get path_for_step("nope")
@@ -161,6 +172,17 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
 
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
+
+        context "when the ECT is being mentored by a new mentor" do
+          let(:mentor_at_school_period_id) { 0 }
+
+          it "redirects to the register mentor wizard" do
+            post(path_for_step("edit"), params:)
+            expect(response).to redirect_to(
+              schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id)
+            )
+          end
+        end
       end
 
       context "when the ECT is undergoing provider-led training" do
@@ -177,6 +199,17 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
 
         before do
           ect_training_period.active_lead_provider.update!(contract_period:)
+        end
+
+        context "when the ECT is being mentored by a new mentor" do
+          let(:mentor_at_school_period_id) { 0 }
+
+          it "redirects to the register mentor wizard" do
+            post(path_for_step("edit"), params:)
+            expect(response).to redirect_to(
+              schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id)
+            )
+          end
         end
 
         context "when the mentor has a provider-led training period" do
