@@ -28,20 +28,7 @@ RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |p
 
         schema({ "$ref": params[:response_schema_ref] })
 
-        after do |example|
-          if defined?(response_example)
-            example_spec = {
-              "application/json" => {
-                examples: {
-                  success: {
-                    value: response_example,
-                  },
-                },
-              },
-            }
-            example.metadata[:response][:content] = example_spec
-          end
-        end
+        after { override_response_content!(it) }
 
         run_test!
       end

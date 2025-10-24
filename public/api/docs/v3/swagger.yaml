@@ -219,6 +219,93 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
+  "/api/v3/participants/{id}/withdraw":
+    put:
+      summary: Update a participant
+      tags:
+      - Participants
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: The updated participant
+          content:
+            application/json:
+              examples:
+                success:
+                  value:
+                    data:
+                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
+                      type: participant
+                      attributes:
+                        full_name: John Doe
+                        teacher_reference_number: '1234567'
+                        ecf_enrolments:
+                        - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+                          email: jane.smith@example.com
+                          mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+                          school_urn: '123456'
+                          participant_type: ect
+                          cohort: '2021'
+                          training_status: withdrawn
+                          participant_status: active
+                          eligible_for_funding: true
+                          pupil_premium_uplift: true
+                          sparsity_uplift: true
+                          schedule_identifier: ecf-standard-january
+                          delivery_partner_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+                          withdrawal:
+                            reason: moved-school
+                            date: '2021-05-31T02:22:32.000Z'
+                          deferral:
+                          created_at: '2023-01-01T00:00:00Z'
+                          induction_end_date: '2023-01-01'
+                          overall_induction_start_date: '2023-01-01'
+                          mentor_funding_end_date: '2023-01-01'
+                          cohort_changed_after_payments_frozen: true
+                          mentor_ineligible_for_funding_reason: completed_declaration_received
+                        participant_id_changes:
+                        - from_participant_id: 23dd8d66-e11f-4139-9001-86b4f9abcb02
+                          to_participant_id: ac3d1243-7308-4879-942a-c4a70ced400a
+                          changed_at: '2023-01-01T12:00:00Z'
+                        updated_at: '2021-05-31T02:22:32.000Z'
+              schema:
+                "$ref": "#/components/schemas/ParticipantResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BadRequestResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableContentResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ParticipantWithdrawRequest"
   "/api/v3/partnerships":
     get:
       summary: Retrieve multiple partnerships
@@ -1143,6 +1230,51 @@ components:
       properties:
         data:
           "$ref": "#/components/schemas/Participant"
+    ParticipantWithdrawRequest:
+      description: Withdraw a participant from training
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          description: A participant withdrawal
+          type: object
+          required:
+          - type
+          - attributes
+          properties:
+            type:
+              type: string
+              required: true
+              enum:
+              - participant-withdraw
+              example: participant-withdraw
+            attributes:
+              description: A participant withdrawal action
+              type: object
+              required:
+              - reason
+              - course_identifier
+              properties:
+                reason:
+                  description: The reason for the withdrawal
+                  type: string
+                  required: true
+                  enum:
+                  - left-teaching-profession
+                  - moved-school
+                  - mentor-no-longer-being-mentor
+                  - switched-to-school-led
+                  - other
+                  example: left-teaching-profession
+                course_identifier:
+                  description: The type of course the participant is enrolled in
+                  type: string
+                  required: true
+                  enum:
+                  - ecf-mentor
+                  - ecf-induction
+                  example: ecf-mentor
     ParticipantsResponse:
       description: A list of participants.
       type: object
