@@ -1,5 +1,5 @@
 RSpec.describe API::TrainingPeriods::TeacherStatus do
-  let(:service) { described_class.new(training_period:, teacher:) }
+  let(:service) { described_class.new(latest_training_period: training_period, teacher:) }
   let(:teacher) { training_period.trainee.teacher }
 
   describe "#status" do
@@ -15,7 +15,7 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
       it { expect(service).not_to be_left }
     end
 
-    context "when 'teacher.mentor_became_ineligible_for_funding_on' is set" do
+    context "when 'teacher.mentor_became_ineligible_for_funding_on' is set (indicating the mentor has completed training)" do
       let(:training_period) { FactoryBot.create(:training_period, :ongoing) }
 
       before do
@@ -32,7 +32,7 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
       it { expect(service).not_to be_left }
     end
 
-    context "when 'finished_induction_period.finished_on' is set" do
+    context "when 'finished_induction_period.finished_on' is set (indicating the ECT has completed training)" do
       let(:training_period) { FactoryBot.create(:training_period, :ongoing) }
 
       before do

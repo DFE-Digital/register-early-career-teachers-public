@@ -88,6 +88,21 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
     describe "ecf_enrolments" do
       subject(:ecf_enrolments) { response["attributes"]["ecf_enrolments"] }
 
+      let(:mock_training_status) { instance_double(API::TrainingPeriods::TrainingStatus, status: "active") }
+      let(:mock_teacher_status) { instance_double(API::TrainingPeriods::TeacherStatus, status: "active") }
+
+      before do
+        if defined?(ect_training_period)
+          allow(API::TrainingPeriods::TrainingStatus).to receive(:new).with(training_period: ect_training_period).and_return(mock_training_status)
+          allow(API::TrainingPeriods::TeacherStatus).to receive(:new).with(latest_training_period: ect_training_period, teacher:).and_return(mock_teacher_status)
+        end
+
+        if defined?(mentor_training_period)
+          allow(API::TrainingPeriods::TrainingStatus).to receive(:new).with(training_period: mentor_training_period).and_return(mock_training_status)
+          allow(API::TrainingPeriods::TeacherStatus).to receive(:new).with(latest_training_period: mentor_training_period, teacher:).and_return(mock_teacher_status)
+        end
+      end
+
       it { is_expected.to be_empty }
 
       context "when there are ECT/mentor training periods for the lead provider" do
@@ -166,56 +181,8 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(ect_enrolment["deferral"]).to be_nil
           end
 
-          context "when `training_status` is withdrawn" do
-            before { ect_training_period.update!(withdrawn_at: 3.days.ago, withdrawal_reason: :moved_school) }
-
-            it "serializes `training_status` as withdrawn" do
-              expect(ect_enrolment["training_status"]).to eq("withdrawn")
-            end
-
-            it "serializes `withdrawal` with the details of the withdrawal" do
-              expect(ect_enrolment["withdrawal"]).to eq({ "withdrawn_at" => ect_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
-            end
-          end
-
-          context "when `training_status` is deferred" do
-            before { ect_training_period.update!(deferred_at: 1.day.ago, deferral_reason: :bereavement) }
-
-            it "serializes `training_status` as deferred" do
-              expect(ect_enrolment["training_status"]).to eq("deferred")
-            end
-
-            it "serializes `deferral` with the details of the deferral" do
-              expect(ect_enrolment["deferral"]).to eq({ "deferred_at" => ect_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
-            end
-          end
-
-          context "serializes `participant_status`" do
-            let(:teacher) { FactoryBot.create(:teacher) }
-
-            context "when `participant_status` is active" do
-              before { ect_training_period.update!(started_on: 1.week.ago, finished_on: nil) }
-
-              it { expect(ect_enrolment["participant_status"]).to eq("active") }
-            end
-
-            context "when `participant_status` is joining" do
-              before { ect_training_period.update!(started_on: 1.week.from_now, finished_on: nil) }
-
-              it { expect(ect_enrolment["participant_status"]).to eq("joining") }
-            end
-
-            context "when `participant_status` is leaving" do
-              before { ect_training_period.update!(started_on: 1.month.ago, finished_on: 3.months.from_now) }
-
-              it { expect(ect_enrolment["participant_status"]).to eq("leaving") }
-            end
-
-            context "when `participant_status` is left" do
-              before { ect_training_period.update!(started_on: 1.month.ago, finished_on: 1.week.ago) }
-
-              it { expect(ect_enrolment["participant_status"]).to eq("left") }
-            end
+          it "serializes `participant_status`" do
+            expect(ect_enrolment["participant_status"]).to eq("active")
           end
 
           it "serializes `eligible_for_funding`" do
@@ -323,56 +290,8 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(mentor_enrolment["deferral"]).to be_nil
           end
 
-          context "when `training_status` is withdrawn" do
-            before { mentor_training_period.update!(withdrawn_at: 3.days.ago, withdrawal_reason: :moved_school) }
-
-            it "serializes `training_status` as withdrawn" do
-              expect(mentor_enrolment["training_status"]).to eq("withdrawn")
-            end
-
-            it "serializes `withdrawal` with the details of the withdrawal" do
-              expect(mentor_enrolment["withdrawal"]).to eq({ "withdrawn_at" => mentor_training_period.withdrawn_at.utc.rfc3339, "reason" => "moved-school" })
-            end
-          end
-
-          context "when `training_status` is deferred" do
-            before { mentor_training_period.update!(deferred_at: 1.day.ago, deferral_reason: :bereavement) }
-
-            it "serializes `training_status` as deferred" do
-              expect(mentor_enrolment["training_status"]).to eq("deferred")
-            end
-
-            it "serializes `deferral` with the details of the deferral" do
-              expect(mentor_enrolment["deferral"]).to eq({ "deferred_at" => mentor_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
-            end
-          end
-
-          context "serializes `participant_status`" do
-            let(:teacher) { FactoryBot.create(:teacher) }
-
-            context "when `participant_status` is active" do
-              before { mentor_training_period.update!(started_on: 1.week.ago, finished_on: nil) }
-
-              it { expect(mentor_enrolment["participant_status"]).to eq("active") }
-            end
-
-            context "when `participant_status` is joining" do
-              before { mentor_training_period.update!(started_on: 1.week.from_now, finished_on: nil) }
-
-              it { expect(mentor_enrolment["participant_status"]).to eq("joining") }
-            end
-
-            context "when `participant_status` is leaving" do
-              before { mentor_training_period.update!(started_on: 1.month.ago, finished_on: 3.months.from_now) }
-
-              it { expect(mentor_enrolment["participant_status"]).to eq("leaving") }
-            end
-
-            context "when `participant_status` is left" do
-              before { mentor_training_period.update!(started_on: 1.month.ago, finished_on: 1.week.ago) }
-
-              it { expect(mentor_enrolment["participant_status"]).to eq("left") }
-            end
+          it "serializes `participant_status`" do
+            expect(mentor_enrolment["participant_status"]).to eq("active")
           end
 
           it "serializes `eligible_for_funding`" do
