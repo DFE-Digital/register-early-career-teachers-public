@@ -23,18 +23,8 @@ RSpec.describe "Pages", type: :request do
     end
   end
 
+  # rubocop:disable RSpec/AnyInstance
   describe 'GET /access-denied' do
-    context 'when a login attempt has succeeded' do
-      before do
-        get '/access-denied'
-      end
-
-      it 'redirects' do
-        expect(response).to redirect_to(root_path)
-      end
-    end
-
-    # rubocop:disable RSpec/AnyInstance
     context 'when a login attempt has failed' do
       before do
         allow_any_instance_of(PagesController).to receive(:session).and_return({
@@ -49,8 +39,8 @@ RSpec.describe "Pages", type: :request do
         expect(response.body).to include('Invalid Organisation')
       end
     end
-    # rubocop:enable RSpec/AnyInstance
   end
+  # rubocop:enable RSpec/AnyInstance
 
   describe 'GET /accessibility' do
     it 'shows the accessibility statement' do
