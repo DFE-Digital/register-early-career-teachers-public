@@ -3,9 +3,6 @@ module Sessions
   class User
     class UnrecognisedType < StandardError; end
 
-    # moved to a env var
-    # MAX_SESSION_IDLE_TIME = 2.hours
-
     # @raise [Sessions::User::UnrecognisedType]
     #
     # @return [Sessions::Users::DfEUser]
