@@ -170,7 +170,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `training_status`" do
-            expect(ect_enrolment["training_status"]).to eq("active")
+            expect(ect_enrolment["training_status"]).to eq(mock_training_status.status)
           end
 
           it "serializes `withdrawal`" do
@@ -182,7 +182,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `participant_status`" do
-            expect(ect_enrolment["participant_status"]).to eq("active")
+            expect(ect_enrolment["participant_status"]).to eq(mock_teacher_status.status)
           end
 
           it "serializes `eligible_for_funding`" do
@@ -279,7 +279,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `training_status`" do
-            expect(mentor_enrolment["training_status"]).to eq("active")
+            expect(mentor_enrolment["training_status"]).to eq(mock_training_status.status)
           end
 
           it "serializes `withdrawal`" do
@@ -291,7 +291,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `participant_status`" do
-            expect(mentor_enrolment["participant_status"]).to eq("active")
+            expect(mentor_enrolment["participant_status"]).to eq(mock_teacher_status.status)
           end
 
           it "serializes `eligible_for_funding`" do
