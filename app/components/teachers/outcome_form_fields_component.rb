@@ -1,7 +1,7 @@
 module Teachers
   # Renders the form fields for recording an induction outcome
   # and shared between admin console and appropriate bodies
-  class OutcomeFormComponent < ApplicationComponent
+  class OutcomeFormFieldsComponent < ApplicationComponent
     attr_reader :form,
                 :appropriate_body
 
