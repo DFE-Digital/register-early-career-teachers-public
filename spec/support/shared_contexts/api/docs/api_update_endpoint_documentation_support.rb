@@ -26,6 +26,8 @@ RSpec.shared_context "an API update endpoint documentation", :exceptions_app do 
       response "200", "The updated #{options[:resource_description]}" do
         schema({ "$ref": options[:response_schema_ref] })
 
+        after { override_response_content!(it) }
+
         run_test!
       end
 
