@@ -57,14 +57,34 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
   end
 
   describe "#defer" do
-    let(:path) { defer_api_v3_participant_path(123) }
+    let(:path) { defer_api_v3_participant_path(resource.api_id) }
+    let(:service) { API::Teachers::Defer }
+    let(:resource_type) { Teacher }
+    let(:resource) { create_resource(active_lead_provider:) }
+    let(:reason) { service::DEFERRAL_REASONS.sample }
+    let(:course_identifier) { "ecf-induction" }
+    let(:service_args) do
+      {
+        lead_provider_id: lead_provider.id,
+        teacher_api_id: resource.api_id,
+        reason:,
+        course_identifier:
+      }
+    end
+    let(:params) do
+      {
+        data: {
+          type: "participant-defer",
+          attributes: {
+            reason:,
+            course_identifier:,
+          }
+        }
+      }
+    end
 
     it_behaves_like "a token authenticated endpoint", :put
-
-    it "returns method not allowed" do
-      authenticated_api_put path
-      expect(response).to be_method_not_allowed
-    end
+    it_behaves_like "an API update endpoint"
   end
 
   describe "#resume" do
