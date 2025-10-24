@@ -36,6 +36,12 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
         expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
         expect(rendered_content).to have_text("Yet to be reported by the lead provider")
       end
+
+      it 'show a link to Change lead provider' do
+        render_inline(described_class.new(teacher:, mentor:))
+
+        expect(rendered_content).to have_link('Change', href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
+      end
     end
 
     context "when partnership is confirmed" do
@@ -56,6 +62,12 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
         expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
         expect(rendered_content).to have_text(lead_provider_delivery_partnership.delivery_partner.name)
         expect(rendered_content).to have_css(".govuk-hint", text: /To change the delivery partner, you must contact the lead provider/)
+      end
+
+      it 'show a link to Change lead provider' do
+        render_inline(described_class.new(teacher:, mentor:))
+
+        expect(rendered_content).to have_link('Change', href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
       end
     end
 
@@ -96,6 +108,12 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
 
         render_inline(component)
         expect(rendered_content).to have_text("Lead provider")
+      end
+
+      it 'show a link to Change lead provider' do
+        render_inline(described_class.new(teacher:, mentor:))
+
+        expect(rendered_content).to have_link('Change', href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
       end
     end
   end

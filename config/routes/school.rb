@@ -44,6 +44,10 @@ constraints -> { Rails.application.config.enable_schools_interface } do
       namespace :change_email_address_wizard, path: "change-email-address" do
         concerns :wizardable, wizard: Schools::Mentors::ChangeEmailAddressWizard
       end
+
+      namespace :change_lead_provider_wizard, path: "change-lead-provider" do
+        concerns :wizardable, wizard: Schools::Mentors::ChangeLeadProviderWizard
+      end
     end
 
     namespace :register_ect_wizard, path: "register-ect" do

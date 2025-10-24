@@ -27,7 +27,15 @@
           Not available
         <% end %>
       <% end %>
+      <% row.with_action(
+        text: "Change",
+        visually_hidden_text: "lead provider",
+        href: schools_mentors_change_lead_provider_wizard_edit_path(@mentor),
+        classes: "govuk-link--no-visited-state"
+      ) %>
     <% end %>
+
+   
 
     <% list.with_row do |row| %>
       <% row.with_key { "Delivery partner" } %>
