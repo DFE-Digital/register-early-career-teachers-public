@@ -13,27 +13,59 @@ RSpec.describe "Admin deletes an induction period" do
   context "when it is the only induction period" do
     let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
 
-    scenario "TRS status is reset" do
-      given_i_am_on_the_ect_page(teacher)
-      then_i_should_see_the_delete_link
-      when_i_click_delete_link
-      then_i_should_see_the_delete_confirmation_page
+    context "and a ticket and reason are provided" do
+      it "deletes the induction, resets TRS, adds context to the timeline" do
+        given_i_am_on_the_teacher_page
+        then_i_should_see_the_delete_link
+        when_i_click_delete_link
+        then_i_should_see_the_delete_confirmation_page
 
-      when_i_do_not_add_any_extra_information
-      and_i_confirm_deletion
-      then_there_is_an_error_message
+        when_i_do_not_add_any_extra_information
+        and_i_confirm_deletion
+        then_there_is_an_error_message
 
-      when_i_add_a_zendesk_ticket_id("#123456")
-      and_i_add_a_note("This is a test reason for deleting")
-      and_i_confirm_deletion
-      then_i_should_be_on_the_success_page
-      and_the_induction_period_should_be_deleted(induction_period)
-      and_an_event_should_have_been_recorded
-      and_trs_status_should_be_reset
+        when_i_add_a_zendesk_ticket_id("#123456")
+        and_i_add_a_note("This is a test reason for deleting")
+        and_i_confirm_deletion
+        then_i_should_be_on_the_success_page
+        and_the_induction_period_should_be_deleted(induction_period)
+        and_an_event_should_have_been_recorded
+        and_trs_status_should_be_reset
 
-      when_i_go_to_the_timeline_page
-      then_i_can_see_the_note("This is a test reason for deleting")
-      and_i_can_see_the_zendesk_url
+        when_i_go_to_the_timeline_page
+        then_i_can_see_the_note("This is a test reason for deleting")
+        and_i_can_see_the_zendesk_link("https://becomingateacher.zendesk.com/agent/tickets/123456")
+      end
+    end
+
+    context "and no reason is provided" do
+      it "deletes the induction, resets TRS, adds context to the timeline" do
+        given_i_am_on_the_teacher_page
+        then_i_should_see_the_delete_link
+        when_i_click_delete_link
+        then_i_should_see_the_delete_confirmation_page
+        when_i_add_a_zendesk_ticket_id("123456")
+        and_i_confirm_deletion
+        then_i_should_be_on_the_success_page
+        and_the_induction_period_should_be_deleted(induction_period)
+        and_an_event_should_have_been_recorded
+        and_trs_status_should_be_reset
+
+        when_i_go_to_the_timeline_page
+        and_i_can_see_the_zendesk_link("https://becomingateacher.zendesk.com/agent/tickets/123456")
+      end
+    end
+
+    context 'and the zendesk ticket is invalid' do
+      it "shows an error message" do
+        given_i_am_on_the_teacher_page
+        then_i_should_see_the_delete_link
+        when_i_click_delete_link
+        then_i_should_see_the_delete_confirmation_page
+        when_i_add_a_zendesk_ticket_id("123")
+        and_i_confirm_deletion
+        then_there_is_an_error_message
+      end
     end
   end
 
@@ -42,15 +74,10 @@ RSpec.describe "Admin deletes an induction period" do
     let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
 
     scenario "TRS start date is updated to next earliest period" do
-      given_i_am_on_the_ect_page(teacher)
+      given_i_am_on_the_teacher_page
       then_i_should_see_the_delete_link_for(induction_period1)
       when_i_click_delete_link_for(induction_period1)
       then_i_should_see_the_delete_confirmation_page
-
-      when_i_do_not_add_any_extra_information
-      and_i_confirm_deletion
-      then_there_is_an_error_message
-
       when_i_add_a_zendesk_ticket_id("#123456")
       and_i_add_a_note("This is a test reason for deleting")
       and_i_confirm_deletion
@@ -61,7 +88,7 @@ RSpec.describe "Admin deletes an induction period" do
 
       when_i_go_to_the_timeline_page
       then_i_can_see_the_note("This is a test reason for deleting")
-      and_i_can_see_the_zendesk_url
+      and_i_can_see_the_zendesk_link("https://becomingateacher.zendesk.com/agent/tickets/123456")
     end
   end
 
@@ -70,7 +97,7 @@ RSpec.describe "Admin deletes an induction period" do
     let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
 
     scenario "TRS start date remains unchanged" do
-      given_i_am_on_the_ect_page(teacher)
+      given_i_am_on_the_teacher_page
       then_i_should_see_the_delete_link_for(induction_period2)
       when_i_click_delete_link_for(induction_period2)
       then_i_should_see_the_delete_confirmation_page
@@ -89,14 +116,14 @@ RSpec.describe "Admin deletes an induction period" do
 
       when_i_go_to_the_timeline_page
       then_i_can_see_the_note("This is a test reason for deleting")
-      and_i_can_see_the_zendesk_url
+      and_i_can_see_the_zendesk_link("https://becomingateacher.zendesk.com/agent/tickets/123456")
     end
   end
 
-  def given_i_am_on_the_ect_page(teacher)
-    path = "/admin/teachers/#{teacher.id}"
-    page.goto(path)
-    expect(page).to have_path(path)
+private
+
+  def given_i_am_on_the_teacher_page
+    page.goto(admin_teacher_path(teacher))
   end
 
   def then_i_should_see_the_delete_link
@@ -175,16 +202,24 @@ RSpec.describe "Admin deletes an induction period" do
 
   def then_i_can_see_the_note(reason)
     description = page
-      .locator(".app-timeline__item", hasText: "Induction period deleted")
+      .locator(".app-timeline__item", hasText: timeline_milestone)
       .locator(".app-timeline__description")
     expect(description).to have_text(reason)
   end
 
-  def and_i_can_see_the_zendesk_url
+  def then_i_can_see_the_zendesk_link(url)
     description = page
-      .locator(".app-timeline__item", hasText: "Induction period deleted")
+      .locator(".app-timeline__item", hasText: timeline_milestone)
       .locator(".app-timeline__description")
-    expect(description.get_by_role("link", name: "Zendesk ticket (opens in new tab)"))
-      .to be_visible
+    link = description.get_by_role("link", name: "Zendesk ticket (opens in new tab)")
+    expect(link).to be_visible
+    expect(link).to have_attribute('href', url)
+    expect(link).to have_attribute('target', '_blank')
+  end
+
+  alias_method :and_i_can_see_the_zendesk_link, :then_i_can_see_the_zendesk_link
+
+  def timeline_milestone
+    "Induction period deleted"
   end
 end

@@ -8,30 +8,60 @@ describe "Admins can reopen a teacher's closed induction" do
     sign_in_as_dfe_user(role: :admin)
   end
 
-  it "reopens the induction period" do
-    when_i_go_to_the_teacher_page
-    then_there_is_no_current_induction_period
+  context "and a ticket and reason are provided" do
+    it "reopens the induction period, resets TRS, adds context to the timeline" do
+      given_i_am_on_the_teacher_page
+      then_there_is_no_current_induction_period
 
-    when_i_reopen_the_induction
-    and_i_do_not_add_any_extra_information
-    and_i_am_sure_i_want_to_reopen_the_induction
-    then_there_is_an_error_message
+      when_i_reopen_the_induction
+      and_i_do_not_add_any_extra_information
+      and_i_am_sure_i_want_to_reopen_the_induction
+      then_there_is_an_error_message
 
-    when_i_add_a_zendesk_ticket_id("#123456")
-    and_i_add_a_note("This is a test reason for reopening")
-    and_i_am_sure_i_want_to_reopen_the_induction
-    and_event_background_jobs_are_executed
-    then_the_induction_is_successfully_reopened
-    and_there_is_a_current_induction_period
+      when_i_add_a_zendesk_ticket_id("#123456")
+      and_i_add_a_note("This is a test reason for reopening")
+      and_i_am_sure_i_want_to_reopen_the_induction
+      and_event_background_jobs_are_executed
+      then_the_induction_is_successfully_reopened
+      and_there_is_a_current_induction_period
 
-    when_i_go_to_the_timeline_page
-    then_i_can_see_the_note("This is a test reason for reopening")
-    and_i_can_see_the_zendesk_url
+      when_i_go_to_the_timeline_page
+      then_i_can_see_the_note("This is a test reason for reopening")
+      and_i_can_see_the_zendesk_link("https://becomingateacher.zendesk.com/agent/tickets/123456")
+    end
+  end
+
+  context "and no reason is provided" do
+    it "reopens the induction period, resets TRS, adds context to the timeline" do
+      given_i_am_on_the_teacher_page
+      then_there_is_no_current_induction_period
+
+      when_i_reopen_the_induction
+      when_i_add_a_zendesk_ticket_id("123456")
+      and_i_am_sure_i_want_to_reopen_the_induction
+      and_event_background_jobs_are_executed
+      then_the_induction_is_successfully_reopened
+      and_there_is_a_current_induction_period
+
+      when_i_go_to_the_timeline_page
+      then_i_can_see_the_zendesk_link("https://becomingateacher.zendesk.com/agent/tickets/123456")
+    end
+  end
+
+  context 'with an invalid zendesk ticket id' do
+    it "shows an error message" do
+      given_i_am_on_the_teacher_page
+      then_there_is_no_current_induction_period
+      when_i_reopen_the_induction
+      when_i_add_a_zendesk_ticket_id("123")
+      and_i_am_sure_i_want_to_reopen_the_induction
+      then_there_is_an_error_message
+    end
   end
 
 private
 
-  def when_i_go_to_the_teacher_page
+  def given_i_am_on_the_teacher_page
     page.goto(admin_teacher_path(teacher))
   end
 
@@ -90,16 +120,24 @@ private
 
   def then_i_can_see_the_note(reason)
     description = page
-      .locator(".app-timeline__item", hasText: "Induction period reopened")
+      .locator(".app-timeline__item", hasText: timeline_milestone)
       .locator(".app-timeline__description")
     expect(description).to have_text(reason)
   end
 
-  def and_i_can_see_the_zendesk_url
+  def then_i_can_see_the_zendesk_link(url)
     description = page
-      .locator(".app-timeline__item", hasText: "Induction period reopened")
+      .locator(".app-timeline__item", hasText: timeline_milestone)
       .locator(".app-timeline__description")
-    expect(description.get_by_role("link", name: "Zendesk ticket (opens in new tab)"))
-      .to be_visible
+    link = description.get_by_role("link", name: "Zendesk ticket (opens in new tab)")
+    expect(link).to be_visible
+    expect(link).to have_attribute('href', url)
+    expect(link).to have_attribute('target', '_blank')
+  end
+
+  alias_method :and_i_can_see_the_zendesk_link, :then_i_can_see_the_zendesk_link
+
+  def timeline_milestone
+    "Induction period reopened"
   end
 end
