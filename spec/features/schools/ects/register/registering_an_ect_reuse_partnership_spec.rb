@@ -187,7 +187,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def and_i_am_on_the_schools_landing_page
-    path = "/schools/home/ects"
+    path = "/school/home/ects"
     page.goto path
     expect(page).to have_path(path)
   end
@@ -197,7 +197,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_am_in_the_requirements_page
-    expect(page).to have_path("/schools/register-ect/what-you-will-need")
+    expect(page).to have_path("/school/register-ect/what-you-will-need")
   end
 
   def when_i_click_continue
@@ -205,7 +205,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_am_on_the_find_ect_step_page
-    expect(page).to have_path("/schools/register-ect/find-ect")
+    expect(page).to have_path("/school/register-ect/find-ect")
   end
 
   def when_i_submit_the_find_ect_form(trn:, dob_day:, dob_month:, dob_year:)
@@ -217,7 +217,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_should_be_taken_to_the_review_ect_details_page
-    expect(page).to have_path("/schools/register-ect/review-ect-details")
+    expect(page).to have_path("/school/register-ect/review-ect-details")
   end
 
   def and_i_should_see_the_ect_details_in_the_review_page
@@ -239,7 +239,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_should_be_taken_to_the_email_address_page
-    expect(page).to have_path("/schools/register-ect/email-address")
+    expect(page).to have_path("/school/register-ect/email-address")
   end
 
   def when_i_enter_the_ect_email_address
@@ -247,7 +247,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_should_be_taken_to_the_ect_start_date_page
-    expect(page).to have_path("/schools/register-ect/start-date")
+    expect(page).to have_path("/school/register-ect/start-date")
   end
 
   def when_i_enter_a_valid_start_date
@@ -257,7 +257,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_should_i_should_be_taken_to_the_working_pattern_page
-    expect(page).to have_path("/schools/register-ect/working-pattern")
+    expect(page).to have_path("/school/register-ect/working-pattern")
   end
 
   def when_i_select_full_time
@@ -269,7 +269,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def handle_use_previous_choices_if_present(desired:)
-    if current_path == "/schools/register-ect/use-previous-ect-choices"
+    if current_path == "/school/register-ect/use-previous-ect-choices"
       page.get_by_label(desired).check
       and_i_click_continue
     end
@@ -280,7 +280,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_should_be_taken_to_the_appropriate_body_page
-    expect(page).to have_path("/schools/register-ect/state-school-appropriate-body")
+    expect(page).to have_path("/school/register-ect/state-school-appropriate-body")
   end
 
   def when_i_select_an_appropriate_body(value: @school.last_chosen_appropriate_body.name)
@@ -290,7 +290,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_should_be_taken_to_the_training_programme_page
-    expect(page).to have_path("/schools/register-ect/training-programme")
+    expect(page).to have_path("/school/register-ect/training-programme")
   end
 
   def when_i_select_school_led
@@ -298,7 +298,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
-    expect(page).to have_path("/schools/register-ect/check-answers")
+    expect(page).to have_path("/school/register-ect/check-answers")
   end
 
   def and_i_should_see_previous_programme_choices_summary
@@ -319,7 +319,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page).to have_path("/schools/register-ect/confirmation")
+    expect(page).to have_path("/school/register-ect/confirmation")
   end
 
   def when_i_click_on_back_to_your_ects
@@ -327,7 +327,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def then_i_should_be_taken_to_the_ects_page
-    expect(page).to have_path("/schools/home/ects")
+    expect(page).to have_path("/school/home/ects")
   end
 
   def and_i_should_see_the_ect_i_registered
