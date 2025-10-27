@@ -7,7 +7,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
 
   let(:author) { Sessions::Users::DfEPersona.new(email: admin.email) }
   let(:note) { "Original outcome recorded in error" }
-  let(:zendesk_ticket_id) { 123 }
+  let(:zendesk_ticket_id) { '#123456' }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:outcome) { "pass" }
@@ -45,7 +45,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
         .with(
           author:,
           body: note,
-          zendesk_ticket_id:,
+          zendesk_ticket_id: '123456',
           induction_period:,
           modifications:,
           teacher:,
@@ -58,6 +58,15 @@ RSpec.describe Admin::ReopenInductionPeriod do
     it "removes the outcome" do
       expect { service.reopen_induction_period! }
         .to change { induction_period.reload.outcome }.from("pass").to(nil)
+    end
+
+    context "when the ticket omits the hashtag prefix" do
+      let(:zendesk_ticket_id) { '123456' }
+
+      it "removes the outcome" do
+        expect { service.reopen_induction_period! }
+          .to change { induction_period.reload.outcome }.from("pass").to(nil)
+      end
     end
 
     it "queues a job that updates the TRS status" do
@@ -110,17 +119,17 @@ RSpec.describe Admin::ReopenInductionPeriod do
       it "raises an error" do
         expect { service.reopen_induction_period! }
           .to raise_error(ActiveModel::ValidationError)
-          .with_message("Validation failed: Enter a Zendesk ID or add a note")
+          .with_message("Validation failed: Add a note or enter the Zendesk ticket number")
       end
     end
 
     context "when the Zendesk ticket ID is invalid" do
-      let(:zendesk_ticket_id) { "invalid_id" }
+      let(:zendesk_ticket_id) { "123" }
 
       it "raises an error" do
         expect { service.reopen_induction_period! }
           .to raise_error(ActiveModel::ValidationError)
-          .with_message("Validation failed: Zendesk ticket ID must be a number")
+          .with_message("Validation failed: Zendesk ticket Ticket number must be 6 digits")
       end
     end
   end

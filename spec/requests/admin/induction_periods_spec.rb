@@ -655,7 +655,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
     let(:params) do
       { induction_periods_delete_induction_period: { zendesk_ticket_id:, note: } }
     end
-    let(:zendesk_ticket_id) { "12345" }
+    let(:zendesk_ticket_id) { "123456" }
     let(:note) { "A reason we are deleting this induction period" }
 
     context "when it is the only induction period" do
