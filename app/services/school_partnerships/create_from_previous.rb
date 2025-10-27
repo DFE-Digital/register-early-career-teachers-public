@@ -76,15 +76,17 @@ module SchoolPartnerships
             lead_provider_delivery_partnership:
           )
           .create
-        return nil unless new_school_partnership&.persisted?
 
-        Events::Record.record_school_partnership_reused_event!(
-          author:,
-          school_partnership: new_school_partnership,
-          previous_school_partnership_id:,
-          happened_at: Time.current
-        )
-        new_school_partnership
+        if new_school_partnership&.persisted?
+          Events::Record.record_school_partnership_reused_event!(
+            author:,
+            school_partnership: new_school_partnership,
+            previous_school_partnership_id:,
+            happened_at: Time.current
+          )
+
+          new_school_partnership
+        end
       end
     end
   end
