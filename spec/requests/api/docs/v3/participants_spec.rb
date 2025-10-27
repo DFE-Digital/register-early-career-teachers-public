@@ -108,4 +108,44 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                       }
                     end
                   end
+
+  it_behaves_like "an API update endpoint documentation",
+                  {
+                    url: "/api/v3/participants/{id}/defer",
+                    tag: "Participants",
+                    resource_description: "participant",
+                    request_schema_ref: "#/components/schemas/ParticipantDeferRequest",
+                    response_schema_ref: "#/components/schemas/ParticipantResponse",
+                  } do
+                    let(:response_example) do
+                      extract_swagger_example(schema: "#/components/schemas/ParticipantResponse", version: :v3).tap do |example|
+                        example[:data][:attributes][:ecf_enrolments][0][:training_status] = "deferred"
+                        example[:data][:attributes][:ecf_enrolments][0][:withdrawal] = nil
+                      end
+                    end
+
+                    let(:params) do
+                      {
+                        data: {
+                          type: "participant",
+                          attributes: {
+                            course_identifier: "ecf-induction",
+                            reason: "career-break"
+                          }
+                        }
+                      }
+                    end
+
+                    let(:invalid_params) do
+                      {
+                        data: {
+                          type: "participant",
+                          attributes: {
+                            course_identifier: "something-invalid",
+                            reason: "invalid-reason"
+                          }
+                        }
+                      }
+                    end
+                  end
 end

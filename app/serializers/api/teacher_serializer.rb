@@ -65,7 +65,7 @@ class API::TeacherSerializer < Blueprinter::Base
         training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
         if training_status == :deferred
           {
-            "deferred_at" => training_period.deferred_at.utc.rfc3339,
+            "date" => training_period.deferred_at.utc.rfc3339,
             "reason" => training_period.deferral_reason.dasherize
           }
         end
