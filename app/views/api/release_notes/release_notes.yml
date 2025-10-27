@@ -51,15 +51,19 @@
     ### TRN validated field removed
     
     The `trn_validated` field is no longer needed because every participant now needs a validated TRN checked with our records to be registered on the ‘Register ECTs’ service.
-    
-    Only a tiny number of records are still `false` in the existing service, and we'll validate them before migration.  
 
     ### Default schedule logic updated
     
-    We’ve introduced a new approach for setting default schedules for participants:
+    We’ve introduced a new approach for setting default schedules for participants. 
     
-    * default schedules will be based on school-provided start dates for ECTs and when mentors are registered
-    * existing records migrated from ‘Manage training for early career teachers’ will keep their current schedules
+    For ECTs, default schedules will be based on school-provided start dates.  
+    
+    For mentors, the logic will relate to: 
+    
+    * when the first provider-led ECT they’re assigned to is starting at the school
+    * if they’re identified by the service as a replacement mentor 
+    
+    Existing records migrated from ‘Manage training for early career teachers’ will keep their current schedules. 
     
     #### Why we’ve made this change
     
@@ -75,7 +79,8 @@
     * if a participant has been reassigned to a different lead provider
     * if a participant has had their programme type changed to `school-led`
     
-    If either value changes after a partnership has been formed, the participant will appear as `left` in the `GET /participants` and `GET /participants/{id}` responses. This ensures they no longer disappear unexpectedly.
+    If either value changes after a partnership has been formed, the participant will appear as `left` in the `GET /participants` and `GET /participants/{id}` responses. 
+    This ensures they no longer disappear unexpectedly.
     
     #### Why we’ve made this change
     
@@ -104,6 +109,57 @@
     
     * improves visibility and offboarding processes
     * ensures data security when multiple partnerships exist for the same school   
+
+    ### We’ve removed the `withdrawn` status  
+    
+    To simplify the data model and remove confusion, we’ve decided not to support the `withdrawn` attribute in the `participant_status` field. 
+    
+    Participants marked as `withdrawn` with no declarations will have their induction records removed. This allows them to be registered correctly at another school.
+    
+    Participants marked as `withdrawn` with declarations will be corrected to `left` to reflect valid, billable records.
+    
+    In some cases, participants that were previously visible to lead providers will be removed. These records were created in error and should not have been shared.
+    
+    We’ll contact affected providers in advance when we make these changes. 
+    
+    Going forward, if a school reports a participant was registered in error:
+    
+    * we'll remove the record
+    * providers will be notified so they understand why the participant no longer appears in their data  
+    
+    #### Why we’ve made this change
+    
+    The withdrawn status was rarely used correctly and often caused confusion for lead providers and schools.
+    
+    Removing it improves:
+    
+    * data quality by ensuring only valid participant records are visible
+    * clarity by replacing ambiguous `withdrawn` statuses with more accurate `left` records
+    * future consistency by making sure new registrations and API responses are cleaner and easier to interpret 
+    
+    ### ECTs yet to start at a school shown as `joining`
+    
+    The `participant_status` field will show as `joining` for ECTs whose school start date is in the future. 
+    
+    #### Why we’ve made this change
+    
+    We’ve made this change to give lead providers more accurate, easier-to-understand data through the API.
+    
+    ### Updated sparsity uplift and pupil premium attributes
+    
+    Sparsity uplift and pupil premium for mentors will now just show as `false`, rather than a mix of `true`or `false`.  
+    
+    #### Why we’ve made this change
+    
+    This uplift is no longer applied to mentors. 
+    
+    ### More filter options
+    
+    `GET /participants` can now be filtered by multiple cohorts at once, not just one.
+    
+    #### Why we’ve made this change
+    
+    It has the dual benefit of giving more functionality for lead providers and simplifying the endpoint build for us.  
 
 - title: Partnerships endpoints now in sandbox for testing   
   date: 2025-09-26
