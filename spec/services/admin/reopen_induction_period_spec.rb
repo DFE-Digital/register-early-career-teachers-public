@@ -45,7 +45,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
         .with(
           author:,
           body: note,
-          zendesk_ticket_id:,
+          zendesk_ticket_id: '123456',
           induction_period:,
           modifications:,
           teacher:,

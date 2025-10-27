@@ -52,7 +52,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
         .with(
           author:,
           body: note,
-          zendesk_ticket_id:,
+          zendesk_ticket_id: '123456',
           modifications: hash_including("id" => [induction_period.id, nil]),
           teacher:,
           appropriate_body:,
@@ -156,7 +156,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
           .with(
             author:,
             body: note,
-            zendesk_ticket_id:,
+            zendesk_ticket_id: '123456',
             modifications: hash_including("id" => [earliest_period.id, nil]),
             teacher:,
             appropriate_body:,
@@ -196,7 +196,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
           .with(
             author:,
             body: note,
-            zendesk_ticket_id:,
+            zendesk_ticket_id: '123456',
             modifications: hash_including("id" => [later_period.id, nil]),
             teacher:,
             appropriate_body:,
