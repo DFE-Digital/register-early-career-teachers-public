@@ -12,13 +12,9 @@ module Schools
           :confirmation
         end
 
-        def new_lead_provider_name
-          new_lead_provider.name
-        end
+        delegate :name, to: :new_lead_provider, prefix: true
 
-        def old_lead_provider_name
-          old_lead_provider.name
-        end
+        delegate :name, to: :old_lead_provider, prefix: true
 
         def save!
           # TODO
@@ -32,7 +28,7 @@ module Schools
       private
 
         def record_event(old_name, new_name)
-          # TODO - do we need to create an event for this, or does one exist?
+          # TODO: - do we need to create an event for this, or does one exist?
 
           # ::Events::Record.teacher_name_changed_in_trs_event!(
           #   old_lead_provider_name:,
@@ -46,7 +42,7 @@ module Schools
           @new_lead_provider ||= ::LeadProvider.find(lead_provider_id)
         end
 
-        # TODO Not very DRY - just copied and pasted from edit_step.rb
+        # TODO: Not very DRY - just copied and pasted from edit_step.rb
         def old_lead_provider
           latest_registration_choice.lead_provider
         end
