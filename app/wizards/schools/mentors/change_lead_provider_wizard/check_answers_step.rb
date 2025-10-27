@@ -2,7 +2,7 @@ module Schools
   module Mentors
     module ChangeLeadProviderWizard
       class CheckAnswersStep < Step
-        delegate :lead_provider_id, to: :wizard
+        # delegate :lead_provider_id, to: :wizard
 
         def previous_step
           :edit
@@ -17,12 +17,17 @@ module Schools
         delegate :name, to: :old_lead_provider, prefix: true
 
         def save!
+          MentorAtSchoolPeriods::ChangeLeadProvider.new(mentor_at_school_period:,
+                                                         school_partnership:, 
+                                                         finished_on:, 
+                                                         author: wizard.author).call
           # TODO
           # CREATE A SERVICE TO HANDLE THIS LOGIC
           # old_lead_provider = lead_provider
           # ect_at_school_period.teacher.update!(corrected_name: store.name)
           # new_name = lead_provider
           # record_event(old_name, new_name)
+          true
         end
 
       private
@@ -39,12 +44,16 @@ module Schools
         end
 
         def new_lead_provider
-          @new_lead_provider ||= ::LeadProvider.find(lead_provider_id)
+          @new_lead_provider ||= ::LeadProvider.find(store.lead_provider_id)
         end
 
         # TODO: Not very DRY - just copied and pasted from edit_step.rb
         def old_lead_provider
           latest_registration_choice.lead_provider
+        end
+
+        def school_partnership
+          SchoolPartnership.where(school: mentor_at_school_period.school, lead_provider: new_lead_provider).first
         end
 
         def latest_registration_choice
