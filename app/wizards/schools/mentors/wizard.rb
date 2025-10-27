@@ -18,10 +18,10 @@ module Schools
       end
 
       # @return [LeadProvider] ???
-      def lead_provider_id
-        # TODO: - this is wrong, might there be a service?
-        mentor_at_school_period.training_periods.first.active_lead_provider.id
-      end
+      # def lead_provider_id
+      #   # TODO: - this is wrong, might there be a service?
+      #   mentor_at_school_period.training_periods.first.active_lead_provider.id
+      # end
 
       delegate :save!, to: :current_step
       delegate :reset, to: :store
