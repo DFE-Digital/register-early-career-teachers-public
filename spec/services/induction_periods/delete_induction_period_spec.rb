@@ -9,7 +9,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
 
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:note) { "Induction period created in error" }
-  let(:zendesk_ticket_id) { 123 }
+  let(:zendesk_ticket_id) { '#123456' }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -52,7 +52,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
         .with(
           author:,
           body: note,
-          zendesk_ticket_id:,
+          zendesk_ticket_id: '123456',
           modifications: hash_including("id" => [induction_period.id, nil]),
           teacher:,
           appropriate_body:,
@@ -156,7 +156,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
           .with(
             author:,
             body: note,
-            zendesk_ticket_id:,
+            zendesk_ticket_id: '123456',
             modifications: hash_including("id" => [earliest_period.id, nil]),
             teacher:,
             appropriate_body:,
@@ -196,7 +196,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
           .with(
             author:,
             body: note,
-            zendesk_ticket_id:,
+            zendesk_ticket_id: '123456',
             modifications: hash_including("id" => [later_period.id, nil]),
             teacher:,
             appropriate_body:,
@@ -214,7 +214,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
       it "raises an error" do
         expect { service.delete_induction_period! }
           .to raise_error(ActiveModel::ValidationError)
-          .with_message("Validation failed: Enter a Zendesk ID or add a note")
+          .with_message("Validation failed: Add a note or enter the Zendesk ticket number")
       end
     end
 
@@ -224,7 +224,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
       it "raises an error" do
         expect { service.delete_induction_period! }
           .to raise_error(ActiveModel::ValidationError)
-          .with_message("Validation failed: Zendesk ticket ID must be a number")
+          .with_message("Validation failed: Zendesk ticket Ticket number must be 6 digits")
       end
     end
   end
