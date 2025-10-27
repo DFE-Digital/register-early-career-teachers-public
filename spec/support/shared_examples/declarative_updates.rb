@@ -24,7 +24,7 @@ RSpec.shared_examples "a declarative touch model", :with_touches do |when_changi
         context "when the #{attribute_to_change} attribute changes" do
           let(:new_value) { generate_new_value(attribute_to_change:) }
 
-          before { will_change_attribute(attribute_to_change:, new_value:) if defined?(will_change_attribute) }
+          before { DeclarativeUpdates.skip(:metadata) { will_change_attribute(attribute_to_change:, new_value:) if defined?(will_change_attribute) } }
 
           it "touches the #{timestamp_attribute} of the associated model(s)" do
             expect {
@@ -192,7 +192,7 @@ RSpec.shared_examples "a declarative metadata model", :with_metadata do |when_ch
         context "when the #{attribute_to_change} attribute changes" do
           let(:new_value) { generate_new_value(attribute_to_change:) }
 
-          before { will_change_attribute(attribute_to_change:, new_value:) if defined?(will_change_attribute) }
+          before { DeclarativeUpdates.skip(:metadata) { will_change_attribute(attribute_to_change:, new_value:) if defined?(will_change_attribute) } }
 
           it "refreshes the metadata of the associated model(s)" do
             instance.update!(attribute_to_change => new_value)
