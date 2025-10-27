@@ -11,12 +11,6 @@ RSpec.describe Schools::Mentors::ChangeLeadProviderWizard::Wizard do
     FactoryBot.create(:mentor_at_school_period, teacher:)
   end
 
-  # describe '#teacher_full_name' do
-  #   it 'finds the MENTOR' do
-  #     expect(wizard.teacher_full_name).to eq('Terry Pratchett')
-  #   end
-  # end
-
   describe '#current_step_path' do
     it { expect(wizard.current_step_path).to eq "/school/mentors/#{mentor_at_school_period.id}/change-lead-provider/edit" }
   end
