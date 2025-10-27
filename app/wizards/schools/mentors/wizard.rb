@@ -19,7 +19,7 @@ module Schools
 
       # @return [LeadProvider] ???
       def lead_provider_id
-        # TODO - this is wrong, might there be a service?
+        # TODO: - this is wrong, might there be a service?
         mentor_at_school_period.training_periods.first.active_lead_provider.id
       end
 

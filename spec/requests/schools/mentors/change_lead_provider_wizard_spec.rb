@@ -120,7 +120,6 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
         end
       end
 
-
       context "when the lead provider is unchanged" do
         it "returns unprocessable_content" do
           post(path_for_step("edit"), params:)
@@ -131,7 +130,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
     end
   end
 
-  private
+private
 
   def path_for_step(step)
     "/school/mentors/#{mentor_at_school_period.id}/change-lead-provider/#{step}"
