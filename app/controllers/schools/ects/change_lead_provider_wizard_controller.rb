@@ -3,7 +3,7 @@ module Schools
     class ChangeLeadProviderWizardController < SchoolsController
       include Wizardable
 
-      before_action :render_not_found_if_school_led_training_programme!
+      before_action :ensure_provider_led!
 
       wizard_for :ect
 
@@ -21,12 +21,10 @@ module Schools
 
     private
 
-      def render_not_found_if_school_led_training_programme!
-        ect_at_school_period = ECTAtSchoolPeriod.find_by(id: params[:ect_id])
+      def ensure_provider_led!
+        return if @ect_at_school_period&.provider_led_training_programme?
 
-        if ect_at_school_period&.current_or_next_training_period&.school_led_training_programme?
-          render "errors/not_found", status: :not_found
-        end
+        render "errors/not_found", status: :not_found
       end
     end
   end
