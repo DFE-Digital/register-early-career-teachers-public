@@ -2,11 +2,12 @@ module Schools
   module ECTs
     class ChangeMentorWizardController < SchoolsController
       include Wizardable
-      before_action :register_mentor, only: %i[new create]
-
       wizard_for :ect
 
+      before_action :redirect_to_register_mentor_if_needed, only: %i[new create]
+
       def new
+        @wizard.new_mentor_requested = params[:new_mentor_requested]
         render @current_step
       end
 
@@ -20,7 +21,7 @@ module Schools
 
     private
 
-      def register_mentor
+      def redirect_to_register_mentor_if_needed
         case action_name
         when "new"
           redirect_to_register_mentor_wizard unless mentors_registered?
@@ -30,11 +31,11 @@ module Schools
       end
 
       def redirect_to_register_mentor_wizard
-        redirect_to schools_register_mentor_wizard_start_path(ect_id: @wizard.ect_at_school_period.id)
+        redirect_to schools_register_mentor_wizard_start_path(ect_id: @wizard.ect_at_school_period.id, new_mentor_requested: true)
       end
 
       def mentor_id
-        @mentor_id ||= params.dig(:edit, :mentor_at_school_period_id)
+        @mentor_id ||= @wizard.current_step.attributes["mentor_at_school_period_id"]
       end
 
       def new_mentor?

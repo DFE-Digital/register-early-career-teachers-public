@@ -11,6 +11,7 @@ module Schools
       @ect = ECTAtSchoolPeriod.find(params[:ect_id])
       session[:register_mentor_for_ect_id] = @ect.id
       @ect_name = Teachers::Name.new(@ect.teacher).full_name
+      @new_mentor_requested = params[:new_mentor_requested]
     end
 
     def new
