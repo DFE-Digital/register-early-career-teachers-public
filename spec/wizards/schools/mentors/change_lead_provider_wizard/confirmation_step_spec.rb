@@ -13,9 +13,10 @@ describe Schools::Mentors::ChangeLeadProviderWizard::ConfirmationStep, type: :mo
   let(:store) { FactoryBot.build(:session_repository) }
   let(:school) { FactoryBot.create(:school) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on: Time.zone.today) }
+
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
-  let(:lead_provider) { school_partnership.lead_provider }
+  let(:lead_provider) { training_period.lead_provider }
   let(:params) { {} }
 
   describe "#previous_step" do
@@ -30,7 +31,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::ConfirmationStep, type: :mo
     end
   end
 
-  xdescribe "#new_lead_provider" do
+  describe "#new_lead_provider" do
     it "returns the mentor's lead provider" do
       expect(current_step.new_lead_provider).to eq(lead_provider)
     end

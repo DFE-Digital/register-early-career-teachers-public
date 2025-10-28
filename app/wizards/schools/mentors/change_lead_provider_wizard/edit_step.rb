@@ -39,15 +39,7 @@ module Schools
         end
 
         def lead_provider_for_mentor_at_school_period
-          latest_registration_choice.lead_provider
-        end
-
-        def latest_registration_choice
-          @latest_registration_choice ||= MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn: mentor_trn)
-        end
-
-        def mentor_trn
-          mentor_at_school_period.teacher.trn
+          wizard.latest_registration_choice.lead_provider
         end
       end
     end
