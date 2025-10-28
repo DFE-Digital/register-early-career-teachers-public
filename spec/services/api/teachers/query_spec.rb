@@ -288,7 +288,7 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           expect(query.teachers).to contain_exactly(teacher2)
         end
 
-        it "does not filter by `updated_since`` if omitted" do
+        it "does not filter by `updated_since` if omitted" do
           teacher1 = FactoryBot.create(:teacher).tap { it.update(updated_at: 1.week.ago) }
           teacher2 = FactoryBot.create(:teacher).tap { it.update(updated_at: 2.weeks.ago) }
 
