@@ -1,12 +1,12 @@
 RSpec.shared_examples "an API update endpoint" do
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
 
-  it "creates and returns the resource in a serialized format" do
+  it "updates and returns the resource in a serialized format" do
     authenticated_api_put(path, params:)
 
     expect(response).to have_http_status(:ok)
     expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq(serializer.render(resource_type.last, root: "data", **options))
+    expect(response.body).to eq(serializer.render(resource_type.last.reload, root: "data", **options))
   end
 
   it "calls the service with the correct arguments" do
@@ -37,13 +37,15 @@ RSpec.shared_examples "an API update endpoint" do
     expect(response.body).to eq({ errors: [{ title: "Bad request", detail: "Correct json data structure required. See API docs for reference." }] }.to_json)
   end
 
-  it "returns a 404 response if the resource does not belong to the lead provider" do
-    resource.update!(active_lead_provider: FactoryBot.create(:active_lead_provider))
+  context "when the resource has a different lead provider" do
+    let(:resource) { create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider)) }
 
-    authenticated_api_put(path, params:)
+    it "returns a 404 response" do
+      authenticated_api_put(path, params:)
 
-    expect(response).to have_http_status(:not_found)
-    expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq({ errors: [{ title: "Resource not found", detail: "Nothing could be found for the provided details" }] }.to_json)
+      expect(response).to have_http_status(:not_found)
+      expect(response.content_type).to eql("application/json; charset=utf-8")
+      expect(response.body).to eq({ errors: [{ title: "Resource not found", detail: "Nothing could be found for the provided details" }] }.to_json)
+    end
   end
 end
