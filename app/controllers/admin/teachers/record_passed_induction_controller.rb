@@ -24,9 +24,7 @@ module Admin
         RecordPass.new(
           appropriate_body:,
           pending_induction_submission: @pending_induction_submission,
-          author: current_user,
-          note: 'foo',
-          zendesk_ticket_id: '#123456'
+          **auditable_params
         ).pass!
       end
     end

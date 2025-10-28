@@ -24,9 +24,7 @@ module Admin
         RecordFail.new(
           appropriate_body:,
           pending_induction_submission: @pending_induction_submission,
-          author: current_user,
-          note: 'bar',
-          zendesk_ticket_id: '#123456'
+          **auditable_params
         ).fail!
       end
     end
