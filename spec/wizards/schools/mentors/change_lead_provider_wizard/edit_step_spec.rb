@@ -37,7 +37,6 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
 
   describe "#lead_providers_for_select" do
     xit "returns active lead providers in the contract period excluding the current lead provider" do
-
     end
   end
 

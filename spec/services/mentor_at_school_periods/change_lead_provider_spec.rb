@@ -20,8 +20,8 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       it 'closes existing training periods and opens a new training period' do
         expect { subject.call }.to change(TrainingPeriod, :count).by(1)
 
-        expect(training_period.reload.finished_on).to eq(Date.today)
-        expect(mentorship_period.reload.finished_on).to eq(Date.today)
+        expect(training_period.reload.finished_on).to eq(Time.zone.today)
+        expect(mentorship_period.reload.finished_on).to eq(Time.zone.today)
       end
     end
 
@@ -44,22 +44,20 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
     context 'when a relationship already exists with this lead provider' do
       it 'opens a new training period with the new lead provider' do
         subject.call
-        
+
         new_training_period = mentor_at_school_period.training_periods.ongoing.first
         expect(new_training_period.lead_provider).to eq(new_lead_provider)
-        expect(new_training_period.started_on).to eq(Date.today + 1)
+        expect(new_training_period.started_on).to eq(Time.zone.today + 1)
         expect(new_training_period.training_programme).to eq('provider_led')
       end
     end
 
     xcontext 'when no relationship exists with this lead provider' do
-      it 'creates a new expression of interest' do
-
+      xit 'creates a new expression of interest' do
       end
     end
 
     xit 'writes an appropriate event' do
     end
-
   end
 end

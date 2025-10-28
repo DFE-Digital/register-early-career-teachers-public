@@ -88,7 +88,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
         let(:new_lead_provider) { create(:lead_provider) }
         let(:params) { { edit: { lead_provider_id: new_lead_provider.id } } }
 
-        it "updates the lead provider only after confirmation" do
+        xit "updates the lead provider only after confirmation" do
           # expect { post(path_for_step("edit"), params:) }
           #   .not_to change(mentor_at_school_period, :ledad)
 
@@ -103,7 +103,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
           # expect(response).to redirect_to(path_for_step("confirmation"))
         end
 
-        it "creates an event only after confirmation" do
+        xit "creates an event only after confirmation" do
           # allow(Events::Record).to receive(:record_teacher_email_updated_event!)
 
           # post(path_for_step("edit"), params:)

@@ -20,7 +20,6 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
   let(:mentor_at_school_period) do
     FactoryBot.create(:mentor_at_school_period, school:)
   end
-  let(:params) { {} }
   let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
   let(:lead_provider) { school_partnership.lead_provider }
   let(:params) { { lead_provider_id: lead_provider.id } }
@@ -39,15 +38,15 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
 
   describe "save!" do
     let(:service) { instance_double(MentorAtSchoolPeriods::ChangeLeadProvider) }
-    
+
     before do
       allow(MentorAtSchoolPeriods::ChangeLeadProvider)
         .to receive(:new)
         .and_return(service)
 
-      allow(service).to receive(:call)  
+      allow(service).to receive(:call)
     end
-    
+
     it "calls the ChangeLeadProvider service" do
       current_step.save!
 
@@ -55,7 +54,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
         .to have_received(:new)
         .with(
           mentor_at_school_period:,
-          school_partnership: ,
+          school_partnership:,
           author: wizard.author
         )
 

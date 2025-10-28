@@ -2,7 +2,6 @@ module MentorAtSchoolPeriods
   class ChangeLeadProvider
     attr_reader :mentor_at_school_period,
                 :school_partnership,
-                :finished_on,
                 :author
 
     def initialize(mentor_at_school_period:, school_partnership:, author:)
@@ -64,7 +63,7 @@ module MentorAtSchoolPeriods
 
     # TODO: dates
     def finished_on
-      Date.today
+      Time.zone.today
     end
 
     def started_on
