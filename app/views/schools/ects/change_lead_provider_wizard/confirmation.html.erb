@@ -5,7 +5,7 @@
 
 <%= govuk_panel(
       title_text: <<~TXT.squish
-        You have chosen #{@wizard.current_step.current_lead_provider_name} as
+        You have chosen #{@wizard.current_step.new_lead_provider_name} as
         the new lead provider for #{@wizard.teacher_full_name}
       TXT
     ) %>
@@ -15,7 +15,7 @@
 </h2>
 
 <p class="govuk-body">
-  We’ll let <%= @wizard.current_step.current_lead_provider_name %> know your
+  We’ll let <%= @wizard.current_step.new_lead_provider_name %> know your
   school wants to work with them. They’ll contact us to confirm the change and
   tell us the delivery partner they’ll be working with.
 </p>
