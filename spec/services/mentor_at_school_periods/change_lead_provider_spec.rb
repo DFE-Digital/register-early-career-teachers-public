@@ -4,7 +4,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on:) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { mentor_at_school_period.school }
-  
+
   let(:started_on) { 3.months.ago.to_date }
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
 
@@ -12,7 +12,6 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
-
 
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:) }
@@ -38,7 +37,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
     end
 
     context 'when there is an exiting relationship with this lead provider' do
-      let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:  ) }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
       it 'uses the existing school partnership' do
         expect { subject.call }.not_to change(ActiveLeadProvider, :count)
@@ -73,8 +72,6 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         end
       end
     end
-
-    
 
     xit 'writes an appropriate event' do
     end
