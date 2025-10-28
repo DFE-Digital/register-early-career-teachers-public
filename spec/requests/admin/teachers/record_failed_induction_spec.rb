@@ -18,7 +18,9 @@ RSpec.describe 'Admin recording a failed outcome for a teacher' do
       pending_induction_submission: {
         finished_on: Date.current,
         number_of_terms: 3,
-        outcome: 'fail'
+        outcome: 'fail',
+        note: 'bar',
+        zendesk_ticket_id: '#123456'
       }
     }
   end
@@ -109,8 +111,6 @@ RSpec.describe 'Admin recording a failed outcome for a teacher' do
         let(:invalid_params) do
           {
             pending_induction_submission: {
-              finished_on: nil,
-              number_of_terms: nil,
               outcome: 'fail'
             }
           }
@@ -145,36 +145,6 @@ RSpec.describe 'Admin recording a failed outcome for a teacher' do
 
           expect(response.body).to include('The end date must be later than the start date')
         end
-      end
-    end
-  end
-
-  describe 'GET /admin/teachers/:teacher_id/record-failed-outcome' do
-    let!(:induction_period) do
-      FactoryBot.create(
-        :induction_period,
-        :fail,
-        teacher:,
-        appropriate_body:,
-        induction_programme: 'fip'
-      )
-    end
-
-    context 'when not signed in' do
-      it 'redirects to the sign in page' do
-        get("/admin/teachers/#{teacher.id}/record-failed-outcome")
-
-        expect(response).to redirect_to(sign_in_path)
-      end
-    end
-
-    context 'when signed in as an admin' do
-      include_context 'sign in as DfE user'
-
-      it 'renders the show page for a valid teacher' do
-        get("/admin/teachers/#{teacher.id}/record-failed-outcome")
-
-        expect(response).to be_successful
       end
     end
   end

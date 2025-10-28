@@ -1,6 +1,8 @@
 module Admin
   module Teachers
     class CloseInductionController < AdminController
+      include AuditableParams
+
       before_action :find_teacher
 
       def new
@@ -42,6 +44,10 @@ module Admin
           **pending_induction_submission_attributes,
           outcome:
         ).pending_induction_submission
+      end
+
+      def auditable_params
+        auditable_params_for(@pending_induction_submission.model_name).to_h.symbolize_keys
       end
     end
   end
