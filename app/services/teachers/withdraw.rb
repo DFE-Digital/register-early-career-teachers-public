@@ -28,7 +28,7 @@ module Teachers
     def record_withdraw_event!
       return unless training_period.saved_changes?
 
-      Events::Record.record_teacher_withdraws_training_period_event!(
+      Events::Record.record_teacher_training_period_withdrawn_event!(
         author:,
         training_period:,
         teacher:,

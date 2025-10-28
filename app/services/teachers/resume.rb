@@ -31,7 +31,7 @@ module Teachers
     def record_resume_event!(new_training_period)
       return if new_training_period.blank?
 
-      Events::Record.record_teacher_resumes_training_period_event!(
+      Events::Record.record_teacher_training_period_resumed_event!(
         author:,
         training_period:,
         teacher:,
