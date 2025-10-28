@@ -394,7 +394,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_23_134806) do
     t.bigint "school_id", null: false
     t.bigint "lead_provider_id", null: false
     t.integer "contract_period_year"
-    t.boolean "expression_of_interest", null: false
+    t.boolean "expression_of_interest_or_school_partnership", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["contract_period_year"], name: "idx_on_contract_period_year_f5913b27f2"

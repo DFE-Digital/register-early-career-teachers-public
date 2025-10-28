@@ -16,7 +16,7 @@ class API::SchoolSerializer < Blueprinter::Base
       contract_period_metadata(school:, options:).induction_programme_choice
     end
     field(:expression_of_interest) do |school, options|
-      lead_provider_contract_period_metadata(school:, options:).expression_of_interest
+      lead_provider_contract_period_metadata(school:, options:).expression_of_interest_or_school_partnership
     end
     field :created_at
     field(:api_updated_at, name: :updated_at)

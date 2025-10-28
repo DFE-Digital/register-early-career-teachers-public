@@ -356,7 +356,7 @@ erDiagram
     integer school_id
     integer lead_provider_id
     integer contract_period_year
-    boolean expression_of_interest
+    boolean expression_of_interest_or_school_partnership
     datetime created_at
     datetime updated_at
   }
