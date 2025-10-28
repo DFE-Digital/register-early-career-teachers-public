@@ -15,10 +15,10 @@ RSpec.describe Teachers::Defer do
   end
 
   describe "#defer" do
-    %i[ect mentor].each do |trainee_type|
+    API::Concerns::Teachers::SharedAction::TEACHER_TYPES.each do |trainee_type|
       context "for #{trainee_type}" do
         let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: nil) }
-        let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
+        let(:teacher_type) { trainee_type }
 
         context "when training period is withdrawn" do
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :withdrawn, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }

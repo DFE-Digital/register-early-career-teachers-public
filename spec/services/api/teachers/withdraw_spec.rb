@@ -4,7 +4,7 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
       lead_provider_id:,
       teacher_api_id:,
       reason:,
-      course_identifier:
+      teacher_type:
     )
   end
 
@@ -12,11 +12,11 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
 
   it_behaves_like "an API teacher shared action" do
     describe "validations" do
-      %i[ect mentor].each do |trainee_type|
+      API::Concerns::Teachers::SharedAction::TEACHER_TYPES.each do |trainee_type|
         context "for #{trainee_type}" do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 2.months.ago) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
-          let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
+          let(:teacher_type) { trainee_type }
 
           it { is_expected.to be_valid }
 
@@ -61,10 +61,10 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
     end
 
     describe "#withdraw" do
-      %i[ect mentor].each do |trainee_type|
+      API::Concerns::Teachers::SharedAction::TEACHER_TYPES.each do |trainee_type|
         context "for #{trainee_type}" do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: nil) }
-          let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
+          let(:teacher_type) { trainee_type }
 
           context "when invalid" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing) }
