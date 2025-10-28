@@ -38,17 +38,31 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
   end
 
   describe "save!" do
-    let(:service) { MentorAtSchoolPeriods::ChangeLeadProvider }
+    let(:service) { instance_double(MentorAtSchoolPeriods::ChangeLeadProvider) }
+    
     before do
-      allow(service).to receive(:new).and_return(double(call: true) )
+      allow(MentorAtSchoolPeriods::ChangeLeadProvider)
+        .to receive(:new)
+        .and_return(service)
+
+      allow(service).to receive(:call)  
     end
     
-    xit "calls the ChangeLeadProvider service" do
-      
-      expect(service).to receive(:new)
+    it "calls the ChangeLeadProvider service" do
+      current_step.save!
+
+      expect(MentorAtSchoolPeriods::ChangeLeadProvider)
+        .to have_received(:new)
+        .with(
+          mentor_at_school_period:,
+          school_partnership: ,
+          author: wizard.author
+        )
+
+      expect(service).to have_received(:call)
     end
 
-    xit "records a `teacher_email_updated` event" do
+    xit "records an event" do
       freeze_time
 
       expect(Events::Record)

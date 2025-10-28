@@ -6,7 +6,7 @@ module Schools
         attribute :lead_provider_id, :string
 
         validates :lead_provider_id,
-                  presence: { message: "Select a lead provider" }
+                  presence: { message: "Select a lead provider to contact your school" }
 
         def self.permitted_params = %i[lead_provider_id]
 

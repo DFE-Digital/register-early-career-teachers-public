@@ -48,7 +48,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
       it "is invalid" do
         expect(current_step).to be_invalid
         expect(current_step.errors.messages_for(:lead_provider_id)).to contain_exactly(
-          "Select a lead provider"
+          "Select a lead provider to contact your school"
         )
       end
     end
