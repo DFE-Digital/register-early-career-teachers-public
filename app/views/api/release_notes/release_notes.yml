@@ -56,11 +56,11 @@
     
     We’ve introduced a new approach for setting default schedules for participants. 
     
-    For ECTs, default schedules will be based on school-provided start dates.  
+    For ECTs, default schedules will be based on school-provided start dates or when they were registered.
     
     For mentors, the logic will relate to: 
     
-    * when the first provider-led ECT they’re assigned to is starting at the school
+    * when we expect the mentor to start 
     * if they’re identified by the service as a replacement mentor 
     
     Existing records migrated from ‘Manage training for early career teachers’ will keep their current schedules. 
@@ -110,7 +110,7 @@
     * improves visibility and offboarding processes
     * ensures data security when multiple partnerships exist for the same school   
 
-    ### We’ve removed the `withdrawn` status  
+    ### We’ve removed the `withdrawn` attribute from `participant_status`   
     
     To simplify the data model and remove confusion, we’ve decided not to support the `withdrawn` attribute in the `participant_status` field. 
     
@@ -139,7 +139,7 @@
     
     ### ECTs yet to start at a school shown as `joining`
     
-    The `participant_status` field will show as `joining` for ECTs whose school start date is in the future. 
+    The `participant_status` field will show as `joining` for ECTs whose school start date is in the future, regardless of whether it's their first school or not.
     
     #### Why we’ve made this change
     
