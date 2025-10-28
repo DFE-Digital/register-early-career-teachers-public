@@ -11,7 +11,7 @@ module Migration
     end
 
     def mentor_name
-      @mentor_name ||= Teachers::Name.new(mentorship_period.mentor.teacher).full_name
+      @mentor_name ||= ::Teachers::Name.new(mentorship_period.mentor.teacher).full_name
     end
 
     def period_dates
