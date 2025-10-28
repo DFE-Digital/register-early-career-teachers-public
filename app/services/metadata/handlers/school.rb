@@ -42,17 +42,23 @@ module Metadata::Handlers
         metadata = existing_lead_provider_contract_period_metadata[[lead_provider_id, contract_period_year]] ||
           Metadata::SchoolLeadProviderContractPeriod.new(school:, lead_provider_id:, contract_period_year:)
 
+        expression_of_interest_or_school_partnership = expression_of_interest_or_school_partnership_pairings.include?([lead_provider_id, contract_period_year])
+
         changes = {
           school_id: school.id,
           lead_provider_id:,
           contract_period_year:,
-          expression_of_interest: school.expression_of_interest_for?(lead_provider_id, contract_period_year)
+          expression_of_interest_or_school_partnership:
         }
 
         hash[metadata] = changes if changes?(metadata, changes)
       end
 
       upsert_all(model: Metadata::SchoolLeadProviderContractPeriod, changes_to_upsert:, unique_by: %i[school_id lead_provider_id contract_period_year])
+    end
+
+    def expression_of_interest_or_school_partnership_pairings
+      @expression_of_interest_or_school_partnership_pairings ||= school.lead_providers_and_contract_periods_with_expression_of_interest_or_school_partnership
     end
 
     def lead_provider_id_contract_period_years
