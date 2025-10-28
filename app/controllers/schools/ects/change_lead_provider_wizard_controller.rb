@@ -3,6 +3,8 @@ module Schools
     class ChangeLeadProviderWizardController < SchoolsController
       include Wizardable
 
+      before_action :ensure_provider_led!
+
       wizard_for :ect
 
       def new
@@ -15,6 +17,14 @@ module Schools
         else
           render @current_step, status: :unprocessable_content
         end
+      end
+
+    private
+
+      def ensure_provider_led!
+        return if @ect_at_school_period&.provider_led_training_programme?
+
+        render "errors/not_found", status: :not_found
       end
     end
   end

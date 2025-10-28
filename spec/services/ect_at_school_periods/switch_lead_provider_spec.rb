@@ -247,6 +247,27 @@ module ECTAtSchoolPeriods
           switch_lead_provider
         end
       end
+
+      context "when the ECT is on a school-led programme" do
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :ongoing,
+            :school_led,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on
+          )
+        end
+
+        it "raises and does not mutate state" do
+          expect {
+            switch_lead_provider
+          }.to raise_error(ECTAtSchoolPeriods::SwitchLeadProvider::SchoolLedTrainingProgrammeError)
+
+          expect { training_period.reload }.not_to raise_error
+          expect(training_period.finished_on).to be_nil
+        end
+      end
     end
   end
 end

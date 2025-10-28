@@ -4,7 +4,7 @@ module Schools
       class ConfirmationStep < Step
         def previous_step = :check_answers
 
-        def current_lead_provider_name = current_lead_provider&.name
+        def new_lead_provider_name = current_lead_provider&.name
 
       private
 
