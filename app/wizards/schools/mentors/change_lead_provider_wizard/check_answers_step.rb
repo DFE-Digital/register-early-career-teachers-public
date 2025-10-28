@@ -18,9 +18,9 @@ module Schools
 
         def save!
           MentorAtSchoolPeriods::ChangeLeadProvider.new(mentor_at_school_period:,
-                                                         school_partnership:, 
-                                                         author: wizard.author).call
-      
+                                                        school_partnership:,
+                                                        author: wizard.author).call
+
           true
         end
 
@@ -50,7 +50,7 @@ module Schools
           SchoolPartnership
           .joins(:lead_provider_delivery_partnership)
           .joins(:active_lead_provider)
-          .where(school:, active_lead_provider: {lead_provider: new_lead_provider })
+          .where(school:, active_lead_provider: { lead_provider: new_lead_provider })
           .first
         end
 

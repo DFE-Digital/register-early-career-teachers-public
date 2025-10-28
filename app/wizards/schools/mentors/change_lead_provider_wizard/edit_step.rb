@@ -2,7 +2,6 @@ module Schools
   module Mentors
     module ChangeLeadProviderWizard
       class EditStep < Mentors::Step
-        # TODO: shouldn't this be an integer
         attribute :lead_provider_id, :string
 
         validates :lead_provider_id,
@@ -13,7 +12,6 @@ module Schools
         def next_step = :check_answers
 
         def save!
-          raise 'e'
           store.update!(lead_provider_id:) if valid_step?
         end
 
@@ -24,9 +22,8 @@ module Schools
 
       private
 
-        # TODO: - query is this a check on whether to prepopulate? Or just setting the value?
         def pre_populate_attributes
-          # self.lead_provider_id = store.lead_provider_id.presence || wizard.lead_provider_id
+          self.lead_provider_id = store.lead_provider_id.presence
         end
 
         def active_lead_providers_in_contract_period

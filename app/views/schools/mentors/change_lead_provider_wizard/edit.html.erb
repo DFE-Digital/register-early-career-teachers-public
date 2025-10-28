@@ -1,16 +1,26 @@
 <% page_data(
-    title: "Change Lead Provider for #{@wizard.teacher_full_name}",
+    title: "Change lead provider for #{@wizard.teacher_full_name}",
     error: @mentor_at_school_period.errors.present?,
     backlink_href: schools_mentor_path(@mentor_at_school_period),
 ) %>
 
-<p class="govuk-body">TODO</p>
+
 
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
   <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
-  <%# TODO RADIO LIST %>
+  <p>If your school wants to change lead provider, you should, for continuity, make changes at the end of the school year.</p>
+  <p>If you change <%= @wizard.teacher_full_name %>'s lead provider it means that their training will stop immediately. They'll need to wait until the new lead provider confirms the partnership before they can continue.</p>
+  <p>Changing the lead provider might mean <%= @wizard.teacher_full_name %> will have a different delivery partner. Their training might be delivered differently.<p>
+  <p>If you do change lead provider, we'll let the:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>new provider know that you want to work with them</li>
+    <li>old provider know they're no longer working with the ECT</li>
+  </ul>
+  <p>The new provider will confirm the delivery partner they're working with.</p>
+  <h2 class="govuk-heading-m">Select the new lead provider for <%= @wizard.teacher_full_name %></h2>
+
   <%= form.govuk_collection_radio_buttons(
         :lead_provider_id,
         @wizard.current_step.lead_providers_for_select,
