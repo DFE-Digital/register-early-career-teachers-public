@@ -19,6 +19,8 @@ module Teachers
 
         record_deferred_event!
       end
+
+      teacher
     end
 
   private
