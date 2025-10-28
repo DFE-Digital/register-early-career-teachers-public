@@ -18,8 +18,8 @@ describe ECTAtSchoolPeriods::Mentorship do
     end
 
     context "when the ect has an ongoing mentorship at a school" do
-      let!(:old_mentorship) { FactoryBot.create(:mentorship_period, mentee:, mentor:) }
-      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:) }
+      let!(:old_mentorship) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago) }
+      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago) }
 
       it { is_expected.to eq(ongoing_mentorship) }
     end
@@ -98,8 +98,8 @@ describe ECTAtSchoolPeriods::Mentorship do
     end
 
     context "when the ect has an ongoing mentorship at the school" do
-      let!(:old_mentorship) { FactoryBot.create(:mentorship_period, mentee:, mentor:) }
-      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:) }
+      let!(:old_mentorship) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: 2.years.ago) }
+      let!(:ongoing_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:, started_on: 1.year.ago) }
 
       it { is_expected.to eq(ongoing_mentorship) }
     end
