@@ -18,6 +18,10 @@ class Teacher < ApplicationRecord
   has_many :teacher_id_changes, inverse_of: :teacher
   has_many :lead_provider_metadata, class_name: "Metadata::TeacherLeadProvider"
 
+  has_many :mentorship_periods, class_name: "MentorshipPeriod", through: :mentor_at_school_periods
+  has_many :mentees, class_name: "ECTAtSchoolPeriod", through: :mentorship_periods
+  has_many :mentee_teachers, class_name: "Teacher", source: :teacher, through: :mentees
+
   has_many :induction_periods
   has_one :first_induction_period, -> { order(started_on: :asc) }, class_name: "InductionPeriod"
   has_one :last_induction_period, -> { order(started_on: :desc) }, class_name: "InductionPeriod"
@@ -37,6 +41,31 @@ class Teacher < ApplicationRecord
   has_many :teacher_migration_failures
 
   refresh_metadata -> { self }, on_event: %i[create update]
+  touch -> { self },
+        on_event: :update,
+        timestamp_attribute: :api_updated_at,
+        when_changing: %i[
+          api_id
+          corrected_name
+          trs_first_name
+          trs_last_name
+          trn
+          api_ect_training_record_id
+          api_mentor_training_record_id
+          mentor_became_ineligible_for_funding_on
+          mentor_became_ineligible_for_funding_reason
+          ect_first_became_eligible_for_training_at
+          mentor_first_became_eligible_for_training_at
+          ect_pupil_premium_uplift
+          ect_sparsity_uplift
+          ect_payments_frozen_year
+          mentor_payments_frozen_year
+        ]
+
+  touch -> { mentee_teachers },
+        on_event: :update,
+        timestamp_attribute: :api_updated_at,
+        when_changing: %i[api_id]
 
   # Validations
   validates :trn,

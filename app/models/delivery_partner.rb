@@ -4,10 +4,17 @@ class DeliveryPartner < ApplicationRecord
   # Associations
   has_many :lead_provider_delivery_partnerships, inverse_of: :delivery_partner
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
+  has_many :training_periods, through: :school_partnerships
+  has_many :ect_at_school_periods, through: :training_periods, inverse_of: :delivery_partner
+  has_many :mentor_at_school_periods, through: :training_periods, inverse_of: :delivery_partner
+  has_many :ect_teachers, -> { distinct }, through: :ect_at_school_periods, source: :teacher
+  has_many :mentor_teachers, -> { distinct }, through: :mentor_at_school_periods, source: :teacher
   has_many :events
   has_many :lead_provider_metadata, class_name: "Metadata::DeliveryPartnerLeadProvider"
 
   refresh_metadata -> { self }, on_event: %i[create]
+  touch -> { ect_teachers }, on_event: %i[update], timestamp_attribute: :api_updated_at, when_changing: %i[api_id]
+  touch -> { mentor_teachers }, on_event: %i[update], timestamp_attribute: :api_updated_at, when_changing: %i[api_id]
 
   # Validations
   validates :name,

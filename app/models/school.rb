@@ -4,6 +4,8 @@ class School < ApplicationRecord
 
   touch -> { self }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
+  touch -> { ect_teachers }, on_event: %i[update], timestamp_attribute: :api_updated_at, when_changing: %i[urn]
+  touch -> { mentor_teachers }, on_event: %i[update], timestamp_attribute: :api_updated_at, when_changing: %i[urn]
   refresh_metadata -> { self }, on_event: %i[create]
 
   # Enums

@@ -46,6 +46,21 @@ class TrainingPeriod < ApplicationRecord
 
   refresh_metadata -> { school_partnership&.school }, on_event: %i[create destroy update]
   refresh_metadata -> { trainee&.teacher }, on_event: %i[create destroy update], when_changing: %i[started_on finished_on]
+  touch -> { trainee&.teacher },
+        on_event: %i[create destroy update],
+        timestamp_attribute: :api_updated_at,
+        when_changing: %i[
+          withdrawn_at
+          withdrawal_reason
+          deferred_at
+          deferral_reason
+          started_on
+          finished_on
+          ect_at_school_period_id
+          mentor_at_school_period_id
+          schedule_id
+          school_partnership_id
+        ]
 
   # Validations
   validates :started_on,
