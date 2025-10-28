@@ -127,6 +127,18 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
         end
       end
 
+      context "when the ECT is being mentored by a new mentor" do
+        # The form uses 0 to indicate a new mentor is being requested and redirects accordingly
+        let(:mentor_at_school_period_id) { 0 }
+
+        it "redirects to the register mentor wizard" do
+          post(path_for_step("edit"), params:)
+          expect(response).to redirect_to(
+            schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id, new_mentor_requested: true)
+          )
+        end
+      end
+
       context "when the ECT is undergoing school-led training" do
         let!(:ect_training_period) do
           FactoryBot.create(
@@ -172,17 +184,6 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
 
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
-
-        context "when the ECT is being mentored by a new mentor" do
-          let(:mentor_at_school_period_id) { 0 }
-
-          it "redirects to the register mentor wizard" do
-            post(path_for_step("edit"), params:)
-            expect(response).to redirect_to(
-              schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id, new_mentor_requested: true)
-            )
-          end
-        end
       end
 
       context "when the ECT is undergoing provider-led training" do
@@ -199,17 +200,6 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
 
         before do
           ect_training_period.active_lead_provider.update!(contract_period:)
-        end
-
-        context "when the ECT is being mentored by a new mentor" do
-          let(:mentor_at_school_period_id) { 0 }
-
-          it "redirects to the register mentor wizard" do
-            post(path_for_step("edit"), params:)
-            expect(response).to redirect_to(
-              schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id, new_mentor_requested: true)
-            )
-          end
         end
 
         context "when the mentor has a provider-led training period" do
