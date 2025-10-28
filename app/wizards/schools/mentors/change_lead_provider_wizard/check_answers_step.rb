@@ -19,14 +19,8 @@ module Schools
         def save!
           MentorAtSchoolPeriods::ChangeLeadProvider.new(mentor_at_school_period:,
                                                          school_partnership:, 
-                                                         finished_on:, 
                                                          author: wizard.author).call
-          # TODO
-          # CREATE A SERVICE TO HANDLE THIS LOGIC
-          # old_lead_provider = lead_provider
-          # ect_at_school_period.teacher.update!(corrected_name: store.name)
-          # new_name = lead_provider
-          # record_event(old_name, new_name)
+      
           true
         end
 
@@ -53,7 +47,15 @@ module Schools
         end
 
         def school_partnership
-          SchoolPartnership.where(school: mentor_at_school_period.school, lead_provider: new_lead_provider).first
+          SchoolPartnership
+          .joins(:lead_provider_delivery_partnership)
+          .joins(:active_lead_provider)
+          .where(school:, active_lead_provider: {lead_provider: new_lead_provider })
+          .first
+        end
+
+        def school
+          mentor_at_school_period.school
         end
 
         def latest_registration_choice

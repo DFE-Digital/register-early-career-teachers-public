@@ -5,11 +5,10 @@ module MentorAtSchoolPeriods
                 :finished_on,
                 :author
 
-    def initialize(mentor_at_school_period:, school_partnership:, finished_on:, author:)
+    def initialize(mentor_at_school_period:, school_partnership:, author:)
       @mentor_at_school_period = mentor_at_school_period
       @school_partnership = school_partnership
       @author = author
-      @finished_on = finished_on
     end
 
     def call
@@ -64,6 +63,10 @@ module MentorAtSchoolPeriods
     end
 
     # TODO: dates
+    def finished_on
+      Date.today
+    end
+
     def started_on
       finished_on + 1
     end
