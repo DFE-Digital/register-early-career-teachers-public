@@ -116,6 +116,10 @@ describe "School user can change early career teachers mentor", :enable_schools_
       when_i_change_the_mentor_to_a_new_mentor
       and_i_click_continue
       then_i_am_redirected_to_the_register_new_mentor_wizard_for_this_mentee
+
+      when_i_click_the_back_link
+      and_i_see_the_change_mentor_form
+      then_the_register_new_mentor_radio_is_selected
     end
   end
 
@@ -261,6 +265,11 @@ private
 
   def then_the_mentor_is_selected
     mentor_radio = page.get_by_label("Jane Smith")
+    expect(mentor_radio).to be_checked
+  end
+
+  def then_the_register_new_mentor_radio_is_selected
+    mentor_radio = page.get_by_label("Register a new mentor")
     expect(mentor_radio).to be_checked
   end
 

@@ -39,7 +39,7 @@ module Schools
         end
 
         def pre_populate_attributes
-          self.mentor_at_school_period_id = store.mentor_at_school_period_id
+          self.mentor_at_school_period_id = @wizard.new_mentor_requested ? 0 : store.mentor_at_school_period_id
         end
 
         def mentor_eligible_for_training?
