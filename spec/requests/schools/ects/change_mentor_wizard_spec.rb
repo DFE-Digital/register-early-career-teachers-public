@@ -59,7 +59,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
         it "redirects to the register mentor wizard" do
           get path_for_step("edit")
           expect(response).to redirect_to(
-            schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id)
+            schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id, new_mentor_requested: true)
           )
         end
       end
@@ -179,7 +179,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
           it "redirects to the register mentor wizard" do
             post(path_for_step("edit"), params:)
             expect(response).to redirect_to(
-              schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id)
+              schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id, new_mentor_requested: true)
             )
           end
         end
@@ -207,7 +207,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
           it "redirects to the register mentor wizard" do
             post(path_for_step("edit"), params:)
             expect(response).to redirect_to(
-              schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id)
+              schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id, new_mentor_requested: true)
             )
           end
         end
