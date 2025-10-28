@@ -1,28 +1,25 @@
 module MentorAtSchoolPeriods
   class ChangeLeadProvider
     attr_reader :mentor_at_school_period,
-                :school_partnership,
+                :lead_provider,
                 :author
 
-    def initialize(mentor_at_school_period:, school_partnership:, author:)
+    def initialize(mentor_at_school_period:, lead_provider:, author:)
       @mentor_at_school_period = mentor_at_school_period
-      @school_partnership = school_partnership
+      @lead_provider = lead_provider
       @author = author
     end
 
     def call
-      # TODO: do something
-      # Hints
-      # Close the existing training training_periods
-      # Open a new training period linked to the new lead provider
-      # Write some events
-
       finish_existing_at_school_periods!
+      create_expression_of_interest unless school_partnership.present?
+        
       create_new_training_period
-
-      # TrainingPeriods.create(period: @mentor_at_school_period, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil)
     end
 
+    
+
+  private
     def finish_existing_at_school_periods!
       ActiveRecord::Base.transaction do
         teacher.mentor_at_school_periods.ongoing_on(finished_on).each do |period|
@@ -32,19 +29,7 @@ module MentorAtSchoolPeriods
       end
     end
 
-    def create_new_training_period
-      ActiveRecord::Base.transaction do
-        TrainingPeriods::Create.new(
-          period: mentor_at_school_period,
-          started_on:,
-          school_partnership:,
-          training_programme: 'provider_led'
-        ).call
-      end
-    end
-
-  private
-
+    
     def finish_mentorship_periods!(period)
       period.mentorship_periods.ongoing_on(finished_on).each do |mentorship_period|
         MentorshipPeriods::Finish.new(mentorship_period:, finished_on:, author:).finish!
@@ -60,6 +45,44 @@ module MentorAtSchoolPeriods
     def training_periods
       mentor_at_school_period.training_periods.ongoing
     end
+
+    def create_new_training_period
+      ActiveRecord::Base.transaction do
+        TrainingPeriods::Create.new(
+          period: mentor_at_school_period,
+          started_on:,
+          school_partnership:,
+          expression_of_interest:,
+          training_programme: 'provider_led'
+        ).call
+      end
+    end
+
+    def expression_of_interest
+      @expression_of_interest ||= create_expression_of_interest
+    end
+
+    def create_expression_of_interest
+      ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period_year: current_year)
+    end
+
+    def school_partnership
+      SchoolPartnership
+      .joins(:lead_provider_delivery_partnership)
+      .joins(:active_lead_provider)
+      .where(school:, active_lead_provider: { lead_provider: lead_provider })
+      .for_contract_period(current_year)
+      .first
+    end
+
+    def school
+      mentor_at_school_period.school
+    end
+
+    def current_year
+      ContractPeriod.containing_date(Date.today).year
+    end
+
 
     # TODO: dates
     def finished_on
