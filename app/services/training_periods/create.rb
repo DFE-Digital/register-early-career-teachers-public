@@ -1,19 +1,21 @@
 module TrainingPeriods
   class Create
-    def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil)
+    def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil, finished_on: nil, schedule: nil)
       @period = period
       @started_on = started_on
       @school_partnership = school_partnership
       @expression_of_interest = expression_of_interest
       @training_programme = training_programme
+      @finished_on = finished_on
+      @schedule = schedule
     end
 
     def self.school_led(period:, started_on:)
       new(period:, started_on:, training_programme: 'school_led')
     end
 
-    def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:)
-      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: 'provider_led')
+    def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil, schedule: nil)
+      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: 'provider_led', finished_on:, schedule:)
     end
 
     def call
@@ -22,7 +24,9 @@ module TrainingPeriods
         started_on: @started_on,
         school_partnership: @school_partnership,
         expression_of_interest: @expression_of_interest,
-        training_programme: @training_programme
+        training_programme: @training_programme,
+        finished_on: @finished_on,
+        schedule: @schedule
       )
     end
 

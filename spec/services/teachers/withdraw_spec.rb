@@ -81,7 +81,7 @@ RSpec.describe Teachers::Withdraw do
             )
           end
 
-          it "sets `withdrawn_at` and `finished_on`` to the current date" do
+          it "sets `withdrawn_at` and `finished_on` to the current date" do
             freeze_time
 
             expect(service.withdraw).not_to be(false)

@@ -45,6 +45,7 @@ class Event < ApplicationRecord
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
     teacher_defers_training_period
+    teacher_resumes_training_period
     teacher_withdraws_training_period
     training_period_assigned_to_school_partnership
     dfe_user_created

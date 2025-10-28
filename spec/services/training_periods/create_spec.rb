@@ -5,7 +5,9 @@ RSpec.describe TrainingPeriods::Create do
       started_on:,
       school_partnership:,
       expression_of_interest:,
-      training_programme:
+      training_programme:,
+      finished_on:,
+      schedule:
     ).call
   end
 
@@ -13,6 +15,8 @@ RSpec.describe TrainingPeriods::Create do
   let(:school_partnership) { FactoryBot.create(:school_partnership) }
   let(:expression_of_interest) { nil }
   let(:training_programme) { 'provider_led' }
+  let(:finished_on) { Time.zone.today - 3.weeks }
+  let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
 
   context 'with an ECTAtSchoolPeriod' do
     let(:teacher) { FactoryBot.create(:teacher) }
@@ -34,6 +38,8 @@ RSpec.describe TrainingPeriods::Create do
       expect(training_period.started_on).to eq(started_on)
       expect(training_period.school_partnership).to eq(school_partnership)
       expect(training_period.expression_of_interest).to eq(expression_of_interest)
+      expect(training_period.finished_on).to eq(finished_on)
+      expect(training_period.schedule).to eq(schedule)
     end
   end
 
@@ -57,6 +63,8 @@ RSpec.describe TrainingPeriods::Create do
       expect(training_period.started_on).to eq(started_on)
       expect(training_period.school_partnership).to eq(school_partnership)
       expect(training_period.expression_of_interest).to eq(expression_of_interest)
+      expect(training_period.finished_on).to eq(finished_on)
+      expect(training_period.schedule).to eq(schedule)
     end
   end
 
@@ -88,14 +96,16 @@ RSpec.describe TrainingPeriods::Create do
     it 'calls new with the provider_led arguments' do
       allow(TrainingPeriods::Create).to receive(:new).with(any_args).and_call_original
 
-      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:)
+      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:, schedule:)
 
       expect(TrainingPeriods::Create).to have_received(:new).with(
         period:,
         started_on:,
         school_partnership:,
         expression_of_interest:,
-        training_programme: 'provider_led'
+        training_programme: 'provider_led',
+        finished_on:,
+        schedule:
       )
     end
   end

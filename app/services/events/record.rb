@@ -439,6 +439,15 @@ module Events
       new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, modifications:, happened_at:).record_event!
     end
 
+    def self.record_teacher_resumes_training_period_event!(author:, training_period:, teacher:, lead_provider:, metadata:, happened_at: Time.zone.now)
+      event_type = :teacher_resumes_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name}’s #{training_type} training period was resumed by #{lead_provider.name}"
+
+      new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, metadata:, happened_at:).record_event!
+    end
+
     def self.record_training_period_assigned_to_school_partnership_event!(
       author:,
       training_period:,
