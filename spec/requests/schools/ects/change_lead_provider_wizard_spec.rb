@@ -171,6 +171,42 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
       end
+
+      context "when the ECT is school-led" do
+        let(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :ongoing,
+            :school_led,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on
+          )
+        end
+
+        before do
+          sign_in_as(:school_user, school:)
+        end
+
+        it "returns not found for the edit get step" do
+          get path_for_step("edit")
+          expect(response).to have_http_status(:not_found)
+        end
+
+        it "returns not found for the edit post step" do
+          post path_for_step("edit")
+          expect(response).to have_http_status(:not_found)
+        end
+
+        it "returns not found for the check-answers get step" do
+          get path_for_step("check-answers")
+          expect(response).to have_http_status(:not_found)
+        end
+
+        it "returns not found for the check-answers post step" do
+          post path_for_step("check-answers")
+          expect(response).to have_http_status(:not_found)
+        end
+      end
     end
   end
 
