@@ -18,7 +18,7 @@ module Schools
 
         def save!
           MentorAtSchoolPeriods::ChangeLeadProvider.new(mentor_at_school_period:,
-                                                        school_partnership:,
+                                                        lead_provider: new_lead_provider,
                                                         author: wizard.author).call
 
           true
@@ -41,29 +41,8 @@ module Schools
           @new_lead_provider ||= ::LeadProvider.find(store.lead_provider_id)
         end
 
-        # TODO: Not very DRY - just copied and pasted from edit_step.rb
         def old_lead_provider
-          latest_registration_choice.lead_provider
-        end
-
-        def school_partnership
-          SchoolPartnership
-          .joins(:lead_provider_delivery_partnership)
-          .joins(:active_lead_provider)
-          .where(school:, active_lead_provider: { lead_provider: new_lead_provider })
-          .first
-        end
-
-        def school
-          mentor_at_school_period.school
-        end
-
-        def latest_registration_choice
-          @latest_registration_choice ||= MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn: mentor_trn)
-        end
-
-        def mentor_trn
-          mentor_at_school_period.teacher.trn
+          wizard.latest_registration_choice.lead_provider
         end
       end
     end
