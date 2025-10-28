@@ -1092,7 +1092,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_withdraws_training_period_event' do
+  describe '.record_teacher_training_period_withdrawn_event' do
     let(:teacher) { training_period.trainee.teacher }
     let(:lead_provider) { training_period.lead_provider }
     let(:reason) { "left_teaching_profession" }
@@ -1114,7 +1114,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
+          Events::Record.record_teacher_training_period_withdrawn_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period:,
@@ -1137,7 +1137,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
+          Events::Record.record_teacher_training_period_withdrawn_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period:,
@@ -1155,7 +1155,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_defers_training_period_event' do
+  describe '.record_teacher_training_period_deferred_event' do
     let(:lead_provider) { training_period.lead_provider }
     let(:reason) { "career_break" }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
@@ -1177,7 +1177,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_defers_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
+          Events::Record.record_teacher_training_period_deferred_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period:,
@@ -1201,7 +1201,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_defers_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
+          Events::Record.record_teacher_training_period_deferred_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period:,
@@ -1219,7 +1219,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_resumes_training_period_event' do
+  describe '.record_teacher_training_period_resumed_event' do
     let(:lead_provider) { training_period.lead_provider }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
     let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
@@ -1233,7 +1233,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_resumes_training_period_event!(author:, training_period:, teacher:, lead_provider:, metadata:)
+          Events::Record.record_teacher_training_period_resumed_event!(author:, training_period:, teacher:, lead_provider:, metadata:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period:,
@@ -1256,7 +1256,7 @@ RSpec.describe Events::Record do
 
       it 'queues a RecordEventJob with the correct values' do
         freeze_time do
-          Events::Record.record_teacher_resumes_training_period_event!(author:, training_period:, teacher:, lead_provider:, metadata:)
+          Events::Record.record_teacher_training_period_resumed_event!(author:, training_period:, teacher:, lead_provider:, metadata:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period:,
