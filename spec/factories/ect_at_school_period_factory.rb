@@ -1,7 +1,12 @@
 FactoryBot.define do
-  sequence(:base_ect_date) { |n| 3.years.ago.to_date + (2 * n).days }
-
   factory(:ect_at_school_period) do
+    transient do
+      # default start date to be a realistic past date
+      start_date { 2.years.ago.beginning_of_year.to_date + 1.day }
+      # default end date to be a realistic end date
+      end_date { (started_on || start_date) + 1.year - 1.day }
+    end
+
     teacher { association :teacher, api_ect_training_record_id: SecureRandom.uuid }
 
     after(:create) do |ect_at_school_period|
@@ -13,8 +18,8 @@ FactoryBot.define do
 
     independent_school
 
-    started_on { generate(:base_ect_date) }
-    finished_on { started_on + 1.day }
+    started_on { start_date }
+    finished_on { end_date }
     email { Faker::Internet.email }
     working_pattern { WORKING_PATTERNS.keys.sample }
 
@@ -29,7 +34,7 @@ FactoryBot.define do
     end
 
     trait :ongoing do
-      started_on { generate(:base_ect_date) + 1.year }
+      started_on { 1.year.ago }
       finished_on { nil }
     end
 
