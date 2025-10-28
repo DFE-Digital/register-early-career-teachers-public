@@ -183,10 +183,6 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
           )
         end
 
-        before do
-          sign_in_as(:school_user, school:)
-        end
-
         it "returns not found for the edit get step" do
           get path_for_step("edit")
           expect(response).to have_http_status(:not_found)
