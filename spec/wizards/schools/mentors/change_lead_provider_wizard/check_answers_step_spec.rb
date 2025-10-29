@@ -14,15 +14,31 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
   let(:store) do
     FactoryBot.build(:session_repository, lead_provider_id: lead_provider.id)
   end
-
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
-  let(:school) { FactoryBot.create(:school) }
-  let(:mentor_at_school_period) do
-    FactoryBot.create(:mentor_at_school_period, school:)
-  end
-  let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
-  let(:lead_provider) { school_partnership.lead_provider }
+
   let(:params) { { lead_provider_id: lead_provider.id } }
+
+  let(:started_on) { 3.months.ago.to_date }
+  let(:school) { FactoryBot.create(:school) }
+  let!(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
+  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:mentor_at_school_period) do
+    FactoryBot.create(
+      :mentor_at_school_period,
+      :ongoing,
+      teacher:,
+      school:,
+      email: "mentor@example.com"
+    )
+  end
+
+  let!(:contract_period) { FactoryBot.create(:contract_period, :current) }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
+
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
+  let(:old_lead_provider) { training_period.lead_provider }
 
   describe "#previous_step" do
     it "returns the previous step" do
@@ -61,14 +77,14 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
       expect(service).to have_received(:call)
     end
 
-    it "records an event", skip: 'EVENTS_TODO' do
+    it "records an event" do
       freeze_time
 
       expect(Events::Record)
-        .to receive(:record_teacher_email_updated_event!)
+        .to receive(:record_mentor_lead_provider_updated_event!)
         .with(
-          old_email: "old@example.com",
-          new_email: "new@example.com",
+          old_lead_provider_name: old_lead_provider.name,
+          new_lead_provider_name: lead_provider.name,
           author:,
           mentor_at_school_period:,
           school:,
