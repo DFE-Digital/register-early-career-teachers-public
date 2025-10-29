@@ -35,11 +35,6 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
     end
   end
 
-  describe "#lead_providers_for_select" do
-    it "returns active lead providers in the contract period excluding the current lead provider", pending: 'TODO' do
-    end
-  end
-
   describe "validations" do
     context "when lead_provider_id is blank" do
       let(:params) { { lead_provider_id: "" } }
