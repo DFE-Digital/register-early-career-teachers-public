@@ -111,20 +111,19 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
 
-        it "creates an event only after confirmation", skip: 'EVENTS_TODO' do
-          # allow(Events::Record).to receive(:record_teacher_email_updated_event!)
+        it "creates an event only after confirmation" do
+          allow(Events::Record).to receive(:record_mentor_lead_provider_updated_event!)
+          post(path_for_step("edit"), params:)
 
-          # post(path_for_step("edit"), params:)
+          expect(Events::Record).not_to have_received(:record_mentor_lead_provider_updated_event!)
+          expect(response).to redirect_to(path_for_step("check-answers"))
 
-          # expect(Events::Record).not_to have_received(:record_teacher_email_updated_event!)
-          # expect(response).to redirect_to(path_for_step("check-answers"))
+          follow_redirect!
 
-          # follow_redirect!
+          post path_for_step("check-answers")
 
-          # post path_for_step("check-answers")
-
-          # expect(Events::Record).to have_received(:record_teacher_email_updated_event!)
-          # expect(response).to redirect_to(path_for_step("confirmation"))
+          expect(Events::Record).to have_received(:record_mentor_lead_provider_updated_event!)
+          expect(response).to redirect_to(path_for_step("confirmation"))
         end
       end
 

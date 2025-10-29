@@ -119,8 +119,5 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         expect { subject.call }.not_to change(TrainingPeriod, :count)
       end
     end
-
-    it 'writes an appropriate event', skip: 'EVENTS_TODO' do
-    end
   end
 end
