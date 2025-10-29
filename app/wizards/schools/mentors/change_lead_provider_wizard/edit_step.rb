@@ -7,7 +7,7 @@ module Schools
         validates :lead_provider_id,
                   presence: { message: "Select a lead provider to contact your school" }
 
-        # validate :lead_provider_has_changed
+        validate :lead_provider_has_changed, if: :lead_provider_id
 
         def self.permitted_params = %i[lead_provider_id]
 
