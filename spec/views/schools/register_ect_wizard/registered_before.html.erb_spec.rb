@@ -37,7 +37,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
     )
   end
 
-  let(:wizard_ect) { Schools::RegisterECTWizard::ECT.new(store) }
+  let(:context) { Schools::RegisterECTWizard::Context.new(store) }
 
   context 'Provider-led' do
     before do
@@ -61,7 +61,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
       FactoryBot.create(:gias_school, school:, name: "Really cool school")
 
       assign(:school, school)
-      assign(:ect, wizard_ect)
+      assign(:ect, context)
       assign(:wizard, wizard)
       render
     end
@@ -122,7 +122,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
       FactoryBot.create(:gias_school, school:, name: "Really cool school")
 
       assign(:school, school)
-      assign(:ect, wizard_ect)
+      assign(:ect, context)
       assign(:wizard, wizard)
       render
     end

@@ -68,8 +68,8 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       let(:wizard) do
         FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:, school:).tap do |instance|
           allow(instance).to receive(:ect).and_return(
-            Schools::RegisterECTWizard::ECT.new(store).tap do |ect|
-              allow(ect).to receive_messages(trs_first_name: 'Johnnie', trs_last_name: 'Walker')
+            Schools::RegisterECTWizard::Context.new(store).tap do |context|
+              allow(context).to receive_messages(trs_first_name: 'Johnnie', trs_last_name: 'Walker')
             end
           )
         end
