@@ -8,6 +8,7 @@ module API
         { title: "Create, view and update partnerships", path: "create-view-and-update-partnerships" },
         { title: "Keeping data in sync", path: "keeping-data-in-sync" },
         { title: "How to test the API effectively", path: "how-to-test-the-api-effectively" },
+        { title: "How we assign participant schedules", path: "how-we-assign-participant-schedules" },
       ].freeze
 
       attr_reader :current_path, :page
