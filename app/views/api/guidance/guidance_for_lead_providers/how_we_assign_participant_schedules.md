@@ -10,7 +10,7 @@ For ECTs, default schedules will be based on school-provided start dates.
 
 For mentors, the logic will relate to: 
 
-* when the first provider-led ECT they’re assigned to is starting at the school
+* when we expect the mentor to start 
 * if they’re identified by the service as a replacement mentor 
 
 Providers will need to review schedules and update them if they’re not correct. 
