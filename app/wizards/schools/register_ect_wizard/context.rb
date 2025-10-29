@@ -15,6 +15,11 @@ module Schools
 
       delegate :full_name, to: :@presenter
 
+      def ect_at_school_period
+        id = fetch(:ect_at_school_period_id)
+        ECTAtSchoolPeriod.find_by_id(id) if id.present?
+      end
+
       def active_at_school?(urn)
         active_record_at_school(urn).present?
       end
