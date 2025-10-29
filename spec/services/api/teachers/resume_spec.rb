@@ -11,9 +11,11 @@ RSpec.describe API::Teachers::Resume, type: :model do
     describe "validations" do
       %i[ect mentor].each do |trainee_type|
         context "for #{trainee_type}" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 2.months.ago) }
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
+          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
+          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
           let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
+
+          it { is_expected.to be_valid }
 
           context "when teacher training period is active/ongoing" do
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
@@ -23,16 +25,8 @@ RSpec.describe API::Teachers::Resume, type: :model do
             it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
           end
 
-          context "when at school period is ongoing" do
-            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
-
-            it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
-          end
-
-          context "when training period ends in the future" do
-            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
-            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
+          context "when at school period is finished" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago, finished_on: 2.months.ago) }
 
             it { is_expected.to have_one_error_per_attribute }
             it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
@@ -50,7 +44,6 @@ RSpec.describe API::Teachers::Resume, type: :model do
     describe "#resume" do
       %i[ect mentor].each do |trainee_type|
         context "for #{trainee_type}" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago) }
           let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
 
           context "when invalid" do
@@ -62,7 +55,8 @@ RSpec.describe API::Teachers::Resume, type: :model do
           end
 
           context "when valid" do
-            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
 
             it "resumes the training period via resume service" do
               resume_service = double("Teachers::Resume")
