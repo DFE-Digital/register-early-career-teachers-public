@@ -3,14 +3,11 @@ RSpec.describe 'Admin recording a failed outcome for a teacher' do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do
-    FactoryBot.create(
-      :induction_period,
-      :ongoing,
-      teacher:,
-      appropriate_body:,
-      started_on: 1.month.ago,
-      induction_programme: 'fip'
-    )
+    FactoryBot.create(:induction_period, :ongoing,
+                      teacher:,
+                      appropriate_body:,
+                      started_on: 1.month.ago,
+                      induction_programme: 'fip')
   end
 
   let(:valid_params) do

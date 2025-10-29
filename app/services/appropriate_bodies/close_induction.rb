@@ -5,31 +5,37 @@ module AppropriateBodies
   # 2. RecordFail#fail!
   # 3. RecordRelease#release!
   class CloseInduction
-    class TeacherHasNoOngoingInductionPeriod < StandardError
-    end
+    class TeacherHasNoOngoingInductionPeriod < StandardError; end
 
-    attr_reader :appropriate_body,
-                :pending_induction_submission,
-                :author,
-                :teacher,
-                :induction_period
+    include ActiveModel::Model
+    include ActiveModel::Attributes
 
-    def initialize(appropriate_body:, pending_induction_submission:, author:)
-      @appropriate_body = appropriate_body
-      @pending_induction_submission = pending_induction_submission
-      @author = author
-      @teacher = Teacher.find_by!(trn: pending_induction_submission.trn)
-      @induction_period = @teacher.ongoing_induction_period
+    attribute :appropriate_body
+    attribute :pending_induction_submission
+    attribute :author
+
+    def call
+      raise TeacherHasNoOngoingInductionPeriod if ongoing_induction_period.blank?
     end
 
   private
 
+    delegate :ongoing_induction_period,
+             :first_induction_period,
+             :last_induction_period,
+             to: :teacher
+
+    delegate :trn,
+             :number_of_terms,
+             :finished_on,
+             to: :pending_induction_submission
+
+    def teacher
+      @teacher ||= Teacher.find_by!(trn:)
+    end
+
     def close_induction_period(outcome: nil)
-      induction_period.update!(
-        number_of_terms: pending_induction_submission.number_of_terms,
-        finished_on: pending_induction_submission.finished_on,
-        outcome:
-      )
+      ongoing_induction_period.update!(number_of_terms:, finished_on:, outcome:)
     end
 
     def delete_submission

@@ -1,12 +1,13 @@
 module Admin
   class RecordFail < ::AppropriateBodies::RecordFail
-    attr_reader :note,
-                :zendesk_ticket_id
+    include Auditable
 
-    def initialize(note:, zendesk_ticket_id:, **args)
-      @note = note
-      @zendesk_ticket_id = zendesk_ticket_id
-      super(**args)
+    def fail!
+      validate!
+
+      fail unless valid?
+
+      super
     end
 
   private
@@ -16,7 +17,7 @@ module Admin
         author:,
         teacher:,
         appropriate_body:,
-        induction_period:,
+        induction_period: ongoing_induction_period,
         body: note,
         zendesk_ticket_id:
       )

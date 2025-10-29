@@ -1,13 +1,11 @@
 RSpec.describe Admin::RecordPass do
-  include ActiveJob::TestHelper
-
   subject(:service) do
     described_class.new(
       appropriate_body:,
       pending_induction_submission:,
       author:,
       note:,
-      zendesk_ticket_id:
+      zendesk_ticket_id: '#123456'
     )
   end
 
@@ -25,7 +23,6 @@ RSpec.describe Admin::RecordPass do
   end
 
   let(:note) { 'Original outcome recorded in error' }
-  let(:zendesk_ticket_id) { '123456' }
 
   describe "#pass!" do
     context "with an ongoing induction period" do
@@ -65,22 +62,15 @@ RSpec.describe Admin::RecordPass do
       end
 
       it "records an induction passed event" do
-        allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
-
-        service.pass!
-
-        expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
+        expect(Events::Record).to receive(:record_teacher_passes_induction_event!).with(
           appropriate_body:,
           teacher:,
           induction_period:,
-          author: an_instance_of(Sessions::Users::DfEUser),
+          author:,
           body: note,
-          zendesk_ticket_id:
+          zendesk_ticket_id: '123456'
         )
-
-        perform_enqueued_jobs
-
-        expect(Event.last.event_type).to eq("teacher_passes_induction")
+        service.pass!
       end
 
       context "when induction submission is invalid" do

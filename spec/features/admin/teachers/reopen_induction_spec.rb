@@ -1,4 +1,4 @@
-describe "Admins can reopen a teacher's closed induction" do
+describe "Admin reopening an induction" do
   include ActiveJob::TestHelper
 
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -8,7 +8,7 @@ describe "Admins can reopen a teacher's closed induction" do
     sign_in_as_dfe_user(role: :admin)
   end
 
-  context "and a ticket and reason are provided" do
+  context "with a ticket and reason" do
     it "reopens the induction period, resets TRS, adds context to the timeline" do
       given_i_am_on_the_teacher_page
       then_there_is_no_current_induction_period
@@ -19,19 +19,19 @@ describe "Admins can reopen a teacher's closed induction" do
       then_there_is_an_error_message
 
       when_i_add_a_zendesk_ticket_id("#123456")
-      and_i_add_a_note("This is a test reason for reopening")
+      and_i_add_a_note("This is a test reason for reopening the induction")
       and_i_am_sure_i_want_to_reopen_the_induction
       and_event_background_jobs_are_executed
-      then_the_induction_is_successfully_reopened
+      then_the_induction_is_reopened
       and_there_is_a_current_induction_period
 
       when_i_go_to_the_timeline_page
-      then_i_can_see_the_note("This is a test reason for reopening")
+      then_i_can_see_the_note("This is a test reason for reopening the induction")
       and_i_can_see_the_zendesk_link("https://becomingateacher.zendesk.com/agent/tickets/123456")
     end
   end
 
-  context "and no reason is provided" do
+  context "with a ticket but no reason" do
     it "reopens the induction period, resets TRS, adds context to the timeline" do
       given_i_am_on_the_teacher_page
       then_there_is_no_current_induction_period
@@ -40,7 +40,7 @@ describe "Admins can reopen a teacher's closed induction" do
       when_i_add_a_zendesk_ticket_id("123456")
       and_i_am_sure_i_want_to_reopen_the_induction
       and_event_background_jobs_are_executed
-      then_the_induction_is_successfully_reopened
+      then_the_induction_is_reopened
       and_there_is_a_current_induction_period
 
       when_i_go_to_the_timeline_page
@@ -48,7 +48,7 @@ describe "Admins can reopen a teacher's closed induction" do
     end
   end
 
-  context 'with an invalid zendesk ticket id' do
+  context 'with an invalid ticket' do
     it "shows an error message" do
       given_i_am_on_the_teacher_page
       then_there_is_no_current_induction_period
@@ -104,7 +104,7 @@ private
     perform_enqueued_jobs(queue: :events)
   end
 
-  def then_the_induction_is_successfully_reopened
+  def then_the_induction_is_reopened
     expect(page.locator(".govuk-notification-banner__content"))
       .to have_text("Induction was successfully reopened")
   end
