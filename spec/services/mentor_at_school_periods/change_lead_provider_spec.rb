@@ -106,18 +106,19 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
     end
 
     context 'when there is no school partnership with the old lead provider' do
-      let!(:training_period) { FactoryBot.create(:training_period, 
-                                :for_mentor, 
-                                :ongoing, 
-                                :with_only_expression_of_interest,
-                                mentor_at_school_period:, 
-                                started_on:) }
+      let!(:training_period) do
+        FactoryBot.create(:training_period,
+                          :for_mentor,
+                          :ongoing,
+                          :with_only_expression_of_interest,
+                          mentor_at_school_period:,
+                          started_on:)
+      end
 
       it 'deletes the existing training period' do
-        expect { subject.call }.to change(TrainingPeriod, :count).by(0)
+        expect { subject.call }.not_to change(TrainingPeriod, :count)
       end
     end
-
 
     it 'writes an appropriate event', skip: 'EVENTS_TODO' do
     end
