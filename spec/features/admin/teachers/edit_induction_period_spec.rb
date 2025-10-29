@@ -1,4 +1,4 @@
-RSpec.describe "Admin amending number of terms of an induction period" do
+RSpec.describe "Admin editing an induction" do
   include ActiveJob::TestHelper
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
