@@ -21,7 +21,7 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
 
       training_status_active = training_status&.active?
-      training_period_ongoing = training_period.ongoing? || training_period.finished_on.future?
+      training_period_ongoing = training_period.ongoing_today?
       at_school_period_ongoing = training_period.trainee.ongoing?
 
       if training_status_active && training_period_ongoing && at_school_period_ongoing
