@@ -111,7 +111,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
 
-        it "creates an event only after confirmation", skip: 'TODO' do
+        it "creates an event only after confirmation", skip: 'EVENTS_TODO' do
           # allow(Events::Record).to receive(:record_teacher_email_updated_event!)
 
           # post(path_for_step("edit"), params:)

@@ -22,7 +22,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
   let(:training_programme) { 'provider_led' }
 
   describe '#call' do
-    context 'when no relationship exists with this lead provider' do
+    context 'when there is no school partnership with the new lead provider' do
       it 'creates a new expression of interest for the current year and assigns it to the new training period' do
         expect { subject.call }.to change(ActiveLeadProvider, :count).by(1)
 
@@ -40,7 +40,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       end
     end
 
-    context 'when there is an exiting relationship with this lead provider' do
+    context 'when there is a school partnership with the new lead provider' do
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
       it 'uses the existing school partnership' do
@@ -105,7 +105,21 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       end
     end
 
-    it 'writes an appropriate event', pending: 'TODO' do
+    context 'when there is no school partnership with the old lead provider' do
+      let!(:training_period) { FactoryBot.create(:training_period, 
+                                :for_mentor, 
+                                :ongoing, 
+                                :with_only_expression_of_interest,
+                                mentor_at_school_period:, 
+                                started_on:) }
+
+      it 'deletes the existing training period' do
+        expect { subject.call }.to change(TrainingPeriod, :count).by(0)
+      end
+    end
+
+
+    it 'writes an appropriate event', skip: 'EVENTS_TODO' do
     end
   end
 end
