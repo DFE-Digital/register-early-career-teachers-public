@@ -1,6 +1,8 @@
 module API
   module V3
     class ParticipantsController < APIController
+      include API::TeacherType
+
       def index
         conditions = {
           contract_period_years: extract_conditions(contract_period_years, integers: true),
@@ -25,7 +27,7 @@ module API
           lead_provider_id: current_lead_provider.id,
           teacher_api_id: teacher.api_id,
           reason: defer_participant_params[:reason],
-          course_identifier: defer_participant_params[:course_identifier]
+          teacher_type:
         )
 
         respond_with_service(service:, action: :defer)
@@ -38,7 +40,7 @@ module API
           lead_provider_id: current_lead_provider.id,
           teacher_api_id: teacher.api_id,
           reason: withdraw_participant_params[:reason],
-          course_identifier: withdraw_participant_params[:course_identifier]
+          teacher_type:
         )
 
         respond_with_service(service:, action: :withdraw)
@@ -67,11 +69,11 @@ module API
       end
 
       def defer_participant_params
-        params.require(:data).expect({ attributes: %i[course_identifier reason] })
+        params.require(:data).expect({ attributes: %i[reason] })
       end
 
       def withdraw_participant_params
-        params.require(:data).expect({ attributes: %i[course_identifier reason] })
+        params.require(:data).expect({ attributes: %i[reason] })
       end
 
       def api_from_teacher_id
