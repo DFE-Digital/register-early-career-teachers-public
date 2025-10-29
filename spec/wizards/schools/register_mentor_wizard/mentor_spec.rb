@@ -302,7 +302,7 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
 
     context 'when there are past mentor_at_school_periods but none ongoing' do
-      let!(:closed_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
+      let!(:closed_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 3.years.ago) }
 
       it 'returns :previously_a_mentor' do
         expect(mentor.mentorship_status).to eq(:previously_a_mentor)
@@ -310,7 +310,7 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
 
     context 'when there are past mentor_at_school_periods and some ongoing' do
-      let!(:closed_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
+      let!(:closed_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 3.years.ago) }
       let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
 
       it 'returns :currently_a_mentor' do

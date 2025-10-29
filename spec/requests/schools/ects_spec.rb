@@ -34,7 +34,7 @@ RSpec.describe 'ECT summary', :enable_schools_interface do
 
   describe 'GET #show' do
     let!(:training_period) do
-      FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect)
+      FactoryBot.create(:training_period, :ongoing, ect_at_school_period: ect, started_on: 1.year.ago)
     end
 
     describe 'finding the ECT at school period' do
@@ -72,7 +72,7 @@ RSpec.describe 'ECT summary', :enable_schools_interface do
       context 'when accessing old period ID from different school' do
         let(:other_school) { FactoryBot.create(:school) }
         let(:teacher) { ect.teacher }
-        let!(:old_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: 4.years.ago) }
+        let!(:old_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: 3.years.ago) }
 
         before do
           sign_in_as(:school_user, school: other_school)
@@ -87,7 +87,7 @@ RSpec.describe 'ECT summary', :enable_schools_interface do
 
       context 'when accessing future ECT period at current school' do
         let(:teacher) { ect.teacher }
-        let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 1.month.from_now) }
+        let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 1.year.from_now) }
 
         before do
           sign_in_as(:school_user, school:)
@@ -103,7 +103,7 @@ RSpec.describe 'ECT summary', :enable_schools_interface do
       context 'when accessing future ECT period from different school' do
         let(:other_school) { FactoryBot.create(:school) }
         let(:teacher) { ect.teacher }
-        let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: 1.month.from_now) }
+        let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: 1.year.from_now) }
 
         before do
           sign_in_as(:school_user, school:)
