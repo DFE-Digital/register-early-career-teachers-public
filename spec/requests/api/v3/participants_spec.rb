@@ -8,12 +8,21 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
   def create_resource(active_lead_provider:, from_participant_id: nil, training_status: nil)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
-    ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: nil)
-    training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.year.ago, finished_on: nil, school_partnership:)
-    training_period.update!(withdrawn_at: 1.day.ago, withdrawal_reason: :other) if training_status == :withdrawn
-    training_period.update!(deferred_at: 1.day.ago, deferral_reason: :other) if training_status == :deferred
+    teacher = FactoryBot.create(:teacher)
 
-    training_period.trainee.teacher.tap do |teacher|
+    ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: nil, teacher:)
+    mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, started_on: 3.years.ago, finished_on: nil, teacher:)
+
+    training_periods = [
+      FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.year.ago, finished_on: nil, school_partnership:),
+      FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.year.ago, finished_on: nil, school_partnership:)
+    ]
+    training_periods.each do |training_period|
+      training_period.update!(withdrawn_at: 1.day.ago, withdrawal_reason: :other) if training_status == :withdrawn
+      training_period.update!(deferred_at: 1.day.ago, deferral_reason: :other) if training_status == :deferred
+    end
+
+    teacher.tap do |teacher|
       FactoryBot.create(:teacher_id_change, teacher:, api_from_teacher_id: from_participant_id) if from_participant_id
     end
   end
@@ -68,7 +77,7 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
         lead_provider_id: lead_provider.id,
         teacher_api_id: resource.api_id,
         reason:,
-        course_identifier:
+        teacher_type: :ect,
       }
     end
     let(:params) do
@@ -104,13 +113,13 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
     let(:resource_type) { Teacher }
     let(:resource) { create_resource(active_lead_provider:) }
     let(:reason) { service::WITHDRAWAL_REASONS.sample }
-    let(:course_identifier) { "ecf-induction" }
+    let(:course_identifier) { "ecf-mentor" }
     let(:service_args) do
       {
         lead_provider_id: lead_provider.id,
         teacher_api_id: resource.api_id,
         reason:,
-        course_identifier:
+        teacher_type: :mentor,
       }
     end
     let(:params) do
